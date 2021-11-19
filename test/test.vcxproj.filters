@@ -15,54 +15,25 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="measurement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="adl_sensor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="adl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="nvml_sensor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="nvml_exception.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="nvml_scope.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stream_element.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="timestamp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="adl_exception.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="adl_sensor.cpp">
+    <ClCompile Include="measurement_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="adl.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="nvml_sensor.cpp">
+    <ClCompile Include="adl_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="nvml_scope.cpp">
+    <ClCompile Include="nvml_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="adl_exception.cpp">
+    <ClCompile Include="timestamp_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="nvml_sensor.inl">
+    <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
-    </None>
+    </ClInclude>
   </ItemGroup>
 </Project>
