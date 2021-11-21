@@ -69,7 +69,7 @@ visus::power_overwhelming::detail::library_base::library_base(
         TPaths&&... paths) : _handle(NULL) {
     std::array<const TCHAR *, sizeof...(TPaths)> p = { paths... };
 
-    auto i = 0;
+    std::size_t i = 0;
     while ((this->_handle == NULL) && (i < p.size())) {
         this->_handle = ::LoadLibrary(p[i]);
     }
