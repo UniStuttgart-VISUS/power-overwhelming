@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "power_overwhelming_api.h"
+#include "timestamp.h"
 
 
 namespace visus {
@@ -29,7 +30,7 @@ namespace power_overwhelming {
         /// <summary>
         /// The type of a timestamp associated with a measurement.
         /// </summary>
-        typedef std::uint64_t timestamp_type;
+        typedef std::int64_t timestamp_type;
 
         /// <summary>
         /// The type of current and voltage measurements.

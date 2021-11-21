@@ -19,15 +19,24 @@ namespace test {
 
         TEST_METHOD(test_construction) {
             {
-                auto n = std::chrono::system_clock::now();
-                auto t = timestamp<std::chrono::system_clock::time_point>::create();
-                Assert::IsTrue(std::chrono::duration_cast<std::chrono::milliseconds>(t - n).count() < 10, L"timestamp from system clock", LINE_INFO());
+                auto n = std::chrono::high_resolution_clock::now();
+                auto t = detail::timestamp<timestamp_resolution::seconds>::create();
+                auto s = std::chrono::duration_cast<std::chrono::seconds>(n.time_since_epoch());
+                Assert::AreEqual(s.count(), t, L"timestamp second", LINE_INFO());
             }
 
             {
                 auto n = std::chrono::high_resolution_clock::now();
-                auto t = timestamp<std::chrono::high_resolution_clock::time_point>::create();
-                Assert::IsTrue(std::chrono::duration_cast<std::chrono::milliseconds>(t - n).count() < 10, L"timestamp from hires clock", LINE_INFO());
+                auto t = detail::timestamp<timestamp_resolution::milliseconds>::create();
+                auto s = std::chrono::duration_cast<std::chrono::milliseconds>(n.time_since_epoch());
+                Assert::IsTrue(t - s.count() < 10, L"timestamp millisecond", LINE_INFO());
+            }
+
+            {
+                auto n = std::chrono::high_resolution_clock::now();
+                auto t = detail::timestamp<timestamp_resolution::nanoseconds>::create();
+                auto s = std::chrono::duration_cast<std::chrono::nanoseconds>(n.time_since_epoch());
+                Assert::IsTrue(t - s.count() < 1000, L"timestamp nanosecond", LINE_INFO());
             }
         }
     };

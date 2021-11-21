@@ -138,31 +138,6 @@ visus::power_overwhelming::nvml_sensor::~nvml_sensor(void) {
 
 
 /*
- * ::power_overwhelming::nvml_sensor::sample
- */
-visus::power_overwhelming::measurement
-visus::power_overwhelming::nvml_sensor::sample(void) const {
-    unsigned int mw = 0;
-    auto t = 5;
-
-    if (!*this) {
-        throw std::runtime_error("A disposed instance of nvml_sensor cannot be "
-            "sampled.");
-    }
-
-    // Get the power usage in milliwatts.
-    auto status = ::nvmlDeviceGetPowerUsage(this->_impl->device, &mw);
-    if (status != NVML_SUCCESS) {
-        throw nvml_exception(status);
-    }
-
-    return measurement(this->_impl->sensor_name.c_str(), t,
-        static_cast<measurement::value_type>(mw)
-        / static_cast<measurement::value_type>(1000));
-}
-
-
-/*
  * visus::power_overwhelming::nvml_sensor::operator =
  */
 visus::power_overwhelming::nvml_sensor&
@@ -181,4 +156,29 @@ visus::power_overwhelming::nvml_sensor::operator =(nvml_sensor&& rhs) noexcept {
  */
 visus::power_overwhelming::nvml_sensor::operator bool(void) const noexcept {
     return (this->_impl != nullptr);
+}
+
+
+
+/*
+ * ::power_overwhelming::nvml_sensor::sample
+ */
+visus::power_overwhelming::measurement
+visus::power_overwhelming::nvml_sensor::sample(
+        const measurement::timestamp_type timestamp) const {
+    if (!*this) {
+        throw std::runtime_error("A disposed instance of nvml_sensor cannot be "
+            "sampled.");
+    }
+
+    // Get the power usage in milliwatts.
+    unsigned int mw = 0;
+    auto status = ::nvmlDeviceGetPowerUsage(this->_impl->device, &mw);
+    if (status != NVML_SUCCESS) {
+        throw nvml_exception(status);
+    }
+
+    return measurement(this->_impl->sensor_name.c_str(), timestamp,
+        static_cast<measurement::value_type>(mw)
+        / static_cast<measurement::value_type>(1000));
 }

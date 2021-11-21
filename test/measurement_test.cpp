@@ -24,7 +24,7 @@ namespace test {
                 Assert::AreEqual(3.0f, m.current(), L"current", LINE_INFO());
                 Assert::AreEqual(6.1f, m.power(), L"power", LINE_INFO());
                 Assert::AreEqual(L"test", m.sensor(), L"sensor", LINE_INFO());
-                Assert::AreEqual(std::uint64_t(42), m.timestamp(), L"timestamp", LINE_INFO());
+                Assert::AreEqual(std::int64_t(42), m.timestamp(), L"timestamp", LINE_INFO());
                 Assert::IsTrue(m, L"operator bool", LINE_INFO());
             }
 
@@ -34,7 +34,7 @@ namespace test {
                 Assert::AreEqual(3.0f, m.current(), L"current", LINE_INFO());
                 Assert::AreEqual(6.0f, m.power(), L"power", LINE_INFO());
                 Assert::AreEqual(L"test", m.sensor(), L"sensor", LINE_INFO());
-                Assert::AreEqual(std::uint64_t(42), m.timestamp(), L"timestamp", LINE_INFO());
+                Assert::AreEqual(std::int64_t(42), m.timestamp(), L"timestamp", LINE_INFO());
                 Assert::IsTrue(m, L"operator bool", LINE_INFO());
             }
 
@@ -44,7 +44,7 @@ namespace test {
                 Assert::AreEqual(measurement::invalid_value, m.current(), L"current", LINE_INFO());
                 Assert::AreEqual(2.0f, m.power(), L"power", LINE_INFO());
                 Assert::AreEqual(L"test", m.sensor(), L"sensor", LINE_INFO());
-                Assert::AreEqual(std::uint64_t(42), m.timestamp(), L"timestamp", LINE_INFO());
+                Assert::AreEqual(std::int64_t(42), m.timestamp(), L"timestamp", LINE_INFO());
                 Assert::IsTrue(m, L"operator bool", LINE_INFO());
             }
 
@@ -94,14 +94,14 @@ namespace test {
                 Assert::AreEqual(measurement::invalid_value, m.voltage(), L"voltage", LINE_INFO());
                 Assert::AreEqual(measurement::invalid_value, m.current(), L"current", LINE_INFO());
                 Assert::IsNull(m.sensor(), L"sensor", LINE_INFO());
-                Assert::AreEqual(std::uint64_t(0), m.timestamp(), L"timestamp", LINE_INFO());
+                Assert::AreEqual(std::int64_t(0), m.timestamp(), L"timestamp", LINE_INFO());
                 Assert::IsFalse(m, L"source operator bool", LINE_INFO());
 
                 Assert::AreEqual(2.0f, n.voltage(), L"voltage", LINE_INFO());
                 Assert::AreEqual(3.0f, n.current(), L"current", LINE_INFO());
                 Assert::AreEqual(6.1f, n.power(), L"power", LINE_INFO());
                 Assert::AreEqual(L"test", n.sensor(), L"sensor", LINE_INFO());
-                Assert::AreEqual(std::uint64_t(42), n.timestamp(), L"timestamp", LINE_INFO());
+                Assert::AreEqual(std::int64_t(42), n.timestamp(), L"timestamp", LINE_INFO());
                 Assert::IsTrue(n, L"destination operator bool", LINE_INFO());
             }
         }

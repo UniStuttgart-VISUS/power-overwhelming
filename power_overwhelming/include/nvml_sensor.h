@@ -89,9 +89,25 @@ namespace power_overwhelming {
         /// <summary>
         /// Sample the sensor.
         /// </summary>
+        /// <typeparam name="Resolution">The desired resolution of the timestamp
+        /// being created for the measurement.</typeparam>
         /// <returns>A sensor sample with the information about power
         /// consumption that is available via NVML.</returns>
-        measurement sample(void) const;
+        template<timestamp_resolution Resolution>
+        inline measurement sample(void) const {
+            typedef detail::timestamp<Resolution> ts;
+            this->sample(ts::create());
+        }
+
+        /// <summary>
+        /// Sample the sensor using a timestamp with millisecond resolution.
+        /// </summary>
+        /// <returns>A sensor sample with the information about power
+        /// consumption that is available via NVML.</returns>
+        inline measurement sample(void) const {
+            typedef detail::timestamp<timestamp_resolution::milliseconds> ts;
+            return this->sample(ts::create());
+        }
 
         /// <summary>
         /// Move assignment.
@@ -112,6 +128,8 @@ namespace power_overwhelming {
         operator bool(void) const noexcept;
 
     private:
+
+        measurement sample(const measurement::timestamp_type timestamp) const;
 
         detail::nvml_sensor_impl *_impl;
 

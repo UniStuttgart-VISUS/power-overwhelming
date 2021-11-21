@@ -6,41 +6,78 @@
 #pragma once
 
 #include <chrono>
+#include <cinttypes>
+
+#include "timestamp_resolution.h"
 
 
 namespace visus {
 namespace power_overwhelming {
+namespace detail {
 
     /// <summary>
-    /// Implements a generator for timestamps from STL clocks.
+    /// Traits class that resolves the target ticks for the given resolution.
     /// </summary>
-    /// <remarks>
-    /// While the default implementation assumes that
-    /// <typeparamref name="TTimestamp" /> is the time point of an STL clock,
-    /// and derives the clock from that. It is, however, possible to use custom
-    /// types of timestamps by providing a template specialisation for that
-    /// type.
-    /// </remarks>
-    /// <typeparam name="TTimestamp">The type of the timestamp. For the default
-    /// implementation it is assume that this is an STL time point.</typeparam>
-    template<class TTimestamp> class timestamp {
+    template<timestamp_resolution Resolution>
+    struct timestamp_resolution_traits { };
 
-    public:
+    /// <summary>
+    /// Specialisation for milliseconds.
+    /// </summary>
+    template<>
+    struct timestamp_resolution_traits<timestamp_resolution::milliseconds> {
+        typedef std::chrono::milliseconds type;
+    };
+
+    /// <summary>
+    /// Specialisation for nanoseconds.
+    /// </summary>
+    template<>
+    struct timestamp_resolution_traits<timestamp_resolution::nanoseconds> {
+        typedef std::chrono::nanoseconds type;
+    };
+
+    /// <summary>
+    /// Specialisation for seconds.
+    /// </summary>
+    template<>
+    struct timestamp_resolution_traits<timestamp_resolution::seconds> {
+        typedef std::chrono::seconds type;
+    };
+
+
+    /// <summary>
+    /// Implements a generator for timestamps from the STL high-resolution
+    /// clock.
+    /// </summary>
+    /// <typeparam name="Resolution">The temporal resolution of the value being
+    /// returned.</typeparam>
+    template<timestamp_resolution Resolution> struct timestamp {
+
+        /// <summary>
+        /// The duration type of the specified
+        /// <typeparamref name="Resolution" />.
+        /// </summary>
+        typedef typename timestamp_resolution_traits<Resolution>::type
+            duration_type;
 
         /// <summary>
         /// The value type of the time stamp.
         /// </summary>
-        typedef TTimestamp value_type;
+        typedef typename duration_type::rep value_type;
 
         /// <summary>
-        /// Samples the underlying clock of <see cref="value_type" /> to
-        /// create new timestamp.
+        /// Samples the high-resolution clock and converts its value into a
+        /// timestamp.
         /// </summary>
         /// <returns>A new timestamp for the current point in time.</returns>
         static inline value_type create(void) {
-            return typename value_type::clock::now();
+            const auto n = std::chrono::high_resolution_clock::now();
+            const auto v = n.time_since_epoch();
+            return std::chrono::duration_cast<duration_type>(v).count();
         }
     };
 
+} /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */

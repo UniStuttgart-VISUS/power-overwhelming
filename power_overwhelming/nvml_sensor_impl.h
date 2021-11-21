@@ -51,7 +51,6 @@ namespace detail {
         /// <see cref="device_name" /> and regenerates the
         /// <see cref="sensor_name" />.
         /// </summary>
-        /// <param name=""></param>
         void load_device_name(void);
     };
 

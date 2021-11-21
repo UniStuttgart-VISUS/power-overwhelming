@@ -21,9 +21,6 @@
     <ClInclude Include="include\nvml_sensor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\timestamp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\adl_sensor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -58,6 +55,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="convert_string.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\timestamp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
