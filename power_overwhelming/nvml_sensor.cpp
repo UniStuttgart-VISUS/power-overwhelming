@@ -173,7 +173,8 @@ visus::power_overwhelming::nvml_sensor::sample(
 
     // Get the power usage in milliwatts.
     unsigned int mw = 0;
-    auto status = ::nvmlDeviceGetPowerUsage(this->_impl->device, &mw);
+    auto status = detail::nvidia_management_library::instance()
+        .nvmlDeviceGetPowerUsage(this->_impl->device, &mw);
     if (status != NVML_SUCCESS) {
         throw nvml_exception(status);
     }

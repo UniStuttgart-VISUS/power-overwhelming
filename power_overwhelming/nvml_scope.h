@@ -31,41 +31,11 @@ namespace power_overwhelming {
         nvml_scope(const nvml_scope&) = delete;
 
         /// <summary>
-        /// Moves <paramref name="rhs" /> to a new instance.
-        /// </summary>
-        /// <remarks>
-        /// This operation abandons <paramref name="rhs" />, ie the NVML library
-        /// will not be released if <paramref name="rhs" /> leaves its scope.
-        /// Instead, ownership is transferred to the new object.
-        /// </remarks>
-        /// <param name="rhs"></param>
-        nvml_scope(nvml_scope&& rhs) noexcept : _abandoned(false) {
-            rhs._abandoned = true;
-        }
-
-        /// <summary>
         /// Finalises the instance.
         /// </summary>
         ~nvml_scope(void);
 
         nvml_scope& operator =(const nvml_scope&) = delete;
-
-        /// <summary>
-        /// Move assignment.
-        /// </summary>
-        /// <remarks>
-        /// This operation abandons <paramref name="rhs" />, ie the NVML library
-        /// will not be released if <paramref name="rhs" /> leaves its scope.
-        /// Instead, ownership is transferred to this object.
-        /// </remarks>
-        /// <param name="rhs"></param>
-        /// <returns><c>*this</c></returns>
-        nvml_scope& operator =(nvml_scope&& rhs) noexcept;
-
-    private:
-
-        bool _abandoned;
-
     };
 
 } /* namespace power_overwhelming */
