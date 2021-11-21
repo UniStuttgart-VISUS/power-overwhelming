@@ -19,15 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="adl.h" />
-    <ClInclude Include="adl_exception.h" />
-    <ClInclude Include="adl_sensor.h" />
-    <ClInclude Include="measurement.h" />
-    <ClInclude Include="stream_element.h" />
-    <ClInclude Include="nvml_exception.h" />
-    <ClInclude Include="nvml_scope.h" />
-    <ClInclude Include="nvml_sensor.h" />
-    <ClInclude Include="timestamp.h" />
+    <ClInclude Include="include\adl.h" />
+    <ClInclude Include="include\adl_exception.h" />
+    <ClInclude Include="include\adl_sensor.h" />
+    <ClInclude Include="include\measurement.h" />
+    <ClInclude Include="include\nvml_exception.h" />
+    <ClInclude Include="include\nvml_scope.h" />
+    <ClInclude Include="include\nvml_sensor.h" />
+    <ClInclude Include="include\stream_element.h" />
+    <ClInclude Include="include\timestamp.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adl.cpp" />
@@ -37,7 +37,7 @@
     <ClCompile Include="nvml_sensor.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="nvml_sensor.inl" />
+    <None Include="include\nvml_sensor.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -123,6 +123,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -140,6 +141,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -157,6 +159,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -174,6 +177,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

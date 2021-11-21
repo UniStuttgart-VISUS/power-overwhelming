@@ -15,31 +15,31 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="measurement.h">
+    <ClInclude Include="include\measurement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="adl_sensor.h">
+    <ClInclude Include="include\nvml_exception.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="adl.h">
+    <ClInclude Include="include\nvml_sensor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="nvml_sensor.h">
+    <ClInclude Include="include\timestamp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="nvml_exception.h">
+    <ClInclude Include="include\adl_exception.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="nvml_scope.h">
+    <ClInclude Include="include\adl_sensor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stream_element.h">
+    <ClInclude Include="include\adl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="timestamp.h">
+    <ClInclude Include="include\stream_element.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="adl_exception.h">
+    <ClInclude Include="include\nvml_scope.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -61,7 +61,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="nvml_sensor.inl">
+    <None Include="include\nvml_sensor.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
