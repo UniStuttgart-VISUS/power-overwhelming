@@ -19,25 +19,34 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\adl.h" />
-    <ClInclude Include="include\adl_exception.h" />
+    <ClInclude Include="adl_exception.h" />
+    <ClInclude Include="amd_display_library.h" />
     <ClInclude Include="include\adl_sensor.h" />
     <ClInclude Include="include\measurement.h" />
-    <ClInclude Include="include\nvml_exception.h" />
-    <ClInclude Include="include\nvml_scope.h" />
     <ClInclude Include="include\nvml_sensor.h" />
+    <ClInclude Include="include\power_overwhelming_api.h" />
     <ClInclude Include="include\stream_element.h" />
     <ClInclude Include="include\timestamp.h" />
+    <ClInclude Include="include\timestamp_resolution.h" />
+    <ClInclude Include="library_base.h" />
+    <ClInclude Include="nvidia_management_library.h" />
+    <ClInclude Include="nvml_exception.h" />
+    <ClInclude Include="nvml_scope.h" />
+    <ClInclude Include="nvml_sensor_impl.h" />
+    <ClInclude Include="convert_string.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="adl.cpp" />
     <ClCompile Include="adl_exception.cpp" />
     <ClCompile Include="adl_sensor.cpp" />
+    <ClCompile Include="amd_display_library.cpp" />
+    <ClCompile Include="library_base.cpp" />
+    <ClCompile Include="measurement.cpp" />
+    <ClCompile Include="nvidia_management_library.cpp" />
+    <ClCompile Include="nvml_exception.cpp" />
     <ClCompile Include="nvml_scope.cpp" />
     <ClCompile Include="nvml_sensor.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="include\nvml_sensor.inl" />
+    <ClCompile Include="nvml_sensor_impl.cpp" />
+    <ClCompile Include="convert_string.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -48,26 +57,26 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -119,7 +128,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;POWEROVERWHELMING_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>POWER_OVERWHELMING_EXPORTS;WIN32;_DEBUG;POWEROVERWHELMING_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -137,7 +146,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;POWEROVERWHELMING_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>POWER_OVERWHELMING_EXPORTS;WIN32;NDEBUG;POWEROVERWHELMING_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -155,7 +164,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;POWEROVERWHELMING_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>POWER_OVERWHELMING_EXPORTS;_DEBUG;POWEROVERWHELMING_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -173,7 +182,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;POWEROVERWHELMING_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>POWER_OVERWHELMING_EXPORTS;NDEBUG;POWEROVERWHELMING_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>

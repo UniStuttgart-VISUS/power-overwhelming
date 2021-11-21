@@ -2,7 +2,6 @@
 
 #include <chrono>
 
-#include <adl.h>
 #include <adl_exception.h>
 #include <measurement.h>
 #include <timestamp.h>

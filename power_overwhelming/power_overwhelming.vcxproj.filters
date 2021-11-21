@@ -18,36 +18,51 @@
     <ClInclude Include="include\measurement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\nvml_exception.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\nvml_sensor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\timestamp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\adl_exception.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\adl_sensor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\adl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\stream_element.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\nvml_scope.h">
+    <ClInclude Include="include\power_overwhelming_api.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\timestamp_resolution.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="library_base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="amd_display_library.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nvidia_management_library.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="adl_exception.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nvml_exception.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nvml_scope.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nvml_sensor_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="convert_string.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adl_sensor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="adl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="nvml_sensor.cpp">
@@ -59,10 +74,26 @@
     <ClCompile Include="adl_exception.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="include\nvml_sensor.inl">
-      <Filter>Header Files</Filter>
-    </None>
+    <ClCompile Include="measurement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="library_base.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="amd_display_library.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nvidia_management_library.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nvml_sensor_impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nvml_exception.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="convert_string.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

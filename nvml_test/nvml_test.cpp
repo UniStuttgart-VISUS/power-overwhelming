@@ -21,13 +21,14 @@ int _tmain(const int argc, const TCHAR **argv) {
     using namespace visus::power_overwhelming;
 
     try {
-        auto sensors = nvml_sensor<measurement<>>::for_all();
+        auto sensors = nvml_sensor::from_index(0);
 
-        for (auto& s : sensors) {
+        //for (auto& s : sensors) {
+        auto &s = sensors;
             auto m = s.sample();
-            std::cout << m.timestamp().time_since_epoch().count()
-                << ": " << m.power() << " W" << std::endl;
-        }
+            std::wcout << m.timestamp() << L" (" << m.sensor() << L"): "
+                << m.power() << L" W" << std::endl;
+        //}
 
         return 0;
     } catch (std::exception &ex) {

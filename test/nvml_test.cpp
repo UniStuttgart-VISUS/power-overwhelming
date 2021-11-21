@@ -13,7 +13,7 @@ namespace visus {
 namespace power_overwhelming {
 namespace test {
 
-#if defined(POWER_OVERWHELMING_WITH_NVML)
+#if false&& defined(POWER_OVERWHELMING_WITH_NVML)
     TEST_CLASS(nvml_test) {
 
     public:

@@ -5,7 +5,6 @@
 
 #pragma once
 
-#if defined(POWER_OVERWHELMING_WITH_NVML)
 #include <exception>
 #include <string>
 
@@ -32,16 +31,15 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="code">The error code, which also determines the error
         /// message.</param>
-        nvml_exception(const value_type code)
-            : std::exception(::nvmlErrorString(code)), _code(code) { }
+        nvml_exception(const value_type code);
 
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
         /// <param name="code">The error code.</param>
         /// <param name="message">A custom error message.</param>
-        nvml_exception(const value_type code, const std::string& message)
-            : std::exception(message.c_str()), _code(code) { }
+        nvml_exception(const value_type code, const char *message)
+            : std::exception(message), _code(code) { }
 
         /// <summary>
         /// Answer the native error code associated with the exception.
@@ -54,9 +52,7 @@ namespace power_overwhelming {
     private:
 
         value_type _code;
-
     };
 
 } /* namespace power_overwhelming */
 } /* namespace visus */
-#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */

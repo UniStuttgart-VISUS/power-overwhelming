@@ -5,42 +5,28 @@
 
 #pragma once
 
-#if defined(POWER_OVERWHELMING_WITH_NVML)
-#include <vector>
-
-#include "nvml_exception.h"
-#include "nvml_scope.h"
-#include "timestamp.h"
+#include "measurement.h"
 
 
 namespace visus {
 namespace power_overwhelming {
 
+    /* Forward declarations */
+    namespace detail { struct nvml_sensor_impl; }
 
-    template<class TMeasurement> class nvml_sensor {
+    /// <summary>
+    /// Implementation of a power sensor using the NVIDIA management library to
+    /// read the internal sensors of the GPU.
+    /// </summary>
+    class POWER_OVERWHELMING_API nvml_sensor final {
 
     public:
 
-        /// <summary>
-        /// The type of the measurements filled by the sensor.
-        /// </summary>
-        typedef TMeasurement measurement_type;
-
-        /// <summary>
-        /// The type of timestamps assigned to measurements.
-        /// </summary>
-        typedef typename TMeasurement::timestamp_type timestamp_type;
-
-        /// <summary>
-        /// The type that measurements are stored in.
-        /// </summary>
-        typedef typename TMeasurement::value_type value_type;
-
-        /// <summary>
-        /// Create sensors for all supported NVIDIA cards in the system.
-        /// </summary>
-        /// <returns></returns>
-        static std::vector<nvml_sensor> for_all(void);
+        ///// <summary>
+        ///// Create sensors for all supported NVIDIA cards in the system.
+        ///// </summary>
+        ///// <returns></returns>
+        //static std::vector<nvml_sensor> for_all(void);
 
         /// <summary>
         /// Create a new instance for the device with the specified PCI bus ID.
@@ -91,7 +77,9 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs"></param>
         /// <returns></returns>
-        nvml_sensor(nvml_sensor&& rhs) noexcept;
+        inline nvml_sensor(nvml_sensor &&rhs) noexcept : _impl(rhs._impl) {
+            rhs._impl = nullptr;
+        }
 
         /// <summary>
         /// Finalise the instance.
@@ -103,7 +91,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>A sensor sample with the information about power
         /// consumption that is available via NVML.</returns>
-        measurement_type sample(void) const;
+        measurement sample(void) const;
 
         /// <summary>
         /// Move assignment.
@@ -112,15 +100,22 @@ namespace power_overwhelming {
         /// <returns></returns>
         nvml_sensor& operator =(nvml_sensor&& rhs) noexcept;
 
+        /// <summary>
+        /// Determines whether the sensor is valid.
+        /// </summary>
+        /// <remarks>
+        /// A sensor is considered valid until it has been disposed by a move
+        /// operation.
+        /// </remarks>
+        /// <returns><c>true</c> if the sensor is valid, <c>false</c>
+        /// otherwise.</returns>
+        operator bool(void) const noexcept;
+
     private:
 
-        nvml_scope __scope;     // Must be first!
-        nvmlDevice_t _device;
+        detail::nvml_sensor_impl *_impl;
 
     };
 
 } /* namespace power_overwhelming */
 } /* namespace visus */
-
-#include "nvml_sensor.inl"
-#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */

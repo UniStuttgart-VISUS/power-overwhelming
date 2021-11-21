@@ -1,7 +1,5 @@
 #pragma once
 
-#include "adl.h"
-
 
 namespace visus {
 namespace power_overwhelming {
@@ -10,7 +8,7 @@ namespace power_overwhelming {
     /// A sensor drawing its information from the AMD display library (ADL).
     /// </summary>
     /// <typeparam name="TMeasurement"></typeparam>
-    template<class TMeasurement> class adl_sensor {
+    class adl_sensor {
     };
 
 } /* namespace power_overwhelming */

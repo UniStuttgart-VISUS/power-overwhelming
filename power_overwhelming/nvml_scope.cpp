@@ -5,7 +5,7 @@
 
 #include "nvml_scope.h"
 
-#if defined(POWER_OVERWHELMING_WITH_NVML)
+#include "nvidia_management_library.h"
 #include "nvml_exception.h"
 
 
@@ -13,7 +13,7 @@
  * visus::power_overwhelming::nvml_scope::nvml_scope
  */
 visus::power_overwhelming::nvml_scope::nvml_scope(void) : _abandoned(false) {
-    auto status = ::nvmlInit();
+    auto status = detail::nvidia_management_library::instance().nvmlInit();
 
     if (status != NVML_SUCCESS) {
         throw nvml_exception(status);
@@ -26,7 +26,7 @@ visus::power_overwhelming::nvml_scope::nvml_scope(void) : _abandoned(false) {
  */
 visus::power_overwhelming::nvml_scope::~nvml_scope(void) {
     if (!this->_abandoned) {
-        ::nvmlShutdown();
+        detail::nvidia_management_library::instance().nvmlShutdown();
     }
 }
 
@@ -43,4 +43,3 @@ visus::power_overwhelming::nvml_scope::operator =(nvml_scope&& rhs) noexcept {
 
     return *this;
 }
-#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */

@@ -6,7 +6,6 @@
 #pragma once
 
 
-#if defined(POWER_OVERWHELMING_WITH_NVML)
 namespace visus {
 namespace power_overwhelming {
 
@@ -14,7 +13,7 @@ namespace power_overwhelming {
     /// A RAII container for the NVML library.
     /// </summary>
     /// <remarks>
-    /// As NVML uses an internal reference counter, multiple scopes can be use
+    /// As NVML uses an internal reference counter, multiple scopes can be used
     /// by an application. NVML will not be unloaded unless the last scope was
     /// destroyed.
     /// </remarks>
@@ -71,4 +70,3 @@ namespace power_overwhelming {
 
 } /* namespace power_overwhelming */
 } /* namespace visus */
-#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */
