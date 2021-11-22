@@ -17,7 +17,7 @@
  */
 void visus::power_overwhelming::detail::nvml_sensor_impl::load_device_name(
         void) {
-    std::array<char, 64> name;
+    std::array<char, NVML_DEVICE_NAME_BUFFER_SIZE> name;
     nvmlPciInfo_t pciInfo;
 
     {

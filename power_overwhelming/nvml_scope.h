@@ -8,6 +8,7 @@
 
 namespace visus {
 namespace power_overwhelming {
+namespace detail {
 
     /// <summary>
     /// A RAII container for the NVML library.
@@ -38,5 +39,6 @@ namespace power_overwhelming {
         nvml_scope& operator =(const nvml_scope&) = delete;
     };
 
+} /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */

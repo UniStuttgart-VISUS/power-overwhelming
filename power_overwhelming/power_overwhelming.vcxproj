@@ -20,8 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adl_exception.h" />
+    <ClInclude Include="adl_scope.h" />
+    <ClInclude Include="adl_sensor_impl.h" />
     <ClInclude Include="amd_display_library.h" />
     <ClInclude Include="include\adl_sensor.h" />
+    <ClInclude Include="include\adl_sensor_source.h" />
     <ClInclude Include="include\measurement.h" />
     <ClInclude Include="include\nvml_sensor.h" />
     <ClInclude Include="include\power_overwhelming_api.h" />
@@ -37,7 +40,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adl_exception.cpp" />
+    <ClCompile Include="adl_scope.cpp" />
     <ClCompile Include="adl_sensor.cpp" />
+    <ClCompile Include="adl_sensor_impl.cpp" />
     <ClCompile Include="amd_display_library.cpp" />
     <ClCompile Include="library_base.cpp" />
     <ClCompile Include="measurement.cpp" />

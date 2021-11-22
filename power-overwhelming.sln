@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "power_overwhelming", "power
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{4053690F-33DE-4BC1-871B-1F3FE3239002}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nvml_test", "nvml_test\nvml_test.vcxproj", "{6443390E-160B-4FE3-97A3-15DF0CDD1CD0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "podump", "podump\podump.vcxproj", "{0C66FFDD-B16C-4EEA-A379-1D7B6F7ABF8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,12 +33,14 @@ Global
 		{4053690F-33DE-4BC1-871B-1F3FE3239002}.Release|x64.Build.0 = Release|x64
 		{4053690F-33DE-4BC1-871B-1F3FE3239002}.Release|x86.ActiveCfg = Release|Win32
 		{4053690F-33DE-4BC1-871B-1F3FE3239002}.Release|x86.Build.0 = Release|Win32
-		{6443390E-160B-4FE3-97A3-15DF0CDD1CD0}.Debug|x64.ActiveCfg = Debug|x64
-		{6443390E-160B-4FE3-97A3-15DF0CDD1CD0}.Debug|x64.Build.0 = Debug|x64
-		{6443390E-160B-4FE3-97A3-15DF0CDD1CD0}.Debug|x86.ActiveCfg = Debug|x64
-		{6443390E-160B-4FE3-97A3-15DF0CDD1CD0}.Release|x64.ActiveCfg = Release|x64
-		{6443390E-160B-4FE3-97A3-15DF0CDD1CD0}.Release|x64.Build.0 = Release|x64
-		{6443390E-160B-4FE3-97A3-15DF0CDD1CD0}.Release|x86.ActiveCfg = Release|x64
+		{0C66FFDD-B16C-4EEA-A379-1D7B6F7ABF8A}.Debug|x64.ActiveCfg = Debug|x64
+		{0C66FFDD-B16C-4EEA-A379-1D7B6F7ABF8A}.Debug|x64.Build.0 = Debug|x64
+		{0C66FFDD-B16C-4EEA-A379-1D7B6F7ABF8A}.Debug|x86.ActiveCfg = Debug|Win32
+		{0C66FFDD-B16C-4EEA-A379-1D7B6F7ABF8A}.Debug|x86.Build.0 = Debug|Win32
+		{0C66FFDD-B16C-4EEA-A379-1D7B6F7ABF8A}.Release|x64.ActiveCfg = Release|x64
+		{0C66FFDD-B16C-4EEA-A379-1D7B6F7ABF8A}.Release|x64.Build.0 = Release|x64
+		{0C66FFDD-B16C-4EEA-A379-1D7B6F7ABF8A}.Release|x86.ActiveCfg = Release|Win32
+		{0C66FFDD-B16C-4EEA-A379-1D7B6F7ABF8A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

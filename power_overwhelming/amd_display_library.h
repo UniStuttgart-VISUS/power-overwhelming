@@ -40,32 +40,23 @@ namespace detail {
 
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Adapter_Active_Get,
             ADL_CONTEXT_HANDLE, int, int *);
-
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL_Adapter_AdapterInfo_Get,
             LPAdapterInfo, int);
-
         __POWER_OVERWHELMING_ADL_FUNC(int,
             ADL_Adapter_NumberOfAdapters_Get, int *);
-
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Adapter_PMLog_Support_Get,
             ADL_CONTEXT_HANDLE, int, ADLPMLogSupportInfo *);
-
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Adapter_PMLog_Support_Start,
             ADL_CONTEXT_HANDLE context, int, ADLPMLogStartInput *,
             ADLPMLogStartOutput *, ADL_D3DKMT_HANDLE);
-
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Adapter_PMLog_Support_Stop,
             ADL_CONTEXT_HANDLE, int, ADL_D3DKMT_HANDLE);
-
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Device_PMLog_Device_Create,
             ADL_CONTEXT_HANDLE, int, ADL_D3DKMT_HANDLE *);
-
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Device_PMLog_Device_Destroy,
             ADL_CONTEXT_HANDLE, ADL_D3DKMT_HANDLE);
-
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL_Main_Control_Create,
             ADL_MAIN_MALLOC_CALLBACK, int);
-
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL_Main_Control_Destroy, void);
 
     private:
@@ -79,6 +70,8 @@ namespace detail {
         /// </remarks>
         amd_display_library(void);
     };
+
+#undef __POWER_OVERWHELMING_ADL_FUNC
 
 } /* namespace detail */
 } /* namespace power_overwhelming */

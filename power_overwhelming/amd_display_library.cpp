@@ -6,6 +6,9 @@
 #include "amd_display_library.h"
 
 #include <atomic>
+#include <cassert>
+#include <cinttypes>
+#include <new>
 #include <system_error>
 
 #include <tchar.h>
@@ -30,7 +33,7 @@ visus::power_overwhelming::detail::amd_display_library::instance(void) {
  * visus::power_overwhelming::detail::amd_display_library::amd_display_library
  */
 visus::power_overwhelming::detail::amd_display_library::amd_display_library(
-        void) : library_base(TEXT("atiadlxx.dll"), TEXT("atiadlxy.dll")) { 
+        void) : library_base(TEXT("atiadlxx.dll"), TEXT("atiadlxy.dll")) {
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_Active_Get);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL_Adapter_AdapterInfo_Get);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL_Adapter_NumberOfAdapters_Get);

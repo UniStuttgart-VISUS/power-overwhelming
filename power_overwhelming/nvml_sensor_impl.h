@@ -22,11 +22,6 @@ namespace detail {
     struct nvml_sensor_impl final {
 
         /// <summary>
-        /// The NVML scope, which must be the first member.
-        /// </summary>
-        nvml_scope _scope;
-
-        /// <summary>
         /// The NVML device the sensor is reading from.
         /// </summary>
         nvmlDevice_t device;
@@ -35,6 +30,12 @@ namespace detail {
         /// The name of the device.
         /// </summary>
         std::wstring device_name;
+
+        /// <summary>
+        /// The NVML scope making sure the library is ready while the sensor
+        /// exists.
+        /// </summary>
+        nvml_scope scope;
 
         /// <summary>
         /// The sensor name.

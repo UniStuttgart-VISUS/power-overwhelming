@@ -22,17 +22,31 @@ namespace power_overwhelming {
 
     public:
 
-        ///// <summary>
-        ///// Create sensors for all supported NVIDIA cards in the system.
-        ///// </summary>
-        ///// <returns></returns>
-        //static std::vector<nvml_sensor> for_all(void);
+        /// <summary>
+        /// Create sensors for all supported NVIDIA cards in the system.
+        /// </summary>
+        /// <remarks>
+        /// <para>It is safe to call the method on machines without NVIDIA GPU.
+        /// In this case, zero is returned.</para>
+        /// </remarks>
+        /// <param name="outSensors">Receives the sensors, if not
+        /// <c>nullptr</c>.</param>
+        /// <param name="cntSensors">The available space in
+        /// <paramref name="outSensors" />.</param>
+        /// <returns>The number of sensors available on the system, regardless
+        /// of the size of the output array. If this number is larger than
+        /// <paramref name="cntSensors" />, not all sensors have been returned.
+        /// </returns>
+        static std::size_t for_all(nvml_sensor *outSensors,
+            const std::size_t cntSensors);
 
         /// <summary>
         /// Create a new instance for the device with the specified PCI bus ID.
         /// </summary>
         /// <param name="pciBusId"></param>
         /// <returns></returns>
+        /// <exception cref="nvml_exception">If the specified device was not
+        /// found, is not unique or another error occurred in NVML.</exception>
         static nvml_sensor from_bus_id(const char *pciBusId);
 
         /// <summary>
@@ -40,6 +54,8 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
+        /// <exception cref="nvml_exception">If the specified device was not
+        /// found, is not unique or another error occurred in NVML.</exception>
         static nvml_sensor from_guid(const char *guid);
 
         /// <summary>
@@ -54,7 +70,7 @@ namespace power_overwhelming {
         /// <param name="index"></param>
         /// <returns></returns>
         /// <exception cref="nvml_exception">If the specified device was not
-        /// found or another error occurred in NVML.</exception>
+        /// found, is not unique or another error occurred in NVML.</exception>
         static nvml_sensor from_index(const unsigned int index);
 
         /// <summary>
@@ -70,14 +86,19 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        nvml_sensor(void) noexcept;
+        /// <exception cref="std::bad_alloc">If the memory for the sensor state
+        /// could not be allocated.</exception>
+        /// <exception cref="std::system_error">If the NVML library could not be
+        /// loaded.</exception>
+        /// <exception cref="nvml_exception">If the NVML library could not be
+        /// initialised.</exception>
+        nvml_sensor(void);
 
         /// <summary>
         /// Move <paramref name="rhs" /> into a new instance.
         /// </summary>
-        /// <param name="rhs"></param>
-        /// <returns></returns>
-        inline nvml_sensor(nvml_sensor &&rhs) noexcept : _impl(rhs._impl) {
+        /// <param name="rhs">The object to be moved.</param>
+        inline nvml_sensor(nvml_sensor&& rhs) noexcept : _impl(rhs._impl) {
             rhs._impl = nullptr;
         }
 
@@ -87,12 +108,23 @@ namespace power_overwhelming {
         ~nvml_sensor(void);
 
         /// <summary>
+        /// Gets the name of the sensor.
+        /// </summary>
+        /// <returns>The implementation-defined, human-readable name of the
+        /// sensor.</returns>
+        const wchar_t *name(void) const noexcept;
+
+        /// <summary>
         /// Sample the sensor.
         /// </summary>
         /// <typeparam name="Resolution">The desired resolution of the timestamp
         /// being created for the measurement.</typeparam>
         /// <returns>A sensor sample with the information about power
         /// consumption that is available via NVML.</returns>
+        /// <exception cref="std::runtime_error">If a sensor that has been moved
+        /// is sampled</exception>
+        /// <exception cref="nvml_exception">If the sensor could not be sampled.
+        /// </exception>
         template<timestamp_resolution Resolution>
         inline measurement sample(void) const {
             typedef detail::timestamp<Resolution> ts;
@@ -104,6 +136,10 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>A sensor sample with the information about power
         /// consumption that is available via NVML.</returns>
+        /// <exception cref="std::runtime_error">If a sensor that has been moved
+        /// is sampled</exception>
+        /// <exception cref="nvml_exception">If the sensor could not be sampled.
+        /// </exception>
         inline measurement sample(void) const {
             typedef detail::timestamp<timestamp_resolution::milliseconds> ts;
             return this->sample(ts::create());
@@ -112,8 +148,8 @@ namespace power_overwhelming {
         /// <summary>
         /// Move assignment.
         /// </summary>
-        /// <param name="rhs"></param>
-        /// <returns></returns>
+        /// <param name="rhs">The right-hand side operand</param>
+        /// <returns><c>*this</c></returns>
         nvml_sensor& operator =(nvml_sensor&& rhs) noexcept;
 
         /// <summary>

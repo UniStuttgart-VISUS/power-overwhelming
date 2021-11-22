@@ -6,6 +6,7 @@
 #pragma once
 
 #include <cinttypes>
+#include <iostream>
 #include <utility>
 
 #include "power_overwhelming_api.h"
@@ -177,3 +178,19 @@ namespace power_overwhelming {
 
 } /* namespace power_overwhelming */
 } /* namespace visus */
+
+
+#if false
+/// <summary>
+/// Print <paramref name="rhs" /> to <paramref name="lhs" />.
+/// </summary>
+/// <typeparam name="TChar"></typeparam>
+/// <param name="lhs"></param>
+/// <param name="rhs"></param>
+/// <returns></returns>
+template<class TChar>
+std::basic_ostream<TChar>& operator <<(std::basic_ostream<TChar>& lhs,
+        const visus::power_overwhelming::measurement& rhs) {
+    return lhs;
+}
+#endif

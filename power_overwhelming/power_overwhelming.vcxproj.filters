@@ -60,6 +60,15 @@
     <ClInclude Include="include\timestamp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="adl_sensor_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="adl_scope.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\adl_sensor_source.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adl_sensor.cpp">
@@ -93,6 +102,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="convert_string.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="adl_sensor_impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="adl_scope.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

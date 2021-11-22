@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="nvml_test.cpp">
+    <ClCompile Include="podump.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -11,36 +11,42 @@
 #include "nvml_exception.h"
 #include "nvml_sensor_impl.h"
 
-#if 0
+
 /*
  * visus::power_overwhelming::nvml_sensor::for_all
  */
-template<class TMeasurement>
-std::vector<visus::power_overwhelming::nvml_sensor>
-visus::power_overwhelming::nvml_sensor::for_all(void) {
-    unsigned int cnt = 0;
-    nvml_scope scope;
+std::size_t visus::power_overwhelming::nvml_sensor::for_all(
+        nvml_sensor *outSensors, const std::size_t cntSensors) {
+    try {
+        unsigned int retval = 0;
+        detail::nvml_scope scope;
 
-    {
-        auto status = ::nvmlDeviceGetCount(&cnt);
-        if (status != NVML_SUCCESS) {
-            throw nvml_exception(status);
+        {
+            auto status = detail::nvidia_management_library::instance()
+                .nvmlDeviceGetCount(&retval);
+            if (status != NVML_SUCCESS) {
+                throw nvml_exception(status);
+            }
         }
-    }
 
-    std::vector<nvml_sensor> retval;
-    retval.resize(cnt);
+        for (unsigned int i = 0; (outSensors != nullptr) && (i < retval)
+                && (i < cntSensors); ++i) {
+            auto& sensor = outSensors[i]._impl;
 
-    for (unsigned int i = 0; i < cnt; ++i) {
-        auto status = ::nvmlDeviceGetHandleByIndex(i, &retval[i]._device);
-        if (status != NVML_SUCCESS) {
-            throw nvml_exception(status);
+            auto status = detail::nvidia_management_library::instance()
+                .nvmlDeviceGetHandleByIndex(i, &sensor->device);
+            if (status != NVML_SUCCESS) {
+                throw nvml_exception(status);
+            }
+
+            sensor->load_device_name();
         }
-    }
 
-    return retval;
+        return retval;
+    } catch (...) {
+        return 0;
+    }
 }
-#endif
 
 
 /*
@@ -125,7 +131,7 @@ visus::power_overwhelming::nvml_sensor::from_serial(
 /*
  * visus::power_overwhelming::nvml_sensor::nvml_sensor
  */
-visus::power_overwhelming::nvml_sensor::nvml_sensor(void) noexcept
+visus::power_overwhelming::nvml_sensor::nvml_sensor(void)
     : _impl(new detail::nvml_sensor_impl()) { }
 
 
@@ -134,6 +140,19 @@ visus::power_overwhelming::nvml_sensor::nvml_sensor(void) noexcept
  */
 visus::power_overwhelming::nvml_sensor::~nvml_sensor(void) {
     delete this->_impl;
+}
+
+
+/*
+ * visus::power_overwhelming::nvml_sensor::name
+ */
+const wchar_t *visus::power_overwhelming::nvml_sensor::name(
+        void) const noexcept {
+    if (this->_impl == nullptr) {
+        return nullptr;
+    } else {
+        return this->_impl->sensor_name.c_str();
+    }
 }
 
 

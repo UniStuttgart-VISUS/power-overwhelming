@@ -18,6 +18,13 @@ namespace detail {
     /// <summary>
     /// Base class for managing libraries that are lazily loaded.
     /// </summary>
+    /// <remarks>
+    /// Rationale: If we statically link against vendor-specific management
+    /// libraries, applications will only work if all of these libraries are
+    /// available on the system, ie. if the system has NVIDIA and AMD GPUs. This
+    /// is highly unlikely. Explicitly loading the libraries on demand solves
+    /// this issue.
+    /// </remarks>
     class library_base {
 
     public:
@@ -71,7 +78,7 @@ visus::power_overwhelming::detail::library_base::library_base(
 
     std::size_t i = 0;
     while ((this->_handle == NULL) && (i < p.size())) {
-        this->_handle = ::LoadLibrary(p[i]);
+        this->_handle = ::LoadLibrary(p[i++]);
     }
 
     if (this->_handle == NULL) {
