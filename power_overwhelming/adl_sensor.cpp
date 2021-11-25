@@ -5,11 +5,13 @@
 
 #include "adl_sensor.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "adl_exception.h"
-#include "adl_sensor_impl.h"
 #include "adl_scope.h"
+#include "adl_sensor_impl.h"
+#include "adl_sensor_source.h"
 
 
 namespace visus {
@@ -32,7 +34,7 @@ namespace detail {
             int cnt;
 
             auto status = detail::amd_display_library::instance()
-                .ADL_Adapter_NumberOfAdapters_Get(&cnt);
+                .ADL2_Adapter_NumberOfAdapters_Get(scope, &cnt);
             if (status != ADL_OK) {
                 throw adl_exception(status);
             }
@@ -58,8 +60,8 @@ namespace detail {
 /*
  * visus::power_overwhelming::adl_sensor::for_all
  */
-std::size_t visus::power_overwhelming::adl_sensor::for_all(adl_sensor *outSensors,
-        const std::size_t cntSensors) {
+std::size_t visus::power_overwhelming::adl_sensor::for_all(
+        adl_sensor *outSensors, const std::size_t cntSensors) {
     try {
         int cnt = 0;
         int retval = 0;
@@ -67,31 +69,103 @@ std::size_t visus::power_overwhelming::adl_sensor::for_all(adl_sensor *outSensor
 
         {
             auto status = detail::amd_display_library::instance()
-                .ADL_Adapter_NumberOfAdapters_Get(&cnt);
+                .ADL2_Adapter_NumberOfAdapters_Get(scope, &cnt);
             if (status != ADL_OK) {
                 throw adl_exception(status);
             }
         }
 
-        if (cntSensors > 0) {
-            std::vector<AdapterInfo> adapters;
-            adapters.resize(retval);
+        std::vector<AdapterInfo> adapters(cnt);
+        {
+            auto status = detail::amd_display_library::instance()
+                .ADL2_Adapter_AdapterInfo_Get(scope, adapters.data(),
+                static_cast<int>(adapters.size() * sizeof(AdapterInfo)));
+            if (status != ADL_OK) {
+                throw adl_exception(status);
+            }
+        }
+
+        for (auto& a : adapters) {
+            int isActive = 0;
+            ADLPMLogSupportInfo supportInfo;
 
             {
                 auto status = detail::amd_display_library::instance()
-                    .ADL_Adapter_AdapterInfo_Get(adapters.data(),
-                    static_cast<int>(adapters.size() * sizeof(AdapterInfo)));
+                    .ADL2_Adapter_PMLog_Support_Get(scope, a.iAdapterIndex,
+                    &supportInfo);
                 if (status != ADL_OK) {
                     throw adl_exception(status);
                 }
             }
 
-            for (int i = 0; (i < retval) && (i < cntSensors); ++i) {
-                outSensors[i] = adl_sensor(new detail::adl_sensor_impl(
-                    adapters[i]));
+            {
+                auto status = detail::amd_display_library::instance()
+                    .ADL2_Adapter_Active_Get(scope, a.iAdapterIndex, &isActive);
+                if (status != ADL_OK) {
+                    throw adl_exception(status);
+                }
             }
 
-        } /* end if ((outSensors != nullptr) && (cntSensors > 0)) */
+            {
+                auto source = adl_sensor_source::asic;
+                auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
+                    supportInfo);
+
+                if (!ids.empty()) {
+                    if ((outSensors != nullptr) && (retval < cntSensors)) {
+                        auto impl = new detail::adl_sensor_impl(a);
+                        impl->configure_source(source, std::move(ids));
+                        outSensors[retval] = adl_sensor(std::move(impl));
+                    }
+                    ++retval;
+                }
+            }
+
+            {
+                auto source = adl_sensor_source::cpu;
+                auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
+                    supportInfo);
+
+                if (!ids.empty()) {
+                    if ((outSensors != nullptr) && (retval < cntSensors)) {
+                        auto impl = new detail::adl_sensor_impl(a);
+                        impl->configure_source(source, std::move(ids));
+                        outSensors[retval] = adl_sensor(std::move(impl));
+                    }
+                    ++retval;
+                }
+            }
+
+            {
+                auto source = adl_sensor_source::graphics;
+                auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
+                    supportInfo);
+
+                if (!ids.empty()) {
+                    if ((outSensors != nullptr) && (retval < cntSensors)) {
+                        auto impl = new detail::adl_sensor_impl(a);
+                        impl->configure_source(source, std::move(ids));
+                        outSensors[retval] = adl_sensor(std::move(impl));
+                    }
+                    ++retval;
+                }
+            }
+
+            {
+                auto source = adl_sensor_source::soc;
+                auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
+                    supportInfo);
+
+                if (!ids.empty()) {
+                    if ((outSensors != nullptr) && (retval < cntSensors)) {
+                        auto impl = new detail::adl_sensor_impl(a);
+                        impl->configure_source(source, std::move(ids));
+                        outSensors[retval] = adl_sensor(std::move(impl));
+                    }
+                    ++retval;
+                }
+            }
+        }
 
         return retval;
     } catch (...) {
@@ -189,4 +263,61 @@ visus::power_overwhelming::adl_sensor::operator =(adl_sensor&& rhs) noexcept {
  */
 visus::power_overwhelming::adl_sensor::operator bool(void) const noexcept {
     return (this->_impl != nullptr);
+}
+
+
+/*
+ * visus::power_overwhelming::adl_sensor::sample
+ */
+visus::power_overwhelming::measurement
+visus::power_overwhelming::adl_sensor::sample(
+        const measurement::timestamp_type timestamp) const {
+    if (!*this) {
+        throw std::runtime_error("A disposed instance of adl_sensor cannot be "
+            "sampled.");
+    }
+
+    {
+        auto status = detail::amd_display_library::instance()
+            .ADL2_Adapter_PMLog_Start(this->_impl->scope,
+            this->_impl->adapter_index, &this->_impl->start_input,
+            &this->_impl->start_output, this->_impl->device);
+        if (status != ADL_OK) {
+            throw new adl_exception(status);
+        }
+    }
+
+    const auto data = static_cast<ADLPMLogData *>(
+        this->_impl->start_output.pLoggingAddress);
+
+    LARGE_INTEGER frequency;
+    ::QueryPerformanceFrequency(&frequency);
+    auto x = data->ulLastUpdated / frequency.QuadPart;
+
+    LARGE_INTEGER time;
+    QueryPerformanceCounter(&time);
+
+    SYSTEMTIME sysTime;
+    ::GetSystemTime(&sysTime);
+
+    FILETIME fileTime;
+    ::SystemTimeToFileTime(&sysTime, &fileTime);
+
+    ULARGE_INTEGER largeInt;
+    largeInt.LowPart = fileTime.dwLowDateTime;
+    largeInt.HighPart = fileTime.dwHighDateTime;
+
+    measurement retval(this->_impl->sensor_name.c_str(), timestamp,
+        data->ulValues[0][1]);
+
+    {
+        auto status = detail::amd_display_library::instance()
+            .ADL2_Adapter_PMLog_Stop(this->_impl->scope,
+            this->_impl->adapter_index, this->_impl->device);
+        if (status != ADL_OK) {
+            throw new adl_exception(status);
+        }
+    }
+
+    return retval;
 }

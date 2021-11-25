@@ -30,9 +30,9 @@ int _tmain(const int argc, const TCHAR **argv) {
 
         for (auto& s : sensors) {
             std::wcout << s.name() << L":" << std::endl;
-            //auto m = s.sample();
-            //std::wcout << m.timestamp() << L" (" << m.sensor() << L"): "
-            //    << m.power() << L" W" << std::endl;
+            auto m = s.sample();
+            std::wcout << m.timestamp() << L" (" << m.sensor() << L"): "
+                << m.power() << L" W" << std::endl;
         }
     } catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;

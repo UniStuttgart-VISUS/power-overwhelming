@@ -40,24 +40,25 @@ namespace detail {
 
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Adapter_Active_Get,
             ADL_CONTEXT_HANDLE, int, int *);
-        __POWER_OVERWHELMING_ADL_FUNC(int, ADL_Adapter_AdapterInfo_Get,
-            LPAdapterInfo, int);
+        __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Adapter_AdapterInfo_Get,
+            ADL_CONTEXT_HANDLE, LPAdapterInfo, int);
         __POWER_OVERWHELMING_ADL_FUNC(int,
-            ADL_Adapter_NumberOfAdapters_Get, int *);
+            ADL2_Adapter_NumberOfAdapters_Get, ADL_CONTEXT_HANDLE, int *);
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Adapter_PMLog_Support_Get,
             ADL_CONTEXT_HANDLE, int, ADLPMLogSupportInfo *);
-        __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Adapter_PMLog_Support_Start,
-            ADL_CONTEXT_HANDLE context, int, ADLPMLogStartInput *,
+        __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Adapter_PMLog_Start,
+            ADL_CONTEXT_HANDLE, int, ADLPMLogStartInput *,
             ADLPMLogStartOutput *, ADL_D3DKMT_HANDLE);
-        __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Adapter_PMLog_Support_Stop,
+        __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Adapter_PMLog_Stop,
             ADL_CONTEXT_HANDLE, int, ADL_D3DKMT_HANDLE);
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Device_PMLog_Device_Create,
             ADL_CONTEXT_HANDLE, int, ADL_D3DKMT_HANDLE *);
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Device_PMLog_Device_Destroy,
             ADL_CONTEXT_HANDLE, ADL_D3DKMT_HANDLE);
-        __POWER_OVERWHELMING_ADL_FUNC(int, ADL_Main_Control_Create,
-            ADL_MAIN_MALLOC_CALLBACK, int);
-        __POWER_OVERWHELMING_ADL_FUNC(int, ADL_Main_Control_Destroy, void);
+        __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Main_Control_Create,
+            ADL_MAIN_MALLOC_CALLBACK, int, ADL_CONTEXT_HANDLE *);
+        __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Main_Control_Destroy,
+            ADL_CONTEXT_HANDLE);
 
     private:
 

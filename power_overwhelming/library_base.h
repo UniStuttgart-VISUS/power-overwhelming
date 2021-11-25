@@ -74,11 +74,13 @@ namespace detail {
 template<class... TPaths>
 visus::power_overwhelming::detail::library_base::library_base(
         TPaths&&... paths) : _handle(NULL) {
-    std::array<const TCHAR *, sizeof...(TPaths)> p = { paths... };
+    std::array<const TCHAR *, sizeof...(TPaths)> ps = { paths... };
 
-    std::size_t i = 0;
-    while ((this->_handle == NULL) && (i < p.size())) {
-        this->_handle = ::LoadLibrary(p[i++]);
+    for (auto& p : ps) {
+        this->_handle = ::LoadLibrary(p);
+        if (this->_handle != NULL) {
+            break;
+        }
     }
 
     if (this->_handle == NULL) {

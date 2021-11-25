@@ -35,12 +35,10 @@ void __stdcall visus::power_overwhelming::detail::adl_scope::deallocate(
  * visus::power_overwhelming::detail::adl_scope::adl_scope
  */
 visus::power_overwhelming::detail::adl_scope::adl_scope(void) {
-    if (adl_scope::_cnt++ == 0) {
-        auto status = amd_display_library::instance().ADL_Main_Control_Create(
-            adl_scope::allocate, 1);
-        if (status == ADL_OK) {
-            throw adl_exception(status);
-        }
+    auto status = amd_display_library::instance().ADL2_Main_Control_Create(
+        adl_scope::allocate, 1, &this->_handle);
+    if (status != ADL_OK) {
+        throw adl_exception(status);
     }
 }
 
@@ -49,14 +47,5 @@ visus::power_overwhelming::detail::adl_scope::adl_scope(void) {
  * visus::power_overwhelming::detail::adl_scope::~adl_scope
  */
 visus::power_overwhelming::detail::adl_scope::~adl_scope(void) {
-    assert(adl_scope::_cnt.load() > 0);
-    if (--adl_scope::_cnt == 0) {
-        amd_display_library::instance().ADL_Main_Control_Destroy();
-    }
+    amd_display_library::instance().ADL2_Main_Control_Destroy(this->_handle);
 }
-
-
-/*
- * visus::power_overwhelming::detail::adl_scope::_cnt
- */
-std::atomic<std::size_t> visus::power_overwhelming::detail::adl_scope::_cnt = 0;

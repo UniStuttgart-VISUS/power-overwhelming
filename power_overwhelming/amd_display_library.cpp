@@ -35,13 +35,13 @@ visus::power_overwhelming::detail::amd_display_library::instance(void) {
 visus::power_overwhelming::detail::amd_display_library::amd_display_library(
         void) : library_base(TEXT("atiadlxx.dll"), TEXT("atiadlxy.dll")) {
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_Active_Get);
-    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL_Adapter_AdapterInfo_Get);
-    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL_Adapter_NumberOfAdapters_Get);
+    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_AdapterInfo_Get);
+    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_NumberOfAdapters_Get);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_PMLog_Support_Get);
-    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_PMLog_Support_Start);
-    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_PMLog_Support_Stop);
+    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_PMLog_Start);
+    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_PMLog_Stop);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Device_PMLog_Device_Create);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Device_PMLog_Device_Destroy);
-    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL_Main_Control_Create);
-    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL_Main_Control_Destroy);
+    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Main_Control_Create);
+    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Main_Control_Destroy);
 }

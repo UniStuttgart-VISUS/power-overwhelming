@@ -8,6 +8,8 @@
 #include <atomic>
 #include <cinttypes>
 
+#include <adl_sdk.h>
+
 
 namespace visus {
 namespace power_overwhelming {
@@ -17,10 +19,8 @@ namespace detail {
     /// A RAII container for the ADL library.
     /// </summary>
     /// <remarks>
-    /// The implementation holds a global counter of active scopes and
-    /// initialises the library only if it has not yet been initialised.
-    /// Likewise, the library is not freed unless the last scope was
-    /// destroyed.
+    /// The implementation represents an ADL2 scope with a separate execution
+    /// context. APIs using the same scope should not be called concurrently.
     /// </remarks>
     class adl_scope final {
 
@@ -56,9 +56,18 @@ namespace detail {
 
         adl_scope& operator =(const adl_scope&) = delete;
 
+        /// <summary>
+        /// Implicit conversion to the context handle represented by the scope.
+        /// </summary>
+        /// <returns>The context handle, which is guaranteed to be valid.
+        /// </returns>
+        inline operator ADL_CONTEXT_HANDLE(void) {
+            return this->_handle;
+        }
+
     private:
 
-        static std::atomic<std::size_t> _cnt;
+        ADL_CONTEXT_HANDLE _handle;
 
     };
 
