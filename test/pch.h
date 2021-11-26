@@ -8,3 +8,4 @@
 #include <nvml_exception.h>
 #include <nvml_scope.h>
 #include <nvml_sensor.h>
+#include <on_exit.h>
