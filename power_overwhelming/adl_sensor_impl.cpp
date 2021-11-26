@@ -27,26 +27,26 @@ visus::power_overwhelming::detail::adl_sensor_impl::count_sensor_readings(
 /*
  * visus::power_overwhelming::detail::adl_sensor_impl::get_sensor_ids
  */
-std::vector<int>
+std::vector<ADL_PMLOG_SENSORS>
 visus::power_overwhelming::detail::adl_sensor_impl::get_sensor_ids(
         const adl_sensor_source source) {
     switch (source) {
         case adl_sensor_source::asic:
-            return std::vector<int> { ADL_PMLOG_ASIC_POWER };
+            return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_ASIC_POWER };
 
         case adl_sensor_source::cpu:
-            return std::vector<int> { ADL_PMLOG_CPU_POWER };
+            return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_CPU_POWER };
 
         case adl_sensor_source::graphics:
-            return std::vector<int> { ADL_PMLOG_GFX_VOLTAGE,
+            return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_GFX_VOLTAGE,
                 ADL_PMLOG_GFX_CURRENT, ADL_PMLOG_GFX_POWER };
 
         case adl_sensor_source::soc:
-            return std::vector<int> { ADL_PMLOG_SOC_VOLTAGE,
+            return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_SOC_VOLTAGE,
                 ADL_PMLOG_SOC_CURRENT, ADL_PMLOG_SOC_POWER };
 
         default:
-            return std::vector<int>();
+            return std::vector<ADL_PMLOG_SENSORS>();
     };
 }
 
@@ -54,7 +54,7 @@ visus::power_overwhelming::detail::adl_sensor_impl::get_sensor_ids(
 /*
  * visus::power_overwhelming::detail::adl_sensor_impl::get_sensor_ids
  */
-std::vector<int>
+std::vector<ADL_PMLOG_SENSORS>
 visus::power_overwhelming::detail::adl_sensor_impl::get_sensor_ids(
         const adl_sensor_source source,
         const ADLPMLogSupportInfo& supportInfo) {
@@ -84,7 +84,7 @@ visus::power_overwhelming::detail::adl_sensor_impl::get_sensor_ids(
 
         if (!haveCurrent || !haveVoltage) {
             auto end = std::remove_if(retval.begin(), retval.end(),
-                [](const int id) { return !is_power(id); });
+                [](const ADL_PMLOG_SENSORS id) { return !is_power(id); });
             retval.erase(end, retval.end());
         }
     }
@@ -97,7 +97,7 @@ visus::power_overwhelming::detail::adl_sensor_impl::get_sensor_ids(
  * visus::power_overwhelming::detail::adl_sensor_impl::is_current
  */
 bool visus::power_overwhelming::detail::adl_sensor_impl::is_current(
-        const int id) {
+        const ADL_PMLOG_SENSORS id) {
     switch (id) {
         case ADL_PMLOG_GFX_CURRENT:
         case ADL_PMLOG_SOC_CURRENT:
@@ -113,7 +113,7 @@ bool visus::power_overwhelming::detail::adl_sensor_impl::is_current(
  * visus::power_overwhelming::detail::adl_sensor_impl::is_power
  */
 bool visus::power_overwhelming::detail::adl_sensor_impl::is_power(
-        const int id) {
+        const ADL_PMLOG_SENSORS id) {
     switch (id) {
         case ADL_PMLOG_ASIC_POWER:
         case ADL_PMLOG_CPU_POWER:
@@ -131,7 +131,7 @@ bool visus::power_overwhelming::detail::adl_sensor_impl::is_power(
  * visus::power_overwhelming::detail::adl_sensor_impl::is_voltage
  */
 bool visus::power_overwhelming::detail::adl_sensor_impl::is_voltage(
-        const int id) {
+        const ADL_PMLOG_SENSORS id) {
     switch (id) {
         case ADL_PMLOG_GFX_VOLTAGE:
         case ADL_PMLOG_SOC_VOLTAGE:
@@ -186,7 +186,8 @@ visus::power_overwhelming::detail::adl_sensor_impl::~adl_sensor_impl(void) {
  * visus::power_overwhelming::detail::adl_sensor_impl::configure_source
  */
 void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
-        const adl_sensor_source source, std::vector<int>&& sensorIDs) {
+        const adl_sensor_source source,
+        std::vector<ADL_PMLOG_SENSORS>&& sensorIDs) {
 
     // Determine which sensors are supported if not provided by the caller.
     if (sensorIDs.empty()) {

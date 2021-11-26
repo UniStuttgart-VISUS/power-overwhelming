@@ -64,9 +64,10 @@ std::size_t visus::power_overwhelming::adl_sensor::for_all(
         adl_sensor *outSensors, const std::size_t cntSensors) {
     try {
         int cnt = 0;
-        int retval = 0;
+        std::size_t retval = 0;
         detail::adl_scope scope;
 
+        // Find out how many adapters we know.
         {
             auto status = detail::amd_display_library::instance()
                 .ADL2_Adapter_NumberOfAdapters_Get(scope, &cnt);
@@ -75,6 +76,7 @@ std::size_t visus::power_overwhelming::adl_sensor::for_all(
             }
         }
 
+        // Get the descriptors for all the adapters.
         std::vector<AdapterInfo> adapters(cnt);
         {
             auto status = detail::amd_display_library::instance()
@@ -85,6 +87,7 @@ std::size_t visus::power_overwhelming::adl_sensor::for_all(
             }
         }
 
+        // For each adapter, check which sensors are supported.
         for (auto& a : adapters) {
             int isActive = 0;
             ADLPMLogSupportInfo supportInfo;
