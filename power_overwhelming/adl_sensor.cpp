@@ -12,6 +12,7 @@
 #include "adl_scope.h"
 #include "adl_sensor_impl.h"
 #include "adl_sensor_source.h"
+#include "on_exit.h"
 
 
 namespace visus {
@@ -271,7 +272,7 @@ visus::power_overwhelming::adl_sensor::operator bool(void) const noexcept {
  */
 visus::power_overwhelming::measurement
 visus::power_overwhelming::adl_sensor::sample(
-        const measurement::timestamp_type timestamp) const {
+        const timestamp_resolution resolution) const {
     if (!*this) {
         throw std::runtime_error("A disposed instance of adl_sensor cannot be "
             "sampled.");
@@ -287,37 +288,38 @@ visus::power_overwhelming::adl_sensor::sample(
         }
     }
 
+    // Install an exit handler to stop sampling the sensor once we have
+    // returned our data. Note that the exit handler must not throw by design,
+    // so we just ignore any error.
+    auto onExit = on_exit([this](void) {
+        detail::amd_display_library::instance().ADL2_Adapter_PMLog_Stop(
+            this->_impl->scope, this->_impl->adapter_index,
+            this->_impl->device);
+    });
+
     const auto data = static_cast<ADLPMLogData *>(
         this->_impl->start_output.pLoggingAddress);
 
-    LARGE_INTEGER frequency;
-    ::QueryPerformanceFrequency(&frequency);
-    auto x = data->ulLastUpdated / frequency.QuadPart;
+    // We found empirically that the timestamp from ADL is in 100 ns units (at
+    // least on Windows). Based on this assumption, convert to the requested
+    // unit.
+    auto timestamp = static_cast<measurement::timestamp_type>(
+        data->ulLastUpdated);
 
-    LARGE_INTEGER time;
-    QueryPerformanceCounter(&time);
+    switch (resolution) {
+        case timestamp_resolution::milliseconds:
+            timestamp /= 10;
+            break;
 
-    SYSTEMTIME sysTime;
-    ::GetSystemTime(&sysTime);
+        case timestamp_resolution::nanoseconds:
+            timestamp *= 100;
+            break;
 
-    FILETIME fileTime;
-    ::SystemTimeToFileTime(&sysTime, &fileTime);
-
-    ULARGE_INTEGER largeInt;
-    largeInt.LowPart = fileTime.dwLowDateTime;
-    largeInt.HighPart = fileTime.dwHighDateTime;
-
-    measurement retval(this->_impl->sensor_name.c_str(), timestamp,
-        data->ulValues[0][1]);
-
-    {
-        auto status = detail::amd_display_library::instance()
-            .ADL2_Adapter_PMLog_Stop(this->_impl->scope,
-            this->_impl->adapter_index, this->_impl->device);
-        if (status != ADL_OK) {
-            throw new adl_exception(status);
-        }
+        case timestamp_resolution::seconds:
+            timestamp /= 10000;
+            break;
     }
 
-    return retval;
+    return measurement(this->_impl->sensor_name.c_str(), timestamp,
+        static_cast<measurement::value_type>(data->ulValues[0][1]));
 }

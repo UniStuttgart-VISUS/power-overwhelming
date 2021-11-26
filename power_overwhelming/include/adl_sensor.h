@@ -117,8 +117,7 @@ namespace power_overwhelming {
         const wchar_t *name(void) const noexcept;
 
         inline measurement sample(void) const {
-            typedef detail::timestamp<timestamp_resolution::milliseconds> ts;
-            return this->sample(ts::create());
+            return this->sample(timestamp_resolution::milliseconds);
         }
 
         /// <summary>
@@ -141,7 +140,7 @@ namespace power_overwhelming {
 
     private:
 
-        measurement sample(const measurement::timestamp_type timestamp) const;
+        measurement sample(const timestamp_resolution resolution) const;
 
         detail::adl_sensor_impl *_impl;
 

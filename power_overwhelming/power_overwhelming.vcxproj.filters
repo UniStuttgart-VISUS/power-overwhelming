@@ -69,6 +69,9 @@
     <ClInclude Include="include\adl_sensor_source.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="on_exit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adl_sensor.cpp">
@@ -110,5 +113,10 @@
     <ClCompile Include="adl_scope.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="on_exit.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
