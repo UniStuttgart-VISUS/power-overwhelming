@@ -137,7 +137,7 @@ namespace power_overwhelming {
         /// <returns>A sensor sample with the information about power
         /// consumption that is available via NVML.</returns>
         /// <exception cref="std::runtime_error">If a sensor that has been moved
-        /// is sampled</exception>
+        /// is sampled.</exception>
         /// <exception cref="nvml_exception">If the sensor could not be sampled.
         /// </exception>
         inline measurement sample(void) const {

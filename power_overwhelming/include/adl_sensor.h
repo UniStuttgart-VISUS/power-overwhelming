@@ -116,6 +116,31 @@ namespace power_overwhelming {
         /// sensor.</returns>
         const wchar_t *name(void) const noexcept;
 
+        /// <summary>
+        /// Sample the sensor.
+        /// </summary>
+        /// <typeparam name="Resolution">The desired resolution of the timestamp
+        /// being created for the measurement.</typeparam>
+        /// <returns>A sensor sample with the information about power
+        /// consumption that is available via ADL.</returns>
+        /// <exception cref="std::runtime_error">If a sensor that has been moved
+        /// is sampled.</exception>
+        /// <exception cref="adl_exception">If the sensor could not be sampled.
+        /// </exception>
+        template<timestamp_resolution Resolution>
+        inline measurement sample(void) const {
+            this->sample(Resolution);
+        }
+
+        /// <summary>
+        /// Sample the sensor using a timestamp with millisecond resolution.
+        /// </summary>
+        /// <returns>A sensor sample with the information about power
+        /// consumption that is available via ADL.</returns>
+        /// <exception cref="std::runtime_error">If a sensor that has been moved
+        /// is sampled.</exception>
+        /// <exception cref="adl_exception">If the sensor could not be sampled.
+        /// </exception>
         inline measurement sample(void) const {
             return this->sample(timestamp_resolution::milliseconds);
         }

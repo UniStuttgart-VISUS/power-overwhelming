@@ -10,6 +10,21 @@
 
 
 /*
+ * visus::power_overwhelming::detail::adl_sensor_impl::count_sensor_readings
+ */
+std::size_t
+visus::power_overwhelming::detail::adl_sensor_impl::count_sensor_readings(
+        const ADLPMLogData& data) {
+    std::size_t retval = 0;
+
+    for (; (retval < ADL_PMLOG_MAX_SENSORS)
+        && (data.ulValues[retval][0] != ADL_SENSOR_MAXTYPES); ++retval);
+
+    return retval;
+}
+
+
+/*
  * visus::power_overwhelming::detail::adl_sensor_impl::get_sensor_ids
  */
 std::vector<int>
@@ -27,7 +42,7 @@ visus::power_overwhelming::detail::adl_sensor_impl::get_sensor_ids(
                 ADL_PMLOG_GFX_CURRENT, ADL_PMLOG_GFX_POWER };
 
         case adl_sensor_source::soc:
-            return std::vector<int> { ADL_PMLOG_SOC_VOLTAGE, 
+            return std::vector<int> { ADL_PMLOG_SOC_VOLTAGE,
                 ADL_PMLOG_SOC_CURRENT, ADL_PMLOG_SOC_POWER };
 
         default:
@@ -43,26 +58,88 @@ std::vector<int>
 visus::power_overwhelming::detail::adl_sensor_impl::get_sensor_ids(
         const adl_sensor_source source,
         const ADLPMLogSupportInfo& supportInfo) {
-    auto required = get_sensor_ids(source);
+    auto retval = get_sensor_ids(source);
 
-    if (required.empty()) {
-        // Sensor is not known, so it is not supported.
-        return required;
+    {
+        auto end = std::remove_if(retval.begin(), retval.end(),
+            [&supportInfo](const int id) {
+                auto found = std::find(supportInfo.usSensors,
+                    supportInfo.usSensors + ADL_PMLOG_MAX_SENSORS, id);
+                return (found == supportInfo.usSensors + ADL_PMLOG_MAX_SENSORS);
+            });
+        retval.erase(end, retval.end());
     }
 
-    std::vector<int> retval;
-    retval.reserve(required.size());
+    if ((retval.size() == 1) && !is_power(retval.front())) {
+        // If there is only one sensor, it must be a power sensor. Having either
+        // voltage or current is useless, so we do not report this.
+        retval.clear();
 
-    for (int i = 0; supportInfo.usSensors[i] != ADL_SENSOR_MAXTYPES; ++i) {
-        auto it = std::find(required.begin(), required.end(),
-            supportInfo.usSensors[i]);
-        if (it != required.end()) {
-            retval.push_back(*it);
-            required.erase(it);
+    } else if (retval.size() == 2) {
+        // If we have two sensors, it must be voltage and current as we can
+        // compute the power from both. Alternatively, if one of the sensors
+        // is a power sensor, remove all except this one.
+        auto haveCurrent = is_current(retval[0]) || is_current(retval[1]);
+        auto haveVoltage = is_voltage(retval[0]) || is_voltage(retval[1]);
+
+        if (!haveCurrent || !haveVoltage) {
+            auto end = std::remove_if(retval.begin(), retval.end(),
+                [](const int id) { return !is_power(id); });
+            retval.erase(end, retval.end());
         }
     }
 
     return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::is_current
+ */
+bool visus::power_overwhelming::detail::adl_sensor_impl::is_current(
+        const int id) {
+    switch (id) {
+        case ADL_PMLOG_GFX_CURRENT:
+        case ADL_PMLOG_SOC_CURRENT:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::is_power
+ */
+bool visus::power_overwhelming::detail::adl_sensor_impl::is_power(
+        const int id) {
+    switch (id) {
+        case ADL_PMLOG_ASIC_POWER:
+        case ADL_PMLOG_CPU_POWER:
+        case ADL_PMLOG_GFX_POWER:
+        case ADL_PMLOG_SOC_POWER:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::is_voltage
+ */
+bool visus::power_overwhelming::detail::adl_sensor_impl::is_voltage(
+        const int id) {
+    switch (id) {
+        case ADL_PMLOG_GFX_VOLTAGE:
+        case ADL_PMLOG_SOC_VOLTAGE:
+            return true;
+
+        default:
+            return false;
+    }
 }
 
 
@@ -157,5 +234,69 @@ void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
 
     for (std::size_t i = 0; i < sensorIDs.size(); ++i) {
         this->start_input.usSensors[i] = sensorIDs[i];
+    }
+}
+
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::to_measurement
+ */
+visus::power_overwhelming::measurement
+visus::power_overwhelming::detail::adl_sensor_impl::to_measurement(
+        const ADLPMLogData& data, const timestamp_resolution resolution) {
+    // We found empirically that the timestamp from ADL is in 100 ns units (at
+    // least on Windows). Based on this assumption, convert to the requested
+    // unit.
+    auto timestamp = static_cast<measurement::timestamp_type>(
+        data.ulLastUpdated);
+
+    switch (resolution) {
+        case timestamp_resolution::milliseconds:
+            timestamp /= 10000;
+            break;
+
+        case timestamp_resolution::nanoseconds:
+            timestamp *= 100;
+            break;
+
+        case timestamp_resolution::seconds:
+            timestamp /= 10000000;
+            break;
+    }
+
+    // TODO: MAJOR HAZARD HERE!!! WE HAVE NO IDEA WHAT UNIT IS USED FOR VOLTAGE AND CURRENT. CURRENT CODE ASSUMES VOLT/AMPERE, BUT IT MIGHT BE MILLIVOLTS ...
+    // The documentation says nothing about this.
+
+    switch (count_sensor_readings(data)) {
+        case 1:
+            // If we have one reading, it must be a power reading due to the way
+            // we enumerate the sensors in get_sensor_ids.
+            return measurement(this->sensor_name.c_str(), timestamp,
+                static_cast<measurement::value_type>(data.ulValues[0][1]));
+
+        case 2:
+            // If we have two readings, it must be voltage and current.
+            return measurement(this->sensor_name.c_str(), timestamp,
+                static_cast<measurement::value_type>(
+                    data.ulValues[find_if(data, is_voltage)][1]),
+                static_cast<measurement::value_type>(
+                    data.ulValues[find_if(data, is_current)][1]));
+
+        case 3:
+            // This must be voltage, current and power.
+            return measurement(this->sensor_name.c_str(), timestamp,
+                static_cast<measurement::value_type>(
+                    data.ulValues[find_if(data, is_voltage)][1]),
+                static_cast<measurement::value_type>(
+                    data.ulValues[find_if(data, is_current)][1]),
+                static_cast<measurement::value_type>(
+                    data.ulValues[find_if(data, is_power)][1]));
+
+        default:
+            throw std::logic_error("The provided sensor data are not "
+                "compatible with the expected measurements . Valid "
+                "combinations are: power; voltage and current; voltage, "
+                "current and power.");
     }
 }

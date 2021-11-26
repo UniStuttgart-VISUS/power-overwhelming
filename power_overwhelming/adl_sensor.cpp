@@ -12,7 +12,6 @@
 #include "adl_scope.h"
 #include "adl_sensor_impl.h"
 #include "adl_sensor_source.h"
-#include "on_exit.h"
 
 
 namespace visus {
@@ -288,38 +287,19 @@ visus::power_overwhelming::adl_sensor::sample(
         }
     }
 
-    // Install an exit handler to stop sampling the sensor once we have
-    // returned our data. Note that the exit handler must not throw by design,
-    // so we just ignore any error.
-    auto onExit = on_exit([this](void) {
-        detail::amd_display_library::instance().ADL2_Adapter_PMLog_Stop(
-            this->_impl->scope, this->_impl->adapter_index,
-            this->_impl->device);
-    });
-
     const auto data = static_cast<ADLPMLogData *>(
         this->_impl->start_output.pLoggingAddress);
+    auto retval = this->_impl->to_measurement(*data, resolution);
 
-    // We found empirically that the timestamp from ADL is in 100 ns units (at
-    // least on Windows). Based on this assumption, convert to the requested
-    // unit.
-    auto timestamp = static_cast<measurement::timestamp_type>(
-        data->ulLastUpdated);
-
-    switch (resolution) {
-        case timestamp_resolution::milliseconds:
-            timestamp /= 10;
-            break;
-
-        case timestamp_resolution::nanoseconds:
-            timestamp *= 100;
-            break;
-
-        case timestamp_resolution::seconds:
-            timestamp /= 10000;
-            break;
+    {
+        auto status = detail::amd_display_library::instance()
+            .ADL2_Adapter_PMLog_Stop(
+            this->_impl->scope, this->_impl->adapter_index,
+            this->_impl->device);
+        if (status != ADL_OK) {
+            throw new adl_exception(status);
+        }
     }
 
-    return measurement(this->_impl->sensor_name.c_str(), timestamp,
-        static_cast<measurement::value_type>(data->ulValues[0][1]));
+    return retval;
 }
