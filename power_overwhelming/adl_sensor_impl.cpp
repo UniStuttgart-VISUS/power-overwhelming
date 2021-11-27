@@ -239,7 +239,6 @@ void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
 }
 
 
-
 /*
  * visus::power_overwhelming::detail::adl_sensor_impl::to_measurement
  */
@@ -249,22 +248,8 @@ visus::power_overwhelming::detail::adl_sensor_impl::to_measurement(
     // We found empirically that the timestamp from ADL is in 100 ns units (at
     // least on Windows). Based on this assumption, convert to the requested
     // unit.
-    auto timestamp = static_cast<measurement::timestamp_type>(
-        data.ulLastUpdated);
-
-    switch (resolution) {
-        case timestamp_resolution::milliseconds:
-            timestamp /= 10000;
-            break;
-
-        case timestamp_resolution::nanoseconds:
-            timestamp *= 100;
-            break;
-
-        case timestamp_resolution::seconds:
-            timestamp /= 10000000;
-            break;
-    }
+    auto timestamp = convert(static_cast<measurement::timestamp_type>(
+        data.ulLastUpdated), resolution);
 
     // TODO: MAJOR HAZARD HERE!!! WE HAVE NO IDEA WHAT UNIT IS USED FOR VOLTAGE AND CURRENT. CURRENT CODE ASSUMES VOLT/AMPERE, BUT IT MIGHT BE MILLIVOLTS ...
     // The documentation says nothing about this.

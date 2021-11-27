@@ -18,6 +18,8 @@ namespace power_overwhelming {
 
         milliseconds,
 
+        microseconds,
+
         nanoseconds
     };
 
