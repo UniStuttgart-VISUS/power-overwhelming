@@ -71,6 +71,7 @@
     <ClCompile Include="convert_string.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="include\timestamp.inl" />
     <None Include="on_exit.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

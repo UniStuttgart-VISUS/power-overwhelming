@@ -118,5 +118,8 @@
     <None Include="on_exit.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="include\timestamp.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

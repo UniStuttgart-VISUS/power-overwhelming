@@ -17,6 +17,30 @@ namespace power_overwhelming {
 namespace detail {
 
     /// <summary>
+    /// Allows for resolving an STL duration for the specified timestamp
+    /// resolution.
+    /// </summary>
+    template<timestamp_resolution Resolution> struct duration_traits final { };
+
+    template<>
+    struct duration_traits<timestamp_resolution::microseconds> final {
+        typedef std::chrono::microseconds type;
+    };
+
+    template<>
+    struct duration_traits<timestamp_resolution::milliseconds> final {
+        typedef std::chrono::milliseconds type;
+    };
+
+    template<> struct duration_traits<timestamp_resolution::nanoseconds> final {
+        typedef std::chrono::nanoseconds type;
+    };
+
+    template<> struct duration_traits<timestamp_resolution::seconds> final {
+        typedef std::chrono::seconds type;
+    };
+
+    /// <summary>
     /// The 100ns period defining the reolution of <see cref="FILETIME" />.
     /// </summary>
     typedef std::ratio<1, 10000000> filetime_period;
@@ -29,29 +53,9 @@ namespace detail {
     /// <param name="resolution">The desired resolution of the timestamp.
     /// </param>
     /// <returns>The timestamp in the requested resolution.</returns>
-    static inline decltype(LARGE_INTEGER::QuadPart) convert(
-            const decltype(LARGE_INTEGER::QuadPart) fileTime,
-            const timestamp_resolution resolution) {
-        using namespace std::chrono;
-        duration<decltype(fileTime), filetime_period> ft(fileTime);
-
-        switch (resolution) {
-            case timestamp_resolution::microseconds:
-                return duration_cast<microseconds>(ft).count();
-
-            case timestamp_resolution::milliseconds:
-                return duration_cast<milliseconds>(ft).count();
-
-            case timestamp_resolution::nanoseconds:
-                return duration_cast<nanoseconds>(ft).count();
-
-            case timestamp_resolution::seconds:
-                return duration_cast<seconds>(ft).count();
-
-            default:
-                return fileTime;
-        }
-    }
+    inline decltype(LARGE_INTEGER::QuadPart) convert(
+        const decltype(LARGE_INTEGER::QuadPart) fileTime,
+        const timestamp_resolution resolution);
 
     /// <summary>
     /// Convert the given raw <see cref="LARGE_INTEGER" /> to a timestamp of the
@@ -61,7 +65,7 @@ namespace detail {
     /// <param name="resolution">The desired resolution of the timestamp.
     /// </param>
     /// <returns>The timestamp in the requested resolution.</returns>
-    static inline decltype(LARGE_INTEGER::QuadPart) convert(
+    inline decltype(LARGE_INTEGER::QuadPart) convert(
             const LARGE_INTEGER& fileTime,
             const timestamp_resolution resolution) {
         return convert(fileTime.QuadPart, resolution);
@@ -73,7 +77,7 @@ namespace detail {
     /// </summary>
     /// <param name="fileTime"></param>
     /// <returns></returns>
-    static inline decltype(LARGE_INTEGER::QuadPart) convert(
+    inline decltype(LARGE_INTEGER::QuadPart) convert(
             const FILETIME& fileTime,
             const timestamp_resolution resolution) {
         LARGE_INTEGER largeInteger;
@@ -119,8 +123,28 @@ namespace detail {
         static inline constexpr value_type create(const FILETIME& fileTime) {
             return detail::convert(fileTime, Resolution);
         }
+
+        /// <summary>
+        /// Create a timestamp from a <see cref="std::time_point" />
+        /// </summary>
+        /// <typeparam name="TTimePoint"></typeparam>
+        /// <param name="timePoint"></param>
+        /// <returns></returns>
+        template<class TTimePoint>
+        static value_type create(const TTimePoint& timePoint);
+
+        /// <summary>
+        /// Create a timestamp from a <see cref="std::clock" />
+        /// </summary>
+        /// <typeparam name="TClock"></typeparam>
+        /// <returns></returns>
+        template<class TClock> inline static value_type create(void) {
+            return create(TClock::now());
+        }
     };
 
 } /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
+
+#include "timestamp.inl"
