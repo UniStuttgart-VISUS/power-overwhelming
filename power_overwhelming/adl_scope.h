@@ -5,9 +5,6 @@
 
 #pragma once
 
-#include <atomic>
-#include <cinttypes>
-
 #include <adl_sdk.h>
 
 

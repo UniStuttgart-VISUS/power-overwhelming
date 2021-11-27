@@ -72,6 +72,12 @@
     <ClInclude Include="on_exit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="tinkerforge_scope.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tinkerforge_exception.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adl_sensor.cpp">
@@ -111,6 +117,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="adl_scope.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tinkerforge_scope.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tinkerforge_exception.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

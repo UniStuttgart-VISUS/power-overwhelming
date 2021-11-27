@@ -889,7 +889,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\Makefile" />
     <None Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\tinkerforge.def">
       <Filter>Source Files</Filter>
     </None>

@@ -1,4 +1,4 @@
-// <copyright file="adl_exception.h" company="Visualisierungsinstitut der Universität Stuttgart">
+// <copyright file="tinkerforge_exception.h" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -13,9 +13,9 @@ namespace visus {
 namespace power_overwhelming {
 
     /// <summary>
-    /// An exception caused by a failure in the AMD Display Library.
+    /// An exception representing an error in the Tinkerforge API.
     /// </summary>
-    class adl_exception : public std::exception {
+    class tinkerforge_exception final : public std::exception {
 
     public:
 
@@ -29,14 +29,14 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="code">The error code, which also determines the error
         /// message.</param>
-        adl_exception(const value_type code);
+        tinkerforge_exception(const value_type code);
 
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
         /// <param name="code">The error code.</param>
         /// <param name="message">A custom error message.</param>
-        adl_exception(const value_type code, const std::string& message)
+        tinkerforge_exception(const value_type code, const std::string& message)
             : std::exception(message.c_str()), _code(code) { }
 
         /// <summary>

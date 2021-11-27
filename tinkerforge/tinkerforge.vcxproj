@@ -329,7 +329,6 @@
     <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\ip_connection.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\Makefile" />
     <None Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\tinkerforge.def" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
