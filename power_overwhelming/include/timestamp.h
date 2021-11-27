@@ -106,7 +106,7 @@ namespace detail {
         typedef decltype(LARGE_INTEGER::QuadPart) value_type;
 
         /// <summary>
-        /// Samples system clock and converts its value into atimestamp.
+        /// Samples system clock and converts its value into a timestamp.
         /// </summary>
         /// <returns>A new timestamp for the current point in time.</returns>
         static inline value_type create(void) {
@@ -125,7 +125,7 @@ namespace detail {
         }
 
         /// <summary>
-        /// Create a timestamp from a <see cref="std::time_point" />
+        /// Create a timestamp from a <see cref="std::time_point" />.
         /// </summary>
         /// <typeparam name="TTimePoint"></typeparam>
         /// <param name="timePoint"></param>
@@ -134,7 +134,7 @@ namespace detail {
         static value_type create(const TTimePoint& timePoint);
 
         /// <summary>
-        /// Create a timestamp from a <see cref="std::clock" />
+        /// Create a timestamp from a <see cref="std::clock" />.
         /// </summary>
         /// <typeparam name="TClock"></typeparam>
         /// <returns></returns>

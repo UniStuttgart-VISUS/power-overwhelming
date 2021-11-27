@@ -74,6 +74,11 @@
     <None Include="include\timestamp.inl" />
     <None Include="on_exit.inl" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\tinkerforge\tinkerforge.vcxproj">
+      <Project>{48db87ba-8756-4633-ba24-0a23404928b5}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -143,41 +148,54 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\third_party\adl.props" />
     <Import Project="..\third_party\nvml.props" />
+    <Import Project="..\third_party\tinkerforge.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\third_party\adl.props" />
     <Import Project="..\third_party\nvml.props" />
+    <Import Project="..\third_party\tinkerforge.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\third_party\adl.props" />
     <Import Project="..\third_party\nvml.props" />
+    <Import Project="..\third_party\tinkerforge.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\third_party\adl.props" />
     <Import Project="..\third_party\nvml.props" />
+    <Import Project="..\third_party\bricklib.props" />
+    <Import Project="..\third_party\tinkerforge.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\third_party\adl.props" />
     <Import Project="..\third_party\nvml.props" />
+    <Import Project="..\third_party\bricklib.props" />
+    <Import Project="..\third_party\tinkerforge.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\third_party\adl.props" />
     <Import Project="..\third_party\nvml.props" />
+    <Import Project="..\third_party\bricklib.props" />
+    <Import Project="..\third_party\tinkerforge.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\third_party\adl.props" />
     <Import Project="..\third_party\nvml.props" />
+    <Import Project="..\third_party\bricklib.props" />
+    <Import Project="..\third_party\tinkerforge.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\third_party\adl.props" />
     <Import Project="..\third_party\nvml.props" />
+    <Import Project="..\third_party\bricklib.props" />
+    <Import Project="..\third_party\tinkerforge.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

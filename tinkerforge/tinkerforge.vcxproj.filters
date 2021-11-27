@@ -1,0 +1,897 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_dc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_hat.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_hat_zero.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_imu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_imu_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_master.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_red.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_servo.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_silent_stepper.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_stepper.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_accelerometer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_accelerometer_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_air_quality.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_ambient_light.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_ambient_light_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_ambient_light_v3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_analog_in.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_analog_in_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_analog_in_v3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_analog_out.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_analog_out_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_analog_out_v3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_barometer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_barometer_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_can.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_can_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_co2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_co2_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_color.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_color_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_compass.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_current12.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_current25.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_dc_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_distance_ir.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_distance_ir_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_distance_us.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_distance_us_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_dmx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_dual_button.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_dual_button_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_dual_relay.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_dust_detector.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_e_paper_296x128.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_energy_monitor.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_gps.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_gps_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_hall_effect.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_hall_effect_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_humidity.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_humidity_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_imu_v3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_analog_out.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_analog_out_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_counter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_digital_in_4.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_digital_in_4_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_digital_out_4.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_digital_out_4_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_dual_0_20ma.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_dual_0_20ma_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_dual_ac_relay.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_dual_analog_in.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_dual_analog_in_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_dual_relay.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_ptc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_quad_relay.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_quad_relay_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_io4.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_io4_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_io16.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_io16_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_isolator.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_joystick.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_joystick_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_laser_range_finder.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_laser_range_finder_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_lcd_16x2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_lcd_20x4.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_lcd_128x64.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_led_strip.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_led_strip_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_line.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_linear_poti.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_linear_poti_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_load_cell.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_load_cell_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_moisture.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_motion_detector.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_motion_detector_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_motorized_linear_poti.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_multi_touch.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_multi_touch_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_nfc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_nfc_rfid.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_oled_64x48.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_oled_128x64.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_oled_128x64_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_one_wire.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_outdoor_weather.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_particulate_matter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_performance_dc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_piezo_buzzer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_piezo_speaker.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_piezo_speaker_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_ptc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_ptc_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_real_time_clock.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_real_time_clock_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_remote_switch.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_remote_switch_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rgb_led.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rgb_led_button.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rgb_led_matrix.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rgb_led_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rotary_encoder.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rotary_encoder_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rotary_poti.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rotary_poti_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rs232.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rs232_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rs485.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_segment_display_4x7.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_segment_display_4x7_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_servo_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_silent_stepper_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_solid_state_relay.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_solid_state_relay_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_sound_intensity.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_sound_pressure_level.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_temperature.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_temperature_ir.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_temperature_ir_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_temperature_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_thermal_imaging.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_thermocouple.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_thermocouple_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_tilt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_uv_light.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_uv_light_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_voltage.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_voltage_current.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_voltage_current_v2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_xmc1400_breakout.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\ip_connection.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_dc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_hat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_hat_zero.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_imu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_imu_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_master.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_red.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_servo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_silent_stepper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\brick_stepper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_accelerometer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_accelerometer_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_air_quality.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_ambient_light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_ambient_light_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_ambient_light_v3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_analog_in.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_analog_in_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_analog_in_v3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_analog_out.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_analog_out_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_analog_out_v3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_barometer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_barometer_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_can.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_can_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_co2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_co2_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_color_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_compass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_current12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_current25.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_dc_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_distance_ir.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_distance_ir_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_distance_us.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_distance_us_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_dmx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_dual_button.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_dual_button_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_dual_relay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_dust_detector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_e_paper_296x128.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_energy_monitor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_gps.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_gps_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_hall_effect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_hall_effect_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_humidity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_humidity_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_imu_v3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_analog_out.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_analog_out_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_counter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_digital_in_4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_digital_in_4_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_digital_out_4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_digital_out_4_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_dual_0_20ma.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_dual_0_20ma_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_dual_ac_relay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_dual_analog_in.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_dual_analog_in_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_dual_relay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_ptc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_quad_relay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_industrial_quad_relay_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_io4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_io4_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_io16.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_io16_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_isolator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_joystick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_joystick_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_laser_range_finder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_laser_range_finder_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_lcd_16x2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_lcd_20x4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_lcd_128x64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_led_strip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_led_strip_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_line.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_linear_poti.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_linear_poti_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_load_cell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_load_cell_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_moisture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_motion_detector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_motion_detector_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_motorized_linear_poti.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_multi_touch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_multi_touch_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_nfc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_nfc_rfid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_oled_64x48.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_oled_128x64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_oled_128x64_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_one_wire.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_outdoor_weather.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_particulate_matter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_performance_dc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_piezo_buzzer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_piezo_speaker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_piezo_speaker_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_ptc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_ptc_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_real_time_clock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_real_time_clock_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_remote_switch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_remote_switch_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rgb_led.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rgb_led_button.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rgb_led_matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rgb_led_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rotary_encoder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rotary_encoder_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rotary_poti.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rotary_poti_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rs232.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rs232_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_rs485.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_segment_display_4x7.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_segment_display_4x7_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_servo_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_silent_stepper_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_solid_state_relay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_solid_state_relay_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_sound_intensity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_sound_pressure_level.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_temperature.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_temperature_ir.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_temperature_ir_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_temperature_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_thermal_imaging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_thermocouple.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_thermocouple_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_tilt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_uv_light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_uv_light_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_voltage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_voltage_current.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_voltage_current_v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\bricklet_xmc1400_breakout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\ip_connection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\Makefile" />
+    <None Include="..\third_party\tinkerforge_c_bindings_2_1_32\source\tinkerforge.def">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

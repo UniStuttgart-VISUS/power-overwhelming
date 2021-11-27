@@ -1,6 +1,3 @@
 [submodule "third_party/display-library"]
 	path = third_party/display-library
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/display-library.git
-[submodule "third_party/bricklib"]
-	path = third_party/bricklib
-	url = https://github.com/Tinkerforge/bricklib.git
