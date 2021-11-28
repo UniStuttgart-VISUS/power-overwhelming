@@ -7,6 +7,7 @@
 
 #include "tinkerforge_exception.h"
 
+
 /*
  * visus::power_overwhelming::detail::tinkerforge_scope::tinkerforge_scope
  */

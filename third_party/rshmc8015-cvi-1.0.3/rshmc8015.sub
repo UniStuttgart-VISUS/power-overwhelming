@@ -1,0 +1,995 @@
+FPAttributeValueFile
+n  SubType="IVI"
+n  SubVersion="1"
+
+v rshmc8015_rngViewMode DataType="i"
+
+ RSHMC8015_VAL_VIEW_MODE_NORMAL (0)
+ "\n"
+ RSHMC8015_VAL_VIEW_MODE_HARMONICS (1)
+ "\n"
+ RSHMC8015_VAL_VIEW_MODE_TRENDCHART (2)
+ "\n"
+ RSHMC8015_VAL_VIEW_MODE_SIGNALS (3)
+ "\n"
+ RSHMC8015_VAL_VIEW_MODE_STANDARDS (4)
+ "\n"
+ RSHMC8015_VAL_VIEW_MODE_INRUSH (5)
+ "\n"
+
+v rshmc8015_rngNormalViewFunction DataType="i"
+
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_EMPTY (0)
+ "Empty\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_P (1)
+ "Active Power\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_S (2)
+ "Apparent Power\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_Q (3)
+ "Reactive Power\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_PF (4)
+ "Power Factor Lambda\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_PHI (5)
+ "Phase Difference Phi\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_FU (6)
+ "Voltage Frequency\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_FI (7)
+ "Current Frequency\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_UPP (8)
+ "Maximum Voltage\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_UMP (9)
+ "Minimum Voltage\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_IPP (10)
+ "Maximum Current\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_IMP (11)
+ "Minimum Current\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_PPP (12)
+ "Maximum Power\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_PMP (13)
+ "Minimum Power\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_URMS (14)
+ "True RMS Voltage\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_UAVG (15)
+ "Average Voltage\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_IRMS (16)
+ "True RMS Current\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_IAVG (17)
+ "Average Current\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_UTHD (18)
+ "Total Harmonic Dist. U\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_ITHD (19)
+ "Total Harmonic Dist. I\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_DIN (20)
+ "Digital Input Value\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_AIN (21)
+ "Analog Input Value\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_TIME (22)
+ "Integration Time\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_WH (23)
+ "Watt Hour\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_WHP (24)
+ "Positive Watt Hour\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_WHM (25)
+ "Negative Watt Hour\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_AH (26)
+ "Ampere Hour\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_AHP (27)
+ "Positive Ampere Hour\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_AHM (28)
+ "Negative Ampere Hour\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_TEMP (29)
+ "Temperature\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_LIM1 (30)
+ "Limit 1\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_LIM2 (31)
+ "Limit 2\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_LIM3 (32)
+ "Limit 3\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_LIM4 (33)
+ "Limit 4\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_LIM5 (34)
+ "Limit 5\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_LIM6 (35)
+ "Limit 6\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_URANGE (36)
+ "Range Voltage\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_IRANGE (37)
+ "Range Current\n"
+ RSHMC8015_VAL_NORMAL_VIEW_FUNC_FPLL (38)
+ "PLL Source Frequency\n"
+
+v rshmc8015_rngViewNormalPageSize DataType="i"
+
+ RSHMC8015_VAL_VIEW_PAGE_SIZE_6 (0)
+ "Page Size 6\n"
+ RSHMC8015_VAL_VIEW_PAGE_SIZE_10 (1)
+ "Page Size 10\n"
+
+v rshmc8015_rngHarmonicsView DataType="i"
+
+ RSHMC8015_VAL_VIEW_HARM_VIEW_BAR (0)
+ "Bar\n"
+ RSHMC8015_VAL_VIEW_HARM_VIEW_TAB (1)
+ "Table\n"
+
+v rshmc8015_rngHarmonicsSource DataType="i"
+
+ RSHMC8015_VAL_VIEW_HARM_SOURCE_VOLTAGE (0)
+ "Voltage\n"
+ RSHMC8015_VAL_VIEW_HARM_SOURCE_CURRENT (1)
+ "Current\n"
+ RSHMC8015_VAL_VIEW_HARM_SOURCE_BOTH (2)
+ "Both\n"
+
+v rshmc8015_rngHarmonicsScaling DataType="i"
+
+ RSHMC8015_VAL_VIEW_HARM_SCALING_ABSOLUTE (0)
+ "Absolute\n"
+ RSHMC8015_VAL_VIEW_HARM_SCALING_PERCENT (1)
+ "Percent\n"
+
+v rshmc8015_rngHarmonicsSubset DataType="i"
+
+ RSHMC8015_VAL_VIEW_HARM_SUBSET_EVEN (0)
+ "Even\n"
+ RSHMC8015_VAL_VIEW_HARM_SUBSET_ODD (1)
+ "Odd\n"
+
+v rshmc8015_rngIntegratorMode DataType="i"
+
+ RSHMC8015_VAL_INTEGRATOR_MODE_MANUAL (0)
+ "Manual\n"
+ RSHMC8015_VAL_INTEGRATOR_MODE_DURATION (1)
+ "Duration\n"
+ RSHMC8015_VAL_INTEGRATOR_MODE_SPAN (2)
+ "Span\n"
+ RSHMC8015_VAL_INTEGRATOR_MODE_EXTERN (3)
+ "Extern\n"
+
+v rshmc8015_rngLoggingMode DataType="i"
+
+ RSHMC8015_VAL_LOGGING_MODE_UNLIMITED (0)
+ "Unlimited\n"
+ RSHMC8015_VAL_LOGGING_MODE_COUNT (1)
+ "Count\n"
+ RSHMC8015_VAL_LOGGING_MODE_TIME (2)
+ "Time\n"
+ RSHMC8015_VAL_LOGGING_MODE_SPAN (3)
+ "Span\n"
+
+v rshmc8015_rngLimitSource DataType="i"
+
+ RSHMC8015_VAL_LIMIT_SOURCE_URMS (0)
+ "True RMS Voltage\n"
+ RSHMC8015_VAL_LIMIT_SOURCE_UAVG (1)
+ "Average Voltage\n"
+ RSHMC8015_VAL_LIMIT_SOURCE_FU (2)
+ "Voltage Frequency\n"
+ RSHMC8015_VAL_LIMIT_SOURCE_IRMS (3)
+ "True RMS Current\n"
+ RSHMC8015_VAL_LIMIT_SOURCE_IAVG (4)
+ "Average Current\n"
+ RSHMC8015_VAL_LIMIT_SOURCE_FI (5)
+ "Current Frequency\n"
+ RSHMC8015_VAL_LIMIT_SOURCE_P (6)
+ "Active Power\n"
+ RSHMC8015_VAL_LIMIT_SOURCE_S (7)
+ "Apparent Power\n"
+ RSHMC8015_VAL_LIMIT_SOURCE_Q (8)
+ "Reactive Power\n"
+ RSHMC8015_VAL_LIMIT_SOURCE_PF (9)
+ "Power Factor Lambda\n"
+ RSHMC8015_VAL_LIMIT_SOURCE_PHI (10)
+ "Phase Difference Phi\n"
+ RSHMC8015_VAL_LIMIT_SOURCE_FPLL (11)
+ "PLL Source Frequency\n"
+ RSHMC8015_VAL_LIMIT_SOURCE_UTHD (12)
+ "Total Harmonic Dist U\n"
+ RSHMC8015_VAL_LIMIT_SOURCE_ITHD (13)
+ "Total Harmonic Dist I\n"
+
+v rshmc8015_rngAcquisitionMode DataType="i"
+
+ RSHMC8015_VAL_ACQ_MODE_AC (0)
+ "AC\n"
+ RSHMC8015_VAL_ACQ_MODE_DC (1)
+ "DC\n"
+ RSHMC8015_VAL_ACQ_MODE_EXTERN (2)
+ "Extern\n"
+
+v rshmc8015_rngAcquisitionCrestFactor DataType="i"
+
+ RSHMC8015_VAL_CREST_FACTOR_3 (0)
+ "Sests crest factor to 3\n"
+ RSHMC8015_VAL_CREST_FACTOR_6 (1)
+ "Sests crest factor to 6\n"
+
+v rshmc8015_rngPLLSource DataType="i"
+
+ RSHMC8015_VAL_PLL_SOURCE_VOLTAGE (0)
+ "Voltage\n"
+ RSHMC8015_VAL_PLL_SOURCE_CURRENT (1)
+ "Current\n"
+
+v rshmc8015_rngImageFormat DataType="i"
+
+ RSHMC8015_VAL_IMAGE_FORMAT_BMP (0)
+ "Selects BMP image format\n"
+ RSHMC8015_VAL_IMAGE_FORMAT_PNG (1)
+ "Selects PNG image format\n"
+
+v rshmc8015_rngAnalogOutputMode DataType="i"
+
+ RSHMC8015_VAL_AOUT_MODE_VOLTAGE (0)
+ "Voltage\n"
+ RSHMC8015_VAL_AOUT_MODE_CURRENT (1)
+ "Current\n"
+ RSHMC8015_VAL_AOUT_MODE_POWER (2)
+ "Power\n"
+ RSHMC8015_VAL_AOUT_MODE_LIM1 (3)
+ "Limit1\n"
+ RSHMC8015_VAL_AOUT_MODE_LIM2 (4)
+ "Limit2\n"
+ RSHMC8015_VAL_AOUT_MODE_LIM3 (5)
+ "Limit3\n"
+ RSHMC8015_VAL_AOUT_MODE_LIM4 (6)
+ "Limit4\n"
+ RSHMC8015_VAL_AOUT_MODE_LIM5 (7)
+ "Limit5\n"
+ RSHMC8015_VAL_AOUT_MODE_LIM6 (8)
+ "Limit6\n"
+
+v rshmc8015_rngDigitalInputMode DataType="i"
+
+ RSHMC8015_VAL_DINP_MODE_FREQUENCY (0)
+ "Frequency\n"
+ RSHMC8015_VAL_DINP_MODE_PWM (1)
+ "PWM\n"
+ RSHMC8015_VAL_DINP_MODE_STATE (2)
+ "State\n"
+ RSHMC8015_VAL_DINP_MODE_COMM (3)
+ "Communication\n"
+ RSHMC8015_VAL_DINP_MODE_INT (4)
+ "Integrator\n"
+
+v rshmc8015_rngDigitalOutputMode DataType="i"
+
+ RSHMC8015_VAL_DOUT_MODE_FPLL (0)
+ "FPLL\n"
+ RSHMC8015_VAL_DOUT_MODE_COMM (1)
+ "Communication\n"
+ RSHMC8015_VAL_DOUT_MODE_LIM1 (2)
+ "Limit1\n"
+ RSHMC8015_VAL_DOUT_MODE_LIM2 (3)
+ "Limit2\n"
+ RSHMC8015_VAL_DOUT_MODE_LIM3 (4)
+ "Limit3\n"
+ RSHMC8015_VAL_DOUT_MODE_LIM4 (5)
+ "Limit4\n"
+ RSHMC8015_VAL_DOUT_MODE_LIM5 (6)
+ "Limit5\n"
+ RSHMC8015_VAL_DOUT_MODE_LIM6 (7)
+ "Limit6\n"
+
+v rshmc8015_rngSensorMode DataType="i"
+
+ RSHMC8015_VAL_SENSOR_MODE_SHUNT (0)
+ "Shunt\n"
+ RSHMC8015_VAL_SENSOR_MODE_CLAMP (1)
+ "Clamp\n"
+
+v rshmc8015_rngStatusRegisterOperation DataType="i"
+
+ RSHMC8015_VAL_STAT_REG_QUESTIONABLE (1)
+ "Set Questionable Register\n"
+ RSHMC8015_VAL_STAT_REG_OPERATION (2)
+ "Set Operation Register\n"
+
+v rshmc8015_rngStatusRegisterQuery DataType="i"
+
+ RSHMC8015_VAL_STAT_REG_QUERY_COND (0)
+ "Condition\n"
+ RSHMC8015_VAL_STAT_REG_QUERY_EVENT (1)
+ "Event\n"
+ RSHMC8015_VAL_STAT_REG_QUERY_ENABLE (2)
+ "Enable\n"
+ RSHMC8015_VAL_STAT_REG_QUERY_PTRANSITION (3)
+ "PTransition\n"
+ RSHMC8015_VAL_STAT_REG_QUERY_NTRANSITION (4)
+ "NTransition\n"
+
+v rshmc8015_rngDevice DataType="i"
+
+ RSHMC8015_VAL_DEVICE_INT (0)
+ "Internal Memory\n"
+ RSHMC8015_VAL_DEVICE_EXT (1)
+ "USB Stick\n"
+ RSHMC8015_VAL_DEVICE_DEF (2)
+ "Internal Memory\n"
+
+0 rshmc8015_SetAttributeViInt32 3 4 false s DataType="ViInt32"
+0 rshmc8015_GetAttributeViInt32 3 4 false g DataType="ViInt32"
+0 rshmc8015_CheckAttributeViInt32 3 4 false s DataType="ViInt32"
+0 rshmc8015_SetAttributeViInt64 3 4 false s DataType="ViInt64"
+0 rshmc8015_GetAttributeViInt64 3 4 false g DataType="ViInt64"
+0 rshmc8015_CheckAttributeViInt64 3 4 false s DataType="ViInt64"
+0 rshmc8015_SetAttributeViReal64 3 4 false s DataType="ViReal64"
+0 rshmc8015_GetAttributeViReal64 3 4 false g DataType="ViReal64"
+0 rshmc8015_CheckAttributeViReal64 3 4 false s DataType="ViReal64"
+0 rshmc8015_SetAttributeViSession 3 4 false s DataType="ViSession"
+0 rshmc8015_GetAttributeViSession 3 4 false g DataType="ViSession"
+0 rshmc8015_CheckAttributeViSession 3 4 false s DataType="ViSession"
+0 rshmc8015_SetAttributeViBoolean 3 4 false s DataType="ViBoolean"
+0 rshmc8015_GetAttributeViBoolean 3 4 false g DataType="ViBoolean"
+0 rshmc8015_CheckAttributeViBoolean 3 4 false s DataType="ViBoolean"
+0 rshmc8015_SetAttributeViString 3 4 false s DataType="ViString"
+0 rshmc8015_GetAttributeViString 3 5 false g DataType="ViString"
+0 rshmc8015_CheckAttributeViString 3 4 false s DataType="ViString"
+0 rshmc8015_GetAttributeRepeatedCapabilityIds 2 2 false g
+0 rshmc8015_GetAttributeRepeatedCapabilityIdNames 2 2 false g
+
+1 all "Inherent Instrument Specific Attributes"
+ "\n"
+
+2 all "User Options"
+ "\n"
+
+3 all "Range Check" RS_ATTR_RANGE_CHECK ViBoolean gs 
+ "Specifies whether to validate attribute values and function parameters. If enabled, the instrument driver validates the parameters values that end-users pass to driver functions, and the RS engine validates values that the driver or end-users pass to the SetAttribute functions. The RS engine uses the range table, range table callback, or check callback for each attribute to validate its values. Range checking parameters is very useful for debugging. After validating the program, the end-user can set this "
+ "attribute to VI_FALSE to disable range checking and maximize performance.\n    The end-user specifies the value of RS_ATTR_RANGE_CHECK.\n    The default value is VI_TRUE. Specific drivers provide a PREFIX_InitWithOptions function to allow the end-user to override this value. When the end-user opens an instrument session through a class driver, the end-user can override both of these values by specifying a value in the ivi.ini configuration file.\n    The Rs_RangeChecking function provides convenient access "
+ "to the value of this attribute.\n\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Query Instrument Status" RS_ATTR_QUERY_INSTRUMENT_STATUS ViBoolean gs 
+ "Specifies whether the instrument driver queries the instrument status after each end-user operation. The driver does so by calling the check status callback at the end of each user-callable function that interacts with the instrument. The RS engine also invokes the check status callback when the end-user calls one of the PREFIX_SetAttribute or PREFIX_GetAttribute functions that the instrument driver provides.   Querying the instrument status is very useful for debugging. After validating the program, the "
+ "end-user can set this attribute to VI_FALSE to disable status checking and maximize performance.\n    The end-user specifies the value of RS_ATTR_QUERY_INSTR_STATUS. The driver, however, can prevent the RS engine from invoking the checks status callback on a particular attribute by setting the RS_VAL_DONT_CHECK_STATUS flag for the attribute.\n    The default value is VI_TRUE. Specific drivers provide a PREFIX_InitWithOptions function to allow the end-user to override this value.\nThe Rs_QueryInstrStatus "
+ "function provides convenient access to the value of this attribute.\n\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Cache" RS_ATTR_CACHE ViBoolean gs 
+ "This attribute specifies whether or not to cache the value of attributes.\n    The end-user specifies the value of RS_ATTR_CACHE. For a particular attribute, however, the driver can override the value of RS_ATTR_CACHE by setting the RS_VAL_NEVER_CACHE or RS_VAL_ALWAYS_CACHE flag for the attribute.\n    The default value is VI_TRUE. Specific drivers provide a PREFIX_InitWithOptions function to allow the end-user to override this value.  \n\nAvailable Repeated Capabilities:\n\n\nRemote-control "
+ "command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Simulate" RS_ATTR_SIMULATE ViBoolean gs 
+ "This attribute specifies whether or not to simulate instrument driver I/O operations. If simulation is enabled, specific instrument driver functions perform range checking and call Rs_GetAttribute and Rs_SetAttribute functions, but they do not perform instrument I/O. The RS engine does not invoke the read and write callbacks for attributes, except when the RS_VAL_USE_CALLBACKS_FOR_SIMULATION flag is set for an attribute.\n    For output parameters that represent instrument data, the instrument driver "
+ "functions return hardcoded values. If the end-user opens the session through a class driver, the class driver loads a special simulation driver to generate output data in a more sophisicated manner, unless the end-user sets the RS_ATTR_USE_SPECIFIC_SIMULATION attribute to VI_TRUE.\n    The end-user sets the value of RS_ATTR_SIMULATE.\n    The default value is VI_FALSE. Specific drivers provide a PREFIX_InitWithOptions function to allow the end-user to override this value.      The Rs_Simulating function "
+ "provides convenient access to the value of this attribute.\n    If you initialize a session with simulation enabled, disabling it causes the RS_ERROR_INVALID_CONFIGURATION error to be returned.\n\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Record Value Coercions" RS_ATTR_RECORD_COERCIONS ViBoolean gs 
+ "This attribute specifies whether the RS engine keeps a list of the value coercions it makes for ViInt32 and ViReal64 attributes. If the driver provides a coerced range table, a range table callback that returns a coerced range table, or a coerce callback for an attribute, the RS engine can coerce the values you specify for the attribute to canonical values the instrument accepts. If the RS_ATTR_RECORD_COERCIONS attribute is enabled, the RS engine maintains a record of each coercion. The end-user calls "
+ "Rs_GetNextCoercionInfo to extract and delete the oldest coercion record from the list.\n    The end-user specifies the value of RS_ATTR_RECORD_COERCIONS.\n    The default value is VI_FALSE. Specific drivers provide a PREFIX_InitWithOptions function to allow the end-user to override this value.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Interchangeability Check" RS_ATTR_INTERCHANGE_CHECK ViBoolean gs 
+ "This attribute specifies whether the class driver performs interchangeability checking. Each instrument class specification defines the rules for interchangeability checking for that class.\n     The end-user specifies the value of RS_ATTR_INTERCHANGE_CHECK.\n    The default value is VI_TRUE.\n    If the end-user opens an instrument session through a specific driver, the RS engine generates an RS_ERROR_NOT_CREATED_BY_CLASS error whenever you attempt to set or get this attribute.\n\n\nAvailable Repeated "
+ "Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Spy" RS_ATTR_SPY ViBoolean gs 
+ "This attribute specifies whether the class driver uses the NI-Spy utility to record calls to class driver functions.\n    The end-user specifies the value of RS_ATTR_SPY.\n    The default value is VI_FALSE.\n    If the end-user opens an instrument session through a specific driver, the RS engine generates an RS_ERROR_NOT_CREATED_BY_CLASS error whenever you attempt to set or get this attribute.\n\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Use Specific Simulation" RS_ATTR_USE_SPECIFIC_SIMULATION ViBoolean gs 
+ "This attribute specifies whether the specific driver or the class driver simulates I/O operations when simulation is enabled. A value of VI_TRUE specifies that the specific driver simulates I/O operations. A value of VI_FALSE specifies that the class driver simulates I/O operations through a special simulation driver.\n    The end-user specifies the value of RS_ATTR_USE_SPECIFIC_SIMULATION.\nWhen the end-user opens an instrument session through a specific driver, the default value is VI_TRUE.\n    The "
+ "Rs_UseSpecificSimulation function provides convenient access to the value of this attribute.\n\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Class Driver Identification"
+ "\n"
+
+3 all "Class Driver Description" RS_ATTR_CLASS_DRIVER_DESCRIPTION ViString gs 
+ "A string that contains a brief description of the specific driver.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Class Driver Prefix" RS_ATTR_CLASS_DRIVER_PREFIX ViString gs 
+ "A string that contains the prefix for the class instrument driver.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Class Driver Vendor" RS_ATTR_CLASS_DRIVER_VENDOR ViString gs 
+ "A string that contains the name of the vendor that supplies class driver.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Class Driver Revision" RS_ATTR_CLASS_DRIVER_REVISION ViString gs 
+ "A string that contains additional version information about class driver.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Class Driver Major Version" RS_ATTR_CLASS_DRIVER_CLASS_SPEC_MAJOR_VERSION ViInt32 gs 
+ "The major version number of the class instrument driver.\n    The class driver sets the value of this attribute.\n    If the end-user opens an instrument session through a specific driver, the RS engine generates an RS_ERROR_NOT_CREATED_BY_CLASS error whenever you attempt to set or get this attribute.\n\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Class Driver Minor Version" RS_ATTR_CLASS_DRIVER_CLASS_SPEC_MINOR_VERSION ViInt32 gs 
+ "The minor version number of the class instrument driver.\n    The class driver sets the value of this attribute.\n    If the end-user opens an instrument session through a specific driver, the RS engine generates an RS_ERROR_NOT_CREATED_BY_CLASS error whenever you attempt to set or get this attribute.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Driver Identification"
+ "\n"
+
+3 all "Driver Description" RS_ATTR_SPECIFIC_DRIVER_DESCRIPTION ViString gs 
+ "A string that contains a brief description of the specific driver.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Driver Prefix" RS_ATTR_SPECIFIC_DRIVER_PREFIX ViString gs 
+ "A string that contains the prefix for the instrument driver. The name of each user-callable function in this driver starts with this prefix.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Driver Locator" RS_ATTR_SPECIFIC_DRIVER_LOCATOR ViString gs 
+ "Returns the information that the class driver uses to find the specific driver module.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Driver Vendor" RS_ATTR_SPECIFIC_DRIVER_VENDOR ViString gs 
+ "A string that contains the name of the vendor that supplies this driver.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Driver Revision" RS_ATTR_SPECIFIC_DRIVER_REVISION ViString gs 
+ "A string that contains additional version information about this instrument driver.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Class Specification Major Version" RS_ATTR_SPECIFIC_DRIVER_CLASS_SPEC_MAJOR_VERSION ViInt32 gs 
+ "The major version number of the class specification with which this driver is compliant.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Class Specification Minor Version" RS_ATTR_SPECIFIC_DRIVER_CLASS_SPEC_MINOR_VERSION ViInt32 gs 
+ "The minor version number of the class specification with which this driver is compliant.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Driver Capabilities"
+ "\n"
+
+3 all "Supported Instrument Models" RS_ATTR_SUPPORTED_INSTRUMENT_MODELS ViString gs 
+ "Contains a model code of the instrument. For drivers that support more than one device, this attribute contains a comma-separated list of supported instrument models.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Class Group Capabilities" RS_ATTR_GROUP_CAPABILITIES ViString gs 
+ "A string that contains a comma-separated list of class-extention groups that this driver implements.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Function Capabilities" RS_ATTR_FUNCTION_CAPABILITIES ViString gs 
+ "This attribute returns a comma-separated string that identifies the class functions that the specific instrument driver implements. \n\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Channel Count" RS_ATTR_CHANNEL_COUNT ViInt32 gs 
+ "Returns the number of available channels (repeated capabilities).\n\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Driver Setup"
+ "\n"
+
+3 all "Driver Setup" RS_ATTR_DRIVER_SETUP ViString gs 
+ "Some cases exist where the end-user must specify instrument driver options at initialization time.  An example of this is specifying a particular instrument model from among a family of instruments that the driver supports. This is useful when using simulation. The end-user can specify driver-specific options through the DriverSetup keyword in the optionsString parameter to the PREFIX_InitWithOptions function.\n    The default value is an empty string.\n\n\nAvailable Repeated "
+ "Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Instrument Identification"
+ "\n"
+
+3 all "Instrument Manufacturer" RS_ATTR_INSTRUMENT_MANUFACTURER ViString gs 
+ "A string that contains the name of the instrument manufacturer you are currently using.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Instrument Model" RS_ATTR_INSTRUMENT_MODEL ViString gs 
+ "A string that contains the model number or name of the instrument that you are currently using.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Instrument Firmware Revision" RS_ATTR_INSTRUMENT_FIRMWARE_REVISION ViString gs 
+ "A string that contains the firmware revision information for the instrument you are currently using.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Options List" RS_ATTR_OPTIONS_LIST ViString gs 
+ "This attribute provides information about the options in which the instrument is equipped with.\n    The specific driver sets the value of this attribute.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Advanced Session Information"
+ "\n"
+
+3 all "Resource Descriptor" RS_ATTR_IO_RESOURCE_DESCRIPTOR ViString gs 
+ "If the end-user opens the RS session through a class driver, this attribute indicates the resource descriptor the class driver uses to identify the physical device to the specific driver.\n    If the end-user opens an instrument session through a specific driver, the RS engine generates an RS_ERROR_NOT_CREATED_BY_CLASS error whenever you attempt to set or get this attribute.\n\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Logical Name" RS_ATTR_LOGICAL_NAME ViString g 
+ "When opening an RS session through a class driver, the end-user passes a logical name to the class driver initialization function. The logical name entry refers to a virtual instrument section in the configuration file. The virtual instrument section specifies a physical device and a specific instrument driver. By assigning the name of a different virtual instrument section to the logical name in the configuration file, the end-user can swap one instrument for another without changing source code or "
+ "recompiling or relinking the application program. This attribute indicates the logical name the end-user specified when opening the current RS session.\n    If the end-user opens an instrument session through a specific driver, the RS engine generates an RS_ERROR_NOT_CREATED_BY_CLASS error whenever you attempt to set or get this attribute.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+1 all "Inherent Vendor Specific Attributes"
+ "\n"
+
+2 all "Error Info"
+ "\n"
+
+3 all "Primary Error" RS_ATTR_PRIMARY_ERROR ViInt32 gs 
+ "A code that describes the first error that occurred since the last call to Rs_GetErrorInfo on the session. The value follows the VXIplug&play completion code conventions. A negative value describes an error condition. A positive value describes a warning condition and indicates that no error occurred. A zero indicates that no error or warning occurred. The error and warning values can be status codes defined by IVI, VISA, class drivers, or specific drivers.\n\nAvailable Repeated "
+ "Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Secondary Error" RS_ATTR_SECONDARY_ERROR ViInt32 gs 
+ "An optional code that provides additional information concerning the primary error condition.  The error and warning values can be status codes defined by VISA or specific drivers. Zero indicates no additional information.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Error Elaboration" RS_ATTR_ERROR_ELABORATION ViString gs 
+ "An optional string that contains additional information concerning the primary error condition.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Session IO"
+ "\n"
+
+3 all "VISA Resource Manager Session" RS_ATTR_VISA_RM_SESSION ViSession gs 
+ "If a specific driver uses VISA instrument I/O, it passes the value of this attribute to the viOpen function during initialization. The viOpen function returns an instrument I/O session, which the driver stores in the RS_ATTR_IO_SESSION attribute.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Instrument IO Session" RS_ATTR_IO_SESSION ViSession gs 
+ "This attribute specifies the I/O session that the specific driver uses to communicate with the instrument.\n    If a specific driver uses VISA instrument I/O, it passes the value of the RS_ATTR_VISA_RM_SESSION attibute to the viOpen function and sets the RS_ATTR_IO_SESSION attribute to the VISA session handle that viOpen returns.\n    The RS engine passes the value of RS_ATTR_IO_SESSION to the read and write callbacks the specific driver installs for its attributes.  The Rs_IOSession function provides "
+ "convenient access to the value of this attribute.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "IO Session Type" RS_ATTR_IO_SESSION_TYPE ViString gs 
+ "This attribute specifies the I/O session type that the specific driver uses to communicate with the instrument.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Version Info"
+ "\n"
+
+3 all "Driver Major Version" RS_ATTR_SPECIFIC_DRIVER_MAJOR_VERSION ViInt32 gs 
+ "The major version number of the specific instrument driver.\n    The specific driver sets the value of this attribute.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Driver Minor Version" RS_ATTR_SPECIFIC_DRIVER_MINOR_VERSION ViInt32 gs 
+ "The minor version number of the specific instrument driver.\n    The specific driver sets the value of this attribute.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Driver Minor Minor Version" RS_ATTR_SPECIFIC_DRIVER_MINOR_MINOR_VERSION ViInt32 gs 
+ "The minor minor version number of the specific instrument driver.\n    The specific driver sets the value of this attribute.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Class Major Version" RS_ATTR_CLASS_DRIVER_MAJOR_VERSION ViInt32 gs 
+ "The major version number of the class instrument driver.\n    The class driver sets the value of this attribute.\n    If the end-user opens an instrument session through a specific driver, the IVI engine generates an RS_ERROR_NOT_CREATED_BY_CLASS error whenever you attempt to set or get this attribute.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Class Minor Version" RS_ATTR_CLASS_DRIVER_MINOR_VERSION ViInt32 gs 
+ "The minor version number of the class instrument driver.\n    The class driver sets the value of this attribute.\n    If the end-user opens an instrument session through a specific driver, the RS engine generates an RS_ERROR_NOT_CREATED_BY_CLASS error whenever you attempt to set or get this attribute.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Engine Major Version" RS_ATTR_ENGINE_MAJOR_VERSION ViInt32 gs 
+ "The major version number of the RS engine. The RS engine sets the value of this attribute.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Engine Minor Version" RS_ATTR_ENGINE_MINOR_VERSION ViInt32 gs 
+ "The minor version number of the RS engine. The RS engine sets the value of this attribute.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Engine Revision" RS_ATTR_ENGINE_REVISION ViString gs 
+ "A string that contains additional version information about the RS engine. The RS engine sets the value of this attribute.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Session Callbacks"
+ "\n"
+
+3 all "Operation Complete (OPC) Callback" RS_ATTR_OPC_CALLBACK ViAddr gs 
+ "This attribute specifies the specific driver callback that waits until all pending instrument operations are complete. If the RS_VAL_WAIT_FOR_OPC_AFTER_WRITES flag is set for the attribute, the RS engine invokes the OPC callback after invoking the write callback.\n    If the RS_VAL_WAIT_FOR_OPC_BEFORE_READS flag is set for the attribute, the RS engine invokes the OPC callback before invoking the read callback.\n    The default value is VI_NULL. Leave the value as VI_NULL if you do not want an operation "
+ "complete callback.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Check Status Callback" RS_ATTR_CHECK_STATUS_CALLBACK ViAddr gs 
+ "This attribute specifies the specific driver callback that queries the instrument status.\n    If the end-user enables the RS_ATTR_QUERY_INSTR_STATUS attribute, the specific driver calls the check status callback at the end of each user-callable function that interacts with the instrument. The RS engine also invokes the check status callback when the end-user calls one of the PREFIX_SetAttribute or PREFIX_GetAttribute functions that the driver provides.\n    The default value is VI_NULL. Leave the value as "
+ "VI_NULL if you do not want a check status callback.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Operation Complete (OPC) Timeout" RS_ATTR_OPC_TIMEOUT ViInt32 gs 
+ "Thise parameter specifies the maximum time to wait for operation complete in milliseconds.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+1 all "Channel"
+ "This class configures the channel dependent settings.\n"
+
+2 all "Acquisition"
+ "This class contains attributes that configure the acquisition.\n"
+
+3 all "Acquisition Mode" RSHMC8015_ATTR_ACQ_MODE ViInt32 gs rshmc8015_rngAcquisitionMode
+ "Sets acq mode.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:ACQuisition]:MODE\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Acquisition PLL Source" RSHMC8015_ATTR_ACQ_PLL_SOURCE ViInt32 gs rshmc8015_rngPLLSource
+ "Sets PLL source.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:ACQuisition]:MODE[:AC]:PLL\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Acquisition Frequency Filter" RSHMC8015_ATTR_ACQ_FREQUENCY_FILTER ViBoolean gs 
+ "Sets state of acquisition frequency filter.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:ACQuisition]:MODE[:FILTer]:FREQuency\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Acquisition Digital Filter" RSHMC8015_ATTR_ACQ_DIGITAL_FILTER ViBoolean gs 
+ "Sets state band width limit.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:ACQuisition]:MODE[:FILTer]:DIGital\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Acquisition BWL" RSHMC8015_ATTR_ACQ_BWL ViBoolean gs 
+ "Sets state of acquisition digital signal filter.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:ACQuisition]:MODE[:FILTer]:ANALog\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Voltage"
+ "This class contains attributes that configure the acquisition voltage.\n"
+
+4 all "Acquisition Voltage Autorange" RSHMC8015_ATTR_ACQ_VOLTAGE_AUTORANGE ViBoolean gs 
+ "Sets state of auto range for voltage range.\n\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:ACQuisition]:VOLTage:RANGe:AUTO\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Acquisition Voltage Range" RSHMC8015_ATTR_ACQ_VOLTAGE_RANGE ViReal64 gs 
+ "Selects an appropriate voltage range for passed RMS value.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:ACQuisition]:VOLTage:RANGe\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Acquisition Voltage Crest Factor" RSHMC8015_ATTR_ACQ_VOLTAGE_CREST_FACTOR ViInt32 gs rshmc8015_rngAcquisitionCrestFactor
+ "Sets the crest factor for voltage.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:ACQuisition]:VOLTage:CFACtor\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Acquisition Voltage Invert" RSHMC8015_ATTR_ACQ_VOLTAGE_INVERT ViBoolean gs 
+ "Sets state of voltage polarity inversion.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:ACQuisition]:VOLTage:INVert\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Current"
+ "This class contains attributes that configure the acquisition current.\n"
+
+4 all "Acquisition Current Autorange" RSHMC8015_ATTR_ACQ_CURRENT_AUTORANGE ViBoolean gs 
+ "Sets state of auto range for current range.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:ACQuisition]:CURRent:RANGe:AUTO\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Acquisition Current Range" RSHMC8015_ATTR_ACQ_CURRENT_RANGE ViReal64 gs 
+ "Selects an appropriate current range for passed RMS value.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:ACQuisition]:CURRent:RANGe\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Acquisition Current Crest Factor" RSHMC8015_ATTR_ACQ_CURRENT_CREST_FACTOR ViInt32 gs rshmc8015_rngAcquisitionCrestFactor
+ "Sets the crest factor for current\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:ACQuisition]:CURRent:CFACtor\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Acquisition Current Invert" RSHMC8015_ATTR_ACQ_CURRENT_INVERT ViBoolean gs 
+ "Sets state of current polarity inversion.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:ACQuisition]:CURRent:INVert\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Acquisition Overcurrent Protection" RSHMC8015_ATTR_ACQ_OCP ViBoolean g 
+ "Query whether overcurrent protection was triggered.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:ACQuisition]:CURRent:PROTection?\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Acquisition Reset Overcurrent Protection" RSHMC8015_ATTR_ACQ_OCP_RESET ViString s 
+ "Reset overcurrent protection.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:ACQuisition]:CURRent:PROTection:RESet\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Measurement"
+ "This class contains attributes that configure the measurement.\n"
+
+3 all "Function List Length" RSHMC8015_ATTR_MEAS_FUNCTION_LIST_LENGTH ViInt32 g 
+ "Queries the length of function list\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>:MEASurement:FUNCtions:COUNt?\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Limit"
+ "This class contains attributes that configure the measurement limit.\n"
+
+4 all "Limit State" RSHMC8015_ATTR_LIMIT_STATE ViBoolean gs 
+ "Sets state of the limit.\n\nAvailable Repeated Capabilities:\nChannel (CH1)Limit (Lim1,Lim2,Lim3,Lim4,Lim5,Lim6)\n\nRemote-control command:\nCHANnel<n>:LIMit<n>[:STATe]\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Limit Source" RSHMC8015_ATTR_LIMIT_SOURCE ViInt32 gs rshmc8015_rngLimitSource
+ "Sets source (function) of the limit.\n\nAvailable Repeated Capabilities:\nChannel (CH1)Limit (Lim1,Lim2,Lim3,Lim4,Lim5,Lim6)\n\nRemote-control command:\nCHANnel<n>:LIMit<n>:SOURce\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Limit High" RSHMC8015_ATTR_LIMIT_HIGH ViReal64 gs 
+ "Sets limit's upper boundary.\n\nAvailable Repeated Capabilities:\nChannel (CH1)Limit (Lim1,Lim2,Lim3,Lim4,Lim5,Lim6)\n\nRemote-control command:\nCHANnel<n>:LIMit<n>:HIGH\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Limit Low" RSHMC8015_ATTR_LIMIT_LOW ViReal64 gs 
+ "Sets limit's lower boundary.\n\nAvailable Repeated Capabilities:\nChannel (CH1)Limit (Lim1,Lim2,Lim3,Lim4,Lim5,Lim6)\n\nRemote-control command:\nCHANnel<n>:LIMit<n>:LOW\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Limit Check Result" RSHMC8015_ATTR_LIMIT_CHECK_RESULT ViBoolean g 
+ "Queries the result of limit check.\n\nAvailable Repeated Capabilities:\nChannel (CH1)Limit (Lim1,Lim2,Lim3,Lim4,Lim5,Lim6)\n\nRemote-control command:\nCHANnel<n>:LIMit<n>:RESult[:STATe]?\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Limit Percent" RSHMC8015_ATTR_LIMIT_PERCENT ViReal64 g 
+ "Queries the result of limit calculation between min and max values.\n\nAvailable Repeated Capabilities:\nChannel (CH1)Limit (Lim1,Lim2,Lim3,Lim4,Lim5,Lim6)\n\nRemote-control command:\nCHANnel<n>:LIMit<n>:PERCent?\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "External"
+ "This class contains attributes that configure the external input, output and sensor.\n"
+
+3 all "Analog Input"
+ "This class contains attributes that configure the external analog input.\n"
+
+4 all "Analog Input State" RSHMC8015_ATTR_EXT_AINPUT_STATE ViBoolean gs 
+ "Sets enabled state of the analog input.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:EXTern]:AINPut[:STATe]\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Analog Output"
+ "This class contains attributes that configure the external analog output.\n"
+
+4 all "Analog Output State" RSHMC8015_ATTR_EXT_AOUTPUT_STATE ViBoolean gs 
+ "Sets enabled state of the analog output.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:EXTern]:AOUTput[:STATe]\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Analog Output Mode" RSHMC8015_ATTR_EXT_AOUTPUT_MODE ViInt32 gs rshmc8015_rngAnalogOutputMode
+ "Sets analog output mode.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:EXTern]:AOUTput:MODE\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Digital Input"
+ "This class contains attributes that configure the external digital input.\n"
+
+4 all "Digital Input State" RSHMC8015_ATTR_EXT_DINPUT_STATE ViBoolean gs 
+ "Sets enabled state of the digital input.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:EXTern]:DINPut[:STATe]\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Digital Input Mode" RSHMC8015_ATTR_EXT_DINPUT_MODE ViInt32 gs rshmc8015_rngDigitalInputMode
+ "Sets digital input mode.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:EXTern]:DINPut:MODE\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Digital Input Invert" RSHMC8015_ATTR_EXT_DINPUT_INVERT ViBoolean gs 
+ "Sets negation of ext. digital input.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:EXTern]:DINPut:INVert\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Digital Output"
+ "This class contains attributes that configure the external digital output.\n"
+
+4 all "Digital Output State" RSHMC8015_ATTR_EXT_DOUTPUT_STATE ViBoolean gs 
+ "Sets enabled state of the digital output.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:EXTern]:DOUTput[:STATe]\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Digital Output Mode" RSHMC8015_ATTR_EXT_DOUTPUT_MODE ViInt32 gs rshmc8015_rngDigitalOutputMode
+ "Sets digital output mode.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:EXTern]:DOUTput:MODE\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Output State" RSHMC8015_ATTR_EXT_DOUTPUT_OUTPUT_STATE ViBoolean gs 
+ "Sets digital output state.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:EXTern]:DOUTput:OUTPut\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Digital Output Invert" RSHMC8015_ATTR_EXT_DOUTPUT_INVERT ViBoolean gs 
+ "Sets negation of ext. digital output.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:EXTern]:DOUTput:INVert\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Sensor"
+ "This class contains attributes that configure the external sensor.\n"
+
+4 all "Sensor State" RSHMC8015_ATTR_EXT_SENSOR_STATE ViBoolean gs 
+ "Sets enabled state of the sensor.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:EXTern]:SENSor[:STATe]\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Sensor Mode" RSHMC8015_ATTR_EXT_SENSOR_MODE ViInt32 gs rshmc8015_rngSensorMode
+ "Sets sensor mode.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:EXTern]:SENSor:MODE\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Shunt Resistance" RSHMC8015_ATTR_EXT_SENSOR_SHUNT_RESISTANCE ViReal64 gs 
+ "Sets resistance of the external shunt.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:EXTern]:SENSor:EXTShunt[:RESistance]\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Clamp Ratio" RSHMC8015_ATTR_EXT_SENSOR_CLAMP_RATIO ViReal64 gs 
+ "Sets V/A ratio of the current clamp.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:EXTern]:SENSor:CCLamp[:RATio]\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Range" RSHMC8015_ATTR_EXT_SENSOR_RANGE ViReal64 gs 
+ "Selects an appropriate sensor voltage range for passed peak voltage value.\n\nAvailable Repeated Capabilities:\nChannel (CH1)\n\nRemote-control command:\nCHANnel<n>[:EXTern]:SENSor:RANGe\n\nOption Checking:\nNone"
+ "\n"
+
+1 all "View"
+ "This class contains attributes that configure the view group.\n"
+
+2 all "Mode" RSHMC8015_ATTR_VIEW_MODE ViInt32 gs rshmc8015_rngViewMode
+ "Sets view mode.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nVIEW\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Normal"
+ "This class contains attributes that configure the normal view.\n"
+
+3 all "Active Page" RSHMC8015_ATTR_VIEW_NORM_ACTIVE_PAGE ViInt32 gs 
+ "Selects active page.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nVIEW:NORMal[:SHOW]\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Page"
+ "This class selects the normal page.\n"
+
+4 all "Size" RSHMC8015_ATTR_VIEW_NORM_PAGE_SIZE ViInt32 gs rshmc8015_rngViewNormalPageSize
+ "Sets page's cell count.\n\nAvailable Repeated Capabilities:\nPage (Page1,Page2,Page3,Page4)\n\nRemote-control command:\nVIEW:NORMal:PAGE<n>:SIZE\n\nOption Checking:\nNone"
+ "\n"
+
+4 all "Cell"
+ "This class contains attributes that configure the normal view cell.\n"
+
+5 all "Function" RSHMC8015_ATTR_VIEW_NORM_FUNCTION ViInt32 gs rshmc8015_rngNormalViewFunction
+ "Selects the normal view cell function.\n\nAvailable Repeated Capabilities:\nPage (Page1,Page2,Page3,Page4)Cell (Cell1,Cell2,Cell3,Cell4,Cell5,Cell6)\n\nRemote-control command:\nVIEW:NORMal:PAGE<n>:CELL<n>:FUNCtion\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Harmonics"
+ "This class contains attributes that configure the harmonics view.\n"
+
+3 all "Select" RSHMC8015_ATTR_VIEW_HARM_SELECT ViInt32 gs rshmc8015_rngHarmonicsView
+ "Selects harmonics view.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nVIEW:HARMonics:VIEW\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Source" RSHMC8015_ATTR_VIEW_HARM_SOURCE ViInt32 gs rshmc8015_rngHarmonicsSource
+ "Selects harmonics source.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nVIEW:HARMonics:SOURce\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Number" RSHMC8015_ATTR_VIEW_HARM_NUMBER ViInt32 gs 
+ "Sets number of harmonics.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nVIEW:HARMonics:NUMBer\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Scaling" RSHMC8015_ATTR_VIEW_HARM_SCALING ViInt32 gs rshmc8015_rngHarmonicsScaling
+ "Selects harmonics scaling.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nVIEW:HARMonics:SCALing\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Subset" RSHMC8015_ATTR_VIEW_HARM_SUBSET ViInt32 gs rshmc8015_rngHarmonicsSubset
+ "Selects harmonics subset.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nVIEW:HARMonics:SUBSet\n\nOption Checking:\nNone"
+ "\n"
+
+1 all "Measurement"
+ "This class contains attributes that configure the measurement.\n"
+
+2 all "Integrator"
+ "This class contains attributes that configure the measurement integrator.\n"
+
+3 all "Integrator State" RSHMC8015_ATTR_INTEGRATOR_STATE ViBoolean gs 
+ "Sets Integrator state (enables or disables the Integrator).\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nINTegrator[:STATe]\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Integrator Mode" RSHMC8015_ATTR_INTEGRATOR_MODE ViInt32 gs rshmc8015_rngIntegratorMode
+ "Sets the integration mode.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nINTegrator:MODE\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Integrator Duration" RSHMC8015_ATTR_INTEGRATOR_DURATION ViReal64 gs 
+ "Sets the integration timer value.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nINTegrator:DURation\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Integrator Reset" RSHMC8015_ATTR_INTEGRATOR_RESET ViString s 
+ "Resets the integrated value.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nINTegrator:RESet\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Integrator Start" RSHMC8015_ATTR_INTEGRATOR_START ViString s 
+ "Starts the integrator.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nINTegrator:STARt\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Integrator Stop" RSHMC8015_ATTR_INTEGRATOR_STOP ViString s 
+ "Stops the integrator.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nINTegrator:STOP\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Logging"
+ "This class contains attributes that configure the measurement logging.\n"
+
+3 all "Logging State" RSHMC8015_ATTR_LOGGING_STATE ViBoolean gs 
+ "Sets logging state (starts or stops a logging session).\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nLOG[:STATe]\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Logging Page" RSHMC8015_ATTR_LOGGING_PAGE ViInt32 gs 
+ "Selects page, whose measurement values will be logged.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nLOG:PAGE\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Logging Mode" RSHMC8015_ATTR_LOGGING_MODE ViInt32 gs rshmc8015_rngLoggingMode
+ "Sets logging mode.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nLOG:MODE\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Logging Time" RSHMC8015_ATTR_LOGGING_TIME ViReal64 gs 
+ "Sets logging duration.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nLOG:DURation\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Logging Count" RSHMC8015_ATTR_LOGGING_COUNT ViInt32 gs 
+ "Sets maximum number of data rows of a log file.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nLOG:COUNt\n\nOption Checking:\nNone"
+ "\n"
+
+1 all "Utility Functions"
+ "Utility Functions.\n"
+
+2 all "ID Query Response" RSHMC8015_ATTR_ID_QUERY_RESPONSE ViString gs 
+ "Returns the ID Query response string. The instrument driver gets the value of this attribute when you pass VI_TRUE for the ID Query parameter to the rsspecan_init or rsspecan_InitWithOptions function.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Visa Timeout" RSHMC8015_ATTR_VISA_TIMEOUT ViInt32 gs 
+ "Thise parameter specifies the visa timeout in milliseconds.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\ncmd\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Operation Complete (OPC) Timeout" RSHMC8015_ATTR_OPC_TIMEOUT ViInt32 gs 
+ "Thise parameter specifies the maximum time to wait for operation complete in milliseconds.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\ncmd\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Query OPC" RSHMC8015_ATTR_QUERY_OPC ViInt32 g 
+ "Queries the OPC.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n*OPC?\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Process All Previous Commands" RSHMC8015_ATTR_PROCESS_ALL_PREVIOUS_COMMANDS ViString s 
+ "Stops further command processing until all commands sent before *WAI have been executed.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n*WAI\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Visa Manufacturer" RSHMC8015_ATTR_VISA_MANUFACTURER ViString g 
+ "Reads VISA manufacturer string.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\ncmd\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Clear Status" RSHMC8015_ATTR_CLEAR_STATUS ViString s 
+ "Clear status.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\n*CLS\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Option Checking" RSHMC8015_ATTR_OPTION_CHECKING ViBoolean gs 
+ "Turns option checking ON or OFF.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\ncmd\n\nOption Checking:\nNone"
+ "\n"
+
+1 all "General Instrument Settings"
+ "This subsystem contains functions for General Instrument Settings.\n"
+
+2 all "Display"
+ "This class contains the attribute that configure display.\n"
+
+3 all "Clear" RSHMC8015_ATTR_DISPLAY_CLEAR ViString s 
+ "Clears the text message box on the front display.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nDISPlay:TEXT:CLEar\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Text" RSHMC8015_ATTR_DISPLAY_TEXT ViString s 
+ "Displays a text message box on the front display.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nDISPlay:TEXT[:DATA]\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Hard Copy"
+ "This subsystem contains functions for General Instrument Settings of Hard Copy.\n"
+
+3 all "Image Format" RSHMC8015_ATTR_HCOPY_IMAGE_FORMAT ViInt32 gs rshmc8015_rngImageFormat
+ "The parameter selects the data format of the screenshot.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nHCOPy:FORMat\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Image Width" RSHMC8015_ATTR_HCOPY_IMAGE_WIDTH ViInt32 g 
+ "Returns the width of the screenshot.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nHCOPy:SIZE:X?\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Image Height" RSHMC8015_ATTR_HCOPY_IMAGE_HEIGHT ViInt32 g 
+ "Returns the height of the screenshot.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nHCOPy:SIZE:Y?\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "System Subsystem"
+ "This subsystem contains functions for General Instrument Settings of System Subsystem.\n"
+
+3 all "Beeper Enabled" RSHMC8015_ATTR_SYSTEM_BEEPER_ENABLED ViBoolean gs 
+ "Disables or enables the beeper tone.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nSYSTem:BEEPer:STATe\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "Start Beep" RSHMC8015_ATTR_SYSTEM_START_BEEP ViString s 
+ "When sending a command, the device emits a beep.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nSYSTem:BEEPer[:IMMediate]\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "System Name" RSHMC8015_ATTR_SYSTEM_NAME ViString gs 
+ "Sets the name of the device (capped at 20 characters).\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nSYSTem:NAME\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "System Error" RSHMC8015_ATTR_SYSTEM_ERROR ViString g 
+ "Query of the error list; After reading of an error it will be erased from the register. The next query will read the next error provided there was more than one.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nSYSTem:ERRor[:NEXT]?\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "System Local" RSHMC8015_ATTR_SYSTEM_LOCAL ViString s 
+ "Local operating mode (front panel control).\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nSYSTem:LOCal\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "System Remote" RSHMC8015_ATTR_SYSTEM_REMOTE ViString s 
+ "Remote control (front panel control locked).\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nSYSTem:REMote\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "System RWLock" RSHMC8015_ATTR_SYSTEM_RWLOCK ViString s 
+ "The front panel control is locked; with the :LOCal command the front panel control will be activated.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nSYSTem:RWLock\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "System Version" RSHMC8015_ATTR_SYSTEM_VERSION ViString g 
+ "Query of the firmware version.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nSYSTem:VERSion?\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "System Device" RSHMC8015_ATTR_SYSTEM_DEVICE ViString g 
+ "Query device model.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nSYSTem:DEVice?\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "System Shutdown" RSHMC8015_ATTR_SYSTEM_SHUTDOWN ViString s 
+ "Turns the device off. The device can't be enabled remotely after this command.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nSYSTem:SHUTdown\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "System Software" RSHMC8015_ATTR_SYSTEM_SOFTWARE ViString g 
+ "Query software version.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nSYSTem:SOFTware?\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "System Hardware" RSHMC8015_ATTR_SYSTEM_HARDWARE ViString g 
+ "Query hardware version.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nSYSTem:HARDware?\n\nOption Checking:\nNone"
+ "\n"
+
+3 all "System Serial Number" RSHMC8015_ATTR_SYSTEM_SERIAL_NUMBER ViString g 
+ "Query serial number.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nSYSTem:SNUMber?\n\nOption Checking:\nNone"
+ "\n"
+
+2 all "Status Subsystem"
+ "This subsystem contains functions for General Instrument Settings of Status Subsystem.\n"
+
+3 all "Status Preset" RSHMC8015_ATTR_STATUS_PRESET ViString s 
+ "Clears all bits in the Questionable Data enable register and the Standard Operation enable register.\n\nAvailable Repeated Capabilities:\n\n\nRemote-control command:\nSTATus:PRESet\n\nOption Checking:\nNone"
+ "\n"
+

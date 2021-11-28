@@ -1,0 +1,13 @@
+2016-03-22 Martin Krcmar
+  * Version 1.0.3:
+  * Updated functions:
+  - rshmc8015_ConfigureVoltageAcquisition - Range is set only when Autorange is Off
+  - rshmc8015_ConfigureCurrentAcquisition - Range is set only when Autorange is Off
+
+2015-09-21 Jiri Kominek
+  * Version 1.0.1:
+  * *WAI is no longer needed after every command
+
+2015-07-13 Stanislav Vajs
+  * Version 1.0.0:
+  * Initial release

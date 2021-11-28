@@ -1,0 +1,530 @@
+2020-04-28, Stanislav Vajs
+  * Version 1.4.0
+  * New Core 3.7.0
+  * Added support for RTM3000 / RTA4000 FW 1.600
+
+  * New:
+  - Probe Meter (Class)
+  - rsrtx_ConfigureProbeCopyToOffset
+  - rsrtx_ConfigureProbeAttenuatorRTZA15Enabled
+  - rsrtx_ConfigureProbeZeroAdjust
+  - rsrtx_ConfigureProbeSaveZeroAdjust
+  - rsrtx_ConfigureProbeInputVoltageRange
+  - rsrtx_ConfigureProbeBandwidthLimit
+  - rsrtx_ConfigureProbeAudibleOverrange
+  - rsrtx_ConfigureProbeMeasMode
+  - rsrtx_ConfigureProbeACCoupling
+  - rsrtx_ConfigureActionsOnTriggerState
+  - rsrtx_ConfigureActionsOnTrigger
+  - rsrtx_ConfigureAmplitudeTimeMainMeasurement
+  - rsrtx_ConfigureDelayMeasurementMarkerVisible
+  - rsrtx_ConfigureDelayMeasurementDirection
+  - rsrtx_ConfigureAutomaticMeasurementTimeoutAuto
+  - rsrtx_ConfigureAutomaticMeasurementTimeout
+
+2020-01-31, John Reid, Tereza Zavodna, Martin Krcmar
+  * Version 1.3.0
+  * New Core 3.6.3
+  * Added support for RTB2000, FW 2.202, RTM3000, FW 1.550, RTA4000 FW 1.550
+  
+  * New:
+  - Zoom (Class)
+  - Gate (Class)
+  - SPI (Class)
+  - Mathematics Tracks (Class)
+  - Spectrum Data (Class)
+  - Bode Plot (Class)
+  - Burst (Class)
+  - PWM (Class)
+  - rsrtx_ConfigureHorizontalRecordLength
+  - rsrtx_QueryHorizontalRecordLength
+  - rsrtx_ConfigureMemoryMode
+  - rsrtx_ConfigureRollModeAutomatic
+  - rsrtx_ConfigureRollModeMinimumTimeBase
+  - rsrtx_QueryNumberofAveragesCurrent
+  - rsrtx_ConfigureChannelZeroOffset
+  - rsrtx_ConfigureChannelPosition
+  - rsrtx_ConfigureChannelWaveformColor
+  - rsrtx_ConfigureProbeDegauss
+  - rsrtx_QueryProbeGain
+  - rsrtx_ConfigureProbeGainUnit
+  - rsrtx_ConfigureProbeGainManual
+  - rsrtx_EnableDisplayDateAndTime
+  - rsrtx_ConfigureHistoryChannelPlayerControlEnable
+  - rsrtx_ConfigureHistoryChannelTimeTableEnable
+  - rsrtx_ConfigureHistoryDigitalPlayerControlEnable
+  - rsrtx_ConfigureHistoryDigitalTimeTableEnable
+  - rsrtx_ConfigureHistoryMathPlayerControlEnable
+  - rsrtx_ConfigureHistoryMathTimeTableEnable
+  - rsrtx_ConfigureHistoryProtocolPlayerControlEnable
+  - rsrtx_ConfigureHistoryProtocolTimeTableEnable
+  - rsrtx_QueryHistorySpectrumAcquisitionAbsoluteTime
+  - rsrtx_QueryHistorySpectrumAcquisitionRelativeTime
+  - rsrtx_QueryHistorySpectrumAcquisitionDate
+  - rsrtx_QueryHistorySpectrumAllDates
+  - rsrtx_QueryHistorySpectrumAllTimeDifferences
+  - rsrtx_QueryHistorySpectrumAllDaytimes
+  - rsrtx_ConfigureHistoryLogicPlayerControlEnable
+  - rsrtx_ConfigureHistoryLogicTimeTableEnable
+  - rsrtx_ConfigureCursorSecondSourceSettings
+  - rsrtx_ConfigureMaskSegmentCaptureMode
+  - rsrtx_ConfigureProtocolUARTIdleStatePolarity
+  - rsrtx_QueryProtocolUARTFrameSettings
+  - rsrtx_QueryProtocolUARTRxFrameSettings
+  - rsrtx_QueryProtocolUARTTxFrameSettings
+  - rsrtx_CloseHardcopyDialogs
+  - rsrtx_ConfigureMathWaveformLabel
+  - rsrtx_ConfigureMathWaveformColor
+  - rsrtx_ConfigureReferenceWaveformLabel
+  - rsrtx_ConfigureReferenceWaveformColor
+  - rsrtx_QueryDigitalWaveformSamplesNumber
+  - rsrtx_QuerySpectrumWaveformSamples
+  - rsrtx_QuerySpectrumAverageWaveformSamples
+  - rsrtx_QuerySpectrumMaximumWaveformSamples
+  - rsrtx_QuerySpectrumMinimumWaveformSamples
+  - rsrtx_ConfigurePowerModulationThresholdSettings
+  - rsrtx_QueryPowerSafeOperatingAreaResultAcquisitionViolation
+  - rsrtx_QueryPowerSafeOperatingAreaResultTotalViolation
+  - rsrtx_ConfigureSpectrumFrequencyFullSpan
+  - rsrtx_QuerySpectrumReferenceMarkerFrequency
+  - rsrtx_QuerySpectrumReferenceMarkerLevel
+  - rsrtx_QuerySpectrumMarkerFrequency
+  - rsrtx_QuerySpectrumMarkerFrequencyDelta
+  - rsrtx_QuerySpectrumMarkerLevel
+  - rsrtx_QuerySpectrumMarkerLevelDelta
+  - rsrtx_ConfigureWaveformGeneratorArbitraryRange
+  - rsrtx_ConfigureWaveformGeneratorArbitraryDisplayEnable
+  - rsrtx_ConfigurePatternGeneratorExternalTriggerSlope
+  - rsrtx_QueryLogicProbeConnected
+  - rsrtx_ConfigureLogicPointSelection
+  - rsrtx_QueryLogicWaveformDataPoints
+  - rsrtx_ConfigureCounterSource
+  - rsrtx_ConfigureEthernetHTTPPort
+  - rsrtx_SaveInstrumentSettingsToPC
+  - rsrtx_RecallInstrumentSettingsFromPC
+  - rsrtx_GetAttributeRepCapName
+  - rsrtx_ConfigureAutoSystemErrQuery
+  - rsrtx_ConfigureMultiThreadLocking
+  
+  * Updated:
+  - rsrtx_ConfigureWaveformAcquisitionType - Acquisition Type help updated
+  - rsrtx_ConfigureProbeAttenuationManual - Range limit updated
+  - rsrtx_ConfigureVideoTriggerSource - Parameter Field help updated
+  - rsrtx_QueryProtocolUARTWordValue - Start and End changed to ViReal64, Source upd.
+  - rsrtx_QueryARINC429Status - SCPI command updated, SDI and SSM helps updated
+  - rsrtx_ConfigureHardcopySettings - Filename help updated
+  - rsrtx_HardcopyPrint - SCPI command updated
+  - rsrtx_ConfigureReferenceWaveformSource - Range updated
+  - rsrtx_ConfigurePatternGeneratorFunctionType - Range and help updated
+  - rsrtx_ConfigureCounterState - Removed repeated capability from SCPI command
+  - rsrtx_QueryCounterFrequency - Removed repeated capability from SCPI command
+  - rsrtx_QueryCounterPeriod - Removed repeated capability from SCPI command
+  - rsrtx_ConfigureEthernetIPPort - Range limits added
+  - rsrtx_ConfigureEthernetVXI11Port - Range limits added, SCPI command updated
+  - rsrtx_SetStatusRegister - Added ADC State, range limit added
+  - rsrtx_GetStatusRegister - Added ADC State
+  
+  
+2018-01-05 Stanislav Vajs
+  * Version 1.2.0
+  - Added support for RTM3000 and RTA4000 instruments 
+
+2017-10-04 Stanislav Vajs
+  * Version 1.1.0
+  * New Subsystems
+  - Configuration >> Digital Channel
+  - History >> Logic
+  - Search >> Export
+  - Protocols >> UART
+  - Protocols >> MILSTD
+  - Simple Mathematics (RTB)
+  - Waveform Acquisition >> Simple Math (RTB)
+  - Waveform Acquisition >> Digital Data
+  - Waveform Acquisition >> Logic
+  - Waveform Export
+  - Generator
+  - Logic
+  - System  
+  * New
+  - rsrtx_ConfigureRecordLength
+  - rsrtx_ConfigureAcquireMode
+  - rsrtx_ConfigurePeakDetect
+  - rsrtx_ConfigureHighResolution
+  - rsrtx_NumberofAveragesReset
+  - rsrtx_ConfigureWaveformRateMaximum
+  - rsrtx_ConfigureHorizontalReference
+  - rsrtx_ConfigureProbeCMOffset
+  - rsrtx_ConfigureTriggerOutMode
+  - rsrtx_RuntTriggerRange
+  - rsrtx_ConfigureRuntTriggerWidth
+  - rsrtx_ConfigureRuntTriggerDelta
+  - rsrtx_ConfigureWindowTriggerRange
+  - rsrtx_ConfigureWindowTriggerWidth
+  - rsrtx_ConfigureWindowTriggerTimeRange
+  - rsrtx_ConfigureTimeoutTriggerTime
+  - rsrtx_ConfigureDisplayLanguage
+  - rsrtx_ConfigureDiagramAnnotationState
+  - rsrtx_ConfigureDiagramAnnotationTrack
+  - rsrtx_DisplayClearScreen
+  - rsrtx_ConfigureDisplayPersistenceType
+  - rsrtx_ConfigureDisplaySegmentationRecordMaximumSegments
+  - rsrtx_QueryHistoryChannelTableMode
+  - rsrtx_HistoryChannelExportSave
+  - rsrtx_DigitalHistoryExportSave
+  - rsrtx_HistoryMathExportSave
+  - rsrtx_HistoryProtocolExportSave
+  - rsrtx_ConfigureCursorMeasurementType
+  - rsrtx_ConfigureCursorSource
+  - rsrtx_CursorLineNextPeak
+  - rsrtx_CursorLinePreviousPeak
+  - rsrtx_ConfigureQuickMeasurementState
+  - rsrtx_ConfigureMaskTestActionScreenshotDestination
+  - rsrtx_ConfigureMaskTestActionSavesWaveformDestination
+  - rsrtx_ConfigureMaskTestActionAUXOutputState
+  - rsrtx_ConfigureMaskScaling
+  - rsrtx_ConfigureSearchCondition
+  - rsrtx_ConfigureSearchSource
+  - rsrtx_ConfigureSearchTriggerWindowLevel
+  - rsrtx_ConfigureSearchTriggerWindowDelta
+  - rsrtx_ConfigureSearchTriggerWindowPolarity
+  - rsrtx_ConfigureSearchTriggerWindowRange
+  - rsrtx_ConfigureSearchTriggerWindowTimeRange
+  - rsrtx_ConfigureSearchTriggerWindowWidth
+  - rsrtx_ConfigureProtocolDisplayVertical
+  - rsrtx_ConfigureProtocolSPICSPolarity
+  - rsrtx_ConfigureSPITriggerSource
+  - rsrtx_ConfigureHardcopyOutputFormat
+  - rsrtx_QueryHardcopyData
+  - rsrtx_ConfigureHardcopyPageSize
+  - rsrtx_QueryHardcopyPageSize
+  - rsrtx_ConfigureReferenceWaveformSource
+  - rsrtx_InitiateAcquisitionAndWait
+  - rsrtx_ConfigureAcquisitionState
+  - rsrtx_PowerAnalysisAutoset
+  - rsrtx_PowerAnalysisAutosetCurrent
+  - rsrtx_PowerAnalysisAutosetVoltage
+  - rsrtx_QueryPowerCurrentHarmonicsMeasurementDuration
+  - rsrtx_QueryPowerCurrentHarmonicsMeasurementRealPowerCurrent
+  - rsrtx_ReadPowerSafeOperatingAreaAcquisitionData
+  - rsrtx_FetchPowerSafeOperatingAreaAcquisitionData
+  - rsrtx_FetchPowerSafeOperatingAreaAcquisitionDataHeader
+  - rsrtx_FetchPowerSafeOperatingAreaAcquisitionConversionData
+  - rsrtx_ConfigureSpectrumAnalysisMode
+  - rsrtx_ConfigureSpectrumAnalysisFrequencyCenterSpan
+  - rsrtx_SpectrumMarkerSetupCenterScreen
+  - rsrtx_SpectrumMarkerSetupRangeToPeak
+  - rsrtx_QuerySpectrumReferenceMarkerResults
+  - rsrtx_QuerySpectrumMarkerResults
+  - rsrtx_QuerySpectrumMarkerDeltaResults
+  - rsrtx_QuerySpectrumMarkerAllResults
+  - rsrtx_QuerySpectrumMarkerAllDeltaResults
+  - rsrtx_QueryCounterFrequency
+  - rsrtx_QueryCounterPeriod  
+  * Modified
+  - rsrtx_ConfigureChannel - default for coupling changed
+  - rsrtx_ConfigureTrigger - line trigger type added 
+  - rsrtx_ConfigureEdgeTriggerFilter - HF Reject added, low removed
+  - rsrtx_ConfigureMeasurementSource - QMA source added
+  - rsrtx_QuerySearchResult - more result types
+  - rsrtx_QueryAllSearchResults - more result types
+  - rsrtx_ConfigureHardcopySettings - new formats, control includeMenuInScreenshot is obsolete
+  - rsrtx_QueryPowerConsumptionMeasurementResults - new results
+  - rsrtx_PowerSafeOperatingAreaLinPointValue - Current added
+  - rsrtx_PowerSafeOperatingAreaLogPointValue - Current added
+  - rsrtx_ConfigureSpectrumAnalysisFrequency removed controls for center and span
+  - rsrtx_ConfigureCounterState - conter range changed
+  - rsrtx_ReadMainWaveformMeasurement - removed some mesurement functions
+  - rsrtx_FetchMainWaveformMeasurement - removed some mesurement functions
+  
+    * Deleted attributes:
+  - RSRTX_ATTR_FILTER_FREQUENCY (Filter Frequency)
+  - RSRTX_ATTR_WAVEFORM_RATE (Waveform Rate)
+  - RSRTX_ATTR_TRIGGER_FILTER_LOW (Trigger Filter Low)
+  - RSRTX_ATTR_ENVELOPE_WAVEFORM_DATA_POINTS (Envelope Waveform Data Points)
+  - RSRTX_ATTR_CURSOR_VOLTAGE_INVERSE_DISTANCE_HORIZONTAL (Cursor Voltage Inverse Distance Horizontal)
+  - RSRTX_ATTR_MAIN_MEASUREMENT_RESULT_TRIGGER_FREQUENCY (Main Measurement Result Trigger Frequency)
+  - RSRTX_ATTR_MAIN_MEASUREMENT_RESULT_TRIGGER_PERIOD (Main Measurement Result Trigger Period)
+  - RSRTX_ATTR_MAIN_MEASUREMENT_RESULT_B_TRIGGER_FREQUENCY (Main Measurement Result B Trigger Frequency)
+  - RSRTX_ATTR_MAIN_MEASUREMENT_RESULT_B_TRIGGER_PERIOD (Main Measurement Result B Trigger Period)
+  - RSRTX_ATTR_PERSISTENCE_TIME_AUTO (Persistence Time Auto)
+  - RSRTX_ATTR_HARDCOPY_INCLUDE_MENU_IN_SCREENSHOT (Hardcopy Include Menu In Screenshot)
+
+  * New attributes:
+  - RSRTX_ATTR_ID_QUERY_RESPONSE (ID Query Response)
+  - RSRTX_ATTR_RECORD_LENGTH_AUTOMATIC (Record Length Automatic)
+  - RSRTX_ATTR_RECORD_LENGTH (Record Length)
+  - RSRTX_ATTR_ACQUIRE_MODE (Acquire Mode)
+  - RSRTX_ATTR_PEAK_DETECT (Peak Detect)
+  - RSRTX_ATTR_HIGH_RESOLUTION (High Resolution)
+  - RSRTX_ATTR_NUM_AVERAGES_RESET (Number of Averages Reset)
+  - RSRTX_ATTR_WAVEFORM_RATE_MAXIMUM (Waveform Rate Maximum)
+  - RSRTX_ATTR_PROBE_CM_OFFSET (Probe CM Offset)
+  - RSRTX_ATTR_DIGITAL_PROBE_ENABLED (Digital Probe Enabled)
+  - RSRTX_ATTR_DIGITAL_POINT_SELECTION (Digital Point Selection)
+  - RSRTX_ATTR_LOGIC_STATE (Logic State)
+  - RSRTX_ATTR_LOGIC_TYPE (Logic Type)
+  - RSRTX_ATTR_LOGIC_THRESHOLD (Logic Threshold)
+  - RSRTX_ATTR_LOGIC_THRESHOLD_USER_LEVEL (Logic Threshold User Level)
+  - RSRTX_ATTR_LOGIC_HYSTERESIS (Logic Hysteresis)
+  - RSRTX_ATTR_LOGIC_ARITHMETICS (Logic Arithmetics)
+  - RSRTX_ATTR_LOGIC_CURRENT_MAXIMUM (Logic Current Maximum)
+  - RSRTX_ATTR_LOGIC_CURRENT_MINIMUM (Logic Current Minimum)
+  - RSRTX_ATTR_TRIGGER_FILTER_HF_REJECT (Trigger Filter HF Reject)
+  - RSRTX_ATTR_TRIGGER_WINDOW_RANGE (Trigger Window Range)
+  - RSRTX_ATTR_TRIGGER_WINDOW_WIDTH (Trigger Window Width)
+  - RSRTX_ATTR_TRIGGER_WINDOW_TIME_RANGE (Trigger Window Time Range)
+  - RSRTX_ATTR_RUNT_TRIGGER_WIDTH (Runt Trigger Width)
+  - RSRTX_ATTR_RUNT_TRIGGER_DELTA (Runt Trigger Delta)
+  - RSRTX_ATTR_RUNT_TRIGGER_RANGE (Runt Trigger Range)
+  - RSRTX_ATTR_TIMEOUT_TRIGGER_TIME (Timeout Trigger Time)
+  - RSRTX_ATTR_TIMEOUT_TRIGGER_RANGE (Timeout Trigger Range)
+  - RSRTX_ATTR_PROTOCOL_SPI_TRIGGER_SOURCE (Protocol SPI Trigger Source)
+  - RSRTX_ATTR_PROTOCOL_UART_TRIGGER_SOURCE (Protocol UART Trigger Source)
+  - RSRTX_ATTR_MILSTD_TRIGGER_MODE (MILSTD Trigger Mode)
+  - RSRTX_ATTR_MILSTD_TRIGGER_FRAME (MILSTD Trigger Frame)
+  - RSRTX_ATTR_ACQUISITION_STATE (Acquisition State)
+  - RSRTX_ATTR_WAVEFROM_EXPORT_NAME (Wavefrom Export Name)
+  - RSRTX_ATTR_WAVEFORM_EXPORT_SOURCE (Waveform Export Source)
+  - RSRTX_ATTR_WAVEFORM_EXPORT_SAVE (Waveform Export Save)
+  - RSRTX_ATTR_SIMPLE_MATH_WAVEFORM_CONVERSION_X_START (Simple Math Waveform Conversion X Start)
+  - RSRTX_ATTR_SIMPLE_MATH_WAVEFORM_CONVERSION_X_INCREMENT (Simple Math Waveform Conversion X Increment)
+  - RSRTX_ATTR_SIMPLE_MATH_WAVEFORM_CONVERSION_Y_START (Simple Math Waveform Conversion Y Start)
+  - RSRTX_ATTR_SIMPLE_MATH_WAVEFORM_CONVERSION_Y_INCREMENT (Simple Math Waveform Conversion Y Increment)
+  - RSRTX_ATTR_SIMPLE_MATH_WAVEFORM_CONVERSION_Y_RESOLUTION (Simple Math Waveform Conversion Y Resolution)
+  - RSRTX_ATTR_LOGIC_DATA_CONVERSION_X_START (Logic Data Conversion X Start)
+  - RSRTX_ATTR_LOGIC_DATA_CONVERSION_X_INCREMENT (Logic Data Conversion X Increment)
+  - RSRTX_ATTR_LOGIC_DATA_CONVERSION_Y_START (Logic Data Conversion Y Start)
+  - RSRTX_ATTR_LOGIC_DATA_CONVERSION_Y_INCREMENT (Logic Data Conversion Y Increment)
+  - RSRTX_ATTR_LOGIC_DATA_CONVERSION_Y_RESOLUTION (Logic Data Conversion Y Resolution)
+  - RSRTX_ATTR_DIGITAL_DATA_CONVERSION_X_START (Digital Data Conversion X Start)
+  - RSRTX_ATTR_DIGITAL_DATA_CONVERSION_X_INCREMENT (Digital Data Conversion X Increment)
+  - RSRTX_ATTR_DIGITAL_DATA_CONVERSION_Y_START (Digital Data Conversion Y Start)
+  - RSRTX_ATTR_DIGITAL_DATA_CONVERSION_Y_INCREMENT (Digital Data Conversion Y Increment)
+  - RSRTX_ATTR_DIGITAL_DATA_CONVERSION_Y_RESOLUTION (Digital Data Conversion Y Resolution)
+  - RSRTX_ATTR_CURSOR_LINE_NEXT_PEAK (Cursor Line Next Peak)
+  - RSRTX_ATTR_CURSOR_LINE_PREVIOUS_PEAK (Cursor Line Previous Peak)
+  - RSRTX_ATTR_QUICK_MEASUREMENT_STATE (Quick Measurement State)
+  - RSRTX_ATTR_SIMPLE_MATH_WAVEFORM_ENABLED (Simple Math Waveform Enabled)
+  - RSRTX_ATTR_SIMPLE_MATH_WAVEFORM_POSITION (Simple Math Waveform Position)
+  - RSRTX_ATTR_SIMPLE_MATH_WAVEFORM_VERTICAL_SCALE (Simple Math Waveform Vertical Scale)
+  - RSRTX_ATTR_SIMPLE_MATH_WAVEFORM_OPERATION (Simple Math Waveform Operation)
+  - RSRTX_ATTR_SIMPLE_MATH_WAVEFORM_SOURCE (Simple Math Waveform Source)
+  - RSRTX_ATTR_MASK_TEST_ACTION_SCREENSHOT_DESTINATION (Mask Test Action Screenshot Destination)
+  - RSRTX_ATTR_MASK_TEST_ACTION_SAVES_WAVEFORM_DESTINATION (Mask Test Action Saves Waveform Destination)
+  - RSRTX_ATTR_MASK_TEST_ACTION_AUX_OUTPUT_ENABLED (Mask Test Action AUX Output Enabled)
+  - RSRTX_ATTR_SEARCH_TRIGGER_WINDOW_LEVEL_LOWER (Search Trigger Window Level Lower)
+  - RSRTX_ATTR_SEARCH_TRIGGER_WINDOW_LEVEL_UPPER (Search Trigger Window Level Upper)
+  - RSRTX_ATTR_SEARCH_TRIGGER_WINDOW_DELTA (Search Trigger Window Delta)
+  - RSRTX_ATTR_SEARCH_TRIGGER_WINDOW_POLARITY (Search Trigger Window Polarity)
+  - RSRTX_ATTR_SEARCH_TRIGGER_WINDOW_RANGE (Search Trigger Window Range)
+  - RSRTX_ATTR_SEARCH_TRIGGER_WINDOW_TIME_RANGE (Search Trigger Window Time Range)
+  - RSRTX_ATTR_SEARCH_TRIGGER_WINDOW_WIDTH (Search Trigger Window Width)
+  - RSRTX_ATTR_SEARCH_EXPORT_NAME (Search Export Name)
+  - RSRTX_ATTR_SEARCH_EXPORT_SAVE (Search Export Save)
+  - RSRTX_ATTR_PROTOCOL_SPI_CS_POLARITY (Protocol SPI CS Polarity)
+  - RSRTX_ATTR_PROTOCOL_UART_FRAME_COUNT (Protocol UART Frame Count)
+  - RSRTX_ATTR_PROTOCOL_UART_WORD_COUNT (Protocol UART Word Count)
+  - RSRTX_ATTR_PROTOCOL_UART_WORD_VALUE (Protocol UART Word Value)
+  - RSRTX_ATTR_PROTOCOL_UART_WORD_START (Protocol UART Word Start)
+  - RSRTX_ATTR_PROTOCOL_UART_WORD_END (Protocol UART Word End)
+  - RSRTX_ATTR_PROTOCOL_UART_WORD_ENABLED (Protocol UART Word Enabled)
+  - RSRTX_ATTR_PROTOCOL_UART_WORD_SOURCE (Protocol UART Word Source)
+  - RSRTX_ATTR_PROTOCOL_MILSTD_INTER_MESSAGE_GAP_TIME_INFINITE (Protocol MILSTD Inter Message Gap Time Infinite)
+  - RSRTX_ATTR_PROTOCOL_MILSTD_INTER_MESSAGE_GAP_TIME_MINIMUM (Protocol MILSTD Inter Message Gap Time Minimum)
+  - RSRTX_ATTR_PROTOCOL_MILSTD_INTER_MESSAGE_GAP_TIME_MAXIMUM (Protocol MILSTD Inter Message Gap Time Maximum)
+  - RSRTX_ATTR_PROTOCOL_MILSTD_RESPONSE_TIME_INFINITE (Protocol MILSTD Response Time Infinite)
+  - RSRTX_ATTR_PROTOCOL_MILSTD_RESPONSE_TIME_MINIMUM (Protocol MILSTD Response Time Minimum)
+  - RSRTX_ATTR_PROTOCOL_MILSTD_RESPONSE_TIME_MAXIMUM (Protocol MILSTD Response Time Maximum)
+  - RSRTX_ATTR_POWER_ANALYSIS_AUTOSET (Power Analysis Autoset)
+  - RSRTX_ATTR_POWER_ANALYSIS_AUTOSET_CURRENT (Power Analysis Autoset Current)
+  - RSRTX_ATTR_POWER_ANALYSIS_AUTOSET_VOLTAGE (Power Analysis Autoset Voltage)
+  - RSRTX_ATTR_POWER_CONSUMPTION_MEASUREMENT_APPARENT_POWER_RESULT (Power Consumption Measurement Apparent Power Result)
+  - RSRTX_ATTR_POWER_CONSUMPTION_MEASUREMENT_POWER_FACTOR_RESULT (Power Consumption Measurement Power Factor Result)
+  - RSRTX_ATTR_POWER_CONSUMPTION_MEASUREMENT_PHASE_RESULT (Power Consumption Measurement Phase Result)
+  - RSRTX_ATTR_POWER_CONSUMPTION_MEASUREMENT_REACTIVE_POWER_RESULT (Power Consumption Measurement Reactive Power Result)
+  - RSRTX_ATTR_POWER_CURRENT_HARMONICS_MEASUREMENT_DURATION (Power Current Harmonics Measurement Duration)
+  - RSRTX_ATTR_POWER_CURRENT_HARMONICS_MEASUREMENT_REAL_POWER_CURRENT (Power Current Harmonics Measurement Real Power Current)
+  - RSRTX_ATTR_POWER_SAFE_OPERATING_AREA_LINEAR_POINT_CURRENT (Power Safe Operating Area Linear Point Current)
+  - RSRTX_ATTR_POWER_SAFE_OPERATING_AREA_LOGARITHMIC_POINT_CURRENT (Power Safe Operating Area Logarithmic Point Current)
+  - RSRTX_ATTR_POWER_SAFE_OPERATING_AREA_RESULT_ACQUISITION_VOLTAGE_DATA_CONVERSION_X_START (Power Safe Operating Area Result Acquisition Voltage Data Conversion X Start)
+  - RSRTX_ATTR_POWER_SAFE_OPERATING_AREA_RESULT_ACQUISITION_VOLTAGE_DATA_CONVERSION_X_INCREMENT (Power Safe Operating Area Result Acquisition Voltage Data Conversion X Increment)
+  - RSRTX_ATTR_POWER_SAFE_OPERATING_AREA_RESULT_ACQUISITION_VOLTAGE_DATA_CONVERSION_Y_START (Power Safe Operating Area Result Acquisition Voltage Data Conversion Y Start)
+  - RSRTX_ATTR_POWER_SAFE_OPERATING_AREA_RESULT_ACQUISITION_VOLTAGE_DATA_CONVERSION_Y_INCREMENT (Power Safe Operating Area Result Acquisition Voltage Data Conversion Y Increment)
+  - RSRTX_ATTR_POWER_SAFE_OPERATING_AREA_RESULT_ACQUISITION_VOLTAGE_DATA_CONVERSION_Y_RESOLUTION (Power Safe Operating Area Result Acquisition Voltage Data Conversion Y Resolution)
+  - RSRTX_ATTR_POWER_SAFE_OPERATING_AREA_RESULT_ACQUISITION_CURRENT_DATA_CONVERSION_X_START (Power Safe Operating Area Result Acquisition Current Data Conversion X Start)
+  - RSRTX_ATTR_POWER_SAFE_OPERATING_AREA_RESULT_ACQUISITION_CURRENT_DATA_CONVERSION_X_INCREMENT (Power Safe Operating Area Result Acquisition Current Data Conversion X Increment)
+  - RSRTX_ATTR_POWER_SAFE_OPERATING_AREA_RESULT_ACQUISITION_CURRENT_DATA_CONVERSION_Y_START (Power Safe Operating Area Result Acquisition Current Data Conversion Y Start)
+  - RSRTX_ATTR_POWER_SAFE_OPERATING_AREA_RESULT_ACQUISITION_CURRENT_DATA_CONVERSION_Y_INCREMENT (Power Safe Operating Area Result Acquisition Current Data Conversion Y Increment)
+  - RSRTX_ATTR_POWER_SAFE_OPERATING_AREA_RESULT_ACQUISITION_CURRENT_DATA_CONVERSION_Y_RESOLUTION (Power Safe Operating Area Result Acquisition Current Data Conversion Y Resolution)
+  - RSRTX_ATTR_SPECTRUM_ANALYSIS_MODE (Spectrum Analysis Mode)
+  - RSRTX_ATTR_SPECTRUM_MARKER_SETUP_CENTER_SCREEN (Spectrum Marker Setup Center Screen)
+  - RSRTX_ATTR_SPECTRUM_MARKER_SETUP_RANGE_TO_PEAK (Spectrum Marker Setup Range To Peak)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_FUNCTION_TYPE (Waveform Generator Function Type)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_FREQUENCY (Waveform Generator Frequency)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_PULSE_DUTY_CYCLE (Waveform Generator Pulse Duty Cycle)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_PULSE_EDGE_TIME (Waveform Generator Pulse Edge Time)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_RAMP_POLARITY (Waveform Generator Ramp Polarity)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_EXPONENTIAL_POLARITY (Waveform Generator Exponential Polarity)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_MODULATION_ENABLED (Waveform Generator Modulation Enabled)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_MODULATION_TYPE (Waveform Generator Modulation Type)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_MODULATION_FUNCTION_TYPE (Waveform Generator Modulation Function Type)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_MODULATION_RAMP_POLARITY (Waveform Generator Modulation Ramp Polarity)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_AM_MODULATION_FREQUENCY (Waveform Generator AM Modulation Frequency)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_AM_MODULATION_DEPTH (Waveform Generator AM Modulation Depth)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_FM_MODULATION_FREQUENCY (Waveform Generator FM Modulation Frequency)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_FM_MODULATION_FREQUENCY_DEVIATION (Waveform Generator FM Modulation Frequency Deviation)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_ASK_MODULATION_FREQUENCY (Waveform Generator ASK Modulation Frequency)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_ASK_MODULATION_DEPTH (Waveform Generator ASK Modulation Depth)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_FSK_MODULATION_HOPPING_FREQUENCY (Waveform Generator FSK Modulation Hopping Frequency)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_FSK_MODULATION_RATE (Waveform Generator FSK Modulation Rate)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_SWEEP_ENABLED (Waveform Generator Sweep Enabled)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_SWEEP_TYPE (Waveform Generator Sweep Type)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_SWEEP_START_FREQUENCY (Waveform Generator Sweep Start Frequency)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_SWEEP_STOP_FREQUENCY (Waveform Generator Sweep Stop Frequency)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_SWEEP_TIME (Waveform Generator Sweep Time)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_ARBITRARY_FILE_NAME (Waveform Generator Arbitrary File Name)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_ARBITRARY_OPEN_FILE (Waveform Generator Arbitrary Open File)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_ARBITRARY_SOURCE (Waveform Generator Arbitrary Source)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_ARBITRARY_UPDATE (Waveform Generator Arbitrary Update)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_OUTPUT_ENABLED (Waveform Generator Output Enabled)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_OUTPUT_AMPLITUDE (Waveform Generator Output Amplitude)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_OUTPUT_OFFSET (Waveform Generator Output Offset)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_OUTPUT_USER_LOAD (Waveform Generator Output User Load)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_OUTPUT_DESTINATION (Waveform Generator Output Destination)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_NOISE_LEVEL_PERCENT (Waveform Generator Noise Level Percent)
+  - RSRTX_ATTR_WAVEFORM_GENERATOR_NOISE_ABSOLUTE_LEVEL (Waveform Generator Noise Absolute Level)
+  - RSRTX_ATTR_PATTERN_GENERATOR_ENABLED (Pattern Generator Enabled)
+  - RSRTX_ATTR_PATTERN_GENERATOR_FUNCTION_TYPE (Pattern Generator Function Type)
+  - RSRTX_ATTR_PATTERN_GENERATOR_FREQUENCY (Pattern Generator Frequency)
+  - RSRTX_ATTR_PATTERN_GENERATOR_PERIOD (Pattern Generator Period)
+  - RSRTX_ATTR_PATTERN_GENERATOR_POLARITY (Pattern Generator Polarity)
+  - RSRTX_ATTR_PATTERN_GENERATOR_DUTY_CYCLE (Pattern Generator Duty Cycle)
+  - RSRTX_ATTR_PATTERN_GENERATOR_SAMPLE_TIME (Pattern Generator Sample Time)
+  - RSRTX_ATTR_PATTERN_GENERATOR_COUNTER_DIRECTION (Pattern Generator Counter Direction)
+  - RSRTX_ATTR_PATTERN_GENERATOR_COUNTER_FREQUENCY (Pattern Generator Counter Frequency)
+  - RSRTX_ATTR_PATTERN_GENERATOR_BURST_ENABLED (Pattern Generator Burst Enabled)
+  - RSRTX_ATTR_PATTERN_GENERATOR_BURST_CYCLES (Pattern Generator Burst Cycles)
+  - RSRTX_ATTR_PATTERN_GENERATOR_IDLE_TIME (Pattern Generator Idle Time)
+  - RSRTX_ATTR_PATTERN_GENERATOR_TRIGGER_MODE (Pattern Generator Trigger Mode)
+  - RSRTX_ATTR_PATTERN_GENERATOR_TRIGGER_RUN_SINGLE (Pattern Generator Trigger Run Single)
+  - RSRTX_ATTR_PATTERN_GENERATOR_ARB_PATTERN_LENGTH (Pattern Generator ARB Pattern Length)
+  - RSRTX_ATTR_PATTERN_GENERATOR_ARB_INDEX (Pattern Generator ARB Index)
+  - RSRTX_ATTR_PATTERN_GENERATOR_MANUAL_STATE (Pattern Generator Manual State)
+  - RSRTX_ATTR_DIAGRAM_ANNOTATION_ENABLED (Diagram Annotation Enabled)
+  - RSRTX_ATTR_DIAGRAM_ANNOTATION_TRACK (Diagram Annotation Track)
+  - RSRTX_ATTR_DISPLAY_CLEAR_SCREEN (Display Clear Screen)
+  - RSRTX_ATTR_PERSISTENCE_TYPE (Persistence Type)
+  - RSRTX_ATTR_HISTORY_CHANNEL_TABLE_MODE (History Channel Table Mode)
+  - RSRTX_ATTR_HISTORY_CHANNEL_EXPORT_NAME (History Channel Export Name)
+  - RSRTX_ATTR_HISTORY_CHANNEL_EXPORT_SAVE (History Channel Export Save)
+  - RSRTX_ATTR_DIGITAL_HISTORY_EXPORT_NAME (Digital History Export Name)
+  - RSRTX_ATTR_DIGITAL_HISTORY_EXPORT_SAVE (Digital History Export Save)
+  - RSRTX_ATTR_HISTORY_MATH_EXPORT_NAME (History Math Export Name)
+  - RSRTX_ATTR_HISTORY_MATH_EXPORT_SAVE (History Math Export Save)
+  - RSRTX_ATTR_HISTORY_PROTOCOL_EXPORT_NAME (History Protocol Export Name)
+  - RSRTX_ATTR_HISTORY_PROTOCOL_EXPORT_SAVE (History Protocol Export Save)
+  - RSRTX_ATTR_HISTORY_LOGIC_CURRENT_ACQUISITION (History Logic Current Acquisition)
+  - RSRTX_ATTR_HISTORY_LOGIC_PLAYER (History Logic Player)
+  - RSRTX_ATTR_HISTORY_LOGIC_START_ACQUISITION (History Logic Start Acquisition)
+  - RSRTX_ATTR_HISTORY_LOGIC_STOP_ACQUISITION (History Logic Stop Acquisition)
+  - RSRTX_ATTR_HISTORY_LOGIC_PLAY_ALL (History Logic Play All)
+  - RSRTX_ATTR_HISTORY_LOGIC_SPEED (History Logic Speed)
+  - RSRTX_ATTR_HISTORY_LOGIC_REPEAT (History Logic Repeat)
+  - RSRTX_ATTR_HISTORY_LOGIC_ACQUISITON_RELATIVE_TIME (History Logic Acquisiton Relative Time)
+  - RSRTX_ATTR_HISTORY_LOGIC_ALL_DATES (History Logic All Dates)
+  - RSRTX_ATTR_HISTORY_LOGIC_ALL_TIME_DIFFERENCES (History Logic All Time Differences)
+  - RSRTX_ATTR_HISTORY_LOGIC_ALL_DAYTIMES (History Logic All Daytimes)
+  - RSRTX_ATTR_HISTORY_LOGIC_EXPORT_NAME (History Logic Export Name)
+  - RSRTX_ATTR_HISTORY_LOGIC_EXPORT_SAVE (History Logic Export Save)
+  - RSRTX_ATTR_SEGMENTATION_RECORD_MAXIMUM_SEGMENTS (Segmentation Record Maximum Segments)
+  - RSRTX_ATTR_HARDCOPY_OUTPUT_FORMAT (Hardcopy Output Format)
+  - RSRTX_ATTR_HARDCOPY_PAGE_SIZE_X (Hardcopy Page Size X)
+  - RSRTX_ATTR_HARDCOPY_PAGE_SIZE_Y (Hardcopy Page Size Y)
+  - RSRTX_ATTR_DEVICE_MODE (Device Mode)
+  - RSRTX_ATTR_INTERFACE_SELECT (Interface Select)
+  - RSRTX_ATTR_USB_CLASS (USB Class)
+  - RSRTX_ATTR_ETHERNET_DHCP (Ethernet DHCP)
+  - RSRTX_ATTR_ETHERNET_IP_PORT (Ethernet IP Port)
+  - RSRTX_ATTR_ETHERNET_VXI11_PORT (Ethernet VXI11 Port)
+  - RSRTX_ATTR_ETHERNET_TRANSFER (Ethernet Transfer)
+  - RSRTX_ATTR_ETHERNET_MAC_ADDRESS (Ethernet MAC Address)
+  - RSRTX_ATTR_PRESET_EDUCATION (Preset Education)
+  - RSRTX_ATTR_DEVICE_FOOTPRINT (Device Footprint)
+
+  * Modified attributes:
+  - RSRTX_ATTR_HORZ_DIVISIONS (Horizontal Divisions) - Data type changed.
+  - RSRTX_ATTR_HORZ_REFERENCE (Horizontal Reference) - Range
+  - RSRTX_ATTR_VERTICAL_COUPLING (Vertical Coupling) - Default changed.
+  - RSRTX_ATTR_DIGITAL_HYSTERESIS (Digital Hysteresis) - Changed range values.
+  - RSRTX_ATTR_DIGITAL_VERTICAL_CHANNEL_SIZE (Digital Vertical Channel Size) - Changed from enum to real.
+  - RSRTX_ATTR_TRIGGER_LEVEL_B (Trigger Level B) - Range table removed.
+  - RSRTX_ATTR_TRIGGER_COUPLING (Trigger Coupling) - Command string changed
+  - RSRTX_ATTR_PROTOCOL_AUDIO_TRIGGER_RIGHT_MINIMUM (Protocol Audio Trigger Right Minimum) - Range table removed.
+  - RSRTX_ATTR_PROTOCOL_AUDIO_TRIGGER_RIGHT_MAXIMUM (Protocol Audio Trigger Right Maximum) - Range table removed.
+  - RSRTX_ATTR_PROTOCOL_AUDIO_TRIGGER_LEFT_MINIMUM (Protocol Audio Trigger Left Minimum) - Range table removed.
+  - RSRTX_ATTR_PROTOCOL_AUDIO_TRIGGER_LEFT_MAXIMUM (Protocol Audio Trigger Left Maximum) - Range table removed.
+  - RSRTX_ATTR_PROTOCOL_AUDIO_TRIGGER_CHANNEL_MINIMUM (Protocol Audio Trigger Channel Minimum) - Range table removed.
+  - RSRTX_ATTR_PROTOCOL_AUDIO_TRIGGER_CHANNEL_MAXIMUM (Protocol Audio Trigger Channel Maximum) - Range table removed.
+  - RSRTX_ATTR_CURSOR_MEASUREMENT_TYPE (Cursor Measurement Type) - HorizontalVertical
+  - RSRTX_ATTR_CURSOR_SOURCE (Cursor Source) - QMA
+  - RSRTX_ATTR_MASK_VERTICAL_OFFSET (Mask Vertical Offset) - removede range
+  - RSRTX_ATTR_MASK_VERTICAL_SCALING (Mask Vertical Scaling) - removed range
+  - RSRTX_ATTR_MASK_VERTICAL_WIDTH (Mask Vertical Width) - Removed range
+  - RSRTX_ATTR_MASK_HORIZONTAL_WIDTH (Mask Horizontal Width) - removed range.
+  - RSRTX_ATTR_PROTOCOL_DISPLAY_VERTICAL (Protocol Display Vertical) - Default, range changed.
+  - RSRTX_ATTR_HARDCOPY_COLOR_SCHEME (Hardcopy Color Scheme) - Short command modified.
+
+  * Deleted Repeated Capabilities:
+
+  * Modified Repeated Capabilities:
+  - Counter - Identifiers ("Counter0,Counter1,Counter2", "Counter1,Counter2")
+  - Counter - Command Values (",1,2", "1,2")
+
+  * Modified Range Tables:
+  - rsrtx_rngHorzReference - RSRTX_ATTR_HORZ_REFERENCE
+				Range changed to <8.33;91.67>
+  - rsrtx_rngLineNumber - RSRTX_ATTR_TV_TRIGGER_LINE_NUMBER
+				Range changed to <1;1125>
+  - rsrtx_rngCursorFunction - RSRTX_ATTR_CURSOR_MEASUREMENT_TYPE
+				New items: RSRTX_VAL_CURSOR_HVER
+  - rsrtx_rngWaveformParameter - RSRTX_ATTR_WAVEFORM_EXPORT_SOURCE, RSRTX_ATTR_CURSOR_SOURCE, RSRTX_ATTR_REFERENCE_WAVEFORM_SOURCE
+				New items: RSRTX_VAL_WAV_QMA, RSRTX_VAL_WAV_XY1
+  - rsrtx_rngLanguage - RSRTX_ATTR_DISPLAY_LANGUAGE
+				New items: RSRTX_VAL_DISPLAY_ITALIAN, RSRTX_VAL_DISPLAY_PORTUGUESE, RSRTX_VAL_DISPLAY_CZECH, RSRTX_VAL_DISPLAY_POLISH
+  - rsrtx_rngHardcopyDeviceLang - RSRTX_ATTR_HARDCOPY_DEVICE_LANGUAGE_OUTPUT_FORMAT
+				New items: RSRTX_VAL_HARDCOPY_DEVICE_LANG_GDI, RSRTX_VAL_HARDCOPY_DEVICE_LANG_GIF
+  - rsrtx_rngPageSize - RSRTX_ATTR_HARDCOPY_PAGE_SIZE
+				New items: RSRTX_VAL_PAGE_LEGAL, RSRTX_VAL_PAGE_LETTER
+  - rsrtx_rngTriggerCoupling.RSRTX_VAL_COUPLING_HIGHFREQ - RSRTX_ATTR_TRIGGER_COUPLING
+				 Command changed ("LFR", "HF")
+  - rsrtx_rngTriggerType - RSRTX_ATTR_TRIGGER_TYPE_A
+				New items: RSRTX_VAL_LINE_TRIGGER
+  - rsrtx_rngProtocolVertical - RSRTX_ATTR_PROTOCOL_DISPLAY_VERTICAL
+				Range changed to <-5;5>
+  - rsrtx_rngSearchCondition - RSRTX_ATTR_SEARCH_CONDITION
+				New items: RSRTX_VAL_SEARCHCOND_WINDOW
+  - rsrtx_rngSearchSource - RSRTX_ATTR_SEARCH_SOURCE, RSRTX_ATTR_SEARCH_TRIGGER_D2C_CLOCK_SOURCE
+				New items: RSRTX_VAL_MEASUREMENT_SOURCE_QMA
+  - rsrtx_rngDigitalHysteresis - RSRTX_ATTR_DIGITAL_HYSTERESIS
+				New items: RSRTX_VAL_DIGITAL_HYSTERESIS_SMALL, RSRTX_VAL_DIGITAL_HYSTERESIS_MEDIUM, RSRTX_VAL_DIGITAL_HYSTERESIS_LARGE
+  - rsrtx_rngDigitalHysteresis - RSRTX_ATTR_DIGITAL_HYSTERESIS
+				Deleted items: RSRTX_VAL_DIGITAL_HYSTERESIS_MAX, RSRTX_VAL_DIGITAL_HYSTERESIS_ROB, RSRTX_VAL_DIGITAL_HYSTERESIS_NORM
+  - rsrtx_rngTriggerOutMode - RSRTX_ATTR_TRIGGER_OUT_MODE
+				New items: RSRTX_VAL_TRIGGER_OUT_MODE_REF, RSRTX_VAL_TRIGGER_OUT_MODE_GEN
+  - rsrtx_rngMeasurementSource - 
+				New items: RSRTX_VAL_MEASUREMENT_SOURCE_QMA
+  - rsrtx_rngMILSTDCodeType.RSRTX_VAL_MILSTD_CODE_TYPE_SEL - RSRTX_ATTR_MILSTD_TRIGGER_COMMAND_MODE_CODE, RSRTX_ATTR_MILSTD_SEARCH_COMMAND_MODE_CODE, RSRTX_ATTR_PROTOCOL_MILSTD_COMMAND_WORD_MODE_CODE_TYPE
+				 Command changed ("ISEL", "SEL")
+  - rsrtx_rngMILSTDTriggerType - RSRTX_ATTR_MILSTD_TRIGGER_TYPE, RSRTX_ATTR_MILSTD_TRIGGER_MODE
+				New items: RSRTX_VAL_MILSTD_TRIGGER_TYPE_CDATA
+  - rsrtx_rngProbeInputImpedance.RSRTX_VAL_UNKNOWN - RSRTX_ATTR_PROBE_INPUT_IMPEDANCE
+				 Command changed ("UNKN", "UNKNown")
+  - rsrtx_rngProbeInputImpedance.RSRTX_VAL_50OHM - RSRTX_ATTR_PROBE_INPUT_IMPEDANCE
+				 Command changed ("50OH", "50OHm")
+  - rsrtx_rngProbeInputImpedance.RSRTX_VAL_1MOHM - RSRTX_ATTR_PROBE_INPUT_IMPEDANCE
+				 Command changed ("1MOH", "1MOHm")
+
+  
+2017-02-03 Jiri Kominek
+  * Version 1.0.0
+  * Initial release, supporting RTB
