@@ -47,6 +47,7 @@
     <ClInclude Include="include\stream_element.h" />
     <ClInclude Include="include\timestamp.h" />
     <ClInclude Include="include\timestamp_resolution.h" />
+    <ClInclude Include="include\tinkerforge_sensor.h" />
     <ClInclude Include="library_base.h" />
     <ClInclude Include="nvidia_management_library.h" />
     <ClInclude Include="nvml_exception.h" />
@@ -55,6 +56,7 @@
     <ClInclude Include="convert_string.h" />
     <ClInclude Include="on_exit.h" />
     <ClInclude Include="tinkerforge_exception.h" />
+    <ClInclude Include="tinkerforge_sensor_impl.h" />
     <ClInclude Include="tinkerforge_scope.h" />
   </ItemGroup>
   <ItemGroup>
@@ -72,6 +74,8 @@
     <ClCompile Include="nvml_sensor_impl.cpp" />
     <ClCompile Include="convert_string.cpp" />
     <ClCompile Include="tinkerforge_exception.cpp" />
+    <ClCompile Include="tinkerforge_sensor.cpp" />
+    <ClCompile Include="tinkerforge_sensor_impl.cpp" />
     <ClCompile Include="tinkerforge_scope.cpp" />
   </ItemGroup>
   <ItemGroup>

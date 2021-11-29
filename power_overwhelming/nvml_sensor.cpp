@@ -178,7 +178,6 @@ visus::power_overwhelming::nvml_sensor::operator bool(void) const noexcept {
 }
 
 
-
 /*
  * ::power_overwhelming::nvml_sensor::sample
  */

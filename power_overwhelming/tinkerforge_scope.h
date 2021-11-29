@@ -38,11 +38,12 @@ namespace detail{
         /// Initialises a new instance.
         /// </summary>
         /// <param name="host">The host on which the Brick daemon is running.
-        /// This parameter defaults to &quot;localhost&quot;.</param>
+        /// </param>
         /// <param name="port">The port on which the Brick daemon is listening.
-        /// This parameter defaots to 4223.</param>
-        tinkerforge_scope(const std::string& host = "localhost",
-            const std::uint16_t port = 4223);
+        /// </param>
+        /// <exception cref="tinkerforge_exception">In case the connection could
+        /// not be established.</exception>
+        tinkerforge_scope(const std::string& host, const std::uint16_t port);
 
         /// <summary>
         /// Converts the scope into the embedded <see cref="IPConnection" />.
@@ -72,6 +73,13 @@ namespace detail{
             ~data(void);
         };
 
+        /// <summary>
+        /// Creates a unique endpoint representation that is used to index the
+        /// <see cref="_scopes" /> map.
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <returns></returns>
         static std::string to_endpoint(const std::string& host,
             const std::uint16_t port);
 
