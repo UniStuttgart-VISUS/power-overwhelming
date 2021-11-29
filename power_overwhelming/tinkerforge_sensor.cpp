@@ -12,8 +12,20 @@
  * visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor
  */
 visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
-        const char *host, const std::uint16_t port) : _impl(nullptr) {
-    
+        const char *uid, const char *host, const std::uint16_t port)
+        : _impl(nullptr) {
+    if (uid == nullptr) {
+        throw std::invalid_argument("The UID of the voltage/current bricklet "
+            "must not be null.");
+    }
+
+    // The implementation will (i) obtain and manage the scope with the
+    // connection to the master brick, (ii) allocate the voltage/current
+    // bricklet and manage its life time.
+    this->_impl = new detail::tinkerforge_sensor_impl(
+        (host != nullptr) ? host : "localhost",
+        port,
+        uid);
 }
 
 

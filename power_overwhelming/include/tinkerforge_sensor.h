@@ -24,11 +24,13 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
+        /// <param name="uid">The unique identifier of the voltage/current
+        /// bricklet addressed by the sensor</param>
         /// <param name="host">The host on which the Brick daemon is running.
         /// This parameter defaults to &quot;localhost&quot;.</param>
         /// <param name="port">The port on which the Brick daemon is listening.
         /// This parameter defaults to 4223.</param>
-        tinkerforge_sensor(const char *host = "localhost",
+        tinkerforge_sensor(const char *uid, const char *host = "localhost",
             const std::uint16_t port = 4223);
 
         /// <summary>
