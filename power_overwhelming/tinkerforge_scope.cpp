@@ -22,9 +22,12 @@ visus::power_overwhelming::detail::tinkerforge_scope::tinkerforge_scope(
     auto it = _scopes.find(endpoint);
     if (it != _scopes.end()) {
         // Reuse existing scope for same connection.
-        this->_scope = it->second;
-    } else {
-        // Create a new scope for an unknown connection.
+        this->_scope = it->second.lock();
+    }
+
+    if (this->_scope == nullptr) {
+        // If no existing scope was found or if the previous scope has been
+        // deleted, create a new one.
         this->_scope = std::make_shared<data>(host, port);
         _scopes[endpoint] = this->_scope;
     }
@@ -75,7 +78,7 @@ std::string visus::power_overwhelming::detail::tinkerforge_scope::to_endpoint(
 /*
  * visus::power_overwhelming::detail::tinkerforge_scope::_scopes
  */
-std::map<std::string, std::shared_ptr<
+std::map<std::string, std::weak_ptr<
     visus::power_overwhelming::detail::tinkerforge_scope::data>>
 visus::power_overwhelming::detail::tinkerforge_scope::_scopes;
 

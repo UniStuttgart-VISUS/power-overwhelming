@@ -22,9 +22,13 @@ namespace detail{
     /// RAII container for a Tinkerforge brick connection.
     /// </summary>
     /// <remarks>
-    /// Tinkerforge scopes can be shared on a per-connection basis. The scope
-    /// keeps a reference count for each connection and terminates it once the
-    /// last instance was destructed.
+    /// <para>Tinkerforge scopes can be shared on a per-connection basis. The
+    /// scope keeps a reference count for each connection and terminates it once
+    /// the last instance was destructed.</para>
+    /// <para>Callers must make sure to adhere the thread-safety requirements
+    /// of the Tingerforge <see cref="IPConnection" /> they can obtain from a
+    /// scope. The creation of new scopes and their destruction is, however,
+    /// thread-safe.</para>
     /// </remarks>
     class tinkerforge_scope final {
 
@@ -71,7 +75,7 @@ namespace detail{
         static std::string to_endpoint(const std::string& host,
             const std::uint16_t port);
 
-        static std::map<std::string, std::shared_ptr<data>> _scopes;
+        static std::map<std::string, std::weak_ptr<data>> _scopes;
         static std::mutex _lock_scopes;
 
         std::shared_ptr<data> _scope;
