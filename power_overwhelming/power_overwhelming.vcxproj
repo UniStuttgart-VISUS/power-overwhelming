@@ -44,8 +44,6 @@
     <ClInclude Include="include\measurement.h" />
     <ClInclude Include="include\nvml_sensor.h" />
     <ClInclude Include="include\power_overwhelming_api.h" />
-    <ClInclude Include="include\stream_element.h" />
-    <ClInclude Include="include\timestamp.h" />
     <ClInclude Include="include\timestamp_resolution.h" />
     <ClInclude Include="include\tinkerforge_sensor.h" />
     <ClInclude Include="library_base.h" />
@@ -55,6 +53,7 @@
     <ClInclude Include="nvml_sensor_impl.h" />
     <ClInclude Include="convert_string.h" />
     <ClInclude Include="on_exit.h" />
+    <ClInclude Include="timestamp.h" />
     <ClInclude Include="tinkerforge_exception.h" />
     <ClInclude Include="tinkerforge_sensor_impl.h" />
     <ClInclude Include="tinkerforge_scope.h" />
@@ -79,8 +78,8 @@
     <ClCompile Include="tinkerforge_scope.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="include\timestamp.inl" />
     <None Include="on_exit.inl" />
+    <None Include="timestamp.inl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\tinkerforge\tinkerforge.vcxproj">

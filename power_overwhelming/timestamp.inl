@@ -4,7 +4,6 @@
 // <author>Christoph Müller</author>
 
 
-
 /*
  * visus::power_overwhelming::detail::convert
  */
@@ -66,7 +65,7 @@ visus::power_overwhelming::detail::timestamp<Resolution>::create(
 
     // Find out what the difference between the given time_point and the UNIX
     // epoch is. Because we cannot rely on the epoch of the STL clock being the
-    // UNIX epock, use time_t, which is guaranteed to represent the UNIX epoch.
+    // UNIX epoch, use time_t, which is guaranteed to represent the UNIX epoch.
     auto dt = std::chrono::duration_cast<duration_traits<Resolution>::type>(
         timePoint - clock_type::from_time_t(0)).count();
 

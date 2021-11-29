@@ -157,6 +157,16 @@ const wchar_t *visus::power_overwhelming::nvml_sensor::name(
 
 
 /*
+ * visus::power_overwhelming::nvml_sensor::sample
+ */
+visus::power_overwhelming::measurement
+visus::power_overwhelming::nvml_sensor::sample(void) const {
+    typedef detail::timestamp<timestamp_resolution::milliseconds> ts;
+    return this->sample(ts::create());
+}
+
+
+/*
  * visus::power_overwhelming::nvml_sensor::operator =
  */
 visus::power_overwhelming::nvml_sensor&

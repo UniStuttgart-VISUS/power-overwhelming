@@ -248,28 +248,6 @@ const wchar_t *visus::power_overwhelming::adl_sensor::name(
 
 
 /*
- * visus::power_overwhelming::adl_sensor::operator =
- */
-visus::power_overwhelming::adl_sensor&
-visus::power_overwhelming::adl_sensor::operator =(adl_sensor&& rhs) noexcept {
-    if (this != std::addressof(rhs)) {
-        this->_impl = rhs._impl;
-        rhs._impl = nullptr;
-    }
-
-    return *this;
-}
-
-
-/*
- * visus::power_overwhelming::adl_sensor::operator bool
- */
-visus::power_overwhelming::adl_sensor::operator bool(void) const noexcept {
-    return (this->_impl != nullptr);
-}
-
-
-/*
  * visus::power_overwhelming::adl_sensor::sample
  */
 visus::power_overwhelming::measurement
@@ -305,4 +283,26 @@ visus::power_overwhelming::adl_sensor::sample(
     }
 
     return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::adl_sensor::operator =
+ */
+visus::power_overwhelming::adl_sensor&
+visus::power_overwhelming::adl_sensor::operator =(adl_sensor&& rhs) noexcept {
+    if (this != std::addressof(rhs)) {
+        this->_impl = rhs._impl;
+        rhs._impl = nullptr;
+    }
+
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::adl_sensor::operator bool
+ */
+visus::power_overwhelming::adl_sensor::operator bool(void) const noexcept {
+    return (this->_impl != nullptr);
 }
