@@ -14,11 +14,6 @@
 visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
         const char *uid, const char *host, const std::uint16_t port)
         : _impl(nullptr) {
-    if (uid == nullptr) {
-        throw std::invalid_argument("The UID of the voltage/current bricklet "
-            "must not be null.");
-    }
-
     // The implementation will (i) obtain and manage the scope with the
     // connection to the master brick, (ii) allocate the voltage/current
     // bricklet and manage its life time.
@@ -30,11 +25,54 @@ visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
 
 
 /*
+ * visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor
+ */
+visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
+        const char *uid, const wchar_t *description, const char *host,
+        const std::uint16_t port) : _impl(nullptr) {
+    this->_impl = new detail::tinkerforge_sensor_impl(
+        (host != nullptr) ? host : "localhost",
+        port,
+        uid);
+
+    if (description != nullptr) {
+        this->_impl->description = description;
+    }
+}
+
+
+/*
  * visus::power_overwhelming::tinkerforge_sensor::~tinkerforge_sensor
  */
 visus::power_overwhelming::tinkerforge_sensor::~tinkerforge_sensor(
         void) {
     delete this->_impl;
+}
+
+
+/*
+ * visus::power_overwhelming::tinkerforge_sensor::description
+ */
+const wchar_t *visus::power_overwhelming::tinkerforge_sensor::description(
+        void) const noexcept {
+    if (this->_impl != nullptr) {
+        return this->_impl->description.c_str();
+    } else {
+        return nullptr;
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::tinkerforge_sensor::name
+ */
+const wchar_t *visus::power_overwhelming::tinkerforge_sensor::name(
+        void) const noexcept {
+    if (this->_impl != nullptr) {
+        return this->_impl->sensor_name.c_str();
+    } else {
+        return nullptr;
+    }
 }
 
 
