@@ -6,8 +6,11 @@
 #pragma once
 
 #include <chrono>
+#include <cinttypes>
 
+#if defined(_WIN32)
 #include <Windows.h>
+#endif /* defined(_WIN32) */
 
 #include "timestamp_resolution.h"
 
@@ -53,10 +56,10 @@ namespace detail {
     /// <param name="resolution">The desired resolution of the timestamp.
     /// </param>
     /// <returns>The timestamp in the requested resolution.</returns>
-    inline decltype(LARGE_INTEGER::QuadPart) convert(
-        const decltype(LARGE_INTEGER::QuadPart) fileTime,
+    inline std::int64_t convert(const std::int64_t fileTime,
         const timestamp_resolution resolution);
 
+#if defined(_WIN32)
     /// <summary>
     /// Convert the given raw <see cref="LARGE_INTEGER" /> to a timestamp of the
     /// specified resolution.
@@ -70,7 +73,9 @@ namespace detail {
             const timestamp_resolution resolution) {
         return convert(fileTime.QuadPart, resolution);
     }
+#endif /* defined(_WIN32) */
 
+#if defined(_WIN32)
     /// <summary>
     /// Convert the given raw <see cref="FILETIME" /> to a timestamp of the
     /// specified resolution.
@@ -85,6 +90,7 @@ namespace detail {
         largeInteger.LowPart = fileTime.dwLowDateTime;
         return detail::convert(largeInteger.QuadPart, resolution);
     }
+#endif /* defined(_WIN32) */
 
     /// <summary>
     /// Implements a generator for timestamps from
@@ -103,18 +109,27 @@ namespace detail {
         /// <summary>
         /// The value type of the time stamp.
         /// </summary>
+#if defined(_WIN32)
         typedef decltype(LARGE_INTEGER::QuadPart) value_type;
+#else  /* defined(_WIN32) */
+        typedef std::int64_t value_type;
+#endif /* defined(_WIN32) */
 
         /// <summary>
         /// Samples system clock and converts its value into a timestamp.
         /// </summary>
         /// <returns>A new timestamp for the current point in time.</returns>
         static inline value_type create(void) {
+#if defined(_WIN32)
             FILETIME time;
             ::GetSystemTimePreciseAsFileTime(&time);
             return create(time);
+#else  /* defined(_WIN32) */
+            return create<std::chrono::system_clock>();
+#endif /* defined(_WIN32) */
         }
 
+#if defined(_WIN32)
         /// <summary>
         /// Create a timestamp from a <see cref="FILETIME" />.
         /// </summary>
@@ -123,11 +138,14 @@ namespace detail {
         static inline constexpr value_type create(const FILETIME& fileTime) {
             return detail::convert(fileTime, Resolution);
         }
+#endif /* defined(_WIN32) */
 
         /// <summary>
         /// Create a timestamp from a <see cref="std::time_point" />.
         /// </summary>
-        /// <typeparam name="TTimePoint"></typeparam>
+        /// <typeparam name="TTimePoint">The type of the time point representing
+        /// the timestamp. This time point must come from a clock that allows for
+        /// conversion from and to <see cref="time_t" />.</typeparam>
         /// <param name="timePoint"></param>
         /// <returns></returns>
         template<class TTimePoint>
@@ -136,7 +154,9 @@ namespace detail {
         /// <summary>
         /// Create a timestamp from a <see cref="std::clock" />.
         /// </summary>
-        /// <typeparam name="TClock"></typeparam>
+        /// <typeparam name="TClock">The type of the clock to create the
+        /// timestamp from. This clock must allow for conversion from and to
+        /// <see cref="time_t" />.</typeparam>
         /// <returns></returns>
         template<class TClock> inline static value_type create(void) {
             return create(TClock::now());

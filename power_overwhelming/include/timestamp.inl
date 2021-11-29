@@ -8,8 +8,8 @@
 /*
  * visus::power_overwhelming::detail::convert
  */
-decltype(LARGE_INTEGER::QuadPart) visus::power_overwhelming::detail::convert(
-        const decltype(LARGE_INTEGER::QuadPart) fileTime,
+std::int64_t visus::power_overwhelming::detail::convert(
+        const std::int64_t fileTime,
         const timestamp_resolution resolution) {
     using namespace std::chrono;
     duration<decltype(fileTime), filetime_period> ft(fileTime);
@@ -43,6 +43,7 @@ visus::power_overwhelming::detail::timestamp<Resolution>::create(
         const TTimePoint& timePoint) {
     typedef typename TTimePoint::clock clock_type;
 
+#if false
     FILETIME fileTime;
     SYSTEMTIME systemTime;
 
@@ -57,7 +58,11 @@ visus::power_overwhelming::detail::timestamp<Resolution>::create(
         throw std::system_error(::GetLastError(), std::system_category());
     }
 
-    auto dz = detail::convert(fileTime, Resolution);
+    const auto dz = detail::convert(fileTime, Resolution);
+#else
+    // All of the above will always yield the following magic number:
+    const auto dz = 11644473600000LL;
+#endif
 
     // Find out what the difference between the given time_point and the UNIX
     // epoch is. Because we cannot rely on the epoch of the STL clock being the
