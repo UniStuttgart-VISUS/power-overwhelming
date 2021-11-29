@@ -6,6 +6,9 @@
 #pragma once
 
 #include <cinttypes>
+#include <map>
+#include <memory>
+#include <mutex>
 #include <string>
 
 #include <ip_connection.h>
@@ -18,6 +21,11 @@ namespace detail{
     /// <summary>
     /// RAII container for a Tinkerforge brick connection.
     /// </summary>
+    /// <remarks>
+    /// Tinkerforge scopes can be shared on a per-connection basis. The scope
+    /// keeps a reference count for each connection and terminates it once the
+    /// last instance was destructed.
+    /// </remarks>
     class tinkerforge_scope final {
 
     public:
@@ -32,15 +40,6 @@ namespace detail{
         tinkerforge_scope(const std::string& host = "localhost",
             const std::uint16_t port = 4223);
 
-        tinkerforge_scope(const tinkerforge_scope&) = delete;
-
-        /// <summary>
-        /// Finalises the instance.
-        /// </summary>
-        ~tinkerforge_scope(void);
-
-        tinkerforge_scope& operator =(const tinkerforge_scope&) = delete;
-
         /// <summary>
         /// Converts the scope into the embedded <see cref="IPConnection" />.
         /// </summary>
@@ -51,12 +50,31 @@ namespace detail{
         /// <returns>The IP connection, which is guaranteed to be valid and
         /// connected for any valid instance of the scope.</returns>
         inline operator IPConnection *(void) {
-            return std::addressof(this->_connection);
+            return std::addressof(this->_scope->connection);
         }
 
     private:
 
-        IPConnection _connection;
+        /// <summary>
+        /// RAII wrapper for the actual connections.
+        /// </summary>
+        /// <remarks>
+        /// The scopes referring to a specific connection hold a shared pointer
+        /// to one of these.
+        /// </remarks>
+        struct data {
+            IPConnection connection;
+            explicit data(const std::string& host, const std::uint16_t port);
+            ~data(void);
+        };
+
+        static std::string to_endpoint(const std::string& host,
+            const std::uint16_t port);
+
+        static std::map<std::string, std::shared_ptr<data>> _scopes;
+        static std::mutex _lock_scopes;
+
+        std::shared_ptr<data> _scope;
     };
 
 } /* namespace detail */
