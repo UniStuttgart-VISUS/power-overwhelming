@@ -72,6 +72,7 @@
     <ClCompile Include="nvml_sensor.cpp" />
     <ClCompile Include="nvml_sensor_impl.cpp" />
     <ClCompile Include="convert_string.cpp" />
+    <ClCompile Include="timestamp.cpp" />
     <ClCompile Include="tinkerforge_exception.cpp" />
     <ClCompile Include="tinkerforge_sensor.cpp" />
     <ClCompile Include="tinkerforge_sensor_impl.cpp" />

@@ -5,34 +5,6 @@
 
 
 /*
- * visus::power_overwhelming::detail::convert
- */
-std::int64_t visus::power_overwhelming::detail::convert(
-        const std::int64_t fileTime,
-        const timestamp_resolution resolution) {
-    using namespace std::chrono;
-    duration<decltype(fileTime), filetime_period> ft(fileTime);
-
-    switch (resolution) {
-        case timestamp_resolution::microseconds:
-            return duration_cast<microseconds>(ft).count();
-
-        case timestamp_resolution::milliseconds:
-            return duration_cast<milliseconds>(ft).count();
-
-        case timestamp_resolution::nanoseconds:
-            return duration_cast<nanoseconds>(ft).count();
-
-        case timestamp_resolution::seconds:
-            return duration_cast<seconds>(ft).count();
-
-        default:
-            return fileTime;
-    }
-}
-
-
-/*
  * visus::power_overwhelming::detail::timestamp<Resolution>::create
  */
 template<visus::power_overwhelming::timestamp_resolution Resolution>

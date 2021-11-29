@@ -115,22 +115,37 @@ namespace power_overwhelming {
         /// sensor.</returns>
         const wchar_t *name(void) const noexcept;
 
-        ///// <summary>
-        ///// Sample the sensor.
-        ///// </summary>
-        ///// <typeparam name="Resolution">The desired resolution of the timestamp
-        ///// being created for the measurement.</typeparam>
-        ///// <returns>A sensor sample with the information about power
-        ///// consumption that is available via NVML.</returns>
-        ///// <exception cref="std::runtime_error">If a sensor that has been moved
-        ///// is sampled</exception>
-        ///// <exception cref="nvml_exception">If the sensor could not be sampled.
-        ///// </exception>
-        //template<timestamp_resolution Resolution>
-        //inline measurement sample(void) const {
-        //    typedef detail::timestamp<Resolution> ts;
-        //    this->sample(ts::create());
-        //}
+        /// <summary>
+        /// Sample the sensor.
+        /// </summary>
+        /// <param name="resolution">The temporal resolution of the timestamp
+        /// to be returned.</param>
+        /// <returns>A sensor sample with the information about power
+        /// consumption that is available via NVML.</returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="resolution" /> does not designate a valid resolution
+        /// for timestamps.</exception>
+        /// <exception cref="std::runtime_error">If a sensor that has been moved
+        /// is sampled.</exception
+        /// <exception cref="nvml_exception">If the sensor could not be sampled.
+        /// </exception>
+        measurement sample(const timestamp_resolution resolution) const;
+
+        /// <summary>
+        /// Sample the sensor.
+        /// </summary>
+        /// <typeparam name="Resolution">The desired resolution of the timestamp
+        /// being created for the measurement.</typeparam>
+        /// <returns>A sensor sample with the information about power
+        /// consumption that is available via NVML.</returns>
+        /// <exception cref="std::runtime_error">If a sensor that has been moved
+        /// is sampled</exception>
+        /// <exception cref="nvml_exception">If the sensor could not be sampled.
+        /// </exception>
+        template<timestamp_resolution Resolution>
+        inline measurement sample(void) const {
+            return this->sample(Resolution);
+        }
 
         /// <summary>
         /// Sample the sensor using a timestamp with millisecond resolution.

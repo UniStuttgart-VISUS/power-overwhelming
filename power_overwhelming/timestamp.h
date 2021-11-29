@@ -12,6 +12,7 @@
 #include <Windows.h>
 #endif /* defined(_WIN32) */
 
+#include "power_overwhelming_api.h"
 #include "timestamp_resolution.h"
 
 
@@ -52,11 +53,15 @@ namespace detail {
     /// Convert the given raw <see cref="FILETIME" /> to a timestamp of the
     /// specified resolution.
     /// </summary>
+    /// <remarks>
+    /// This API is only exposed for unit tests and should not be accessed by
+    /// any other clients.
+    /// </remarks>
     /// <param name="fileTime">The file time value in 100ns units.</param>
     /// <param name="resolution">The desired resolution of the timestamp.
     /// </param>
     /// <returns>The timestamp in the requested resolution.</returns>
-    inline std::int64_t convert(const std::int64_t fileTime,
+    std::int64_t POWER_OVERWHELMING_API convert(const std::int64_t fileTime,
         const timestamp_resolution resolution);
 
 #if defined(_WIN32)
@@ -162,6 +167,19 @@ namespace detail {
             return create(TClock::now());
         }
     };
+
+    /// <summary>
+    /// Create a new timestamp using the specified resolution per tick.
+    /// </summary>
+    /// <remarks>
+    /// This API is only exposed for unit tests and should not be accessed by
+    /// any other clients.
+    /// </remarks>
+    /// <param name="resolution"></param>
+    /// <returns></returns>
+    /// <exception cref="std::invalid_argument"></exception>
+    std::int64_t POWER_OVERWHELMING_API create_timestamp(
+        const timestamp_resolution resolution);
 
 } /* namespace detail */
 } /* namespace power_overwhelming */

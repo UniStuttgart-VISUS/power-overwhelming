@@ -134,6 +134,9 @@
     <ClCompile Include="tinkerforge_sensor_impl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="timestamp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="on_exit.inl">
