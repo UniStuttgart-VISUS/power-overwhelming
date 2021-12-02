@@ -43,12 +43,41 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
+        /// <param name="uid">The unique identifier of the voltage/current
+        /// bricklet addressed by the sensor.</param>
         /// <param name="host">The host on which the Brick daemon is running.
         /// This parameter defaults to &quot;localhost&quot;.</param>
         /// <param name="port">The port on which the Brick daemon is listening.
         /// This parameter defaults to 4223.</param>
-        tinkerforge_sensor(const char *host = "localhost",
+        /// <exception cref="std::invalid_argument">If <paramref name="uid" />
+        /// is <c>nullptr</c>.</exceptions>
+        /// <exception cref="std::bad_alloc">If the required resources could not
+        /// be allocated.</exceptions>
+        /// <exception cref="tinkerforge_exception">If the connection to the
+        /// master brick could not be established.</exception>
+        tinkerforge_sensor(const char *uid, const char *host = "localhost",
             const std::uint16_t port = 4223);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="uid">The unique identifier of the voltage/current
+        /// bricklet addressed by the sensor.</param>
+        /// <param name="description">A user-defined description that allows you
+        /// to track what this sensor is measuring. It is safe to pass
+        /// <c>nullptr</c>, in which case no description will be set.</param>
+        /// <param name="host">The host on which the Brick daemon is running.
+        /// This parameter defaults to &quot;localhost&quot;.</param>
+        /// <param name="port">The port on which the Brick daemon is listening.
+        /// This parameter defaults to 4223.</param>
+        /// <exception cref="std::invalid_argument">If <paramref name="uid" />
+        /// is <c>nullptr</c>.</exceptions>
+        /// <exception cref="std::bad_alloc">If the required resources could not
+        /// be allocated.</exceptions>
+        /// <exception cref="tinkerforge_exception">If the connection to the
+        /// master brick could not be established.</exception>
+        tinkerforge_sensor(const char *uid, const wchar_t *description,
+            const char *host = "localhost", const std::uint16_t port = 4223);
 
         /// <summary>
         /// Move <paramref name="rhs" /> into a new instance.
@@ -64,6 +93,20 @@ namespace power_overwhelming {
         /// </summary>
         ~tinkerforge_sensor(void);
 
+        /// <summary>
+        /// The user-defined description of what the sensor is measuring.
+        /// </summary>
+        /// <returns>The description of what the sensor is measuring.</returns>
+        const wchar_t *description(void) const noexcept;
+
+        /// <summary>
+        /// Gets the name of the sensor.
+        /// </summary>
+        /// <returns>The implementation-defined, human-readable name of the
+        /// sensor.</returns>
+        const wchar_t *name(void) const noexcept;
+
+        /// <summary>
         /// Move assignment.
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>

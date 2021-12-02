@@ -7,6 +7,7 @@
 
 #include "adl_sensor_source.h"
 #include "measurement.h"
+#include "timestamp_resolution.h"
 
 
 namespace visus {
@@ -119,6 +120,19 @@ namespace power_overwhelming {
         /// <summary>
         /// Sample the sensor.
         /// </summary>
+        /// <param name="resolution">The temporal resolution of the timestamp
+        /// to be returned.</param>
+        /// <returns>A sensor sample with the information about power
+        /// consumption that is available via ADL.</returns>
+        /// <exception cref="std::runtime_error">If a sensor that has been moved
+        /// is sampled.</exception>
+        /// <exception cref="adl_exception">If the sensor could not be sampled.
+        /// </exception>
+        measurement sample(const timestamp_resolution resolution) const;
+
+        /// <summary>
+        /// Sample the sensor.
+        /// </summary>
         /// <typeparam name="Resolution">The desired resolution of the timestamp
         /// being created for the measurement.</typeparam>
         /// <returns>A sensor sample with the information about power
@@ -164,8 +178,6 @@ namespace power_overwhelming {
         operator bool(void) const noexcept;
 
     private:
-
-        measurement sample(const timestamp_resolution resolution) const;
 
         detail::adl_sensor_impl *_impl;
 

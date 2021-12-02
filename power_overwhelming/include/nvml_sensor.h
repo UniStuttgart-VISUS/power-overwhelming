@@ -6,6 +6,7 @@
 #pragma once
 
 #include "measurement.h"
+#include "timestamp_resolution.h"
 
 
 namespace visus {
@@ -117,6 +118,22 @@ namespace power_overwhelming {
         /// <summary>
         /// Sample the sensor.
         /// </summary>
+        /// <param name="resolution">The temporal resolution of the timestamp
+        /// to be returned.</param>
+        /// <returns>A sensor sample with the information about power
+        /// consumption that is available via NVML.</returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="resolution" /> does not designate a valid resolution
+        /// for timestamps.</exception>
+        /// <exception cref="std::runtime_error">If a sensor that has been moved
+        /// is sampled.</exception
+        /// <exception cref="nvml_exception">If the sensor could not be sampled.
+        /// </exception>
+        measurement sample(const timestamp_resolution resolution) const;
+
+        /// <summary>
+        /// Sample the sensor.
+        /// </summary>
         /// <typeparam name="Resolution">The desired resolution of the timestamp
         /// being created for the measurement.</typeparam>
         /// <returns>A sensor sample with the information about power
@@ -127,8 +144,7 @@ namespace power_overwhelming {
         /// </exception>
         template<timestamp_resolution Resolution>
         inline measurement sample(void) const {
-            typedef detail::timestamp<Resolution> ts;
-            this->sample(ts::create());
+            return this->sample(Resolution);
         }
 
         /// <summary>
@@ -140,10 +156,7 @@ namespace power_overwhelming {
         /// is sampled.</exception>
         /// <exception cref="nvml_exception">If the sensor could not be sampled.
         /// </exception>
-        inline measurement sample(void) const {
-            typedef detail::timestamp<timestamp_resolution::milliseconds> ts;
-            return this->sample(ts::create());
-        }
+        measurement sample(void) const;
 
         /// <summary>
         /// Move assignment.
