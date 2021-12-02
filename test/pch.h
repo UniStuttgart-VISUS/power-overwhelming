@@ -9,3 +9,4 @@
 #include <nvml_scope.h>
 #include <nvml_sensor.h>
 #include <on_exit.h>
+#include <tinkerforge_sensor_definiton.h>

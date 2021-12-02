@@ -179,6 +179,7 @@
     </ClCompile>
     <ClCompile Include="measurement_test.cpp" />
     <ClCompile Include="timestamp_test.cpp" />
+    <ClCompile Include="tinkerforge_sensor_definition_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

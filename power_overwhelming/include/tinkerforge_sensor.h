@@ -6,6 +6,7 @@
 #pragma once
 
 #include "measurement.h"
+#include "tinkerforge_sensor_definiton.h"
 
 
 namespace visus {
@@ -20,6 +21,24 @@ namespace power_overwhelming {
     class POWER_OVERWHELMING_API tinkerforge_sensor final {
 
     public:
+
+        /// <summary>
+        /// Retrieve sensor definitions for all bricklets attacted to the
+        /// specified host.
+        /// </summary>
+        /// <param name="outSensors">Receives the sensor definitions. If
+        /// <c>nullptr</c>, the sensors will only be counted.</param>
+        /// <param name="cntSensors">Size of <paramref name="outSensors" />
+        /// in elements.</param>
+        /// <param name="host">The host on which the Brick daemon is running.
+        /// This parameter defaults to &quot;localhost&quot;.</param>
+        /// <param name="port">The port on which the Brick daemon is listening.
+        /// This parameter defaults to 4223.</param>
+        /// <returns>The number of current/voltage bricklets available,
+        /// regardless of how many have been copied.</returns>
+        static std::size_t get_sensors(tinkerforge_sensor_definiton *outSensors,
+            const std::size_t cntSensors, const char *host = "localhost",
+            const std::uint16_t port = 4223);
 
         /// <summary>
         /// Initialises a new instance.

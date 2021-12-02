@@ -9,6 +9,17 @@
 
 
 /*
+ * visus::power_overwhelming::tinkerforge_sensor::get_sensors
+ */
+std::size_t visus::power_overwhelming::tinkerforge_sensor::get_sensors(
+        tinkerforge_sensor_definiton *outSensors, const std::size_t cntSensors,
+        const char *host, const std::uint16_t port) {
+    // TODO
+    return 0;
+}
+
+
+/*
  * visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor
  */
 visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
