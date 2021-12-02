@@ -4,11 +4,13 @@
 // <author>Christoph Müller</author>
 
 #include <iostream>
+#include <thread>
 #include <vector>
 
 #include <adl_sensor.h>
 #include <measurement.h>
 #include <nvml_sensor.h>
+#include <tinkerforge_sensor.h>
 #include <tchar.h>
 
 
@@ -44,7 +46,7 @@ int _tmain(const int argc, const TCHAR **argv) {
         sensors.resize(nvml_sensor::for_all(nullptr, 0));
         nvml_sensor::for_all(sensors.data(), sensors.size());
 
-        for (auto &s : sensors) {
+        for (auto& s : sensors) {
             std::wcout << s.name() << L":" << std::endl;
             auto m = s.sample();
             std::wcout << m.timestamp() << L": " << m.power() << L" W"
@@ -53,6 +55,23 @@ int _tmain(const int argc, const TCHAR **argv) {
     } catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;
     }
+
+    // Print data for all connected Tinkerforge sensors.
+    try {
+        std::vector<tinkerforge_sensor_definiton> sensors;
+        sensors.resize(tinkerforge_sensor::get_sensors(nullptr, 0));
+        tinkerforge_sensor::get_sensors(sensors.data(), sensors.size());
+
+        for (auto& s: sensors) {
+            tinkerforge_sensor sensor(s);
+            // TODO
+        }
+
+    } catch (std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+
+    std::this_thread::sleep_for(std::chrono::seconds(10));
 
      return 0;
 }

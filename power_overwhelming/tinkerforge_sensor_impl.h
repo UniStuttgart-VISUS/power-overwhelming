@@ -19,11 +19,6 @@ namespace detail {
     /// </summary>
     struct tinkerforge_sensor_impl final {
 
-        //cb_enumerate(const char *uid, const char *connected_uid,
-        //    char position, uint8_t hardware_version[3],
-        //    uint8_t firmware_version[3], uint16_t device_identifier,
-        //    uint8_t enumeration_type, void *user_data)
-
         /// <summary>
         /// The handle for a voltage/current bricklet.
         /// </summary>

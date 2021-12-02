@@ -5,6 +5,9 @@
 
 #include "tinkerforge_sensor.h"
 
+#include <thread>
+#include <vector>
+
 #include "tinkerforge_sensor_impl.h"
 
 
@@ -14,6 +17,25 @@
 std::size_t visus::power_overwhelming::tinkerforge_sensor::get_sensors(
         tinkerforge_sensor_definiton *outSensors, const std::size_t cntSensors,
         const char *host, const std::uint16_t port) {
+    std::vector<detail::tinkerforge_bricklet> bricklets;
+    detail::tinkerforge_scope scope(host, port);
+
+    for (auto i = 0; i < 4; ++i) {
+        scope.copy_bricklets(std::back_inserter(bricklets));
+
+        if (bricklets.empty()) {
+            // Bricklets are enumerated asynchronously, so if we are calling
+            // that for the first time, we might not yet have any information.
+            // The (hacky) solution is to wait for a bit and try again ...
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            // We have at least some bricklets, albeit it is not sure that
+            // we have all of them ...
+            break;
+        }
+    }
+
+
     // TODO
     return 0;
 }
@@ -48,6 +70,23 @@ visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
 
     if (description != nullptr) {
         this->_impl->description = description;
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor
+ */
+visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
+        const tinkerforge_sensor_definiton& definition,
+        const char *host, const std::uint16_t port) : _impl(nullptr) {
+    this->_impl = new detail::tinkerforge_sensor_impl(
+        (host != nullptr) ? host : "localhost",
+        port,
+        definition.uid());
+
+    if (definition.description() != nullptr) {
+        this->_impl->description = definition.description();
     }
 }
 

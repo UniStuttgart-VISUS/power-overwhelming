@@ -23,6 +23,16 @@ namespace power_overwhelming {
     public:
 
         /// <summary>
+        /// The default host on which brickd is assumed to run.
+        /// </summary>
+        static constexpr const char *default_host = "localhost";
+
+        /// <summary>
+        /// The default port on which brickd is assumed to listen on.
+        /// </summary>
+        static constexpr const std::uint16_t default_port = 4223;
+
+        /// <summary>
         /// Retrieve sensor definitions for all bricklets attacted to the
         /// specified host.
         /// </summary>
@@ -37,8 +47,8 @@ namespace power_overwhelming {
         /// <returns>The number of current/voltage bricklets available,
         /// regardless of how many have been copied.</returns>
         static std::size_t get_sensors(tinkerforge_sensor_definiton *outSensors,
-            const std::size_t cntSensors, const char *host = "localhost",
-            const std::uint16_t port = 4223);
+            const std::size_t cntSensors, const char *host = default_host,
+            const std::uint16_t port = default_port);
 
         /// <summary>
         /// Initialises a new instance.
@@ -55,8 +65,8 @@ namespace power_overwhelming {
         /// be allocated.</exceptions>
         /// <exception cref="tinkerforge_exception">If the connection to the
         /// master brick could not be established.</exception>
-        tinkerforge_sensor(const char *uid, const char *host = "localhost",
-            const std::uint16_t port = 4223);
+        tinkerforge_sensor(const char *uid, const char *host = default_host,
+            const std::uint16_t port = default_port);
 
         /// <summary>
         /// Initialises a new instance.
@@ -77,7 +87,27 @@ namespace power_overwhelming {
         /// <exception cref="tinkerforge_exception">If the connection to the
         /// master brick could not be established.</exception>
         tinkerforge_sensor(const char *uid, const wchar_t *description,
-            const char *host = "localhost", const std::uint16_t port = 4223);
+            const char *host = default_host,
+            const std::uint16_t port = default_port);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="definition">The definition of the bricklet to create
+        /// the sensor for</param>
+        /// <param name="host">The host on which the Brick daemon is running.
+        /// This parameter defaults to &quot;localhost&quot;.</param>
+        /// <param name="port">The port on which the Brick daemon is listening.
+        /// This parameter defaults to 4223.</param>
+        /// <exception cref="std::invalid_argument">If the UID in
+        /// <paramref name="definition" /> is invalid.</exceptions>
+        /// <exception cref="std::bad_alloc">If the required resources could not
+        /// be allocated.</exceptions>
+        /// <exception cref="tinkerforge_exception">If the connection to the
+        /// master brick could not be established.</exception>
+        tinkerforge_sensor(const tinkerforge_sensor_definiton& definition,
+            const char *host = default_host,
+            const std::uint16_t port = default_port);
 
         /// <summary>
         /// Move <paramref name="rhs" /> into a new instance.

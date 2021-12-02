@@ -1,45 +1,96 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
+    <ClCompile Include="adl_exception.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="adl_scope.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="adl_sensor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="adl_sensor_impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="amd_display_library.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="convert_string.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="library_base.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="measurement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nvidia_management_library.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nvml_exception.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nvml_scope.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nvml_sensor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nvml_sensor_impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="timestamp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tinkerforge_exception.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tinkerforge_scope.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tinkerforge_sensor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tinkerforge_sensor_definiton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tinkerforge_sensor_impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tinkerforge_bricklet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\measurement.h">
+    <ClInclude Include="adl_exception.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\nvml_sensor.h">
+    <ClInclude Include="adl_scope.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\adl_sensor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\power_overwhelming_api.h">
+    <ClInclude Include="adl_sensor_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\timestamp_resolution.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="library_base.h">
+    <ClInclude Include="include\adl_sensor_source.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="amd_display_library.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="nvidia_management_library.h">
+    <ClInclude Include="convert_string.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="adl_exception.h">
+    <ClInclude Include="library_base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\measurement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nvidia_management_library.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="nvml_exception.h">
@@ -48,101 +99,42 @@
     <ClInclude Include="nvml_scope.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\nvml_sensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="nvml_sensor_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="convert_string.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="adl_sensor_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="adl_scope.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\adl_sensor_source.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="on_exit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tinkerforge_scope.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tinkerforge_exception.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\tinkerforge_sensor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tinkerforge_sensor_impl.h">
+    <ClInclude Include="include\power_overwhelming_api.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="timestamp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\timestamp_resolution.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tinkerforge_exception.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tinkerforge_scope.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tinkerforge_sensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="include\tinkerforge_sensor_definiton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="adl_sensor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="nvml_sensor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="nvml_scope.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="adl_exception.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="measurement.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="library_base.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="amd_display_library.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="nvidia_management_library.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="nvml_sensor_impl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="nvml_exception.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="convert_string.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="adl_sensor_impl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="adl_scope.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tinkerforge_scope.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tinkerforge_exception.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tinkerforge_sensor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tinkerforge_sensor_impl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="timestamp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tinkerforge_sensor_definiton.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClInclude Include="tinkerforge_sensor_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tinkerforge_bricklet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="on_exit.inl">
@@ -151,5 +143,22 @@
     <None Include="timestamp.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="tinkerforge_scope.inl">
+      <Filter>Header Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{20286781-df94-4609-99a7-b3c90d2d76fc}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{4b6cda99-5eff-4c43-8495-a248ef6f6bd4}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{49844d3e-fcb9-420d-835e-0060f76ae5f5}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
   </ItemGroup>
 </Project>

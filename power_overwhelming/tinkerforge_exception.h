@@ -50,7 +50,6 @@ namespace power_overwhelming {
     private:
 
         value_type _code;
-
     };
 
 } /* namespace power_overwhelming */

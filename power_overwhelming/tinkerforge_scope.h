@@ -13,10 +13,12 @@
 
 #include <ip_connection.h>
 
+#include "tinkerforge_bricklet.h"
+
 
 namespace visus {
 namespace power_overwhelming {
-namespace detail{
+namespace detail {
 
     /// <summary>
     /// RAII container for a Tinkerforge brick connection.
@@ -46,6 +48,17 @@ namespace detail{
         tinkerforge_scope(const std::string& host, const std::uint16_t port);
 
         /// <summary>
+        /// Copy the the currently known <see cref="tinkerforge_bricklet" />s
+        /// in a thread-safe manner to the output iterator
+        /// <paramref name="oit" />.
+        /// </summary>
+        /// <typeparam name="TIterator"></typeparam>
+        /// <param name="oit"></param>
+        /// <returns></returns>
+        template<class TIterator>
+        std::size_t copy_bricklets(TIterator oit) const;
+
+        /// <summary>
         /// Converts the scope into the embedded <see cref="IPConnection" />.
         /// </summary>
         /// <remarks>
@@ -68,10 +81,33 @@ namespace detail{
         /// to one of these.
         /// </remarks>
         struct data {
+            std::map<std::string, tinkerforge_bricklet> bricklets;
+            std::mutex lock_bricklets;
             IPConnection connection;
-            explicit data(const std::string& host, const std::uint16_t port);
+            data(const std::string& host, const std::uint16_t port);
             ~data(void);
         };
+
+        /// <summary>
+        /// Device enumeration callback for a connection.
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <param name="connected_uid"></param>
+        /// <param name="position"></param>
+        /// <param name="hardware_version"></param>
+        /// <param name="firmware_version"></param>
+        /// <param name="device_identifier"></param>
+        /// <param name="enumeration_type"></param>
+        /// <param name="user_data"></param>
+        /// <returns></returns>
+        static void CALLBACK on_enumerate(const char *uid,
+            const char *connected_uid,
+            char position,
+            std::uint8_t hardware_version[3],
+            std::uint8_t firmware_version[3],
+            std::uint16_t device_identifier,
+            std::uint8_t enumeration_type,
+            void *user_data);
 
         /// <summary>
         /// Creates a unique endpoint representation that is used to index the
@@ -92,3 +128,5 @@ namespace detail{
 } /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
+
+#include "tinkerforge_scope.inl"

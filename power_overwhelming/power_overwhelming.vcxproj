@@ -55,6 +55,7 @@
     <ClInclude Include="convert_string.h" />
     <ClInclude Include="on_exit.h" />
     <ClInclude Include="timestamp.h" />
+    <ClInclude Include="tinkerforge_bricklet.h" />
     <ClInclude Include="tinkerforge_exception.h" />
     <ClInclude Include="tinkerforge_sensor_impl.h" />
     <ClInclude Include="tinkerforge_scope.h" />
@@ -74,6 +75,7 @@
     <ClCompile Include="nvml_sensor_impl.cpp" />
     <ClCompile Include="convert_string.cpp" />
     <ClCompile Include="timestamp.cpp" />
+    <ClCompile Include="tinkerforge_bricklet.cpp" />
     <ClCompile Include="tinkerforge_exception.cpp" />
     <ClCompile Include="tinkerforge_sensor.cpp" />
     <ClCompile Include="tinkerforge_sensor_definiton.cpp" />
@@ -83,6 +85,7 @@
   <ItemGroup>
     <None Include="on_exit.inl" />
     <None Include="timestamp.inl" />
+    <None Include="tinkerforge_scope.inl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\tinkerforge\tinkerforge.vcxproj">
