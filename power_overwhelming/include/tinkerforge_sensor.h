@@ -6,6 +6,7 @@
 #pragma once
 
 #include "measurement.h"
+#include "timestamp_resolution.h"
 #include "tinkerforge_sensor_definiton.h"
 
 
@@ -180,6 +181,35 @@ namespace power_overwhelming {
         /// <returns>The implementation-defined, human-readable name of the
         /// sensor.</returns>
         const wchar_t *name(void) const noexcept;
+
+        /// <summary>
+        /// Sample the sensor.
+        /// </summary>
+        /// <param name="resolution">The temporal resolution of the timestamp
+        /// to be returned.</param>
+        /// <returns>A sensor sample with the information about power
+        /// consumption that is available via Tinkerforge bricklets.</returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="resolution" /> does not designate a valid resolution
+        /// for timestamps.</exception>
+        /// <exception cref="std::runtime_error">If a sensor that has been moved
+        /// is sampled.</exception
+        /// <exception cref="tinkerforge_exception">If the sensor could not be
+        /// sampled. </exception>
+        measurement sample(const timestamp_resolution resolution) const;
+
+        /// <summary>
+        /// Sample the sensor using a timestamp with millisecond resolution.
+        /// </summary>
+        /// <returns>A sensor sample with the information about power
+        /// consumption that is available via Tinkerforge bricklets.</returns>
+        /// <exception cref="std::runtime_error">If a sensor that has been moved
+        /// is sampled.</exception>
+        /// <exception cref="tinkerforge_exception">If the sensor could not be
+        /// sampled. </exception>
+        inline measurement sample(void) const {
+            return this->sample(timestamp_resolution::milliseconds);
+        }
 
         /// <summary>
         /// Move assignment.

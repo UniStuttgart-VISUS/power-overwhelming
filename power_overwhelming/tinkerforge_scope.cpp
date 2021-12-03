@@ -47,7 +47,7 @@ visus::power_overwhelming::detail::tinkerforge_scope::data::data(
     // Connect to master brick.
     {
         auto status = ::ipcon_connect(&this->connection, host.c_str(), port);
-        if (status != E_OK) {
+        if (status < 0) {
             // Must deallocate if throwing after ipcon_create!
             ::ipcon_destroy(&this->connection);
             throw tinkerforge_exception(status);
@@ -61,7 +61,7 @@ visus::power_overwhelming::detail::tinkerforge_scope::data::data(
     // Perform first enumeration of devices.
     {
         auto status = ::ipcon_enumerate(&this->connection);
-        if (status != E_OK) {
+        if (status < 0) {
             // Same as above: manually cleanup resources.
             ::ipcon_destroy(&this->connection);
             throw tinkerforge_exception(status);

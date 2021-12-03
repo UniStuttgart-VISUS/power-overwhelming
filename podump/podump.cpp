@@ -58,14 +58,22 @@ int _tmain(const int argc, const TCHAR **argv) {
 
     // Print data for all connected Tinkerforge sensors.
     try {
-        std::vector<tinkerforge_sensor_definiton> sensors;
-        sensors.resize(tinkerforge_sensor::get_definitions(nullptr, 0));
-        tinkerforge_sensor::get_definitions(sensors.data(), sensors.size());
+        std::vector<tinkerforge_sensor_definiton> descs;
+        descs.resize(tinkerforge_sensor::get_definitions(nullptr, 0));
+        auto cnt = tinkerforge_sensor::get_definitions(descs.data(),
+            descs.size());
 
-        for (auto& s: sensors) {
-            tinkerforge_sensor sensor(s);
-            std::cout << s.uid() << std::endl;
-            // TODO
+        if (cnt < descs.size()) {
+            descs.resize(cnt);
+        }
+
+        for (auto& d: descs) {
+            tinkerforge_sensor s(d);
+            std::wcout << s.name() << L":" << std::endl;
+            auto m = s.sample();
+            std::wcout << m.timestamp() << L": " << m.voltage() << " V * "
+                << m.current() << " A = " << m.power() << L" W"
+                << std::endl;
         }
 
     } catch (std::exception &ex) {
