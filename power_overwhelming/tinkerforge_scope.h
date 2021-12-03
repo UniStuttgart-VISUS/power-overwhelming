@@ -51,8 +51,7 @@ namespace detail {
         /// <summary>
         /// Copy the the currently known <see cref="tinkerforge_bricklet" />s
         /// matching the given predicate in a thread-safe manner to the output
-        /// iterator.
-        /// <paramref name="oit" />.
+        /// iterator <paramref name="oit" />.
         /// </summary>
         /// <typeparam name="TIterator">An output iterator that can accept an
         /// arbitrary number of <see cref="tinkerfore_bricklet" />s being
@@ -82,6 +81,38 @@ namespace detail {
                 return true;
             });
         }
+
+        /// <summary>
+        /// Copy the the currently known <see cref="tinkerforge_bricklet" />s
+        /// matching the given predicate in a thread-safe manner to the output
+        /// iterator <paramref name="oit" />. If no bricklets are known, retry
+        /// until the specified timeout was reached.
+        /// </summary>
+        /// <typeparam name="TIterator">An output iterator that can accept an
+        /// arbitrary number of <see cref="tinkerfore_bricklet" />s being
+        /// written.</typeparam>
+        /// <typeparam name="TPredicate">An unary predicate accepting a
+        /// <see cref="tinkerforge_bricklet" /> returning a <c>bool</c> that
+        /// indicates whether the bricklet should be returned or not.
+        /// </typeparam>
+        /// <param name="oit">The output iterator receiving the bricklets.
+        /// </param>
+        /// <param name="predicate">The predicate the returned bricklets
+        /// must match.</param>
+        /// <param name="timeout">The maximum time in milliseconds to try to
+        /// retrieve bricklets from the master brick in case no bricklets are
+        /// cached.</param>
+        /// <param name="expected">If greater than zero, the method will wait
+        /// for this number of (matching) bricklets to be available before
+        /// returning. Otherwise (if zero), the method will return if at least
+        /// one bricklet was found. Note that the timeout will be honoured in
+        /// both cases.</param>
+        /// <returns>The number of bricklets written to <paramref name="oit" />.
+        /// </returns>
+        template<class TIterator, class TPredicate>
+        std::size_t copy_bricklets(TIterator oit, const TPredicate& predicate,
+            const std::chrono::milliseconds timeout,
+            const std::size_t expected = 0) const;
 
         /// <summary>
         /// Converts the scope into the embedded <see cref="IPConnection" />.

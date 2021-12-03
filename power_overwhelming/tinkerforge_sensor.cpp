@@ -5,40 +5,38 @@
 
 #include "tinkerforge_sensor.h"
 
+#include <chrono>
 #include <thread>
 #include <vector>
+
+#include <bricklet_voltage_current_v2.h>
 
 #include "tinkerforge_sensor_impl.h"
 
 
 /*
- * visus::power_overwhelming::tinkerforge_sensor::get_sensors
+ * visus::power_overwhelming::tinkerforge_sensor::get_definitions
  */
-std::size_t visus::power_overwhelming::tinkerforge_sensor::get_sensors(
-        tinkerforge_sensor_definiton *outSensors, const std::size_t cntSensors,
-        const std::size_t timeout = 1000, const char *host,
-        const std::uint16_t port) {
+std::size_t visus::power_overwhelming::tinkerforge_sensor::get_definitions(
+        tinkerforge_sensor_definiton *out_definitions,
+        const std::size_t cnt_definitions, const std::size_t timeout,
+        const char *host, const std::uint16_t port) {
     std::vector<detail::tinkerforge_bricklet> bricklets;
     detail::tinkerforge_scope scope(host, port);
 
-    for (auto i = 0; i < 4; ++i) {
-        scope.copy_bricklets(std::back_inserter(bricklets));
+    auto retval = scope.copy_bricklets(std::back_inserter(bricklets),
+        [](const detail::tinkerforge_bricklet& b) {
+            return (b.device_type() == VOLTAGE_CURRENT_V2_DEVICE_IDENTIFIER);
+        }, std::chrono::milliseconds(timeout), cnt_definitions);
 
-        if (bricklets.empty()) {
-            // Bricklets are enumerated asynchronously, so if we are calling
-            // that for the first time, we might not yet have any information.
-            // The (hacky) solution is to wait for a bit and try again ...
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        } else {
-            // We have at least some bricklets, albeit it is not sure that
-            // we have all of them ...
-            break;
+    if (out_definitions != nullptr) {
+        for (std::size_t i = 0; (i < cnt_definitions) && (i < retval); ++i) {
+            out_definitions[i] = tinkerforge_sensor_definiton(
+                bricklets[i].uid().c_str());
         }
     }
 
-
-    // TODO
-    return 0;
+    return retval;
 }
 
 

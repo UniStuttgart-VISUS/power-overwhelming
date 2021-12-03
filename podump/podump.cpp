@@ -59,11 +59,12 @@ int _tmain(const int argc, const TCHAR **argv) {
     // Print data for all connected Tinkerforge sensors.
     try {
         std::vector<tinkerforge_sensor_definiton> sensors;
-        sensors.resize(tinkerforge_sensor::get_sensors(nullptr, 0));
-        tinkerforge_sensor::get_sensors(sensors.data(), sensors.size());
+        sensors.resize(tinkerforge_sensor::get_definitions(nullptr, 0));
+        tinkerforge_sensor::get_definitions(sensors.data(), sensors.size());
 
         for (auto& s: sensors) {
             tinkerforge_sensor sensor(s);
+            std::cout << s.uid() << std::endl;
             // TODO
         }
 

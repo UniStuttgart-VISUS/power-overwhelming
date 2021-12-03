@@ -42,20 +42,56 @@ namespace power_overwhelming {
         /// all of them and it is impossible to know for sure whether the
         /// currently know set of bricklets is the actual ones. However,
         /// the library keeps a list of already discovered bricklets, which
-        /// is updated</para>
+        /// is updated in background and returned if it is non-empty. Otherwise,
+        /// ie in case of an empty list, the method waits for at most
+        /// <paramref name="timeout" /> milliseconds for the bricklets to
+        /// appear.</para>
+        /// <para>Due to the asynchronous detection of bricklets and the fact
+        /// that bricklets are fully hot-plug capable and therefore can also
+        /// be removed at any time, the method might return spurious numbers
+        /// of bricklets which need to be handled by the caller. It is
+        /// absolutely mandatory to check the return value! If the return
+        /// value is larger than <paramref name="cnt_definitions" />, the caller
+        /// should increase the buffer size and call the method again. If the
+        /// returned number of brickles is smaller than
+        /// <paramref name="cnt_definitions" />, the remaining elements in
+        /// the output array are invalid and must not be used. Spurious return
+        /// values can even occur when using the pattern of calling the method
+        /// with <c>nullptr</c> for <paramref name="out_definitions" /> to
+        /// count the required space, allocating this space and then calling
+        /// it again. This is due to the cached bricklets only being locked
+        /// when inside the method, not between calls.</para>
+        /// <para>Callers should try to avoid specifying larger numbers
+        /// for <paramref name="cnt_definitions" /> than the actually available
+        /// number of current/voltage bricklets, because the method assumes
+        /// that this is the epected number and waits until the timeout if
+        /// less bricklets than this number are actually connected. A reasonable
+        /// pattern is determining the number of current/voltage bricklets by
+        /// calling the method without an output buffer, the expected number
+        /// as <paramre name="cnt_definitions" /> and a fairly large timeout
+        /// to give the method time to actually discover all of the expected
+        /// bricklets. Callers should then allocate the required output buffer
+        /// and call the method again with a small timeout.</para>
         /// </remarks>
-        /// <param name="outSensors">Receives the sensor definitions. If
+        /// <param name="out_definitions">Receives the sensor definitions. If
         /// <c>nullptr</c>, the sensors will only be counted.</param>
-        /// <param name="cntSensors">Size of <paramref name="outSensors" />
-        /// in elements.</param>
+        /// <param name="cnt_definitions">Size of
+        /// <paramref name="out_definitions" /> in elements. It is safe to pass
+        /// any number if <paramref name="out_definitions" /> is <c>nullptr</c>.
+        /// In this case, the number is interpreted as the expected number of
+        /// bricklets to wait for.</param>
+        /// <param name="timeout">The number of milliseconds to wait for the
+        /// bricklets to connect if none are cached. This value defaults to
+        /// 1000.</param>
         /// <param name="host">The host on which the Brick daemon is running.
         /// This parameter defaults to &quot;localhost&quot;.</param>
         /// <param name="port">The port on which the Brick daemon is listening.
         /// This parameter defaults to 4223.</param>
         /// <returns>The number of current/voltage bricklets available,
         /// regardless of how many have been copied.</returns>
-        static std::size_t get_sensors(tinkerforge_sensor_definiton *outSensors,
-            const std::size_t cntSensors, const std::size_t timeout = 1000,
+        static std::size_t get_definitions(
+            tinkerforge_sensor_definiton *out_definitions,
+            const std::size_t cnt_definitions, const std::size_t timeout = 1000,
             const char *host = default_host,
             const std::uint16_t port = default_port);
 
