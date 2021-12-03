@@ -61,6 +61,12 @@
     <ClCompile Include="tinkerforge_bricklet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tinkerforge_display.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tinkerforge_display_impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adl_exception.h">
@@ -133,6 +139,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tinkerforge_bricklet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tinkerforge_display.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tinkerforge_display_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

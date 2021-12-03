@@ -52,7 +52,7 @@ visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
     // connection to the master brick, (ii) allocate the voltage/current
     // bricklet and manage its life time.
     this->_impl = new detail::tinkerforge_sensor_impl(
-        (host != nullptr) ? host : "localhost",
+        (host != nullptr) ? host : default_host,
         port,
         uid);
 }
@@ -65,7 +65,7 @@ visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
         const char *uid, const wchar_t *description, const char *host,
         const std::uint16_t port) : _impl(nullptr) {
     this->_impl = new detail::tinkerforge_sensor_impl(
-        (host != nullptr) ? host : "localhost",
+        (host != nullptr) ? host : default_host,
         port,
         uid);
 
@@ -82,7 +82,7 @@ visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
         const tinkerforge_sensor_definiton& definition,
         const char *host, const std::uint16_t port) : _impl(nullptr) {
     this->_impl = new detail::tinkerforge_sensor_impl(
-        (host != nullptr) ? host : "localhost",
+        (host != nullptr) ? host : default_host,
         port,
         definition.uid());
 
