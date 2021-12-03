@@ -36,6 +36,14 @@ namespace power_overwhelming {
         /// Retrieve sensor definitions for all bricklets attacted to the
         /// specified host.
         /// </summary>
+        /// <remarks>
+        /// <para>Tinkerforge bricklets are discovered asynchronously via
+        /// a network protocol. Therefore, it might take some time to find
+        /// all of them and it is impossible to know for sure whether the
+        /// currently know set of bricklets is the actual ones. However,
+        /// the library keeps a list of already discovered bricklets, which
+        /// is updated</para>
+        /// </remarks>
         /// <param name="outSensors">Receives the sensor definitions. If
         /// <c>nullptr</c>, the sensors will only be counted.</param>
         /// <param name="cntSensors">Size of <paramref name="outSensors" />
@@ -47,7 +55,8 @@ namespace power_overwhelming {
         /// <returns>The number of current/voltage bricklets available,
         /// regardless of how many have been copied.</returns>
         static std::size_t get_sensors(tinkerforge_sensor_definiton *outSensors,
-            const std::size_t cntSensors, const char *host = default_host,
+            const std::size_t cntSensors, const std::size_t timeout = 1000,
+            const char *host = default_host,
             const std::uint16_t port = default_port);
 
         /// <summary>

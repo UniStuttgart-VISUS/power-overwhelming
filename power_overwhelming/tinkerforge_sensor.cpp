@@ -16,7 +16,8 @@
  */
 std::size_t visus::power_overwhelming::tinkerforge_sensor::get_sensors(
         tinkerforge_sensor_definiton *outSensors, const std::size_t cntSensors,
-        const char *host, const std::uint16_t port) {
+        const std::size_t timeout = 1000, const char *host,
+        const std::uint16_t port) {
     std::vector<detail::tinkerforge_bricklet> bricklets;
     detail::tinkerforge_scope scope(host, port);
 

@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cinttypes>
 #include <map>
 #include <memory>
@@ -49,14 +50,38 @@ namespace detail {
 
         /// <summary>
         /// Copy the the currently known <see cref="tinkerforge_bricklet" />s
-        /// in a thread-safe manner to the output iterator
+        /// matching the given predicate in a thread-safe manner to the output
+        /// iterator.
         /// <paramref name="oit" />.
         /// </summary>
-        /// <typeparam name="TIterator"></typeparam>
+        /// <typeparam name="TIterator">An output iterator that can accept an
+        /// arbitrary number of <see cref="tinkerfore_bricklet" />s being
+        /// written.</typeparam>
+        /// <typeparam name="TPredicate">An unary predicate accepting a
+        /// <see cref="tinkerforge_bricklet" /> returning a <c>bool</c> that
+        /// indicates whether the bricklet should be returned or not.
+        /// </typeparam>
+        /// <param name="oit"></param>
+        /// <returns></returns>
+        template<class TIterator, class TPredicate>
+        std::size_t copy_bricklets(TIterator oit,
+            const TPredicate& predicate) const;
+
+        /// <summary>
+        /// Copy the the currently known <see cref="tinkerforge_bricklet" />s
+        /// in a thread-safe manner to the output iterator.
+        /// </summary>
+        /// <typeparam name="TIterator">An output iterator that can accept an
+        /// arbitrary number of <see cref="tinkerfore_bricklet" />s being
+        /// written.</typeparam>
         /// <param name="oit"></param>
         /// <returns></returns>
         template<class TIterator>
-        std::size_t copy_bricklets(TIterator oit) const;
+        inline std::size_t copy_bricklets(TIterator oit) const {
+            return this->copy_bricklets(oit, [](const tinkerforge_bricklet&) {
+                return true;
+            });
+        }
 
         /// <summary>
         /// Converts the scope into the embedded <see cref="IPConnection" />.

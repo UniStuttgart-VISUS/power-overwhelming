@@ -7,16 +7,18 @@
 /*
  * visus::power_overwhelming::detail::tinkerforge_scope::copy_bricklets
  */
-template<class TIterator>
+template<class TIterator, class TPredicate>
 std::size_t visus::power_overwhelming::detail::tinkerforge_scope::copy_bricklets(
-        TIterator oit) const {
+        TIterator oit, const TPredicate& predicate) const {
     std::size_t retval = 0;
 
     std::lock_guard<decltype(this->_scope->lock_bricklets)> l(
         this->_scope->lock_bricklets);
     for (auto& b : this->_scope->bricklets) {
-        *oit++ = b.second;
-        ++retval;
+        if (predicate(b.second)) {
+            *oit++ = b.second;
+            ++retval;
+        }
     }
 
     return retval;
