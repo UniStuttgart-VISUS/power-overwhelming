@@ -73,7 +73,7 @@ int _tmain(const int argc, const TCHAR **argv) {
             d.print("Power overwhelming!");
         }
 
-    } catch (std::exception &ex) {
+    } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
 
@@ -96,11 +96,9 @@ int _tmain(const int argc, const TCHAR **argv) {
                 << std::endl;
         }
 
-    } catch (std::exception &ex) {
+    } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
-
-    std::this_thread::sleep_for(std::chrono::seconds(10));
 
      return 0;
 }
