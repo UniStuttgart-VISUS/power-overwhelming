@@ -33,12 +33,15 @@ namespace power_overwhelming {
         typedef int value_type;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
+        /// <param name="vi"></param>
         /// <param name="code">The error code, which also determines the error
         /// message.</param>
-        visa_exception(const value_type code);
+        visa_exception(const ViSession vi, const value_type code);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
         /// <summary>
         /// Initialises a new instance.
