@@ -11,3 +11,4 @@
  */
 visus::power_overwhelming::visa_exception::visa_exception(const value_type code)
         : std::exception(std::to_string(code).c_str()), _code(code) { }
+// TODO: Is there any way to obtain a meaningful error string from VISA?
