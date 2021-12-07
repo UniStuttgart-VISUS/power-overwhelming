@@ -61,6 +61,7 @@
     <ClInclude Include="tinkerforge_exception.h" />
     <ClInclude Include="tinkerforge_sensor_impl.h" />
     <ClInclude Include="tinkerforge_scope.h" />
+    <ClInclude Include="visa_exception.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adl_exception.cpp" />
@@ -85,6 +86,7 @@
     <ClCompile Include="tinkerforge_sensor_definiton.cpp" />
     <ClCompile Include="tinkerforge_sensor_impl.cpp" />
     <ClCompile Include="tinkerforge_scope.cpp" />
+    <ClCompile Include="visa_exception.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="on_exit.inl" />
