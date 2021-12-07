@@ -5,9 +5,14 @@
 
 #pragma once
 
+#include <array>
+#include <functional>
+
 #include <bricklet_voltage_current_v2.h>
+#include <Windows.h>
 
 #include "tinkerforge_scope.h"
+#include "triple_buffering.h"
 
 
 namespace visus {
@@ -20,14 +25,61 @@ namespace detail {
     struct tinkerforge_sensor_impl final {
 
         /// <summary>
+        /// The callback to be invoked for incoming asynchronous current
+        /// readings.
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="data"></param>
+        static void CALLBACK current_callback(const std::int32_t current,
+            void *data);
+
+        /// <summary>
+        /// The callback to be invoked for incoming asynchronous power
+        /// readings.
+        /// </summary>
+        /// <param name="power"></param>
+        /// <param name="data"></param>
+        static void CALLBACK power_callback(const std::int32_t power,
+            void *data);
+
+        /// <summary>
+        /// The callback to be invoked for incoming asynchronous voltage
+        /// readings.
+        /// </summary>
+        /// <param name="power"></param>
+        /// <param name="data"></param>
+        static void CALLBACK voltage_callback(const std::int32_t voltage,
+            void *data);
+
+        /// <summary>
         /// The handle for a voltage/current bricklet.
         /// </summary>
         VoltageCurrentV2 bricklet;
 
         /// <summary>
+        /// Triple buffer for asynchronously arriving current readings.
+        /// </summary>
+        std::array<std::int32_t, 3> current_buffer;
+
+        /// <summary>
+        /// Tracks the state of the triple buffer <see cref="current_buffer" />.
+        /// </summary>
+        triple_buffer_state current_state;
+
+        /// <summary>
         /// A user-defined description of what the sensor is actually measuring.
         /// </summary>
         std::wstring description;
+
+        ///// <summary>
+        ///// Callback in the sensor to be invoked if an asynchronous voltage
+        ///// reading was recevied.
+        ///// </summary>
+        ///// <remarks>
+        ///// This function is used to translate from C callbacks to C++ 11 lambda
+        ///// expressions.
+        ///// </remarks>
+        //std::function<void(const std::int32_t)> on_voltage;
 
         /// <summary>
         /// The name of the sensor, which has been created from the host,
@@ -54,6 +106,24 @@ namespace detail {
         /// Finalises the instance.
         /// </summary>
         ~tinkerforge_sensor_impl(void);
+
+        /// <summary>
+        /// Disable all three callbacks of <see cref="bricklet" />.
+        /// </summary>
+        /// <exception cref="tinkerforge_exception"></exception>
+        void disable_callbacks(void);
+
+        /// <summary>
+        /// Enable all three callbacks with <see cref="bricklet" />.
+        /// </summary>
+        /// <remarks>
+        /// This method will set the callbacks defined in this class on the
+        /// bricklet and start sampling it with the specified period (in
+        /// milliseconds).
+        /// </remarks>
+        /// <param name="period"></param>
+        /// <exception cref="tinkerforge_exception"></exception>
+        void enable_callbacks(const std::int32_t period = 1);
     };
 
 } /* namespace detail */
