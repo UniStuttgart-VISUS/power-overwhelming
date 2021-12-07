@@ -67,6 +67,9 @@
     <ClCompile Include="tinkerforge_display_impl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="triple_buffering.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="visa_exception.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -148,6 +151,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tinkerforge_display_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="triple_buffering.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="visa_exception.h">

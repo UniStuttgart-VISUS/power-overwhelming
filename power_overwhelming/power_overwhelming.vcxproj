@@ -61,6 +61,7 @@
     <ClInclude Include="tinkerforge_exception.h" />
     <ClInclude Include="tinkerforge_sensor_impl.h" />
     <ClInclude Include="tinkerforge_scope.h" />
+    <ClInclude Include="triple_buffering.h" />
     <ClInclude Include="visa_exception.h" />
   </ItemGroup>
   <ItemGroup>
@@ -86,6 +87,7 @@
     <ClCompile Include="tinkerforge_sensor_definiton.cpp" />
     <ClCompile Include="tinkerforge_sensor_impl.cpp" />
     <ClCompile Include="tinkerforge_scope.cpp" />
+    <ClCompile Include="triple_buffering.cpp" />
     <ClCompile Include="visa_exception.cpp" />
   </ItemGroup>
   <ItemGroup>
