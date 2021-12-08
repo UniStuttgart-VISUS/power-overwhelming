@@ -33,15 +33,25 @@ namespace power_overwhelming {
         typedef int value_type;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
+        /// <summary>
+        /// If <paramref name="status" /> indicates a VISA error, throw a
+        /// <see cref="visa_exception" />.
+        /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library is being compiled without
+        /// VISA support.
+        /// </remarks>
+        /// <param name="status">The error code to be tested.</param>
+        /// <exception cref="visa_exception">If the given status code
+        /// represents an error state.</exception>
+        static void throw_on_error(const value_type status);
+
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <param name="vi"></param>
         /// <param name="code">The error code, which also determines the error
         /// message.</param>
-        visa_exception(const ViSession vi, const value_type code);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+        visa_exception(const value_type code);
 
         /// <summary>
         /// Initialises a new instance.

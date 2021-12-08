@@ -12,13 +12,13 @@
 #include <mutex>
 #include <string>
 
+#include "visa_exception.h"
+#include "visa_scope_impl.h"
+
 
 namespace visus {
 namespace power_overwhelming {
 namespace detail {
-
-    /* Forward declarations. */
-    struct visa_scope_impl;
 
     /// <summary>
     /// RAII container for a VISA connection.
@@ -39,7 +39,19 @@ namespace detail {
         /// <param name="timeout">The timeout for establishing a connection to
         /// the device (in milliseconds). This parameter defaults to 3000.
         /// </param>
-        visa_scope(const std::string& path, const std::uint32_t timeout = 3000);
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c>.</exception>
+        visa_scope(const char *path, const std::uint32_t timeout = 3000);
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+        /// <summary>
+        /// Converts the scope into the device session it represents.
+        /// </summary>
+        /// <returns></returns>
+        inline operator ViSession(void) const noexcept {
+            return this->_impl->session;
+        }
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     private:
 

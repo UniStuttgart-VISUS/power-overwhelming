@@ -5,14 +5,22 @@
 
 #include "visa_scope.h"
 
-#include "visa_scope_impl.h"
+#include <cassert>
+#include <stdexcept>
+
+#include "visa_library.h"
 
 
 /*
  * visus::power_overwhelming::detail::visa_scope::visa_scope
  */
 visus::power_overwhelming::detail::visa_scope::visa_scope(
-        const std::string& path, const std::uint32_t timeout) {
+        const char *path, const std::uint32_t timeout) {
+    if (path == nullptr) {
+        throw std::invalid_argument("The path to a VISA device must not be "
+            "null.");
+    }
+
     std::lock_guard<decltype(_lock_scopes)> l(_lock_scopes);
     auto it = _scopes.find(path);
     if (it != _scopes.end()) {

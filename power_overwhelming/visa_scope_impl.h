@@ -42,17 +42,6 @@ namespace detail {
         /// Finalises the instance.
         /// </summary>
         ~visa_scope_impl(void);
-
-        /// <summary>
-        /// If <paramref name="status" /> indicates a VISA error, throw a
-        /// <see cref="visa_exception" />.
-        /// </summary>
-        /// <remarks>
-        /// This method does nothing if the library is being compiled without
-        /// VISA support.
-        /// </remarks>
-        /// <param name="status">The error code to be tested.</param>
-        void throw_on_error(const visa_exception::value_type status);
     };
 
 } /* namespace detail */

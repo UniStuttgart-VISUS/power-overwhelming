@@ -3,8 +3,8 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
     <VisaDir>$(ProgramFiles)\IVI Foundation\VISA\</VisaDir>
-    <VisaPlatform Condition="'$(Platform)' == 'Win32'">WinNT</VisaPlatform>
-    <VisaPlatform Condition="'$(Platform)' == 'x64'">Win64</VisaPlatform>
+    <VisaPlatform Condition="Exists('$(VisaDir)WinNT')">WinNT</VisaPlatform>
+    <VisaPlatform Condition="Exists('$(VisaDir)Win64')">Win64</VisaPlatform>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
@@ -12,9 +12,6 @@
       <PreprocessorDefinitions Condition="Exists('$(VisaDir)$(VisaPlatform)')">POWER_OVERWHELMING_WITH_VISA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(VisaDir)$(VisaPlatform)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
-    <Link>
-      <AdditionalLibraryDirectories>$(VisaDir)$(VisaPlatform)\Lib_x64\msc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-    </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="VisaDir">

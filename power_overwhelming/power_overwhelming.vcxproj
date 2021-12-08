@@ -41,6 +41,7 @@
     <ClInclude Include="amd_display_library.h" />
     <ClInclude Include="include\adl_sensor.h" />
     <ClInclude Include="include\adl_sensor_source.h" />
+    <ClInclude Include="include\hmc8015_sensor.h" />
     <ClInclude Include="include\measurement.h" />
     <ClInclude Include="include\nvml_sensor.h" />
     <ClInclude Include="include\power_overwhelming_api.h" />
@@ -66,6 +67,7 @@
     <ClInclude Include="visa_library.h" />
     <ClInclude Include="visa_scope.h" />
     <ClInclude Include="visa_scope_impl.h" />
+    <ClInclude Include="visa_sensor_impl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adl_exception.cpp" />
@@ -73,6 +75,7 @@
     <ClCompile Include="adl_sensor.cpp" />
     <ClCompile Include="adl_sensor_impl.cpp" />
     <ClCompile Include="amd_display_library.cpp" />
+    <ClCompile Include="hmc8015_sensor.cpp" />
     <ClCompile Include="library_base.cpp" />
     <ClCompile Include="measurement.cpp" />
     <ClCompile Include="nvidia_management_library.cpp" />
@@ -95,6 +98,7 @@
     <ClCompile Include="visa_library.cpp" />
     <ClCompile Include="visa_scope.cpp" />
     <ClCompile Include="visa_scope_impl.cpp" />
+    <ClCompile Include="visa_sensor_impl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="on_exit.inl" />

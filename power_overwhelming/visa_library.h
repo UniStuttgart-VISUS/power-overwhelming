@@ -5,6 +5,9 @@
 
 #pragma once
 
+#include <string>
+#include <vector>
+
 #if defined(POWER_OVERWHELMING_WITH_VISA)
 #include <visa.h>
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -41,11 +44,27 @@ namespace detail {
         /// </exception>
         static const visa_library& instance(void);
 
+        /// <summary>
+        /// Find the device strings for connected instruments matching the given
+        /// search expression.
+        /// </summary>
+        /// <param name="expression">A search expression for VISA devices. See
+        /// https://zone.ni.com/reference/en-XX/help/370131S-01/ni-visa/vifindrsrc/
+        /// for details.</param>
+        /// <returns>A list of matching device identifiers that can be used
+        /// to open a per-instrument scope.</returns>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        std::vector<std::string> find_resource(
+            const char *expression = "?*") const;
+
         __POWER_OVERWHELMING_VISA_FUNC(viClear);
         __POWER_OVERWHELMING_VISA_FUNC(viClose);
         __POWER_OVERWHELMING_VISA_FUNC(viDisableEvent);
         __POWER_OVERWHELMING_VISA_FUNC(viDiscardEvents);
         __POWER_OVERWHELMING_VISA_FUNC(viEnableEvent);
+        __POWER_OVERWHELMING_VISA_FUNC(viFindNext);
+        __POWER_OVERWHELMING_VISA_FUNC(viFindRsrc);
         __POWER_OVERWHELMING_VISA_FUNC(viGetAttribute);
         __POWER_OVERWHELMING_VISA_FUNC(viInstallHandler);
         __POWER_OVERWHELMING_VISA_FUNC(viOpen);
@@ -53,6 +72,7 @@ namespace detail {
         __POWER_OVERWHELMING_VISA_FUNC(viRead);
         __POWER_OVERWHELMING_VISA_FUNC(viReadSTB);
         __POWER_OVERWHELMING_VISA_FUNC(viSetAttribute);
+        __POWER_OVERWHELMING_VISA_FUNC(viSetBuf);
         __POWER_OVERWHELMING_VISA_FUNC(viStatusDesc);
         __POWER_OVERWHELMING_VISA_FUNC(viUninstallHandler);
         __POWER_OVERWHELMING_VISA_FUNC(viWaitOnEvent);

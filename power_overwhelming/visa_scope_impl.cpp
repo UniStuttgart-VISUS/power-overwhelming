@@ -14,7 +14,8 @@
  * visus::power_overwhelming::detail::visa_scope_impl::visa_scope_impl
  */
 visus::power_overwhelming::detail::visa_scope_impl::visa_scope_impl(
-        const std::string& path, const std::uint32_t timeout) {
+        const std::string& path, const std::uint32_t timeout)
+        : resource_manager(0), session(0) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     {
         auto status = visa_library::instance().viOpenDefaultRM(
@@ -30,7 +31,7 @@ visus::power_overwhelming::detail::visa_scope_impl::visa_scope_impl(
             path.c_str(), 0, timeout, &this->session);
         if (status < VI_SUCCESS) {
             visa_library::instance().viClose(this->resource_manager);
-            throw visa_exception(this->resource_manager, status);
+            throw visa_exception(status);
         }
     }
 
@@ -53,18 +54,5 @@ visus::power_overwhelming::detail::visa_scope_impl::~visa_scope_impl(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     visa_library::instance().viClose(this->session);
     visa_library::instance().viClose(this->resource_manager);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
-}
-
-
-/*
- * visus::power_overwhelming::detail::visa_scope_impl::throw_on_error
- */
-void visus::power_overwhelming::detail::visa_scope_impl::throw_on_error(
-        const visa_exception::value_type status) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    if (error < VI_SUCCESS) {
-        throw visa_exception(this->resource_manager, status);
-    }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
