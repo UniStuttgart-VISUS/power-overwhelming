@@ -47,6 +47,13 @@ namespace power_overwhelming {
         static void throw_on_error(const value_type status);
 
         /// <summary>
+        /// If <paramref name="status" /> indicates anything but success, throw
+        /// a <see cref="visa_exception" />.
+        /// </summary>
+        /// <param name="status"></param>
+        static void throw_unless_succeeded(const value_type status);
+
+        /// <summary>
         /// Initialises a new instance.
         /// </summary>
         /// <param name="code">The error code, which also determines the error

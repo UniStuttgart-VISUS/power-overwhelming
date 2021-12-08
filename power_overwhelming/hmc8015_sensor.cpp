@@ -64,6 +64,10 @@ visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
 
     // Query the instrument name for use a sensor name.
     this->_impl->sensor_name = detail::convert_string(this->_impl->identify());
+
+    // Lock the system to indicate that it is controlled by the software. As
+    // locking the system is not critical, do not check for system errors here.
+    this->_impl->printf("SYST:REM\n");
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -72,7 +76,31 @@ visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
  * visus::power_overwhelming::hmc8015_sensor::~hmc8015_sensor
  */
 visus::power_overwhelming::hmc8015_sensor::~hmc8015_sensor(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    if (this->_impl != nullptr) {
+        // Reset the system state.
+        try {
+            this->_impl->printf("SYST:LOC\n");
+        } catch (...) { /* Ignore this. */ }
+    }
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
     delete this->_impl;
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::get_log_file
+ */
+std::size_t visus::power_overwhelming::hmc8015_sensor::get_log_file(
+        char *path, const std::size_t cnt) {
+    if (path != nullptr) {
+        this->_impl->printf("LOG:FNAM?\n");
+        return this->_impl->read(reinterpret_cast<ViByte *>(path),
+            static_cast<ViUInt32>(cnt));
+    } else {
+        return 0;
+    }
 }
 
 
@@ -84,6 +112,23 @@ const wchar_t *visus::power_overwhelming::hmc8015_sensor::name(
     return (this->_impl != nullptr)
         ? this->_impl->sensor_name.c_str()
         : nullptr;
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::set_log_file
+ */
+void visus::power_overwhelming::hmc8015_sensor::set_log_file(const char *path,
+        const bool use_usb) {
+    if (path == nullptr) {
+        throw std::invalid_argument("The path to the log file cannot be null.");
+    }
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    this->_impl->printf("LOG:FNAM \"%s\", %s\n", path,
+        use_usb ? "EXT" : "INT");
+    this->_impl->throw_on_system_error();
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <cinttypes>
 #include <string>
 #include <vector>
 
@@ -61,6 +62,17 @@ namespace detail {
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>
+        /// Invoke <see cref="viPrintf" /> on the instrument.
+        /// </summary>
+        /// <typeparam name="TArgs"></typeparam>
+        /// <param name="format"></param>
+        /// <param name="args"></param>
+        template<class... TArgs>
+        void printf(ViConstString format, TArgs&&... args);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+        /// <summary>
         /// Write the given data to the instrument and read a response of
         /// at most <paramref name="buffer_size" /> bytes.
         /// </summary>
@@ -96,27 +108,20 @@ namespace detail {
             ViUInt32 buffer_size = 1024);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-        /// <summary>
-        /// Invoke <see cref="viPrintf" /> on the instrument.
-        /// </summary>
-        /// <typeparam name="TArgs"></typeparam>
-        /// <param name="format"></param>
-        /// <param name="args"></param>
-        template<class... TArgs>
-        void printf(ViConstString format, TArgs&&... args);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
-
-#if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>
         /// Read from the instrument into the given buffer.
         /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="cnt"></param>
+        /// <remarks>
+        /// This method has no effect if the library has been compiled without
+        /// support for VISA.
+        /// </remarks>
+        /// <param name="buffer">The buffer to write the data to.</param>
+        /// <param name="cnt">The size of the buffer in bytes.</param>
         /// <returns></returns>
-        /// <exception cref="visa_exception"></exception>
-        ViUInt32 read(ViPBuf buffer, ViUInt32 cnt);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+        /// <exception cref="visa_exception">If the operation did not succeed,
+        /// which includes the warning state like an insufficient output buffer
+        /// being provided.</exception>
+        std::size_t read(std::uint8_t *buffer, std::size_t cnt);
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>
@@ -148,8 +153,10 @@ namespace detail {
         /// This method always returns zero if the library was compiled without
         /// support for VISA.
         /// </remarks>
-        /// <param name="message"></param>
-        /// <returns></returns>
+        /// <param name="message">The message associated with the system error
+        /// code returned.</param>
+        /// <returns>The current system error, or zero if the system has no
+        /// previous error.</returns>
         int system_error(std::string& message);
 
         /// <summary>
@@ -159,8 +166,19 @@ namespace detail {
         /// This method always returns zero if the library was compiled without
         /// support for VISA.
         /// </remarks>
-        /// <returns></returns>
+        /// <returns>The current system error, or zero if the system has no
+        /// previous error.</returns>
         int system_error(void);
+
+        /// <summary>
+        /// Checks <see cref="system_error" /> and throws a
+        /// <see cref="std::runtime_error" /> if it does not return zero.
+        /// </summary>
+        /// <exception cref="visa_exception">If the current system state could
+        /// not be retrieved.</exception>
+        /// <exception cref="std::runtime_error">If the current system state was
+        /// retrieved and is not zero.</exception>
+        void throw_on_system_error(void);
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>

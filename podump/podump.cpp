@@ -143,6 +143,9 @@ int _tmain(const int argc, const TCHAR **argv) {
         hmc8015_sensor::for_all(sensors.data(), sensors.size());
 
         for (auto &s : sensors) {
+            s.set_log_file("podump.csv", false);
+            std::vector<char> path(1024);
+            s.get_log_file(path.data(), path.size());
             std::wcout << s.name() << L":" << std::endl;
             //auto m = s.sample();
             //std::wcout << m.timestamp() << L": " << m.power() << L" W"

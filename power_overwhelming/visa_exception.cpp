@@ -59,6 +59,19 @@ void visus::power_overwhelming::visa_exception::throw_on_error(
 
 
 /*
+ * visus::power_overwhelming::visa_exception::throw_unless_succeeded
+ */
+void visus::power_overwhelming::visa_exception::throw_unless_succeeded(
+        const value_type status) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    if (status != VI_SUCCESS) {
+        throw visa_exception(status);
+    }
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
  * visus::power_overwhelming::visa_exception::visa_exception
  */
 visus::power_overwhelming::visa_exception::visa_exception(const value_type code)

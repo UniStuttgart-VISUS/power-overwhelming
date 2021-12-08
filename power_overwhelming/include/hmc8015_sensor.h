@@ -91,11 +91,33 @@ namespace power_overwhelming {
         ~hmc8015_sensor(void);
 
         /// <summary>
+        /// Gets the path to the log file.
+        /// </summary>
+        /// <param name="path">The buffer receiving the log file. Note that
+        /// this is the path and a designator whether the internal or USB
+        /// memory is used. If this parameter is <c>nullptr</c>, nothing will
+        /// be written.</param>
+        /// <param name="cnt">The maximum number of bytes that can be written
+        /// to <paramref name="path "/>.</param>
+        /// <returns>The number of characters actually written.</returns>
+        std::size_t get_log_file(char *path, const std::size_t cnt);
+
+        /// <summary>
         /// Gets the name of the sensor.
         /// </summary>
         /// <returns>The implementation-defined, human-readable name of the
         /// sensor.</returns>
         const wchar_t *name(void) const noexcept;
+
+        /// <summary>
+        /// Sets the path to the log file.
+        /// </summary>
+        /// <param name="path">The path to the log file, usually just the
+        /// file name.</param>
+        /// <param name="use_usb">If <c>true</c>, the file will be written to
+        /// the attached USB stick instead of internal memory. This parameter
+        /// defaults to <c>false</c>.</param>
+        void set_log_file(const char *path, const bool use_usb = false);
 
         /// <summary>
         /// Move assignment.

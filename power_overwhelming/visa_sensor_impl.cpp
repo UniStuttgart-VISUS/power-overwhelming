@@ -71,18 +71,20 @@ std::vector<ViByte> visus::power_overwhelming::detail::visa_sensor_impl::query(
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * visus::power_overwhelming::detail::visa_sensor_impl::read
  */
-ViUInt32 visus::power_overwhelming::detail::visa_sensor_impl::read(
-        ViPBuf buffer, ViUInt32 cnt) {
+std::size_t visus::power_overwhelming::detail::visa_sensor_impl::read(
+        std::uint8_t *buffer, std::size_t cnt) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     ViUInt32 retval = 0;
-    visa_exception::throw_on_error(detail::visa_library::instance()
-        .viRead(this->scope, buffer, cnt, &retval));
+    visa_exception::throw_unless_succeeded(detail::visa_library::instance()
+        .viRead(this->scope, buffer, static_cast<ViUInt32>(cnt), &retval));
     return retval;
-}
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
 
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
@@ -166,6 +168,24 @@ int visus::power_overwhelming::detail::visa_sensor_impl::system_error(void) {
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_sensor_impl::throw_on_system_error
+ */
+void visus::power_overwhelming::detail::visa_sensor_impl::throw_on_system_error(
+        void) {
+    std::string message;
+    auto error = this->system_error(message);
+
+    if (error != 0) {
+        if (message.empty()) {
+            message = std::to_string(error);
+        }
+
+        throw std::runtime_error(message);
+    }
 }
 
 
