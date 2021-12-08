@@ -51,6 +51,8 @@ namespace detail {
         /// This method does nothing if the library was compiled without support
         /// for VISA.
         /// </remarks>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
         void clear(void);
 
         /// <summary>
@@ -58,20 +60,28 @@ namespace detail {
         /// return its response.
         /// </summary>
         /// <returns></returns>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
         std::string identify(void);
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>
         /// Invoke <see cref="viPrintf" /> on the instrument.
         /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library was compiled without support
+        /// for VISA.
+        /// </remarks>
         /// <typeparam name="TArgs"></typeparam>
         /// <param name="format"></param>
         /// <param name="args"></param>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
         template<class... TArgs>
-        void printf(ViConstString format, TArgs&&... args);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+        void printf(const char *format, TArgs&&... args);
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>
         /// Write the given data to the instrument and read a response of
         /// at most <paramref name="buffer_size" /> bytes.
@@ -80,9 +90,15 @@ namespace detail {
         /// <param name="cnt"></param>
         /// <param name="buffer_size"></param>
         /// <returns></returns>
-        /// <exception cref="visa_exception"></exception>
-        std::vector<ViByte> query(ViConstBuf query, ViUInt32 cnt,
-            ViUInt32 buffer_size = 1024);
+        /// <exception cref="std::invalid_argument">If <paramref name="query" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        std::vector<std::uint8_t> query(const std::uint8_t *query,
+            const std::size_t cnt, const std::size_t buffer_size = 1024);
 
         /// <summary>
         /// Write the given data to the instrument and read a response of
@@ -91,22 +107,8 @@ namespace detail {
         /// <param name="query"></param>
         /// <param name="buffer_size"></param>
         /// <returns></returns>
-        inline std::vector<ViByte> query(const std::vector<ViByte>& query,
-                ViUInt32 buffer_size = 1024) {
-            return this->query(query.data(),
-                static_cast<ViUInt32>(query.size()), buffer_size);
-        }
-
-        /// <summary>
-        /// Write the given data to the instrument and read a response of
-        /// at most <paramref name="buffer_size" /> bytes.
-        /// </summary>
-        /// <param name="query"></param>
-        /// <param name="buffer_size"></param>
-        /// <returns></returns>
-        std::vector<ViByte> query(const std::string &query,
-            ViUInt32 buffer_size = 1024);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+        std::vector<std::uint8_t> query(const std::string& query,
+            const std::size_t buffer_size = 1024);
 
         /// <summary>
         /// Read from the instrument into the given buffer.
@@ -117,10 +119,12 @@ namespace detail {
         /// </remarks>
         /// <param name="buffer">The buffer to write the data to.</param>
         /// <param name="cnt">The size of the buffer in bytes.</param>
-        /// <returns></returns>
-        /// <exception cref="visa_exception">If the operation did not succeed,
-        /// which includes the warning state like an insufficient output buffer
-        /// being provided.</exception>
+        /// <returns>The number of bytes actually read.</returns>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
         std::size_t read(std::uint8_t *buffer, std::size_t cnt);
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
@@ -134,16 +138,18 @@ namespace detail {
         void set_attribute(ViAttr name, ViAttrState value);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>
         /// Shortcut to <see cref="viSetBuf" /> on the device session
         /// represented by <see cref="scope" />.
         /// </summary>
         /// <param name="mask"></param>
         /// <param name="size"></param>
-        /// <exception cref="visa_exception"></exception>
-        void set_buffer(ViUInt16 mask, ViUInt32 size);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        void set_buffer(const std::uint16_t mask, const std::uint32_t size);
 
         /// <summary>
         /// Query the oldest error in the queue and returns the message
@@ -180,16 +186,24 @@ namespace detail {
         /// retrieved and is not zero.</exception>
         void throw_on_system_error(void);
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>
         /// Write the given data to the instrument.
         /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library was compiled without support
+        /// for VISA.
+        /// </remarks>
         /// <param name="buffer"></param>
         /// <param name="cnt"></param>
         /// <returns></returns>
-        /// <exception cref="visa_exception"></exception>
-        ViUInt32 write(ViConstBuf buffer, ViUInt32 cnt);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="buffer" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        std::size_t write(const std::uint8_t *buffer, const std::size_t cnt);
 
     };
 

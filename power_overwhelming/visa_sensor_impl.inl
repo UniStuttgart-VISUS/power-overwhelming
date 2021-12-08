@@ -9,7 +9,9 @@
  */
 template<class ...TArgs>
 void visus::power_overwhelming::detail::visa_sensor_impl::printf(
-        ViConstString format, TArgs&&... args) {
+        const char *format, TArgs&&... args) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     visa_exception::throw_on_error(detail::visa_library::instance()
         .viPrintf(this->scope, format, std::forward<TArgs>(args)...));
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
