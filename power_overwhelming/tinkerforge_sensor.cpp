@@ -179,21 +179,40 @@ visus::power_overwhelming::tinkerforge_sensor::sample(
  * visus::power_overwhelming::tinkerforge_sensor::sample
  */
 void visus::power_overwhelming::tinkerforge_sensor::sample(
-        const measurement_callback on_measurement) {
+        const measurement_callback on_measurement,
+        const std::int32_t sampling_period) {
     if (!*this) {
         throw std::runtime_error("A disposed instance of tinkerforge_sensor "
             "cannot be sampled.");
     }
 
-    measurement_callback expected = nullptr;
+    if (on_measurement != nullptr) {
+        // Callback is non-null, so user wants to enable asynchronous sampling.
+        measurement_callback expected = nullptr;
 
-    if (!this->_impl->on_measurement.compare_exchange_strong(expected,
+        if (!this->_impl->on_measurement.compare_exchange_strong(expected,
             on_measurement)) {
-        throw std::logic_error("Asynchronous sampling cannot be started while "
-            "it is already running.");
+            throw std::logic_error("Asynchronous sampling cannot be started "
+                "while it is already running.");
+        }
+
+        try {
+            this->_impl->enable_callbacks(sampling_period);
+        } catch (...) {
+            // Clear the guard in case the operation failed.
+            this->_impl->on_measurement.exchange(nullptr);
+            throw;
+        }
+
+    } else {
+        // If the callback is null, disable asynchronous sampling.
+        if (this->_impl->on_measurement != nullptr) {
+            this->_impl->disable_callbacks();
+        }
+
+        this->_impl->on_measurement.exchange(on_measurement);
     }
 
-    this->_impl->enable_callbacks();    // TODO
 }
 
 

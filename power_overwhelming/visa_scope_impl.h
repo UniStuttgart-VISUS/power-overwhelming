@@ -35,6 +35,7 @@ namespace detail {
         /// Initialises a new instance.
         /// </summary>
         /// <param name="path"></param>
+        /// <param name="timeout"></param>
         visa_scope_impl(const std::string& path, const std::uint32_t timeout);
 
         /// <summary>

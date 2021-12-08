@@ -36,7 +36,10 @@ namespace detail {
         /// is established.
         /// </remarks>
         /// <param name="path">The path to the device to be opened.</param>
-        visa_scope(const std::string& path);
+        /// <param name="timeout">The timeout for establishing a connection to
+        /// the device (in milliseconds). This parameter defaults to 3000.
+        /// </param>
+        visa_scope(const std::string& path, const std::uint32_t timeout = 3000);
 
     private:
 

@@ -10,7 +10,7 @@
 #define __POWER_OVERWHELMING_GET_VISA_FUNC(n) \
     this->n = this->get_function<decltype(this->n)>(#n)
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-##define __POWER_OVERWHELMING_GET_VISA_FUNC(n)
+#define __POWER_OVERWHELMING_GET_VISA_FUNC(n)
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 

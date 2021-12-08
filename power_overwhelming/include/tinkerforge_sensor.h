@@ -211,7 +211,25 @@ namespace power_overwhelming {
             return this->sample(timestamp_resolution::milliseconds);
         }
 
-        void sample(const measurement_callback on_measurement);
+        /// <summary>
+        /// Asynchronously sample the sensor every
+        /// <paramref name="sampling_period "/> milliseconds.
+        /// </summary>
+        /// <param name="on_measurement">The callback to be invoked if new data
+        /// arrived. If this is <c>nullptr</c>, the asynchronous sampling will
+        /// be disabled. Only one callback can be registered, subsequent calls
+        /// will fail.</param>
+        /// <param name="sampling_period">The desired sampling period in
+        /// milliseconds. This parameter defaults to 1.</param>
+        /// <exception cref="std::runtime_error">If the sensor has been moved.
+        /// </exception>
+        /// <exception cref="std::logic_error">If the sensor is already being
+        /// sampled asynchronously due to a previous call to the method.
+        /// </exception>
+        /// <exception cref="tinkerforge_exception">If the sensor could not be
+        /// sampled. </exception>
+        void sample(const measurement_callback on_measurement,
+            const std::int32_t sampling_period = 1);
 
         /// <summary>
         /// Move assignment.

@@ -12,7 +12,7 @@
  * visus::power_overwhelming::detail::visa_scope::visa_scope
  */
 visus::power_overwhelming::detail::visa_scope::visa_scope(
-        const std::string& path) {
+        const std::string& path, const std::uint32_t timeout) {
     std::lock_guard<decltype(_lock_scopes)> l(_lock_scopes);
     auto it = _scopes.find(path);
     if (it != _scopes.end()) {
@@ -23,7 +23,20 @@ visus::power_overwhelming::detail::visa_scope::visa_scope(
     if (this->_impl == nullptr) {
         // If no existing scope was found or if the previous scope has been
         // deleted, create a new one.
-        this->_impl = std::make_shared<visa_scope_impl>(path);
+        this->_impl = std::make_shared<visa_scope_impl>(path, timeout);
         _scopes[path] = this->_impl;
     }
 }
+
+
+/*
+ * visus::power_overwhelming::detail::visa_scope::_scopes
+ */
+std::map<std::string, std::weak_ptr<visus::power_overwhelming::detail::visa_scope_impl>>
+visus::power_overwhelming::detail::visa_scope::_scopes;
+
+
+/*
+ * visus::power_overwhelming::detail::visa_scope::_lock_scopes
+ */
+std::mutex visus::power_overwhelming::detail::visa_scope::_lock_scopes;
