@@ -102,6 +102,7 @@ int _tmain(const int argc, const TCHAR **argv) {
         std::cerr << ex.what() << std::endl;
     }
 
+#if false
     // Asynchronously sample the Tinkerforge sensors for five seconds.
     try {
         std::vector<tinkerforge_sensor_definiton> descs;
@@ -133,6 +134,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     } catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;
     }
+#endif
 
     // Query HMC8015
     try {

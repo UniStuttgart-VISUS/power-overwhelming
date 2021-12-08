@@ -43,6 +43,16 @@ namespace detail {
         visa_sensor_impl(const char *path, const std::int32_t timeout);
 
         /// <summary>
+        /// Call <see cref="viClear" /> on the instrument, which will clear any
+        /// queued error states.
+        /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library was compiled without support
+        /// for VISA.
+        /// </remarks>
+        void clear(void);
+
+        /// <summary>
         /// Send the &quot;identify&quot; SCPI command to the instrument and
         /// return its response.
         /// </summary>
@@ -129,6 +139,28 @@ namespace detail {
         /// <exception cref="visa_exception"></exception>
         void set_buffer(ViUInt16 mask, ViUInt32 size);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+        /// <summary>
+        /// Query the oldest error in the queue and returns the message
+        /// associated with it to <paramref name="message" />.
+        /// </summary>
+        /// <remarks>
+        /// This method always returns zero if the library was compiled without
+        /// support for VISA.
+        /// </remarks>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        int system_error(std::string& message);
+
+        /// <summary>
+        /// Query the oldes error in the queue.
+        /// </summary>
+        /// <remarks>
+        /// This method always returns zero if the library was compiled without
+        /// support for VISA.
+        /// </remarks>
+        /// <returns></returns>
+        int system_error(void);
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>

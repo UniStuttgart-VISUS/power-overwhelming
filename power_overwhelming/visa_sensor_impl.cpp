@@ -13,6 +13,14 @@
  */
 visus::power_overwhelming::detail::visa_sensor_impl::visa_sensor_impl(
         const char *path, const std::int32_t timeout) : scope(path, timeout) {
+    this->clear();
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_sensor_impl::clear
+ */
+void visus::power_overwhelming::detail::visa_sensor_impl::clear(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     visa_exception::throw_on_error(detail::visa_library::instance()
         .viClear(this->scope));
@@ -99,6 +107,66 @@ void visus::power_overwhelming::detail::visa_sensor_impl::set_buffer(
         .viSetBuf(this->scope, mask, size));
 }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+
+/*
+ * visus::power_overwhelming::detail::visa_sensor_impl::system_error
+ */
+int visus::power_overwhelming::detail::visa_sensor_impl::system_error(
+        std::string& message) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto status = this->query(":SYST:ERR?\n");
+    auto delimiter = std::find_if(status.begin(), status.end(),
+        [](const ViByte b) { return b == ','; });
+
+    if (delimiter != status.end()) {
+        *delimiter = '\0';
+
+        // Skip the delimiter itself.
+        ++delimiter;
+
+        // Trim any leading spaces and quotes.
+        for (; (delimiter != status.end()) && (std::isspace(*delimiter)
+                || (*delimiter == '"')); ++delimiter);
+
+        // Trim any trailing spaces and quotes.
+        auto end = status.rbegin();
+        for (; (end != status.rend()) && (std::isspace(*end)
+            || (*end == '"')); ++end);
+
+        message = std::string(delimiter, end.base());
+
+        return std::atoi(reinterpret_cast<char *>(status.data()));
+    } else {
+        throw std::runtime_error("The instrumed did responded unexpectedly.");
+    }
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return 0;
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_sensor_impl::system_error
+ */
+int visus::power_overwhelming::detail::visa_sensor_impl::system_error(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto status = this->query(":SYST:ERR?\n");
+    auto delimiter = std::find_if(status.begin(), status.end(),
+        [](const ViByte b) { return b == ','; });
+
+    if (delimiter != status.end()) {
+        *delimiter = '\0';
+        return std::atoi(reinterpret_cast<char *>(status.data()));
+    } else {
+        throw std::runtime_error("The instrumed did responded unexpectedly.");
+    }
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return 0;
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
 
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
