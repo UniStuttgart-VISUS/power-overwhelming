@@ -113,7 +113,10 @@ int _tmain(const int argc, const TCHAR **argv) {
         if (!descs.empty()) {
             tinkerforge_sensor s(descs.front());
             s.sample([](const measurement& m) {
-                // TODO
+                std::wcout << m.sensor() << L":" << m.timestamp() << L": "
+                    << m.voltage() << " V * " << m.current() << " A = "
+                    << m.power() << L" W"
+                    << std::endl;
                 });
         }
 

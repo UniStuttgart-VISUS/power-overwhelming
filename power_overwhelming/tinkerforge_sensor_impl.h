@@ -7,6 +7,7 @@
 
 #include <array>
 #include <atomic>
+#include <mutex>
 #include <functional>
 
 #include <bricklet_voltage_current_v2.h>
@@ -14,7 +15,7 @@
 
 #include "measurement.h"
 #include "tinkerforge_scope.h"
-#include "triple_buffering.h"
+#include "timestamp.h"
 
 
 namespace visus {
@@ -59,14 +60,15 @@ namespace detail {
         VoltageCurrentV2 bricklet;
 
         /// <summary>
-        /// Triple buffer for asynchronously arriving current readings.
+        /// Buffer for incoming asynchronous data (current, power, voltage, in
+        /// that order).
         /// </summary>
-        std::array<std::int32_t, 3> current_buffer;
+        std::array<measurement::value_type, 3> async_data;
 
         /// <summary>
-        /// Tracks the state of the triple buffer <see cref="current_buffer" />.
+        /// A lock for protecting <see cref="async_data" />.
         /// </summary>
-        triple_buffer_state current_state;
+        std::mutex async_lock;
 
         /// <summary>
         /// A user-defined description of what the sensor is actually measuring.
@@ -122,6 +124,14 @@ namespace detail {
         /// <param name="period"></param>
         /// <exception cref="tinkerforge_exception"></exception>
         void enable_callbacks(const std::int32_t period = 1);
+
+        /// <summary>
+        /// If <see cref="on_measurement" /> is set, invoke the callback with
+        /// the data stored in <see cref="async_data" />.
+        /// </summary>
+        /// <remarks>The caller must hold <see cref="async_lock" />.</remarks>
+        /// <param name="timestamp"></param>
+        void invoke_callback(const timestamp_type timestamp);
     };
 
 } /* namespace detail */

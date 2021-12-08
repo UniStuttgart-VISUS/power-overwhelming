@@ -50,6 +50,15 @@ namespace detail {
     typedef std::ratio<1, 10000000> filetime_period;
 
     /// <summary>
+    /// The type used to store timestamps.
+    /// </summary>
+#if defined(_WIN32)
+    typedef decltype(LARGE_INTEGER::QuadPart) timestamp_type;
+#else  /* defined(_WIN32) */
+    typedef std::int64_t value_type;
+#endif /* defined(_WIN32) */
+
+    /// <summary>
     /// Convert the given raw <see cref="FILETIME" /> to a timestamp of the
     /// specified resolution.
     /// </summary>
@@ -61,7 +70,7 @@ namespace detail {
     /// <param name="resolution">The desired resolution of the timestamp.
     /// </param>
     /// <returns>The timestamp in the requested resolution.</returns>
-    std::int64_t POWER_OVERWHELMING_API convert(const std::int64_t fileTime,
+    timestamp_type POWER_OVERWHELMING_API convert(const timestamp_type fileTime,
         const timestamp_resolution resolution);
 
 #if defined(_WIN32)
@@ -112,13 +121,9 @@ namespace detail {
     template<timestamp_resolution Resolution> struct timestamp {
 
         /// <summary>
-        /// The value type of the time stamp.
+        /// The value type of the timestamp.
         /// </summary>
-#if defined(_WIN32)
-        typedef decltype(LARGE_INTEGER::QuadPart) value_type;
-#else  /* defined(_WIN32) */
-        typedef std::int64_t value_type;
-#endif /* defined(_WIN32) */
+        typedef timestamp_type value_type;
 
         /// <summary>
         /// Samples system clock and converts its value into a timestamp.
@@ -178,8 +183,8 @@ namespace detail {
     /// <param name="resolution"></param>
     /// <returns></returns>
     /// <exception cref="std::invalid_argument"></exception>
-    std::int64_t POWER_OVERWHELMING_API create_timestamp(
-        const timestamp_resolution resolution);
+    visus::power_overwhelming::detail::timestamp_type POWER_OVERWHELMING_API
+    create_timestamp(const timestamp_resolution resolution);
 
 } /* namespace detail */
 } /* namespace power_overwhelming */

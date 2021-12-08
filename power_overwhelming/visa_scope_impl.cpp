@@ -50,4 +50,21 @@ visus::power_overwhelming::detail::visa_scope_impl::visa_scope_impl(
  * visus::power_overwhelming::detail::visa_scope_impl::~visa_scope_impl
  */
 visus::power_overwhelming::detail::visa_scope_impl::~visa_scope_impl(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    visa_library::instance().viClose(this->session);
+    visa_library::instance().viClose(this->resource_manager);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_scope_impl::throw_on_error
+ */
+void visus::power_overwhelming::detail::visa_scope_impl::throw_on_error(
+        const visa_exception::value_type status) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    if (error < VI_SUCCESS) {
+        throw visa_exception(this->resource_manager, status);
+    }
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }

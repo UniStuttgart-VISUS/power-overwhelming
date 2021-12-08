@@ -11,8 +11,9 @@
 /*
  * visus::power_overwhelming::detail::convert
  */
-std::int64_t visus::power_overwhelming::detail::convert(
-        const std::int64_t fileTime,
+visus::power_overwhelming::detail::timestamp_type
+visus::power_overwhelming::detail::convert(
+        const timestamp_type fileTime,
         const timestamp_resolution resolution) {
     using namespace std::chrono;
     duration<decltype(fileTime), filetime_period> ft(fileTime);
@@ -39,7 +40,8 @@ std::int64_t visus::power_overwhelming::detail::convert(
 /*
  * visus::power_overwhelming::detail::create_timestamp
  */
-std::int64_t visus::power_overwhelming::detail::create_timestamp(
+visus::power_overwhelming::detail::timestamp_type
+visus::power_overwhelming::detail::create_timestamp(
         const timestamp_resolution resolution) {
     switch (resolution) {
         case timestamp_resolution::microseconds:
