@@ -19,7 +19,7 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::current_callback(
     const std::int32_t current, void *data) {
     assert(data != nullptr);
     auto that = static_cast<tinkerforge_sensor_impl *>(data);
-    that->current_buffer[get_write_buffer_index(that->current_state)];
+    that->current_buffer[get_write_buffer_index(that->current_state)] = current;
     swap_write_buffer(that->current_state);
 }
 
@@ -54,7 +54,7 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::voltage_callback(
 visus::power_overwhelming::detail::tinkerforge_sensor_impl::tinkerforge_sensor_impl(
         const std::string& host, const std::uint16_t port,
         const char *uid)
-        : scope(host, port) {
+        : on_measurement(nullptr), scope(host, port) {
     // Note that there is a delicate balance in what is done where and when in
     // this constructor: If we enter the body, the scope will have a valid
     // connection to a master brick. Otherwise, its constructor would have

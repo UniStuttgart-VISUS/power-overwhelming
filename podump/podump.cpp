@@ -100,5 +100,28 @@ int _tmain(const int argc, const TCHAR **argv) {
         std::cerr << ex.what() << std::endl;
     }
 
+    try {
+        std::vector<tinkerforge_sensor_definiton> descs;
+        descs.resize(tinkerforge_sensor::get_definitions(nullptr, 0));
+        auto cnt = tinkerforge_sensor::get_definitions(descs.data(),
+            descs.size());
+
+        if (cnt < descs.size()) {
+            descs.resize(cnt);
+        }
+
+        if (!descs.empty()) {
+            tinkerforge_sensor s(descs.front());
+            s.sample([](const measurement& m) {
+                // TODO
+                });
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+
+    } catch (std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+
      return 0;
 }

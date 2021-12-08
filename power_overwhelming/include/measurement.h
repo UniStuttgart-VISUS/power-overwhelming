@@ -175,6 +175,13 @@ namespace power_overwhelming {
         value_type _voltage;
     };
 
+
+    /// <summary>
+    /// A callback for <see cref="measurement" />s that are received
+    /// asynchronously.
+    /// </summary>
+    typedef void (*measurement_callback)(const measurement&);
+
 } /* namespace power_overwhelming */
 } /* namespace visus */
 

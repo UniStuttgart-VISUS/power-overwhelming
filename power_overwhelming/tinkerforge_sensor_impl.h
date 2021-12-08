@@ -6,11 +6,13 @@
 #pragma once
 
 #include <array>
+#include <atomic>
 #include <functional>
 
 #include <bricklet_voltage_current_v2.h>
 #include <Windows.h>
 
+#include "measurement.h"
 #include "tinkerforge_scope.h"
 #include "triple_buffering.h"
 
@@ -71,15 +73,11 @@ namespace detail {
         /// </summary>
         std::wstring description;
 
-        ///// <summary>
-        ///// Callback in the sensor to be invoked if an asynchronous voltage
-        ///// reading was recevied.
-        ///// </summary>
-        ///// <remarks>
-        ///// This function is used to translate from C callbacks to C++ 11 lambda
-        ///// expressions.
-        ///// </remarks>
-        //std::function<void(const std::int32_t)> on_voltage;
+        /// <summary>
+        /// A callback to be invoked if a <see cref="measurement" /> is received
+        /// asynchronously.
+        /// </summary>
+        std::atomic<measurement_callback> on_measurement;
 
         /// <summary>
         /// The name of the sensor, which has been created from the host,

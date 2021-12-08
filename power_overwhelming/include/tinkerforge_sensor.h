@@ -211,6 +211,8 @@ namespace power_overwhelming {
             return this->sample(timestamp_resolution::milliseconds);
         }
 
+        void sample(const measurement_callback on_measurement);
+
         /// <summary>
         /// Move assignment.
         /// </summary>

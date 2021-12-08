@@ -176,6 +176,28 @@ visus::power_overwhelming::tinkerforge_sensor::sample(
 
 
 /*
+ * visus::power_overwhelming::tinkerforge_sensor::sample
+ */
+void visus::power_overwhelming::tinkerforge_sensor::sample(
+        const measurement_callback on_measurement) {
+    if (!*this) {
+        throw std::runtime_error("A disposed instance of tinkerforge_sensor "
+            "cannot be sampled.");
+    }
+
+    measurement_callback expected = nullptr;
+
+    if (!this->_impl->on_measurement.compare_exchange_strong(expected,
+            on_measurement)) {
+        throw std::logic_error("Asynchronous sampling cannot be started while "
+            "it is already running.");
+    }
+
+    this->_impl->enable_callbacks();    // TODO
+}
+
+
+/*
  * visus::power_overwhelming::tinkerforge_sensor::operator =
  */
 visus::power_overwhelming::tinkerforge_sensor&
