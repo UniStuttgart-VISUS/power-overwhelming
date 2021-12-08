@@ -27,13 +27,18 @@ visus::power_overwhelming::detail::visa_sensor_impl::visa_sensor_impl(
  */
 std::string visus::power_overwhelming::detail::visa_sensor_impl::identify(
         void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto retval = this->query("*IDN?\n");
     retval.erase(std::remove_if(retval.begin(), retval.end(),
         [](const ViByte b) { return ((b == '\r') || (b == '\n')); }));
     return std::string(retval.begin(), retval.end());
+#else/*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return "";
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * visus::power_overwhelming::detail::visa_sensor_impl::query
  */
@@ -45,6 +50,7 @@ visus::power_overwhelming::detail::visa_sensor_impl::query(ViConstBuf query,
     retval.resize(this->read(retval.data(), buffer_size));
     return retval;
 }
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
