@@ -62,6 +62,10 @@
     <ClInclude Include="tinkerforge_sensor_impl.h" />
     <ClInclude Include="tinkerforge_scope.h" />
     <ClInclude Include="triple_buffering.h" />
+    <ClInclude Include="visa_exception.h" />
+    <ClInclude Include="visa_library.h" />
+    <ClInclude Include="visa_scope.h" />
+    <ClInclude Include="visa_scope_impl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adl_exception.cpp" />
@@ -87,6 +91,10 @@
     <ClCompile Include="tinkerforge_sensor_impl.cpp" />
     <ClCompile Include="tinkerforge_scope.cpp" />
     <ClCompile Include="triple_buffering.cpp" />
+    <ClCompile Include="visa_exception.cpp" />
+    <ClCompile Include="visa_library.cpp" />
+    <ClCompile Include="visa_scope.cpp" />
+    <ClCompile Include="visa_scope_impl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="on_exit.inl" />
