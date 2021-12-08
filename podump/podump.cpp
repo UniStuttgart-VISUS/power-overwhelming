@@ -102,6 +102,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 
     try {
         std::vector<tinkerforge_sensor_definiton> descs;
+        std::vector<tinkerforge_sensor> sensors;
         descs.resize(tinkerforge_sensor::get_definitions(nullptr, 0));
         auto cnt = tinkerforge_sensor::get_definitions(descs.data(),
             descs.size());
@@ -110,9 +111,9 @@ int _tmain(const int argc, const TCHAR **argv) {
             descs.resize(cnt);
         }
 
-        if (!descs.empty()) {
-            tinkerforge_sensor s(descs.front());
-            s.sample([](const measurement& m) {
+        for (auto& d : descs) {
+            sensors.emplace_back(d);
+            sensors.back().sample([](const measurement& m) {
                 std::wcout << m.sensor() << L":" << m.timestamp() << L": "
                     << m.voltage() << " V * " << m.current() << " A = "
                     << m.power() << L" W"
@@ -121,6 +122,10 @@ int _tmain(const int argc, const TCHAR **argv) {
         }
 
         std::this_thread::sleep_for(std::chrono::seconds(5));
+
+        for (auto& s : sensors) {
+            s.sample(nullptr);
+        }
 
     } catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;

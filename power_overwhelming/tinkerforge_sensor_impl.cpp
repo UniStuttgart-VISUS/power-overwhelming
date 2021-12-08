@@ -98,6 +98,14 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::tinkerforge_sensor_i
  */
 visus::power_overwhelming::detail::tinkerforge_sensor_impl::~tinkerforge_sensor_impl(
         void) {
+    // Make sure to disable the callbacks in case the user forgot to do
+    // so before destroying the sensor.
+    this->disable_callbacks();
+
+    // Make sure that we do not destroy the sensor while asnychronous data are
+    // written. This will block until the writer exited.
+    std::lock_guard<decltype(this->async_lock)> l(this->async_lock);
+
     ::voltage_current_v2_destroy(&this->bricklet);
 }
 
@@ -185,11 +193,17 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl::enable_callback
 void visus::power_overwhelming::detail::tinkerforge_sensor_impl::invoke_callback(
         const timestamp_type timestamp) {
     auto cb = this->on_measurement.load();
+
     if (cb != nullptr) {
         auto current = this->async_data[0];
         auto power = this->async_data[1];
         auto voltage = this->async_data[2];
-        cb(measurement(this->sensor_name.c_str(), timestamp, voltage, current,
-            power));
+        measurement measurement(this->sensor_name.c_str(), timestamp, voltage,
+            current, power);
+
+        cb = this->on_measurement.load();
+        if ((cb != nullptr) && measurement) {
+            cb(measurement);
+        }
     }
 }
