@@ -25,8 +25,8 @@ namespace power_overwhelming {
     public:
 
         /// <summary>
-        /// Create sensor objects for all Rohde &amp; Schwarz HMC8015 devices
-        /// that can be enumerated via VISA.
+        /// Create sensor objects for all Rohde &amp; Schwarz HMC8015
+        /// instruments that can be enumerated via VISA.
         /// </summary>
         /// <param name="out_sensors">An array receiving the sensors. If this is
         /// <c>nullptr</c>, nothing is returned.</param>
@@ -35,7 +35,8 @@ namespace power_overwhelming {
         /// <param name="timeout">The timeout in milliseconds for establishing a
         /// connection to each instrument that was found. This parameter defaults
         /// to 3000.</param>
-        /// <returns></returns>
+        /// <returns>The number of HMC8015 instruments found, regardless of how
+        /// many have been returned to <paramref name="out_sensors" />.</returns>
         static std::size_t for_all(hmc8015_sensor *out_sensors,
             const std::size_t cnt_sensors,
             const std::int32_t timeout = 3000);

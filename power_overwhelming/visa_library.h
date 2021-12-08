@@ -48,6 +48,11 @@ namespace detail {
         /// Find the device strings for connected instruments matching the given
         /// search expression.
         /// </summary>
+        /// <remarks>
+        /// This method can be called even if the library has been compiled
+        /// without support for VISA. In this case an empty result set will
+        /// be returned.
+        /// </remarks>
         /// <param name="expression">A search expression for VISA devices. See
         /// https://zone.ni.com/reference/en-XX/help/370131S-01/ni-visa/vifindrsrc/
         /// for details.</param>
@@ -69,6 +74,7 @@ namespace detail {
         __POWER_OVERWHELMING_VISA_FUNC(viInstallHandler);
         __POWER_OVERWHELMING_VISA_FUNC(viOpen);
         __POWER_OVERWHELMING_VISA_FUNC(viOpenDefaultRM);
+        __POWER_OVERWHELMING_VISA_FUNC(viPrintf);
         __POWER_OVERWHELMING_VISA_FUNC(viRead);
         __POWER_OVERWHELMING_VISA_FUNC(viReadSTB);
         __POWER_OVERWHELMING_VISA_FUNC(viSetAttribute);

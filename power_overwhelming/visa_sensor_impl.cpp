@@ -7,8 +7,6 @@
 
 #include <algorithm>
 
-#include "visa_library.h"
-
 
 /*
  * visus::power_overwhelming::detail::visa_sensor_impl::visa_sensor_impl
@@ -45,8 +43,20 @@ std::string visus::power_overwhelming::detail::visa_sensor_impl::identify(
 std::vector<ViByte>
 visus::power_overwhelming::detail::visa_sensor_impl::query(ViConstBuf query,
         ViUInt32 cnt, ViUInt32 buffer_size) {
-    std::vector<ViByte> retval(buffer_size);
     this->write(query, cnt);
+    std::vector<ViByte> retval(buffer_size);
+    retval.resize(this->read(retval.data(), buffer_size));
+    return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_sensor_impl::query
+ */
+std::vector<ViByte> visus::power_overwhelming::detail::visa_sensor_impl::query(
+        const std::string& query, ViUInt32 buffer_size) {
+    this->printf(query.c_str());
+    std::vector<ViByte> retval(buffer_size);
     retval.resize(this->read(retval.data(), buffer_size));
     return retval;
 }

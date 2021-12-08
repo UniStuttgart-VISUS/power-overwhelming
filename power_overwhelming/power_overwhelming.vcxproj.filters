@@ -200,6 +200,9 @@
     <None Include="tinkerforge_scope.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="visa_sensor_impl.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

@@ -9,6 +9,8 @@
 #include <stdexcept>
 #include <utility>
 
+#include <rsidr_core.h>
+
 #include "convert_string.h"
 #include "visa_library.h"
 #include "visa_sensor_impl.h"

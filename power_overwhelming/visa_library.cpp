@@ -43,6 +43,7 @@ visus::power_overwhelming::detail::visa_library::visa_library(void)
     __POWER_OVERWHELMING_GET_VISA_FUNC(viInstallHandler);
     __POWER_OVERWHELMING_GET_VISA_FUNC(viOpen);
     __POWER_OVERWHELMING_GET_VISA_FUNC(viOpenDefaultRM);
+    __POWER_OVERWHELMING_GET_VISA_FUNC(viPrintf);
     __POWER_OVERWHELMING_GET_VISA_FUNC(viRead);
     __POWER_OVERWHELMING_GET_VISA_FUNC(viReadSTB);
     __POWER_OVERWHELMING_GET_VISA_FUNC(viSetAttribute);

@@ -5,10 +5,11 @@
 
 #pragma once
 
-#include "visa_scope.h"
-
 #include <string>
 #include <vector>
+
+#include "visa_library.h"
+#include "visa_scope.h"
 
 
 namespace visus {
@@ -81,11 +82,19 @@ namespace detail {
         /// <param name="query"></param>
         /// <param name="buffer_size"></param>
         /// <returns></returns>
-        inline std::vector<ViByte> query(const std::string& query,
-            ViUInt32 buffer_size = 1024) {
-            return this->query(reinterpret_cast<const ViByte *>(query.data()),
-                static_cast<ViUInt32>(query.size()), buffer_size);
-        }
+        std::vector<ViByte> query(const std::string &query,
+            ViUInt32 buffer_size = 1024);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+        /// <summary>
+        /// Invoke <see cref="viPrintf" /> on the instrument.
+        /// </summary>
+        /// <typeparam name="TArgs"></typeparam>
+        /// <param name="format"></param>
+        /// <param name="args"></param>
+        template<class... TArgs>
+        void printf(ViConstString format, TArgs&&... args);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
@@ -137,3 +146,5 @@ namespace detail {
 } /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
+
+#include "visa_sensor_impl.inl"

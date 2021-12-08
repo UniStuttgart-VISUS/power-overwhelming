@@ -104,6 +104,7 @@
     <None Include="on_exit.inl" />
     <None Include="timestamp.inl" />
     <None Include="tinkerforge_scope.inl" />
+    <None Include="visa_sensor_impl.inl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\tinkerforge\tinkerforge.vcxproj">
@@ -181,6 +182,8 @@
     <Import Project="..\third_party\nvml.props" />
     <Import Project="..\third_party\tinkerforge.props" />
     <Import Project="..\third_party\visa.props" />
+    <Import Project="..\third_party\rshmc8015.props" />
+    <Import Project="..\third_party\rsrtx.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -188,6 +191,8 @@
     <Import Project="..\third_party\nvml.props" />
     <Import Project="..\third_party\tinkerforge.props" />
     <Import Project="..\third_party\visa.props" />
+    <Import Project="..\third_party\rshmc8015.props" />
+    <Import Project="..\third_party\rsrtx.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -195,6 +200,8 @@
     <Import Project="..\third_party\nvml.props" />
     <Import Project="..\third_party\tinkerforge.props" />
     <Import Project="..\third_party\visa.props" />
+    <Import Project="..\third_party\rshmc8015.props" />
+    <Import Project="..\third_party\rsrtx.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -202,6 +209,8 @@
     <Import Project="..\third_party\nvml.props" />
     <Import Project="..\third_party\tinkerforge.props" />
     <Import Project="..\third_party\visa.props" />
+    <Import Project="..\third_party\rshmc8015.props" />
+    <Import Project="..\third_party\rsrtx.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -209,6 +218,8 @@
     <Import Project="..\third_party\nvml.props" />
     <Import Project="..\third_party\tinkerforge.props" />
     <Import Project="..\third_party\visa.props" />
+    <Import Project="..\third_party\rshmc8015.props" />
+    <Import Project="..\third_party\rsrtx.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -216,6 +227,8 @@
     <Import Project="..\third_party\nvml.props" />
     <Import Project="..\third_party\tinkerforge.props" />
     <Import Project="..\third_party\visa.props" />
+    <Import Project="..\third_party\rshmc8015.props" />
+    <Import Project="..\third_party\rsrtx.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -223,6 +236,8 @@
     <Import Project="..\third_party\nvml.props" />
     <Import Project="..\third_party\tinkerforge.props" />
     <Import Project="..\third_party\visa.props" />
+    <Import Project="..\third_party\rshmc8015.props" />
+    <Import Project="..\third_party\rsrtx.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -230,6 +245,8 @@
     <Import Project="..\third_party\nvml.props" />
     <Import Project="..\third_party\tinkerforge.props" />
     <Import Project="..\third_party\visa.props" />
+    <Import Project="..\third_party\rshmc8015.props" />
+    <Import Project="..\third_party\rsrtx.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
