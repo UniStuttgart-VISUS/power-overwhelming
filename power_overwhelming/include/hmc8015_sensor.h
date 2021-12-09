@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cinttypes>
 
 #include "power_overwhelming_api.h"
 
@@ -96,11 +97,19 @@ namespace power_overwhelming {
         /// <param name="path">The buffer receiving the log file. Note that
         /// this is the path and a designator whether the internal or USB
         /// memory is used. If this parameter is <c>nullptr</c>, nothing will
-        /// be written.</param>
+        /// be written. The output string is guaranteed to be null-terminated
+        /// if anything has been written.</param>
         /// <param name="cnt">The maximum number of bytes that can be written
         /// to <paramref name="path "/>.</param>
-        /// <returns>The number of characters actually written.</returns>
+        /// <returns>The actual length of the path, including the terminating
+        /// null character.</returns>
         std::size_t get_log_file(char *path, const std::size_t cnt);
+
+        /// <summary>
+        /// Gets whether logging is enabled or not.
+        /// </summary>
+        /// <returns></returns>
+        bool get_logging(void);
 
         /// <summary>
         /// Gets the name of the sensor.
@@ -110,20 +119,63 @@ namespace power_overwhelming {
         const wchar_t *name(void) const noexcept;
 
         /// <summary>
+        /// Resets the instrument to its default state.
+        /// </summary>
+        void reset(void);
+
+        /// <summary>
+        /// Sets the logging mode to capturing the specific number of samples.
+        /// </summary>
+        /// <param name="count"></param>
+        void set_log_count(const std::uint32_t count);
+
+        /// <summary>
         /// Sets the path to the log file.
         /// </summary>
         /// <param name="path">The path to the log file, usually just the
         /// file name.</param>
+        /// <param name="overwrite">If <c>true</c>, the file will be cleared
+        /// if it already exists. This parameter defaults to <c>false</c>.
+        /// </param>
         /// <param name="use_usb">If <c>true</c>, the file will be written to
         /// the attached USB stick instead of internal memory. This parameter
         /// defaults to <c>false</c>.</param>
-        void set_log_file(const char *path, const bool use_usb = false);
+        void set_log_file(const char *path, const bool overwrite = false,
+            const bool use_usb = false);
+
+        /// <summary>
+        /// Sets the logging measurement inter valin seconds.
+        /// </summary>
+        /// <param name="seconds"></param>
+        void set_log_interval(const float seconds);
+
+        // This does not seem to work on the HMC8015 ...
+        ///// <summary>
+        ///// Sets the time in seconds to log for and switch the mode to timed
+        ///// logging.
+        ///// </summary>
+        ///// <param name="time"></param>
+        //void set_log_time(const std::uint32_t time);
+
+        /// <summary>
+        /// Sets the logging mode to unlimited.
+        /// </summary>
+        /// <param name=""></param>
+        void set_log_unlimited(void);
+
+        /// <summary>
+        /// Enables or disables logging.
+        /// </summary>
+        /// <param name="enable"></param>
+        void set_logging(const bool enable);
 
         /// <summary>
         /// Synchonises the date and time on the instrument with the system
         /// clock of the computer calling this API.
         /// </summary>
-        void synchronise_clock(void);
+        /// <param name="utc">If <c>true</c>, UTC will be used, the local time
+        /// otherwise. This parameter defaults to <c>false</c>.</param>
+        void synchronise_clock(const bool utc = false);
 
         /// <summary>
         /// Move assignment.
@@ -144,6 +196,8 @@ namespace power_overwhelming {
         operator bool(void) const noexcept;
 
     private:
+
+        void check_not_disposed(void);
 
         detail::visa_sensor_impl *_impl;
     };

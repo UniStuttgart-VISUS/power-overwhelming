@@ -136,7 +136,28 @@ namespace detail {
         /// can be in a failed state even if the call succeeded. Use
         /// <see cref="throw_on_system_error" /> to check the internal state of
         /// the instrument after the call.</exception>
-        std::size_t read(std::uint8_t *buffer, std::size_t cnt);
+        std::size_t read(std::uint8_t *buffer, const std::size_t cnt);
+
+        /// <summary>
+        /// Read a full response.
+        /// </summary>
+        /// <remarks>
+        /// This method has no effect if the library has been compiled without
+        /// support for VISA.
+        /// </remarks>
+        /// <param name="buffer_size">The size of the read buffer being used. If
+        /// this is less than the response size, the buffer will be resized
+        /// until everything was read.
+        /// </param>
+        /// <returns>The full output from the device. The buffer will have
+        /// exactly the size of the response, all padding will be removed before
+        /// the buffer is returned.</returns>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        std::vector<std::uint8_t> read(const std::size_t buffer_size = 1024);
 
         /// <summary>
         /// Resets the device to a default state.

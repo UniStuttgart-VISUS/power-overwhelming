@@ -96,11 +96,35 @@ visus::power_overwhelming::hmc8015_sensor::~hmc8015_sensor(void) {
 std::size_t visus::power_overwhelming::hmc8015_sensor::get_log_file(
         char *path, const std::size_t cnt) {
     if (path != nullptr) {
+        this->check_not_disposed();
         this->_impl->printf("LOG:FNAM?\n");
-        return this->_impl->read(reinterpret_cast<std::uint8_t *>(path), cnt);
+
+        // Read everything to prevent spurious responses in future calls.
+        auto value = this->_impl->read();
+
+        // Copy as must as the output buffer can hold.
+        for (std::size_t i = 0; (i < cnt) && (i < value.size()); ++i) {
+            path[i] = value[i];
+        }
+
+        // The last character in the reponse is always the line feed, which
+        // we just override with the the string terminator.
+        path[cnt - 1] = 0;
+
+        return value.size();
     } else {
         return 0;
     }
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::get_logging
+ */
+bool visus::power_overwhelming::hmc8015_sensor::get_logging(void) {
+    this->check_not_disposed();
+    auto response = this->_impl->query("LOG:STATE?\n");
+    return (!response.empty() && (response[0] != '0'));
 }
 
 
@@ -116,16 +140,86 @@ const wchar_t *visus::power_overwhelming::hmc8015_sensor::name(
 
 
 /*
+ * visus::power_overwhelming::hmc8015_sensor::reset
+ */
+void visus::power_overwhelming::hmc8015_sensor::reset(void) {
+    this->check_not_disposed();
+    this->_impl->reset();
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::set_log_count
+ */
+void visus::power_overwhelming::hmc8015_sensor::set_log_count(
+        const std::uint32_t count) {
+    this->check_not_disposed();
+    this->_impl->printf("LOG:MODE COUN\n");
+    this->_impl->throw_on_system_error();
+    this->_impl->printf("LOG:COUN %u\n", count);
+    this->_impl->throw_on_system_error();
+}
+
+
+/*
  * visus::power_overwhelming::hmc8015_sensor::set_log_file
  */
 void visus::power_overwhelming::hmc8015_sensor::set_log_file(const char *path,
-        const bool use_usb) {
+        const bool overwrite, const bool use_usb) {
     if (path == nullptr) {
         throw std::invalid_argument("The path to the log file cannot be null.");
     }
 
-    this->_impl->printf("LOG:FNAM \"%s\", %s\n", path,
-        use_usb ? "EXT" : "INT");
+    this->check_not_disposed();
+    auto location = use_usb ? "EXT" : "INT";
+    this->_impl->printf("LOG:DEL \"%s\", %s\n", path, location);
+    this->_impl->clear_status();    // Clear error in case file did not exist.
+    this->_impl->printf("LOG:FNAM \"%s\", %s\n", path, location);
+    this->_impl->throw_on_system_error();
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::set_log_interval
+ */
+void visus::power_overwhelming::hmc8015_sensor::set_log_interval(
+        const float seconds) {
+    this->check_not_disposed();
+    this->_impl->printf("LOG:INT %f\n", seconds);
+    this->_impl->throw_on_system_error();
+}
+
+
+#if false
+/*
+ * visus::power_overwhelming::hmc8015_sensor::set_log_time
+ */
+void visus::power_overwhelming::hmc8015_sensor::set_log_time(
+        const std::uint32_t time) {
+    this->_impl->printf("LOG:MODE TIME\n");
+    this->_impl->throw_on_system_error();
+    this->_impl->printf("LOG:TIME %u\n", time);
+    this->_impl->throw_on_system_error();
+}
+#endif
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::set_log_unlimited
+ */
+void visus::power_overwhelming::hmc8015_sensor::set_log_unlimited(void) {
+    this->check_not_disposed();
+    this->_impl->printf("LOG:MODE UNL\n");
+    this->_impl->throw_on_system_error();
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::set_logging
+ */
+void visus::power_overwhelming::hmc8015_sensor::set_logging(const bool enable) {
+    this->check_not_disposed();
+    this->_impl->printf("LOG:STAT %s\n", enable ? "ON" : "OFF");
     this->_impl->throw_on_system_error();
 }
 
@@ -133,13 +227,24 @@ void visus::power_overwhelming::hmc8015_sensor::set_log_file(const char *path,
 /*
  * visus::power_overwhelming::hmc8015_sensor::synchronise_clock
  */
-void visus::power_overwhelming::hmc8015_sensor::synchronise_clock(void) {
+void visus::power_overwhelming::hmc8015_sensor::synchronise_clock(
+        const bool utc) {
     SYSTEMTIME time;
-    ::GetSystemTime(&time);
-    this->_impl->printf("SYST:TIME %02d, %02d, %02d",
+
+    this->check_not_disposed();
+
+    if (utc) {
+        ::GetSystemTime(&time);
+    } else {
+        ::GetLocalTime(&time);
+    }
+
+    this->_impl->printf("SYST:TIME %d, %d, %d\n",
         time.wHour, time.wMinute, time.wSecond);
-    this->_impl->printf("SYST:DATE %04d, %02d, %02d",
+    //this->_impl->throw_on_system_error();
+    this->_impl->printf("SYST:DATE %d, %d, %d\n",
         time.wYear, time.wMonth, time.wDay);
+    //this->_impl->throw_on_system_error();
 }
 
 
@@ -163,4 +268,15 @@ visus::power_overwhelming::hmc8015_sensor::operator =(
  */
 visus::power_overwhelming::hmc8015_sensor::operator bool(void) const noexcept {
     return (this->_impl != nullptr);
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::check_not_disposed
+ */
+void visus::power_overwhelming::hmc8015_sensor::check_not_disposed(void) {
+    if (!*this) {
+        throw std::runtime_error("The requested operation cannot be performed "
+            "on a disposed instance of hmc8015_sensor.");
+    }
 }

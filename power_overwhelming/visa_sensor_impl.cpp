@@ -66,10 +66,7 @@ visus::power_overwhelming::detail::visa_sensor_impl::query(
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     this->write(query, cnt);
-    std::vector<std::uint8_t> retval(buffer_size);
-    retval.resize(this->read(retval.data(),
-        static_cast<ViUInt32>(retval.size())));
-    return retval;
+    return this->read(buffer_size);
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -84,10 +81,7 @@ visus::power_overwhelming::detail::visa_sensor_impl::query(
         const std::string& query, const std::size_t buffer_size) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     this->printf(query.c_str());
-    std::vector<uint8_t> retval(buffer_size);
-    retval.resize(this->read(retval.data(),
-        static_cast<ViUInt32>(retval.size())));
-    return retval;
+    return this->read(buffer_size);
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -98,14 +92,55 @@ visus::power_overwhelming::detail::visa_sensor_impl::query(
  * visus::power_overwhelming::detail::visa_sensor_impl::read
  */
 std::size_t visus::power_overwhelming::detail::visa_sensor_impl::read(
-        std::uint8_t *buffer, std::size_t cnt) {
+        std::uint8_t *buffer, const std::size_t cnt) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     ViUInt32 retval = 0;
-    visa_exception::throw_unless_succeeded(detail::visa_library::instance()
+    visa_exception::throw_on_error(detail::visa_library::instance()
         .viRead(this->scope, buffer, static_cast<ViUInt32>(cnt), &retval));
     return retval;
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_sensor_impl::read
+ */
+std::vector<std::uint8_t>
+visus::power_overwhelming::detail::visa_sensor_impl::read(
+        const std::size_t buffer_size) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    static const std::size_t min_size = 1;
+    std::vector<std::uint8_t> retval((std::max)(buffer_size, min_size));
+    ViUInt32 offset = 0;
+    ViUInt32 read = 0;
+    ViStatus status = VI_SUCCESS_MAX_CNT;
+
+    while (status == VI_SUCCESS_MAX_CNT) {
+        status = detail::visa_library::instance().viRead(this->scope,
+            retval.data() + offset,
+            static_cast<ViUInt32>(retval.size() - offset),
+            &read);
+        offset += read;
+
+        if (status == VI_SUCCESS_MAX_CNT) {
+            // Increase the buffer size if the message was not completely read.
+            // The 50% increase is something used by many STL vector
+            // implementations, so it is probably a reasonable heuristic.
+            retval.resize(retval.size() + (std::max)(retval.size() / 2,
+                min_size));
+        } else {
+            // Terminate in case of any error.
+            visa_exception::throw_on_error(status);
+        }
+    };
+
+    retval.resize(offset);
+
+    return retval;
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return std::vector<std::uint8_t>();
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 

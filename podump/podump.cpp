@@ -135,7 +135,7 @@ int _tmain(const int argc, const TCHAR **argv) {
         std::cerr << ex.what() << std::endl;
     }
 #endif
-
+     
     // Query HMC8015
     try {
         std::vector<hmc8015_sensor> sensors;
@@ -143,16 +143,23 @@ int _tmain(const int argc, const TCHAR **argv) {
         hmc8015_sensor::for_all(sensors.data(), sensors.size());
 
         for (auto &s : sensors) {
-            s.set_log_file("podump.csv", false);
+            s.synchronise_clock();
+            s.set_log_file("podump", true);
+            s.set_log_interval(0.1f);
+            s.get_logging();
+            //s.set_log_count(10);
+            s.set_log_unlimited();
+            s.set_logging(true);
             std::vector<char> path(1024);
             s.get_log_file(path.data(), path.size());
             std::wcout << s.name() << L":" << std::endl;
+
             //auto m = s.sample();
             //std::wcout << m.timestamp() << L": " << m.power() << L" W"
             //    << std::endl;
         }
 
-    } catch (std::exception &ex) {
+    } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
 
