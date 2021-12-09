@@ -29,6 +29,14 @@ void visus::power_overwhelming::detail::visa_sensor_impl::clear(void) {
 
 
 /*
+ * visus::power_overwhelming::detail::visa_sensor_impl::clear_status
+ */
+void visus::power_overwhelming::detail::visa_sensor_impl::clear_status(void) {
+    this->printf("*CLS\n");
+}
+
+
+/*
  * visus::power_overwhelming::detail::visa_sensor_impl::identify
  */
 std::string visus::power_overwhelming::detail::visa_sensor_impl::identify(
@@ -44,31 +52,46 @@ std::string visus::power_overwhelming::detail::visa_sensor_impl::identify(
 }
 
 
+/*
+ * visus::power_overwhelming::detail::visa_sensor_impl::query
+ */
+std::vector<std::uint8_t>
+visus::power_overwhelming::detail::visa_sensor_impl::query(
+        const std::uint8_t *query, const std::size_t cnt,
+        const std::size_t buffer_size) {
+    if (query == nullptr) {
+        throw std::invalid_argument("The query sent ot the instrument must "
+            "not be null.");
+    }
+
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-/*
- * visus::power_overwhelming::detail::visa_sensor_impl::query
- */
-std::vector<ViByte>
-visus::power_overwhelming::detail::visa_sensor_impl::query(ViConstBuf query,
-        ViUInt32 cnt, ViUInt32 buffer_size) {
     this->write(query, cnt);
-    std::vector<ViByte> retval(buffer_size);
-    retval.resize(this->read(retval.data(), buffer_size));
+    std::vector<std::uint8_t> retval(buffer_size);
+    retval.resize(this->read(retval.data(),
+        static_cast<ViUInt32>(retval.size())));
     return retval;
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return 0;
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
 /*
  * visus::power_overwhelming::detail::visa_sensor_impl::query
  */
-std::vector<ViByte> visus::power_overwhelming::detail::visa_sensor_impl::query(
-        const std::string& query, ViUInt32 buffer_size) {
+std::vector<std::uint8_t>
+visus::power_overwhelming::detail::visa_sensor_impl::query(
+        const std::string& query, const std::size_t buffer_size) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     this->printf(query.c_str());
-    std::vector<ViByte> retval(buffer_size);
-    retval.resize(this->read(retval.data(), buffer_size));
+    std::vector<uint8_t> retval(buffer_size);
+    retval.resize(this->read(retval.data(),
+        static_cast<ViUInt32>(retval.size())));
     return retval;
-}
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
 
 
 /*
@@ -84,6 +107,15 @@ std::size_t visus::power_overwhelming::detail::visa_sensor_impl::read(
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_sensor_impl::reset
+ */
+void visus::power_overwhelming::detail::visa_sensor_impl::reset(void) {
+    this->printf("*RST\n");
+    this->throw_on_system_error();
 }
 
 
@@ -104,7 +136,7 @@ void visus::power_overwhelming::detail::visa_sensor_impl::set_attribute(
  * visus::power_overwhelming::detail::visa_sensor_impl::set_buffer
  */
 void visus::power_overwhelming::detail::visa_sensor_impl::set_buffer(
-        ViUInt16 mask, ViUInt32 size) {
+        const std::uint16_t mask, const std::uint32_t size) {
     visa_exception::throw_on_error(detail::visa_library::instance()
         .viSetBuf(this->scope, mask, size));
 }
@@ -142,7 +174,6 @@ int visus::power_overwhelming::detail::visa_sensor_impl::system_error(
     } else {
         throw std::runtime_error("The instrumed did responded unexpectedly.");
     }
-
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -164,7 +195,6 @@ int visus::power_overwhelming::detail::visa_sensor_impl::system_error(void) {
     } else {
         throw std::runtime_error("The instrumed did responded unexpectedly.");
     }
-
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -189,15 +219,22 @@ void visus::power_overwhelming::detail::visa_sensor_impl::throw_on_system_error(
 }
 
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * visus::power_overwhelming::detail::visa_sensor_impl::write
  */
-ViUInt32 visus::power_overwhelming::detail::visa_sensor_impl::write(
-        ViConstBuf buffer, ViUInt32 cnt) {
+std::size_t visus::power_overwhelming::detail::visa_sensor_impl::write(
+        const std::uint8_t *buffer, const std::size_t cnt) {
+    if (buffer == nullptr) {
+        throw std::invalid_argument("The buffer being written to the "
+            "instrument must not be null.");
+    }
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     ViUInt32 retval = 0;
     visa_exception::throw_on_error(detail::visa_library::instance()
-        .viWrite(this->scope, buffer, cnt, &retval));
+        .viWrite(this->scope, buffer, static_cast<ViUInt32>(cnt), &retval));
     return retval;
-}
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}

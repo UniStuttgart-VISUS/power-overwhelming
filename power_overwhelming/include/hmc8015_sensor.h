@@ -120,6 +120,12 @@ namespace power_overwhelming {
         void set_log_file(const char *path, const bool use_usb = false);
 
         /// <summary>
+        /// Synchonises the date and time on the instrument with the system
+        /// clock of the computer calling this API.
+        /// </summary>
+        void synchronise_clock(void);
+
+        /// <summary>
         /// Move assignment.
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>

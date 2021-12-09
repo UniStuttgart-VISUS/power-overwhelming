@@ -78,10 +78,11 @@ visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
 visus::power_overwhelming::hmc8015_sensor::~hmc8015_sensor(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     if (this->_impl != nullptr) {
-        // Reset the system state.
-        try {
-            this->_impl->printf("SYST:LOC\n");
-        } catch (...) { /* Ignore this. */ }
+        // Reset the system state to local operations, but make sure that we
+        // do not throw in the destructor. Therefore, we use the library
+        // directly instead of the wrappers checking the state of the calls.
+        detail::visa_library::instance().viPrintf(this->_impl->scope,
+            "SYST:LOC\n");
     }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
@@ -96,8 +97,7 @@ std::size_t visus::power_overwhelming::hmc8015_sensor::get_log_file(
         char *path, const std::size_t cnt) {
     if (path != nullptr) {
         this->_impl->printf("LOG:FNAM?\n");
-        return this->_impl->read(reinterpret_cast<ViByte *>(path),
-            static_cast<ViUInt32>(cnt));
+        return this->_impl->read(reinterpret_cast<std::uint8_t *>(path), cnt);
     } else {
         return 0;
     }
@@ -124,11 +124,22 @@ void visus::power_overwhelming::hmc8015_sensor::set_log_file(const char *path,
         throw std::invalid_argument("The path to the log file cannot be null.");
     }
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     this->_impl->printf("LOG:FNAM \"%s\", %s\n", path,
         use_usb ? "EXT" : "INT");
     this->_impl->throw_on_system_error();
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::synchronise_clock
+ */
+void visus::power_overwhelming::hmc8015_sensor::synchronise_clock(void) {
+    SYSTEMTIME time;
+    ::GetSystemTime(&time);
+    this->_impl->printf("SYST:TIME %02d, %02d, %02d",
+        time.wHour, time.wMinute, time.wSecond);
+    this->_impl->printf("SYST:DATE %04d, %02d, %02d",
+        time.wYear, time.wMonth, time.wDay);
 }
 
 

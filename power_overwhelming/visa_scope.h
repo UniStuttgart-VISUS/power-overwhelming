@@ -23,6 +23,12 @@ namespace detail {
     /// <summary>
     /// RAII container for a VISA connection.
     /// </summary>
+    /// <remarks>
+    /// Note that VISA scopes can be shared and aliased. Any scope for the
+    /// same instrument path refers to the same object. Callers need to make
+    /// sure that the same instrument is not used concurrently from multiple
+    /// threads.
+    /// </remarks>
     class visa_scope final {
 
     public:
