@@ -131,6 +131,19 @@ void visus::power_overwhelming::hmc8015_sensor::set_log_file(const char *path,
 
 
 /*
+ * visus::power_overwhelming::hmc8015_sensor::synchronise_clock
+ */
+void visus::power_overwhelming::hmc8015_sensor::synchronise_clock(void) {
+    SYSTEMTIME time;
+    ::GetSystemTime(&time);
+    this->_impl->printf("SYST:TIME %02d, %02d, %02d",
+        time.wHour, time.wMinute, time.wSecond);
+    this->_impl->printf("SYST:DATE %04d, %02d, %02d",
+        time.wYear, time.wMonth, time.wDay);
+}
+
+
+/*
  * visus::power_overwhelming::hmc8015_sensor::operator =
  */
 visus::power_overwhelming::hmc8015_sensor&

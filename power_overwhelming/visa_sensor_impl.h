@@ -44,8 +44,8 @@ namespace detail {
         visa_sensor_impl(const char *path, const std::int32_t timeout);
 
         /// <summary>
-        /// Call <see cref="viClear" /> on the instrument, which will clear any
-        /// queued error states.
+        /// Call <see cref="viClear" /> on the instrument, which will flush all
+        /// buffers.
         /// </summary>
         /// <remarks>
         /// This method does nothing if the library was compiled without support
@@ -54,6 +54,17 @@ namespace detail {
         /// <exception cref="visa_exception">If the operation failed.
         /// </exception>
         void clear(void);
+
+        /// <summary>
+        /// Clear the error queue of the instrument.
+        /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library was compiled without support
+        /// for VISA.
+        /// </remarks>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        void clear_status(void);
 
         /// <summary>
         /// Send the &quot;identify&quot; SCPI command to the instrument and
@@ -126,6 +137,11 @@ namespace detail {
         /// <see cref="throw_on_system_error" /> to check the internal state of
         /// the instrument after the call.</exception>
         std::size_t read(std::uint8_t *buffer, std::size_t cnt);
+
+        /// <summary>
+        /// Resets the device to a default state.
+        /// </summary>
+        void reset(void);
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>

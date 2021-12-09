@@ -29,6 +29,14 @@ void visus::power_overwhelming::detail::visa_sensor_impl::clear(void) {
 
 
 /*
+ * visus::power_overwhelming::detail::visa_sensor_impl::clear_status
+ */
+void visus::power_overwhelming::detail::visa_sensor_impl::clear_status(void) {
+    this->printf("*CLS\n");
+}
+
+
+/*
  * visus::power_overwhelming::detail::visa_sensor_impl::identify
  */
 std::string visus::power_overwhelming::detail::visa_sensor_impl::identify(
@@ -42,7 +50,6 @@ std::string visus::power_overwhelming::detail::visa_sensor_impl::identify(
     return "";
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
-
 
 
 /*
@@ -103,6 +110,15 @@ std::size_t visus::power_overwhelming::detail::visa_sensor_impl::read(
 }
 
 
+/*
+ * visus::power_overwhelming::detail::visa_sensor_impl::reset
+ */
+void visus::power_overwhelming::detail::visa_sensor_impl::reset(void) {
+    this->printf("*RST\n");
+    this->throw_on_system_error();
+}
+
+
 #if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * visus::power_overwhelming::detail::visa_sensor_impl::set_attribute
@@ -158,7 +174,6 @@ int visus::power_overwhelming::detail::visa_sensor_impl::system_error(
     } else {
         throw std::runtime_error("The instrumed did responded unexpectedly.");
     }
-
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -180,7 +195,6 @@ int visus::power_overwhelming::detail::visa_sensor_impl::system_error(void) {
     } else {
         throw std::runtime_error("The instrumed did responded unexpectedly.");
     }
-
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
