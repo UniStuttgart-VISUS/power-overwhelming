@@ -157,6 +157,8 @@ namespace detail {
         /// code returned.</param>
         /// <returns>The current system error, or zero if the system has no
         /// previous error.</returns>
+        /// <exception cref="visa_exception">If the current system state could
+        /// not be retrieved.</exception>
         int system_error(std::string& message);
 
         /// <summary>
@@ -168,6 +170,8 @@ namespace detail {
         /// </remarks>
         /// <returns>The current system error, or zero if the system has no
         /// previous error.</returns>
+        /// <exception cref="visa_exception">If the current system state could
+        /// not be retrieved.</exception>
         int system_error(void);
 
         /// <summary>
