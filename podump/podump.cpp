@@ -159,7 +159,7 @@ int _tmain(const int argc, const TCHAR **argv) {
             //    log_mode::time_span, 5, now.wYear, now.wMonth,
             //    now.wDay, now.wHour, now.wMinute, now.wSecond + 5);
             s.log_behaviour(std::numeric_limits<float>::lowest(),
-                log_mode::duration, 5);
+                log_mode::duration);
             s.log(true);
             std::wcout << s.is_log() << std::endl;
 

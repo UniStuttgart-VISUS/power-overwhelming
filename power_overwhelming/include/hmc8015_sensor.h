@@ -114,6 +114,8 @@ namespace power_overwhelming {
         /// 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10 an 20.</param>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
         inline void current_range(const instrument_range range,
                 const float value = 0.0f) {
             // Note: HMC8015 supports only one channel, so this is hard coded.
@@ -127,6 +129,8 @@ namespace power_overwhelming {
         /// clear the display.</param>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
         void display(const char *text);
 
         /// <summary>
@@ -136,6 +140,8 @@ namespace power_overwhelming {
         /// <c>false</c> otherwise.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
         bool is_log(void);
 
         /// <summary>
@@ -145,6 +151,8 @@ namespace power_overwhelming {
         /// it.</param>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
         void log(const bool enable);
 
         /// <summary>
@@ -174,6 +182,8 @@ namespace power_overwhelming {
         /// <see cref="log_mode::time_span" /> is selected.</param>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
         void log_behaviour(const float interval, const log_mode mode,
             const int value = INT_MAX,
             const std::int32_t year = 0, const std::int32_t month = 0,
@@ -194,6 +204,8 @@ namespace power_overwhelming {
         /// null character.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
         std::size_t log_file(char *path, const std::size_t cnt);
 
         /// <summary>
@@ -209,6 +221,8 @@ namespace power_overwhelming {
         /// defaults to <c>false</c>.</param>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
         void log_file(const char *path, const bool overwrite = false,
             const bool use_usb = false);
 
@@ -224,6 +238,8 @@ namespace power_overwhelming {
         /// </summary>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
         void reset(void);
 
         /// <summary>
@@ -234,6 +250,8 @@ namespace power_overwhelming {
         /// <returns>The measurement received from the instrument.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
         measurement sample(const timestamp_resolution resolution
             = timestamp_resolution::milliseconds);
 
@@ -245,6 +263,8 @@ namespace power_overwhelming {
         /// otherwise. This parameter defaults to <c>false</c>.</param>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
         void synchronise_clock(const bool utc = false);
 
         /// <summary>
@@ -266,6 +286,8 @@ namespace power_overwhelming {
         /// 5, 15, 30, 60, 150, 300 and 600.</param>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
         inline void voltage_range(const instrument_range range,
                 const std::int32_t value = 0) {
             // Note: HMC8015 supports only one channel, so this is hard coded.
