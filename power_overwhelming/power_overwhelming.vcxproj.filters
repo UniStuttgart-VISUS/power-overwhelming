@@ -189,6 +189,15 @@
     <ClInclude Include="visa_sensor_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\instrument_range.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\log_mode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tokenise.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="on_exit.inl">
@@ -201,6 +210,9 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="visa_sensor_impl.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="tokenise.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

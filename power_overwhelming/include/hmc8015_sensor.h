@@ -5,11 +5,15 @@
 
 #pragma once
 
+#include <climits>
 #include <cstddef>
 #include <cstdint>
 #include <cinttypes>
 
-#include "power_overwhelming_api.h"
+#include "instrument_range.h"
+#include "log_mode.h"
+#include "measurement.h"
+#include "timestamp_resolution.h"
 
 
 namespace visus {
@@ -92,6 +96,82 @@ namespace power_overwhelming {
         ~hmc8015_sensor(void);
 
         /// <summary>
+        /// Sets the current range.
+        /// </summary>
+        /// <remarks>
+        /// <para>The instrument can be instructed to select a reasonable range
+        /// by specifying <see cref="instrument_range::automatically" />.
+        /// However, this will prevent a correct integration of measurements if
+        /// the range changes during the measurement period. Therefore, it is
+        /// reasonable to specify a safe range explictly in such an application
+        /// case.</para>
+        /// </remarks>
+        /// <param name="range">Defines how <paramref name="value" /> is
+        /// interpreted.</param>
+        /// <param name="value">The current range in Amperes. This parameter
+        /// is only used if <paramref name="range" /> is set to
+        /// <see cref="instrument_range::explicitly" />. Valid values are
+        /// 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10 an 20.</param>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        inline void current_range(const instrument_range range,
+                const float value = 0.0f) {
+            // Note: HMC8015 supports only one channel, so this is hard coded.
+            this->set_range(1, "CURR", range, value);
+        }
+
+        /// <summary>
+        /// Gets whether logging is enabled or not.
+        /// </summary>
+        /// <returns><c>true</c> if the instrument is currently logging,
+        /// <c>false</c> otherwise.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        bool is_log(void);
+
+        /// <summary>
+        /// Enables or disables logging.
+        /// </summary>
+        /// <param name="enable">Start logging if <c>true</c>, otherwise, stop
+        /// it.</param>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        void log(const bool enable);
+
+        /// <summary>
+        /// Configures how logging started by <see cref="log" /> behaves.
+        /// </summary>
+        /// <param name="interval">The interval between samples in seconds.
+        /// Specifying the lowest/maximum value of <c>float</c> is interpreted
+        /// as special values &quot;MIN&quot; and &quot;MAX&quot; respectively.
+        /// </param>
+        /// <param name="mode">The logging mode.</param>
+        /// <param name="value">The count (number of samples) or duration (in
+        /// seconds), depending on the given <paramref name="mode" />. This
+        /// value is ignored for <see cref="log_mode::unlimited" />. Specifying
+        /// the lowest/maximum value of <c>int</c> is interpreted as special
+        /// values &quot;MIN&quot; and &quot;MAX&quot; respectively.</param>
+        /// <param name="year">The year of the start time if
+        /// <see cref="log_mode::time_span" /> is selected.</param>
+        /// <param name="month">The month of the start time if
+        /// <see cref="log_mode::time_span" /> is selected.</param>
+        /// <param name="day">The day of the start time if
+        /// <see cref="log_mode::time_span" /> is selected.</param>
+        /// <param name="hour">The hour of the start time if
+        /// <see cref="log_mode::time_span" /> is selected.</param>
+        /// <param name="minute">The minute of the start time if
+        /// <see cref="log_mode::time_span" /> is selected.</param>
+        /// <param name="second">The second of the start time if
+        /// <see cref="log_mode::time_span" /> is selected.</param>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        void log_behaviour(const float interval, const log_mode mode,
+            const int value = INT_MAX,
+            const std::int32_t year = 0, const std::int32_t month = 0,
+            const std::int32_t day = 0, const std::int32_t hour = 0,
+            const std::int32_t minute = 0, const std::int32_t second = 0);
+
+        /// <summary>
         /// Gets the path to the log file.
         /// </summary>
         /// <param name="path">The buffer receiving the log file. Note that
@@ -103,34 +183,9 @@ namespace power_overwhelming {
         /// to <paramref name="path "/>.</param>
         /// <returns>The actual length of the path, including the terminating
         /// null character.</returns>
-        std::size_t get_log_file(char *path, const std::size_t cnt);
-
-        /// <summary>
-        /// Gets whether logging is enabled or not.
-        /// </summary>
-        /// <returns><c>true</c> if the instrument is currently logging,
-        /// <c>false</c> otherwise.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
-        bool get_logging(void);
-
-        /// <summary>
-        /// Gets the name of the sensor.
-        /// </summary>
-        /// <returns>The implementation-defined, human-readable name of the
-        /// sensor.</returns>
-        const wchar_t *name(void) const noexcept;
-
-        /// <summary>
-        /// Resets the instrument to its default state.
-        /// </summary>
-        void reset(void);
-
-        /// <summary>
-        /// Sets the logging mode to capturing the specific number of samples.
-        /// </summary>
-        /// <param name="count"></param>
-        void set_log_count(const std::uint32_t count);
+        std::size_t log_file(char *path, const std::size_t cnt);
 
         /// <summary>
         /// Sets the path to the log file.
@@ -143,34 +198,35 @@ namespace power_overwhelming {
         /// <param name="use_usb">If <c>true</c>, the file will be written to
         /// the attached USB stick instead of internal memory. This parameter
         /// defaults to <c>false</c>.</param>
-        void set_log_file(const char *path, const bool overwrite = false,
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        void log_file(const char *path, const bool overwrite = false,
             const bool use_usb = false);
 
         /// <summary>
-        /// Sets the logging measurement inter valin seconds.
+        /// Gets the name of the sensor.
         /// </summary>
-        /// <param name="seconds"></param>
-        void set_log_interval(const float seconds);
-
-        // This does not seem to work on the HMC8015 ...
-        ///// <summary>
-        ///// Sets the time in seconds to log for and switch the mode to timed
-        ///// logging.
-        ///// </summary>
-        ///// <param name="time"></param>
-        //void set_log_time(const std::uint32_t time);
+        /// <returns>The implementation-defined, human-readable name of the
+        /// sensor.</returns>
+        const wchar_t *name(void) const noexcept;
 
         /// <summary>
-        /// Sets the logging mode to unlimited.
+        /// Resets the instrument to its default state.
         /// </summary>
-        /// <param name=""></param>
-        void set_log_unlimited(void);
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        void reset(void);
 
         /// <summary>
-        /// Enables or disables logging.
+        /// Samples the sensor one time.
         /// </summary>
-        /// <param name="enable"></param>
-        void set_logging(const bool enable);
+        /// <param name="resolution">The resolution of the timestamp to be
+        /// generated for the measurement.</param>
+        /// <returns>The measurement received from the instrument.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        measurement sample(const timestamp_resolution resolution
+            = timestamp_resolution::milliseconds);
 
         /// <summary>
         /// Synchonises the date and time on the instrument with the system
@@ -178,7 +234,34 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="utc">If <c>true</c>, UTC will be used, the local time
         /// otherwise. This parameter defaults to <c>false</c>.</param>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
         void synchronise_clock(const bool utc = false);
+
+        /// <summary>
+        /// Sets the voltage range.
+        /// </summary>
+        /// <remarks>
+        /// <para>The instrument can be instructed to select a reasonable range
+        /// by specifying <see cref="instrument_range::automatically" />.
+        /// However, this will prevent a correct integration of measurements if
+        /// the range changes during the measurement period. Therefore, it is
+        /// reasonable to specify a safe range explictly in such an application
+        /// case.</para>
+        /// </remarks>
+        /// <param name="range">Defines how <paramref name="value" /> is
+        /// interpreted.</param>
+        /// <param name="value">The current range in Volts. This parameter
+        /// is only used if <paramref name="range" /> is set to
+        /// <see cref="instrument_range::explicitly" />. Valid values are
+        /// 5, 15, 30, 60, 150, 300 and 600.</param>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        inline void voltage_range(const instrument_range range,
+                const std::int32_t value = 0) {
+            // Note: HMC8015 supports only one channel, so this is hard coded.
+            this->set_range(1, "VOLT", range, static_cast<float>(value));
+        }
 
         /// <summary>
         /// Move assignment.
@@ -201,6 +284,9 @@ namespace power_overwhelming {
     private:
 
         void check_not_disposed(void);
+
+        void set_range(const std::int32_t channel, const char *quantity,
+            const instrument_range range, const float value);
 
         detail::visa_sensor_impl *_impl;
     };

@@ -14,6 +14,7 @@
 #include <tinkerforge_display.h>
 #include <tinkerforge_sensor.h>
 #include <tchar.h>
+#include <Windows.h>
 
 
 /// <summary>
@@ -144,19 +145,27 @@ int _tmain(const int argc, const TCHAR **argv) {
 
         for (auto &s : sensors) {
             s.synchronise_clock();
-            s.set_log_file("podump", true);
-            s.set_log_interval(0.1f);
-            s.get_logging();
-            //s.set_log_count(10);
-            s.set_log_unlimited();
-            s.set_logging(true);
+            s.log_file("podump", true, true);
+            s.current_range(instrument_range::maximum);
+            s.voltage_range(instrument_range::explicitly, 300);
+
+            SYSTEMTIME now;
+            ::GetLocalTime(&now);
+
+            s.log_behaviour(std::numeric_limits<float>::lowest(),
+                log_mode::time_span, 5, now.wYear, now.wMonth,
+                now.wDay, now.wHour, now.wMinute, now.wSecond + 5);
+            s.log(true);
+            std::wcout << s.is_log() << std::endl;
+
             std::vector<char> path(1024);
-            s.get_log_file(path.data(), path.size());
+            s.log_file(path.data(), path.size());
             std::wcout << s.name() << L":" << std::endl;
 
-            //auto m = s.sample();
-            //std::wcout << m.timestamp() << L": " << m.power() << L" W"
-            //    << std::endl;
+            auto m = s.sample(timestamp_resolution::milliseconds);
+            std::wcout << m.timestamp() << L": " << m.voltage() << " V * "
+                << m.current() << " A = " << m.power() << L" W"
+                << std::endl;
         }
 
     } catch (std::exception& ex) {

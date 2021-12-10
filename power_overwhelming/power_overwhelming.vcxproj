@@ -42,6 +42,8 @@
     <ClInclude Include="include\adl_sensor.h" />
     <ClInclude Include="include\adl_sensor_source.h" />
     <ClInclude Include="include\hmc8015_sensor.h" />
+    <ClInclude Include="include\instrument_range.h" />
+    <ClInclude Include="include\log_mode.h" />
     <ClInclude Include="include\measurement.h" />
     <ClInclude Include="include\nvml_sensor.h" />
     <ClInclude Include="include\power_overwhelming_api.h" />
@@ -62,6 +64,7 @@
     <ClInclude Include="tinkerforge_exception.h" />
     <ClInclude Include="tinkerforge_sensor_impl.h" />
     <ClInclude Include="tinkerforge_scope.h" />
+    <ClInclude Include="tokenise.h" />
     <ClInclude Include="triple_buffering.h" />
     <ClInclude Include="visa_exception.h" />
     <ClInclude Include="visa_library.h" />
@@ -104,6 +107,7 @@
     <None Include="on_exit.inl" />
     <None Include="timestamp.inl" />
     <None Include="tinkerforge_scope.inl" />
+    <None Include="tokenise.inl" />
     <None Include="visa_sensor_impl.inl" />
   </ItemGroup>
   <ItemGroup>
