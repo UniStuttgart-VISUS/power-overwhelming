@@ -68,6 +68,24 @@ visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
     // Lock the system to indicate that it is controlled by the software. As
     // locking the system is not critical, do not check for system errors here.
     this->_impl->printf("SYST:REM\n");
+
+    // Configure the display to show always the same stuff.
+    this->_impl->printf("VIEW:NUM:SHOW 1\n");
+    this->_impl->printf("VIEW:NUM:PAGE1:SIZE 10\n");
+    this->_impl->printf("VIEW:NUM:PAGE1:CELL1:FUNC FU\n");
+    this->_impl->printf("VIEW:NUM:PAGE1:CELL2:FUNC FI\n");
+    this->_impl->printf("VIEW:NUM:PAGE1:CELL3:FUNC P\n");
+    this->_impl->printf("VIEW:NUM:PAGE1:CELL4:FUNC S\n");
+    this->_impl->printf("VIEW:NUM:PAGE1:CELL5:FUNC TIME\n");
+    this->_impl->printf("VIEW:NUM:PAGE1:CELL6:FUNC WH\n");
+    this->_impl->printf("VIEW:NUM:PAGE1:CELL7:FUNC UAVG\n");
+    this->_impl->printf("VIEW:NUM:PAGE1:CELL8:FUNC IAVG\n");
+    this->_impl->printf("VIEW:NUM:PAGE1:CELL9:FUNC URAN\n");
+    this->_impl->printf("VIEW:NUM:PAGE1:CELL10:FUNC IRAN\n");
+
+    // Clear any error that might have been caused by our setup. We do not want
+    // to abort just because the display does not look as expected.
+    this->_impl->clear_status();
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 

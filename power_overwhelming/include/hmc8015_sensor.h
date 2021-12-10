@@ -108,7 +108,10 @@ namespace power_overwhelming {
         /// <summary>
         /// Gets whether logging is enabled or not.
         /// </summary>
-        /// <returns></returns>
+        /// <returns><c>true</c> if the instrument is currently logging,
+        /// <c>false</c> otherwise.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
         bool get_logging(void);
 
         /// <summary>
