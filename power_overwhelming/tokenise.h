@@ -15,7 +15,6 @@ namespace visus {
 namespace power_overwhelming {
 namespace detail {
 
-
     /// <summary>
     /// Splits a string at the positions where the given
     /// <paramref name="predicate" /> yields true for a characeter, which is

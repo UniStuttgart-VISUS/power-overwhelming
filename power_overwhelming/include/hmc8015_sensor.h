@@ -121,6 +121,15 @@ namespace power_overwhelming {
         }
 
         /// <summary>
+        /// Displays the given text or clears the display.
+        /// </summary>
+        /// <param name="text">The text to be displayed or <c>nullptr</c> to
+        /// clear the display.</param>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        void display(const char *text);
+
+        /// <summary>
         /// Gets whether logging is enabled or not.
         /// </summary>
         /// <returns><c>true</c> if the instrument is currently logging,

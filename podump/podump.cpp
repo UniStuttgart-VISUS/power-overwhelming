@@ -144,23 +144,31 @@ int _tmain(const int argc, const TCHAR **argv) {
         hmc8015_sensor::for_all(sensors.data(), sensors.size());
 
         for (auto &s : sensors) {
+            s.display("Die Kraft ist überwältigend!");
             s.synchronise_clock();
-            s.log_file("podump", true, true);
+            s.log_file("podump.csv", true, true);
             s.current_range(instrument_range::maximum);
             s.voltage_range(instrument_range::explicitly, 300);
 
             SYSTEMTIME now;
             ::GetLocalTime(&now);
 
+            std::wcout << now.wHour << ":" << now.wMinute << ":" << now.wSecond << std::endl;
+
+            //s.log_behaviour(std::numeric_limits<float>::lowest(),
+            //    log_mode::time_span, 5, now.wYear, now.wMonth,
+            //    now.wDay, now.wHour, now.wMinute, now.wSecond + 5);
             s.log_behaviour(std::numeric_limits<float>::lowest(),
-                log_mode::time_span, 5, now.wYear, now.wMonth,
-                now.wDay, now.wHour, now.wMinute, now.wSecond + 5);
+                log_mode::duration, 5);
             s.log(true);
             std::wcout << s.is_log() << std::endl;
 
             std::vector<char> path(1024);
             s.log_file(path.data(), path.size());
             std::wcout << s.name() << L":" << std::endl;
+
+            std::this_thread::sleep_for(std::chrono::seconds(6));
+            s.log(false);
 
             auto m = s.sample(timestamp_resolution::milliseconds);
             std::wcout << m.timestamp() << L": " << m.voltage() << " V * "

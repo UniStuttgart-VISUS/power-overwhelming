@@ -92,6 +92,8 @@ visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
     // Default: URMS,IRMS,P,FPLL,URAN,IRAN,S,Q,LAMB,PHI
     this->_impl->printf("CHAN1:MEAS:FUNC URMS, IRMS, P\n");
 
+    this->_impl->printf("CHAN1:ACQ:MODE AUTO\n");
+
     // Clear any error that might have been caused by our setup. We do not want
     // to abort just because the display does not look as expected.
     this->_impl->clear_status();
@@ -118,6 +120,21 @@ visus::power_overwhelming::hmc8015_sensor::~hmc8015_sensor(void) {
 
 
 /*
+ * visus::power_overwhelming::hmc8015_sensor::display
+ */
+void visus::power_overwhelming::hmc8015_sensor::display(const char *text) {
+    this->check_not_disposed();
+
+    if (text != nullptr) {
+        this->_impl->printf("DISP:TEXT:DATA \"%s\"\n", text);
+    } else {
+        this->_impl->printf("DISP:TEXT:CLE\n");
+    }
+
+    this->_impl->throw_on_system_error();
+}
+
+/*
  * visus::power_overwhelming::hmc8015_sensor::is_log
  */
 bool visus::power_overwhelming::hmc8015_sensor::is_log(void) {
@@ -132,6 +149,25 @@ bool visus::power_overwhelming::hmc8015_sensor::is_log(void) {
  */
 void visus::power_overwhelming::hmc8015_sensor::log(const bool enable) {
     this->check_not_disposed();
+
+    //if (enable) {
+    //    this->_impl->printf("INT:STAT ON\n");
+    //    this->_impl->throw_on_system_error();
+
+    //    this->_impl->printf("INT:RES\n");
+    //    this->_impl->throw_on_system_error();
+
+    //    this->_impl->printf("INT:STAR\n");
+    //    this->_impl->throw_on_system_error();
+
+    //} else {
+    //    this->_impl->printf("INT:STOP\n");
+    //    this->_impl->throw_on_system_error();
+
+    //    this->_impl->printf("INT:STAT OFF\n");
+    //    this->_impl->throw_on_system_error();
+    //}
+
     this->_impl->printf("LOG:STAT %s\n", enable ? "ON" : "OFF");
     this->_impl->throw_on_system_error();
 }
@@ -147,6 +183,7 @@ void visus::power_overwhelming::hmc8015_sensor::log_behaviour(
         const std::int32_t minute, const std::int32_t second) {
     this->check_not_disposed();
 
+    // Configure the logging mode.
     switch (mode) {
         case log_mode::count:
             this->_impl->printf("LOG:MODE COUN\n");
@@ -157,6 +194,8 @@ void visus::power_overwhelming::hmc8015_sensor::log_behaviour(
             } else {
                 this->_impl->printf("LOG:COUN %d\n", value);
             }
+
+            //this->_impl->printf("INT:MODE MAN\n");
             break;
 
         case log_mode::duration:
@@ -168,9 +207,19 @@ void visus::power_overwhelming::hmc8015_sensor::log_behaviour(
             } else {
                 this->_impl->printf("LOG:DUR %d\n", value);
             }
+
+            //this->_impl->printf("INT:MODE DUR\n");
+            //if (value == std::numeric_limits<decltype(value)>::lowest()) {
+            //    this->_impl->printf("INT:DUR MIN\n");
+            //} else if (value == (std::numeric_limits<decltype(value)>::max)()) {
+            //    this->_impl->printf("INT:DUR MAX\n");
+            //} else {
+            //    this->_impl->printf("INT:DUR %d\n", value);
+            //}
             break;
 
         case log_mode::time_span:
+            throw std::invalid_argument("time_span does not work ...");
             this->_impl->printf("LOG:MODE SPAN\n");
             this->_impl->printf("LOG:STIM %d, %d, %d, %d, %d, %d\n", year,
                 month, day, hour, minute, second);
@@ -181,10 +230,22 @@ void visus::power_overwhelming::hmc8015_sensor::log_behaviour(
             } else {
                 this->_impl->printf("LOG:DUR %d\n", value);
             }
+
+            //this->_impl->printf("INT:MODE SPAN\n");
+            //this->_impl->printf("INT:STIM %d, %d, %d, %d, %d, %d\n", year,
+            //    month, day, hour, minute, second);
+            //if (value == std::numeric_limits<decltype(value)>::lowest()) {
+            //    this->_impl->printf("INT:DUR MIN\n");
+            //} else if (value == (std::numeric_limits<decltype(value)>::max)()) {
+            //    this->_impl->printf("INT:DUR MAX\n");
+            //} else {
+            //    this->_impl->printf("INT:DUR %d\n", value);
+            //}
             break;
 
         case log_mode::unlimited:
             this->_impl->printf("LOG:MODE UNL\n");
+            //this->_impl->printf("INT:MODE MAN\n");
             break;
 
         default:
@@ -192,6 +253,9 @@ void visus::power_overwhelming::hmc8015_sensor::log_behaviour(
                 "supported by the instrument.");
     }
 
+    this->_impl->throw_on_system_error();
+
+    // Configure the logging interval.
     if (interval == std::numeric_limits<decltype(interval)>::lowest()) {
         this->_impl->printf("LOG:INT MIN\n");
     } else if (interval == (std::numeric_limits<decltype(interval)>::max)()) {
@@ -200,6 +264,10 @@ void visus::power_overwhelming::hmc8015_sensor::log_behaviour(
         this->_impl->printf("LOG:INT %f\n", interval);
     }
 
+    this->_impl->throw_on_system_error();
+
+    // Use the first page configured in the constructor.
+    this->_impl->printf("LOG:PAGE 1\n");
     this->_impl->throw_on_system_error();
 }
 
@@ -243,8 +311,10 @@ void visus::power_overwhelming::hmc8015_sensor::log_file(const char *path,
 
     this->check_not_disposed();
     auto location = use_usb ? "EXT" : "INT";
-    this->_impl->printf("LOG:DEL \"%s\", %s\n", path, location);
+
+    this->_impl->printf("DATA:DEL \"%s\", %s\n", path, location);
     this->_impl->clear_status();    // Clear error in case file did not exist.
+
     this->_impl->printf("LOG:FNAM \"%s\", %s\n", path, location);
     this->_impl->throw_on_system_error();
 }
