@@ -10,6 +10,7 @@
 #include <nvml.h>
 
 #include "nvml_scope.h"
+#include "timestamp.h"
 
 
 namespace visus {

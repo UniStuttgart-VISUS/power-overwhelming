@@ -12,6 +12,7 @@
 #include "adl_scope.h"
 #include "adl_sensor_source.h"
 #include "measurement.h"
+#include "timestamp.h"
 
 
 namespace visus {

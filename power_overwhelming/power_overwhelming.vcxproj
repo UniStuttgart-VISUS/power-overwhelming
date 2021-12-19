@@ -42,12 +42,19 @@
     <ClInclude Include="timestamp_resolution_traits.h" />
     <ClInclude Include="include\adl_sensor.h" />
     <ClInclude Include="include\adl_sensor_source.h" />
+    <ClInclude Include="include\hmc8015_sensor.h" />
+    <ClInclude Include="include\instrument_range.h" />
+    <ClInclude Include="include\log_mode.h" />
     <ClInclude Include="include\measurement.h" />
     <ClInclude Include="include\nvml_sensor.h" />
     <ClInclude Include="include\power_overwhelming_api.h" />
     <ClInclude Include="include\sensor.h" />
     <ClInclude Include="include\timestamp.h" />
+    <ClInclude Include="include\rtb_sensor.h" />
     <ClInclude Include="include\timestamp_resolution.h" />
+    <ClInclude Include="include\tinkerforge_display.h" />
+    <ClInclude Include="include\tinkerforge_sensor.h" />
+    <ClInclude Include="include\tinkerforge_sensor_definiton.h" />
     <ClInclude Include="library_base.h" />
     <ClInclude Include="nvidia_management_library.h" />
     <ClInclude Include="nvml_exception.h" />
@@ -55,8 +62,19 @@
     <ClInclude Include="nvml_sensor_impl.h" />
     <ClInclude Include="convert_string.h" />
     <ClInclude Include="on_exit.h" />
+    <ClInclude Include="timestamp.h" />
+    <ClInclude Include="tinkerforge_bricklet.h" />
+    <ClInclude Include="tinkerforge_display_impl.h" />
     <ClInclude Include="tinkerforge_exception.h" />
+    <ClInclude Include="tinkerforge_sensor_impl.h" />
     <ClInclude Include="tinkerforge_scope.h" />
+    <ClInclude Include="tokenise.h" />
+    <ClInclude Include="triple_buffering.h" />
+    <ClInclude Include="visa_exception.h" />
+    <ClInclude Include="visa_library.h" />
+    <ClInclude Include="visa_scope.h" />
+    <ClInclude Include="visa_scope_impl.h" />
+    <ClInclude Include="visa_sensor_impl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adl_exception.cpp" />
@@ -64,6 +82,7 @@
     <ClCompile Include="adl_sensor.cpp" />
     <ClCompile Include="adl_sensor_impl.cpp" />
     <ClCompile Include="amd_display_library.cpp" />
+    <ClCompile Include="hmc8015_sensor.cpp" />
     <ClCompile Include="library_base.cpp" />
     <ClCompile Include="measurement.cpp" />
     <ClCompile Include="nvidia_management_library.cpp" />
@@ -72,13 +91,30 @@
     <ClCompile Include="nvml_sensor.cpp" />
     <ClCompile Include="nvml_sensor_impl.cpp" />
     <ClCompile Include="convert_string.cpp" />
+    <ClCompile Include="rtb_sensor.cpp" />
+    <ClCompile Include="timestamp.cpp" />
+    <ClCompile Include="tinkerforge_bricklet.cpp" />
+    <ClCompile Include="tinkerforge_display.cpp" />
+    <ClCompile Include="tinkerforge_display_impl.cpp" />
     <ClCompile Include="sensor.cpp" />
     <ClCompile Include="tinkerforge_exception.cpp" />
+    <ClCompile Include="tinkerforge_sensor.cpp" />
+    <ClCompile Include="tinkerforge_sensor_definiton.cpp" />
+    <ClCompile Include="tinkerforge_sensor_impl.cpp" />
     <ClCompile Include="tinkerforge_scope.cpp" />
+    <ClCompile Include="triple_buffering.cpp" />
+    <ClCompile Include="visa_exception.cpp" />
+    <ClCompile Include="visa_library.cpp" />
+    <ClCompile Include="visa_scope.cpp" />
+    <ClCompile Include="visa_scope_impl.cpp" />
+    <ClCompile Include="visa_sensor_impl.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="include\timestamp.inl" />
     <None Include="on_exit.inl" />
+    <None Include="timestamp.inl" />
+    <None Include="tinkerforge_scope.inl" />
+    <None Include="tokenise.inl" />
+    <None Include="visa_sensor_impl.inl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\tinkerforge\tinkerforge.vcxproj">
@@ -156,6 +192,8 @@
     <Import Project="..\third_party\nvml.props" />
     <Import Project="..\third_party\tinkerforge.props" />
     <Import Project="..\third_party\visa.props" />
+    <Import Project="..\third_party\rshmc8015.props" />
+    <Import Project="..\third_party\rsrtx.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -163,6 +201,8 @@
     <Import Project="..\third_party\nvml.props" />
     <Import Project="..\third_party\tinkerforge.props" />
     <Import Project="..\third_party\visa.props" />
+    <Import Project="..\third_party\rshmc8015.props" />
+    <Import Project="..\third_party\rsrtx.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -170,6 +210,8 @@
     <Import Project="..\third_party\nvml.props" />
     <Import Project="..\third_party\tinkerforge.props" />
     <Import Project="..\third_party\visa.props" />
+    <Import Project="..\third_party\rshmc8015.props" />
+    <Import Project="..\third_party\rsrtx.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -177,6 +219,8 @@
     <Import Project="..\third_party\nvml.props" />
     <Import Project="..\third_party\tinkerforge.props" />
     <Import Project="..\third_party\visa.props" />
+    <Import Project="..\third_party\rshmc8015.props" />
+    <Import Project="..\third_party\rsrtx.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -184,6 +228,8 @@
     <Import Project="..\third_party\nvml.props" />
     <Import Project="..\third_party\tinkerforge.props" />
     <Import Project="..\third_party\visa.props" />
+    <Import Project="..\third_party\rshmc8015.props" />
+    <Import Project="..\third_party\rsrtx.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -191,6 +237,8 @@
     <Import Project="..\third_party\nvml.props" />
     <Import Project="..\third_party\tinkerforge.props" />
     <Import Project="..\third_party\visa.props" />
+    <Import Project="..\third_party\rshmc8015.props" />
+    <Import Project="..\third_party\rsrtx.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -198,6 +246,8 @@
     <Import Project="..\third_party\nvml.props" />
     <Import Project="..\third_party\tinkerforge.props" />
     <Import Project="..\third_party\visa.props" />
+    <Import Project="..\third_party\rshmc8015.props" />
+    <Import Project="..\third_party\rsrtx.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -205,6 +255,8 @@
     <Import Project="..\third_party\nvml.props" />
     <Import Project="..\third_party\tinkerforge.props" />
     <Import Project="..\third_party\visa.props" />
+    <Import Project="..\third_party\rshmc8015.props" />
+    <Import Project="..\third_party\rsrtx.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

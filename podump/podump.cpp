@@ -4,12 +4,18 @@
 // <author>Christoph Müller</author>
 
 #include <iostream>
+#include <thread>
 #include <vector>
 
 #include <adl_sensor.h>
+#include <hmc8015_sensor.h>
 #include <measurement.h>
 #include <nvml_sensor.h>
+#include <rtb_sensor.h>
+#include <tinkerforge_display.h>
+#include <tinkerforge_sensor.h>
 #include <tchar.h>
+#include <Windows.h>
 
 
 /// <summary>
@@ -44,12 +50,146 @@ int _tmain(const int argc, const TCHAR **argv) {
         sensors.resize(nvml_sensor::for_all(nullptr, 0));
         nvml_sensor::for_all(sensors.data(), sensors.size());
 
-        for (auto &s : sensors) {
+        for (auto& s : sensors) {
             std::wcout << s.name() << L":" << std::endl;
             auto m = s.sample();
             std::wcout << m.timestamp() << L": " << m.power() << L" W"
                 << std::endl;
         }
+    } catch (std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+
+    // Print some useful messsage to all Tinkerforge LCDs attached.
+    try {
+        std::vector<tinkerforge_display> displays;
+        displays.resize(tinkerforge_display::for_all(nullptr, 0));
+        auto cnt = tinkerforge_display::for_all(displays.data(),
+            displays.size());
+
+        if (cnt < displays.size()) {
+            displays.resize(cnt);
+        }
+
+        for (auto& d : displays) {
+            d.clear();
+            d.print("Power overwhelming!");
+        }
+
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+
+    // Print data for all connected Tinkerforge sensors.
+    try {
+        std::vector<tinkerforge_sensor_definiton> descs;
+        descs.resize(tinkerforge_sensor::get_definitions(nullptr, 0));
+        auto cnt = tinkerforge_sensor::get_definitions(descs.data(),
+            descs.size());
+
+        if (cnt < descs.size()) {
+            descs.resize(cnt);
+        }
+
+        for (auto &d : descs) {
+            tinkerforge_sensor s(d);
+            std::wcout << s.name() << L":" << std::endl;
+            auto m = s.sample();
+            std::wcout << m.timestamp() << L": " << m.voltage() << " V * "
+                << m.current() << " A = " << m.power() << L" W"
+                << std::endl;
+        }
+
+    } catch (std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+
+#if false
+    // Asynchronously sample the Tinkerforge sensors for five seconds.
+    try {
+        std::vector<tinkerforge_sensor_definiton> descs;
+        std::vector<tinkerforge_sensor> sensors;
+        descs.resize(tinkerforge_sensor::get_definitions(nullptr, 0));
+        auto cnt = tinkerforge_sensor::get_definitions(descs.data(),
+            descs.size());
+
+        if (cnt < descs.size()) {
+            descs.resize(cnt);
+        }
+
+        for (auto& d : descs) {
+            sensors.emplace_back(d);
+            sensors.back().sample([](const measurement& m) {
+                std::wcout << m.sensor() << L":" << m.timestamp() << L": "
+                    << m.voltage() << " V * " << m.current() << " A = "
+                    << m.power() << L" W"
+                    << std::endl;
+                });
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+
+        for (auto& s : sensors) {
+            s.sample(nullptr);
+        }
+
+    } catch (std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+#endif
+     
+    // Query HMC8015
+    try {
+        std::vector<hmc8015_sensor> sensors;
+        sensors.resize(hmc8015_sensor::for_all(nullptr, 0));
+        hmc8015_sensor::for_all(sensors.data(), sensors.size());
+
+        for (auto &s : sensors) {
+            s.display("Die Kraft ist überwältigend!");
+            s.synchronise_clock();
+            s.log_file("podump.csv", true, true);
+            s.current_range(instrument_range::maximum);
+            s.voltage_range(instrument_range::explicitly, 300);
+
+            SYSTEMTIME now;
+            ::GetLocalTime(&now);
+
+            std::wcout << now.wHour << ":" << now.wMinute << ":" << now.wSecond << std::endl;
+
+            //s.log_behaviour(std::numeric_limits<float>::lowest(),
+            //    log_mode::time_span, 5, now.wYear, now.wMonth,
+            //    now.wDay, now.wHour, now.wMinute, now.wSecond + 5);
+            s.log_behaviour(std::numeric_limits<float>::lowest(),
+                log_mode::duration);
+            s.log(true);
+            std::wcout << s.is_log() << std::endl;
+
+            std::vector<char> path(1024);
+            s.log_file(path.data(), path.size());
+            std::this_thread::sleep_for(std::chrono::seconds(6));
+            s.log(false);
+
+            std::wcout << s.name() << L":" << std::endl;
+            auto m = s.sample(timestamp_resolution::milliseconds);
+            std::wcout << m.timestamp() << L": " << m.voltage() << " V * "
+                << m.current() << " A = " << m.power() << L" W"
+                << std::endl;
+        }
+
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+
+    // Query RTB2004
+    try {
+        std::vector<rtb_sensor> sensors;
+        sensors.resize(rtb_sensor::for_all(nullptr, 0));
+        rtb_sensor::for_all(sensors.data(), sensors.size());
+
+        for (auto& s : sensors) {
+            std::wcout << s.name() << L":" << std::endl;
+        }
+
     } catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;
     }
