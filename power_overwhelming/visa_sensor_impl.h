@@ -125,12 +125,14 @@ namespace detail {
         /// Read from the instrument into the given buffer.
         /// </summary>
         /// <remarks>
-        /// This method has no effect if the library has been compiled without
-        /// support for VISA.
+        /// <para>This method has no effect if the library has been compiled
+        /// without support for VISA.</para>
         /// </remarks>
         /// <param name="buffer">The buffer to write the data to.</param>
         /// <param name="cnt">The size of the buffer in bytes.</param>
-        /// <returns>The number of bytes actually read.</returns>
+        /// <returns>The number of bytes actually read. If this is equal to
+        /// <see cref="cnt" />, the response has most likely not been read in
+        /// total and you should call the method again.</returns>
         /// <exception cref="visa_exception">If the operation failed. Note that
         /// a failure here only refers to the use of the API, ie the instrument
         /// can be in a failed state even if the call succeeded. Use
