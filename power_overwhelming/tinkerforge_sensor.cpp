@@ -168,7 +168,7 @@ visus::power_overwhelming::tinkerforge_sensor::sample(
     }
 
     return measurement(this->_impl->sensor_name.c_str(),
-        detail::create_timestamp(resolution),
+        create_timestamp(resolution),
         static_cast<measurement::value_type>(voltage) / thousand,
         static_cast<measurement::value_type>(current) / thousand,
         static_cast<measurement::value_type>(power) / thousand);

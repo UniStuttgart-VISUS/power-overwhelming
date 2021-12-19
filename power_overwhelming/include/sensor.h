@@ -6,6 +6,7 @@
 #pragma once
 
 #include "measurement.h"
+#include "timestamp_resolution.h"
 
 
 namespace visus {

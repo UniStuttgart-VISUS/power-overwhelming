@@ -351,7 +351,7 @@ visus::power_overwhelming::hmc8015_sensor::sample(
         const timestamp_resolution resolution) {
     this->check_not_disposed();
     auto response = this->_impl->query("CHAN1:MEAS:DATA?\n");
-    auto timestamp = detail::create_timestamp(resolution);
+    auto timestamp = create_timestamp(resolution);
     auto tokens = detail::tokenise(std::string(response.begin(),
         response.end()), ',', true);
 
