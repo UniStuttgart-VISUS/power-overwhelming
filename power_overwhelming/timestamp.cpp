@@ -50,7 +50,7 @@ visus::power_overwhelming::detail::convert(
 visus::power_overwhelming::timestamp_type
 visus::power_overwhelming::create_timestamp(
         const timestamp_resolution resolution) {
-#if !defined(_WIN32)
+#if defined(_WIN32)
     FILETIME time;
     ::GetSystemTimePreciseAsFileTime(&time);
     return detail::convert(time, resolution);
@@ -75,8 +75,9 @@ visus::power_overwhelming::create_timestamp(
         case timestamp_resolution::milliseconds:
             return duration_cast<milliseconds>(dt + dz).count();
 
-        case timestamp_resolution::nanoseconds:
-            return duration_cast<nanoseconds>(dt + dz).count();
+        // TODO: This overflows, so we do not support it.
+        //case timestamp_resolution::nanoseconds:
+        //    return duration_cast<nanoseconds>(dt + dz).count();
 
         case timestamp_resolution::seconds:
             return duration_cast<seconds>(dt + dz).count();
