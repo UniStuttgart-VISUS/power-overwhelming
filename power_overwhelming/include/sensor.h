@@ -27,6 +27,12 @@ namespace power_overwhelming {
         /// <summary>
         /// Gets the name of the sensor.
         /// </summary>
+        /// <remarks>
+        /// Implementors should make resonable effort to make this name unique,
+        /// first by including their sensor type and second by including some
+        /// kind of unique device identifier if multiple instances of the sensor
+        /// are supported on a single machine.
+        /// </remarks>
         /// <returns>The implementation-defined, human-readable name of the
         /// sensor.</returns>
         virtual const wchar_t *name(void) const noexcept = 0;
