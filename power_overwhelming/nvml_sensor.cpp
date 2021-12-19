@@ -157,6 +157,18 @@ const wchar_t *visus::power_overwhelming::nvml_sensor::name(
 
 
 /*
+ * visus::power_overwhelming::nvml_sensor::sample
+ */
+visus::power_overwhelming::measurement
+visus::power_overwhelming::nvml_sensor::sample(
+        const timestamp_resolution resolution) const {
+    return this->sample(0);// TODO
+}
+
+
+
+
+/*
  * visus::power_overwhelming::nvml_sensor::operator =
  */
 visus::power_overwhelming::nvml_sensor&
@@ -178,17 +190,13 @@ visus::power_overwhelming::nvml_sensor::operator bool(void) const noexcept {
 }
 
 
-
 /*
  * ::power_overwhelming::nvml_sensor::sample
  */
 visus::power_overwhelming::measurement
 visus::power_overwhelming::nvml_sensor::sample(
         const measurement::timestamp_type timestamp) const {
-    if (!*this) {
-        throw std::runtime_error("A disposed instance of nvml_sensor cannot be "
-            "sampled.");
-    }
+    this->check_not_disposed();
 
     // Get the power usage in milliwatts.
     unsigned int mw = 0;
@@ -202,3 +210,4 @@ visus::power_overwhelming::nvml_sensor::sample(
         static_cast<measurement::value_type>(mw)
         / static_cast<measurement::value_type>(1000));
 }
+

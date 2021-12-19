@@ -24,9 +24,6 @@
     <ClInclude Include="include\adl_sensor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\stream_element.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\power_overwhelming_api.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -78,6 +75,12 @@
     <ClInclude Include="tinkerforge_exception.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\sensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="timestamp_resolution_traits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adl_sensor.cpp">
@@ -123,6 +126,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tinkerforge_exception.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sensor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

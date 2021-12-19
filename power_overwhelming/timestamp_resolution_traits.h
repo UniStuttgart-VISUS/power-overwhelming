@@ -1,4 +1,4 @@
-// <copyright file="timestamp.h" company="Visualisierungsinstitut der Universität Stuttgart">
+// <copyright file="timestamp_resolution_traits.h" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -7,14 +7,11 @@
 
 #include <chrono>
 
-#include <Windows.h>
-
 #include "timestamp_resolution.h"
 
 
 namespace visus {
 namespace power_overwhelming {
-
 namespace detail {
 
     /// <summary>

@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "measurement.h"
+#include "sensor.h"
 
 
 namespace visus {
@@ -18,7 +18,7 @@ namespace power_overwhelming {
     /// Implementation of a power sensor using the NVIDIA management library to
     /// read the internal sensors of the GPU.
     /// </summary>
-    class POWER_OVERWHELMING_API nvml_sensor final {
+    class POWER_OVERWHELMING_API nvml_sensor final : public sensor {
 
     public:
 
@@ -114,36 +114,9 @@ namespace power_overwhelming {
         /// sensor.</returns>
         const wchar_t *name(void) const noexcept;
 
-        /// <summary>
-        /// Sample the sensor.
-        /// </summary>
-        /// <typeparam name="Resolution">The desired resolution of the timestamp
-        /// being created for the measurement.</typeparam>
-        /// <returns>A sensor sample with the information about power
-        /// consumption that is available via NVML.</returns>
-        /// <exception cref="std::runtime_error">If a sensor that has been moved
-        /// is sampled</exception>
-        /// <exception cref="nvml_exception">If the sensor could not be sampled.
-        /// </exception>
-        template<timestamp_resolution Resolution>
-        inline measurement sample(void) const {
-            typedef detail::timestamp<Resolution> ts;
-            this->sample(ts::create());
-        }
-
-        /// <summary>
-        /// Sample the sensor using a timestamp with millisecond resolution.
-        /// </summary>
-        /// <returns>A sensor sample with the information about power
-        /// consumption that is available via NVML.</returns>
-        /// <exception cref="std::runtime_error">If a sensor that has been moved
-        /// is sampled.</exception>
-        /// <exception cref="nvml_exception">If the sensor could not be sampled.
-        /// </exception>
-        inline measurement sample(void) const {
-            typedef detail::timestamp<timestamp_resolution::milliseconds> ts;
-            return this->sample(ts::create());
-        }
+        /// <inheritdoc />
+        virtual measurement sample(
+            const timestamp_resolution resolution) const override;
 
         /// <summary>
         /// Move assignment.
@@ -152,16 +125,8 @@ namespace power_overwhelming {
         /// <returns><c>*this</c></returns>
         nvml_sensor& operator =(nvml_sensor&& rhs) noexcept;
 
-        /// <summary>
-        /// Determines whether the sensor is valid.
-        /// </summary>
-        /// <remarks>
-        /// A sensor is considered valid until it has been disposed by a move
-        /// operation.
-        /// </remarks>
-        /// <returns><c>true</c> if the sensor is valid, <c>false</c>
-        /// otherwise.</returns>
-        operator bool(void) const noexcept;
+        /// <inheritdoc />
+        virtual operator bool(void) const noexcept override;
 
     private:
 

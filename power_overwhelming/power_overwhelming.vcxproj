@@ -39,12 +39,13 @@
     <ClInclude Include="adl_scope.h" />
     <ClInclude Include="adl_sensor_impl.h" />
     <ClInclude Include="amd_display_library.h" />
+    <ClInclude Include="timestamp_resolution_traits.h" />
     <ClInclude Include="include\adl_sensor.h" />
     <ClInclude Include="include\adl_sensor_source.h" />
     <ClInclude Include="include\measurement.h" />
     <ClInclude Include="include\nvml_sensor.h" />
     <ClInclude Include="include\power_overwhelming_api.h" />
-    <ClInclude Include="include\stream_element.h" />
+    <ClInclude Include="include\sensor.h" />
     <ClInclude Include="include\timestamp.h" />
     <ClInclude Include="include\timestamp_resolution.h" />
     <ClInclude Include="library_base.h" />
@@ -71,6 +72,7 @@
     <ClCompile Include="nvml_sensor.cpp" />
     <ClCompile Include="nvml_sensor_impl.cpp" />
     <ClCompile Include="convert_string.cpp" />
+    <ClCompile Include="sensor.cpp" />
     <ClCompile Include="tinkerforge_exception.cpp" />
     <ClCompile Include="tinkerforge_scope.cpp" />
   </ItemGroup>
