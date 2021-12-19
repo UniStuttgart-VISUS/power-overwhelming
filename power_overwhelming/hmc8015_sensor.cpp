@@ -348,7 +348,7 @@ void visus::power_overwhelming::hmc8015_sensor::reset(void) {
  */
 visus::power_overwhelming::measurement
 visus::power_overwhelming::hmc8015_sensor::sample(
-        const timestamp_resolution resolution) {
+        const timestamp_resolution resolution) const {
     this->check_not_disposed();
     auto response = this->_impl->query("CHAN1:MEAS:DATA?\n");
     auto timestamp = create_timestamp(resolution);
@@ -407,17 +407,6 @@ visus::power_overwhelming::hmc8015_sensor::operator =(
  */
 visus::power_overwhelming::hmc8015_sensor::operator bool(void) const noexcept {
     return (this->_impl != nullptr);
-}
-
-
-/*
- * visus::power_overwhelming::hmc8015_sensor::check_not_disposed
- */
-void visus::power_overwhelming::hmc8015_sensor::check_not_disposed(void) {
-    if (!*this) {
-        throw std::runtime_error("The requested operation cannot be performed "
-            "on a disposed instance of hmc8015_sensor.");
-    }
 }
 
 

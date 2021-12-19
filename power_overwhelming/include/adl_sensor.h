@@ -6,8 +6,7 @@
 #pragma once
 
 #include "adl_sensor_source.h"
-#include "measurement.h"
-#include "timestamp_resolution.h"
+#include "sensor.h"
 
 
 namespace visus {
@@ -19,8 +18,7 @@ namespace power_overwhelming {
     /// <summary>
     /// A sensor drawing its information from the AMD display library (ADL).
     /// </summary>
-    /// <typeparam name="TMeasurement"></typeparam>
-    class POWER_OVERWHELMING_API adl_sensor final {
+    class POWER_OVERWHELMING_API adl_sensor final : public sensor {
 
     public:
 
@@ -108,14 +106,14 @@ namespace power_overwhelming {
         /// <summary>
         /// Finalise the instance.
         /// </summary>
-        ~adl_sensor(void);
+        virtual ~adl_sensor(void);
 
         /// <summary>
         /// Gets the name of the sensor.
         /// </summary>
         /// <returns>The implementation-defined, human-readable name of the
         /// sensor.</returns>
-        const wchar_t *name(void) const noexcept;
+        virtual const wchar_t *name(void) const noexcept override;
 
         /// <summary>
         /// Sample the sensor.
@@ -128,36 +126,10 @@ namespace power_overwhelming {
         /// is sampled.</exception>
         /// <exception cref="adl_exception">If the sensor could not be sampled.
         /// </exception>
-        measurement sample(const timestamp_resolution resolution) const;
+        virtual measurement sample(
+            const timestamp_resolution resolution) const override;
 
-        /// <summary>
-        /// Sample the sensor.
-        /// </summary>
-        /// <typeparam name="Resolution">The desired resolution of the timestamp
-        /// being created for the measurement.</typeparam>
-        /// <returns>A sensor sample with the information about power
-        /// consumption that is available via ADL.</returns>
-        /// <exception cref="std::runtime_error">If a sensor that has been moved
-        /// is sampled.</exception>
-        /// <exception cref="adl_exception">If the sensor could not be sampled.
-        /// </exception>
-        template<timestamp_resolution Resolution>
-        inline measurement sample(void) const {
-            this->sample(Resolution);
-        }
-
-        /// <summary>
-        /// Sample the sensor using a timestamp with millisecond resolution.
-        /// </summary>
-        /// <returns>A sensor sample with the information about power
-        /// consumption that is available via ADL.</returns>
-        /// <exception cref="std::runtime_error">If a sensor that has been moved
-        /// is sampled.</exception>
-        /// <exception cref="adl_exception">If the sensor could not be sampled.
-        /// </exception>
-        inline measurement sample(void) const {
-            return this->sample(timestamp_resolution::milliseconds);
-        }
+        using sensor::sample;
 
         /// <summary>
         /// Move assignment.
@@ -175,7 +147,7 @@ namespace power_overwhelming {
         /// </remarks>
         /// <returns><c>true</c> if the sensor is valid, <c>false</c>
         /// otherwise.</returns>
-        operator bool(void) const noexcept;
+        virtual operator bool(void) const noexcept override;
 
     private:
 

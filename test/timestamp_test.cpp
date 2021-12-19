@@ -40,7 +40,7 @@ namespace test {
 
         TEST_METHOD(test_microseconds) {
             auto n = std::chrono::system_clock::now();
-            auto t = detail::timestamp<timestamp_resolution::microseconds>::create();
+            auto t = create_timestamp(timestamp_resolution::microseconds);
             auto s = std::chrono::duration_cast<std::chrono::microseconds>(n - this->_system_zero).count();
             auto z = detail::convert(this->_filetime_zero, timestamp_resolution::microseconds);
             Assert::IsTrue(s - z - t < 1000000, L"timestamp microsecond", LINE_INFO());
@@ -48,7 +48,7 @@ namespace test {
 
         TEST_METHOD(test_milliseconds) {
             auto n = std::chrono::system_clock::now();
-            auto t = detail::timestamp<timestamp_resolution::milliseconds>::create();
+            auto t = create_timestamp(timestamp_resolution::milliseconds);
             auto s = std::chrono::duration_cast<std::chrono::milliseconds>(n - this->_system_zero).count();
             auto z = detail::convert(this->_filetime_zero, timestamp_resolution::milliseconds);
             Assert::IsTrue(t - z - s < 1000, L"timestamp millisecond", LINE_INFO());
@@ -56,7 +56,7 @@ namespace test {
 
         TEST_METHOD(test_nanoseconds) {
             auto n = std::chrono::system_clock::now();
-            auto t = detail::timestamp<timestamp_resolution::nanoseconds>::create();
+            auto t = create_timestamp(timestamp_resolution::nanoseconds);
             auto s = std::chrono::duration_cast<std::chrono::nanoseconds>(n - this->_system_zero).count();
             auto z = detail::convert(this->_filetime_zero, timestamp_resolution::nanoseconds);
             Assert::IsTrue(t - z - s < 1000000000, L"timestamp nanosecond", LINE_INFO());
@@ -64,27 +64,10 @@ namespace test {
 
         TEST_METHOD(test_seconds) {
             auto n = std::chrono::system_clock::now();
-            auto t = detail::timestamp<timestamp_resolution::seconds>::create();
+            auto t = create_timestamp(timestamp_resolution::seconds);
             auto s = std::chrono::duration_cast<std::chrono::seconds>(n - this->_system_zero).count();
             auto z = detail::convert(this->_filetime_zero, timestamp_resolution::seconds);
             Assert::IsTrue(s - z - t < 1, L"timestamp second", LINE_INFO());
-        }
-
-        TEST_METHOD(test_time_point_milliseconds) {
-            auto n = std::chrono::system_clock::now();
-            auto t = detail::timestamp<timestamp_resolution::milliseconds>::create(n);
-            auto s = std::chrono::duration_cast<std::chrono::milliseconds>(n - this->_system_zero).count();
-            auto z = detail::convert(this->_filetime_zero, timestamp_resolution::milliseconds);
-            Assert::IsTrue(t - z - s == 0, L"STL timestamp millisecond", LINE_INFO());
-            Assert::AreEqual(s + z, t, L"STL timestamp millisecond", LINE_INFO());
-        }
-
-        TEST_METHOD(test_system_clock_milliseconds) {
-            auto n = std::chrono::system_clock::now();
-            auto t = detail::timestamp<timestamp_resolution::milliseconds>::create<std::chrono::system_clock>();
-            auto s = std::chrono::duration_cast<std::chrono::milliseconds>(n - this->_system_zero).count();
-            auto z = detail::convert(this->_filetime_zero, timestamp_resolution::milliseconds);
-            Assert::IsTrue(t - z - s < 1000, L"STL clock millisecond", LINE_INFO());
         }
 
     private:

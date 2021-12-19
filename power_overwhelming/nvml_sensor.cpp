@@ -162,10 +162,22 @@ const wchar_t *visus::power_overwhelming::nvml_sensor::name(
 visus::power_overwhelming::measurement
 visus::power_overwhelming::nvml_sensor::sample(
         const timestamp_resolution resolution) const {
-    return this->sample(0);// TODO
+    const auto timestamp = create_timestamp(resolution);
+
+    this->check_not_disposed();
+
+    // Get the power usage in milliwatts.
+    unsigned int mw = 0;
+    auto status = detail::nvidia_management_library::instance()
+        .nvmlDeviceGetPowerUsage(this->_impl->device, &mw);
+    if (status != NVML_SUCCESS) {
+        throw nvml_exception(status);
+    }
+
+    return measurement(this->_impl->sensor_name.c_str(), timestamp,
+        static_cast<measurement::value_type>(mw)
+        / static_cast<measurement::value_type>(1000));
 }
-
-
 
 
 /*
@@ -188,26 +200,3 @@ visus::power_overwhelming::nvml_sensor::operator =(nvml_sensor&& rhs) noexcept {
 visus::power_overwhelming::nvml_sensor::operator bool(void) const noexcept {
     return (this->_impl != nullptr);
 }
-
-
-/*
- * ::power_overwhelming::nvml_sensor::sample
- */
-visus::power_overwhelming::measurement
-visus::power_overwhelming::nvml_sensor::sample(
-        const measurement::timestamp_type timestamp) const {
-    this->check_not_disposed();
-
-    // Get the power usage in milliwatts.
-    unsigned int mw = 0;
-    auto status = detail::nvidia_management_library::instance()
-        .nvmlDeviceGetPowerUsage(this->_impl->device, &mw);
-    if (status != NVML_SUCCESS) {
-        throw nvml_exception(status);
-    }
-
-    return measurement(this->_impl->sensor_name.c_str(), timestamp,
-        static_cast<measurement::value_type>(mw)
-        / static_cast<measurement::value_type>(1000));
-}
-

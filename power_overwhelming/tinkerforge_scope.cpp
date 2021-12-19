@@ -17,61 +17,7 @@
  * visus::power_overwhelming::detail::tinkerforge_scope::tinkerforge_scope
  */
 visus::power_overwhelming::detail::tinkerforge_scope::tinkerforge_scope(
-        const std::string& host, const std::uint16_t port)
-        : _endpoint(to_endpoint(host, port)) {
-    //::ipcon_create(&this->_connection);
-
-    //auto status = ::ipcon_connect(&this->_connection, host.c_str(), port);
-    //if (status != E_OK) {
-    //    // Must deallocate if throwing after ipcon_create!
-    //    this->~tinkerforge_scope();
-    //    throw tinkerforge_exception(status);
-    //}
-}
-
-
-/*
- * visus::power_overwhelming::detail::tinkerforge_scope::tinkerforge_scope
- */
-visus::power_overwhelming::detail::tinkerforge_scope::tinkerforge_scope(
-        const tinkerforge_scope& rhs) {
-    throw "TODO";
-}
-
-
-/*
- * visus::power_overwhelming::detail::tinkerforge_scope::~tinkerforge_scope
- */
-visus::power_overwhelming::detail::tinkerforge_scope::~tinkerforge_scope(void) {
-    std::lock_guard<decltype(_lock)> l(_lock);
-    if (--_data[this->_endpoint]->count == 0) {
-        _data.erase(this->_endpoint);
-    }
-}
-
-
-/*
- * visus::power_overwhelming::detail::tinkerforge_scope::operator =
- */
-visus::power_overwhelming::detail::tinkerforge_scope&
-visus::power_overwhelming::detail::tinkerforge_scope::operator =(
-        const tinkerforge_scope& rhs) {
-    if (this != std::addressof(rhs)) {
-        std::lock_guard<decltype(_lock)> l(_lock);
-        _data[this->_endpoint]->count--;
-        this->_endpoint = rhs._endpoint;
-        _data[this->_endpoint]->count++;
-    }
-
-    return *this;
-}
-
-
-/*
- * visus::power_overwhelming::detail::tinkerforge_scope::to_endpoint
- */
-std::string visus::power_overwhelming::detail::tinkerforge_scope::to_endpoint(
-        const std::string& host, const std::uint16_t port) {
+    const std::string &host, const std::uint16_t port) {
     auto endpoint = to_endpoint(host, port);
 
     std::lock_guard<decltype(_lock_scopes)> l(_lock_scopes);
@@ -94,7 +40,7 @@ std::string visus::power_overwhelming::detail::tinkerforge_scope::to_endpoint(
  * visus::power_overwhelming::detail::tinkerforge_scope::data::data
  */
 visus::power_overwhelming::detail::tinkerforge_scope::data::data(
-        const std::string& host, const std::uint16_t port) {
+    const std::string &host, const std::uint16_t port) {
     ::ipcon_create(&this->connection);
     //::ipcon_set_auto_reconnect(&this->connection, true);
 
@@ -136,10 +82,10 @@ visus::power_overwhelming::detail::tinkerforge_scope::data::~data(void) {
  * visus::power_overwhelming::detail::tinkerforge_scope::on_enumerate
  */
 void CALLBACK visus::power_overwhelming::detail::tinkerforge_scope::on_enumerate(
-        const char *uid, const char *connected_uid, char position,
-        std::uint8_t hardware_version[3], std::uint8_t firmware_version[3],
-        std::uint16_t device_identifier, std::uint8_t enumeration_type,
-        void *user_data) {
+    const char *uid, const char *connected_uid, char position,
+    std::uint8_t hardware_version[3], std::uint8_t firmware_version[3],
+    std::uint16_t device_identifier, std::uint8_t enumeration_type,
+    void *user_data) {
     auto data = static_cast<tinkerforge_scope::data *>(user_data);
     const auto is_add = (enumeration_type == IPCON_ENUMERATION_TYPE_AVAILABLE)
         || (enumeration_type == IPCON_ENUMERATION_TYPE_CONNECTED);
@@ -164,7 +110,7 @@ void CALLBACK visus::power_overwhelming::detail::tinkerforge_scope::on_enumerate
  * visus::power_overwhelming::detail::tinkerforge_scope::to_endpoint
  */
 std::string visus::power_overwhelming::detail::tinkerforge_scope::to_endpoint(
-        const std::string& host, const std::uint16_t port) {
+    const std::string &host, const std::uint16_t port) {
     std::string retval;
     retval.reserve(host.size() + 1 + 6);
 
@@ -182,7 +128,7 @@ std::string visus::power_overwhelming::detail::tinkerforge_scope::to_endpoint(
  */
 std::map<std::string, std::weak_ptr<
     visus::power_overwhelming::detail::tinkerforge_scope::data>>
-visus::power_overwhelming::detail::tinkerforge_scope::_scopes;
+    visus::power_overwhelming::detail::tinkerforge_scope::_scopes;
 
 
 /*

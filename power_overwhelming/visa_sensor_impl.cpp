@@ -68,7 +68,7 @@ visus::power_overwhelming::detail::visa_sensor_impl::query(
     this->write(query, cnt);
     return this->read(buffer_size);
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    return 0;
+    return std::vector<std::uint8_t>();
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -83,7 +83,7 @@ visus::power_overwhelming::detail::visa_sensor_impl::query(
     this->printf(query.c_str());
     return this->read(buffer_size);
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    return 0;
+    return std::vector<std::uint8_t>();
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 

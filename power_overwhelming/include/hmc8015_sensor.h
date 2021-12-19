@@ -12,8 +12,7 @@
 
 #include "instrument_range.h"
 #include "log_mode.h"
-#include "measurement.h"
-#include "timestamp_resolution.h"
+#include "sensor.h"
 
 
 namespace visus {
@@ -25,7 +24,7 @@ namespace power_overwhelming {
     /// <summary>
     /// Allows for controlling a Rohde & Schwarz HMC8015 power analyser.
     /// </summary>
-    class POWER_OVERWHELMING_API hmc8015_sensor final {
+    class POWER_OVERWHELMING_API hmc8015_sensor final : public sensor {
 
     public:
 
@@ -93,7 +92,7 @@ namespace power_overwhelming {
         /// <summary>
         /// Finalise the instance.
         /// </summary>
-        ~hmc8015_sensor(void);
+        virtual ~hmc8015_sensor(void);
 
         /// <summary>
         /// Sets the current range.
@@ -231,7 +230,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>The implementation-defined, human-readable name of the
         /// sensor.</returns>
-        const wchar_t *name(void) const noexcept;
+        virtual const wchar_t *name(void) const noexcept override;
 
         /// <summary>
         /// Resets the instrument to its default state.
@@ -252,8 +251,10 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        measurement sample(const timestamp_resolution resolution
-            = timestamp_resolution::milliseconds);
+        virtual measurement sample(
+            const timestamp_resolution resolution) const override;
+
+        using sensor::sample;
 
         /// <summary>
         /// Synchonises the date and time on the instrument with the system
@@ -310,11 +311,9 @@ namespace power_overwhelming {
         /// </remarks>
         /// <returns><c>true</c> if the sensor is valid, <c>false</c>
         /// otherwise.</returns>
-        operator bool(void) const noexcept;
+        virtual operator bool(void) const noexcept override;
 
     private:
-
-        void check_not_disposed(void);
 
         void set_range(const std::int32_t channel, const char *quantity,
             const instrument_range range, const float value);

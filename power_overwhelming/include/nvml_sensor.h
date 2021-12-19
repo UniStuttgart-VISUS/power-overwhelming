@@ -105,18 +105,20 @@ namespace power_overwhelming {
         /// <summary>
         /// Finalise the instance.
         /// </summary>
-        ~nvml_sensor(void);
+        virtual ~nvml_sensor(void);
 
         /// <summary>
         /// Gets the name of the sensor.
         /// </summary>
         /// <returns>The implementation-defined, human-readable name of the
         /// sensor.</returns>
-        const wchar_t *name(void) const noexcept;
+        virtual const wchar_t *name(void) const noexcept override;
 
         /// <inheritdoc />
         virtual measurement sample(
             const timestamp_resolution resolution) const override;
+
+        using sensor::sample;
 
         /// <summary>
         /// Move assignment.
@@ -129,8 +131,6 @@ namespace power_overwhelming {
         virtual operator bool(void) const noexcept override;
 
     private:
-
-        measurement sample(const measurement::timestamp_type timestamp) const;
 
         detail::nvml_sensor_impl *_impl;
 

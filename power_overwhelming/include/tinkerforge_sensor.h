@@ -5,8 +5,7 @@
 
 #pragma once
 
-#include "measurement.h"
-#include "timestamp_resolution.h"
+#include "sensor.h"
 #include "tinkerforge_sensor_definiton.h"
 
 
@@ -19,7 +18,7 @@ namespace power_overwhelming {
     /// <summary>
     /// A power sensor based on the Tinkerforge current/voltage bricklet v2.
     /// </summary>
-    class POWER_OVERWHELMING_API tinkerforge_sensor final {
+    class POWER_OVERWHELMING_API tinkerforge_sensor final : public sensor {
 
     public:
 
@@ -167,7 +166,7 @@ namespace power_overwhelming {
         /// <summary>
         /// Finalises the instance.
         /// </summary>
-        ~tinkerforge_sensor(void);
+        virtual ~tinkerforge_sensor(void);
 
         /// <summary>
         /// The user-defined description of what the sensor is measuring.
@@ -180,7 +179,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>The implementation-defined, human-readable name of the
         /// sensor.</returns>
-        const wchar_t *name(void) const noexcept;
+        virtual const wchar_t *name(void) const noexcept override;
 
         /// <summary>
         /// Sample the sensor.
@@ -196,20 +195,10 @@ namespace power_overwhelming {
         /// is sampled.</exception
         /// <exception cref="tinkerforge_exception">If the sensor could not be
         /// sampled. </exception>
-        measurement sample(const timestamp_resolution resolution) const;
+        virtual measurement sample(
+            const timestamp_resolution resolution) const override;
 
-        /// <summary>
-        /// Sample the sensor using a timestamp with millisecond resolution.
-        /// </summary>
-        /// <returns>A sensor sample with the information about power
-        /// consumption that is available via Tinkerforge bricklets.</returns>
-        /// <exception cref="std::runtime_error">If a sensor that has been moved
-        /// is sampled.</exception>
-        /// <exception cref="tinkerforge_exception">If the sensor could not be
-        /// sampled. </exception>
-        inline measurement sample(void) const {
-            return this->sample(timestamp_resolution::milliseconds);
-        }
+        using sensor::sample;
 
         /// <summary>
         /// Asynchronously sample the sensor every
@@ -247,7 +236,7 @@ namespace power_overwhelming {
         /// </remarks>
         /// <returns><c>true</c> if the sensor is valid, <c>false</c>
         /// otherwise.</returns>
-        operator bool(void) const noexcept;
+        virtual operator bool(void) const noexcept override;
 
     private:
 

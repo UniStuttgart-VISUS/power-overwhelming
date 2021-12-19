@@ -20,6 +20,18 @@ namespace power_overwhelming {
     public:
 
         /// <summary>
+        /// Finalises the instance.
+        /// </summary>
+        virtual ~sensor(void) = default;
+
+        /// <summary>
+        /// Gets the name of the sensor.
+        /// </summary>
+        /// <returns>The implementation-defined, human-readable name of the
+        /// sensor.</returns>
+        virtual const wchar_t *name(void) const noexcept = 0;
+
+        /// <summary>
         /// Sample the sensor using a timestamp with the specified resolution.
         /// </summary>
         /// <param name="resolution">The resolution of the timestamp to be

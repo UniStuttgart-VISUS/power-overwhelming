@@ -15,8 +15,8 @@
  */
 visus::power_overwhelming::detail::visa_scope_impl::visa_scope_impl(
         const std::string& path, const std::uint32_t timeout)
-        : resource_manager(0), session(0) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
+        : resource_manager(0), session(0) {
     {
         auto status = visa_library::instance().viOpenDefaultRM(
             &this->resource_manager);
@@ -41,6 +41,7 @@ visus::power_overwhelming::detail::visa_scope_impl::visa_scope_impl(
         //CHECKERR(viClear(*io))
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+        {
     throw std::logic_error("The library was compiled without support for the "
         "Virtual Instrument Software Architecture.");
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */

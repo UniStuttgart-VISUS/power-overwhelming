@@ -253,10 +253,7 @@ const wchar_t *visus::power_overwhelming::adl_sensor::name(
 visus::power_overwhelming::measurement
 visus::power_overwhelming::adl_sensor::sample(
         const timestamp_resolution resolution) const {
-    if (!*this) {
-        throw std::runtime_error("A disposed instance of adl_sensor cannot be "
-            "sampled.");
-    }
+    this->check_not_disposed();
 
     {
         auto status = detail::amd_display_library::instance()
