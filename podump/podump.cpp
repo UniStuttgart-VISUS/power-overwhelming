@@ -11,6 +11,7 @@
 #include <hmc8015_sensor.h>
 #include <measurement.h>
 #include <nvml_sensor.h>
+#include <rtb_sensor.h>
 #include <tinkerforge_display.h>
 #include <tinkerforge_sensor.h>
 #include <tchar.h>
@@ -165,11 +166,10 @@ int _tmain(const int argc, const TCHAR **argv) {
 
             std::vector<char> path(1024);
             s.log_file(path.data(), path.size());
-            std::wcout << s.name() << L":" << std::endl;
-
             std::this_thread::sleep_for(std::chrono::seconds(6));
             s.log(false);
 
+            std::wcout << s.name() << L":" << std::endl;
             auto m = s.sample(timestamp_resolution::milliseconds);
             std::wcout << m.timestamp() << L": " << m.voltage() << " V * "
                 << m.current() << " A = " << m.power() << L" W"
@@ -177,6 +177,20 @@ int _tmain(const int argc, const TCHAR **argv) {
         }
 
     } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+
+    // Query RTB2004
+    try {
+        std::vector<rtb_sensor> sensors;
+        sensors.resize(rtb_sensor::for_all(nullptr, 0));
+        rtb_sensor::for_all(sensors.data(), sensors.size());
+
+        for (auto& s : sensors) {
+            std::wcout << s.name() << L":" << std::endl;
+        }
+
+    } catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;
     }
 

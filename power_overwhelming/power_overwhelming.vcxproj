@@ -47,6 +47,7 @@
     <ClInclude Include="include\measurement.h" />
     <ClInclude Include="include\nvml_sensor.h" />
     <ClInclude Include="include\power_overwhelming_api.h" />
+    <ClInclude Include="include\rtb_sensor.h" />
     <ClInclude Include="include\timestamp_resolution.h" />
     <ClInclude Include="include\tinkerforge_display.h" />
     <ClInclude Include="include\tinkerforge_sensor.h" />
@@ -87,6 +88,7 @@
     <ClCompile Include="nvml_sensor.cpp" />
     <ClCompile Include="nvml_sensor_impl.cpp" />
     <ClCompile Include="convert_string.cpp" />
+    <ClCompile Include="rtb_sensor.cpp" />
     <ClCompile Include="timestamp.cpp" />
     <ClCompile Include="tinkerforge_bricklet.cpp" />
     <ClCompile Include="tinkerforge_display.cpp" />
