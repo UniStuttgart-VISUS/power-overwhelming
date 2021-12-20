@@ -184,14 +184,17 @@ int _tmain(const int argc, const TCHAR **argv) {
 
     // Query RTB2004
     try {
+        std::vector<oscilloscope_sensor_definition> definitions;
         std::vector<rtb_sensor> sensors;
         sensors.resize(rtb_sensor::for_all(nullptr, 0));
         rtb_sensor::for_all(sensors.data(), sensors.size());
 
+        definitions.push_back(oscilloscope_sensor_definition(L"Test1",
+            1, 10.0f, 2, 10.0f));
+
         for (auto& s : sensors) {
             s.synchronise_clock();
-            s.unit(1, "V");
-            s.unit(2, "A");
+            s.configure(definitions.data(), definitions.size());
             //s.expression(1, "CH1*CH2", "W");
             std::wcout << s.name() << L":" << std::endl;
         }

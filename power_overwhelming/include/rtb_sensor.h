@@ -86,6 +86,9 @@ namespace power_overwhelming {
         /// </summary>
         ~rtb_sensor(void);
 
+        void configure(const oscilloscope_sensor_definition *sensors,
+            const std::size_t cnt_sensors);
+
         /// <summary>
         /// Enable an configure one of the mathematical expressions.
         /// </summary>

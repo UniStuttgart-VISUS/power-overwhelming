@@ -63,6 +63,48 @@ visus::power_overwhelming::rtb_sensor::~rtb_sensor(void) { }
 
 
 /*
+ * visus::power_overwhelming::rtb_sensor::configure
+ */
+void visus::power_overwhelming::rtb_sensor::configure(
+        const oscilloscope_sensor_definition *sensors,
+        const std::size_t cnt_sensors) {
+    if ((cnt_sensors > 0) && (sensors == nullptr)) {
+        throw std::invalid_argument("The sensor definitions must be valid.");
+    }
+
+    auto impl = static_cast<detail::visa_sensor_impl&>(*this);
+
+    for (std::uint32_t i = 1; impl.system_error() == VI_SUCCESS; ++i) {
+        impl.printf("CHAN%u:STAT OFF\n", i);
+    }
+
+    for (std::size_t i = 0; i < cnt_sensors; ++i) {
+        {
+            auto c = sensors[i].channel_current();
+            impl.printf("PROB%u:SET:ATT:UNIT %s\n", c, "A");
+            if (!sensors[i].auto_attenuation_current()) {
+                impl.printf("PROB%u:SET:ATT:MAN %f\n",
+                    c, sensors[i].attenuation_current());
+            }
+
+            impl.printf("CHAN%u:STAT ON\n", c);
+        }
+
+        {
+            auto c = sensors[i].channel_voltage();
+            impl.printf("PROB%u:SET:ATT:UNIT %s\n", c, "V");
+            if (!sensors[i].auto_attenuation_voltage()) {
+                impl.printf("PROB%u:SET:ATT:MAN %f\n",
+                    c, sensors[i].attenuation_voltage());
+            }
+
+            impl.printf("CHAN%u:STAT ON\n", c);
+        }
+    }
+}
+
+
+/*
  * visus::power_overwhelming::rtb_sensor::expression
  */
 void visus::power_overwhelming::rtb_sensor::expression(
@@ -72,16 +114,16 @@ void visus::power_overwhelming::rtb_sensor::expression(
 
     if (expression != nullptr) {
         if (unit != nullptr) {
-            impl.printf("CALC:MATH%d:EXPR:DEF \"%s in %s\"\n", channel,
+            impl.printf("CALC:MATH%u:EXPR:DEF \"%s in %s\"\n", channel,
                 expression, unit);
         } else {
-            impl.printf("CALC:MATH%d:EXPR:DEF \"%s\"\n", channel, expression);
+            impl.printf("CALC:MATH%u:EXPR:DEF \"%s\"\n", channel, expression);
         }
 
-        impl.printf("CALC:MATH%d:STAT ON\n", channel);
+        impl.printf("CALC:MATH%u:STAT ON\n", channel);
 
     } else {
-        impl.printf("CALC:MATH%d:STAT OFF\n", channel);
+        impl.printf("CALC:MATH%u:STAT OFF\n", channel);
     }
 
     this->throw_on_system_error();
@@ -108,7 +150,7 @@ void visus::power_overwhelming::rtb_sensor::unit(const std::uint32_t channel,
     }
 
     auto impl = static_cast<detail::visa_sensor_impl &>(*this);
-    impl.printf("PROB%d:SET:ATT:UNIT %s\n", channel, unit);
+    impl.printf("PROB%u:SET:ATT:UNIT %s\n", channel, unit);
     this->throw_on_system_error();
 }
 
