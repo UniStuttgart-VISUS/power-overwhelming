@@ -82,23 +82,31 @@ void visus::power_overwhelming::rtb_sensor::configure(
         {
             auto c = sensors[i].channel_current();
             impl.printf("PROB%u:SET:ATT:UNIT %s\n", c, "A");
+            this->throw_on_system_error();
+
             if (!sensors[i].auto_attenuation_current()) {
                 impl.printf("PROB%u:SET:ATT:MAN %f\n",
                     c, sensors[i].attenuation_current());
+                this->throw_on_system_error();
             }
 
             impl.printf("CHAN%u:STAT ON\n", c);
+            this->throw_on_system_error();
         }
 
         {
             auto c = sensors[i].channel_voltage();
             impl.printf("PROB%u:SET:ATT:UNIT %s\n", c, "V");
+            this->throw_on_system_error();
+
             if (!sensors[i].auto_attenuation_voltage()) {
                 impl.printf("PROB%u:SET:ATT:MAN %f\n",
                     c, sensors[i].attenuation_voltage());
+                this->throw_on_system_error();
             }
 
             impl.printf("CHAN%u:STAT ON\n", c);
+            this->throw_on_system_error();
         }
     }
 }
