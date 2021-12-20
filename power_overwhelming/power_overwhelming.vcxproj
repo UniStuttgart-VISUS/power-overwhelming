@@ -39,6 +39,8 @@
     <ClInclude Include="adl_scope.h" />
     <ClInclude Include="adl_sensor_impl.h" />
     <ClInclude Include="amd_display_library.h" />
+    <ClInclude Include="include\oscilloscope_sensor_definition.h" />
+    <ClInclude Include="include\visa_sensor.h" />
     <ClInclude Include="timestamp_resolution_traits.h" />
     <ClInclude Include="include\adl_sensor.h" />
     <ClInclude Include="include\adl_sensor_source.h" />
@@ -91,6 +93,7 @@
     <ClCompile Include="nvml_sensor.cpp" />
     <ClCompile Include="nvml_sensor_impl.cpp" />
     <ClCompile Include="convert_string.cpp" />
+    <ClCompile Include="oscilloscope_sensor_definition.cpp" />
     <ClCompile Include="rtb_sensor.cpp" />
     <ClCompile Include="timestamp.cpp" />
     <ClCompile Include="tinkerforge_bricklet.cpp" />
@@ -107,6 +110,7 @@
     <ClCompile Include="visa_library.cpp" />
     <ClCompile Include="visa_scope.cpp" />
     <ClCompile Include="visa_scope_impl.cpp" />
+    <ClCompile Include="visa_sensor.cpp" />
     <ClCompile Include="visa_sensor_impl.cpp" />
   </ItemGroup>
   <ItemGroup>

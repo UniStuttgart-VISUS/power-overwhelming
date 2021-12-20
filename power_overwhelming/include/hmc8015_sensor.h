@@ -12,7 +12,7 @@
 
 #include "instrument_range.h"
 #include "log_mode.h"
-#include "sensor.h"
+#include "visa_sensor.h"
 
 
 namespace visus {
@@ -24,7 +24,8 @@ namespace power_overwhelming {
     /// <summary>
     /// Allows for controlling a Rohde & Schwarz HMC8015 power analyser.
     /// </summary>
-    class POWER_OVERWHELMING_API hmc8015_sensor final : public sensor {
+    class POWER_OVERWHELMING_API hmc8015_sensor final
+            : public detail::visa_sensor {
 
     public:
 
@@ -56,14 +57,9 @@ namespace power_overwhelming {
         static constexpr const char *product_id = "0x0135";
 
         /// <summary>
-        /// The vendor ID of Rohde &amp; Schwarz.
-        /// </summary>
-        static constexpr const char *vendor_id = "0x0AAD";
-
-        /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        hmc8015_sensor(void);
+        inline hmc8015_sensor(void) { }
 
         /// <summary>
         /// Initialises a new instance.
@@ -85,9 +81,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
         inline hmc8015_sensor(hmc8015_sensor&& rhs) noexcept
-                : _impl(rhs._impl) {
-            rhs._impl = nullptr;
-        }
+            : detail::visa_sensor(std::move(rhs)) { }
 
         /// <summary>
         /// Finalise the instance.
@@ -226,20 +220,13 @@ namespace power_overwhelming {
             const bool use_usb = false);
 
         /// <summary>
-        /// Gets the name of the sensor.
-        /// </summary>
-        /// <returns>The implementation-defined, human-readable name of the
-        /// sensor.</returns>
-        virtual const wchar_t *name(void) const noexcept override;
-
-        /// <summary>
         /// Resets the instrument to its default state.
         /// </summary>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        void reset(void);
+        virtual void reset(void) override;
 
         /// <summary>
         /// Samples the sensor one time.
@@ -255,18 +242,6 @@ namespace power_overwhelming {
             const timestamp_resolution resolution) const override;
 
         using sensor::sample;
-
-        /// <summary>
-        /// Synchonises the date and time on the instrument with the system
-        /// clock of the computer calling this API.
-        /// </summary>
-        /// <param name="utc">If <c>true</c>, UTC will be used, the local time
-        /// otherwise. This parameter defaults to <c>false</c>.</param>
-        /// <exception cref="std::runtime_error">If the method is called on an
-        /// object that has been disposed by moving it.</exception>
-        /// <exception cref="visa_exception">If the VISA command was not
-        /// processed successfully.</exception>
-        void synchronise_clock(const bool utc = false);
 
         /// <summary>
         /// Sets the voltage range.
@@ -300,25 +275,17 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        hmc8015_sensor& operator =(hmc8015_sensor&& rhs) noexcept;
-
-        /// <summary>
-        /// Determines whether the sensor is valid.
-        /// </summary>
-        /// <remarks>
-        /// A sensor is considered valid until it has been disposed by a move
-        /// operation.
-        /// </remarks>
-        /// <returns><c>true</c> if the sensor is valid, <c>false</c>
-        /// otherwise.</returns>
-        virtual operator bool(void) const noexcept override;
+        inline hmc8015_sensor& operator =(hmc8015_sensor&& rhs) noexcept {
+            visa_sensor::operator =(std::move(rhs));
+            return *this;
+        }
 
     private:
 
+        void configure(void);
+
         void set_range(const std::int32_t channel, const char *quantity,
             const instrument_range range, const float value);
-
-        detail::visa_sensor_impl *_impl;
     };
 
 } /* namespace power_overwhelming */

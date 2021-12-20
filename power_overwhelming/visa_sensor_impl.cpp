@@ -145,15 +145,6 @@ visus::power_overwhelming::detail::visa_sensor_impl::read(
 }
 
 
-/*
- * visus::power_overwhelming::detail::visa_sensor_impl::reset
- */
-void visus::power_overwhelming::detail::visa_sensor_impl::reset(void) {
-    this->printf("*RST\n");
-    this->throw_on_system_error();
-}
-
-
 #if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * visus::power_overwhelming::detail::visa_sensor_impl::set_attribute
@@ -233,24 +224,6 @@ int visus::power_overwhelming::detail::visa_sensor_impl::system_error(void) {
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
-}
-
-
-/*
- * visus::power_overwhelming::detail::visa_sensor_impl::throw_on_system_error
- */
-void visus::power_overwhelming::detail::visa_sensor_impl::throw_on_system_error(
-        void) {
-    std::string message;
-    auto error = this->system_error(message);
-
-    if (error != 0) {
-        if (message.empty()) {
-            message = std::to_string(error);
-        }
-
-        throw std::runtime_error(message);
-    }
 }
 
 

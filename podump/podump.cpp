@@ -137,7 +137,8 @@ int _tmain(const int argc, const TCHAR **argv) {
         std::cerr << ex.what() << std::endl;
     }
 #endif
-     
+
+#if false
     // Query HMC8015
     try {
         std::vector<hmc8015_sensor> sensors;
@@ -179,6 +180,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
+#endif
 
     // Query RTB2004
     try {
@@ -187,6 +189,10 @@ int _tmain(const int argc, const TCHAR **argv) {
         rtb_sensor::for_all(sensors.data(), sensors.size());
 
         for (auto& s : sensors) {
+            s.synchronise_clock();
+            s.unit(1, "V");
+            s.unit(2, "A");
+            //s.expression(1, "CH1*CH2", "W");
             std::wcout << s.name() << L":" << std::endl;
         }
 

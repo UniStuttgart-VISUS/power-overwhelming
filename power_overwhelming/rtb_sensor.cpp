@@ -26,7 +26,7 @@ std::size_t visus::power_overwhelming::rtb_sensor::for_all(
         const std::int32_t timeout) {
     // Build the query for all R&S RTB2004 instruments.
     std::string query("?*::");      // Any protocol
-    query += vendor_id;             // Only R&S
+    query += rohde_und_schwarz;     // Only R&S
     query += "::";
     query += rtb2004_id;            // Only RTB2004
     query += "::?*::INSTR";         // All serial numbers.
@@ -44,27 +44,14 @@ std::size_t visus::power_overwhelming::rtb_sensor::for_all(
 }
 
 
-/*
- * visus::power_overwhelming::rtb_sensor::rtb_sensor
- */
-visus::power_overwhelming::rtb_sensor::rtb_sensor(void) : _impl(nullptr) { }
-
 
 /*
  * visus::power_overwhelming::rtb_sensor::rtb_sensor
  */
 visus::power_overwhelming::rtb_sensor::rtb_sensor(
         const char *path, const std::int32_t timeout)
-        : _impl(new detail::visa_sensor_impl(path, timeout)) {
+        : detail::visa_sensor(path, timeout) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    // Query the instrument name for use a sensor name.
-    this->_impl->sensor_name = detail::convert_string(this->_impl->identify());
-
-    // TODO: *RST?
-
-    // Clear any error that might have been caused by our setup. We do not want
-    // to abort just because the display does not look as expected.
-    this->_impl->clear_status();
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -72,18 +59,42 @@ visus::power_overwhelming::rtb_sensor::rtb_sensor(
 /*
  * visus::power_overwhelming::rtb_sensor::~rtb_sensor
  */
-visus::power_overwhelming::rtb_sensor::~rtb_sensor(void) {
-    delete this->_impl;
+visus::power_overwhelming::rtb_sensor::~rtb_sensor(void) { }
+
+
+/*
+ * visus::power_overwhelming::rtb_sensor::expression
+ */
+void visus::power_overwhelming::rtb_sensor::expression(
+        const std::uint32_t channel, const char *expression,
+        const char *unit) {
+    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
+
+    if (expression != nullptr) {
+        if (unit != nullptr) {
+            impl.printf("CALC:MATH%d:EXPR:DEF \"%s in %s\"\n", channel,
+                expression, unit);
+        } else {
+            impl.printf("CALC:MATH%d:EXPR:DEF \"%s\"\n", channel, expression);
+        }
+
+        impl.printf("CALC:MATH%d:STAT ON\n", channel);
+
+    } else {
+        impl.printf("CALC:MATH%d:STAT OFF\n", channel);
+    }
+
+    this->throw_on_system_error();
 }
 
 
 /*
- * visus::power_overwhelming::rtb_sensor::name
+ * visus::power_overwhelming::rtb_sensor::sample
  */
-const wchar_t *visus::power_overwhelming::rtb_sensor::name(void) const noexcept {
-    return (this->_impl != nullptr)
-        ? this->_impl->sensor_name.c_str()
-        : nullptr;
+visus::power_overwhelming::measurement
+visus::power_overwhelming::rtb_sensor::sample(
+        const timestamp_resolution resolution) const {
+    throw "TODO";
 }
 
 
@@ -96,43 +107,12 @@ void visus::power_overwhelming::rtb_sensor::unit(const std::uint32_t channel,
         throw std::invalid_argument("The unit for a probe cannot be null.");
     }
 
-    this->check_not_disposed();
-    this->_impl->printf("PROB%d:SET:ATT:UNIT %s\n", channel, unit);
-    this->_impl->throw_on_system_error();
+    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
+    impl.printf("PROB%d:SET:ATT:UNIT %s\n", channel, unit);
+    this->throw_on_system_error();
 }
 
 
-/*
- * visus::power_overwhelming::rtb_sensor::operator =
- */
-visus::power_overwhelming::rtb_sensor&
-visus::power_overwhelming::rtb_sensor::operator =(rtb_sensor&& rhs) noexcept {
-    if (this != std::addressof(rhs)) {
-        this->_impl = rhs._impl;
-        rhs._impl = nullptr;
-    }
-
-    return *this;
-}
-
-
-/*
- * visus::power_overwhelming::rtb_sensor::operator bool
- */
-visus::power_overwhelming::rtb_sensor::operator bool(void) const noexcept {
-    return (this->_impl != nullptr);
-}
-
-
-/*
- * visus::power_overwhelming::rtb_sensor::check_not_disposed
- */
-void visus::power_overwhelming::rtb_sensor::check_not_disposed(void) {
-    if (!*this) {
-        throw std::runtime_error("The requested operation cannot be performed "
-            "on a disposed instance of rtb_sensor.");
-    }
-}
 
 // TIM:SCAL 5
 //CHAN2:STAT OFF

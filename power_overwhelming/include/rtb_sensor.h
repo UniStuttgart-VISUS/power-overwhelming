@@ -10,10 +10,8 @@
 #include <cstdint>
 #include <cinttypes>
 
-#include "instrument_range.h"
-#include "log_mode.h"
-#include "measurement.h"
-#include "timestamp_resolution.h"
+#include "oscilloscope_sensor_definition.h"
+#include "visa_sensor.h"
 
 
 namespace visus {
@@ -25,7 +23,7 @@ namespace power_overwhelming {
     /// <summary>
     /// A sensor using a Rohde &amp; Schwarz RTB series oscilloscope.
     /// </summary>
-    class POWER_OVERWHELMING_API rtb_sensor final {
+    class POWER_OVERWHELMING_API rtb_sensor final : public detail::visa_sensor {
 
     public:
 
@@ -57,14 +55,9 @@ namespace power_overwhelming {
         static constexpr const char *rtb2004_id = "0x01D6";
 
         /// <summary>
-        /// The vendor ID of Rohde &amp; Schwarz.
-        /// </summary>
-        static constexpr const char *vendor_id = "0x0AAD";
-
-        /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        rtb_sensor(void);
+        inline rtb_sensor(void) { }
 
         /// <summary>
         /// Initialises a new instance.
@@ -85,9 +78,8 @@ namespace power_overwhelming {
         /// Move <paramref name="rhs" /> into a new instance.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        inline rtb_sensor(rtb_sensor&& rhs) noexcept : _impl(rhs._impl) {
-            rhs._impl = nullptr;
-        }
+        inline rtb_sensor(rtb_sensor&& rhs) noexcept
+            : detail::visa_sensor(std::move(rhs)) { }
 
         /// <summary>
         /// Finalise the instance.
@@ -95,12 +87,31 @@ namespace power_overwhelming {
         ~rtb_sensor(void);
 
         /// <summary>
-        /// Gets the name of the sensor.
+        /// Enable an configure one of the mathematical expressions.
         /// </summary>
-        /// <returns>The implementation-defined, human-readable name of the
-        /// sensor.</returns>
-        const wchar_t *name(void) const noexcept;
+        /// <param name="channel">The maths channel to be configured. For an
+        /// RTB2004, this must be within [1, 4].</param>
+        /// <param name="expression">The arithmetic expression to be computed,
+        /// ie &quot;CH1*CH2&quot;.</param>
+        /// <param name="unit">The unit of the resulting values. If
+        /// <c>nullptr</c>, the currently set unit will be unchanged. This
+        /// parameter defaults to <c>nullptr</c>.</param>
+        void expression(const std::uint32_t channel, const char *expression,
+            const char *unit = nullptr);
 
+        /// <inheritdoc />
+        virtual measurement sample(
+            const timestamp_resolution resolution) const override;
+
+        /// <summary>
+        /// Sets the unit of the specified channel.
+        /// </summary>
+        /// <param name="channel">The number (starting at 1) of the channel to
+        /// be configured.</param>
+        /// <param name="unit">The unit being measured (either &quot;A&quot;
+        /// or &quot;V&quot;).</param>
+        /// <exception cref="std::invalid_argument">If <paramref name="unit" />
+        /// is <c>nullptr</c>.</exception>
         void unit(const std::uint32_t channel, const char *unit);
 
         /// <summary>
@@ -108,24 +119,12 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        rtb_sensor& operator =(rtb_sensor&& rhs) noexcept;
+        inline rtb_sensor& operator =(rtb_sensor&& rhs) noexcept {
+            visa_sensor::operator =(std::move(rhs));
+            return *this;
+        }
 
-        /// <summary>
-        /// Determines whether the sensor is valid.
-        /// </summary>
-        /// <remarks>
-        /// A sensor is considered valid until it has been disposed by a move
-        /// operation.
-        /// </remarks>
-        /// <returns><c>true</c> if the sensor is valid, <c>false</c>
-        /// otherwise.</returns>
-        operator bool(void) const noexcept;
 
-    private:
-
-        void check_not_disposed(void);
-
-        detail::visa_sensor_impl *_impl;
     };
 
 } /* namespace power_overwhelming */

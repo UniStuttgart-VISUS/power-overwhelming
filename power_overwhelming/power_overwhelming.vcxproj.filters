@@ -91,6 +91,12 @@
     <ClCompile Include="rtb_sensor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="visa_sensor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="oscilloscope_sensor_definition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adl_exception.h">
@@ -208,6 +214,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="timestamp_resolution_traits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\timestamp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\visa_sensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\oscilloscope_sensor_definition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

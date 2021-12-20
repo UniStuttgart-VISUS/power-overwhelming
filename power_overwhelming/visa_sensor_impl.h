@@ -161,11 +161,6 @@ namespace detail {
         /// the instrument after the call.</exception>
         std::vector<std::uint8_t> read(const std::size_t buffer_size = 1024);
 
-        /// <summary>
-        /// Resets the device to a default state.
-        /// </summary>
-        void reset(void);
-
 #if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>
         /// Shortcut to <see cref="viAttribute" /> on the device session
@@ -218,16 +213,6 @@ namespace detail {
         /// <exception cref="visa_exception">If the current system state could
         /// not be retrieved.</exception>
         int system_error(void);
-
-        /// <summary>
-        /// Checks <see cref="system_error" /> and throws a
-        /// <see cref="std::runtime_error" /> if it does not return zero.
-        /// </summary>
-        /// <exception cref="visa_exception">If the current system state could
-        /// not be retrieved.</exception>
-        /// <exception cref="std::runtime_error">If the current system state was
-        /// retrieved and is not zero.</exception>
-        void throw_on_system_error(void);
 
         /// <summary>
         /// Write the given data to the instrument.
