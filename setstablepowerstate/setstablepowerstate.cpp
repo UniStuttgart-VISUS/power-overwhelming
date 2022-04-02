@@ -13,6 +13,16 @@
 /// <summary>
 /// Entry point of the application.
 /// </summary>
+/// <remarks>
+/// <para>This library creates a
+/// <see cref="visus::power_overwhelming::stable_power_state_scope" /> for all
+/// hardware GPUs in the system putting them into a stable power state. It then
+/// waits until user input. This way, the devices are kept in stable power state
+/// until the application exits.</para>
+/// <para>This tool is intended to testing applications that do not want to
+/// include the Power Overwhelming library in their own code, but need to enable
+/// stable power state for benchmarks.</para>
+/// </remarks>
 /// <returns>Zero in case of success, -1 otherwise.</returns>
 int main(void) {
     try {
