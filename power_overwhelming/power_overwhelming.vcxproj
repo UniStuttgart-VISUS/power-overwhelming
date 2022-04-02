@@ -39,8 +39,12 @@
     <ClInclude Include="adl_scope.h" />
     <ClInclude Include="adl_sensor_impl.h" />
     <ClInclude Include="amd_display_library.h" />
+    <ClInclude Include="com_error_category.h" />
+    <ClInclude Include="include\graphics_device.h" />
     <ClInclude Include="include\oscilloscope_sensor_definition.h" />
+    <ClInclude Include="include\stable_power_state_scope.h" />
     <ClInclude Include="include\visa_sensor.h" />
+    <ClInclude Include="safe_com.h" />
     <ClInclude Include="timestamp_resolution_traits.h" />
     <ClInclude Include="include\adl_sensor.h" />
     <ClInclude Include="include\adl_sensor_source.h" />
@@ -84,6 +88,8 @@
     <ClCompile Include="adl_sensor.cpp" />
     <ClCompile Include="adl_sensor_impl.cpp" />
     <ClCompile Include="amd_display_library.cpp" />
+    <ClCompile Include="com_error_category.cpp" />
+    <ClCompile Include="graphics_device.cpp" />
     <ClCompile Include="hmc8015_sensor.cpp" />
     <ClCompile Include="library_base.cpp" />
     <ClCompile Include="measurement.cpp" />
@@ -95,6 +101,7 @@
     <ClCompile Include="convert_string.cpp" />
     <ClCompile Include="oscilloscope_sensor_definition.cpp" />
     <ClCompile Include="rtb_sensor.cpp" />
+    <ClCompile Include="stable_power_state_scope.cpp" />
     <ClCompile Include="timestamp.cpp" />
     <ClCompile Include="tinkerforge_bricklet.cpp" />
     <ClCompile Include="tinkerforge_display.cpp" />

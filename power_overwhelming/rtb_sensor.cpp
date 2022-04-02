@@ -68,6 +68,7 @@ visus::power_overwhelming::rtb_sensor::~rtb_sensor(void) { }
 void visus::power_overwhelming::rtb_sensor::configure(
         const oscilloscope_sensor_definition *sensors,
         const std::size_t cnt_sensors) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     if ((cnt_sensors > 0) && (sensors == nullptr)) {
         throw std::invalid_argument("The sensor definitions must be valid.");
     }
@@ -109,6 +110,10 @@ void visus::power_overwhelming::rtb_sensor::configure(
             this->throw_on_system_error();
         }
     }
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error("This function is unavailable unless compiled with "
+        "support for VISA.");
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

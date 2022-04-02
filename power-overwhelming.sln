@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "setstablepowerstate", "setstablepowerstate\setstablepowerstate.vcxproj", "{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -88,6 +90,18 @@ Global
 		{48DB87BA-8756-4633-BA24-0A23404928B5}.Release|x64.Build.0 = Release|x64
 		{48DB87BA-8756-4633-BA24-0A23404928B5}.Release|x86.ActiveCfg = Release|Win32
 		{48DB87BA-8756-4633-BA24-0A23404928B5}.Release|x86.Build.0 = Release|Win32
+		{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}.Debug|ARM.ActiveCfg = Debug|Win32
+		{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}.Debug|x64.ActiveCfg = Debug|x64
+		{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}.Debug|x64.Build.0 = Debug|x64
+		{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}.Debug|x86.ActiveCfg = Debug|Win32
+		{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}.Debug|x86.Build.0 = Debug|Win32
+		{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}.Release|ARM.ActiveCfg = Release|Win32
+		{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}.Release|ARM64.ActiveCfg = Release|Win32
+		{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}.Release|x64.ActiveCfg = Release|x64
+		{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}.Release|x64.Build.0 = Release|x64
+		{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}.Release|x86.ActiveCfg = Release|Win32
+		{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

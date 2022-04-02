@@ -7,15 +7,18 @@
 #include <thread>
 #include <vector>
 
-#include <adl_sensor.h>
-#include <hmc8015_sensor.h>
-#include <measurement.h>
-#include <nvml_sensor.h>
-#include <rtb_sensor.h>
-#include <tinkerforge_display.h>
-#include <tinkerforge_sensor.h>
 #include <tchar.h>
 #include <Windows.h>
+
+#include "adl_sensor.h"
+#include "graphics_device.h"
+#include "hmc8015_sensor.h"
+#include "measurement.h"
+#include "nvml_sensor.h"
+#include "rtb_sensor.h"
+#include "stable_power_state_scope.h"
+#include "tinkerforge_display.h"
+#include "tinkerforge_sensor.h"
 
 
 /// <summary>
@@ -28,6 +31,14 @@
 int _tmain(const int argc, const TCHAR **argv) {
     using namespace visus::power_overwhelming;
 
+#if (defined(DEBUG) || defined(_DEBUG))
+    ::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    //::_CrtSetBreakAlloc(1);
+#endif /* (defined(DEBUG) || defined(_DEBUG)) */
+
+    stable_power_state_scope spss;
+
+#if false
     // Print data for all supported AMD cards.
     try {
         std::vector<adl_sensor> sensors;
@@ -43,7 +54,9 @@ int _tmain(const int argc, const TCHAR **argv) {
     } catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;
     }
+#endif
 
+#if false
     // Print data for all supported NVIDIA cards.
     try {
         std::vector<nvml_sensor> sensors;
@@ -56,10 +69,27 @@ int _tmain(const int argc, const TCHAR **argv) {
             std::wcout << m.timestamp() << L": " << m.power() << L" W"
                 << std::endl;
         }
-    } catch (std::exception &ex) {
+    } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
+#endif
 
+#if true
+    // Print all supported graphics devices
+    try {
+        std::vector<graphics_device> devices;
+        devices.resize(graphics_device::all(nullptr, 0));
+        graphics_device::all(devices.data(), devices.size());
+
+        for (auto& d : devices) {
+            std::wcout << d.name() << L": " << d.id() << std::endl;
+        }
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+#endif
+
+#if false
     // Print some useful messsage to all Tinkerforge LCDs attached.
     try {
         std::vector<tinkerforge_display> displays;
@@ -79,7 +109,9 @@ int _tmain(const int argc, const TCHAR **argv) {
     } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
+#endif
 
+#if false
     // Print data for all connected Tinkerforge sensors.
     try {
         std::vector<tinkerforge_sensor_definiton> descs;
@@ -103,6 +135,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     } catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;
     }
+#endif
 
 #if false
     // Asynchronously sample the Tinkerforge sensors for five seconds.
@@ -182,6 +215,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     }
 #endif
 
+#if false
     // Query RTB2004
     try {
         std::vector<oscilloscope_sensor_definition> definitions;
@@ -202,6 +236,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     } catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;
     }
+#endif
 
-     return 0;
+    return 0;
 }

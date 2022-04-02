@@ -97,6 +97,15 @@
     <ClCompile Include="oscilloscope_sensor_definition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="stable_power_state_scope.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics_device.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="com_error_category.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adl_exception.h">
@@ -223,6 +232,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\oscilloscope_sensor_definition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics_device.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stable_power_state_scope.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="safe_com.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="com_error_category.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
