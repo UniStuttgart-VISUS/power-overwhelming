@@ -34,8 +34,10 @@ int main(void) {
 
         visus::power_overwhelming::stable_power_state_scope spss;
 
-        std::cout << spss.size() << " graphics device(s) have been put into "
-            "stable power state. Press any key to revert." << std::endl;
+        std::cout << spss.size() << ((spss.size() == 1)
+            ? " graphics device has " : " graphics devices have ")
+            << "been put into stable power state. Press any key to revert."
+            << std::endl;
 
         ::_getch();
 
