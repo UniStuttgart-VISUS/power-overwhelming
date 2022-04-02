@@ -40,6 +40,7 @@ int main(void) {
             << std::endl;
 
         ::_getch();
+        return 0;
 
     } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
