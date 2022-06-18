@@ -258,6 +258,12 @@
     <ClInclude Include="include\power_overwhelming\convert_string.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\power_overwhelming\conversion_time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\sample_averaging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adl_sensor.cpp">

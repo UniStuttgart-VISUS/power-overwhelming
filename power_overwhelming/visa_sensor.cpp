@@ -25,7 +25,8 @@ visus::power_overwhelming::detail::visa_sensor::visa_sensor(
         : _impl(new detail::visa_sensor_impl(path, timeout)) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     // Query the instrument name for use a sensor name.
-    this->_impl->sensor_name = detail::convert_string(this->_impl->identify());
+    this->_impl->sensor_name = power_overwhelming::convert_string<wchar_t>(
+        this->_impl->identify());
 
     // Reset the device to default state, but do not throw.
     this->_impl->printf("*RST\n");

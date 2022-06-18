@@ -102,6 +102,57 @@ visus::power_overwhelming::tinkerforge_sensor::~tinkerforge_sensor(
 
 
 /*
+ * visus::power_overwhelming::tinkerforge_sensor::configuration
+ */
+void visus::power_overwhelming::tinkerforge_sensor::configuration(
+        sample_averaging& averaging, conversion_time& voltage_conversion_time,
+        conversion_time& current_conversion_time) {
+    typedef std::underlying_type<conversion_time>::type native_adc_type;
+    typedef std::underlying_type<conversion_time>::type native_avg_type;
+
+    if (!*this) {
+        throw std::runtime_error("The configuration of a disposed "
+            "tinkerforge_sensor cannot be retrieved.");
+    }
+
+    auto status = ::voltage_current_v2_get_configuration(
+        &this->_impl->bricklet,
+        reinterpret_cast<native_avg_type *>(&averaging),
+        reinterpret_cast<native_adc_type *>(&voltage_conversion_time),
+        reinterpret_cast<native_adc_type *>(&current_conversion_time));
+    if (status < 0) {
+        throw tinkerforge_exception(status);
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::tinkerforge_sensor::configure
+ */
+void visus::power_overwhelming::tinkerforge_sensor::configure(
+        const sample_averaging averaging,
+        const conversion_time voltage_conversion_time,
+        const conversion_time current_conversion_time) {
+    typedef std::underlying_type<conversion_time>::type native_adc_type;
+    typedef std::underlying_type<conversion_time>::type native_avg_type;
+
+    if (!*this) {
+        throw std::runtime_error("A disposed instance of tinkerforge_sensor "
+            "cannot be configured.");
+    }
+
+    auto status = ::voltage_current_v2_set_configuration(
+        &this->_impl->bricklet,
+        static_cast<native_avg_type>(averaging),
+        static_cast<native_adc_type>(voltage_conversion_time),
+        static_cast<native_adc_type>(current_conversion_time));
+    if (status < 0) {
+        throw tinkerforge_exception(status);
+    }
+}
+
+
+/*
  * visus::power_overwhelming::tinkerforge_sensor::description
  */
 const wchar_t *visus::power_overwhelming::tinkerforge_sensor::description(

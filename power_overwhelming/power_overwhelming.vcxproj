@@ -54,10 +54,12 @@
     <ClInclude Include="include\power_overwhelming\oscilloscope_sensor_definition.h" />
     <ClInclude Include="include\power_overwhelming\power_overwhelming_api.h" />
     <ClInclude Include="include\power_overwhelming\rtb_sensor.h" />
+    <ClInclude Include="include\power_overwhelming\sample_averaging.h" />
     <ClInclude Include="include\power_overwhelming\sensor.h" />
     <ClInclude Include="include\power_overwhelming\stable_power_state_scope.h" />
     <ClInclude Include="include\power_overwhelming\quote.h" />
     <ClInclude Include="include\power_overwhelming\timestamp_resolution.h" />
+    <ClInclude Include="include\power_overwhelming\conversion_time.h" />
     <ClInclude Include="include\power_overwhelming\tinkerforge_display.h" />
     <ClInclude Include="include\power_overwhelming\tinkerforge_sensor.h" />
     <ClInclude Include="include\power_overwhelming\tinkerforge_sensor_definiton.h" />

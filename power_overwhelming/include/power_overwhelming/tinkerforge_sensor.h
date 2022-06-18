@@ -5,8 +5,10 @@
 
 #pragma once
 
-#include "sensor.h"
-#include "tinkerforge_sensor_definiton.h"
+#include "power_overwhelming/conversion_time.h"
+#include "power_overwhelming/sample_averaging.h"
+#include "power_overwhelming/sensor.h"
+#include "power_overwhelming/tinkerforge_sensor_definiton.h"
 
 
 namespace visus {
@@ -167,6 +169,31 @@ namespace power_overwhelming {
         /// Finalises the instance.
         /// </summary>
         virtual ~tinkerforge_sensor(void);
+
+        /// <summary>
+        /// Retrieves the current configuration of the bricklet.
+        /// </summary>
+        /// <param name="averaging">Receives the number of samples to average.
+        /// </param>
+        /// <param name="voltage_conversion_time">Receives the A/D conversion
+        /// time for voltage.</param>
+        /// <param name="current_conversion_time">Receives the A/D conversion
+        /// time for current.</param>
+        void configuration(sample_averaging& averaging,
+            conversion_time& voltage_conversion_time,
+            conversion_time& current_conversion_time);
+
+        /// <summary>
+        /// Configures the bricklet.
+        /// </summary>
+        /// <param name="averaging">The number of samples to average.</param>
+        /// <param name="voltage_conversion_time">The A/D conversion time for
+        /// voltage.</param>
+        /// <param name="current_conversion_time">The A/D conversion time for
+        /// current.</param>
+        void configure(const sample_averaging averaging,
+            const conversion_time voltage_conversion_time,
+            const conversion_time current_conversion_time);
 
         /// <summary>
         /// The user-defined description of what the sensor is measuring.
