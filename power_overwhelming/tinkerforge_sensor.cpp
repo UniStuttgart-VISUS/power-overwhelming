@@ -179,6 +179,22 @@ const wchar_t *visus::power_overwhelming::tinkerforge_sensor::name(
 
 
 /*
+ * visus::power_overwhelming::tinkerforge_sensor::reset
+ */
+void visus::power_overwhelming::tinkerforge_sensor::reset(void) {
+    if (!*this) {
+        throw std::runtime_error("A disposed instance of tinkerforge_sensor "
+            "cannot be reset.");
+    }
+
+    auto status = ::voltage_current_v2_reset(&this->_impl->bricklet);
+    if (status < 0) {
+        throw tinkerforge_exception(status);
+    }
+}
+
+
+/*
  * visus::power_overwhelming::tinkerforge_sensor::sample
  */
 visus::power_overwhelming::measurement

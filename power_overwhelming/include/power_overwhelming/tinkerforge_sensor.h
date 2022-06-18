@@ -209,6 +209,11 @@ namespace power_overwhelming {
         virtual const wchar_t *name(void) const noexcept override;
 
         /// <summary>
+        /// Reset the bricklet.
+        /// </summary>
+        void reset(void);
+
+        /// <summary>
         /// Sample the sensor.
         /// </summary>
         /// <param name="resolution">The temporal resolution of the timestamp
