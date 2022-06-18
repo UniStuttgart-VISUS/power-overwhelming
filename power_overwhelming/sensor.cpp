@@ -3,7 +3,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "sensor.h"
+#include "power_overwhelming/sensor.h"
 
 
 /*

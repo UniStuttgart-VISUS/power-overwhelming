@@ -7,7 +7,8 @@
 
 #include <vector>
 
-#include "convert_string.h"
+#include "power_overwhelming/convert_string.h"
+
 #include "nvidia_management_library.h"
 #include "nvml_exception.h"
 
@@ -28,7 +29,8 @@ void visus::power_overwhelming::detail::nvml_sensor_impl::load_device_name(
         }
     }
 
-    this->device_name = convert_string(name.data());
+    this->device_name = power_overwhelming::convert_string<wchar_t>(
+        name.data());
 
     {
         auto status = nvidia_management_library::instance()
@@ -39,5 +41,5 @@ void visus::power_overwhelming::detail::nvml_sensor_impl::load_device_name(
     }
 
     this->sensor_name = L"NVML/" + this->device_name + L"/"
-        + convert_string(pciInfo.busId);
+        + power_overwhelming::convert_string<wchar_t>(pciInfo.busId);
 }

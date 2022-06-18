@@ -3,7 +3,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "nvml_sensor.h"
+#include "power_overwhelming/nvml_sensor.h"
 
 #include <stdexcept>
 

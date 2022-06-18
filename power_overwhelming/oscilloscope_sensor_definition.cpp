@@ -3,7 +3,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "oscilloscope_sensor_definition.h"
+#include "power_overwhelming/oscilloscope_sensor_definition.h"
 
 #include <cassert>
 #include <memory>

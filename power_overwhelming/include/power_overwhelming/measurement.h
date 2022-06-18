@@ -9,8 +9,9 @@
 #include <iostream>
 #include <utility>
 
-#include "csv_iomanip.h"
-#include "text.h"
+#include "power_overwhelming/convert_string.h"
+#include "power_overwhelming/csv_iomanip.h"
+#include "power_overwhelming/quote.h"
 
 
 namespace visus {

@@ -3,7 +3,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "tinkerforge_sensor.h"
+#include "power_overwhelming/tinkerforge_sensor.h"
 
 #include <chrono>
 #include <thread>

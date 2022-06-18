@@ -3,7 +3,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "graphics_device.h"
+#include "power_overwhelming/graphics_device.h"
 
 #include <memory>
 

@@ -10,15 +10,15 @@
 #include <tchar.h>
 #include <Windows.h>
 
-#include "adl_sensor.h"
-#include "graphics_device.h"
-#include "hmc8015_sensor.h"
-#include "measurement.h"
-#include "nvml_sensor.h"
-#include "rtb_sensor.h"
-#include "stable_power_state_scope.h"
-#include "tinkerforge_display.h"
-#include "tinkerforge_sensor.h"
+#include "power_overwhelming/adl_sensor.h"
+#include "power_overwhelming/graphics_device.h"
+#include "power_overwhelming/hmc8015_sensor.h"
+#include "power_overwhelming/measurement.h"
+#include "power_overwhelming/nvml_sensor.h"
+#include "power_overwhelming/rtb_sensor.h"
+#include "power_overwhelming/stable_power_state_scope.h"
+#include "power_overwhelming/tinkerforge_display.h"
+#include "power_overwhelming/tinkerforge_sensor.h"
 
 
 /// <summary>

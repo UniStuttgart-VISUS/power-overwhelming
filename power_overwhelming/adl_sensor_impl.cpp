@@ -5,8 +5,9 @@
 
 #include "adl_sensor_impl.h"
 
+#include "power_overwhelming/convert_string.h"
+
 #include "adl_exception.h"
-#include "convert_string.h"
 
 
 /*
@@ -165,7 +166,8 @@ visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(
         throw adl_exception(status);
     }
 
-    this->device_name = convert_string(adapterInfo.strAdapterName);
+    this->device_name = power_overwhelming::convert_string<wchar_t>(
+        adapterInfo.strAdapterName);
 }
 
 

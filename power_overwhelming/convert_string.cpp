@@ -1,40 +1,60 @@
 // <copyright file="convert_string.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "convert_string.h"
+#include "power_overwhelming/convert_string.h"
 
+#include <codecvt>
+#include <locale>
 #include <system_error>
-#include <vector>
 
-#include <Windows.h>
+#include <wchar.h>
 
 
 /*
  * visus::power_overwhelming::detail::convert_string
  */
-std::wstring visus::power_overwhelming::detail::convert_string(
-        const char *str) {
-    if (str == nullptr) {
-        return std::wstring();
+std::size_t visus::power_overwhelming::detail::convert_string(
+        char *output, const std::size_t cnt_output,
+        const wchar_t *input, const std::size_t cnt_input) {
+    std::size_t retval = 0;
+    auto state = std::mbstate_t();
+
+    auto error = ::wcsrtombs_s(&retval,
+        output, (output == nullptr) ? 0 : cnt_output,
+        &input, cnt_input,
+        &state);
+
+    if (error != 0) {
+        throw std::system_error(error, std::system_category());
     }
 
-    const auto strLen = static_cast<int>(::strlen(str));
+    return retval;
 
-    auto wcsLen = ::MultiByteToWideChar(CP_UTF8, 0, str, strLen, nullptr, 0);
-    if (wcsLen <= 0) {
-        throw std::system_error(::GetLastError(), std::system_category());
+    //return std::wcsrtombs_s(output, &input, cnt_output, &state) + 1;
+}
+
+
+/*
+ * visus::power_overwhelming::detail::convert_string
+ */
+std::size_t visus::power_overwhelming::detail::convert_string(
+        wchar_t *output, const std::size_t cnt_output,
+        const char *input, const std::size_t cnt_input) {
+    std::size_t retval = 0;
+    auto state = std::mbstate_t();
+
+    auto error = ::mbsrtowcs_s(&retval,
+        output, (output == nullptr) ? 0 : cnt_output,
+        &input, cnt_input,
+        &state);
+
+    if (error != 0) {
+        throw std::system_error(error, std::system_category());
     }
 
-    std::vector<wchar_t> retval;
-    retval.resize(++wcsLen);
+    return retval;
 
-    wcsLen = ::MultiByteToWideChar(CP_UTF8, 0, str, strLen, retval.data(),
-        wcsLen);
-    if (wcsLen <= 0) {
-        throw std::system_error(::GetLastError(), std::system_category());
-    }
-
-    return retval.data();
+    //return std::mbsrtowcs(output, &input, cnt_output, &state) + 1;
 }

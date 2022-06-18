@@ -1,5 +1,5 @@
-// <copyright file="text.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// <copyright file="convert_string.h" company="Visualisierungsinstitut der Universität Stuttgart">
+// Copyright © 2021 - 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -8,8 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "literal.h"
-#include "power_overwhelming_api.h"
+#include "power_overwhelming/power_overwhelming_api.h"
 
 
 namespace visus {
@@ -57,20 +56,21 @@ namespace detail {
         std::basic_string<TOutput>>::type convert_string(const TInput *str);
 
     /// <summary>
-    /// Enclose the given string in quotes.
+    /// Converts a string to the given character set.
     /// </summary>
-    /// <typeparam name="TChar">The type of a character in the string.
-    /// </typeparam>
-    /// <param name="str">The string to be quoted. It is safe to pass
-    /// <c>nullptr</c>, which will be interpreted as an empty string.</param>
-    /// <param name="quote">The quote character, which defaults to double
-    /// quotes.</param>
-    /// <returns>The quoted input string.</returns>
-    template<class TChar>
-    std::basic_string<TChar> quote(const TChar *str,
-        const TChar quote = POWER_OVERWHELMING_TPL_LITERAL(TChar, '"'));
+    /// <typeparam name="TOutput"></typeparam>
+    /// <typeparam name="TInput"></typeparam>
+    /// <typeparam name="TTraits"></typeparam>
+    /// <typeparam name="TAlloc"></typeparam>
+    /// <param name="str"></param>
+    /// <returns></returns>
+    template<class TOutput, class TInput, class TTraits, class TAlloc>
+    inline std::basic_string<TOutput> convert_string(
+            const std::basic_string<TInput, TTraits, TAlloc>& str) {
+        return convert_string<TOutput>(str.c_str());
+    }
 
 } /* namespace power_overwhelming */
 } /* namespace visus */
 
-#include "text.inl"
+#include "power_overwhelming/convert_string.inl"

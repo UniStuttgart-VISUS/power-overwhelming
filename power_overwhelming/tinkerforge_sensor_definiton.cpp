@@ -3,7 +3,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "tinkerforge_sensor_definiton.h"
+#include "power_overwhelming/tinkerforge_sensor_definiton.h"
 
 #include <cstring>
 #include <memory>

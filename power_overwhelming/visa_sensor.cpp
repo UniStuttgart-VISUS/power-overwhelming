@@ -3,9 +3,10 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "visa_sensor.h"
+#include "power_overwhelming/visa_sensor.h"
 
-#include "convert_string.h"
+#include "power_overwhelming/convert_string.h"
+
 #include "visa_sensor_impl.h"
 
 
