@@ -1,8 +1,10 @@
 #pragma once
 
 #include <chrono>
+#include <sstream>
 
 #include <adl_exception.h>
+#include <csv_iomanip.h>
 #include <measurement.h>
 #include <timestamp.h>
 #include <nvml_exception.h>

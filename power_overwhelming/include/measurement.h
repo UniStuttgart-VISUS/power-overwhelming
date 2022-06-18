@@ -1,5 +1,5 @@
 // <copyright file="measurement.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -9,7 +9,8 @@
 #include <iostream>
 #include <utility>
 
-#include "power_overwhelming_api.h"
+#include "csv_iomanip.h"
+#include "text.h"
 
 
 namespace visus {
@@ -139,7 +140,6 @@ namespace power_overwhelming {
         /// Gets the electric potential (in Volts) measured at the given point
         /// in time.
         /// </summary>
-        /// <param name=""></param>
         /// <returns></returns>
         inline value_type voltage(void) const noexcept {
             return this->_voltage;
@@ -186,17 +186,21 @@ namespace power_overwhelming {
 } /* namespace visus */
 
 
-#if false
-/// <summary>
-/// Print <paramref name="rhs" /> to <paramref name="lhs" />.
-/// </summary>
-/// <typeparam name="TChar"></typeparam>
-/// <param name="lhs"></param>
-/// <param name="rhs"></param>
-/// <returns></returns>
-template<class TChar>
-std::basic_ostream<TChar>& operator <<(std::basic_ostream<TChar>& lhs,
-        const visus::power_overwhelming::measurement& rhs) {
-    return lhs;
+namespace std {
+
+    /// <summary>
+    /// Print <paramref name="rhs" /> as CSV to <paramref name="lhs" />.
+    /// </summary>
+    /// <typeparam name="TChar"></typeparam>
+    /// <typeparam name="TTraits"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <returns></returns>
+    template<class TChar, class TTraits>
+    basic_ostream<TChar, TTraits>& operator <<(
+        basic_ostream<TChar, TTraits>& lhs,
+        const visus::power_overwhelming::measurement &rhs);
+
 }
-#endif
+
+#include "measurement.inl"

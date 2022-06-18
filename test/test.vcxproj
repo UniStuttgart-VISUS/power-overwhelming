@@ -169,6 +169,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="adl_test.cpp" />
+    <ClCompile Include="csv_iomanip_test.cpp" />
     <ClCompile Include="nvml_test.cpp" />
     <ClCompile Include="on_exit_test.cpp" />
     <ClCompile Include="oscilloscope_sensor_definition_test.cpp" />
