@@ -13,8 +13,8 @@ std::basic_ostream<TChar, TTraits>& std::operator <<(
         const visus::power_overwhelming::measurement& rhs) {
     using namespace visus::power_overwhelming;
     const auto delim = getcsvdelimiter(lhs);
-    const auto is_quote = (std::cout.iword(detail::io_index_quote()) == 0);
     const auto quote_char = getcsvquote(lhs);
+    const auto is_quote = (quote_char != 0);
 
     if (lhs.iword(detail::io_index_header()) != 0) {
         // Print the header instead of the data.

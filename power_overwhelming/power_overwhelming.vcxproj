@@ -125,7 +125,6 @@
     <ClCompile Include="visa_sensor_impl.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="include\csv_iomanip.inl" />
     <None Include="include\power_overwhelming\convert_string.inl" />
     <None Include="include\power_overwhelming\measurement.inl" />
     <None Include="include\power_overwhelming\quote.inl" />

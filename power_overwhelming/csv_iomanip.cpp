@@ -34,11 +34,3 @@ int visus::power_overwhelming::detail::io_index_header(void) noexcept {
 int visus::power_overwhelming::detail::io_index_quote(void) noexcept {
     return ::idx_quote;
 }
-
-
-/*
- * visus::power_overwhelming::detail::io_index_quote_char
- */
-int visus::power_overwhelming::detail::io_index_quote_char(void) noexcept {
-    return ::idx_quote_char;
-}

@@ -84,13 +84,6 @@ namespace detail {
     /// <returns></returns>
     extern int POWER_OVERWHELMING_API io_index_quote(void) noexcept;
 
-    /// <summary>
-    /// Gets the unique index value for accessing the quote character in the
-    /// private storage of std::ios_base.
-    /// </summary>
-    /// <returns></returns>
-    extern int POWER_OVERWHELMING_API io_index_quote_char(void) noexcept;
-
 } /* namespace detail */
 
     /// <summary>
@@ -126,7 +119,7 @@ namespace detail {
     /// <param name="stream">The stream to manipulate.</param>
     /// <returns><paramref name="stream" /></returns>
     inline std::ios_base& csvnoquote(std::ios_base& stream) {
-        stream.iword(detail::io_index_quote()) = static_cast<long>(1);
+        stream.iword(detail::io_index_quote()) = static_cast<long>(0);
         return stream;
     }
 
@@ -138,11 +131,16 @@ namespace detail {
     /// flags are initialised to 0 and we want quoting to be enabled by
     /// default.
     /// </remarks>
+        /// <typeparam name="TChar">The character type used in the stream.
+    /// </typeparam>
+    /// <typeparam name="TTraits">The traits type of the stream.</typeparam>
     /// <param name="stream">The stream to manipulate.</param>
     /// <returns><paramref name="stream" /></returns>
-    inline std::ios_base& csvquote(std::ios_base&stream) {
-        stream.iword(detail::io_index_quote()) = static_cast<long>(0);
-        return stream;
+    template<class TChar, class TTraits>
+    inline std::basic_ostream<TChar, TTraits>& csvquote(
+            std::basic_ostream<TChar, TTraits>& stream) {
+        return stream << setcsvquote(POWER_OVERWHELMING_TPL_LITERAL(
+            TChar, '"'));
     }
 
     /// <summary>
@@ -168,23 +166,16 @@ namespace detail {
     /// <summary>
     /// Retrieve the CSV quote character configured for the given stream.
     /// </summary>
-    /// <remarks>
-    /// If no value has been configured, this function will return double quotes
-    /// as fallback.
-    /// </remarks>
     /// <typeparam name="TChar">The character type used in the stream.
     /// </typeparam>
     /// <typeparam name="TTraits">The traits type of the stream.</typeparam>
     /// <param name="stream">The stream to retrieve the quote character for.
     /// </param>
-    /// <returns>The configured CSV quote character for the given stream.
-    /// </returns>
+    /// <returns>The configured CSV quote character for the given stream. If
+    /// this value is zero, no quotes will be added.</returns>
     template<class TChar, class TTraits> inline TChar getcsvquote(
             std::basic_ostream<TChar, TTraits>& stream) {
-        auto retval = stream.iword(detail::io_index_quote_char());
-        return (retval > 0)
-            ? static_cast<TChar>(retval)
-            : POWER_OVERWHELMING_TPL_LITERAL(TChar, '"');
+        return static_cast<TChar>(stream.iword(detail::io_index_quote()));
     }
 
     /// <summary>
@@ -247,7 +238,7 @@ namespace detail {
     inline std::basic_ostream<TChar, TTraits>& operator <<(
             std::basic_ostream<TChar, TTraits>& lhs,
             const detail::csv_quote<TChar> rhs) {
-        lhs.iword(detail::io_index_quote_char()) = rhs.value;
+        lhs.iword(detail::io_index_quote()) = rhs.value;
         return lhs;
     }
 

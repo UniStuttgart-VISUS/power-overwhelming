@@ -325,9 +325,6 @@
     <None Include="tokenise.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="include\csv_iomanip.inl">
-      <Filter>Header Files</Filter>
-    </None>
     <None Include="include\power_overwhelming\measurement.inl">
       <Filter>Header Files</Filter>
     </None>

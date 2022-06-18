@@ -25,14 +25,6 @@ namespace test {
             Assert::AreEqual(';', getcsvdelimiter(std::cout), L"Delimiter retrieved.", LINE_INFO());
         }
 
-        TEST_METHOD(test_char_quote) {
-            Assert::AreEqual(long(0), std::cout.iword(detail::io_index_quote_char()), L"No quote set", LINE_INFO());
-            Assert::AreEqual('"', getcsvquote(std::cout), L"Fallback retrieved.", LINE_INFO());
-            std::cout << setcsvquote('\'');
-            Assert::AreEqual(long('\''), std::cout.iword(detail::io_index_quote_char()), L"Quote set", LINE_INFO());
-            Assert::AreEqual('\'', getcsvquote(std::cout), L"Quote retrieved.", LINE_INFO());
-        }
-
         TEST_METHOD(test_header) {
             Assert::AreEqual(long(0), std::cout.iword(detail::io_index_header()), L"Print data", LINE_INFO());
             std::cout << csvheader;
@@ -46,7 +38,7 @@ namespace test {
 
             {
                 std::stringstream stream;
-                stream << csvheader << dummy;
+                stream << csvheader << csvquote << dummy;
                 auto actual = stream.str();
                 auto expected = std::string("\"sensor\"\t\"timestamp\"\t\"valid\"\t\"voltage\"\t\"current\"\t\"power\"");
                 Assert::AreEqual(expected, actual, L"Default CSV header.", LINE_INFO());
@@ -62,7 +54,7 @@ namespace test {
 
             {
                 std::stringstream stream;
-                stream << dummy;
+                stream << csvquote << dummy;
                 auto actual = stream.str();
                 auto expected = std::string("\"dummy\"\t9999\t1\t1\t2\t3");
                 Assert::AreEqual(expected, actual, L"Default CSV line.", LINE_INFO());
@@ -82,7 +74,7 @@ namespace test {
 
             {
                 std::wstringstream stream;
-                stream << csvheader << dummy;
+                stream << csvheader << csvquote << dummy;
                 auto actual = stream.str();
                 auto expected = std::wstring(L"\"sensor\"\t\"timestamp\"\t\"valid\"\t\"voltage\"\t\"current\"\t\"power\"");
                 Assert::AreEqual(expected, actual, L"Default CSV header.", LINE_INFO());
@@ -98,7 +90,7 @@ namespace test {
 
             {
                 std::wstringstream stream;
-                stream << dummy;
+                stream << csvquote << dummy;
                 auto actual = stream.str();
                 auto expected = std::wstring(L"\"dummy\"\t9999\t1\t1\t2\t3");
                 Assert::AreEqual(expected, actual, L"Default CSV line.", LINE_INFO());
@@ -111,14 +103,22 @@ namespace test {
                 auto expected = std::wstring(L"'dummy';9999;1;1;2;3");
                 Assert::AreEqual(expected, actual, L"Default CSV line.", LINE_INFO());
             }
+
+            {
+                std::wstringstream stream;
+                stream << setcsvdelimiter(L';') << setcsvquote(L'\'') << csvnoquote << dummy;
+                auto actual = stream.str();
+                auto expected = std::wstring(L"dummy;9999;1;1;2;3");
+                Assert::AreEqual(expected, actual, L"Default CSV line.", LINE_INFO());
+            }
         }
 
         TEST_METHOD(test_quote) {
-            Assert::AreEqual(long(0), std::cout.iword(detail::io_index_quote()), L"Quote set", LINE_INFO());
-            std::cout << csvnoquote;
-            Assert::AreEqual(long(1), std::cout.iword(detail::io_index_quote()), L"No-quote set", LINE_INFO());
+            Assert::AreEqual(long(0), std::cout.iword(detail::io_index_quote()), L"Quote not set", LINE_INFO());
             std::cout << csvquote;
-            Assert::AreEqual(long(0), std::cout.iword(detail::io_index_quote()), L"Quote set", LINE_INFO());
+            Assert::AreEqual(long('"'), std::cout.iword(detail::io_index_quote()), L"Default Quote set", LINE_INFO());
+            std::cout << csvnoquote;
+            Assert::AreEqual(long(0), std::cout.iword(detail::io_index_quote()), L"Quote erased", LINE_INFO());
         }
 
         TEST_METHOD(test_wchar_delimiter) {
@@ -128,15 +128,6 @@ namespace test {
             Assert::AreEqual(long(';'), std::wcout.iword(detail::io_index_delimiter()), L"Delimiter set", LINE_INFO());
             Assert::AreEqual(L';', getcsvdelimiter(std::wcout), L"Delimiter retrieved.", LINE_INFO());
         }
-
-        TEST_METHOD(test_wchar_quote) {
-            Assert::AreEqual(long(0), std::wcout.iword(detail::io_index_quote_char()), L"No quote set", LINE_INFO());
-            Assert::AreEqual(L'"', getcsvquote(std::wcout), L"Fallback retrieved.", LINE_INFO());
-            std::wcout << setcsvquote(L'\'');
-            Assert::AreEqual(long('\''), std::wcout.iword(detail::io_index_quote_char()), L"Quote set", LINE_INFO());
-            Assert::AreEqual(L'\'', getcsvquote(std::wcout), L"Quote retrieved.", LINE_INFO());
-        }
-
     };
 } /* namespace test */
 } /* namespace power_overwhelming */
