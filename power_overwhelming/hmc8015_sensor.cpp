@@ -251,14 +251,14 @@ std::size_t visus::power_overwhelming::hmc8015_sensor::log_file(
         char *path, const std::size_t cnt) {
     auto impl = static_cast<detail::visa_sensor_impl&>(*this);
 
+    this->check_not_disposed();
+    impl.printf("LOG:FNAM?\n");
+
+    // Read everything to prevent spurious responses in future calls.
+    auto value = impl.read();
+
+    // Copy as much as the output buffer can hold.
     if (path != nullptr) {
-        this->check_not_disposed();
-        impl.printf("LOG:FNAM?\n");
-
-        // Read everything to prevent spurious responses in future calls.
-        auto value = impl.read();
-
-        // Copy as must as the output buffer can hold.
         for (std::size_t i = 0; (i < cnt) && (i < value.size()); ++i) {
             path[i] = value[i];
         }
@@ -266,11 +266,9 @@ std::size_t visus::power_overwhelming::hmc8015_sensor::log_file(
         // The last character in the reponse is always the line feed, which
         // we just override with the the string terminator.
         path[cnt - 1] = 0;
-
-        return value.size();
-    } else {
-        return 0;
     }
+
+    return value.size();
 }
 
 

@@ -191,7 +191,7 @@ void visus::power_overwhelming::tinkerforge_sensor::sample(
         measurement_callback expected = nullptr;
 
         if (!this->_impl->on_measurement.compare_exchange_strong(expected,
-            on_measurement)) {
+                on_measurement)) {
             throw std::logic_error("Asynchronous sampling cannot be started "
                 "while it is already running.");
         }
@@ -238,4 +238,3 @@ visus::power_overwhelming::tinkerforge_sensor::operator bool(
         void) const noexcept {
     return (this->_impl != nullptr);
 }
-
