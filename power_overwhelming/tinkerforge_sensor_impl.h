@@ -13,9 +13,10 @@
 #include <bricklet_voltage_current_v2.h>
 #include <Windows.h>
 
-#include "measurement.h"
-#include "tinkerforge_scope.h"
+#include "power_overwhelming/measurement.h"
+
 #include "timestamp.h"
+#include "tinkerforge_scope.h"
 
 
 namespace visus {

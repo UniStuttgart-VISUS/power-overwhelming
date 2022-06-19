@@ -31,7 +31,8 @@ namespace detail {
     /// <returns>A vector holding the tokens (or the whole string if no
     /// occurrence of the delimiter characters was found).</returns>
     template<class C, class P>
-    std::vector<std::basic_string<C>> tokenise(const std::basic_string<C>& str,
+    std::vector<std::basic_string<C>> tokenise_if(
+        const std::basic_string<C>& str,
         const P predicate, const bool omitEmpty = false);
 
     /// <summary>
@@ -45,7 +46,9 @@ namespace detail {
     inline std::vector<std::string> tokenise(
             const std::string& str,
             const bool omitEmpty = false) {
-        return tokenise(str, std::isspace, omitEmpty);
+        return tokenise_if(str,
+            [](const char c) { return std::isspace(c); },
+            omitEmpty);
     }
 
     /// <summary>
@@ -59,7 +62,9 @@ namespace detail {
     inline std::vector<std::wstring> tokenise(
             const std::wstring& str,
             const bool omitEmpty = false) {
-        return tokenise(str, std::iswspace, omitEmpty);
+        return tokenise_if(str,
+            [](const wchar_t c) { return std::iswspace(c); },
+            omitEmpty);
     }
 
     ///// <summary>
@@ -105,7 +110,7 @@ namespace detail {
             const std::basic_string<C>& str,
             const C delim,
             const bool omitEmpty = false) {
-        return tokenise(str, [delim](const C c) { return (c == delim); },
+        return tokenise_if(str, [delim](const C c) { return (c == delim); },
             omitEmpty);
     }
 

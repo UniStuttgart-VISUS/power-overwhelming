@@ -6,10 +6,10 @@
 
 
 /*
- * visus::power_overwhelming::detail::tokenise
+ * visus::power_overwhelming::detail::tokenise_if
  */
 template<class C, class P>
-std::vector<std::basic_string<C>> visus::power_overwhelming::detail::tokenise(
+std::vector<std::basic_string<C>> visus::power_overwhelming::detail::tokenise_if(
         const std::basic_string<C>& str, const P predicate,
         const bool omitEmpty) {
     typedef typename std::decay<decltype(str)>::type StringType;

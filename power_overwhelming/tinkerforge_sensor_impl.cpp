@@ -7,7 +7,8 @@
 
 #include <cassert>
 
-#include "convert_string.h"
+#include "power_overwhelming/convert_string.h"
+
 #include "tinkerforge_exception.h"
 
 
@@ -82,8 +83,10 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::tinkerforge_sensor_i
             "must not be null.");
     }
 
-    this->sensor_name = L"Tinkerforge/" + convert_string(host) + L":"
-        + std::to_wstring(port) + L"/" + convert_string(uid);
+    this->sensor_name = L"Tinkerforge/"
+        + power_overwhelming::convert_string<wchar_t>(host) + L":"
+        + std::to_wstring(port) + L"/"
+        + power_overwhelming::convert_string<wchar_t>(uid);
 
     ::voltage_current_v2_create(&this->bricklet, uid, this->scope);
 

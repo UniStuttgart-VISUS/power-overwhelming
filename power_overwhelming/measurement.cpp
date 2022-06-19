@@ -3,7 +3,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "measurement.h"
+#include "power_overwhelming/measurement.h"
 
 #include <limits>
 #include <stdexcept>

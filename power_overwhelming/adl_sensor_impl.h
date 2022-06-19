@@ -8,10 +8,11 @@
 #include <functional>
 #include <vector>
 
+#include "power_overwhelming/adl_sensor_source.h"
+#include "power_overwhelming/measurement.h"
+
 #include "amd_display_library.h"
 #include "adl_scope.h"
-#include "adl_sensor_source.h"
-#include "measurement.h"
 #include "timestamp.h"
 
 

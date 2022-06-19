@@ -3,7 +3,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "rtb_sensor.h"
+#include "power_overwhelming/rtb_sensor.h"
 
 #include <algorithm>
 #include <cassert>
@@ -11,7 +11,8 @@
 #include <stdexcept>
 #include <utility>
 
-#include "convert_string.h"
+#include "power_overwhelming/convert_string.h"
+
 #include "timestamp.h"
 #include "tokenise.h"
 #include "visa_library.h"
@@ -68,6 +69,7 @@ visus::power_overwhelming::rtb_sensor::~rtb_sensor(void) { }
 void visus::power_overwhelming::rtb_sensor::configure(
         const oscilloscope_sensor_definition *sensors,
         const std::size_t cnt_sensors) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     if ((cnt_sensors > 0) && (sensors == nullptr)) {
         throw std::invalid_argument("The sensor definitions must be valid.");
     }
@@ -109,6 +111,10 @@ void visus::power_overwhelming::rtb_sensor::configure(
             this->throw_on_system_error();
         }
     }
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error("This function is unavailable unless compiled with "
+        "support for VISA.");
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

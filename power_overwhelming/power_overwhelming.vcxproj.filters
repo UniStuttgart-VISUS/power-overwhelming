@@ -97,6 +97,18 @@
     <ClCompile Include="oscilloscope_sensor_definition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="stable_power_state_scope.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics_device.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="com_error_category.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csv_iomanip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adl_exception.h">
@@ -105,25 +117,13 @@
     <ClInclude Include="adl_scope.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\adl_sensor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="adl_sensor_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\adl_sensor_source.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="amd_display_library.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="convert_string.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="library_base.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\measurement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="nvidia_management_library.h">
@@ -135,22 +135,13 @@
     <ClInclude Include="nvml_scope.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\nvml_sensor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="nvml_sensor_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="on_exit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\power_overwhelming_api.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="timestamp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\timestamp_resolution.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tinkerforge_exception.h">
@@ -159,19 +150,10 @@
     <ClInclude Include="tinkerforge_scope.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\tinkerforge_sensor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\tinkerforge_sensor_definiton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="tinkerforge_sensor_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tinkerforge_bricklet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\tinkerforge_display.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tinkerforge_display_impl.h">
@@ -192,25 +174,10 @@
     <ClInclude Include="visa_scope_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\hmc8015_sensor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="visa_sensor_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\instrument_range.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\log_mode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="tokenise.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\rtb_sensor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\sensor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="timestamp_resolution_traits.h">
@@ -219,10 +186,85 @@
     <ClInclude Include="include\timestamp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\visa_sensor.h">
+    <ClInclude Include="safe_com.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\oscilloscope_sensor_definition.h">
+    <ClInclude Include="com_error_category.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\literal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\log_mode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\measurement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\nvml_sensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\oscilloscope_sensor_definition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\power_overwhelming_api.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\rtb_sensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\sensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\stable_power_state_scope.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\quote.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\timestamp_resolution.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\tinkerforge_display.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\tinkerforge_sensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\tinkerforge_sensor_definiton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\visa_sensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\adl_sensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\adl_sensor_source.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\csv_iomanip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\graphics_device.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\hmc8015_sensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\instrument_range.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\convert_string.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\conversion_time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\sample_averaging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sampler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -290,6 +332,18 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="tokenise.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\power_overwhelming\measurement.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\power_overwhelming\quote.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\power_overwhelming\convert_string.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="sampler.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

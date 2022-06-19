@@ -7,9 +7,28 @@
 
 #include <vector>
 
-#include "convert_string.h"
+#include "power_overwhelming/convert_string.h"
+
 #include "nvidia_management_library.h"
 #include "nvml_exception.h"
+
+
+/*
+ * visus::power_overwhelming::detail::nvml_sensor_impl::sampler
+ */
+visus::power_overwhelming::detail::sampler<
+    visus::power_overwhelming::detail::nvml_sensor_impl>
+visus::power_overwhelming::detail::nvml_sensor_impl::sampler;
+
+
+/*
+ * visus::power_overwhelming::detail::nvml_sensor_impl::~nvml_sensor_impl
+ */
+visus::power_overwhelming::detail::nvml_sensor_impl::~nvml_sensor_impl(void) {
+    // Make sure that a sensor that is being destroyed is removed from all
+    // asynchronous sampling threads.
+    nvml_sensor_impl::sampler.remove(this);
+}
 
 
 /*
@@ -28,7 +47,8 @@ void visus::power_overwhelming::detail::nvml_sensor_impl::load_device_name(
         }
     }
 
-    this->device_name = convert_string(name.data());
+    this->device_name = power_overwhelming::convert_string<wchar_t>(
+        name.data());
 
     {
         auto status = nvidia_management_library::instance()
@@ -39,5 +59,27 @@ void visus::power_overwhelming::detail::nvml_sensor_impl::load_device_name(
     }
 
     this->sensor_name = L"NVML/" + this->device_name + L"/"
-        + convert_string(pciInfo.busId);
+        + power_overwhelming::convert_string<wchar_t>(pciInfo.busId);
+}
+
+
+/*
+ * visus::power_overwhelming::detail::nvml_sensor_impl::sample
+ */
+visus::power_overwhelming::measurement
+visus::power_overwhelming::detail::nvml_sensor_impl::sample(
+        const timestamp_resolution resolution) const {
+    static constexpr auto thousand = static_cast<measurement::value_type>(1000);
+    const auto timestamp = create_timestamp(resolution);
+
+    // Get the power usage in milliwatts.
+    unsigned int mw = 0;
+    auto status = detail::nvidia_management_library::instance()
+        .nvmlDeviceGetPowerUsage(this->device, &mw);
+    if (status != NVML_SUCCESS) {
+        throw nvml_exception(status);
+    }
+
+    return measurement(this->sensor_name.c_str(), timestamp,
+        static_cast<measurement::value_type>(mw) / thousand);
 }

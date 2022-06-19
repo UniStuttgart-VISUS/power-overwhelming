@@ -11,8 +11,8 @@
 #include <Windows.h>
 #endif /* defined(_WIN32) */
 
-#include "power_overwhelming_api.h"
-#include "timestamp_resolution.h"
+#include "power_overwhelming/power_overwhelming_api.h"
+#include "power_overwhelming/timestamp_resolution.h"
 
 
 namespace visus {

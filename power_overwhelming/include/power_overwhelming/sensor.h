@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <cinttypes>
+
 #include "measurement.h"
 #include "timestamp_resolution.h"
 
@@ -18,6 +20,16 @@ namespace power_overwhelming {
     class POWER_OVERWHELMING_API sensor {
 
     public:
+
+        /// <summary>
+        /// The type to represent microseconds intervals in.
+        /// </summary>
+        typedef std::uint64_t microseconds_type;
+
+        /// <summary>
+        /// The default sampling interval of one millisecond.
+        /// </summary>
+        static constexpr microseconds_type default_sampling_period = 1000;
 
         /// <summary>
         /// Finalises the instance.

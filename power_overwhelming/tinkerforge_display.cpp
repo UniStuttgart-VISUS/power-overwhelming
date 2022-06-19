@@ -3,7 +3,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "tinkerforge_display.h"
+#include "power_overwhelming/tinkerforge_display.h"
 
 #include <stdexcept>
 #include <vector>

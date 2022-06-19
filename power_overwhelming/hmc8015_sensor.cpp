@@ -3,7 +3,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "hmc8015_sensor.h"
+#include "power_overwhelming/hmc8015_sensor.h"
 
 #include <algorithm>
 #include <cassert>
@@ -11,7 +11,8 @@
 #include <stdexcept>
 #include <utility>
 
-#include "convert_string.h"
+#include "power_overwhelming/convert_string.h"
+
 #include "timestamp.h"
 #include "tokenise.h"
 #include "visa_library.h"

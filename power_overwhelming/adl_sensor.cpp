@@ -3,15 +3,17 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "adl_sensor.h"
+#include "power_overwhelming/adl_sensor.h"
 
 #include <algorithm>
 #include <vector>
 
+#include "power_overwhelming/adl_sensor_source.h"
+
 #include "adl_exception.h"
 #include "adl_scope.h"
 #include "adl_sensor_impl.h"
-#include "adl_sensor_source.h"
+
 
 
 namespace visus {
