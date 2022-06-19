@@ -247,7 +247,10 @@ visus::power_overwhelming::tinkerforge_sensor::sample(
  */
 void visus::power_overwhelming::tinkerforge_sensor::sample(
         const measurement_callback on_measurement,
-        const std::int32_t sampling_period) {
+        const microseconds_type sampling_period) {
+    static constexpr auto one = static_cast<microseconds_type>(1);
+    static constexpr auto thousand = static_cast<microseconds_type>(1000);
+
     if (!*this) {
         throw std::runtime_error("A disposed instance of tinkerforge_sensor "
             "cannot be sampled.");
@@ -258,13 +261,14 @@ void visus::power_overwhelming::tinkerforge_sensor::sample(
         measurement_callback expected = nullptr;
 
         if (!this->_impl->on_measurement.compare_exchange_strong(expected,
-            on_measurement)) {
+                on_measurement)) {
             throw std::logic_error("Asynchronous sampling cannot be started "
                 "while it is already running.");
         }
 
         try {
-            this->_impl->enable_callbacks(sampling_period);
+            auto millis = (std::min)(sampling_period / thousand, one);
+            this->_impl->enable_callbacks(millis);
         } catch (...) {
             // Clear the guard in case the operation failed.
             this->_impl->on_measurement.exchange(nullptr);

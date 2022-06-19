@@ -234,14 +234,18 @@ namespace power_overwhelming {
 
         /// <summary>
         /// Asynchronously sample the sensor every
-        /// <paramref name="sampling_period "/> milliseconds.
+        /// <paramref name="sampling_period "/> microseconds.
         /// </summary>
         /// <param name="on_measurement">The callback to be invoked if new data
         /// arrived. If this is <c>nullptr</c>, the asynchronous sampling will
         /// be disabled. Only one callback can be registered, subsequent calls
         /// will fail.</param>
         /// <param name="sampling_period">The desired sampling period in
-        /// milliseconds. This parameter defaults to 1.</param>
+        /// microseconds. Note that Tinkerforge only supports millisecond
+        /// resolution for this parameter, so this number must be divisble by
+        /// 1000. The sampling frequence will be clamped to 1 ms at the bottom.
+        /// This parameter defaults to 1000 (1 millisecond).
+        /// </param>
         /// <exception cref="std::runtime_error">If the sensor has been moved.
         /// </exception>
         /// <exception cref="std::logic_error">If the sensor is already being
@@ -250,7 +254,7 @@ namespace power_overwhelming {
         /// <exception cref="tinkerforge_exception">If the sensor could not be
         /// sampled. </exception>
         void sample(const measurement_callback on_measurement,
-            const std::int32_t sampling_period = 1);
+            const microseconds_type sampling_period = default_sampling_period);
 
         /// <summary>
         /// Move assignment.

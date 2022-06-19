@@ -264,6 +264,9 @@
     <ClInclude Include="include\power_overwhelming\sample_averaging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sampler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adl_sensor.cpp">
@@ -338,6 +341,9 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="include\power_overwhelming\convert_string.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="sampler.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

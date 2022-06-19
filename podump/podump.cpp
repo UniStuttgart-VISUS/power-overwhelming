@@ -75,6 +75,31 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
 #if true
+    // Sample all supported NVIDIA cards for five seconds.
+    try {
+        std::vector<nvml_sensor> sensors;
+        sensors.resize(nvml_sensor::for_all(nullptr, 0));
+        nvml_sensor::for_all(sensors.data(), sensors.size());
+
+        for (auto& s : sensors) {
+            s.sample([](const measurement& m) {
+                std::wcout << m.timestamp() << L": " << m.power() << L" W"
+                    << std::endl;
+                });
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+
+        for (auto& s : sensors) {
+            s.sample(nullptr);
+        }
+
+    } catch (std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+#endif
+
+#if true
     // Print all supported graphics devices
     try {
         std::vector<graphics_device> devices;

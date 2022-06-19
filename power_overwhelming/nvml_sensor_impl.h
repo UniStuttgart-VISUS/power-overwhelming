@@ -10,6 +10,7 @@
 #include <nvml.h>
 
 #include "nvml_scope.h"
+#include "sampler.h"
 #include "timestamp.h"
 
 
@@ -21,6 +22,11 @@ namespace detail {
     /// Private data container for the <see cref="nvml_sensor" />.
     /// </summary>
     struct nvml_sensor_impl final {
+
+        /// <summary>
+        /// A sampler for NVML sensors.
+        /// </summary>
+        static sampler<nvml_sensor_impl> sampler;
 
         /// <summary>
         /// The NVML device the sensor is reading from.
@@ -49,11 +55,25 @@ namespace detail {
         inline nvml_sensor_impl(void) : device(nullptr) { }
 
         /// <summary>
+        /// Finalises the instance.
+        /// </summary>
+        ~nvml_sensor_impl(void);
+
+        /// <summary>
         /// Loads the name of <see cref="device" /> into
         /// <see cref="device_name" /> and regenerates the
         /// <see cref="sensor_name" />.
         /// </summary>
         void load_device_name(void);
+
+        /// <summary>
+        /// Sample the sensor.
+        /// </summary>
+        /// <param name="resolution">The resolution of the timestamp to be
+        /// generated, which defaults to milliseconds.</param>
+        /// <returns>A measurement from the sensor.</returns>
+        measurement sample(const timestamp_resolution resolution
+            = timestamp_resolution::milliseconds) const;
     };
 
 } /* namespace detail */

@@ -65,6 +65,7 @@
     <ClInclude Include="include\power_overwhelming\tinkerforge_sensor_definiton.h" />
     <ClInclude Include="include\power_overwhelming\visa_sensor.h" />
     <ClInclude Include="safe_com.h" />
+    <ClInclude Include="sampler.h" />
     <ClInclude Include="timestamp_resolution_traits.h" />
     <ClInclude Include="include\timestamp.h" />
     <ClInclude Include="library_base.h" />
@@ -131,6 +132,7 @@
     <None Include="include\power_overwhelming\measurement.inl" />
     <None Include="include\power_overwhelming\quote.inl" />
     <None Include="on_exit.inl" />
+    <None Include="sampler.inl" />
     <None Include="timestamp.inl" />
     <None Include="tinkerforge_scope.inl" />
     <None Include="tokenise.inl" />
