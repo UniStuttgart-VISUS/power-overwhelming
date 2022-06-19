@@ -9,8 +9,19 @@
  */
 template<class TSensorImpl>
 visus::power_overwhelming::detail::sampler<TSensorImpl>::~sampler(void) {
+    std::lock_guard<decltype(this->_lock)> l(this->_lock);
+
     for (auto& c : this->_contexts) {
-        
+        // Clear all sensors, which makes the threads exit.
+        {
+            std::lock_guard<decltype(c->lock)> ll(c->lock);
+            c->sensors.clear();
+        }
+
+        // Detach thread and let it exit asynchronously.
+        if (c->thread.joinable()) {
+            c->thread.detach();
+        }
     }
 }
 
