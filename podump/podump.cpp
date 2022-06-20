@@ -38,7 +38,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 
     stable_power_state_scope spss;
 
-#if false
+#if true
     // Print data for all supported AMD cards.
     try {
         std::vector<adl_sensor> sensors;

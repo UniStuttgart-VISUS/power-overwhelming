@@ -80,6 +80,8 @@ std::size_t visus::power_overwhelming::adl_sensor::for_all(
 
         // Get the descriptors for all the adapters.
         std::vector<AdapterInfo> adapters(cnt);
+        ::ZeroMemory(adapters.data(), adapters.size() * sizeof(AdapterInfo));
+
         {
             auto status = detail::amd_display_library::instance()
                 .ADL2_Adapter_AdapterInfo_Get(scope, adapters.data(),
