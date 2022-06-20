@@ -38,7 +38,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 
     stable_power_state_scope spss;
 
-#if false
+#if true
     // Print data for all supported AMD cards.
     try {
         std::vector<adl_sensor> sensors;
@@ -50,6 +50,30 @@ int _tmain(const int argc, const TCHAR **argv) {
             auto m = s.sample();
             std::wcout << m.timestamp() << L" (" << m.sensor() << L"): "
                 << m.power() << L" W" << std::endl;
+        }
+    } catch (std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+#endif
+
+#if true
+    // Sample all supported AMD cards for five seconds.
+    try {
+        std::vector<adl_sensor> sensors;
+        sensors.resize(adl_sensor::for_all(nullptr, 0));
+        adl_sensor::for_all(sensors.data(), sensors.size());
+
+        for (auto& s : sensors) {
+            s.sample([](const measurement &m) {
+                std::wcout << m.timestamp() << L": " << m.power() << L" W"
+                    << std::endl;
+            });
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+
+        for (auto& s : sensors) {
+            s.sample(nullptr);
         }
     } catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;
@@ -74,7 +98,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     }
 #endif
 
-#if true
+#if false
     // Sample all supported NVIDIA cards for five seconds.
     try {
         std::vector<nvml_sensor> sensors;
