@@ -11,6 +11,7 @@
 #include <Windows.h>
 
 #include "power_overwhelming/adl_sensor.h"
+#include "power_overwhelming/collector.h"
 #include "power_overwhelming/graphics_device.h"
 #include "power_overwhelming/hmc8015_sensor.h"
 #include "power_overwhelming/measurement.h"
@@ -39,6 +40,13 @@ int _tmain(const int argc, const TCHAR **argv) {
     stable_power_state_scope spss;
 
 #if true
+    {
+        collector::make_configuration_template(L"sensors.json");
+        collector collector(L"sensors.json");
+    }
+#endif
+
+#if false
     // Print data for all supported AMD cards.
     try {
         std::vector<adl_sensor> sensors;
@@ -56,7 +64,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     }
 #endif
 
-#if true
+#if false
     // Sample all supported AMD cards for five seconds.
     try {
         std::vector<adl_sensor> sensors;
@@ -80,7 +88,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     }
 #endif
 
-#if false
+#if true
     // Print data for all supported NVIDIA cards.
     try {
         std::vector<nvml_sensor> sensors;

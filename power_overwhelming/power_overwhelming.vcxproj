@@ -39,9 +39,11 @@
     <ClInclude Include="adl_scope.h" />
     <ClInclude Include="adl_sensor_impl.h" />
     <ClInclude Include="amd_display_library.h" />
+    <ClInclude Include="collector_impl.h" />
     <ClInclude Include="com_error_category.h" />
     <ClInclude Include="include\power_overwhelming\adl_sensor.h" />
     <ClInclude Include="include\power_overwhelming\adl_sensor_source.h" />
+    <ClInclude Include="include\power_overwhelming\collector.h" />
     <ClInclude Include="include\power_overwhelming\convert_string.h" />
     <ClInclude Include="include\power_overwhelming\csv_iomanip.h" />
     <ClInclude Include="include\power_overwhelming\graphics_device.h" />
@@ -93,7 +95,9 @@
     <ClCompile Include="adl_scope.cpp" />
     <ClCompile Include="adl_sensor.cpp" />
     <ClCompile Include="adl_sensor_impl.cpp" />
+    <ClCompile Include="adl_sensor_source.cpp" />
     <ClCompile Include="amd_display_library.cpp" />
+    <ClCompile Include="collector.cpp" />
     <ClCompile Include="com_error_category.cpp" />
     <ClCompile Include="graphics_device.cpp" />
     <ClCompile Include="hmc8015_sensor.cpp" />
@@ -216,6 +220,7 @@
     <Import Project="..\third_party\visa.props" />
     <Import Project="..\third_party\rshmc8015.props" />
     <Import Project="..\third_party\rsrtx.props" />
+    <Import Project="..\third_party\json.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -225,6 +230,7 @@
     <Import Project="..\third_party\visa.props" />
     <Import Project="..\third_party\rshmc8015.props" />
     <Import Project="..\third_party\rsrtx.props" />
+    <Import Project="..\third_party\json.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -234,6 +240,7 @@
     <Import Project="..\third_party\visa.props" />
     <Import Project="..\third_party\rshmc8015.props" />
     <Import Project="..\third_party\rsrtx.props" />
+    <Import Project="..\third_party\json.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -243,6 +250,7 @@
     <Import Project="..\third_party\visa.props" />
     <Import Project="..\third_party\rshmc8015.props" />
     <Import Project="..\third_party\rsrtx.props" />
+    <Import Project="..\third_party\json.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -252,6 +260,7 @@
     <Import Project="..\third_party\visa.props" />
     <Import Project="..\third_party\rshmc8015.props" />
     <Import Project="..\third_party\rsrtx.props" />
+    <Import Project="..\third_party\json.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -261,6 +270,7 @@
     <Import Project="..\third_party\visa.props" />
     <Import Project="..\third_party\rshmc8015.props" />
     <Import Project="..\third_party\rsrtx.props" />
+    <Import Project="..\third_party\json.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -270,6 +280,7 @@
     <Import Project="..\third_party\visa.props" />
     <Import Project="..\third_party\rshmc8015.props" />
     <Import Project="..\third_party\rsrtx.props" />
+    <Import Project="..\third_party\json.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -279,6 +290,7 @@
     <Import Project="..\third_party\visa.props" />
     <Import Project="..\third_party\rshmc8015.props" />
     <Import Project="..\third_party\rsrtx.props" />
+    <Import Project="..\third_party\json.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

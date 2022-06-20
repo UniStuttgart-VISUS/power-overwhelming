@@ -144,6 +144,19 @@ visus::power_overwhelming::nvml_sensor::~nvml_sensor(void) {
 
 
 /*
+ * visus::power_overwhelming::nvml_sensor::device_guid
+ */
+const char *visus::power_overwhelming::nvml_sensor::device_guid(
+        void) const noexcept {
+    if (this->_impl == nullptr) {
+        return nullptr;
+    } else {
+        return this->_impl->device_guid.c_str();
+    }
+}
+
+
+/*
  * visus::power_overwhelming::nvml_sensor::name
  */
 const wchar_t *visus::power_overwhelming::nvml_sensor::name(

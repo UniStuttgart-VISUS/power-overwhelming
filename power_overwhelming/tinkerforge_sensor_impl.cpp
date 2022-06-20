@@ -29,6 +29,18 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::current_callback(
 
 
 /*
+ * visus::power_overwhelming::detail::tinkerforge_sensor_impl::get_sensor_name
+ */
+std::string
+visus::power_overwhelming::detail::tinkerforge_sensor_impl::get_sensor_name(
+        const std::string& host, const std::uint16_t port,
+        const std::string& uid) {
+    return std::string("Tinkerforge/") + host + ":" + std::to_string(port)
+        + "/" + uid;
+}
+
+
+/*
  * ...::tinkerforge_sensor_impl::power_callback
  */
 void CALLBACK
@@ -83,10 +95,8 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::tinkerforge_sensor_i
             "must not be null.");
     }
 
-    this->sensor_name = L"Tinkerforge/"
-        + power_overwhelming::convert_string<wchar_t>(host) + L":"
-        + std::to_wstring(port) + L"/"
-        + power_overwhelming::convert_string<wchar_t>(uid);
+    this->sensor_name = power_overwhelming::convert_string<wchar_t>(
+        tinkerforge_sensor_impl::get_sensor_name(host, port, uid));
 
     ::voltage_current_v2_create(&this->bricklet, uid, this->scope);
 

@@ -109,6 +109,12 @@
     <ClCompile Include="csv_iomanip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="collector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="adl_sensor_source.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adl_exception.h">
@@ -265,6 +271,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sampler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\collector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="collector_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

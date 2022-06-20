@@ -38,6 +38,16 @@ namespace detail {
             void *data);
 
         /// <summary>
+        /// Compose the sensor name from the given connection information.
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        static std::string get_sensor_name(const std::string& host,
+            const std::uint16_t port, const std::string& uid);
+
+        /// <summary>
         /// The callback to be invoked for incoming asynchronous power
         /// readings.
         /// </summary>

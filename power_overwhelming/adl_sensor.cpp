@@ -317,6 +317,18 @@ void visus::power_overwhelming::adl_sensor::sample(
 
 
 /*
+ * visus::power_overwhelming::adl_sensor::udid
+ */
+const char *visus::power_overwhelming::adl_sensor::udid(void) const noexcept {
+    if (this->_impl == nullptr) {
+        return nullptr;
+    } else {
+        return this->_impl->udid.c_str();
+    }
+}
+
+
+/*
  * visus::power_overwhelming::adl_sensor::operator =
  */
 visus::power_overwhelming::adl_sensor&

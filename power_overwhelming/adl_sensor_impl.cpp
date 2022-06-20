@@ -168,7 +168,8 @@ visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(void)
 visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(
         const AdapterInfo& adapterInfo)
     : adapter_index(adapterInfo.iAdapterIndex), device(0),
-        start_input({ 0 }), start_output({ 0 }), state(0) {
+        start_input({ 0 }), start_output({ 0 }), state(0),
+        udid(adapterInfo.strUDID) {
     auto status = detail::amd_display_library::instance()
         .ADL2_Device_PMLog_Device_Create(this->scope, this->adapter_index,
         &this->device);

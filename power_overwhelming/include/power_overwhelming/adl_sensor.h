@@ -151,6 +151,13 @@ namespace power_overwhelming {
         using sensor::sample;
 
         /// <summary>
+        /// Answer the unique device ID of the adapter the sensor is for.
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        const char *udid(void) const noexcept;
+
+        /// <summary>
         /// Move assignment.
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>

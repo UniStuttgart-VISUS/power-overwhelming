@@ -28,6 +28,11 @@ namespace detail {
         typedef visa_exception::value_type status_type;
 
         /// <summary>
+        /// The VISA path of the device.
+        /// </summary>
+        std::string path;
+
+        /// <summary>
         /// The user-facing name of the sensor.
         /// </summary>
         std::wstring sensor_name;

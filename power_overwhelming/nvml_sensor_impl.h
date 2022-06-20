@@ -34,6 +34,11 @@ namespace detail {
         nvmlDevice_t device;
 
         /// <summary>
+        /// The unique ID which NVML uses to identify the device.
+        /// </summary>
+        std::string device_guid;
+
+        /// <summary>
         /// The name of the device.
         /// </summary>
         std::wstring device_name;
@@ -61,7 +66,8 @@ namespace detail {
 
         /// <summary>
         /// Loads the name of <see cref="device" /> into
-        /// <see cref="device_name" /> and regenerates the
+        /// <see cref="device_name" />, the device GUID into
+        /// <see cref="device_guid" /> and regenerates the
         /// <see cref="sensor_name" />.
         /// </summary>
         void load_device_name(void);

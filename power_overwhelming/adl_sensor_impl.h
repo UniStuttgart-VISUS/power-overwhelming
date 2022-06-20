@@ -153,6 +153,11 @@ namespace detail {
         std::atomic<int> state;
 
         /// <summary>
+        /// The unique device ID of the adapter the sensor is for.
+        /// </summary>
+        std::string udid;
+
+        /// <summary>
         /// Initialises a new instance.
         /// </summary>
         adl_sensor_impl(void);

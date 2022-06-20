@@ -58,6 +58,17 @@ const wchar_t *visus::power_overwhelming::detail::visa_sensor::name(
 
 
 /*
+ * visus::power_overwhelming::detail::visa_sensor::path
+ */
+const char *visus::power_overwhelming::detail::visa_sensor::path(
+        void) const noexcept {
+    return (this->_impl != nullptr)
+        ? this->_impl->path.c_str()
+        : nullptr;
+}
+
+
+/*
  * visus::power_overwhelming::detail::visa_sensor::reset
  */
 void visus::power_overwhelming::detail::visa_sensor::reset(void) {

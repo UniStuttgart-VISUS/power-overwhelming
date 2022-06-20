@@ -108,6 +108,13 @@ namespace power_overwhelming {
         virtual ~nvml_sensor(void);
 
         /// <summary>
+        /// Gets the GUID NVIDIA uses to uniquely identify the device the sensor
+        /// is for.
+        /// </summary>
+        /// <returns>The GUID of the device.</returns>
+        const char *device_guid(void) const noexcept;
+
+        /// <summary>
         /// Gets the name of the sensor.
         /// </summary>
         /// <returns>The implementation-defined, human-readable name of the

@@ -76,6 +76,12 @@ namespace detail {
         virtual const wchar_t *name(void) const noexcept override;
 
         /// <summary>
+        /// Gets the VISA path of the device.
+        /// </summary>
+        /// <returns>The VISA path used to open the device.</returns>
+        const char *path(void) const noexcept;
+
+        /// <summary>
         /// Resets the instrument to its default state.
         /// </summary>
         /// <exception cref="std::runtime_error">If the method is called on an
