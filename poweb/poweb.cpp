@@ -164,7 +164,11 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
                 // Navigate to the page to benchmark.
                 //::webViewWindow->Navigate(L"https://www.bing.com/");
-                ::webViewWindow->Navigate(L"https://bl.ocks.org/steveharoz/8c3e2524079a8c440df60c1ab72b5d03");
+                //::webViewWindow->Navigate(L"https://bl.ocks.org/steveharoz/8c3e2524079a8c440df60c1ab72b5d03");
+                //::webViewWindow->Navigate(L"https://bl.ocks.org/texodus/6b4dcebf65db4ebe4fe53a6de5ea0b48");
+                //::webViewWindow->Navigate(L"https://bl.ocks.org/stepheneb/1297383");
+                //::webViewWindow->Navigate(L"http://bl.ocks.org/msbarry/9152218");
+                ::webViewWindow->Navigate(L"https://observablehq.com/@robsutcliffe/dirty-planet/2");
 
                 return S_OK;
             }).Get());
