@@ -256,32 +256,61 @@ visus::power_overwhelming::measurement
 visus::power_overwhelming::adl_sensor::sample(
         const timestamp_resolution resolution) const {
     this->check_not_disposed();
+    const auto is_running = this->_impl->running();
 
-    {
-        auto status = detail::amd_display_library::instance()
-            .ADL2_Adapter_PMLog_Start(this->_impl->scope,
-            this->_impl->adapter_index, &this->_impl->start_input,
-            &this->_impl->start_output, this->_impl->device);
-        if (status != ADL_OK) {
-            throw new adl_exception(status);
-        }
+    if (!is_running) {
+        // If the sensor is not running asynchronously, start it for obtaining
+        // a single sample.
+        this->_impl->start(0);
     }
 
-    const auto data = static_cast<ADLPMLogData *>(
-        this->_impl->start_output.pLoggingAddress);
-    auto retval = this->_impl->to_measurement(*data, resolution);
+    auto retval = this->_impl->sample(resolution);
 
-    {
-        auto status = detail::amd_display_library::instance()
-            .ADL2_Adapter_PMLog_Stop(
-            this->_impl->scope, this->_impl->adapter_index,
-            this->_impl->device);
-        if (status != ADL_OK) {
-            throw new adl_exception(status);
-        }
+    if (!is_running) {
+        // If we started the sensor here, stop it.
+        this->_impl->stop();
     }
 
     return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::adl_sensor::sample
+ */
+void visus::power_overwhelming::adl_sensor::sample(
+        const measurement_callback on_measurement,
+        const microseconds_type sampling_period) {
+    using std::chrono::duration_cast;
+    typedef decltype(detail::adl_sensor_impl::sampler)::interval_type
+        interval_type;
+
+    this->check_not_disposed();
+
+    if (on_measurement != nullptr) {
+        auto sampler_rate = interval_type(sampling_period);
+        auto adl_rate = duration_cast<std::chrono::milliseconds>(sampler_rate);
+
+        // Make sure that the sensor is running before queuing to the thread.
+        if (!this->_impl->running()) {
+            this->_impl->start(static_cast<unsigned long>(adl_rate.count()));
+        }
+
+        if (!detail::adl_sensor_impl::sampler.add(this->_impl, on_measurement,
+                sampler_rate)) {
+            throw std::logic_error("Asynchronous sampling cannot be started "
+                "while it is already running.");
+        }
+
+    } else {
+        detail::adl_sensor_impl::sampler.remove(this->_impl);
+
+        if (!detail::adl_sensor_impl::sampler.samples()) {
+            // If there is no sensor left to sample, stop the sensor.
+            assert(this->_impl->running());
+            this->_impl->stop();
+        }
+    }
 }
 
 

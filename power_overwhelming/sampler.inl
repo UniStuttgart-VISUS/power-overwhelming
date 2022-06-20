@@ -1,3 +1,4 @@
+#include "sampler.h"
 // <copyright file="sampler.inl" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
@@ -43,17 +44,24 @@ bool visus::power_overwhelming::detail::sampler<TSensorImpl>::add(
     }
 
     std::lock_guard<decltype(this->_lock)> l(this->_lock);
-    for (auto& c : this->_contexts) {
-        assert(c != nullptr);
-        if (c->interval == interval) {
-            return c->add(sensor, callback);
+    auto it = this->_contexts.begin();
+    for (; it != this->_contexts.end(); ++it) {
+        assert(*it != nullptr);
+        if ((**it).interval == interval) {
+            break;
         }
     }
 
-    // If we are here, we have not context for the requested interval, so we
-    // need to create a new one.
-    this->_contexts.emplace_back(new context());
-    return this->_contexts.back()->add(sensor, callback);
+    if (it == this->_contexts.end()) {
+        // If we have reached the end of the context list, we have no context
+        // for the requested interval, so we need to create a new one.
+        this->_contexts.emplace_back(new context());
+        return this->_contexts.back()->add(sensor, callback);
+
+    } else {
+        // Otherwise, add the sensor to the existing context.
+        return (**it).add(sensor, callback);
+    }
 }
 
 
@@ -89,7 +97,7 @@ bool visus::power_overwhelming::detail::sampler<TSensorImpl>::remove(
  */
 template<class TSensorImpl>
 bool visus::power_overwhelming::detail::sampler<TSensorImpl>::samples(
-        sensor_type sensor) {
+        sensor_type sensor) const {
     if (sensor == nullptr) {
         // Trivial reject: we never sample nullptrs.
         return false;
@@ -105,6 +113,24 @@ bool visus::power_overwhelming::detail::sampler<TSensorImpl>::samples(
         }
     }
     // Not found in any context at this point.
+
+    return false;
+}
+
+
+/*
+ * visus::power_overwhelming::detail::sampler<TSensorImpl>::samples
+ */
+template<class TSensorImpl>
+bool visus::power_overwhelming::detail::sampler<TSensorImpl>::samples(
+        void) const {
+    std::lock_guard<decltype(this->_lock)> l(this->_lock);
+    for (auto& c : this->_contexts) {
+        if (!c->sensors.empty()) {
+            return true;
+        }
+    }
+    // No non-empty context found at this point.
 
     return false;
 }

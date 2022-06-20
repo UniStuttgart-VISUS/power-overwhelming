@@ -5,6 +5,8 @@
 
 #include "adl_sensor_impl.h"
 
+#include <cassert>
+
 #include "power_overwhelming/convert_string.h"
 
 #include "adl_exception.h"
@@ -145,11 +147,19 @@ bool visus::power_overwhelming::detail::adl_sensor_impl::is_voltage(
 
 
 /*
+ * visus::power_overwhelming::detail::adl_sensor_impl::sampler
+ */
+visus::power_overwhelming::detail::sampler<
+    visus::power_overwhelming::detail::adl_sensor_impl>
+visus::power_overwhelming::detail::adl_sensor_impl::sampler;
+
+
+/*
  * visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl
  */
 visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(void)
-    : adapter_index(0), device(0), start_input({ 0 }),
-    start_output({ 0 }) { }
+    : adapter_index(0), device(0), start_input({ 0 }), start_output({ 0 }),
+    state(0) { }
 
 
 /*
@@ -157,8 +167,8 @@ visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(void)
  */
 visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(
         const AdapterInfo& adapterInfo)
-    : adapter_index(adapterInfo.iAdapterIndex), device(0), start_input({ 0 }),
-        start_output({ 0 }) {
+    : adapter_index(adapterInfo.iAdapterIndex), device(0),
+        start_input({ 0 }), start_output({ 0 }), state(0) {
     auto status = detail::amd_display_library::instance()
         .ADL2_Device_PMLog_Device_Create(this->scope, this->adapter_index,
         &this->device);
@@ -242,49 +252,104 @@ void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
 
 
 /*
- * visus::power_overwhelming::detail::adl_sensor_impl::to_measurement
+ * visus::power_overwhelming::detail::adl_sensor_impl::sample
  */
 visus::power_overwhelming::measurement
-visus::power_overwhelming::detail::adl_sensor_impl::to_measurement(
-        const ADLPMLogData& data, const timestamp_resolution resolution) {
+visus::power_overwhelming::detail::adl_sensor_impl::sample(
+        const timestamp_resolution resolution) {
+    assert(this->state == 1);
+    const auto data = static_cast<ADLPMLogData *>(
+        this->start_output.pLoggingAddress);
+
     // We found empirically that the timestamp from ADL is in 100 ns units (at
     // least on Windows). Based on this assumption, convert to the requested
     // unit.
     auto timestamp = convert(static_cast<measurement::timestamp_type>(
-        data.ulLastUpdated), resolution);
+        data->ulLastUpdated), resolution);
 
     // TODO: MAJOR HAZARD HERE!!! WE HAVE NO IDEA WHAT UNIT IS USED FOR VOLTAGE AND CURRENT. CURRENT CODE ASSUMES VOLT/AMPERE, BUT IT MIGHT BE MILLIVOLTS ...
     // The documentation says nothing about this.
 
-    switch (count_sensor_readings(data)) {
+    switch (count_sensor_readings(*data)) {
         case 1:
             // If we have one reading, it must be a power reading due to the way
             // we enumerate the sensors in get_sensor_ids.
             return measurement(this->sensor_name.c_str(), timestamp,
-                static_cast<measurement::value_type>(data.ulValues[0][1]));
+                static_cast<measurement::value_type>(data->ulValues[0][1]));
 
         case 2:
             // If we have two readings, it must be voltage and current.
             return measurement(this->sensor_name.c_str(), timestamp,
                 static_cast<measurement::value_type>(
-                    data.ulValues[find_if(data, is_voltage)][1]),
+                    data->ulValues[find_if(*data, is_voltage)][1]),
                 static_cast<measurement::value_type>(
-                    data.ulValues[find_if(data, is_current)][1]));
+                    data->ulValues[find_if(*data, is_current)][1]));
 
         case 3:
             // This must be voltage, current and power.
             return measurement(this->sensor_name.c_str(), timestamp,
                 static_cast<measurement::value_type>(
-                    data.ulValues[find_if(data, is_voltage)][1]),
+                    data->ulValues[find_if(*data, is_voltage)][1]),
                 static_cast<measurement::value_type>(
-                    data.ulValues[find_if(data, is_current)][1]),
+                    data->ulValues[find_if(*data, is_current)][1]),
                 static_cast<measurement::value_type>(
-                    data.ulValues[find_if(data, is_power)][1]));
+                    data->ulValues[find_if(*data, is_power)][1]));
 
         default:
             throw std::logic_error("The provided sensor data are not "
-                "compatible with the expected measurements . Valid "
+                "compatible with the expected measurements. Valid "
                 "combinations are: power; voltage and current; voltage, "
                 "current and power.");
     }
 }
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::start
+ */
+void visus::power_overwhelming::detail::adl_sensor_impl::start(
+        const unsigned long samplingRate) {
+    auto expected = 0;
+    if (!this->state.compare_exchange_strong(expected, 2)) {
+        throw std::runtime_error("The ADL sensor cannot be started while it is "
+            "already running.");
+    }
+
+    this->start_input.ulSampleRate = samplingRate;
+
+    auto status = detail::amd_display_library::instance()
+        .ADL2_Adapter_PMLog_Start(this->scope, this->adapter_index,
+            &this->start_input, &this->start_output, this->device);
+    if (status == ADL_OK) {
+        this->state = 1;
+    } else {
+        this->state = 0;
+        throw new adl_exception(status);
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::stop
+ */
+void visus::power_overwhelming::detail::adl_sensor_impl::stop(void) {
+    auto expected = 1;
+    if (this->state.compare_exchange_strong(expected, 2)) {
+        // Note: Transitioning to two will ensure that the sensor cannot be
+        // started or stopped by another thread while we are tearing it down.
+
+        auto status = detail::amd_display_library::instance()
+            .ADL2_Adapter_PMLog_Stop(this->scope, this->adapter_index,
+                this->device);
+
+        // Note: The sensor is broken if we marked it running and cannot stop
+        // it, so we still mark it as not running in order to allow the user
+        // to restart it (this might be an unreasonable approach so).
+        this->state = 0;
+
+        if (status != ADL_OK) {
+            throw new adl_exception(status);
+        }
+    }
+}
+

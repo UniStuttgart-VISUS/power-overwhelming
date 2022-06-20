@@ -78,7 +78,15 @@ namespace detail {
         /// <c>false</c>.</param>
         /// <returns><c>true</c> if the sensor was found in the sampler,
         /// <c>false</c> otherwise.</returns>
-        bool samples(sensor_type sensor);
+        bool samples(sensor_type sensor) const;
+
+        /// <summary>
+        /// Indicates whether the sampler is currently processing any active
+        /// sensor.
+        /// </summary>
+        /// <returns><c>true</c> if there is any sensor to be sampled in the
+        /// sampler, <c>false</c> otherwise.</returns>
+        bool samples(void) const;
 
     private:
 
@@ -130,7 +138,7 @@ namespace detail {
         /// <summary>
         /// A lock for protecting <see cref="_contexts" />.
         /// </summary>
-        std::mutex _lock;
+        mutable std::mutex _lock;
     };
 
 } /* namespace detail */
