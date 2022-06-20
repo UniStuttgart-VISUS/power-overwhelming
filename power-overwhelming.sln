@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "setstablepowerstate", "setstablepowerstate\setstablepowerstate.vcxproj", "{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "poweb", "poweb\poweb.vcxproj", "{86D01514-0156-43A4-BD02-D2CD0A6AF496}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -102,6 +104,18 @@ Global
 		{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}.Release|x64.Build.0 = Release|x64
 		{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}.Release|x86.ActiveCfg = Release|Win32
 		{88E7CF85-64E4-4034-A8FF-D3D840BE98CA}.Release|x86.Build.0 = Release|Win32
+		{86D01514-0156-43A4-BD02-D2CD0A6AF496}.Debug|ARM.ActiveCfg = Debug|Win32
+		{86D01514-0156-43A4-BD02-D2CD0A6AF496}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{86D01514-0156-43A4-BD02-D2CD0A6AF496}.Debug|x64.ActiveCfg = Debug|x64
+		{86D01514-0156-43A4-BD02-D2CD0A6AF496}.Debug|x64.Build.0 = Debug|x64
+		{86D01514-0156-43A4-BD02-D2CD0A6AF496}.Debug|x86.ActiveCfg = Debug|Win32
+		{86D01514-0156-43A4-BD02-D2CD0A6AF496}.Debug|x86.Build.0 = Debug|Win32
+		{86D01514-0156-43A4-BD02-D2CD0A6AF496}.Release|ARM.ActiveCfg = Release|Win32
+		{86D01514-0156-43A4-BD02-D2CD0A6AF496}.Release|ARM64.ActiveCfg = Release|Win32
+		{86D01514-0156-43A4-BD02-D2CD0A6AF496}.Release|x64.ActiveCfg = Release|x64
+		{86D01514-0156-43A4-BD02-D2CD0A6AF496}.Release|x64.Build.0 = Release|x64
+		{86D01514-0156-43A4-BD02-D2CD0A6AF496}.Release|x86.ActiveCfg = Release|Win32
+		{86D01514-0156-43A4-BD02-D2CD0A6AF496}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
