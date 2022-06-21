@@ -15,7 +15,7 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 /* Global variables. */
 static wil::com_ptr<ICoreWebView2Controller> webViewController;
-static wil::com_ptr<ICoreWebView2> webViewWindow;
+static wil::com_ptr<ICoreWebView2_2> webViewWindow;
 
 
 /// <summary>
@@ -33,7 +33,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(cmdLine);
     static constexpr const TCHAR *WINDOW_CLASS = _T("PowerOverwhelmingWindow");
 
-    auto nvmlSensor = visus::power_overwhelming::nvml_sensor::from_index(0);
+    //auto nvmlSensor = visus::power_overwhelming::nvml_sensor::from_index(0);
 
     TCHAR windowTitle[MAX_LOADSTRING];
     ::LoadString(hInstance, IDS_APP_TITLE, windowTitle, MAX_LOADSTRING);
@@ -73,14 +73,17 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
     ::CreateCoreWebView2EnvironmentWithOptions(nullptr, nullptr, nullptr,
         Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
-            [hWnd, &nvmlSensor](HRESULT result, ICoreWebView2Environment *env) {
+            [hWnd](HRESULT result, ICoreWebView2Environment *env) {
             // Create a CoreWebView2Controller and get the associated
             // CoreWebView2 whose parent is the main window hWnd.
             env->CreateCoreWebView2Controller(hWnd, Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
-                [hWnd, &nvmlSensor](HRESULT result, ICoreWebView2Controller *controller) {
+                [hWnd](HRESULT result, ICoreWebView2Controller *controller) {
                 if (controller != nullptr) {
                     ::webViewController = controller;
-                    ::webViewController->get_CoreWebView2(&webViewWindow);
+
+                    wil::com_ptr<ICoreWebView2> window;
+                    ::webViewController->get_CoreWebView2(&window);
+                    window.query_to(&::webViewWindow);
                 }
 
                 // Configure the view.
@@ -96,10 +99,10 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                 // Register an ICoreWebView2NavigationStartingEventHandler to cancel any non-https navigation
                 EventRegistrationToken token;
                 webViewWindow->add_NavigationStarting(Microsoft::WRL::Callback<ICoreWebView2NavigationStartingEventHandler>(
-                    [&nvmlSensor](ICoreWebView2 *webview, ICoreWebView2NavigationStartingEventArgs *args) -> HRESULT {
-                    nvmlSensor.sample([](const visus::power_overwhelming::measurement& m) {
+                    [](ICoreWebView2 *webview, ICoreWebView2NavigationStartingEventArgs *args) -> HRESULT {
+   /*                 nvmlSensor.sample([](const visus::power_overwhelming::measurement& m) {
                         ::OutputDebugStringW((std::to_wstring(m.power()) + L"\r\n").c_str());
-                    });
+                    });*/
                     //PWSTR uri;
                     //args->get_Uri(&uri);
                     //std::wstring source(uri);
@@ -112,7 +115,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
                 EventRegistrationToken tokNavCompleted;
                 ::webViewWindow->add_NavigationCompleted(Microsoft::WRL::Callback<ICoreWebView2NavigationCompletedEventHandler>(
-                    [&nvmlSensor](ICoreWebView2 *webview, ICoreWebView2NavigationCompletedEventArgs *args) {
+                    [](ICoreWebView2 *webview, ICoreWebView2NavigationCompletedEventArgs *args) {
                     ::OutputDebugString(_T("nav complete\r\n"));
                     //nvmlSensor.sample(nullptr);
                     //PWSTR uri;
