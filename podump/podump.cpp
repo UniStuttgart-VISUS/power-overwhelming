@@ -228,7 +228,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     }
 #endif
 
-#if false
+#if true
     // Query HMC8015
     try {
         std::vector<hmc8015_sensor> sensors;

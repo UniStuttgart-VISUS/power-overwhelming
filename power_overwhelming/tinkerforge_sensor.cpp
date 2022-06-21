@@ -248,7 +248,8 @@ visus::power_overwhelming::tinkerforge_sensor::sample(
 void visus::power_overwhelming::tinkerforge_sensor::sample(
         const measurement_callback on_measurement,
         const tinkerforge_sensor_source source,
-        const microseconds_type sampling_period) {
+        const microseconds_type sampling_period,
+        void *context) {
     static constexpr auto one = static_cast<microseconds_type>(1);
     static constexpr auto thousand = static_cast<microseconds_type>(1000);
 
@@ -270,6 +271,8 @@ void visus::power_overwhelming::tinkerforge_sensor::sample(
         try {
             auto millis = static_cast<std::int32_t>((std::min)(one,
                 sampling_period / thousand));
+
+            this->_impl->on_measurement_context = context;
 
             if (source == tinkerforge_sensor_source::all) {
                 // Enable all sensor readings.

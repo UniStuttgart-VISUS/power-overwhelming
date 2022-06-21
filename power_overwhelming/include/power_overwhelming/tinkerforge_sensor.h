@@ -251,6 +251,9 @@ namespace power_overwhelming {
         /// 1000. The sampling frequence will be clamped to 1 ms at the bottom.
         /// This parameter defaults to 1000 (1 millisecond).
         /// </param>
+        /// <param name="context">A user-defined context pointer that is passed
+        /// on to <see cref="on_measurement" />. This parameter defaults to
+        /// <c>nullptr</c>.</para>
         /// <exception cref="std::runtime_error">If the sensor has been moved.
         /// </exception>
         /// <exception cref="std::logic_error">If the sensor is already being
@@ -260,7 +263,8 @@ namespace power_overwhelming {
         /// sampled. </exception>
         void sample(const measurement_callback on_measurement,
             const tinkerforge_sensor_source source,
-            const microseconds_type sampling_period = default_sampling_period);
+            const microseconds_type sampling_period = default_sampling_period,
+            void *context = nullptr);
 
         /// <summary>
         /// Move assignment.

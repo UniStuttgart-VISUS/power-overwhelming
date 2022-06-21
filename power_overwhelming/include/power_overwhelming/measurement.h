@@ -181,7 +181,7 @@ namespace power_overwhelming {
     /// A callback for <see cref="measurement" />s that are received
     /// asynchronously.
     /// </summary>
-    typedef void (*measurement_callback)(const measurement&);
+    typedef void (*measurement_callback)(const measurement&, void *);
 
 } /* namespace power_overwhelming */
 } /* namespace visus */

@@ -282,7 +282,8 @@ visus::power_overwhelming::adl_sensor::sample(
  */
 void visus::power_overwhelming::adl_sensor::sample(
         const measurement_callback on_measurement,
-        const microseconds_type sampling_period) {
+        const microseconds_type sampling_period,
+        void *context) {
     using std::chrono::duration_cast;
     typedef decltype(detail::adl_sensor_impl::sampler)::interval_type
         interval_type;
@@ -299,7 +300,7 @@ void visus::power_overwhelming::adl_sensor::sample(
         }
 
         if (!detail::adl_sensor_impl::sampler.add(this->_impl, on_measurement,
-                sampler_rate)) {
+                context, sampler_rate)) {
             throw std::logic_error("Asynchronous sampling cannot be started "
                 "while it is already running.");
         }
@@ -312,6 +313,33 @@ void visus::power_overwhelming::adl_sensor::sample(
             assert(this->_impl->running());
             this->_impl->stop();
         }
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::adl_sensor::start
+ */
+void visus::power_overwhelming::adl_sensor::start(
+        const microseconds_type sampling_period) {
+    using std::chrono::duration_cast;
+    typedef decltype(detail::adl_sensor_impl::sampler)::interval_type
+        interval_type;
+
+    this->check_not_disposed();
+
+    auto sampler_rate = interval_type(sampling_period);
+    auto adl_rate = duration_cast<std::chrono::milliseconds>(sampler_rate);
+    this->_impl->start(static_cast<unsigned long>(adl_rate.count()));
+}
+
+
+/*
+ * visus::power_overwhelming::adl_sensor::stop
+ */
+void visus::power_overwhelming::adl_sensor::stop(void) {
+    if (this->_impl != nullptr) {
+        this->_impl->stop();
     }
 }
 

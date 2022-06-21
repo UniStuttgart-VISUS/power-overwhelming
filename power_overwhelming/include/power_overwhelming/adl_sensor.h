@@ -133,11 +133,22 @@ namespace power_overwhelming {
         /// Asynchronously sample the sensor every
         /// <paramref name="sampling_period "/> microseconds.
         /// </summary>
+        /// <remarks>
+        /// <para>This method <see cref="start" />s the sensor and regularly
+        /// queries it on a background thread.</para>
+        /// <para>If you have multiple sensors running asynchronously, it is
+        /// recommended to use the same <paramref name="sampling_period" /> as
+        /// the implementation can use the same background thread in this
+        /// case.</para>
+        /// </remarks>
         /// <param name="on_measurement">The callback to be invoked if new data
         /// arrived. If this is <c>nullptr</c>, the asynchronous sampling will
         /// be disabled.</param>
         /// <param name="sampling_period">The desired sampling period in
         /// microseconds. This parameter defaults to 1 millisecond.</param>
+        /// <param name="context">A user-defined context pointer that is passed
+        /// on to <see cref="on_measurement" />. This parameter defaults to
+        /// <c>nullptr</c>.</para>
         /// <exception cref="std::runtime_error">If the sensor has been moved.
         /// </exception>
         /// <exception cref="std::logic_error">If the sensor is already being
@@ -146,9 +157,44 @@ namespace power_overwhelming {
         /// <exception cref="tinkerforge_exception">If the sensor could not be
         /// sampled. </exception>
         void sample(const measurement_callback on_measurement,
-            const microseconds_type sampling_period = default_sampling_period);
+            const microseconds_type sampling_period = default_sampling_period,
+            void *context = nullptr);
 
         using sensor::sample;
+
+        /// <summary>
+        /// Starts the sensor asynchronously collecting data.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method is for expert use only. It puts the sensor into
+        /// sampling state, but does not deliver the data to any callback.
+        /// Instead, callers are expected to retrieve data using the
+        /// synchronous <see cref="sample" /> method in a separate thread.
+        /// Note that putting the sensor in sampling state this way will prevent
+        /// the asynchronous <see cref="sample" /> method from working. You
+        /// should therefore either use either of the methods and never mix
+        /// them.</para>
+        /// </remarks>
+        /// <param name="sampling_period">The desired sampling period in
+        /// microseconds.</param>
+        /// <exception cref="std::runtime_error">If the method is called when
+        /// the sensor is already asynchronously collecting data.</exception>
+        /// <exception cref="adl_exception">If the source could not be
+        /// started.</exception>
+        void start(const microseconds_type sampling_period);
+
+        /// <summary>
+        /// Stops the sensor from asynchronously collecting data.
+        /// </summary>
+        /// <remarks>
+        /// <para>The method is for expert use only. If you call it while the
+        /// asynchronous <see cref="sample" /> method is running, asynchronous
+        /// sampling will be stopped as well.</para>
+        /// <para>It is safe to call this method on a sensor that is not
+        /// sampling asynchronously or that has been disposed by a move
+        /// operation.</para>
+        /// </remarks>
+        void stop(void);
 
         /// <summary>
         /// Answer the unique device ID of the adapter the sensor is for.

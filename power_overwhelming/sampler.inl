@@ -33,7 +33,7 @@ visus::power_overwhelming::detail::sampler<TSensorImpl>::~sampler(void) {
 template<class TSensorImpl>
 bool visus::power_overwhelming::detail::sampler<TSensorImpl>::add(
         sensor_type sensor, const measurement_callback callback,
-        const interval_type interval) {
+        void *user_context, const interval_type interval) {
     if (sensor == nullptr) {
         throw std::invalid_argument("Sensors to be sampled must be a valid "
             "pointer.");
@@ -56,11 +56,11 @@ bool visus::power_overwhelming::detail::sampler<TSensorImpl>::add(
         // If we have reached the end of the context list, we have no context
         // for the requested interval, so we need to create a new one.
         this->_contexts.emplace_back(new context());
-        return this->_contexts.back()->add(sensor, callback);
+        return this->_contexts.back()->add(sensor, callback, user_context);
 
     } else {
         // Otherwise, add the sensor to the existing context.
-        return (**it).add(sensor, callback);
+        return (**it).add(sensor, callback, user_context);
     }
 }
 
@@ -141,7 +141,8 @@ bool visus::power_overwhelming::detail::sampler<TSensorImpl>::samples(
  */
 template<class TSensorImpl>
 bool visus::power_overwhelming::detail::sampler<TSensorImpl>::context::add(
-        sensor_type sensor, const measurement_callback callback) {
+        sensor_type sensor, const measurement_callback callback,
+        void *context) {
     assert(sensor != nullptr);
     assert(callback != nullptr);
     std::lock_guard<decltype(this->lock)> l(this->lock);
@@ -151,7 +152,7 @@ bool visus::power_overwhelming::detail::sampler<TSensorImpl>::context::add(
         return false;
     }
 
-    this->sensors.emplace(sensor, callback);
+    this->sensors.emplace(sensor, std::make_pair(callback, context));
 
     if ((this->sensors.size() == 1) && !this->thread.joinable()) {
         // If this is the first sensor, we need to start a worker thread.
@@ -176,7 +177,7 @@ void visus::power_overwhelming::detail::sampler<TSensorImpl>::context::sample(
         {
             std::lock_guard<decltype(this->lock)> l(this->lock);
             for (auto& s : this->sensors) {
-                s.second(s.first->sample());
+                s.second.first(s.first->sample(), s.second.second);
             }
 
             have_sensors = !this->sensors.empty();

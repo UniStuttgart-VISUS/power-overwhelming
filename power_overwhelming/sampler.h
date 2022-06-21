@@ -7,6 +7,7 @@
 
 #include <cassert>
 #include <chrono>
+#include <functional>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -56,8 +57,16 @@ namespace detail {
         /// </summary>
         ~sampler(void);
 
+        /// <summary>
+        /// Add a new sensor to be sampled.
+        /// </summary>
+        /// <param name="sensor"></param>
+        /// <param name="callback"></param>
+        /// <param name="user_context"></param>
+        /// <param name="interval"></param>
+        /// <returns></returns>
         bool add(sensor_type sensor, const measurement_callback callback,
-            const interval_type interval);
+            void *user_context, const interval_type interval);
 
         /// <summary>
         /// Remove the sensor from the list of sensors being sampled by this
@@ -109,7 +118,8 @@ namespace detail {
             /// <summary>
             /// The sensors to sample along with the callback to be invoked.
             /// </summary>
-            std::map<sensor_type, measurement_callback> sensors;
+            std::map<sensor_type, std::pair<measurement_callback, void *>>
+                sensors;
 
             /// <summary>
             /// The thread sampling the <see cref="sensors" />.
@@ -121,8 +131,10 @@ namespace detail {
             /// </summary>
             /// <param name="sensor"></param>
             /// <param name="callback"></param>
+            /// <param name="context"></param>
             /// <returns></returns>
-            bool add(sensor_type sensor, const measurement_callback callback);
+            bool add(sensor_type sensor, const measurement_callback callback,
+                void *context);
 
             /// <summary>
             /// Performs sampling in this context.

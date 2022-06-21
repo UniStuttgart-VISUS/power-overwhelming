@@ -97,7 +97,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                 EventRegistrationToken token;
                 webViewWindow->add_NavigationStarting(Microsoft::WRL::Callback<ICoreWebView2NavigationStartingEventHandler>(
                     [&nvmlSensor](ICoreWebView2 *webview, ICoreWebView2NavigationStartingEventArgs *args) -> HRESULT {
-                    nvmlSensor.sample([](const visus::power_overwhelming::measurement& m) {
+                    nvmlSensor.sample([](const visus::power_overwhelming::measurement& m, void *) {
                         ::OutputDebugStringW((std::to_wstring(m.power()) + L"\r\n").c_str());
                     });
                     //PWSTR uri;

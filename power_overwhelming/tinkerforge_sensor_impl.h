@@ -93,6 +93,11 @@ namespace detail {
         std::atomic<measurement_callback> on_measurement;
 
         /// <summary>
+        /// The context pointer passed to <see cref="on_measurement" />.
+        /// </summary>
+        std::atomic<void *> on_measurement_context;
+
+        /// <summary>
         /// The name of the sensor, which has been created from the host,
         /// port and unique ID of the bricklet.
         /// </summary>

@@ -82,7 +82,7 @@ void visus::power_overwhelming::detail::visa_sensor::reset(void) {
  * visus::power_overwhelming::detail::visa_sensor::synchronise_clock
  */
 void visus::power_overwhelming::detail::visa_sensor::synchronise_clock(
-    const bool utc) {
+        const bool utc) {
     SYSTEMTIME time;
 
     this->check_not_disposed();

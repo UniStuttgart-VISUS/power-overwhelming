@@ -78,7 +78,8 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::voltage_callback(
 visus::power_overwhelming::detail::tinkerforge_sensor_impl::tinkerforge_sensor_impl(
         const std::string& host, const std::uint16_t port,
         const char *uid)
-        : on_measurement(nullptr), scope(host, port) {
+    : on_measurement(nullptr), on_measurement_context(nullptr),
+        scope(host, port) {
     // Note that there is a delicate balance in what is done where and when in
     // this constructor: If we enter the body, the scope will have a valid
     // connection to a master brick. Otherwise, its constructor would have
@@ -231,6 +232,7 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl
 void visus::power_overwhelming::detail::tinkerforge_sensor_impl::invoke_callback(
         const timestamp_type timestamp) {
     auto cb = this->on_measurement.load();
+    auto ctx = this->on_measurement_context.load();
 
     if (cb != nullptr) {
         auto current = this->async_data[0];
@@ -241,7 +243,7 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl::invoke_callback
 
         cb = this->on_measurement.load();
         if ((cb != nullptr) && measurement) {
-            cb(measurement);
+            cb(measurement, ctx);
         }
     }
 }

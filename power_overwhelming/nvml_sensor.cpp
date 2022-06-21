@@ -185,7 +185,8 @@ visus::power_overwhelming::nvml_sensor::sample(
  */
 void visus::power_overwhelming::nvml_sensor::sample(
         const measurement_callback on_measurement,
-        const microseconds_type sampling_period) {
+        const microseconds_type sampling_period,
+        void *context) {
     typedef decltype(detail::nvml_sensor_impl::sampler)::interval_type
         interval_type;
 
@@ -193,7 +194,7 @@ void visus::power_overwhelming::nvml_sensor::sample(
 
     if (on_measurement != nullptr) {
         if (!detail::nvml_sensor_impl::sampler.add(this->_impl, on_measurement,
-                interval_type(sampling_period))) {
+                context, interval_type(sampling_period))) {
             throw std::logic_error("Asynchronous sampling cannot be started "
                 "while it is already running.");
         }
