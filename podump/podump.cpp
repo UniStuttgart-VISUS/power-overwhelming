@@ -42,7 +42,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #if true
     {
         collector::make_configuration_template(L"sensors.json");
-        collector collector(L"sensors.json");
+        auto collector = collector::from_json(L"sensors.json");
     }
 #endif
 
