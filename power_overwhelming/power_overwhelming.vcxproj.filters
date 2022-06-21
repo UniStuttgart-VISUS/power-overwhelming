@@ -115,6 +115,9 @@
     <ClCompile Include="adl_sensor_source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tinkerforge_sensor_source.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adl_exception.h">
@@ -277,6 +280,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="collector_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\tinkerforge_sensor_source.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -9,6 +9,7 @@
 #include "power_overwhelming/sample_averaging.h"
 #include "power_overwhelming/sensor.h"
 #include "power_overwhelming/tinkerforge_sensor_definiton.h"
+#include "power_overwhelming/tinkerforge_sensor_source.h"
 
 
 namespace visus {
@@ -240,6 +241,10 @@ namespace power_overwhelming {
         /// arrived. If this is <c>nullptr</c>, the asynchronous sampling will
         /// be disabled. Only one callback can be registered, subsequent calls
         /// will fail.</param>
+        /// <param name="source">Specifies the data to be sampled from the
+        /// bricklet. If you are only interested in power, it is reasonable to
+        /// not request current and voltage in order to free up bandwidth.
+        /// </param>
         /// <param name="sampling_period">The desired sampling period in
         /// microseconds. Note that Tinkerforge only supports millisecond
         /// resolution for this parameter, so this number must be divisble by
@@ -254,6 +259,7 @@ namespace power_overwhelming {
         /// <exception cref="tinkerforge_exception">If the sensor could not be
         /// sampled. </exception>
         void sample(const measurement_callback on_measurement,
+            const tinkerforge_sensor_source source,
             const microseconds_type sampling_period = default_sampling_period);
 
         /// <summary>

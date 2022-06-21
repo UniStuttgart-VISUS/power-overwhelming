@@ -65,6 +65,7 @@
     <ClInclude Include="include\power_overwhelming\tinkerforge_display.h" />
     <ClInclude Include="include\power_overwhelming\tinkerforge_sensor.h" />
     <ClInclude Include="include\power_overwhelming\tinkerforge_sensor_definiton.h" />
+    <ClInclude Include="include\power_overwhelming\tinkerforge_sensor_source.h" />
     <ClInclude Include="include\power_overwhelming\visa_sensor.h" />
     <ClInclude Include="safe_com.h" />
     <ClInclude Include="sampler.h" />
@@ -123,6 +124,7 @@
     <ClCompile Include="tinkerforge_sensor_definiton.cpp" />
     <ClCompile Include="tinkerforge_sensor_impl.cpp" />
     <ClCompile Include="tinkerforge_scope.cpp" />
+    <ClCompile Include="tinkerforge_sensor_source.cpp" />
     <ClCompile Include="triple_buffering.cpp" />
     <ClCompile Include="visa_exception.cpp" />
     <ClCompile Include="visa_library.cpp" />

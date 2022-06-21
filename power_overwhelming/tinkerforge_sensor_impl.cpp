@@ -159,6 +159,17 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl::disable_callbac
  */
 void visus::power_overwhelming::detail::tinkerforge_sensor_impl::enable_callbacks(
         const std::int32_t period) {
+    this->enable_current_callback();
+    this->enable_power_callback();
+    this->enable_voltage_callback();
+}
+
+
+/*
+ * ...::detail::tinkerforge_sensor_impl::enable_current_callback
+ */
+void visus::power_overwhelming::detail::tinkerforge_sensor_impl
+::enable_current_callback(const std::int32_t period) {
     ::voltage_current_v2_register_callback(&this->bricklet,
         VOLTAGE_CURRENT_V2_CALLBACK_CURRENT,
         reinterpret_cast<void (*)(void)>(current_callback),
@@ -171,7 +182,14 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl::enable_callback
             throw tinkerforge_exception(status);
         }
     }
+}
 
+
+/*
+ * ...::detail::tinkerforge_sensor_impl::enable_power_callback
+ */
+void visus::power_overwhelming::detail::tinkerforge_sensor_impl
+::enable_power_callback(const std::int32_t period) {
     ::voltage_current_v2_register_callback(&this->bricklet,
         VOLTAGE_CURRENT_V2_CALLBACK_POWER,
         reinterpret_cast<void (*)(void)>(power_callback),
@@ -184,7 +202,14 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl::enable_callback
             throw tinkerforge_exception(status);
         }
     }
+}
 
+
+/*
+ * ...::detail::tinkerforge_sensor_impl::enable_voltage_callback
+ */
+void visus::power_overwhelming::detail::tinkerforge_sensor_impl
+::enable_voltage_callback(const std::int32_t period) {
     ::voltage_current_v2_register_callback(&this->bricklet,
         VOLTAGE_CURRENT_V2_CALLBACK_VOLTAGE,
         reinterpret_cast<void (*)(void)>(voltage_callback),

@@ -137,6 +137,27 @@ namespace detail {
         void enable_callbacks(const std::int32_t period = 1);
 
         /// <summary>
+        /// Enable the current callback with <see cref="bricklet" />.
+        /// </summary>
+        /// <param name="period"></param>
+        /// <exception cref="tinkerforge_exception"></exception>
+        void enable_current_callback(const std::int32_t period = 1);
+
+        /// <summary>
+        /// Enable the power callback with <see cref="bricklet" />.
+        /// </summary>
+        /// <param name="period"></param>
+        /// <exception cref="tinkerforge_exception"></exception>
+        void enable_power_callback(const std::int32_t period = 1);
+
+        /// <summary>
+        /// Enable the voltage callback with <see cref="bricklet" />.
+        /// </summary>
+        /// <param name="period"></param>
+        /// <exception cref="tinkerforge_exception"></exception>
+        void enable_voltage_callback(const std::int32_t period = 1);
+
+        /// <summary>
         /// If <see cref="on_measurement" /> is set, invoke the callback with
         /// the data stored in <see cref="async_data" />.
         /// </summary>

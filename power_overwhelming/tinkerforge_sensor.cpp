@@ -247,6 +247,7 @@ visus::power_overwhelming::tinkerforge_sensor::sample(
  */
 void visus::power_overwhelming::tinkerforge_sensor::sample(
         const measurement_callback on_measurement,
+        const tinkerforge_sensor_source source,
         const microseconds_type sampling_period) {
     static constexpr auto one = static_cast<microseconds_type>(1);
     static constexpr auto thousand = static_cast<microseconds_type>(1000);
@@ -267,8 +268,28 @@ void visus::power_overwhelming::tinkerforge_sensor::sample(
         }
 
         try {
-            auto millis = (std::min)(sampling_period / thousand, one);
-            this->_impl->enable_callbacks(millis);
+            auto millis = static_cast<std::int32_t>((std::min)(one,
+                sampling_period / thousand));
+
+            if (source == tinkerforge_sensor_source::all) {
+                // Enable all sensor readings.
+                this->_impl->enable_callbacks(millis);
+
+            } else {
+                // Enable individual sensor readings.
+                if ((source & tinkerforge_sensor_source::current)
+                        == tinkerforge_sensor_source::current) {
+                    this->_impl->enable_current_callback(millis);
+                }
+                if ((source & tinkerforge_sensor_source::power)
+                    == tinkerforge_sensor_source::power) {
+                    this->_impl->enable_power_callback(millis);
+                }
+                if ((source & tinkerforge_sensor_source::voltage)
+                    == tinkerforge_sensor_source::voltage) {
+                    this->_impl->enable_voltage_callback(millis);
+                }
+            }
         } catch (...) {
             // Clear the guard in case the operation failed.
             this->_impl->on_measurement.exchange(nullptr);
@@ -283,7 +304,6 @@ void visus::power_overwhelming::tinkerforge_sensor::sample(
 
         this->_impl->on_measurement.exchange(on_measurement);
     }
-
 }
 
 

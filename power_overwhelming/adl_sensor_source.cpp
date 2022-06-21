@@ -25,4 +25,6 @@ const wchar_t *visus::power_overwhelming::to_string(
             throw std::invalid_argument("The specified sensor source is "
                 "unknown. Make sure to add all new sources in to_string.");
     }
+
+#undef _TO_STRING_CASE
 }
