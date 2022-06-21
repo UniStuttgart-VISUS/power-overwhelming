@@ -16,9 +16,10 @@
 #include <tchar.h>
 #include <wrl.h>
 
-#include <power_overwhelming/collector.h>
-
 #include <wil/com.h>
 
-// Must be last!
+// Must be after all of Windows, WRL and WIL.
 #include <WebView2.h>
+
+
+#include "power_overwhelming/collector.h"
