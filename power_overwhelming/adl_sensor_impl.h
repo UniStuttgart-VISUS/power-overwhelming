@@ -35,6 +35,20 @@ namespace detail {
         static std::size_t count_sensor_readings(const ADLPMLogData& data);
 
         /// <summary>
+        /// Filter out the values we are interested in from the log data.
+        /// </summary>
+        /// <param name="voltage"></param>
+        /// <param name="current"></param>
+        /// <param name="power"></param>
+        /// <param name="data"></param>
+        /// <returns>The number of readings returned. If this is 1, only power
+        /// has been set. If it is 2, voltage and current have been set.
+        /// Otherwise, all values are set.</returns>
+        static std::size_t filter_sensor_readings(unsigned int& voltage,
+            unsigned int& current, unsigned int& power,
+            const ADLPMLogData& data);
+
+        /// <summary>
         /// Find the index of the first sensor in <paramref name="data" />
         /// matching the given predicate.
         /// </summary>

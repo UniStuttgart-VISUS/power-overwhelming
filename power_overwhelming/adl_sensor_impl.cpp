@@ -6,6 +6,7 @@
 #include "adl_sensor_impl.h"
 
 #include <cassert>
+#include <limits>
 
 #include "power_overwhelming/convert_string.h"
 
@@ -24,6 +25,64 @@ visus::power_overwhelming::detail::adl_sensor_impl::count_sensor_readings(
         && (data.ulValues[retval][0] != ADL_SENSOR_MAXTYPES); ++retval);
 
     return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::filter_sensor_readings
+ */
+std::size_t
+visus::power_overwhelming::detail::adl_sensor_impl::filter_sensor_readings(
+        unsigned int& voltage, unsigned int& current, unsigned int& power,
+        const ADLPMLogData& data) {
+    auto have_current = false;
+    auto have_power = false;
+    auto have_voltage = false;
+    std::size_t retval = 0;
+
+    for (auto i = 0; (i < ADL_PMLOG_MAX_SENSORS)
+            && (data.ulValues[i][0] != ADL_SENSOR_MAXTYPES); ++i) {
+        auto s = static_cast<ADL_PMLOG_SENSORS>(data.ulValues[i][0]);
+
+        if (is_power(s)) {
+            power = data.ulValues[i][1];
+            have_power = true;
+            ++retval;
+
+        } else if (is_current(s)) {
+            current = data.ulValues[i][1];
+            have_current = true;
+            ++retval;
+
+        } else if (is_voltage(s)) {
+            voltage = data.ulValues[i][1];
+            have_voltage = true;
+            ++retval;
+        }
+    }
+
+    if ((retval >= 3) && !(have_current && have_power && have_voltage)) {
+        throw std::logic_error("An ADL sensor providing three values must "
+            "provide voltage, current and power. The current sensor "
+            "provides one of these multiple times and is lacking another, "
+            "which is unexpected.");
+
+    } else if ((retval == 2) && !(have_current && have_voltage)) {
+        throw std::logic_error("An ADL sensor providing two values must "
+            "provide voltage and current. The current sensor provides "
+            "different values, most likely power, which is unexpcted.");
+
+    } else if ((retval == 1) && !have_power) {
+        throw std::logic_error("An ADL sensor providing one value must "
+            "provide power. The current sensor provides a different value, "
+            "which is not useful.");
+
+    } else {
+        throw std::logic_error("The current ADL sensor is not reading any "
+            "of the quantities we are interested in.");
+    }
+
+    return (std::min)(static_cast<std::size_t>(3), retval);
 }
 
 
@@ -271,30 +330,26 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample(
     // TODO: MAJOR HAZARD HERE!!! WE HAVE NO IDEA WHAT UNIT IS USED FOR VOLTAGE AND CURRENT. CURRENT CODE ASSUMES VOLT/AMPERE, BUT IT MIGHT BE MILLIVOLTS ...
     // The documentation says nothing about this.
 
-    switch (count_sensor_readings(*data)) {
+    unsigned int current, power, voltage;
+    switch (filter_sensor_readings(voltage, current, power, *data)) {
         case 1:
             // If we have one reading, it must be a power reading due to the way
             // we enumerate the sensors in get_sensor_ids.
             return measurement(this->sensor_name.c_str(), timestamp,
-                static_cast<measurement::value_type>(data->ulValues[0][1]));
+                static_cast<measurement::value_type>(power));
 
         case 2:
             // If we have two readings, it must be voltage and current.
             return measurement(this->sensor_name.c_str(), timestamp,
-                static_cast<measurement::value_type>(
-                    data->ulValues[find_if(*data, is_voltage)][1]),
-                static_cast<measurement::value_type>(
-                    data->ulValues[find_if(*data, is_current)][1]));
+                static_cast<measurement::value_type>(voltage),
+                static_cast<measurement::value_type>(current));
 
         case 3:
             // This must be voltage, current and power.
             return measurement(this->sensor_name.c_str(), timestamp,
-                static_cast<measurement::value_type>(
-                    data->ulValues[find_if(*data, is_voltage)][1]),
-                static_cast<measurement::value_type>(
-                    data->ulValues[find_if(*data, is_current)][1]),
-                static_cast<measurement::value_type>(
-                    data->ulValues[find_if(*data, is_power)][1]));
+                static_cast<measurement::value_type>(voltage),
+                static_cast<measurement::value_type>(current),
+                static_cast<measurement::value_type>(power));
 
         default:
             throw std::logic_error("The provided sensor data are not "
