@@ -351,7 +351,7 @@ void visus::power_overwhelming::hmc8015_sensor::configure(void) {
 
     // Configure the stuff we want to measure.
     // Default: URMS,IRMS,P,FPLL,URAN,IRAN,S,Q,LAMB,PHI
-    impl.printf("CHAN1:MEAS:FUNC URMS, IRMS, P\n");
+    impl.printf("CHAN1:MEAS:FUNC URMS, URAN, IRMS, IRAN, S, P\n");
 
     impl.printf("CHAN1:ACQ:MODE AUTO\n");
 }
