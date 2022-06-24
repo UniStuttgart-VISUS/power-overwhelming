@@ -12,7 +12,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <PreprocessorDefinitions Condition="Exists('$(NvmlDir)')">POWER_OVERWHELMING_WITH_NVML;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="Exists('$(NvmlDir)') And '$(Platform)' != 'ARM' And '$(Platform)' != 'ARM64'">POWER_OVERWHELMING_WITH_NVML;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(NvmlDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
