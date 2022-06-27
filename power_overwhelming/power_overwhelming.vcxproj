@@ -99,6 +99,7 @@
     <ClCompile Include="adl_sensor_source.cpp" />
     <ClCompile Include="amd_display_library.cpp" />
     <ClCompile Include="collector.cpp" />
+    <ClCompile Include="collector_impl.cpp" />
     <ClCompile Include="com_error_category.cpp" />
     <ClCompile Include="graphics_device.cpp" />
     <ClCompile Include="hmc8015_sensor.cpp" />

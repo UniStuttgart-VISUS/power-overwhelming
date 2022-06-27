@@ -28,6 +28,7 @@ namespace detail {
     static constexpr const char *field_output = "outputPath";
     static constexpr const char *field_path = "path";
     static constexpr const char *field_port = "port";
+    static constexpr const char *field_require_marker = "collectRequiresMarker";
     static constexpr const char *field_sampling = "samplingInterval";
     static constexpr const char *field_sensors = "sensors";
     static constexpr const char *field_source = "source";
@@ -49,6 +50,7 @@ namespace detail {
 
         retval[field_output] = "output.csv";
         retval[field_sampling] = 1000;
+        retval[field_require_marker] = true;
         auto& sensor_list = retval[field_sensors] = nlohmann::json::array();
 
         // Get all ADL sensors.
@@ -130,6 +132,8 @@ namespace detail {
                 // definition and the API for the sensor name suffice.
                 auto name = detail::tinkerforge_sensor_impl::get_sensor_name(
                     host, port, d.uid());
+                auto source = convert_string<char>(to_string(
+                    tinkerforge_sensor_source::all));
 
                 sensor_list.push_back({
                     { field_type, "tinkerforge_sensor" },
@@ -137,6 +141,7 @@ namespace detail {
                     { field_host, host },
                     { field_port, port },
                     { field_uid, d.uid() },
+                    { field_source, source }
                 });
             }
         } catch (...) { /* Just ignore the sensor. */ }
@@ -164,6 +169,7 @@ namespace detail {
                 auto path = s[field_path].get<std::string>();
                 auto timeout = s[field_timeout].get<std::int32_t>();
                 hmc8015_sensor sensor(path.c_str(), timeout);
+                //sensor.log_file(cfg[field_path])
                 dst->sensors.emplace_back(
                     new hmc8015_sensor(std::move(sensor)));
 
@@ -196,10 +202,10 @@ namespace detail {
 
         // If we have the sensors, create the output file and store the rest of the
         // properties.
-        dst->stream = std::ofstream(cfg[field_output].get<std::string>(),
+        dst->stream = std::wofstream(cfg[field_output].get<std::string>(),
             std::ofstream::trunc);
-        dst->sampling_interval
-            = cfg[field_sampling].get<sensor::microseconds_type>();
+        dst->sampling_interval = decltype(dst->sampling_interval)(
+            cfg[field_sampling].get<sensor::microseconds_type>());
     }
 
 } /* namespace detail */
@@ -230,8 +236,13 @@ visus::power_overwhelming::collector::from_json(const wchar_t *path) {
     }
 
     // Read the JSON configuration file into memory.
-    nlohmann::json config;
     std::ifstream stream(path);
+    if (!stream.good()) {
+        throw std::invalid_argument("The specified configuration file could "
+            "not be opened.");
+    }
+
+    nlohmann::json config;
     stream >> config;
 
     auto retval = collector(new detail::collector_impl());
@@ -265,6 +276,26 @@ visus::power_overwhelming::collector::~collector(void) {
 
 
 /*
+ * visus::power_overwhelming::collector::marker
+ */
+void visus::power_overwhelming::collector::marker(const wchar_t *marker) {
+    if (this->_impl == nullptr) {
+        throw std::runtime_error("The collector has been moved to another "
+            "instance wherefore no marker can be set.");
+    }
+
+    const auto have_marker = (marker != nullptr);
+
+    if (have_marker) {
+        this->_impl->marker = marker;
+    }
+
+    this->_impl->have_marker.store(have_marker,
+        std::memory_order::memory_order_release);
+}
+
+
+/*
  * visus::power_overwhelming::collector::size
  */
 std::size_t visus::power_overwhelming::collector::size(void) const noexcept {
@@ -281,9 +312,7 @@ void visus::power_overwhelming::collector::start(void) {
             "instance and therefore cannot be started.");
     }
 
-    for (auto& s : this->_impl->sensors) {
-        // TODO: async is not yet part of the interface.
-    }
+    this->_impl->start();
 }
 
 
@@ -292,7 +321,7 @@ void visus::power_overwhelming::collector::start(void) {
  */
 void visus::power_overwhelming::collector::stop(void) {
     if (this->_impl != nullptr) {
-        // TODO: async is not yet part of the interface.
+        this->_impl->stop();
     }
 }
 

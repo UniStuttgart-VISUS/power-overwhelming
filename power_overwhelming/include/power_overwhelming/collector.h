@@ -78,6 +78,13 @@ namespace power_overwhelming {
         ~collector(void);
 
         /// <summary>
+        /// Inject a marker in the command stream which will be included in the
+        /// output.
+        /// </summary>
+        /// <param name="marker"></param>
+        void marker(const wchar_t *marker);
+
+        /// <summary>
         /// Answer the number of sensors in the collector.
         /// </summary>
         /// <returns>The number of sensors. For disposed collectors, this is
