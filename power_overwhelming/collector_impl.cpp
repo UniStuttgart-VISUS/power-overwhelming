@@ -22,10 +22,10 @@ void visus::power_overwhelming::detail::collector_impl::on_measurement(
     if (that->can_buffer()) {
         std::lock_guard<decltype(that->lock)> l(that->lock);
         that->buffer.push_back(m);
-
     }
 
     if (!that->require_marker) {
+        std::lock_guard<decltype(that->lock)> l(that->lock);
         that->flush_buffer();
     }
 }
@@ -43,8 +43,7 @@ visus::power_overwhelming::detail::collector_impl::collector_impl(void)
 /*
  * visus::power_overwhelming::detail::collector_impl::~collector_impl
  */
-visus::power_overwhelming::detail::collector_impl::~collector_impl(void) {
-}
+visus::power_overwhelming::detail::collector_impl::~collector_impl(void) { }
 
 
 /*
@@ -143,6 +142,7 @@ void visus::power_overwhelming::detail::collector_impl::start(void) {
                 auto ss = dynamic_cast<adl_sensor *>(s.get());
                 if (ss != nullptr) {
                     ss->start(this->sampling_interval.count());
+                    //ss->start(0);
                     continue;
                 }
             }

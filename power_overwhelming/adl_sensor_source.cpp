@@ -9,6 +9,30 @@
 
 
 /*
+ * visus::power_overwhelming::operator |
+ */
+visus::power_overwhelming::adl_sensor_source
+visus::power_overwhelming::operator |(const adl_sensor_source lhs,
+        const adl_sensor_source rhs) {
+    typedef std::underlying_type<adl_sensor_source>::type mask_type;
+    auto retval = static_cast<mask_type>(lhs) | static_cast<mask_type>(rhs);
+    return static_cast<adl_sensor_source>(retval);
+}
+
+
+/*
+ * visus::power_overwhelming::operator &
+ */
+visus::power_overwhelming::adl_sensor_source
+visus::power_overwhelming::operator &(const adl_sensor_source lhs,
+        const adl_sensor_source rhs) {
+    typedef std::underlying_type<adl_sensor_source>::type mask_type;
+    auto retval = static_cast<mask_type>(lhs) & static_cast<mask_type>(rhs);
+    return static_cast<adl_sensor_source>(retval);
+}
+
+
+/*
  * visus::power_overwhelming::to_string
  */
 const wchar_t *visus::power_overwhelming::to_string(
@@ -20,6 +44,7 @@ const wchar_t *visus::power_overwhelming::to_string(
         _TO_STRING_CASE(cpu);
         _TO_STRING_CASE(graphics);
         _TO_STRING_CASE(soc);
+        _TO_STRING_CASE(all);
 
         default:
             throw std::invalid_argument("The specified sensor source is "

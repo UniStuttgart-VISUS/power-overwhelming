@@ -64,7 +64,7 @@ namespace detail {
                     { field_type, "adl_sensor" },
                     { field_name, convert_string<char>(s.name()) },
                     { field_udid, s.udid() },
-                    { field_source, convert_string<char>(to_string(adl_sensor_source::asic)) }  // TODO: write the real thing.
+                    { field_source, convert_string<char>(to_string(adl_sensor_source::soc)) }  // TODO: write the real thing.
                 });
             }
         } catch (...) { /* Just ignore the sensor. */ }
@@ -162,7 +162,7 @@ namespace detail {
             if (s[field_type] == "adl_sensor") {
                 auto udid = s[field_udid].get<std::string>();
                 auto sensor = adl_sensor::from_udid(udid.c_str(),
-                    adl_sensor_source::asic);   // TODO: allow different types.
+                    adl_sensor_source::soc);   // TODO: allow different types.
                 dst->sensors.emplace_back(new adl_sensor(std::move(sensor)));
 
             } else if (s[field_type] == "hmc8015_sensor") {
@@ -287,6 +287,7 @@ void visus::power_overwhelming::collector::marker(const wchar_t *marker) {
     const auto have_marker = (marker != nullptr);
 
     if (have_marker) {
+        std::lock_guard<decltype(this->_impl->lock)> l(this->_impl->lock);
         this->_impl->marker = marker;
     }
 

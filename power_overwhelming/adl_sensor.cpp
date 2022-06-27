@@ -21,13 +21,109 @@ namespace power_overwhelming {
 namespace detail {
 
     /// <summary>
+    /// Add all supported sensors of <paramref name="adapter" /> to the
+    /// specified output iterator.
+    /// </summary>
+    /// <typeparam name="TIterator"></typeparam>
+    /// <param name="oit"></param>
+    /// <param name="scope"></param>
+    /// <param name="adapter"></param>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    template<class TIterator>
+    std::size_t for_adapter(TIterator oit, adl_scope& scope,
+            const AdapterInfo& adapter, const adl_sensor_source source) {
+        int isActive = 0;
+        std::size_t retval = 0;
+        ADLPMLogSupportInfo supportInfo;
+
+        // First, find out whether the adapter supports PMLlog.
+        {
+            auto status = detail::amd_display_library::instance()
+                .ADL2_Adapter_PMLog_Support_Get(scope, adapter.iAdapterIndex,
+                &supportInfo);
+            if (status != ADL_OK) {
+                throw adl_exception(status);
+            }
+        }
+
+        // Second, find out whether the adapter is active.
+        {
+            auto status = detail::amd_display_library::instance()
+                .ADL2_Adapter_Active_Get(scope, adapter.iAdapterIndex,
+                &isActive);
+            if (status != ADL_OK) {
+                throw adl_exception(status);
+            }
+        }
+
+        // Now, check all of the supported sensor sources.
+        if ((source & adl_sensor_source::asic) == adl_sensor_source::asic) {
+            auto source = adl_sensor_source::asic;
+            auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
+                supportInfo);
+
+            if (!ids.empty()) {
+                auto impl = new detail::adl_sensor_impl(adapter);
+                impl->configure_source(source, std::move(ids));
+                *oit++ = adl_sensor(std::move(impl));
+                ++retval;
+            }
+        }
+
+        if ((source & adl_sensor_source::cpu) == adl_sensor_source::cpu) {
+            auto source = adl_sensor_source::cpu;
+            auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
+                supportInfo);
+
+            if (!ids.empty()) {
+                auto impl = new detail::adl_sensor_impl(adapter);
+                impl->configure_source(source, std::move(ids));
+                *oit++ = adl_sensor(std::move(impl));
+                ++retval;
+            }
+        }
+
+        if ((source & adl_sensor_source::graphics)
+                == adl_sensor_source::graphics) {
+            auto source = adl_sensor_source::graphics;
+            auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
+                supportInfo);
+
+            if (!ids.empty()) {
+                auto impl = new detail::adl_sensor_impl(adapter);
+                impl->configure_source(source, std::move(ids));
+                *oit++ = adl_sensor(std::move(impl));
+                ++retval;
+            }
+        }
+
+        if ((source & adl_sensor_source::soc) == adl_sensor_source::soc) {
+            auto source = adl_sensor_source::soc;
+            auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
+                supportInfo);
+
+            if (!ids.empty()) {
+                auto impl = new detail::adl_sensor_impl(adapter);
+                impl->configure_source(source, std::move(ids));
+                *oit++ = adl_sensor(std::move(impl));
+                ++retval;
+            }
+        }
+
+        return retval;
+    }
+
+    /// <summary>
     /// Creates sensors for all adapters matching <paramref name="predicate" />.
     /// </summary>
     /// <typeparam name="TPredicate"></typeparam>
     /// <param name="predicate"></param>
+    /// <param name="source"></param>
     /// <returns></returns>
     template<class TPredicate>
-    static std::vector<adl_sensor> for_predicate(const TPredicate& predicate) {
+    static std::vector<adl_sensor> for_predicate(const TPredicate& predicate,
+            const adl_sensor_source source) {
         std::vector<AdapterInfo> adapters;
         std::vector<adl_sensor> retval;
         adl_scope scope;
@@ -45,9 +141,19 @@ namespace detail {
             retval.reserve(cnt);
         }
 
+        ::ZeroMemory(adapters.data(), adapters.size() * sizeof(AdapterInfo));
+        {
+            auto status = detail::amd_display_library::instance()
+                .ADL2_Adapter_AdapterInfo_Get(scope, adapters.data(),
+                    static_cast<int>(adapters.size() * sizeof(AdapterInfo)));
+            if (status != ADL_OK) {
+                throw adl_exception(status);
+            }
+        }
+
         for (auto& a : adapters) {
             if (predicate(a)) {
-                retval.emplace_back(new detail::adl_sensor_impl(a));
+                for_adapter(std::back_inserter(retval), scope, a, source);
             }
         }
 
@@ -66,7 +172,7 @@ std::size_t visus::power_overwhelming::adl_sensor::for_all(
         adl_sensor *outSensors, const std::size_t cntSensors) {
     try {
         int cnt = 0;
-        std::size_t retval = 0;
+        std::vector<adl_sensor> retval;
         detail::adl_scope scope;
 
         // Find out how many adapters we know.
@@ -91,90 +197,22 @@ std::size_t visus::power_overwhelming::adl_sensor::for_all(
             }
         }
 
-        // For each adapter, check which sensors are supported.
+        // For each adapter, get all supported sensors.
         for (auto& a : adapters) {
-            int isActive = 0;
-            ADLPMLogSupportInfo supportInfo;
-
-            {
-                auto status = detail::amd_display_library::instance()
-                    .ADL2_Adapter_PMLog_Support_Get(scope, a.iAdapterIndex,
-                    &supportInfo);
-                if (status != ADL_OK) {
-                    throw adl_exception(status);
-                }
-            }
-
-            {
-                auto status = detail::amd_display_library::instance()
-                    .ADL2_Adapter_Active_Get(scope, a.iAdapterIndex, &isActive);
-                if (status != ADL_OK) {
-                    throw adl_exception(status);
-                }
-            }
-
-            {
-                auto source = adl_sensor_source::asic;
-                auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
-                    supportInfo);
-
-                if (!ids.empty()) {
-                    if ((outSensors != nullptr) && (retval < cntSensors)) {
-                        auto impl = new detail::adl_sensor_impl(a);
-                        impl->configure_source(source, std::move(ids));
-                        outSensors[retval] = adl_sensor(std::move(impl));
-                    }
-                    ++retval;
-                }
-            }
-
-            {
-                auto source = adl_sensor_source::cpu;
-                auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
-                    supportInfo);
-
-                if (!ids.empty()) {
-                    if ((outSensors != nullptr) && (retval < cntSensors)) {
-                        auto impl = new detail::adl_sensor_impl(a);
-                        impl->configure_source(source, std::move(ids));
-                        outSensors[retval] = adl_sensor(std::move(impl));
-                    }
-                    ++retval;
-                }
-            }
-
-            {
-                auto source = adl_sensor_source::graphics;
-                auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
-                    supportInfo);
-
-                if (!ids.empty()) {
-                    if ((outSensors != nullptr) && (retval < cntSensors)) {
-                        auto impl = new detail::adl_sensor_impl(a);
-                        impl->configure_source(source, std::move(ids));
-                        outSensors[retval] = adl_sensor(std::move(impl));
-                    }
-                    ++retval;
-                }
-            }
-
-            {
-                auto source = adl_sensor_source::soc;
-                auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
-                    supportInfo);
-
-                if (!ids.empty()) {
-                    if ((outSensors != nullptr) && (retval < cntSensors)) {
-                        auto impl = new detail::adl_sensor_impl(a);
-                        impl->configure_source(source, std::move(ids));
-                        outSensors[retval] = adl_sensor(std::move(impl));
-                    }
-                    ++retval;
-                }
-            }
+            for_adapter(std::back_inserter(retval), scope, a,
+                adl_sensor_source::all);
         }
 
-        return retval;
+        // Move as many sensors as possible to the output buffer.
+        if (outSensors != nullptr) {
+            for (std::size_t i = 0; i < (std::min)(retval.size(), cntSensors);
+                    ++i) {
+                outSensors[i] = std::move(retval[i]);
+            }
+
+        }
+
+        return retval.size();
     } catch (...) {
         return 0;
     }
@@ -195,6 +233,8 @@ visus::power_overwhelming::adl_sensor::from_index(const int index,
         throw adl_exception(status);
     }
 
+    throw "TODO";
+
     return retval;
 }
 
@@ -212,7 +252,7 @@ visus::power_overwhelming::adl_sensor::from_udid(const char *udid,
 
     auto retval = detail::for_predicate([&](const AdapterInfo &a) {
         return (::strcmp(udid, a.strUDID) == 0);
-    });
+    }, source);
 
     if (retval.size() != 1) {
         throw std::invalid_argument("The unique device identifier did not "

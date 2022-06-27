@@ -77,7 +77,7 @@ visus::power_overwhelming::detail::adl_sensor_impl::filter_sensor_readings(
             "provide power. The current sensor provides a different value, "
             "which is not useful.");
 
-    } else {
+    } else if (retval == 0) {
         throw std::logic_error("The current ADL sensor is not reading any "
             "of the quantities we are interested in.");
     }
@@ -377,9 +377,9 @@ void visus::power_overwhelming::detail::adl_sensor_impl::start(
         .ADL2_Adapter_PMLog_Start(this->scope, this->adapter_index,
             &this->start_input, &this->start_output, this->device);
     if (status == ADL_OK) {
-        this->state = 1;
+        this->state.store(1, std::memory_order::memory_order_release);
     } else {
-        this->state = 0;
+        this->state.store(0, std::memory_order::memory_order_release);
         throw new adl_exception(status);
     }
 }
@@ -401,7 +401,7 @@ void visus::power_overwhelming::detail::adl_sensor_impl::stop(void) {
         // Note: The sensor is broken if we marked it running and cannot stop
         // it, so we still mark it as not running in order to allow the user
         // to restart it (this might be an unreasonable approach so).
-        this->state = 0;
+        this->state.store(0, std::memory_order::memory_order_release);
 
         if (status != ADL_OK) {
             throw new adl_exception(status);
