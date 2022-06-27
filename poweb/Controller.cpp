@@ -55,7 +55,7 @@ void Controller::Start(HINSTANCE hInstance, const std::wstring& configFile,
     options->put_AdditionalBrowserArguments(L"--disk-cache-size=1");
 
     // Create the browser.
-    ::CreateCoreWebView2EnvironmentWithOptions(nullptr, nullptr, options.Get(), Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>([=](HRESULT result, ICoreWebView2Environment *env) {
+    auto hr = ::CreateCoreWebView2EnvironmentWithOptions(nullptr, nullptr, options.Get(), Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>([=](HRESULT result, ICoreWebView2Environment *env) {
         assert(SUCCEEDED(result));
         env->CreateCoreWebView2Controller(this->_hWnd, Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>([=](HRESULT result, ICoreWebView2Controller *controller) {
             if (controller != nullptr) {
@@ -100,6 +100,14 @@ void Controller::Start(HINSTANCE hInstance, const std::wstring& configFile,
 
         return S_OK;
     }).Get());
+
+    if (FAILED(hr)) {
+        ::MessageBox(this->_hWnd, _T("Failed to instantiate the browser ")
+            _T("control. This is most likely due to WebView2 not installed ")
+            _T("on the machine. You can download it from ")
+            _T("https://developer.microsoft.com/en-us/microsoft-edge/webview2/."),
+            nullptr, MB_ICONERROR | MB_OK);
+    }
 
     // Start the controller thread that waits for the navigation events, but
     // must not block the STA thread.

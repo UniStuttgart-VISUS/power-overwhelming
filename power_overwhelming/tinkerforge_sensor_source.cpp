@@ -44,6 +44,7 @@ const wchar_t *visus::power_overwhelming::to_string(
         _TO_STRING_CASE(current);
         _TO_STRING_CASE(voltage);
         _TO_STRING_CASE(power);
+        _TO_STRING_CASE(all);
 
         default:
             throw std::invalid_argument("The specified sensor source is "
