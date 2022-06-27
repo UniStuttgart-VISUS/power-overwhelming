@@ -31,6 +31,7 @@
 
 // Must be after all of Windows, WRL and WIL.
 #include <WebView2.h>
+#include <WebView2EnvironmentOptions.h>
 
 #include "power_overwhelming/collector.h"
 #include "power_overwhelming/convert_string.h"

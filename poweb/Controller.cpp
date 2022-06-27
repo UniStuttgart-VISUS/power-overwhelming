@@ -49,8 +49,13 @@ void Controller::Start(HINSTANCE hInstance, const std::wstring& configFile,
     // Create the window.
     this->CreateWnd(hInstance);
 
+    // Create an insanely small cache to prevent caching.
+    // Cf. https://github.com/MicrosoftEdge/WebView2Feedback/issues/299
+    auto options = Microsoft::WRL::Make<CoreWebView2EnvironmentOptions>();
+    options->put_AdditionalBrowserArguments(L"--disk-cache-size=1");
+
     // Create the browser.
-    ::CreateCoreWebView2EnvironmentWithOptions(nullptr, nullptr, nullptr, Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>([=](HRESULT result, ICoreWebView2Environment *env) {
+    ::CreateCoreWebView2EnvironmentWithOptions(nullptr, nullptr, options.Get(), Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>([=](HRESULT result, ICoreWebView2Environment *env) {
         env->CreateCoreWebView2Controller(this->_hWnd, Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>([=](HRESULT result, ICoreWebView2Controller *controller) {
             if (controller != nullptr) {
                 this->_webViewController = controller;
