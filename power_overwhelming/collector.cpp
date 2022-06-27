@@ -64,7 +64,7 @@ namespace detail {
                     { field_type, "adl_sensor" },
                     { field_name, convert_string<char>(s.name()) },
                     { field_udid, s.udid() },
-                    { field_source, convert_string<char>(to_string(adl_sensor_source::soc)) }  // TODO: write the real thing.
+                    { field_source, convert_string<char>(to_string(s.source())) }
                 });
             }
         } catch (...) { /* Just ignore the sensor. */ }
@@ -161,8 +161,10 @@ namespace detail {
         for (auto& s : sensor_list) {
             if (s[field_type] == "adl_sensor") {
                 auto udid = s[field_udid].get<std::string>();
+                auto source = power_overwhelming::convert_string<wchar_t>(
+                    s[field_source].get<std::string>());
                 auto sensor = adl_sensor::from_udid(udid.c_str(),
-                    adl_sensor_source::soc);   // TODO: allow different types.
+                    parse_adl_sensor_source(source.c_str()));
                 dst->sensors.emplace_back(new adl_sensor(std::move(sensor)));
 
             } else if (s[field_type] == "hmc8015_sensor") {

@@ -33,6 +33,32 @@ visus::power_overwhelming::operator &(const adl_sensor_source lhs,
 
 
 /*
+ * visus::power_overwhelming::parse_adl_sensor_source
+ */
+visus::power_overwhelming::adl_sensor_source
+visus::power_overwhelming::parse_adl_sensor_source(const wchar_t *str) {
+    if (str == nullptr) {
+        throw std::invalid_argument("Only a valid string can be parsed into a "
+            "adl_sensor_source.");
+    }
+
+#define _FROM_STRING_CASE(v) else if (to_string(adl_sensor_source::##v) == str)\
+    return adl_sensor_source::##v
+
+    if (false);
+    _FROM_STRING_CASE(asic);
+    _FROM_STRING_CASE(cpu);
+    _FROM_STRING_CASE(graphics);
+    _FROM_STRING_CASE(soc);
+    _FROM_STRING_CASE(all);
+    else throw std::invalid_argument("The given string represents no "
+        "valid adl_sensor_source");
+
+#undef _FROM_STRING_CASE
+}
+
+
+/*
  * visus::power_overwhelming::to_string
  */
 const wchar_t *visus::power_overwhelming::to_string(

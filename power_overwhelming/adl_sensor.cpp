@@ -385,6 +385,16 @@ void visus::power_overwhelming::adl_sensor::stop(void) {
 
 
 /*
+ * visus::power_overwhelming::adl_sensor::source
+ */
+visus::power_overwhelming::adl_sensor_source
+visus::power_overwhelming::adl_sensor::source(void) const {
+    this->check_not_disposed();
+    return this->_impl->source;
+}
+
+
+/*
  * visus::power_overwhelming::adl_sensor::udid
  */
 const char *visus::power_overwhelming::adl_sensor::udid(void) const noexcept {

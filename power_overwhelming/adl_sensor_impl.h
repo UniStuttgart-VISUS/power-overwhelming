@@ -167,6 +167,11 @@ namespace detail {
         std::atomic<int> state;
 
         /// <summary>
+        /// Remembers the type of the source.
+        /// </summary>
+        adl_sensor_source source;
+
+        /// <summary>
         /// The unique device ID of the adapter the sensor is for.
         /// </summary>
         std::string udid;
