@@ -56,6 +56,7 @@ void Controller::Start(HINSTANCE hInstance, const std::wstring& configFile,
 
     // Create the browser.
     ::CreateCoreWebView2EnvironmentWithOptions(nullptr, nullptr, options.Get(), Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>([=](HRESULT result, ICoreWebView2Environment *env) {
+        assert(SUCCEEDED(result));
         env->CreateCoreWebView2Controller(this->_hWnd, Microsoft::WRL::Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>([=](HRESULT result, ICoreWebView2Controller *controller) {
             if (controller != nullptr) {
                 this->_webViewController = controller;
