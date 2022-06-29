@@ -317,7 +317,7 @@ void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
 visus::power_overwhelming::measurement
 visus::power_overwhelming::detail::adl_sensor_impl::sample(
         const timestamp_resolution resolution) {
-    assert(this->state == 1);
+    assert(this->state.load() == 1);
     const auto data = static_cast<ADLPMLogData *>(
         this->start_output.pLoggingAddress);
 

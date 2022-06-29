@@ -43,6 +43,9 @@ int _tmain(const int argc, const TCHAR **argv) {
     {
         collector::make_configuration_template(L"sensors.json");
         auto collector = collector::from_json(L"sensors.json");
+        collector.start();
+        std::this_thread::sleep_for(std::chrono::seconds(20));
+        collector.stop();
     }
 #endif
 
@@ -57,9 +60,40 @@ int _tmain(const int argc, const TCHAR **argv) {
             std::wcout << s.name() << L":" << std::endl;
             auto m = s.sample();
             std::wcout << m.timestamp() << L" (" << m.sensor() << L"): "
+                << m.voltage() << L" V, "
+                << m.current() << L" A, "
                 << m.power() << L" W" << std::endl;
         }
     } catch (std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+#endif
+
+#if false
+    // Print data for Vega FE.
+    try {
+        auto s = adl_sensor::from_udid(
+            "PCI_VEN_1002&DEV_6863&SUBSYS_6B761002&REV_00_6&377B8C4D&0&00000019A",
+            adl_sensor_source::soc);
+
+        std::wcout << s.name() << L":" << std::endl;
+        //auto m = s.sample();
+        //std::wcout << m.timestamp() << L" (" << m.sensor() << L"): "
+        //    << m.voltage() << L" V, "
+        //    << m.current() << L" A, "
+        //    << m.power() << L" W" << std::endl;
+        s.sample([](const measurement& m, void*) {
+            std::wcout << m.timestamp() << L": "
+                << m.voltage() << L" V, "
+                << m.current() << L" A, "
+                << m.power() << L" W"
+                << std::endl;
+            });
+
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+
+        s.sample(nullptr);
+    } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
 #endif
@@ -72,8 +106,11 @@ int _tmain(const int argc, const TCHAR **argv) {
         adl_sensor::for_all(sensors.data(), sensors.size());
 
         for (auto& s : sensors) {
-            s.sample([](const measurement &m) {
-                std::wcout << m.timestamp() << L": " << m.power() << L" W"
+            s.sample([](const measurement& m, void *) {
+                std::wcout << m.timestamp() << L": "
+                    << m.voltage() << L" V, "
+                    << m.current() << L" A, "
+                    << m.power() << L" W"
                     << std::endl;
             });
         }
@@ -88,7 +125,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     }
 #endif
 
-#if true
+#if false
     // Print data for all supported NVIDIA cards.
     try {
         std::vector<nvml_sensor> sensors;
@@ -228,7 +265,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     }
 #endif
 
-#if true
+#if false
     // Query HMC8015
     try {
         std::vector<hmc8015_sensor> sensors;

@@ -199,7 +199,7 @@ std::size_t visus::power_overwhelming::adl_sensor::for_all(
 
         // For each adapter, get all supported sensors.
         for (auto& a : adapters) {
-            for_adapter(std::back_inserter(retval), scope, a,
+            detail::for_adapter(std::back_inserter(retval), scope, a,
                 adl_sensor_source::all);
         }
 
