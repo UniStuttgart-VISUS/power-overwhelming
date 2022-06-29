@@ -160,9 +160,9 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl::disable_callbac
  */
 void visus::power_overwhelming::detail::tinkerforge_sensor_impl::enable_callbacks(
         const std::int32_t period) {
-    this->enable_current_callback();
-    this->enable_power_callback();
-    this->enable_voltage_callback();
+    this->enable_current_callback(period);
+    this->enable_power_callback(period);
+    this->enable_voltage_callback(period);
 }
 
 
