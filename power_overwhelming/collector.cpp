@@ -286,15 +286,7 @@ void visus::power_overwhelming::collector::marker(const wchar_t *marker) {
             "instance wherefore no marker can be set.");
     }
 
-    const auto have_marker = (marker != nullptr);
-
-    if (have_marker) {
-        std::lock_guard<decltype(this->_impl->lock)> l(this->_impl->lock);
-        this->_impl->marker = marker;
-    }
-
-    this->_impl->have_marker.store(have_marker,
-        std::memory_order::memory_order_release);
+    this->_impl->marker(marker);
 }
 
 

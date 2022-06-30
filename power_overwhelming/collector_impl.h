@@ -14,6 +14,8 @@
 #include <thread>
 #include <vector>
 
+#include <Windows.h>
+
 
 namespace visus {
 namespace power_overwhelming {
@@ -25,6 +27,22 @@ namespace detail {
     struct collector_impl final {
 
         /// <summary>
+        /// The type of the buffer for incoming measurements that are kept until
+        /// they can be written to disk.
+        /// </summary>
+        typedef std::vector<measurement> buffer_type;
+
+        /// <summary>
+        /// Represents a marker in the measurement buffer.
+        /// </summary>
+        typedef std::pair<std::wstring, std::size_t> marker_type;
+
+        /// <summary>
+        /// The type of a marker list.
+        /// </summary>
+        typedef std::vector<marker_type> marker_list_type;
+
+        /// <summary>
         /// Processes asynchronously created measurements.
         /// </summary>
         /// <param name="m"></param>
@@ -34,27 +52,39 @@ namespace detail {
         /// <summary>
         /// Buffers the measurements until a marker is reached.
         /// </summary>
-        std::vector<measurement> buffer;
+        buffer_type buffer;
+
+        /// <summary>
+        /// The collector thread that polls all sensors that do not run
+        /// asynchronouly by themselves (executes <see cref="collect" />).
+        /// </summary>
+        std::thread collector_thread;
+
+        /// <summary>
+        /// An event to wake the I/O thread.
+        /// </summary>
+        HANDLE evt_write;
 
         /// <summary>
         /// Indicates whether a have a valid marker.
         /// </summary>
         /// <remarks>
-        /// This flag serves two purposes: first, it can be set and read
-        /// asynchronously, and second, it allows empty strings as valid
-        /// markers.
+        /// This flag is used to bypass collection of
+        /// <see cref="measurement" />s into <see cref="buffer" /> while we have
+        /// no active marker.
         /// </remarks>
         std::atomic<bool> have_marker;
 
         /// <summary>
-        /// The lock protecting the buffer.
+        /// The lock protecting the <see cref="buffer" /> and the
+        /// <see cref="markers" />.
         /// </summary>
         std::mutex lock;
 
         /// <summary>
-        /// The current marker value.
+        /// The markers for the current <see cref="buffer" />.
         /// </summary>
-        std::wstring marker;
+        marker_list_type markers;
 
         /// <summary>
         /// Indicates whether the collector thread should continue running.
@@ -70,6 +100,10 @@ namespace detail {
         /// Indicates whether collecting sensor data requires a marker being
         /// set.
         /// </summary>
+        /// <remarks>
+        /// This flag is assumed to be immutable and therefore readable without
+        /// holding a lock.
+        /// </remarks>
         bool require_marker;
 
         /// <summary>
@@ -88,9 +122,9 @@ namespace detail {
         timestamp_resolution timestamp_resolution;
 
         /// <summary>
-        /// The collector thread.
+        /// The I/O thread executing <see cref="write" />.
         /// </summary>
-        std::thread thread;
+        std::thread writer_thread;
 
         /// <summary>
         /// Initialises a new instance.
@@ -114,13 +148,10 @@ namespace detail {
         void collect(void);
 
         /// <summary>
-        /// Write data from <see cref="buffer" /> to <see cref="stream" /> and
-        /// clear the buffer.
+        /// Inject a marker in the stream.
         /// </summary>
-        /// <remarks>
-        /// The caller must hold <see cref="lock" />!
-        /// </remarks>
-        void flush_buffer(void);
+        /// <param name="marker"></param>
+        void marker(const wchar_t *marker);
 
         /// <summary>
         /// Starts the collector thread if not running.
@@ -131,6 +162,12 @@ namespace detail {
         /// Stops the collector thread.
         /// </summary>
         void stop(void);
+
+        /// <summary>
+        /// Asynchronously writes data from <see cref="buffer" /> and
+        /// <see cref="markers" /> to <see cref="stream" />.
+        /// </summary>
+        void write(void);
     };
 
 } /* namespace detail */

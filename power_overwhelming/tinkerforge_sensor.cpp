@@ -269,7 +269,7 @@ void visus::power_overwhelming::tinkerforge_sensor::sample(
         }
 
         try {
-            auto millis = static_cast<std::int32_t>((std::min)(one,
+            auto millis = static_cast<std::int32_t>((std::max)(one,
                 sampling_period / thousand));
 
             this->_impl->on_measurement_context = context;
