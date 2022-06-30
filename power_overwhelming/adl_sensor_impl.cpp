@@ -217,8 +217,8 @@ visus::power_overwhelming::detail::adl_sensor_impl::sampler;
  * visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl
  */
 visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(void)
-    : adapter_index(0), device(0), start_input({ 0 }), start_output({ 0 }),
-    state(0) { }
+    : adapter_index(0), device(0), source(adl_sensor_source::all),
+    start_input({ 0 }), start_output({ 0 }), state(0) { }
 
 
 /*
@@ -227,8 +227,8 @@ visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(void)
 visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(
         const AdapterInfo& adapterInfo)
     : adapter_index(adapterInfo.iAdapterIndex), device(0),
-        start_input({ 0 }), start_output({ 0 }), state(0),
-        udid(adapterInfo.strUDID) {
+        source(adl_sensor_source::all), start_input({ 0 }),
+        start_output({ 0 }), state(0), udid(adapterInfo.strUDID) {
     auto status = detail::amd_display_library::instance()
         .ADL2_Device_PMLog_Device_Create(this->scope, this->adapter_index,
         &this->device);
@@ -260,6 +260,7 @@ visus::power_overwhelming::detail::adl_sensor_impl::~adl_sensor_impl(void) {
 void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
         const adl_sensor_source source,
         std::vector<ADL_PMLOG_SENSORS>&& sensorIDs) {
+    this->source = source;
 
     // Determine which sensors are supported if not provided by the caller.
     if (sensorIDs.empty()) {
@@ -271,11 +272,11 @@ void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
             throw adl_exception(status);
         }
 
-        sensorIDs = get_sensor_ids(source, supportInfo);
+        sensorIDs = get_sensor_ids(this->source, supportInfo);
     }
 
     // Set the sensor name.
-    switch (source) {
+    switch (this->source) {
         case adl_sensor_source::asic:
             this->sensor_name = L"ADL/ASIC/" + this->device_name
                 + L"/" + std::to_wstring(this->adapter_index);
@@ -320,6 +321,7 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample(
     assert(this->state.load() == 1);
     const auto data = static_cast<ADLPMLogData *>(
         this->start_output.pLoggingAddress);
+    static constexpr auto thousand = static_cast<measurement::value_type>(1000);
 
     // We found empirically that the timestamp from ADL is in 100 ns units (at
     // least on Windows). Based on this assumption, convert to the requested
@@ -327,8 +329,10 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample(
     auto timestamp = convert(static_cast<measurement::timestamp_type>(
         data->ulLastUpdated), resolution);
 
-    // TODO: MAJOR HAZARD HERE!!! WE HAVE NO IDEA WHAT UNIT IS USED FOR VOLTAGE AND CURRENT. CURRENT CODE ASSUMES VOLT/AMPERE, BUT IT MIGHT BE MILLIVOLTS ...
-    // The documentation says nothing about this.
+    // MAJOR HAZARD HERE!!! WE HAVE NO IDEA WHAT UNIT IS USED FOR VOLTAGE AND
+    // CURRENT. The documentation says nothing about this, but some overclocking
+    // tools (specifically "MorePowerTool") suggest that voltage is in mV,
+    // current in A and power in W.
 
     unsigned int current, power, voltage;
     switch (filter_sensor_readings(voltage, current, power, *data)) {
@@ -341,13 +345,13 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample(
         case 2:
             // If we have two readings, it must be voltage and current.
             return measurement(this->sensor_name.c_str(), timestamp,
-                static_cast<measurement::value_type>(voltage),
+                static_cast<measurement::value_type>(voltage) / thousand,
                 static_cast<measurement::value_type>(current));
 
         case 3:
             // This must be voltage, current and power.
             return measurement(this->sensor_name.c_str(), timestamp,
-                static_cast<measurement::value_type>(voltage),
+                static_cast<measurement::value_type>(voltage) / thousand,
                 static_cast<measurement::value_type>(current),
                 static_cast<measurement::value_type>(power));
 

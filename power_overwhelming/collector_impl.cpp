@@ -5,6 +5,8 @@
 
 #include "collector_impl.h"
 
+#include <system_error>
+
 #include "power_overwhelming/adl_sensor.h"
 #include "power_overwhelming/collector.h"
 #include "power_overwhelming/nvml_sensor.h"
@@ -23,11 +25,6 @@ void visus::power_overwhelming::detail::collector_impl::on_measurement(
         std::lock_guard<decltype(that->lock)> l(that->lock);
         that->buffer.push_back(m);
     }
-
-    if (!that->require_marker) {
-        std::lock_guard<decltype(that->lock)> l(that->lock);
-        that->flush_buffer();
-    }
 }
 
 
@@ -35,15 +32,22 @@ void visus::power_overwhelming::detail::collector_impl::on_measurement(
  * visus::power_overwhelming::detail::collector_impl::collector_impl
  */
 visus::power_overwhelming::detail::collector_impl::collector_impl(void)
-        : have_marker(false), running(false), sampling_interval(0),
+        : evt_write(::CreateEvent(nullptr, FALSE, FALSE, nullptr)),
+        have_marker(false), running(false), sampling_interval(0),
         require_marker(false),
-        timestamp_resolution(timestamp_resolution::milliseconds) { }
+        timestamp_resolution(timestamp_resolution::milliseconds) {
+    if (this->evt_write == NULL) {
+        throw std::system_error(::GetLastError(), std::system_category());
+    }
+}
 
 
 /*
  * visus::power_overwhelming::detail::collector_impl::~collector_impl
  */
-visus::power_overwhelming::detail::collector_impl::~collector_impl(void) { }
+visus::power_overwhelming::detail::collector_impl::~collector_impl(void) {
+    ::CloseHandle(this->evt_write);
+}
 
 
 /*
@@ -53,6 +57,7 @@ bool visus::power_overwhelming::detail::collector_impl::can_buffer(void) const {
     return (!this->require_marker
         || this->have_marker.load(std::memory_order::memory_order_acquire));
 }
+
 
 /*
  * visus::power_overwhelming::detail::collector_impl::collect
@@ -86,10 +91,6 @@ void visus::power_overwhelming::detail::collector_impl::collect(void) {
                     }
                 }
             }
-
-            if (!this->require_marker) {
-                this->flush_buffer();
-            }
         }
         // Note: we must not hold 'lock' while sleeping!
 
@@ -99,25 +100,25 @@ void visus::power_overwhelming::detail::collector_impl::collect(void) {
 
 
 /*
- * visus::power_overwhelming::detail::collector_impl::flush_buffer
+ * visus::power_overwhelming::detail::collector_impl::marker
  */
-void visus::power_overwhelming::detail::collector_impl::flush_buffer(void) {
-    const auto delimiter = getcsvdelimiter(this->stream);
+void visus::power_overwhelming::detail::collector_impl::marker(
+        const wchar_t *marker) {
+    const auto have_marker = (marker != nullptr);
 
-    if ((this->stream.tellp() == 0) && !this->buffer.empty()) {
-        // If this is the first line, print the CSV header.
-        this->stream << csvheader
-            << this->buffer.front() << delimiter
-            << L"marker" << std::endl
-            << csvdata;
+    // Enable/disable collection of samples by other threads.
+    this->have_marker.store(have_marker,
+        std::memory_order::memory_order_release);
+
+    if (have_marker) {
+        // If we now have a marker, store it for the I/O thread to process.
+        std::lock_guard<decltype(this->lock)> l(this->lock);
+        this->markers.emplace_back(marker, this->buffer.size());
+
+        // Wake the I/O thread, because if we start a new phase, it is typically
+        // a good idea to make sure that what we already have is persisted.
+        ::SetEvent(this->evt_write);
     }
-
-    for (auto& m : this->buffer) {
-        this->stream << m << delimiter << this->marker << std::endl;
-    }
-
-    this->buffer.clear();
-    this->stream.flush();
 }
 
 
@@ -179,8 +180,9 @@ void visus::power_overwhelming::detail::collector_impl::start(void) {
             }
         }
 
-        // Finally, start the collector thread.
-        this->thread = std::thread(&collector_impl::collect, this);
+        // Finally, start the collector and I/O threads.
+        this->collector_thread = std::thread(&collector_impl::collect, this);
+        this->writer_thread = std::thread(&collector_impl::write, this);
     } catch (...) {
         this->running = false;
         throw;
@@ -192,7 +194,7 @@ void visus::power_overwhelming::detail::collector_impl::start(void) {
  * visus::power_overwhelming::detail::collector_impl::stop
  */
 void visus::power_overwhelming::detail::collector_impl::stop(void) {
-    // Tell the thread to exit if it is running.
+    // Tell the threads to exit if they are running.
     this->running.store(false, std::memory_order::memory_order_release);
 
     for (auto& s : this->sensors) {
@@ -227,11 +229,75 @@ void visus::power_overwhelming::detail::collector_impl::stop(void) {
     }
 
     // Wait for the thread to exit such that we do not receive anything else.
-    if (this->thread.joinable()) {
-        this->thread.join();
+    if (this->collector_thread.joinable()) {
+        this->collector_thread.join();
     }
 
-    // Log all remaining data in the buffer.
-    this->flush_buffer();
+    // Then, wake the I/O thread for a last time to make sure it exit, too.
+    ::SetEvent(this->evt_write);
+    if (this->writer_thread.joinable()) {
+        this->writer_thread.join();
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::collector_impl::write
+ */
+void visus::power_overwhelming::detail::collector_impl::write(void) {
+    using namespace std::chrono;
+    buffer_type buffer;
+    const auto delimiter = getcsvdelimiter(this->stream);
+    marker_list_type markers;
+    const auto timeout = static_cast<DWORD>(duration_cast<milliseconds>(
+        this->sampling_interval).count()) * 8;
+
+    while (this->running.load()) {
+        switch (::WaitForSingleObject(this->evt_write, timeout)) {
+            case WAIT_OBJECT_0:
+            case WAIT_TIMEOUT:
+                break;
+
+            default:
+                throw std::system_error(::GetLastError(),
+                    std::system_category());
+        }
+
+        {
+            std::lock_guard<decltype(this->lock)> l(this->lock);
+            buffer = std::move(this->buffer);
+            markers = std::move(this->markers);
+
+            if (!markers.empty() && this->have_marker.load()) {
+                // Remember the last marker if it is still active. This is
+                // relevant in cases when we were invoked because of a timeout.
+                this->markers.push_back(markers.back());
+            }
+        }
+
+        if ((this->stream.tellp() == 0) && !buffer.empty()) {
+            // If this is the first line, print the CSV header.
+            this->stream << csvheader
+                << buffer.front() << delimiter
+                << L"marker" << std::endl
+                << csvdata;
+        }
+
+        for (std::size_t i = 0, m = 0; i < buffer.size(); ++i) {
+            if ((m + 1 < markers.size()) && (i >= markers[m + 1].second)) {
+                ++m;
+            }
+
+            if (m < markers.size()) {
+                this->stream << buffer[i] << delimiter
+                    << markers[m].first << std::endl;
+            } else {
+                this->stream << buffer[i] << delimiter << std::endl;
+            }
+        }
+
+        this->stream.flush();
+    }
+
     this->stream.close();
 }

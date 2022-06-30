@@ -197,6 +197,12 @@ namespace power_overwhelming {
         void stop(void);
 
         /// <summary>
+        /// Gets the type of the sensor source.
+        /// </summary>
+        /// <returns>The sensor source.</returns>
+        adl_sensor_source source(void) const;
+
+        /// <summary>
         /// Answer the unique device ID of the adapter the sensor is for.
         /// </summary>
         /// <param name=""></param>
