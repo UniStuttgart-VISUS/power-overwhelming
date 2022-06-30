@@ -252,19 +252,22 @@ visus::power_overwhelming::collector::from_json(const wchar_t *path) {
 
     // TODO: Remove this ADL hack once the weird bug producing too small results is fixed:
     {
-        retval._impl->sensors.erase(std::remove_if(
-            retval._impl->sensors.begin(), retval._impl->sensors.end(),
+        auto it = std::remove_if(retval._impl->sensors.begin(),
+            retval._impl->sensors.end(),
             [](const std::unique_ptr<sensor>& s) {
                 return dynamic_cast<adl_sensor*>(s.get()) != nullptr;
-            }
-        ), retval._impl->sensors.end());
+            });
+        auto have_adl = (it != retval._impl->sensors.end());
+        retval._impl->sensors.erase(it, retval._impl->sensors.end());
 
-        std::vector<adl_sensor> sensors;
-        sensors.resize(adl_sensor::for_all(nullptr, 0));
-        adl_sensor::for_all(sensors.data(), sensors.size());
-        
-        for (auto& s : sensors) {
-            retval._impl->sensors.emplace_back(new adl_sensor(std::move(s)));
+        if (have_adl) {
+            std::vector<adl_sensor> sensors;
+            sensors.resize(adl_sensor::for_all(nullptr, 0));
+            adl_sensor::for_all(sensors.data(), sensors.size());
+
+            for (auto& s : sensors) {
+                retval._impl->sensors.emplace_back(new adl_sensor(std::move(s)));
+            }
         }
     }
 
