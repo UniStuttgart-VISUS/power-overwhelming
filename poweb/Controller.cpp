@@ -247,7 +247,7 @@ HRESULT Controller::OnNavigationCompleted(ICoreWebView2 *webView,
         ICoreWebView2NavigationCompletedEventArgs *args) {
     assert(webView != nullptr);
     assert(args != nullptr);
-    ::OutputDebugString(_T("Navigation completed."));
+    ::OutputDebugString(_T("Navigation completed.\r\n"));
     ::SetEvent(this->_hEvent);
     return S_OK;
 }
@@ -260,7 +260,7 @@ HRESULT Controller::OnNavigationStarting(ICoreWebView2 *webView,
         ICoreWebView2NavigationStartingEventArgs *args) {
     assert(webView != nullptr);
     assert(args != nullptr);
-    ::OutputDebugString(_T("Navigation starting."));
+    ::OutputDebugString(_T("Navigation starting.\r\n"));
     return S_OK;
 }
 
@@ -277,21 +277,24 @@ void Controller::Run(const std::wstring configFile,
         this->WaitEvent();
 
         // Start collecting power samples.
+        config.GetCollector().marker(L"waiting");
         config.StartCollector();
 
         // Initially wait until the browser stops consuming excessive energy for
         // background initialisation tasks.
-        config.GetCollector().marker(L"waiting");
+        ::OutputDebugString(_T("Initial wait.\r\n"));
         config.WaitInitially();
 
         // Go through the test URLs.
-        for (auto &u : config.GetUrls()) {
+        for (auto& u : config.GetUrls()) {
             for (std::uint32_t i = 0; i < config.GetIterations(); ++i) {
+                ::OutputDebugString(_T("Blank page.\r\n"));
                 config.GetCollector().marker(L"blank");
                 this->Navigate(config.GetBlankPage());
                 this->WaitEvent();
                 config.WaitForCoolDown();
 
+                ::OutputDebugString(_T("Navigate to actual page.\r\n"));
                 {
                     std::wstringstream ss;
                     ss << L"navigating \"" << u << L"\"" << std::ends;
@@ -300,6 +303,7 @@ void Controller::Run(const std::wstring configFile,
                 this->Navigate(u);
                 this->WaitEvent();
 
+                ::OutputDebugString(_T("Show actual page.\r\n"));
                 {
                     std::wstringstream ss;
                     ss << L"showing \"" << u << L"\"" << std::ends;
