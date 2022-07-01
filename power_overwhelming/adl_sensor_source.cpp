@@ -42,7 +42,8 @@ visus::power_overwhelming::parse_adl_sensor_source(const wchar_t *str) {
             "adl_sensor_source.");
     }
 
-#define _FROM_STRING_CASE(v) else if (to_string(adl_sensor_source::##v) == str)\
+    const std::wstring s(str);
+#define _FROM_STRING_CASE(v) else if (to_string(adl_sensor_source::##v) == s) \
     return adl_sensor_source::##v
 
     if (false);

@@ -3,7 +3,7 @@ This project provides a library for measuring the power consumption of GPUs (and
 
 
 ## Building the library
-The library is self-contained and most optional external dependencies are in the third_party folder. The Visual Studio solution should build right of the box without any further preparation.
+The library is self-contained and most optional external dependencies are in the third_party folder. Make sure that you clone all of the submodules. The Visual Studio solution should build right of the box without any further preparation.
 
 ### Sensors included in the repository
 SDKs included in the repository are the [AMD Display Library (ADL)](https://github.com/GPUOpen-LibrariesAndSDKs/display-library), the [NVIDIA Management Library (NVML)](https://developer.nvidia.com/nvidia-management-library-nvml) and support for [Tinkerforge](https://github.com/Tinkerforge) bricks and bricklets.
