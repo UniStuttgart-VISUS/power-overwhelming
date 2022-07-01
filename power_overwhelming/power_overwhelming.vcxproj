@@ -41,6 +41,7 @@
     <ClInclude Include="amd_display_library.h" />
     <ClInclude Include="collector_impl.h" />
     <ClInclude Include="com_error_category.h" />
+    <ClInclude Include="default_sampler_context.h" />
     <ClInclude Include="include\power_overwhelming\adl_sensor.h" />
     <ClInclude Include="include\power_overwhelming\adl_sensor_source.h" />
     <ClInclude Include="include\power_overwhelming\collector.h" />
@@ -135,6 +136,7 @@
     <ClCompile Include="visa_sensor_impl.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="default_sampler_context.inl" />
     <None Include="include\power_overwhelming\convert_string.inl" />
     <None Include="include\power_overwhelming\measurement.inl" />
     <None Include="include\power_overwhelming\quote.inl" />

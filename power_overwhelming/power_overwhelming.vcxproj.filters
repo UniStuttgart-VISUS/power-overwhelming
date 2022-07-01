@@ -288,6 +288,9 @@
     <ClInclude Include="include\power_overwhelming\tinkerforge_sensor_source.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="default_sampler_context.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adl_sensor.cpp">
@@ -365,6 +368,9 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="sampler.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="default_sampler_context.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

@@ -209,7 +209,8 @@ bool visus::power_overwhelming::detail::adl_sensor_impl::is_voltage(
  * visus::power_overwhelming::detail::adl_sensor_impl::sampler
  */
 visus::power_overwhelming::detail::sampler<
-    visus::power_overwhelming::detail::adl_sensor_impl>
+    visus::power_overwhelming::detail::default_sampler_context<
+    visus::power_overwhelming::detail::adl_sensor_impl>>
 visus::power_overwhelming::detail::adl_sensor_impl::sampler;
 
 
