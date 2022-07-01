@@ -14,6 +14,8 @@
 
 #include "power_overwhelming/measurement.h"
 
+#include "thread_name.h"
+
 
 namespace visus {
 namespace power_overwhelming {

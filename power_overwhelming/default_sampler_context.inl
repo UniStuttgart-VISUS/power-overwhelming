@@ -38,6 +38,8 @@ void visus::power_overwhelming::detail::default_sampler_context<TSensorImpl>
 ::sample(void) {
     auto have_sensors = true;
 
+    set_thread_name("PwrOwg Default Sampler Thread");
+
     while (have_sensors) {
         auto now = std::chrono::high_resolution_clock::now();
 
