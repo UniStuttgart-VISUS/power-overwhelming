@@ -5,17 +5,12 @@
 
 #pragma once
 
-#include <cassert>
-#include <chrono>
 #include <functional>
-#include <map>
 #include <memory>
-#include <mutex>
 #include <stdexcept>
-#include <thread>
 #include <vector>
 
-#include "power_overwhelming/measurement.h"
+#include "default_sampler_context.h"
 
 
 namespace visus {
@@ -35,22 +30,28 @@ namespace detail {
     /// the sampler in its destructor to make sure that there are no dangling
     /// pointers in the sampler.
     /// </remarks>
-    /// <typeparam name="TSensorImpl">The type of the sensor implementation to
-    /// be sampled by this sampler. This type must expose a synchronous
-    /// <c>sample</c> method to be called by the sampling thread.</typeparam>
-    template<class TSensorImpl> class sampler final {
+    /// <typeparam name="TContext">The type of the sampler context that
+    /// implements the per-sensor sampling functionality. The interface must be
+    /// like <see cref="default_sampler_context" />.</typeparam>
+    template<class TContext> class sampler final {
 
     public:
 
         /// <summary>
+        /// The type of the sampler context that implements the per-sensor
+        /// sampling functionality.
+        /// </summary>
+        typedef TContext context_type;
+
+        /// <summary>
         /// The type to express sampling intervals.
         /// </summary>
-        typedef std::chrono::microseconds interval_type;
+        typedef typename TContext::interval_type interval_type;
 
         /// <summary>
         /// The type of the sensor implementation to be sampled by this sampler.
         /// </summary>
-        typedef TSensorImpl *sensor_type;
+        typedef typename TContext::sensor_type sensor_type;
 
         /// <summary>
         /// Finalises the instance.
@@ -100,52 +101,9 @@ namespace detail {
     private:
 
         /// <summary>
-        /// A context represents a thread that handles a specific sampling
-        /// interval.
-        /// </summary>
-        struct context {
-
-            /// <summary>
-            /// The sampling interval.
-            /// </summary>
-            interval_type interval;
-
-            /// <summary>
-            /// A lock protecting the list of <see cref="sensors" />.
-            /// </summary>
-            std::mutex lock;
-
-            /// <summary>
-            /// The sensors to sample along with the callback to be invoked.
-            /// </summary>
-            std::map<sensor_type, std::pair<measurement_callback, void *>>
-                sensors;
-
-            /// <summary>
-            /// The thread sampling the <see cref="sensors" />.
-            /// </summary>
-            std::thread thread;
-
-            /// <summary>
-            /// Add the given sensor to the this context.
-            /// </summary>
-            /// <param name="sensor"></param>
-            /// <param name="callback"></param>
-            /// <param name="context"></param>
-            /// <returns></returns>
-            bool add(sensor_type sensor, const measurement_callback callback,
-                void *context);
-
-            /// <summary>
-            /// Performs sampling in this context.
-            /// </summary>
-            void sample(void);
-        };
-
-        /// <summary>
         /// The list of sampling threads.
         /// </summary>
-        std::vector<std::unique_ptr<context>> _contexts;
+        std::vector<std::unique_ptr<context_type>> _contexts;
 
         /// <summary>
         /// A lock for protecting <see cref="_contexts" />.

@@ -81,15 +81,15 @@ void visus::power_overwhelming::detail::collector_impl::collect(void) {
                     }
                 }
 
-                {
-                    // NVIDIA ist synchronous, so retrieve it manually.
-                    auto ss = dynamic_cast<nvml_sensor *>(s.get());
-                    if (ss != nullptr) {
-                        this->buffer.push_back(ss->sample(
-                            this->timestamp_resolution));
-                        continue;
-                    }
-                }
+                //{
+                //    // NVIDIA ist synchronous, so retrieve it manually.
+                //    auto ss = dynamic_cast<nvml_sensor *>(s.get());
+                //    if (ss != nullptr) {
+                //        this->buffer.push_back(ss->sample(
+                //            this->timestamp_resolution));
+                //        continue;
+                //    }
+                //}
             }
         }
         // Note: we must not hold 'lock' while sleeping!
@@ -159,9 +159,13 @@ void visus::power_overwhelming::detail::collector_impl::start(void) {
             }
 
             {
-                // Nothing to do for NVML, we need to poll this sensor.
+                // Start NVML sampler. NVML is in principle synchronous, but we
+                // built our own sampling thread around it.
                 auto ss = dynamic_cast<nvml_sensor *>(s.get());
                 if (ss != nullptr) {
+                    const auto si = duration_cast<microseconds>(
+                        this->sampling_interval).count();
+                    ss->sample(on_measurement, si, this);
                     continue;
                 }
             }
@@ -216,7 +220,14 @@ void visus::power_overwhelming::detail::collector_impl::stop(void) {
             }
         } catch (...) { /* Ignore this, we need to stop all.*/ }
 
-        // Nothing to do for NVIDIA.
+        try {
+            // Stop delivery of NVML sampler thread.
+            auto ss = dynamic_cast<nvml_sensor *>(s.get());
+            if (ss != nullptr) {
+                ss->sample(nullptr);
+                continue;
+            }
+        } catch (...) { /* Ignore this, we need to stop all.*/ }
 
         try {
             // Unregister callback from Tinkerforge, which will stop it.

@@ -247,7 +247,7 @@ HRESULT Controller::OnNavigationCompleted(ICoreWebView2 *webView,
         ICoreWebView2NavigationCompletedEventArgs *args) {
     assert(webView != nullptr);
     assert(args != nullptr);
-    ::OutputDebugString(_T("Navigation completed."));
+    ::OutputDebugString(_T("Navigation completed.\r\n"));
     ::SetEvent(this->_hEvent);
     return S_OK;
 }
@@ -260,7 +260,7 @@ HRESULT Controller::OnNavigationStarting(ICoreWebView2 *webView,
         ICoreWebView2NavigationStartingEventArgs *args) {
     assert(webView != nullptr);
     assert(args != nullptr);
-    ::OutputDebugString(_T("Navigation starting."));
+    ::OutputDebugString(_T("Navigation starting.\r\n"));
     return S_OK;
 }
 

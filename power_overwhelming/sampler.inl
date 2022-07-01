@@ -1,4 +1,3 @@
-#include "sampler.h"
 // <copyright file="sampler.inl" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
@@ -6,10 +5,10 @@
 
 
 /*
- * visus::power_overwhelming::detail::sampler<TSensorImpl>::~sampler
+ * visus::power_overwhelming::detail::sampler<TContext>::~sampler
  */
-template<class TSensorImpl>
-visus::power_overwhelming::detail::sampler<TSensorImpl>::~sampler(void) {
+template<class TContext>
+visus::power_overwhelming::detail::sampler<TContext>::~sampler(void) {
     std::lock_guard<decltype(this->_lock)> l(this->_lock);
 
     for (auto& c : this->_contexts) {
@@ -28,10 +27,10 @@ visus::power_overwhelming::detail::sampler<TSensorImpl>::~sampler(void) {
 
 
 /*
- * visus::power_overwhelming::detail::sampler<TSensorImpl>::add
+ * visus::power_overwhelming::detail::sampler<TContext>::add
  */
-template<class TSensorImpl>
-bool visus::power_overwhelming::detail::sampler<TSensorImpl>::add(
+template<class TContext>
+bool visus::power_overwhelming::detail::sampler<TContext>::add(
         sensor_type sensor, const measurement_callback callback,
         void *user_context, const interval_type interval) {
     if (sensor == nullptr) {
@@ -55,7 +54,7 @@ bool visus::power_overwhelming::detail::sampler<TSensorImpl>::add(
     if (it == this->_contexts.end()) {
         // If we have reached the end of the context list, we have no context
         // for the requested interval, so we need to create a new one.
-        this->_contexts.emplace_back(new context());
+        this->_contexts.emplace_back(new context_type());
         return this->_contexts.back()->add(sensor, callback, user_context);
 
     } else {
@@ -66,10 +65,10 @@ bool visus::power_overwhelming::detail::sampler<TSensorImpl>::add(
 
 
 /*
- * visus::power_overwhelming::detail::sampler<TSensorImpl>::remove
+ * visus::power_overwhelming::detail::sampler<TContext>::remove
  */
-template<class TSensorImpl>
-bool visus::power_overwhelming::detail::sampler<TSensorImpl>::remove(
+template<class TContext>
+bool visus::power_overwhelming::detail::sampler<TContext>::remove(
         sensor_type sensor) {
     if (sensor == nullptr) {
         // Trivial reject: we never sample nullptrs.
@@ -93,10 +92,10 @@ bool visus::power_overwhelming::detail::sampler<TSensorImpl>::remove(
 
 
 /*
- * visus::power_overwhelming::detail::sampler<TSensorImpl>::samples
+ * visus::power_overwhelming::detail::sampler<TContext>::samples
  */
-template<class TSensorImpl>
-bool visus::power_overwhelming::detail::sampler<TSensorImpl>::samples(
+template<class TContext>
+bool visus::power_overwhelming::detail::sampler<TContext>::samples(
         sensor_type sensor) const {
     if (sensor == nullptr) {
         // Trivial reject: we never sample nullptrs.
@@ -119,10 +118,10 @@ bool visus::power_overwhelming::detail::sampler<TSensorImpl>::samples(
 
 
 /*
- * visus::power_overwhelming::detail::sampler<TSensorImpl>::samples
+ * visus::power_overwhelming::detail::sampler<TContext>::samples
  */
-template<class TSensorImpl>
-bool visus::power_overwhelming::detail::sampler<TSensorImpl>::samples(
+template<class TContext>
+bool visus::power_overwhelming::detail::sampler<TContext>::samples(
         void) const {
     std::lock_guard<decltype(this->_lock)> l(this->_lock);
     for (auto& c : this->_contexts) {
@@ -133,58 +132,4 @@ bool visus::power_overwhelming::detail::sampler<TSensorImpl>::samples(
     // No non-empty context found at this point.
 
     return false;
-}
-
-
-/*
- * visus::power_overwhelming::detail::sampler<TSensorImpl>::context::add
- */
-template<class TSensorImpl>
-bool visus::power_overwhelming::detail::sampler<TSensorImpl>::context::add(
-        sensor_type sensor, const measurement_callback callback,
-        void *context) {
-    assert(sensor != nullptr);
-    assert(callback != nullptr);
-    std::lock_guard<decltype(this->lock)> l(this->lock);
-
-    if (this->sensors.find(sensor) != this->sensors.end()) {
-        // Sensor is already being sampled, so there is nothing to do.
-        return false;
-    }
-
-    this->sensors.emplace(sensor, std::make_pair(callback, context));
-
-    if ((this->sensors.size() == 1) && !this->thread.joinable()) {
-        // If this is the first sensor, we need to start a worker thread.
-        this->thread = std::thread(&context::sample, this);
-    }
-
-    return true;
-}
-
-
-/*
- * visus::power_overwhelming::detail::sampler<TSensorImpl>::context::sample
- */
-template<class TSensorImpl>
-void visus::power_overwhelming::detail::sampler<TSensorImpl>::context::sample(
-        void) {
-    auto have_sensors = true;
-
-    while (have_sensors) {
-        auto now = std::chrono::high_resolution_clock::now();
-
-        {
-            std::lock_guard<decltype(this->lock)> l(this->lock);
-            for (auto& s : this->sensors) {
-                s.second.first(s.first->sample(), s.second.second);
-            }
-
-            have_sensors = !this->sensors.empty();
-        }
-
-        if (have_sensors) {
-            std::this_thread::sleep_until(now + this->interval);
-        }
-    }
 }
