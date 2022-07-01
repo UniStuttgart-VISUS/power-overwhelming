@@ -55,6 +55,7 @@ bool visus::power_overwhelming::detail::sampler<TContext>::add(
         // If we have reached the end of the context list, we have no context
         // for the requested interval, so we need to create a new one.
         this->_contexts.emplace_back(new context_type());
+        this->_contexts.back()->interval = interval;
         return this->_contexts.back()->add(sensor, callback, user_context);
 
     } else {
