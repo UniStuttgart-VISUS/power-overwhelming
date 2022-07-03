@@ -70,6 +70,7 @@
     <ClInclude Include="include\power_overwhelming\visa_sensor.h" />
     <ClInclude Include="safe_com.h" />
     <ClInclude Include="sampler.h" />
+    <ClInclude Include="sensor_utilities.h" />
     <ClInclude Include="timestamp_resolution_traits.h" />
     <ClInclude Include="include\timestamp.h" />
     <ClInclude Include="library_base.h" />
@@ -115,6 +116,7 @@
     <ClCompile Include="convert_string.cpp" />
     <ClCompile Include="oscilloscope_sensor_definition.cpp" />
     <ClCompile Include="rtb_sensor.cpp" />
+    <ClCompile Include="sensor_utilities.cpp" />
     <ClCompile Include="stable_power_state_scope.cpp" />
     <ClCompile Include="timestamp.cpp" />
     <ClCompile Include="tinkerforge_bricklet.cpp" />
