@@ -144,6 +144,19 @@ visus::power_overwhelming::nvml_sensor::~nvml_sensor(void) {
 
 
 /*
+ * visus::power_overwhelming::nvml_sensor::device_guid
+ */
+const char *visus::power_overwhelming::nvml_sensor::device_guid(
+        void) const noexcept {
+    if (this->_impl == nullptr) {
+        return nullptr;
+    } else {
+        return this->_impl->device_guid.c_str();
+    }
+}
+
+
+/*
  * visus::power_overwhelming::nvml_sensor::name
  */
 const wchar_t *visus::power_overwhelming::nvml_sensor::name(
@@ -162,21 +175,33 @@ const wchar_t *visus::power_overwhelming::nvml_sensor::name(
 visus::power_overwhelming::measurement
 visus::power_overwhelming::nvml_sensor::sample(
         const timestamp_resolution resolution) const {
-    const auto timestamp = create_timestamp(resolution);
+    this->check_not_disposed();
+    return this->_impl->sample(resolution);
+}
+
+
+/*
+ * visus::power_overwhelming::nvml_sensor::sample
+ */
+void visus::power_overwhelming::nvml_sensor::sample(
+        const measurement_callback on_measurement,
+        const microseconds_type sampling_period,
+        void *context) {
+    typedef decltype(detail::nvml_sensor_impl::sampler)::interval_type
+        interval_type;
 
     this->check_not_disposed();
 
-    // Get the power usage in milliwatts.
-    unsigned int mw = 0;
-    auto status = detail::nvidia_management_library::instance()
-        .nvmlDeviceGetPowerUsage(this->_impl->device, &mw);
-    if (status != NVML_SUCCESS) {
-        throw nvml_exception(status);
-    }
+    if (on_measurement != nullptr) {
+        if (!detail::nvml_sensor_impl::sampler.add(this->_impl, on_measurement,
+                context, interval_type(sampling_period))) {
+            throw std::logic_error("Asynchronous sampling cannot be started "
+                "while it is already running.");
+        }
 
-    return measurement(this->_impl->sensor_name.c_str(), timestamp,
-        static_cast<measurement::value_type>(mw)
-        / static_cast<measurement::value_type>(1000));
+    } else {
+        detail::nvml_sensor_impl::sampler.remove(this->_impl);
+    }
 }
 
 

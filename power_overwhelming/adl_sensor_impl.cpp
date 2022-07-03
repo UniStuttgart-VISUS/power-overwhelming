@@ -5,6 +5,9 @@
 
 #include "adl_sensor_impl.h"
 
+#include <cassert>
+#include <limits>
+
 #include "power_overwhelming/convert_string.h"
 
 #include "adl_exception.h"
@@ -22,6 +25,64 @@ visus::power_overwhelming::detail::adl_sensor_impl::count_sensor_readings(
         && (data.ulValues[retval][0] != ADL_SENSOR_MAXTYPES); ++retval);
 
     return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::filter_sensor_readings
+ */
+std::size_t
+visus::power_overwhelming::detail::adl_sensor_impl::filter_sensor_readings(
+        unsigned int& voltage, unsigned int& current, unsigned int& power,
+        const ADLPMLogData& data) {
+    auto have_current = false;
+    auto have_power = false;
+    auto have_voltage = false;
+    std::size_t retval = 0;
+
+    for (auto i = 0; (i < ADL_PMLOG_MAX_SENSORS)
+            && (data.ulValues[i][0] != ADL_SENSOR_MAXTYPES); ++i) {
+        auto s = static_cast<ADL_PMLOG_SENSORS>(data.ulValues[i][0]);
+
+        if (is_power(s)) {
+            power = data.ulValues[i][1];
+            have_power = true;
+            ++retval;
+
+        } else if (is_current(s)) {
+            current = data.ulValues[i][1];
+            have_current = true;
+            ++retval;
+
+        } else if (is_voltage(s)) {
+            voltage = data.ulValues[i][1];
+            have_voltage = true;
+            ++retval;
+        }
+    }
+
+    if ((retval >= 3) && !(have_current && have_power && have_voltage)) {
+        throw std::logic_error("An ADL sensor providing three values must "
+            "provide voltage, current and power. The current sensor "
+            "provides one of these multiple times and is lacking another, "
+            "which is unexpected.");
+
+    } else if ((retval == 2) && !(have_current && have_voltage)) {
+        throw std::logic_error("An ADL sensor providing two values must "
+            "provide voltage and current. The current sensor provides "
+            "different values, most likely power, which is unexpcted.");
+
+    } else if ((retval == 1) && !have_power) {
+        throw std::logic_error("An ADL sensor providing one value must "
+            "provide power. The current sensor provides a different value, "
+            "which is not useful.");
+
+    } else if (retval == 0) {
+        throw std::logic_error("The current ADL sensor is not reading any "
+            "of the quantities we are interested in.");
+    }
+
+    return (std::min)(static_cast<std::size_t>(3), retval);
 }
 
 
@@ -145,11 +206,20 @@ bool visus::power_overwhelming::detail::adl_sensor_impl::is_voltage(
 
 
 /*
+ * visus::power_overwhelming::detail::adl_sensor_impl::sampler
+ */
+visus::power_overwhelming::detail::sampler<
+    visus::power_overwhelming::detail::default_sampler_context<
+    visus::power_overwhelming::detail::adl_sensor_impl>>
+visus::power_overwhelming::detail::adl_sensor_impl::sampler;
+
+
+/*
  * visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl
  */
 visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(void)
-    : adapter_index(0), device(0), start_input({ 0 }),
-    start_output({ 0 }) { }
+    : adapter_index(0), device(0), source(adl_sensor_source::all),
+    start_input({ 0 }), start_output({ 0 }), state(0) { }
 
 
 /*
@@ -157,8 +227,9 @@ visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(void)
  */
 visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(
         const AdapterInfo& adapterInfo)
-    : adapter_index(adapterInfo.iAdapterIndex), device(0), start_input({ 0 }),
-        start_output({ 0 }) {
+    : adapter_index(adapterInfo.iAdapterIndex), device(0),
+        source(adl_sensor_source::all), start_input({ 0 }),
+        start_output({ 0 }), state(0), udid(adapterInfo.strUDID) {
     auto status = detail::amd_display_library::instance()
         .ADL2_Device_PMLog_Device_Create(this->scope, this->adapter_index,
         &this->device);
@@ -190,6 +261,7 @@ visus::power_overwhelming::detail::adl_sensor_impl::~adl_sensor_impl(void) {
 void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
         const adl_sensor_source source,
         std::vector<ADL_PMLOG_SENSORS>&& sensorIDs) {
+    this->source = source;
 
     // Determine which sensors are supported if not provided by the caller.
     if (sensorIDs.empty()) {
@@ -201,11 +273,11 @@ void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
             throw adl_exception(status);
         }
 
-        sensorIDs = get_sensor_ids(source, supportInfo);
+        sensorIDs = get_sensor_ids(this->source, supportInfo);
     }
 
     // Set the sensor name.
-    switch (source) {
+    switch (this->source) {
         case adl_sensor_source::asic:
             this->sensor_name = L"ADL/ASIC/" + this->device_name
                 + L"/" + std::to_wstring(this->adapter_index);
@@ -242,49 +314,103 @@ void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
 
 
 /*
- * visus::power_overwhelming::detail::adl_sensor_impl::to_measurement
+ * visus::power_overwhelming::detail::adl_sensor_impl::sample
  */
 visus::power_overwhelming::measurement
-visus::power_overwhelming::detail::adl_sensor_impl::to_measurement(
-        const ADLPMLogData& data, const timestamp_resolution resolution) {
+visus::power_overwhelming::detail::adl_sensor_impl::sample(
+        const timestamp_resolution resolution) {
+    assert(this->state.load() == 1);
+    const auto data = static_cast<ADLPMLogData *>(
+        this->start_output.pLoggingAddress);
+    static constexpr auto thousand = static_cast<measurement::value_type>(1000);
+
     // We found empirically that the timestamp from ADL is in 100 ns units (at
     // least on Windows). Based on this assumption, convert to the requested
     // unit.
     auto timestamp = convert(static_cast<measurement::timestamp_type>(
-        data.ulLastUpdated), resolution);
+        data->ulLastUpdated), resolution);
 
-    // TODO: MAJOR HAZARD HERE!!! WE HAVE NO IDEA WHAT UNIT IS USED FOR VOLTAGE AND CURRENT. CURRENT CODE ASSUMES VOLT/AMPERE, BUT IT MIGHT BE MILLIVOLTS ...
-    // The documentation says nothing about this.
+    // MAJOR HAZARD HERE!!! WE HAVE NO IDEA WHAT UNIT IS USED FOR VOLTAGE AND
+    // CURRENT. The documentation says nothing about this, but some overclocking
+    // tools (specifically "MorePowerTool") suggest that voltage is in mV,
+    // current in A and power in W.
 
-    switch (count_sensor_readings(data)) {
+    unsigned int current, power, voltage;
+    switch (filter_sensor_readings(voltage, current, power, *data)) {
         case 1:
             // If we have one reading, it must be a power reading due to the way
             // we enumerate the sensors in get_sensor_ids.
             return measurement(this->sensor_name.c_str(), timestamp,
-                static_cast<measurement::value_type>(data.ulValues[0][1]));
+                static_cast<measurement::value_type>(power));
 
         case 2:
             // If we have two readings, it must be voltage and current.
             return measurement(this->sensor_name.c_str(), timestamp,
-                static_cast<measurement::value_type>(
-                    data.ulValues[find_if(data, is_voltage)][1]),
-                static_cast<measurement::value_type>(
-                    data.ulValues[find_if(data, is_current)][1]));
+                static_cast<measurement::value_type>(voltage) / thousand,
+                static_cast<measurement::value_type>(current));
 
         case 3:
             // This must be voltage, current and power.
             return measurement(this->sensor_name.c_str(), timestamp,
-                static_cast<measurement::value_type>(
-                    data.ulValues[find_if(data, is_voltage)][1]),
-                static_cast<measurement::value_type>(
-                    data.ulValues[find_if(data, is_current)][1]),
-                static_cast<measurement::value_type>(
-                    data.ulValues[find_if(data, is_power)][1]));
+                static_cast<measurement::value_type>(voltage) / thousand,
+                static_cast<measurement::value_type>(current),
+                static_cast<measurement::value_type>(power));
 
         default:
             throw std::logic_error("The provided sensor data are not "
-                "compatible with the expected measurements . Valid "
+                "compatible with the expected measurements. Valid "
                 "combinations are: power; voltage and current; voltage, "
                 "current and power.");
     }
 }
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::start
+ */
+void visus::power_overwhelming::detail::adl_sensor_impl::start(
+        const unsigned long samplingRate) {
+    auto expected = 0;
+    if (!this->state.compare_exchange_strong(expected, 2)) {
+        throw std::runtime_error("The ADL sensor cannot be started while it is "
+            "already running.");
+    }
+
+    this->start_input.ulSampleRate = samplingRate;
+
+    auto status = detail::amd_display_library::instance()
+        .ADL2_Adapter_PMLog_Start(this->scope, this->adapter_index,
+            &this->start_input, &this->start_output, this->device);
+    if (status == ADL_OK) {
+        this->state.store(1, std::memory_order::memory_order_release);
+    } else {
+        this->state.store(0, std::memory_order::memory_order_release);
+        throw new adl_exception(status);
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::stop
+ */
+void visus::power_overwhelming::detail::adl_sensor_impl::stop(void) {
+    auto expected = 1;
+    if (this->state.compare_exchange_strong(expected, 2)) {
+        // Note: Transitioning to two will ensure that the sensor cannot be
+        // started or stopped by another thread while we are tearing it down.
+
+        auto status = detail::amd_display_library::instance()
+            .ADL2_Adapter_PMLog_Stop(this->scope, this->adapter_index,
+                this->device);
+
+        // Note: The sensor is broken if we marked it running and cannot stop
+        // it, so we still mark it as not running in order to allow the user
+        // to restart it (this might be an unreasonable approach so).
+        this->state.store(0, std::memory_order::memory_order_release);
+
+        if (status != ADL_OK) {
+            throw new adl_exception(status);
+        }
+    }
+}
+

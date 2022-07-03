@@ -11,6 +11,7 @@
 #include <Windows.h>
 
 #include "power_overwhelming/adl_sensor.h"
+#include "power_overwhelming/collector.h"
 #include "power_overwhelming/graphics_device.h"
 #include "power_overwhelming/hmc8015_sensor.h"
 #include "power_overwhelming/measurement.h"
@@ -38,6 +39,16 @@ int _tmain(const int argc, const TCHAR **argv) {
 
     stable_power_state_scope spss;
 
+#if true
+    {
+        collector::make_configuration_template(L"sensors.json");
+        auto collector = collector::from_json(L"sensors.json");
+        collector.start();
+        std::this_thread::sleep_for(std::chrono::seconds(20));
+        collector.stop();
+    }
+#endif
+
 #if false
     // Print data for all supported AMD cards.
     try {
@@ -49,7 +60,65 @@ int _tmain(const int argc, const TCHAR **argv) {
             std::wcout << s.name() << L":" << std::endl;
             auto m = s.sample();
             std::wcout << m.timestamp() << L" (" << m.sensor() << L"): "
+                << m.voltage() << L" V, "
+                << m.current() << L" A, "
                 << m.power() << L" W" << std::endl;
+        }
+    } catch (std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+#endif
+
+#if false
+    // Print data for Vega FE.
+    try {
+        auto s = adl_sensor::from_udid(
+            "PCI_VEN_1002&DEV_6863&SUBSYS_6B761002&REV_00_6&377B8C4D&0&00000019A",
+            adl_sensor_source::soc);
+
+        std::wcout << s.name() << L":" << std::endl;
+        //auto m = s.sample();
+        //std::wcout << m.timestamp() << L" (" << m.sensor() << L"): "
+        //    << m.voltage() << L" V, "
+        //    << m.current() << L" A, "
+        //    << m.power() << L" W" << std::endl;
+        s.sample([](const measurement& m, void*) {
+            std::wcout << m.timestamp() << L": "
+                << m.voltage() << L" V, "
+                << m.current() << L" A, "
+                << m.power() << L" W"
+                << std::endl;
+            });
+
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+
+        s.sample(nullptr);
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+#endif
+
+#if false
+    // Sample all supported AMD cards for five seconds.
+    try {
+        std::vector<adl_sensor> sensors;
+        sensors.resize(adl_sensor::for_all(nullptr, 0));
+        adl_sensor::for_all(sensors.data(), sensors.size());
+
+        for (auto& s : sensors) {
+            s.sample([](const measurement& m, void *) {
+                std::wcout << m.timestamp() << L": "
+                    << m.voltage() << L" V, "
+                    << m.current() << L" A, "
+                    << m.power() << L" W"
+                    << std::endl;
+            });
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+
+        for (auto& s : sensors) {
+            s.sample(nullptr);
         }
     } catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;
@@ -70,6 +139,31 @@ int _tmain(const int argc, const TCHAR **argv) {
                 << std::endl;
         }
     } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+#endif
+
+#if false
+    // Sample all supported NVIDIA cards for five seconds.
+    try {
+        std::vector<nvml_sensor> sensors;
+        sensors.resize(nvml_sensor::for_all(nullptr, 0));
+        nvml_sensor::for_all(sensors.data(), sensors.size());
+
+        for (auto& s : sensors) {
+            s.sample([](const measurement& m) {
+                std::wcout << m.timestamp() << L": " << m.power() << L" W"
+                    << std::endl;
+                });
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+
+        for (auto& s : sensors) {
+            s.sample(nullptr);
+        }
+
+    } catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;
     }
 #endif

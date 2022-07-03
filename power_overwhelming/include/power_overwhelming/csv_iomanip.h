@@ -204,6 +204,12 @@ namespace detail {
         return detail::csv_quote<TChar>(quote);
     }
 
+} /* namespace power_overwhelming */
+} /* namespace visus */
+
+
+namespace std {
+
     /// <summary>
     /// Sets the given delimiter for CSV output of measurements in the given
     /// stream.
@@ -218,10 +224,12 @@ namespace detail {
     template<class TChar, class TTraits>
     inline std::basic_ostream<TChar, TTraits>& operator <<(
             std::basic_ostream<TChar, TTraits>& lhs,
-            const detail::csv_delimiter<TChar> rhs) {
-        lhs.iword(detail::io_index_delimiter()) = rhs.value;
+            const visus::power_overwhelming::detail::csv_delimiter<TChar> rhs) {
+        lhs.iword(visus::power_overwhelming::detail::io_index_delimiter())
+            = rhs.value;
         return lhs;
     }
+
 
     /// <summary>
     /// Sets the given quote character for CSV output of measurements in the
@@ -237,10 +245,8 @@ namespace detail {
     template<class TChar, class TTraits>
     inline std::basic_ostream<TChar, TTraits>& operator <<(
             std::basic_ostream<TChar, TTraits>& lhs,
-            const detail::csv_quote<TChar> rhs) {
-        lhs.iword(detail::io_index_quote()) = rhs.value;
+            const visus::power_overwhelming::detail::csv_quote<TChar> rhs) {
+        lhs.iword(visus::power_overwhelming::detail::io_index_quote()) = rhs.value;
         return lhs;
     }
-
-} /* namespace power_overwhelming */
-} /* namespace visus */
+} /* end namespace std */

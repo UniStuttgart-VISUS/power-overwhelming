@@ -109,6 +109,18 @@
     <ClCompile Include="csv_iomanip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="collector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="adl_sensor_source.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tinkerforge_sensor_source.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="collector_impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adl_exception.h">
@@ -258,6 +270,27 @@
     <ClInclude Include="include\power_overwhelming\convert_string.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\power_overwhelming\conversion_time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\sample_averaging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sampler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\collector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="collector_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\tinkerforge_sensor_source.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="default_sampler_context.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adl_sensor.cpp">
@@ -332,6 +365,12 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="include\power_overwhelming\convert_string.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="sampler.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="default_sampler_context.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

@@ -33,6 +33,7 @@ visus::power_overwhelming::detail::nvidia_management_library
     __POWER_OVERWHELMING_GET_NVML_FUNC(nvmlDeviceGetHandleByPciBusId);
     __POWER_OVERWHELMING_GET_NVML_FUNC(nvmlDeviceGetHandleBySerial);
     __POWER_OVERWHELMING_GET_NVML_FUNC(nvmlDeviceGetHandleByUUID);
+    __POWER_OVERWHELMING_GET_NVML_FUNC(nvmlDeviceGetUUID);
     __POWER_OVERWHELMING_GET_NVML_FUNC(nvmlErrorString);
     __POWER_OVERWHELMING_GET_NVML_FUNC(nvmlInit);
     __POWER_OVERWHELMING_GET_NVML_FUNC(nvmlShutdown);

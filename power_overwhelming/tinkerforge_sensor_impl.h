@@ -38,6 +38,16 @@ namespace detail {
             void *data);
 
         /// <summary>
+        /// Compose the sensor name from the given connection information.
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        static std::string get_sensor_name(const std::string& host,
+            const std::uint16_t port, const std::string& uid);
+
+        /// <summary>
         /// The callback to be invoked for incoming asynchronous power
         /// readings.
         /// </summary>
@@ -83,6 +93,11 @@ namespace detail {
         std::atomic<measurement_callback> on_measurement;
 
         /// <summary>
+        /// The context pointer passed to <see cref="on_measurement" />.
+        /// </summary>
+        std::atomic<void *> on_measurement_context;
+
+        /// <summary>
         /// The name of the sensor, which has been created from the host,
         /// port and unique ID of the bricklet.
         /// </summary>
@@ -125,6 +140,27 @@ namespace detail {
         /// <param name="period"></param>
         /// <exception cref="tinkerforge_exception"></exception>
         void enable_callbacks(const std::int32_t period = 1);
+
+        /// <summary>
+        /// Enable the current callback with <see cref="bricklet" />.
+        /// </summary>
+        /// <param name="period"></param>
+        /// <exception cref="tinkerforge_exception"></exception>
+        void enable_current_callback(const std::int32_t period = 1);
+
+        /// <summary>
+        /// Enable the power callback with <see cref="bricklet" />.
+        /// </summary>
+        /// <param name="period"></param>
+        /// <exception cref="tinkerforge_exception"></exception>
+        void enable_power_callback(const std::int32_t period = 1);
+
+        /// <summary>
+        /// Enable the voltage callback with <see cref="bricklet" />.
+        /// </summary>
+        /// <param name="period"></param>
+        /// <exception cref="tinkerforge_exception"></exception>
+        void enable_voltage_callback(const std::int32_t period = 1);
 
         /// <summary>
         /// If <see cref="on_measurement" /> is set, invoke the callback with

@@ -29,6 +29,18 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::current_callback(
 
 
 /*
+ * visus::power_overwhelming::detail::tinkerforge_sensor_impl::get_sensor_name
+ */
+std::string
+visus::power_overwhelming::detail::tinkerforge_sensor_impl::get_sensor_name(
+        const std::string& host, const std::uint16_t port,
+        const std::string& uid) {
+    return std::string("Tinkerforge/") + host + ":" + std::to_string(port)
+        + "/" + uid;
+}
+
+
+/*
  * ...::tinkerforge_sensor_impl::power_callback
  */
 void CALLBACK
@@ -66,7 +78,8 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::voltage_callback(
 visus::power_overwhelming::detail::tinkerforge_sensor_impl::tinkerforge_sensor_impl(
         const std::string& host, const std::uint16_t port,
         const char *uid)
-        : on_measurement(nullptr), scope(host, port) {
+    : on_measurement(nullptr), on_measurement_context(nullptr),
+        scope(host, port) {
     // Note that there is a delicate balance in what is done where and when in
     // this constructor: If we enter the body, the scope will have a valid
     // connection to a master brick. Otherwise, its constructor would have
@@ -83,10 +96,8 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::tinkerforge_sensor_i
             "must not be null.");
     }
 
-    this->sensor_name = L"Tinkerforge/"
-        + power_overwhelming::convert_string<wchar_t>(host) + L":"
-        + std::to_wstring(port) + L"/"
-        + power_overwhelming::convert_string<wchar_t>(uid);
+    this->sensor_name = power_overwhelming::convert_string<wchar_t>(
+        tinkerforge_sensor_impl::get_sensor_name(host, port, uid));
 
     ::voltage_current_v2_create(&this->bricklet, uid, this->scope);
 
@@ -149,6 +160,17 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl::disable_callbac
  */
 void visus::power_overwhelming::detail::tinkerforge_sensor_impl::enable_callbacks(
         const std::int32_t period) {
+    this->enable_current_callback(period);
+    this->enable_power_callback(period);
+    this->enable_voltage_callback(period);
+}
+
+
+/*
+ * ...::detail::tinkerforge_sensor_impl::enable_current_callback
+ */
+void visus::power_overwhelming::detail::tinkerforge_sensor_impl
+::enable_current_callback(const std::int32_t period) {
     ::voltage_current_v2_register_callback(&this->bricklet,
         VOLTAGE_CURRENT_V2_CALLBACK_CURRENT,
         reinterpret_cast<void (*)(void)>(current_callback),
@@ -161,7 +183,14 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl::enable_callback
             throw tinkerforge_exception(status);
         }
     }
+}
 
+
+/*
+ * ...::detail::tinkerforge_sensor_impl::enable_power_callback
+ */
+void visus::power_overwhelming::detail::tinkerforge_sensor_impl
+::enable_power_callback(const std::int32_t period) {
     ::voltage_current_v2_register_callback(&this->bricklet,
         VOLTAGE_CURRENT_V2_CALLBACK_POWER,
         reinterpret_cast<void (*)(void)>(power_callback),
@@ -174,7 +203,14 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl::enable_callback
             throw tinkerforge_exception(status);
         }
     }
+}
 
+
+/*
+ * ...::detail::tinkerforge_sensor_impl::enable_voltage_callback
+ */
+void visus::power_overwhelming::detail::tinkerforge_sensor_impl
+::enable_voltage_callback(const std::int32_t period) {
     ::voltage_current_v2_register_callback(&this->bricklet,
         VOLTAGE_CURRENT_V2_CALLBACK_VOLTAGE,
         reinterpret_cast<void (*)(void)>(voltage_callback),
@@ -196,6 +232,7 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl::enable_callback
 void visus::power_overwhelming::detail::tinkerforge_sensor_impl::invoke_callback(
         const timestamp_type timestamp) {
     auto cb = this->on_measurement.load();
+    auto ctx = this->on_measurement_context.load();
 
     if (cb != nullptr) {
         auto current = this->async_data[0];
@@ -206,7 +243,7 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl::invoke_callback
 
         cb = this->on_measurement.load();
         if ((cb != nullptr) && measurement) {
-            cb(measurement);
+            cb(measurement, ctx);
         }
     }
 }

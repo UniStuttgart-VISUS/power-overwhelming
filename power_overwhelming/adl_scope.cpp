@@ -34,7 +34,7 @@ void __stdcall visus::power_overwhelming::detail::adl_scope::deallocate(
 /*
  * visus::power_overwhelming::detail::adl_scope::adl_scope
  */
-visus::power_overwhelming::detail::adl_scope::adl_scope(void) {
+visus::power_overwhelming::detail::adl_scope::adl_scope(void) : _handle(0) {
     auto status = amd_display_library::instance().ADL2_Main_Control_Create(
         adl_scope::allocate, 1, &this->_handle);
     if (status != ADL_OK) {

@@ -5,14 +5,16 @@
 
 #pragma once
 
+#include <atomic>
 #include <functional>
 #include <vector>
 
 #include "power_overwhelming/adl_sensor_source.h"
 #include "power_overwhelming/measurement.h"
 
-#include "amd_display_library.h"
 #include "adl_scope.h"
+#include "amd_display_library.h"
+#include "sampler.h"
 #include "timestamp.h"
 
 
@@ -31,6 +33,20 @@ namespace detail {
         /// <param name="data"></param>
         /// <returns></returns>
         static std::size_t count_sensor_readings(const ADLPMLogData& data);
+
+        /// <summary>
+        /// Filter out the values we are interested in from the log data.
+        /// </summary>
+        /// <param name="voltage"></param>
+        /// <param name="current"></param>
+        /// <param name="power"></param>
+        /// <param name="data"></param>
+        /// <returns>The number of readings returned. If this is 1, only power
+        /// has been set. If it is 2, voltage and current have been set.
+        /// Otherwise, all values are set.</returns>
+        static std::size_t filter_sensor_readings(unsigned int& voltage,
+            unsigned int& current, unsigned int& power,
+            const ADLPMLogData& data);
 
         /// <summary>
         /// Find the index of the first sensor in <paramref name="data" />
@@ -96,6 +112,11 @@ namespace detail {
         static bool is_voltage(const ADL_PMLOG_SENSORS id);
 
         /// <summary>
+        /// A sampler for ADL sensors.
+        /// </summary>
+        static sampler<default_sampler_context<adl_sensor_impl>> sampler;
+
+        /// <summary>
         /// The adpater index of the device, which is required for a series of
         /// APIs.
         /// </summary>
@@ -135,6 +156,27 @@ namespace detail {
         ADLPMLogStartOutput start_output;
 
         /// <summary>
+        /// Remembers whether the sensor is running and sampling asynchronously
+        /// to <see cref="start_output" />.
+        /// </summary>
+        /// <remarks>
+        /// The following values are used here: zero, if the sensor is not
+        /// running, one if it is running and two if it is in a transition
+        /// state.
+        /// </remarks>
+        std::atomic<int> state;
+
+        /// <summary>
+        /// Remembers the type of the source.
+        /// </summary>
+        adl_sensor_source source;
+
+        /// <summary>
+        /// The unique device ID of the adapter the sensor is for.
+        /// </summary>
+        std::string udid;
+
+        /// <summary>
         /// Initialises a new instance.
         /// </summary>
         adl_sensor_impl(void);
@@ -154,31 +196,62 @@ namespace detail {
         /// Prepares <see cref="start_input" /> for the specified sensor source.
         /// </summary>
         /// <param name="source"></param>
-        /// <param name="sampleRate"></param>
+        /// <param name="sensorIDs"></param>
         void configure_source(const adl_sensor_source source,
             std::vector<ADL_PMLOG_SENSORS>&& sensorIDs);
 
         /// <summary>
-        /// Convert the given log data to an instance of
-        /// <see cref="measurement" />.
+        /// Checks whether <see cref="state" /> represents the running
+        /// state (not stopped or transitional).
+        /// </summary>
+        /// <returns><c>true</c> if the sensor is marked running, <c>false</c>
+        /// if it is stopped or in a transitional state.</returns>
+        inline bool running(void) const {
+            return (this->state.load() == 1);
+        }
+
+        /// <summary>
+        /// Obtain a single sample from the sensor.
         /// </summary>
         /// <remarks>
-        /// <para>The method checks how the given data are best converted into
-        /// an instance of <see cref="measurement" /> (based on the sensor
-        /// readings available) and creates the instance for the
-        /// <see cref="sensor_name" /> configured in the object.</para>
+        /// <para>The sensor must be running in order to produce meaningful
+        /// results. The implementation does not verify that, though, for
+        /// performance reasons. Callers must make sure that this invariant
+        /// is met.</para>
+        /// <para>The method checks how the data in <see cref="start_output" />
+        /// are best converted into an instance of <see cref="measurement" />
+        /// (based on the sensor readings available) and creates the instance
+        /// for the <see cref="sensor_name" />.</para>
         /// <para>Valid combinations of input data are: power measurements only,
         /// measurements of voltage and current and measurement of all of the
         /// sensors before. Any other combination will cause the method to
         /// fail.</para>
+        /// <para>HAZARD: It is totally unclear to me how AMD achieves thread
+        /// safety with that. The code is taken from their sample
+        /// https://github.com/GPUOpen-LibrariesAndSDKs/display-library/blob/79cdb8e22b8650c861b390d5a9895032492ce8c5/Sample/PMLog/PMLog.cpp
+        /// which is completely unprotected against races IMHO.</para>
         /// </remarks>
-        /// <param name="data">The sensor readings obtained from ADL.</param>
-        /// <returns>A measurement object containing the normalised data from
-        /// the sensor readings.</returns>
-        /// <exception cref="std::logic_error">In case the given data do not
-        /// contain the required sensor readings.</exception>
-        measurement to_measurement(const ADLPMLogData& data,
-            const timestamp_resolution resolution);
+        /// <param name="resolution">The resolution of the timestamp being
+        /// returned.</param>
+        /// <returns>The current measurement from the sensor.</returns>
+        measurement sample(const timestamp_resolution resolution
+            = timestamp_resolution::milliseconds);
+
+        /// <summary>
+        /// Starts the source if not yet running.
+        /// </summary>
+        /// <param name="samplingRate">The sampling rate at which the sensor
+        /// should update.</param>
+        /// <exception cref="std::runtime_error">If the method is called when
+        /// <see cref="is_sampling" /> is already <c>true</c>.</exception>
+        /// <exception cref="adl_exception">If the source could not be
+        /// started.</exception>
+        void start(const unsigned long samplingRate);
+
+        /// <summary>
+        /// Stops the source if <see cref="state" /> is <c>1</c>.
+        /// </summary>
+        void stop(void);
     };
 
 } /* namespace detail */

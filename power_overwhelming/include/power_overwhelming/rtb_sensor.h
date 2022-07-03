@@ -102,6 +102,24 @@ namespace power_overwhelming {
         void expression(const std::uint32_t channel, const char *expression,
             const char *unit = nullptr);
 
+        ///// <summary>
+        ///// Sets the path to the log file.
+        ///// </summary>
+        ///// <param name="path">The path to the log file, usually just the
+        ///// file name.</param>
+        ///// <param name="overwrite">If <c>true</c>, the file will be cleared
+        ///// if it already exists. This parameter defaults to <c>false</c>.
+        ///// </param>
+        ///// <param name="use_usb">If <c>true</c>, the file will be written to
+        ///// the attached USB stick instead of internal memory. This parameter
+        ///// defaults to <c>false</c>.</param>
+        ///// <exception cref="std::runtime_error">If the method is called on an
+        ///// object that has been disposed by moving it.</exception>
+        ///// <exception cref="visa_exception">If the VISA command was not
+        ///// processed successfully.</exception>
+        //void log_file(const char *path, const bool overwrite = false,
+        //    const bool use_usb = false);
+
         /// <inheritdoc />
         virtual measurement sample(
             const timestamp_resolution resolution) const override;

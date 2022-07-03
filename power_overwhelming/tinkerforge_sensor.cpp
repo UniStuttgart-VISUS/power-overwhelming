@@ -102,6 +102,57 @@ visus::power_overwhelming::tinkerforge_sensor::~tinkerforge_sensor(
 
 
 /*
+ * visus::power_overwhelming::tinkerforge_sensor::configuration
+ */
+void visus::power_overwhelming::tinkerforge_sensor::configuration(
+        sample_averaging& averaging, conversion_time& voltage_conversion_time,
+        conversion_time& current_conversion_time) {
+    typedef std::underlying_type<conversion_time>::type native_adc_type;
+    typedef std::underlying_type<conversion_time>::type native_avg_type;
+
+    if (!*this) {
+        throw std::runtime_error("The configuration of a disposed "
+            "tinkerforge_sensor cannot be retrieved.");
+    }
+
+    auto status = ::voltage_current_v2_get_configuration(
+        &this->_impl->bricklet,
+        reinterpret_cast<native_avg_type *>(&averaging),
+        reinterpret_cast<native_adc_type *>(&voltage_conversion_time),
+        reinterpret_cast<native_adc_type *>(&current_conversion_time));
+    if (status < 0) {
+        throw tinkerforge_exception(status);
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::tinkerforge_sensor::configure
+ */
+void visus::power_overwhelming::tinkerforge_sensor::configure(
+        const sample_averaging averaging,
+        const conversion_time voltage_conversion_time,
+        const conversion_time current_conversion_time) {
+    typedef std::underlying_type<conversion_time>::type native_adc_type;
+    typedef std::underlying_type<conversion_time>::type native_avg_type;
+
+    if (!*this) {
+        throw std::runtime_error("A disposed instance of tinkerforge_sensor "
+            "cannot be configured.");
+    }
+
+    auto status = ::voltage_current_v2_set_configuration(
+        &this->_impl->bricklet,
+        static_cast<native_avg_type>(averaging),
+        static_cast<native_adc_type>(voltage_conversion_time),
+        static_cast<native_adc_type>(current_conversion_time));
+    if (status < 0) {
+        throw tinkerforge_exception(status);
+    }
+}
+
+
+/*
  * visus::power_overwhelming::tinkerforge_sensor::description
  */
 const wchar_t *visus::power_overwhelming::tinkerforge_sensor::description(
@@ -123,6 +174,22 @@ const wchar_t *visus::power_overwhelming::tinkerforge_sensor::name(
         return this->_impl->sensor_name.c_str();
     } else {
         return nullptr;
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::tinkerforge_sensor::reset
+ */
+void visus::power_overwhelming::tinkerforge_sensor::reset(void) {
+    if (!*this) {
+        throw std::runtime_error("A disposed instance of tinkerforge_sensor "
+            "cannot be reset.");
+    }
+
+    auto status = ::voltage_current_v2_reset(&this->_impl->bricklet);
+    if (status < 0) {
+        throw tinkerforge_exception(status);
     }
 }
 
@@ -180,7 +247,12 @@ visus::power_overwhelming::tinkerforge_sensor::sample(
  */
 void visus::power_overwhelming::tinkerforge_sensor::sample(
         const measurement_callback on_measurement,
-        const std::int32_t sampling_period) {
+        const tinkerforge_sensor_source source,
+        const microseconds_type sampling_period,
+        void *context) {
+    static constexpr auto one = static_cast<microseconds_type>(1);
+    static constexpr auto thousand = static_cast<microseconds_type>(1000);
+
     if (!*this) {
         throw std::runtime_error("A disposed instance of tinkerforge_sensor "
             "cannot be sampled.");
@@ -191,13 +263,36 @@ void visus::power_overwhelming::tinkerforge_sensor::sample(
         measurement_callback expected = nullptr;
 
         if (!this->_impl->on_measurement.compare_exchange_strong(expected,
-            on_measurement)) {
+                on_measurement)) {
             throw std::logic_error("Asynchronous sampling cannot be started "
                 "while it is already running.");
         }
 
         try {
-            this->_impl->enable_callbacks(sampling_period);
+            auto millis = static_cast<std::int32_t>((std::max)(one,
+                sampling_period / thousand));
+
+            this->_impl->on_measurement_context = context;
+
+            if (source == tinkerforge_sensor_source::all) {
+                // Enable all sensor readings.
+                this->_impl->enable_callbacks(millis);
+
+            } else {
+                // Enable individual sensor readings.
+                if ((source & tinkerforge_sensor_source::current)
+                        == tinkerforge_sensor_source::current) {
+                    this->_impl->enable_current_callback(millis);
+                }
+                if ((source & tinkerforge_sensor_source::power)
+                    == tinkerforge_sensor_source::power) {
+                    this->_impl->enable_power_callback(millis);
+                }
+                if ((source & tinkerforge_sensor_source::voltage)
+                    == tinkerforge_sensor_source::voltage) {
+                    this->_impl->enable_voltage_callback(millis);
+                }
+            }
         } catch (...) {
             // Clear the guard in case the operation failed.
             this->_impl->on_measurement.exchange(nullptr);
@@ -212,7 +307,6 @@ void visus::power_overwhelming::tinkerforge_sensor::sample(
 
         this->_impl->on_measurement.exchange(on_measurement);
     }
-
 }
 
 
@@ -238,4 +332,3 @@ visus::power_overwhelming::tinkerforge_sensor::operator bool(
         void) const noexcept {
     return (this->_impl != nullptr);
 }
-
