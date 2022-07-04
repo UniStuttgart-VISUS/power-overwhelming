@@ -15,6 +15,7 @@
 #include "power_overwhelming/convert_string.h"
 
 #include "collector_impl.h"
+#include "sensor_utilities.h"
 #include "tinkerforge_sensor_impl.h"
 
 
@@ -53,11 +54,9 @@ namespace detail {
         retval[field_require_marker] = true;
         auto& sensor_list = retval[field_sensors] = nlohmann::json::array();
 
-        // Get all ADL sensors.
+        // Get descriptions for all ADL sensors.
         try {
-            std::vector<adl_sensor> sensors;
-            sensors.resize(adl_sensor::for_all(nullptr, 0));
-            adl_sensor::for_all(sensors.data(), sensors.size());
+            auto sensors = get_all_sensors_of<adl_sensor>();
 
             for (auto& s : sensors) {
                 sensor_list.push_back({
@@ -69,11 +68,9 @@ namespace detail {
             }
         } catch (...) { /* Just ignore the sensor. */ }
 
-        // Get all R&S HMC8015 sensors.
+        // Get descriptionf for all R&S HMC8015 sensors.
         try {
-            std::vector<hmc8015_sensor> sensors;
-            sensors.resize(hmc8015_sensor::for_all(nullptr, 0));
-            hmc8015_sensor::for_all(sensors.data(), sensors.size());
+            auto sensors = get_all_sensors_of<hmc8015_sensor>();
 
             for (auto& s : sensors) {
                 sensor_list.push_back({
@@ -85,11 +82,9 @@ namespace detail {
             }
         } catch (...) { /* Just ignore the sensor. */ }
 
-        // Get all NVML sensors.
+        // Get descriptions for all NVML sensors.
         try {
-            std::vector<nvml_sensor> sensors;
-            sensors.resize(nvml_sensor::for_all(nullptr, 0));
-            nvml_sensor::for_all(sensors.data(), sensors.size());
+            auto sensors = get_all_sensors_of<nvml_sensor>();
 
             for (auto& s : sensors) {
                 sensor_list.push_back({
@@ -100,11 +95,9 @@ namespace detail {
             }
         } catch (...) { /* Just ignore the sensor. */ }
 
-        // Get all R&S RTBxxxx sensors.
+        // Get descriptions for all R&S RTBxxxx sensors.
         try {
-            std::vector<rtb_sensor> sensors;
-            sensors.resize(rtb_sensor::for_all(nullptr, 0));
-            rtb_sensor::for_all(sensors.data(), sensors.size());
+            auto sensors = get_all_sensors_of<rtb_sensor>();
 
             for (auto& s : sensors) {
                 sensor_list.push_back({
@@ -116,7 +109,7 @@ namespace detail {
             }
         } catch (...) { /* Just ignore the sensor. */ }
 
-        // Get all Tinkerforge sensors.
+        // Get descriptions for all Tinkerforge sensors.
         try {
             std::vector<tinkerforge_sensor_definiton> descs;
             descs.resize(tinkerforge_sensor::get_definitions(nullptr, 0));
@@ -128,8 +121,8 @@ namespace detail {
 
             for (auto& d : descs) {
                 assert(d.uid() != nullptr);
-                // We do not need to create the sensor to write its properties, the
-                // definition and the API for the sensor name suffice.
+                // We do not need to create the sensor to write its properties,
+                // the definition and the API for the sensor name suffice.
                 auto name = detail::tinkerforge_sensor_impl::get_sensor_name(
                     host, port, d.uid());
                 auto source = convert_string<char>(to_string(
@@ -216,6 +209,27 @@ namespace detail {
 
 
 /*
+ * visus::power_overwhelming::collector::for_all
+ */
+visus::power_overwhelming::collector
+visus::power_overwhelming::collector::for_all(const wchar_t *output_path,
+        const sensor::microseconds_type sampling_interval) {
+    if (output_path == nullptr) {
+        throw std::invalid_argument("The output path of a collector cannot be "
+            "null.");
+    }
+
+    auto retval = collector(new detail::collector_impl());
+    retval._impl->sensors = detail::get_all_sensors();
+    retval._impl->stream = std::wofstream(output_path, std::ofstream::trunc);
+    retval._impl->sampling_interval = std::chrono::microseconds(
+        sampling_interval);
+
+    return retval;
+}
+
+
+/*
  * visus::power_overwhelming::collector::from_defaults
  */
 visus::power_overwhelming::collector
@@ -248,30 +262,7 @@ visus::power_overwhelming::collector::from_json(const wchar_t *path) {
     stream >> config;
 
     auto retval = collector(new detail::collector_impl());
-
-    // Apply the configuration.
     detail::apply_template(retval._impl, config);
-
-    // TODO: Remove this ADL hack once the weird bug producing too small results is fixed:
-    {
-        auto it = std::remove_if(retval._impl->sensors.begin(),
-            retval._impl->sensors.end(),
-            [](const std::unique_ptr<sensor>& s) {
-                return dynamic_cast<adl_sensor*>(s.get()) != nullptr;
-            });
-        auto have_adl = (it != retval._impl->sensors.end());
-        retval._impl->sensors.erase(it, retval._impl->sensors.end());
-
-        if (have_adl) {
-            std::vector<adl_sensor> sensors;
-            sensors.resize(adl_sensor::for_all(nullptr, 0));
-            adl_sensor::for_all(sensors.data(), sensors.size());
-
-            for (auto& s : sensors) {
-                retval._impl->sensors.emplace_back(new adl_sensor(std::move(s)));
-            }
-        }
-    }
 
     return retval;
 }

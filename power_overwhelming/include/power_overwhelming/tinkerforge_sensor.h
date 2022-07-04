@@ -161,7 +161,7 @@ namespace power_overwhelming {
         /// Move <paramref name="rhs" /> into a new instance.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        inline tinkerforge_sensor(tinkerforge_sensor && rhs) noexcept
+        inline tinkerforge_sensor(tinkerforge_sensor&& rhs) noexcept
                 : _impl(rhs._impl) {
             rhs._impl = nullptr;
         }

@@ -121,6 +121,9 @@
     <ClCompile Include="collector_impl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sensor_utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="thread_name.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -292,6 +295,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="default_sampler_context.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sensor_utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="thread_name.h">

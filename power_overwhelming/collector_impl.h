@@ -55,12 +55,6 @@ namespace detail {
         buffer_type buffer;
 
         /// <summary>
-        /// The collector thread that polls all sensors that do not run
-        /// asynchronouly by themselves (executes <see cref="collect" />).
-        /// </summary>
-        std::thread collector_thread;
-
-        /// <summary>
         /// An event to wake the I/O thread.
         /// </summary>
         HANDLE evt_write;

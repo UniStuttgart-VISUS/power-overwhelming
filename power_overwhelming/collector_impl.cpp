@@ -60,46 +60,6 @@ bool visus::power_overwhelming::detail::collector_impl::can_buffer(void) const {
 
 
 /*
- * visus::power_overwhelming::detail::collector_impl::collect
- */
-void visus::power_overwhelming::detail::collector_impl::collect(void) {
-    while (this->running.load()) {
-        auto now = std::chrono::high_resolution_clock::now();
-
-        if (this->can_buffer()) {
-            std::lock_guard<decltype(this->lock)> l(this->lock);
-
-            for (auto&s : this->sensors) {
-                {
-                    // ADL sensor is weird: It is asynchronous, but we need to
-                    // get the samples from their buffer.
-                    auto ss = dynamic_cast<adl_sensor *>(s.get());
-                    if (ss != nullptr) {
-                        this->buffer.push_back(ss->sample(
-                            this->timestamp_resolution));
-                        continue;
-                    }
-                }
-
-                //{
-                //    // NVIDIA ist synchronous, so retrieve it manually.
-                //    auto ss = dynamic_cast<nvml_sensor *>(s.get());
-                //    if (ss != nullptr) {
-                //        this->buffer.push_back(ss->sample(
-                //            this->timestamp_resolution));
-                //        continue;
-                //    }
-                //}
-            }
-        }
-        // Note: we must not hold 'lock' while sleeping!
-
-        std::this_thread::sleep_until(now + this->sampling_interval);
-    }
-}
-
-
-/*
  * visus::power_overwhelming::detail::collector_impl::marker
  */
 void visus::power_overwhelming::detail::collector_impl::marker(
@@ -139,11 +99,16 @@ void visus::power_overwhelming::detail::collector_impl::start(void) {
     try {
         for (auto& s : this->sensors) {
             {
-                // ADL is reasonably simple: just start the sensor.
+                // Start ADL sampler. ADL is asynchronous, but we start a
+                // separate thread to collect the data at regular intervals.
+                // Registering a callback with the sensor implementation will
+                // start the ADL sampling and our collector thread.
                 auto ss = dynamic_cast<adl_sensor *>(s.get());
                 if (ss != nullptr) {
-                    ss->start(this->sampling_interval.count());
-                    //ss->start(0);
+                    //ss->start(this->sampling_interval.count());
+                    const auto si = duration_cast<microseconds>(
+                        this->sampling_interval).count();
+                    ss->sample(on_measurement, si, this);
                     continue;
                 }
             }
@@ -184,8 +149,7 @@ void visus::power_overwhelming::detail::collector_impl::start(void) {
             }
         }
 
-        // Finally, start the collector and I/O threads.
-        this->collector_thread = std::thread(&collector_impl::collect, this);
+        // Finally, start the I/O thread.
         this->writer_thread = std::thread(&collector_impl::write, this);
     } catch (...) {
         this->running = false;
@@ -203,10 +167,10 @@ void visus::power_overwhelming::detail::collector_impl::stop(void) {
 
     for (auto& s : this->sensors) {
         try {
-            // Stop delivery of ADL samples.
+            // Stop ADL sampler.
             auto ss = dynamic_cast<adl_sensor *>(s.get());
             if (ss != nullptr) {
-                ss->stop();
+                ss->sample(nullptr);
                 continue;
             }
         } catch (...) { /* Ignore this, we need to stop all.*/ }
@@ -239,12 +203,7 @@ void visus::power_overwhelming::detail::collector_impl::stop(void) {
         } catch (...) { /* Ignore this, we need to stop all.*/ }
     }
 
-    // Wait for the thread to exit such that we do not receive anything else.
-    if (this->collector_thread.joinable()) {
-        this->collector_thread.join();
-    }
-
-    // Then, wake the I/O thread for a last time to make sure it exit, too.
+    // Then, wake the I/O thread for a last time to make sure it exits.
     ::SetEvent(this->evt_write);
     if (this->writer_thread.joinable()) {
         this->writer_thread.join();
