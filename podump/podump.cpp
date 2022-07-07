@@ -37,9 +37,20 @@ int _tmain(const int argc, const TCHAR **argv) {
     //::_CrtSetBreakAlloc(1);
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
 
+#if false
     stable_power_state_scope spss;
+#endif
 
 #if true
+    {
+        auto collector = collector::for_all(L"idle.csv");
+        collector.start();
+        std::this_thread::sleep_for(std::chrono::seconds(20));
+        collector.stop();
+    }
+#endif
+
+#if false
     {
         collector::make_configuration_template(L"sensors.json");
         auto collector = collector::from_json(L"sensors.json");

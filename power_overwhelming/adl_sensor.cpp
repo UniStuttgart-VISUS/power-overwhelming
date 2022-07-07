@@ -350,7 +350,6 @@ void visus::power_overwhelming::adl_sensor::sample(
 
         if (!detail::adl_sensor_impl::sampler.samples()) {
             // If there is no sensor left to sample, stop the sensor.
-            assert(this->_impl->running());
             this->_impl->stop();
         }
     }
