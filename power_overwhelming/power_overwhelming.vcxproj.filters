@@ -127,6 +127,12 @@
     <ClCompile Include="thread_name.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="time_synchroniser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="time_synchroniser_impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adl_exception.h">
@@ -301,6 +307,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="thread_name.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\power_overwhelming\time_synchroniser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="time_synchroniser_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

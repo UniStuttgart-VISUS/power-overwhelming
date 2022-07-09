@@ -73,7 +73,7 @@ namespace detail {
         LARGE_INTEGER largeInteger;
         largeInteger.HighPart = fileTime.dwHighDateTime;
         largeInteger.LowPart = fileTime.dwLowDateTime;
-        return detail::convert(largeInteger.QuadPart, resolution);
+        return convert(largeInteger.QuadPart, resolution);
     }
 #endif /* defined(_WIN32) */
 } /* namespace detail */

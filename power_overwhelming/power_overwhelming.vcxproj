@@ -63,6 +63,7 @@
     <ClInclude Include="include\power_overwhelming\quote.h" />
     <ClInclude Include="include\power_overwhelming\timestamp_resolution.h" />
     <ClInclude Include="include\power_overwhelming\conversion_time.h" />
+    <ClInclude Include="include\power_overwhelming\time_synchroniser.h" />
     <ClInclude Include="include\power_overwhelming\tinkerforge_display.h" />
     <ClInclude Include="include\power_overwhelming\tinkerforge_sensor.h" />
     <ClInclude Include="include\power_overwhelming\tinkerforge_sensor_definiton.h" />
@@ -81,6 +82,7 @@
     <ClInclude Include="nvml_sensor_impl.h" />
     <ClInclude Include="on_exit.h" />
     <ClInclude Include="timestamp.h" />
+    <ClInclude Include="time_synchroniser_impl.h" />
     <ClInclude Include="tinkerforge_bricklet.h" />
     <ClInclude Include="tinkerforge_display_impl.h" />
     <ClInclude Include="tinkerforge_exception.h" />
@@ -121,6 +123,8 @@
     <ClCompile Include="stable_power_state_scope.cpp" />
     <ClCompile Include="thread_name.cpp" />
     <ClCompile Include="timestamp.cpp" />
+    <ClCompile Include="time_synchroniser.cpp" />
+    <ClCompile Include="time_synchroniser_impl.cpp" />
     <ClCompile Include="tinkerforge_bricklet.cpp" />
     <ClCompile Include="tinkerforge_display.cpp" />
     <ClCompile Include="tinkerforge_display_impl.cpp" />
