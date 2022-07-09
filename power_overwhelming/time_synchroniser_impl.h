@@ -10,11 +10,25 @@
 
 #include <atomic>
 #include <cinttypes>
+#include <limits>
+#include <map>
 #include <mutex>
 #include <thread>
 #include <vector>
 
 #include "timestamp.h"
+
+
+namespace std {
+
+    /// <summary>
+    /// Specialisation of the <see cref="std::less" /> operator for socket
+    /// addresses.
+    /// </summary>
+    template<> struct less<sockaddr> {
+        bool operator ()(const sockaddr& lhs, const sockaddr& rhs) const;
+    };
+}
 
 
 namespace visus {
@@ -56,6 +70,19 @@ namespace detail {
             timestamp(create_timestamp(request.resolution)) { }
     };
 
+    /// <summary>
+    /// Represents the state of a peer node of the time synchroniser.
+    /// </summary>
+    struct tsstate {
+        timestamp_type timestamp;
+        timestamp_type roundtrip;
+        double drift;
+
+        inline tsstate(void)
+            : timestamp(0),
+            roundtrip((std::numeric_limits<timestamp_type>::max)()),
+            drift(0.0) { }
+    };
 
     /// <summary>
     /// The actual implementation of <see cref="time_synchroniser" />, which is
@@ -82,6 +109,11 @@ namespace detail {
         std::mutex lock;
 
         /// <summary>
+        /// The peer nodes for which we know the drift.
+        /// </summary>
+        std::map<sockaddr, tsstate> peers;
+
+        /// <summary>
         /// The receiver thread waiting for incoming synchronisation requests.
         /// </summary>
         std::thread receiver;
@@ -104,14 +136,15 @@ namespace detail {
         timestamp_resolution resolution;
 
         /// <summary>
-        /// Indicates whether the synchroniser is running.
-        /// </summary>
-        std::atomic<bool> running;
-
-        /// <summary>
         /// The datagram socket used to exchange network packets.
         /// </summary>
         SOCKET socket;
+
+        /// <summary>
+        /// Remembers the state of the thread, which is 0 if it is not running,
+        /// 1 while it is running and 2 in transitional states.
+        /// </summary>
+        std::atomic<int> state;
 
         /// <summary>
         /// Initialises a new instance.
@@ -147,6 +180,20 @@ namespace detail {
         /// <param name="address_family"></param>
         /// <param name="port"></param>
         void receive(const int address_family, const std::uint16_t port);
+
+        /// <summary>
+        /// Starts the time synchroniser.
+        /// </summary>
+        /// <param name="address_family"></param>
+        /// <param name="port"></param>
+        /// <exception cref="std::runtime_error">If the synchroniser is already
+        /// running.</exception>
+        void start(const int address_family, const std::uint16_t port);
+
+        /// <summary>
+        /// Stops the time synchroniser if it is running.
+        /// </summary>
+        void stop(void);
 
     };
 

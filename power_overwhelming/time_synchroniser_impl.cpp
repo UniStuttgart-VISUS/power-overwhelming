@@ -20,12 +20,35 @@
 
 
 /*
+ * std::less<sockaddr>::operator ()
+ */
+bool std::less<sockaddr>::operator ()(const sockaddr & lhs,
+        const sockaddr & rhs) const {
+    if (lhs.sa_family == rhs.sa_family) {
+        switch (lhs.sa_family) {
+            case AF_INET:
+                return (::memcmp(&lhs, &rhs, sizeof(sockaddr_in)) < 0);
+
+            case AF_INET6:
+                return (::memcmp(&lhs, &rhs, sizeof(sockaddr_in6)) < 0);
+
+            default:
+                return (::memcmp(&lhs, &rhs, sizeof(sockaddr)) < 0);
+        }
+
+    } else {
+        return lhs.sa_family < rhs.sa_family;
+    }
+}
+
+
+/*
  * visus::power_overwhelming::detail::time_synchroniser_impl::time_synchroniser_impl
  */
 visus::power_overwhelming::detail::time_synchroniser_impl
 ::time_synchroniser_impl(void)
     : grace_period(2), resolution(timestamp_resolution::milliseconds),
-    running(false), socket(INVALID_SOCKET) { }
+    socket(INVALID_SOCKET), state(0) { }
 
 
 /*
@@ -33,8 +56,10 @@ visus::power_overwhelming::detail::time_synchroniser_impl
  */
 visus::power_overwhelming::detail::time_synchroniser_impl
 ::~time_synchroniser_impl(void) {
-    if (this->socket != INVALID_SOCKET) {
-        ::closesocket(this->socket);
+    this->stop();
+
+    if (this->receiver.joinable()) {
+        this->receiver.join();
     }
 }
 
@@ -68,16 +93,26 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::on_response(
     std::lock_guard<decltype(this->lock)> _l(this->lock);
     for (auto it = this->requests.begin(); it != this->requests.end(); ++it) {
         if (it->sequence_number == response->sequence_number) {
+            // We found a corresponding request for the response. Update the
+            // estimate for the clock drift based on the round trip time of the
+            // request/response pair and the time we received from the server.
             assert(it->timestamp >= now);
-            const auto roundtrip = static_cast<double>(now - it->timestamp);
-            const auto server_time = response->timestamp + 0.5 * roundtrip;
-            auto drift = server_time - now;
+            const auto roundtrip = now - it->timestamp;
+            auto& peer = this->peers[addr];
 
-            throw "TODO: what do we do with this knowledge?";
+            if (peer.roundtrip > roundtrip) {
+                auto server_time = response->timestamp + (0.5 * roundtrip);
+                peer.roundtrip = roundtrip;
+                peer.timestamp = now;
+                peer.drift = server_time - now;
+            }
+
             it = this->requests.erase(it);
 
         } else if (it->sequence_number + this->grace_period
                 < response->sequence_number) {
+            // We consider this request to be orphaned, so we delete it. If we
+            // still receive a response for it, it will be ignored.
             it = this->requests.erase(it);
         }
     }
@@ -91,6 +126,16 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::receive(
         const int address_family, const std::uint16_t port) {
     assert(this->socket == INVALID_SOCKET);
 
+    // Set the state of the receiver and install an exit handler that
+    // marks it stopped if this scope is left. The exit guard will make
+    // sure that the state is reset regardless of whether the thread
+    // existed in an orderly manner or died due to an exception.
+    this->state.store(1, std::memory_order::memory_order_release);
+
+    const auto guard_state = on_exit([this](void) {
+        this->state.store(0, std::memory_order::memory_order_release);
+    });
+
     // Winsock must be initialised per thread. Also, make sure to install
     // an exit handler cleaning it up if the scope is left.
     {
@@ -102,10 +147,11 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::receive(
         }
     }
 
-    auto guard_wsa_cleanup = on_exit([](void) { ::WSACleanup(); });
+    const auto guard_wsa_cleanup = on_exit([](void) { ::WSACleanup(); });
 
     // Create, configure and bind the local socket.
-    this->socket = ::socket(address_family, SOCK_DGRAM, IPPROTO_UDP);
+    this->socket = ::WSASocket(address_family, SOCK_DGRAM, IPPROTO_UDP,
+        nullptr, 0, WSA_FLAG_OVERLAPPED);
     if (this->socket == INVALID_SOCKET) {
         throw std::system_error(::WSAGetLastError(),
             std::system_category());
@@ -150,7 +196,7 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::receive(
     } /* end switch (address_family) */
 
     // Receive until indicated to leave.
-    while (this->running.load(std::memory_order::memory_order_acquire)) {
+    while (this->state.load(std::memory_order::memory_order_acquire) == 1) {
         sockaddr addr;
         int addr_length = sizeof(addr);
         char buffer[TIMESYNC_MAX_DATAGRAM];
@@ -178,4 +224,36 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::receive(
             }
         }
     } /* end while (this->running.load(... */
+}
+
+
+/*
+ * visus::power_overwhelming::detail::time_synchroniser_impl::start
+ */
+void visus::power_overwhelming::detail::time_synchroniser_impl::start(
+        const int address_family, const std::uint16_t port) {
+    auto expected = 0;
+    if (!this->state.compare_exchange_strong(expected, 2,
+            std::memory_order::memory_order_release)) {
+        throw std::runtime_error("The time_synchroniser is already running");
+    }
+
+    this->receiver = std::thread(&time_synchroniser_impl::receive,
+        this, address_family, port);
+}
+
+
+/*
+ * visus::power_overwhelming::detail::time_synchroniser_impl::stop
+ */
+void visus::power_overwhelming::detail::time_synchroniser_impl::stop(void) {
+    auto expected = 1;
+    if (this->state.compare_exchange_weak(expected, 2,
+            std::memory_order::memory_order_release)) {
+        // Closing the socket will cause the receive to fail and the thread will
+        // notice that the state has changed and it should exit.
+        assert(this->socket != INVALID_SOCKET);
+        ::closesocket(this->socket);
+        this->socket = INVALID_SOCKET;
+    }
 }
