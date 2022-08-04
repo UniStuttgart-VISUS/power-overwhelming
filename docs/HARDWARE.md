@@ -1,4 +1,4 @@
-# Building a bench table
+# Building a bench table for measuring GPU power consumption
 In the following, we provide instructions for building a power measurement setup to be used with the library, mainly based on [Tinkerforge](https://github.com/Tinkerforge) bricklets. The setup was used for our BELIV 2022 paper "Power Overwhelming: Quantifying the Energy Cost of Visualisation".
 
 ## Disclaimer
