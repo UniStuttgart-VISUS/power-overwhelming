@@ -13,5 +13,8 @@ The library supports reading Rohde & Schwarz oscilloscopes of the RTB 2000 famil
 
 Only the power analyser is currently ready to use, **support for automating oscilloscopes is work in progress.**
 
+## Using the library
+[Instructions for building the hardware setup](docs/HARDWARE.md)
+
 ## Acknowledgments
 This work was partially funded by Deutsche Forschungsgemeinschaft (DFG) as part of [SFB/Transregio 161](https://www.sfbtrr161.de) (project ID 251654672).
