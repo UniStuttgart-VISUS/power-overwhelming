@@ -45,5 +45,7 @@ In the following, we provide instructions for building a power measurement setup
 * 60 &times; wire connectors for wires with a cross section of up to 1.5 mm², e.g. *WAGO 221-2411.* Due to the large number of connections, we strongly recommend using revisable wire connectors instead of soldering them.
 * 25 &times; 5-conductor lever nuts for wires with a cross section of up to 2.5 mm², e.g. *WAGO 221-415.*
 * ??? &times; ferrule. This is only required if you intend to solder the connections. Due to the large number of connections, we strongly advise against soldering them.
+* Shrink tubing in different colours. This is required to mark the wires you have cut such that you know which ones need to be connected. Alternatively, you can also use tape for that.
+* Electrical tape in different colours. This is required to mark the wires you have cut sucht that you know which ones need to be connected. Alternatively, you can also use coloured shrink tubing.
 
 ## Instructions
