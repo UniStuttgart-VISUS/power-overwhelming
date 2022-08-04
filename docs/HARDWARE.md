@@ -37,4 +37,6 @@ In the following, we provide instructions for building a power measurement setup
 * Hard disk/SSD, e.g. *Samsung 980 PRO 500 GB*
 * GPUs to test
 
+### Parts
+
 ## Instructions
