@@ -14,7 +14,7 @@ The library supports reading Rohde & Schwarz oscilloscopes of the RTB 2000 famil
 Only the power analyser is currently ready to use, **support for automating oscilloscopes is work in progress.**
 
 ## Using the library
-The `podump` demo application is a good starting point to familiarise onself with the library. It contains a sample for each sensor available. Unfortunately, the way sensors are identified and instantiates is dependent on the underlying technology. For instance, ADL allows for creating sensors for the PCI device ID show in Windows task manager whereas NVML uses a custom GUID or the PCI bus ID. Whenever possible, the sensors provide a static factory method `for_all(sensor_type *dst, const std::size_t cnt)` that creates all available sensors of this type. The usage pattern for this API is
+The `podump` demo application is a good starting point to familiarise onself with the library. It contains a sample for each sensor available. Unfortunately, the way sensors are identified and instantiates is dependent on the underlying technology. For instance, ADL allows for creating sensors for the PCI device ID show in Windows task manager whereas NVML uses a custom GUID or the PCI bus ID. Whenever possible, the sensors provide a static factory method `for_all(sensor_type *dst, const std::size_t cnt)` that creates all available sensors of this type. The usage pattern for this API is:
 ```c++
 using namespace visus::power_overwhelming;
 
@@ -56,10 +56,31 @@ for (auto& d : descs) {
 
 The sensors returned are objects based on the PIMPL pattern. While they cannot be copied, the can be moved around. If the sensor object is destroyed while holding a valid implementation pointer, the sensor itself is freed.
 
+Sensor readings are obtained via the `sample` method. The synchronous one returns a single reading with a a timestamp:
+```c++
+auto m = sensor.sample();
+std::wcout << m.timestamp() << L": S = " << m.power() << " VA << std::endl;
+```
 
+If possible, there is also an asynchronous version that delivers samples to a user-specified callback function. When supported by the API, this method uses the asynchronicity of the API. Otherwise, the library will start a sampler thread that regularly calls the synchronous version. Sensors will be grouped into as few sampler threads as possible:
+```c++
+sensors.sample([](const measurement& m) {
+    std::wcout << m.timestamp() << L": S = " << m.power() << " VA << std::endl;
+});
+// Do something else in this thread; afterwards, stop the asynchronous sampling
+// by passing nullptr as callback.
+sensor.sample(nullptr);
+```
 
+The `collector` class is a convenient way of sampling all sensors the library can find on the system it is running:
+```c++
+auto collector = collector::for_all(L"output.csv");
+collector.start();
+// Do something else in this thread; afterwards, stop the collector again.
+collector.stop();
+```
 
-[Instructions for building the hardware setup](docs/HARDWARE.md)
+Using the Tinkerforge bricklets for measuring the power lanes of the GPU requires a custom setup. We have compiled some [instructions](docs/HARDWARE.md) for doing that.
 
 ## Acknowledgments
 This work was partially funded by Deutsche Forschungsgemeinschaft (DFG) as part of [SFB/Transregio 161](https://www.sfbtrr161.de) (project ID 251654672).
