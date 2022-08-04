@@ -15,6 +15,7 @@ In the following, we provide instructions for building a power measurement setup
 > Universität Stuttgart, VISUS and any person involved in this project do not make any warranty of the permissibility, safety and fitness for any purpose of the process described herein. In no event shall they be liable for any claim, damages or other liability, arising from, out of or in connection with following the process described here. **You do that at your own risk!**
 
 ## Parts and special tools
-
+> **Note**
+> Mentioning of specific products in this guide does not constitute an endorsement of said products by Universität Stuttgart, VISUS or any person involved in this project. We are mentioning these only for your convenience, but other products might be similarly or better suitable for the purpose. We do not receive any commission for any of the products mentioned.
 
 ## Instructions
