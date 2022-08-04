@@ -26,6 +26,7 @@ In the following, we provide instructions for building a power measurement setup
 * Heat gun, e.g. *Bosch GHG 20-63 Professional.* This is also optional, but if you want to use shrink tubing to insulate and mark cables, you need one.
 
 ### Components
-* Bench table, e.g. *Lian Li PC-T70X.*
+* Bench table, e.g. *Lian Li PC-T70X.* You will need an open bench table, because after installing the riser card, the GPU will not fit into a PC chassis anymore.
+* Power supply unit, e.g. *BeQuiet Dark Power Pro P12 1200W.*
 
 ## Instructions
