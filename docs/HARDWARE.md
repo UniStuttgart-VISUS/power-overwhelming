@@ -18,8 +18,9 @@ In the following, we provide instructions for building a power measurement setup
 > **Note**
 > Mentioning of specific products in this guide does not constitute an endorsement of said products by Universität Stuttgart, VISUS or any person involved in this project. We are mentioning these only for your convenience, but other products might be similarly or better suitable for the purpose. We do not receive any commission for any of the products mentioned.
 
+### Tools
 * Soldering station
 * Solder with flux
-* 
+* Cable stripper, e.g. *Knipex 12 40 2000.* In principle, this is optional, but you will need to strip a lot of cables, so this is highly recommended.
 
 ## Instructions
