@@ -1,6 +1,8 @@
 # Power Overwhelming
 This project provides a library for measuring the power consumption of GPUs (and other system components) by various means.
 
+If you are here for the [instructions for building the hardware setup for measuring GPU power consumption](docs/HARDWARE.md), look in the `docs` folder.
+
 
 ## Building the library
 The library is self-contained and most optional external dependencies are in the third_party folder. Make sure that you clone all of the submodules (`git submodule update --init --recursive`). The Visual Studio solution should build right of the box without any further preparation.
