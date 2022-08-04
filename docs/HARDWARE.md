@@ -24,6 +24,7 @@ In the following, we provide instructions for building a power measurement setup
 * Screwdrivers
 * Cable stripper, e.g. *Knipex 12 40 2000.* In principle, this is optional, but you will need to strip a lot of cables, so this is highly recommended.
 * Heat gun, e.g. *Bosch GHG 20-63 Professional.* This is also optional, but if you want to use shrink tubing to insulate and mark cables, you need one.
+* 3D printer
 
 ### Components
 * Bench table, e.g. *Lian Li PC-T70X.* You will need an open bench table, because after installing the riser card, the GPU will not fit into a PC chassis anymore.
@@ -33,6 +34,7 @@ In the following, we provide instructions for building a power measurement setup
 * CPU, e.g. *AMD Ryzen 9 5900X*
 * CPU fan, e.g. *BeQuiet Pure Rock Slim 2*
 * RAM, e.g. *Crucial Ballistix Black 64GB PC3200 CL16 kit*
-* 
+* Hard disk/SSD, e.g. *Samsung 980 PRO 500 GB*
+* GPUs to test
 
 ## Instructions
