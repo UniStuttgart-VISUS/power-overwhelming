@@ -31,7 +31,7 @@ In the following, we provide instructions for building a power measurement setup
 ### PC components
 * Bench table, e.g. *Lian Li PC-T70X.* You will need an open bench table, because after installing the riser card, the GPU will not fit into a PC chassis anymore.
 * Power supply unit, e.g. *BeQuiet Dark Power Pro P12 1200W.* We recommend using a modular PSU for which you can purchase the PC-side cables individually such that you can try again if you made a mistake.
-* PCI Express riser, e.g. *Adex Electronics PEX16IX.* Make sure to choose a riser that has probing/soldering points for the power lanes. You need to be able to bypass the internal power lanes of the riser and replace these with cables running through the power sensors.
+* PCI Express riser, e.g. *[Adex Electronics PEX16IX](http://www.adexelec.com/pex16ix).* Make sure to choose a riser that has probing/soldering points for the power lanes. You need to be able to bypass the internal power lanes of the riser and replace these with cables running through the power sensors.
 * Mainboard, e.g. *ASUS ROG Strix X570-E Gaming*
 * CPU, e.g. *AMD Ryzen 9 5900X*
 * CPU fan, e.g. *BeQuiet Pure Rock Slim 2*
