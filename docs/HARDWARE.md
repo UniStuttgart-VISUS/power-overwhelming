@@ -38,7 +38,7 @@ In the following, we provide instructions for building a power measurement setup
 * GPUs to test
 
 ### Parts
-* 20m litz wire with 1.5mm² cross section. We recommend having half in red and half in blue/black.
-* 
+* 20 m litz wire with 1.5 mm² cross section. We recommend having half in red and half in blue/black. Depending on the placement of the components, you might need more or less wire. However, you should aim at keeping it as short as possible.
+* TODO litz wire with 2.5 mm² cross section.
 
 ## Instructions
