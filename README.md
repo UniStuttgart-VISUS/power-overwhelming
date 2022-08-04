@@ -14,6 +14,51 @@ The library supports reading Rohde & Schwarz oscilloscopes of the RTB 2000 famil
 Only the power analyser is currently ready to use, **support for automating oscilloscopes is work in progress.**
 
 ## Using the library
+The `podump` demo application is a good starting point to familiarise onself with the library. It contains a sample for each sensor available. Unfortunately, the way sensors are identified and instantiates is dependent on the underlying technology. For instance, ADL allows for creating sensors for the PCI device ID show in Windows task manager whereas NVML uses a custom GUID or the PCI bus ID. Whenever possible, the sensors provide a static factory method `for_all(sensor_type *dst, const std::size_t cnt)` that creates all available sensors of this type. The usage pattern for this API is
+```c++
+using namespace visus::power_overwhelming;
+
+std::vector<adl_sensor> sensors;
+// Call 'for_all' to determine the required buffer size.
+sensors.resize(adl_sensor::for_all(nullptr, 0));
+// Call 'for_all' to actually get the sensors.
+adl_sensor::for_all(sensors.data(), sensors.size());
+```
+
+Some sensors have a slightly different API. For instance, sensors using *Tinkerforge Voltage/Current Bricklets* are not directly created, but require enumerating a descriptor object that in turn can be used to make the sensor:
+```c++
+using namespace visus::power_overwhelming;
+
+std::vector<tinkerforge_sensor_definiton> descs;
+// Call 'get_definitions' to find out how many definitions there are.
+descs.resize(tinkerforge_sensor::get_definitions(nullptr, 0));
+// Call 'get_definitions' to get the actual descriptors.
+auto cnt = tinkerforge_sensor::get_definitions(descs.data(), descs.size());
+// As Tinkerforge sensors can be hot-plugged, it might occur that there are now
+// less sensors than initially reported. In this case, we need to truncate the
+// array.
+if (cnt < descs.size()) {
+    descs.resize(cnt);
+}
+
+// Create a sensor for each of the descriptors.
+std::vector<tinkerforge_sensor> sensors;
+sensors.reserve(descs.size());
+
+for (auto& d : descs) {
+    // Add a description to the sensors in order to identify them later.
+    // Typically, you would have map from the unique UID to a description
+    // of what is attached to the bricklet.
+    d.description(L"One of my great sensors");
+    sensors.emplace_back(d);
+}
+```
+
+The sensors returned are objects based on the PIMPL pattern. While they cannot be copied, the can be moved around. If the sensor object is destroyed while holding a valid implementation pointer, the sensor itself is freed.
+
+
+
+
 [Instructions for building the hardware setup](docs/HARDWARE.md)
 
 ## Acknowledgments
