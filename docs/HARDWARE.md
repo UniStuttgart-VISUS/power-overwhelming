@@ -41,7 +41,7 @@ In the following, we provide instructions for building a power measurement setup
 ### Parts
 * 20 m litz wire with 1.5 mm² cross section. We recommend having half in red and half in blue/black. Depending on the placement of the components, you might need more or less wire. However, you should aim at keeping it as short as possible.
 * TODO litz wire with 2.5 mm² cross section.
-* 60 &times; wire connectors for wires with a cross section of up to 2.5 mm², e.g. *WAGO 221-2411.* Due to the large number of connections, we strongly recommend using revisable wire connectors instead of soldering them.
+* 60 &times; wire connectors for wires with a cross section of up to 1.5 mm², e.g. *WAGO 221-2411.* Due to the large number of connections, we strongly recommend using revisable wire connectors instead of soldering them.
 * 25 &times; 5-conductor lever nuts for wires with a cross section of up to 2.5 mm², e.g. *WAGO 221-415.*
 * ??? &times; ferrule. This is only required if you intend to solder the connections. Due to the large number of connections, we strongly advise against soldering them.
 
