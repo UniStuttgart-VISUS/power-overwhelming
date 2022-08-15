@@ -137,11 +137,11 @@ In the following, we provide instructions for building a power measurement setup
 6. Cut the PCIe power cables.
     1.  Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard, the manual of your power supply or [Wikipedia](https://en.wikipedia.org/wiki/PCI_Express#Power).
 
-       > **Warning**
-       > Double check whether the diagram shows the socket or the cable before cutting any cable! You can identify this by matching the shapes (squared or rounded) of the headers or receptacles shown with the heads you want to cut.
+        > **Warning**
+        > Double check whether the diagram shows the socket or the cable before cutting any cable! You can identify this by matching the shapes (squared or rounded) of the headers or receptacles shown with the heads you want to cut.
 
-       > **Warning**
-       > The 8-pin connectors are frequently realised as a 6-pin connector and a 2-pin connector. Make sure that you arranged these correctly before cutting any cable!
+        > **Warning**
+        > The 8-pin connectors are frequently realised as a 6-pin connector and a 2-pin connector. Make sure that you arranged these correctly before cutting any cable!
 
         For a 6-pin connector, there are three 12 V cables on pins 1, 2 and 3 and two ground cables on pins 4 and 6. The 12 V pins should be *opposite of the side of the clamp* that holds the connector in place.
         
