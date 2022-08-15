@@ -113,7 +113,20 @@ In the following, we provide instructions for building a power measurement setup
     
     5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
         
-4. Cut the CPU power cables.
+4. Cut the EPS P4/P8 CPU power cables.
+    1. Consulte a trustworthy website with a diagram showing the pins on the cable, for instance on [TODO](http://127.0.0.1).
+
+        For a 6-pin connector, there are two 12 V cables on pins 1 and 3 and two ground cables on pins 4 and 6. The 12 V pins should be on opposite side of the clamp that holds the connector in place.
+        
+        For an 8-pin connector, there are three 12 V cables on pins 1, 2 and 3 and three ground cables on pins 5, 7 and 8. The ground pins should be on the side of the clamp that holds the connector in place.
+        
+    2. Cut the cables in two. The location does not matter buch, but we recommend cutting about 50 mm from the connectors attached to the mainboard for later accessibility of the cut.
+    
+    3. In order to identify the ends when putting them together later, you want to *immediately* tie the cables to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
+
+    4. Remove the insulation on both sides ot the cut.
+        
+    5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
 
 6. Cut the PCIe power cables.
     1. Consulte a trustworthy website with a diagram showing the pins on the cable, for instance on [Wikipedia](https://en.wikipedia.org/wiki/PCI_Express#Power).
