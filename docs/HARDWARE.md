@@ -166,6 +166,9 @@ In the following, we provide instructions for building a power measurement setup
     > **Warning**
     > The illustration is specific for the very revision of the *Adex Electronics PEX16IX* we used. Consult the manual of your hardware to identify the correct fuses to remove!
 
+    > **Warning**
+    > The fuses are most likely not identical. Remember which one you removed from which location in case you ever want to restore the original configuration of the riser.
+
     <picture>
         <img alt="Removed fuses on an Adex Electronics PEX16IX." src="fuses.jpg">
 </picture>
