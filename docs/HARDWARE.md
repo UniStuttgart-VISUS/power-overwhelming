@@ -175,11 +175,13 @@ In the following, we provide instructions for building a power measurement setup
 
 9. Prepare the four cables cables for the PEG power rails of the riser.
 
-   The length of the cables depends on the application scenarios you want to cover: If you intend only using the Tinkerforge bricklets for measuring, you can determine the length such that you directly reach the bricklets. If you intend to only measure using oscilloscopes, you can solder a loop (two cables) directly on the riser that is long enough that you can put a current clamp around it. If you want to have both options, you can use short cables at the riser that you can either connect into a loop or extend to reach the bricklets.
+    The length of the cables depends on the application scenarios you want to cover: If you intend only using the Tinkerforge bricklets for measuring, you can determine the length such that you directly reach the bricklets. If you intend to only measure using oscilloscopes, you can solder a loop (two cables) directly on the riser that is long enough that you can put a current clamp around it. If you want to have both options, you can use short cables at the riser that you can either connect into a loop or extend to reach the bricklets.
 
 10. Solder extension cables to the riser.
 
     Consult the manual of your riser to identify the pins where to attach the cables. In case of the *Adex Electronics PEX16IX*, there are pins for an external power supply and pins for supplying power via PEG. You must make sure to connect the pins for supplying power via PEG.
+
+    We strongly recommend to *immediately* add some identification in form of coloured tape or shrink tubing to each of the four cables such that you know which pair is 3.3 V/12 V and which of these are input and output.
 
     <picture>
         <img alt="Extension cables soldered to the riser card." src="cables.jpg">
