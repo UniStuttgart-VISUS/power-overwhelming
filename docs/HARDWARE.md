@@ -205,7 +205,10 @@ In the following, we provide instructions for building a power measurement setup
 
         Regardless of whether you have attached any device to any of the *Voltage/Current Bricklets*, you should be able to enumerate all of the bricklets in the *Brick Viewer*.
 
+11. Prepare the extension cables for ATX, EPS P4/P8 and the PCIe cables.
+
+    We recommend measuring the reqiured cables once you have assembled the Tinkerforge bricks and bricklets and have decided on where to place them. The cables should be as long as necessary, but as short as possible.
+
+    When deciding the length of the PCIe power cables, remember that some GPUs might be higher than others.
 
 
-
-XX. Prepare the extension cables for ATX, EPS P4/P8 and the PCIe cables.
