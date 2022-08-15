@@ -94,6 +94,22 @@ In the following, we provide instructions for building a power measurement setup
 
         On most bench table, the PSU is mounted on the bottom layer of the table below the mainboard.
         
-3.
+3. Cut the ATX power cables.
+    1. Consult a website with a diagram showing the pins on the cable, for instance on [Wikipedia](https://en.wikipedia.org/wiki/ATX#Power_supply).
+
+        There are four 3.3 V cables on pins 1, 2, 12 and 13.
+        
+        There are five 5 V cables on pins 4, 6, 21, 22 and 23.
+        
+        There are two 12 V cables on pins 10 and 11.
+        
+    2. In order to identify the ends, you might want to *immediately* tie the cables to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
+
+    3. Remove the insulation on both sides of the cut. 
+    
+        Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
+        
+4. Cut the CPU power cables.
+5. Cut the PCIe power cables.
         
         
