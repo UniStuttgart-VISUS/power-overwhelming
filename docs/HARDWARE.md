@@ -51,8 +51,8 @@ In the following, we provide instructions for building a power measurement setup
 * Shrink tubing in different colours. This is required to mark the wires you have cut such that you know which ones need to be connected. Alternatively, you can also use tape for that.
 * Electrical tape in different colours. This is required to mark the wires you have cut sucht that you know which ones need to be connected. Alternatively, you can also use coloured shrink tubing.
 * 3 &times; *[Tinkerforge Master Brick 3.1](https://www.tinkerforge.com/en/shop/master-brick.html)*
-* 12 &times; *[Tinkerforge Voltage/Current Bricklet 2.0](https://www.tinkerforge.com/en/shop/voltage-current-v2-bricklet.html)*
-* 12 &times; *[Tinkerforge Bricklet Cable 50 cm (7p-7p)](https://www.tinkerforge.com/en/shop/bricklet-cable-50cm-7p-7p.html)*
+* 10 &times; *[Tinkerforge Voltage/Current Bricklet 2.0](https://www.tinkerforge.com/en/shop/voltage-current-v2-bricklet.html)* (if you plan to use a GPU with three PCIe power cables, you need 11 of these)
+* 10 &times; *[Tinkerforge Bricklet Cable 50 cm (7p-7p)](https://www.tinkerforge.com/en/shop/bricklet-cable-50cm-7p-7p.html)* (if you plan to use a GPU with three PCIe power cables, you need 11 of these)
 * 1 &times; *[Tinkerforge Workbench (34 &times; 20 cm)](https://www.tinkerforge.com/en/shop/tinkerforge-workbench-34x20cm.html)*
 * 15 &times; *[Tinkerforge Mounting Kit 12 mm](https://www.tinkerforge.com/en/shop/accessories/mounting/mounting-kit-12mm.html)*
 * 1 m (or longer) USB-C to USB-C cable or USB-C to USB-A cable.
