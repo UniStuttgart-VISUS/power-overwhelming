@@ -172,3 +172,5 @@ In the following, we provide instructions for building a power measurement setup
     <picture>
         <img alt="Removed fuses on an Adex Electronics PEX16IX." src="fuses.jpg">
 </picture>
+
+9. Prepare the cables for the PEG power rails of the riser.
