@@ -196,14 +196,14 @@ In the following, we provide instructions for building a power measurement setup
 
         Leave sufficient space around each of them such that you can route the power cables. Ideally, the bricklets are placed over or next to the opening in the plate such that you can route the power cables below the plate.
 
-    4. Connect the bricklets using the 7p-7p cables.
+    4. Connect the bricklets using the 7p-7p cables to the stack of master bricks.
 
         Start at the bottom of the stack. The bottommost master brick is the one that will be connected to the computer via USB and the higher the stack is, the worse becomes the latency.
 
     5. Connect the bottommost master brick via USB to the computer.
     6. Install the [Brick Daemon](https://www.tinkerforge.com/en/doc/Software/Brickd.html) and the [Brick Viewer](https://www.tinkerforge.com/en/doc/Software/Brickv.html#brickv) on the computer.
 
-        Regardless of whether you have attached any device to any of the Voltage/Current Bricklets, you should be able to enumerate all of the bricklets in the Brick Viewer.
+        Regardless of whether you have attached any device to any of the *Voltage/Current Bricklets*, you should be able to enumerate all of the bricklets in the *Brick Viewer*.
 
 
 
