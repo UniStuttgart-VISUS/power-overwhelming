@@ -129,6 +129,8 @@ In the following, we provide instructions for building a power measurement setup
     3. In order to identify the ends when putting them together later, you want to *immediately* tie the cables to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
 
     4. Remove the insulation on both sides ot the cut.
+
+        Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
         
     5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
 
@@ -150,5 +152,7 @@ In the following, we provide instructions for building a power measurement setup
     3. In order to identify the ends when putting them together later, you want to *immediately* tie the cables to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
 
     4. Remove the insulation on both sides ot the cut.
+    
+        Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
         
     5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
