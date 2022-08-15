@@ -157,6 +157,18 @@ In the following, we provide instructions for building a power measurement setup
         
     5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
   
-7. Prepare the extension cables.
+7. Prepare the extension cables for ATX, EPS P4/P8 and the PCIe cables.
 
-9. On the riser card, remove the pluggable fuses for the 3.3 V and 12 V rails.
+9. Prepare the riser card for soldering by removing the pluggable fuses for the 3.3 V and 12 V rails.
+
+    The following picture illustrates the fuses that need to be removed from the B side of an *Adex Electronics PEX16IX* we used. The remaining fuse is for 5 V.
+    
+    > **Warning**
+    > The illustration is specific for the very revision of the *Adex Electronics PEX16IX* we used. Consult the manual of your hardware to identify the correct fuses to remove!
+
+    > **Warning**
+    > The fuses are most likely not identical. Remember which one you removed from which location in case you ever want to restore the original configuration of the riser.
+
+    <picture>
+        <img alt="Removed fuses on an Adex Electronics PEX16IX." src="fuses.jpg">
+</picture>
