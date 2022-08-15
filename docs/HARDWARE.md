@@ -100,7 +100,7 @@ In the following, we provide instructions for building a power measurement setup
     1. Identify the relevant pins on the cable, for instance using the manual of your mainboard or [Wikipedia](https://en.wikipedia.org/wiki/ATX#Power_supply).
 
        > **Warning**
-       > Double check whether the diagram shows the socket or the cable before cutting any cable! The diagrams in the manual typically show the pins on the mainboard-side socket, not on the cable/plug side.
+       > Double check whether the diagram shows the socket or the cable before cutting any cable! The diagrams in the manual typically show the pins on the mainboard-side socket, not on the cable/plug side. You can identify this by matching the shapes (squared or rounded) of the pins or receptacles shown with the plug you want to cut.
 
         Assuming the 24-pin ATX power supply connector, the pins are (i) four 3.3 V cables on pins 1, 2, 12 and 13, (ii) five 5 V cables on pins 4, 6, 21, 22 and 23 and (iii) two 12 V cables on pins 10 and 11.
         
@@ -131,6 +131,9 @@ In the following, we provide instructions for building a power measurement setup
 
 6. Cut the PCIe power cables.
     1. Consulte a trustworthy website with a diagram showing the pins on the cable, for instance on [Wikipedia](https://en.wikipedia.org/wiki/PCI_Express#Power).
+
+       > **Warning**
+       > Double check whether the diagram shows the socket or the cable before cutting any cable! You can identify this by matching the shapes (squared or rounded) of the pins or receptacles shown with the plug you want to cut.
 
         For a 6-pin connector, there are two 12 V cables on pins 1 and 3 and two ground cables on pins 4 and 6. The 12 V pins should be on opposite side of the clamp that holds the connector in place.
         
