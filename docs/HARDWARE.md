@@ -12,7 +12,7 @@ In the following, we provide instructions for building a power measurement setup
 > The modifications described in the following will **invalidate the warranty** on the components and render them useless for normal operations.
 
 > **Warning**
-> Universität Stuttgart, VISUS and any person involved in this project do not make any warranty of the permissibility, safety and fitness for any purpose of the process described herein. In no event shall they be liable for any claim, damages or other liability, arising from, out of or in connection with following the process described here. **You do that at your own risk!**
+> Universität Stuttgart, VISUS and any person involved in this project do not make any warranty of the permissibility, safety and fitness for any purpose of the process described herein. We are not electrical engineers, and in no event shall we be liable for any claim, damages or other liability, arising from, out of or in connection with following the process described here. **You do that at your own risk!**
 
 ## Parts and special tools
 > **Note**
@@ -28,6 +28,7 @@ In the following, we provide instructions for building a power measurement setup
 * Heat gun, e.g. *Bosch GHG 20-63 Professional.* This is also optional, but if you want to use shrink tubing to insulate and mark cables, you need one.
 * Crimp tong. This is optional and only required if you intend to solder the connections instead of clamping them together. Due to the large number of connections, we strongly advise against soldering them.
 * Label printer. This is optional, but we recommend labelling the bricklets such that you easily know what is connected to them.
+* Antistatic mat and/or antistatic wrist strap. We strongly recommend using this while working with expensive electronic parts.
 
 ### PC components
 * Bench table, e.g. *Lian Li PC-T70X.* You will need an open bench table, because after installing the riser card, the GPU will not fit into a PC chassis anymore.
@@ -57,3 +58,40 @@ In the following, we provide instructions for building a power measurement setup
 * 1 m (or longer) USB-C to USB-C cable or USB-C to USB-A cable.
 
 ## Instructions
+1. Assemble the bench table.
+
+    Consult the manual of your bench table. Some tables come with bezels detached that must be screwed to the body before the computer components can be installed.
+   
+2. Assemble the computer on the bench table. Refer to the manual of your mainboard for detailed instructions. Typically, the following steps are necessary:
+    1. Attach the mainboard to the bench table using the spacers provided with the mainboard.
+    
+        Nowadays, there is usually no need to install a back plate for the CPU fan, but you may want to check the manual of your fan whether it requires installation of one *before* the mainboard is screwed to the bench table.
+        
+    4. Mount the CPU in its socket.
+    
+        Consult the manual for instructions and make sure that the marker in one of the corner of the CPU and the marker on the socket match. The markers might be rather subtle.
+        
+    5. Install the CPU fan.
+    
+        Consult the manual for instructions. Some fans require special brackets to be installed on the mainboard. In any case, apply some heat paste (about the size of a pea), which should come with the fan, on the centre of the CPU before pressing the fan on it. Make sure to tighten the screws iteratively in alternating order.
+        
+        In some cases, the CPU is very close to the memory slots and a large CPU fan will make it difficult to reach the slots. You might want to install the memory before installing the fan in this case.
+        
+    6. Install the RAM modules.
+
+        If you do not install a module in every slot, consult the manual which ones should be used.
+        
+    7. Install the hard disk.
+
+        SATA disks are fairly easy to connect with the respective cables.
+        
+        M.2 SSDs might have a dedicated heat sink that must be removed from the mainboard before they can be installed. Consult the manual for instructions.
+        
+        On some mainboards, PCIe lanes are shared between M.2 SSDs and the PCIe slots. Consult the manual to find out which M.2 slot and which PCIe slot for the GPU you should used to avoid conflicts. You want to make sure that both can work with the full bandwidth available.
+        
+    8. Install the GPU.
+    9. Install the power supply unit (PSU).
+
+        On most bench table, the PSU is mounted on the bottom layer of the table below the mainboard.
+        
+        
