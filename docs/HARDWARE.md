@@ -115,7 +115,7 @@ In the following, we provide instructions for building a power measurement setup
     5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
         
 4. Cut the EPS P4/P8 CPU power cables.
-    1. Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard.
+    1. Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard or the manual of your power supply.
 
        > **Warning**
        > Double check whether the diagram shows the socket or the cable before cutting any cable! The diagrams in the manual typically show the pins on the mainboard-side socket, not on the cable/plug side. You can identify this by matching the shapes (squared or rounded) of the headers or receptacles shown with the heads you want to cut.
@@ -133,7 +133,7 @@ In the following, we provide instructions for building a power measurement setup
     5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
 
 6. Cut the PCIe power cables.
-    1.  Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard or [Wikipedia](https://en.wikipedia.org/wiki/PCI_Express#Power).
+    1.  Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard, the manual of your power supply or [Wikipedia](https://en.wikipedia.org/wiki/PCI_Express#Power).
 
        > **Warning**
        > Double check whether the diagram shows the socket or the cable before cutting any cable! You can identify this by matching the shapes (squared or rounded) of the headers or receptacles shown with the heads you want to cut.
