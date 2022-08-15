@@ -118,7 +118,7 @@ In the following, we provide instructions for building a power measurement setup
     1. Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard.
 
        > **Warning**
-       > Double check whether the diagram shows the socket or the cable before cutting any cable! You can identify this by matching the shapes (squared or rounded) of the headers or receptacles shown with the heads you want to cut.
+       > Double check whether the diagram shows the socket or the cable before cutting any cable! The diagrams in the manual typically show the pins on the mainboard-side socket, not on the cable/plug side. You can identify this by matching the shapes (squared or rounded) of the headers or receptacles shown with the heads you want to cut.
 
         For a P4 connector, there are two 12 V cables on pins 3 and 4 and two ground cables on pins 1 and 2. The 12 V pins should be *on the side of the clamp* that holds the connector in place.
         
