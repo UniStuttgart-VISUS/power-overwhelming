@@ -161,7 +161,7 @@ In the following, we provide instructions for building a power measurement setup
 
 9. Prepare the riser card for soldering by removing the pluggable fuses for the 3.3 V and 12 V rails.
 
-    The following picture illustrates the fuses that need to be removed from an *Adex Electronics PEX16IX* we used and the 5 V fuse that can remain.
+    The following picture illustrates the fuses that need to be removed from the B side of an *Adex Electronics PEX16IX* we used. The remaining fuse is for 5 V.
     
     > **Warning**
     > The illustration is specific for the very revision of the *Adex Electronics PEX16IX* we used. Consult the manual of your hardware to identify the correct fuses to remove!
