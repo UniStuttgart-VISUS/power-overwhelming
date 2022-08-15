@@ -61,41 +61,41 @@ In the following, we provide instructions for building a power measurement setup
 1. Assemble the bench table.
 
     Consult the manual of your bench table. Some tables come with bezels detached that must be screwed to the body before the computer components can be installed.
-   
+
 2. Assemble the computer on the bench table. Refer to the manual of your mainboard for detailed instructions. Typically, the following steps are necessary:
     1. Attach the mainboard to the bench table using the spacers provided with the mainboard.
-    
+
         Nowadays, there is usually no need to install a back plate for the CPU fan, but you may want to check the manual of your fan whether it requires installation of one *before* the mainboard is screwed to the bench table.
-        
+
     4. Mount the CPU in its socket.
-    
+
         Consult the manual for instructions and make sure that the marker in one of the corner of the CPU and the marker on the socket match. The markers might be rather subtle.
-        
+
     5. Install the CPU fan.
-    
+
         Consult the manual for instructions. Some fans require special brackets to be installed on the mainboard. In any case, apply some heat paste (about the size of a pea), which should come with the fan, on the centre of the CPU before pressing the fan on it. Make sure to tighten the screws iteratively in alternating order.
-        
+
         In some cases, the CPU is very close to the memory slots and a large CPU fan will make it difficult to reach the slots. You might want to install the memory before installing the fan in this case.
-        
+
     6. Install the RAM modules.
 
         If you do not install a module in every slot, consult the manual which ones should be used.
-        
+
     7. Install the hard disk.
 
         SATA disks are fairly easy to connect with the respective cables.
-        
+
         M.2 SSDs might have a dedicated heat sink that must be removed from the mainboard before they can be installed. Consult the manual for instructions.
-        
+
         On some mainboards, PCIe lanes are shared between M.2 SSDs and the PCIe slots. Consult the manual to find out which M.2 slot and which PCIe slot for the GPU you should used to avoid conflicts. You want to make sure that both can work with the full bandwidth available.
-        
+
     8. Install the GPU.
     9. Install the power supply unit (PSU).
 
         On most bench table, the PSU is mounted on the bottom layer of the table below the mainboard.
-        
+
     10. Connect all the cables for switches, USB, etc. as described in the manual of the mainboard.
-        
+
 3. Cut the ATX power cables.
     1. Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard or [Wikipedia](https://en.wikipedia.org/wiki/ATX#Power_supply).
 
@@ -103,17 +103,17 @@ In the following, we provide instructions for building a power measurement setup
        > Double check whether the diagram shows the socket or the cable before cutting any cable! The diagrams in the manual typically show the pins on the mainboard-side socket, not on the cable/plug side. You can identify this by matching the shapes (squared or rounded) of the heads or receptacles shown with the heads you want to cut.
 
         Assuming the 24-pin ATX power supply connector, the pins are (i) four 3.3 V cables on pins 1, 2, 12 and 13, (ii) five 5 V cables on pins 4, 6, 21, 22 and 23 and (iii) two 12 V cables on pins 10 and 11.
-        
+
     2. Cut the cables in two. The location does not matter much, but we recommend cutting about 50 mm from the connector attached to the mainboard for later accessibility of the cut.
-        
+
     3. In order to identify the ends when putting them together later, you want to *immediately* tie the cables to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
 
     4. Remove the insulation on both sides of the cut. 
-    
+
         Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
-    
+
     5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
-        
+
 4. Cut the EPS P4/P8 CPU power cables.
     1. Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard or the manual of your power supply.
 
@@ -121,17 +121,17 @@ In the following, we provide instructions for building a power measurement setup
        > Double check whether the diagram shows the socket or the cable before cutting any cable! The diagrams in the manual typically show the pins on the mainboard-side socket, not on the cable/plug side. You can identify this by matching the shapes (squared or rounded) of the headers or receptacles shown with the heads you want to cut.
 
         For a P4 connector, there are two 12 V cables on pins 3 and 4 and two ground cables on pins 1 and 2. The 12 V pins should be *on the side of the clamp* that holds the connector in place.
-        
+
         For a P8 connector, there are four 12 V cables on pins 5, 6, 7 and 8 and four ground cables on pins 1, 2, 3 and 4. The 12 V pins should be *on the side of the clamp* that holds the connector in place.
-        
+
     2. Cut the cables in two. The location does not matter buch, but we recommend cutting about 50 mm from the connectors attached to the mainboard for later accessibility of the cut.
-    
+
     3. In order to identify the ends when putting them together later, you want to *immediately* tie the cables to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
 
     4. Remove the insulation on both sides ot the cut.
 
         Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
-        
+
     5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
 
 6. Cut the PCIe power cables.
@@ -146,15 +146,15 @@ In the following, we provide instructions for building a power measurement setup
         For a 6-pin connector, there are three 12 V cables on pins 1, 2 and 3 and two ground cables on pins 4 and 6. The 12 V pins should be *opposite of the side of the clamp* that holds the connector in place.
         
         For an 8-pin connector, there are three 12 V cables on pins 1, 2 and 3 and three ground cables on pins 5, 7 and 8. The ground pins should be *on the side of the clamp* that holds the connector in place.
-        
+
     2. Cut the cables in two. The location does not matter buch, but we recommend cutting about 50 mm from the connectors attached to the GPU for later accessibility of the cut.
-    
+
     3. In order to identify the ends when putting them together later, you want to *immediately* tie the cables to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
 
     4. Remove the insulation on both sides ot the cut.
-    
+
         Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
-        
+
     5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
   
 7. Prepare the extension cables for ATX, EPS P4/P8 and the PCIe cables.
