@@ -95,13 +95,9 @@ In the following, we provide instructions for building a power measurement setup
         On most bench table, the PSU is mounted on the bottom layer of the table below the mainboard.
         
 3. Cut the ATX power cables.
-    1. Consult a trustworthy website with a diagram showing the pins on the cable, for instance on [Wikipedia](https://en.wikipedia.org/wiki/ATX#Power_supply). Assuming the 24-pin ATX power supply connector, the pins are:
-
-        There are four 3.3 V cables on pins 1, 2, 12 and 13.
-        
-        There are five 5 V cables on pins 4, 6, 21, 22 and 23.
-        
-        There are two 12 V cables on pins 10 and 11.
+    1. Identify the relevant pins on the cable, for instance using the manual of your mainboard or [Wikipedia](https://en.wikipedia.org/wiki/ATX#Power_supply). 
+    
+        Assuming the 24-pin ATX power supply connector, the pins are (i) four 3.3 V cables on pins 1, 2, 12 and 13, (ii) five 5 V cables on pins 4, 6, 21, 22 and 23 and (iii) two 12 V cables on pins 10 and 11.
         
     2. Cut the cables in two. The location does not matter much, but we recommend cutting about 50 mm from the connector attached to the mainboard for later accessibility of the cut.
         
