@@ -110,6 +110,8 @@ In the following, we provide instructions for building a power measurement setup
     4. Remove the insulation on both sides of the cut. 
     
         Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
+    
+    5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
         
 4. Cut the CPU power cables.
 
@@ -126,6 +128,4 @@ In the following, we provide instructions for building a power measurement setup
 
     4. Remove the insulation on both sides ot the cut.
         
-        
-        
-        
+    5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
