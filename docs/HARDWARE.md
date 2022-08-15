@@ -97,7 +97,7 @@ In the following, we provide instructions for building a power measurement setup
     10. Connect all the cables for switches, USB, etc. as described in the manual of the mainboard.
         
 3. Cut the ATX power cables.
-    1. Identify the relevant pins on the cable, for instance using the manual of your mainboard or [Wikipedia](https://en.wikipedia.org/wiki/ATX#Power_supply).
+    1. Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard or [Wikipedia](https://en.wikipedia.org/wiki/ATX#Power_supply).
 
        > **Warning**
        > Double check whether the diagram shows the socket or the cable before cutting any cable! The diagrams in the manual typically show the pins on the mainboard-side socket, not on the cable/plug side. You can identify this by matching the shapes (squared or rounded) of the heads or receptacles shown with the heads you want to cut.
@@ -115,11 +115,14 @@ In the following, we provide instructions for building a power measurement setup
     5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
         
 4. Cut the EPS P4/P8 CPU power cables.
-    1. Consulte a trustworthy website with a diagram showing the pins on the cable, for instance on [TODO](http://127.0.0.1).
+    1. Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard.
 
-        For a 6-pin connector, there are two 12 V cables on pins 1 and 3 and two ground cables on pins 4 and 6. The 12 V pins should be on opposite side of the clamp that holds the connector in place.
+       > **Warning**
+       > Double check whether the diagram shows the socket or the cable before cutting any cable! You can identify this by matching the shapes (squared or rounded) of the headers or receptacles shown with the heads you want to cut.
+
+        For a P4 connector, there are two 12 V cables on pins 3 and 4 and two ground cables on pins 1 and 2. The 12 V pins should be *on the side of the clamp* that holds the connector in place.
         
-        For an 8-pin connector, there are three 12 V cables on pins 1, 2 and 3 and three ground cables on pins 5, 7 and 8. The ground pins should be on the side of the clamp that holds the connector in place.
+        For a P8 connector, there are four 12 V cables on pins 5, 6, 7 and 8 and four ground cables on pins 1, 2, 3 and 4. The 12 V pins should be *on the side of the clamp* that holds the connector in place.
         
     2. Cut the cables in two. The location does not matter buch, but we recommend cutting about 50 mm from the connectors attached to the mainboard for later accessibility of the cut.
     
@@ -130,7 +133,7 @@ In the following, we provide instructions for building a power measurement setup
     5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
 
 6. Cut the PCIe power cables.
-    1. Consulte a trustworthy website with a diagram showing the pins on the cable, for instance on [Wikipedia](https://en.wikipedia.org/wiki/PCI_Express#Power).
+    1.  Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard or [Wikipedia](https://en.wikipedia.org/wiki/PCI_Express#Power).
 
        > **Warning**
        > Double check whether the diagram shows the socket or the cable before cutting any cable! You can identify this by matching the shapes (squared or rounded) of the headers or receptacles shown with the heads you want to cut.
