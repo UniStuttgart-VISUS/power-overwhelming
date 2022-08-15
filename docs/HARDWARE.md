@@ -94,4 +94,6 @@ In the following, we provide instructions for building a power measurement setup
 
         On most bench table, the PSU is mounted on the bottom layer of the table below the mainboard.
         
+3.
+        
         
