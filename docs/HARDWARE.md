@@ -138,9 +138,9 @@ In the following, we provide instructions for building a power measurement setup
        > **Warning**
        > The 8-pin connectors are frequently realised as a 6-pin connector and a 2-pin connector. Make sure that you arranged these correctly before cutting any cable!
 
-        For a 6-pin connector, there are three 12 V cables on pins 1, 2 and 3 and two ground cables on pins 4 and 6. The 12 V pins should be on opposite side of the clamp that holds the connector in place.
+        For a 6-pin connector, there are three 12 V cables on pins 1, 2 and 3 and two ground cables on pins 4 and 6. The 12 V pins should be *opposite of the side of the clamp* that holds the connector in place.
         
-        For an 8-pin connector, there are three 12 V cables on pins 1, 2 and 3 and three ground cables on pins 5, 7 and 8. The ground pins should be on the side of the clamp that holds the connector in place.
+        For an 8-pin connector, there are three 12 V cables on pins 1, 2 and 3 and three ground cables on pins 5, 7 and 8. The ground pins should be *on the side of the clamp* that holds the connector in place.
         
     2. Cut the cables in two. The location does not matter buch, but we recommend cutting about 50 mm from the connectors attached to the GPU for later accessibility of the cut.
     
