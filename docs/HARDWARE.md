@@ -156,3 +156,7 @@ In the following, we provide instructions for building a power measurement setup
         Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
         
     5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
+  
+7. Prepare the extension cables.
+
+9. On the riser card, remove the pluggable fuses for the 3.3 V and 12 V rails.
