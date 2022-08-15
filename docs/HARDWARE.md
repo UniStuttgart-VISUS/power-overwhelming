@@ -103,9 +103,11 @@ In the following, we provide instructions for building a power measurement setup
         
         There are two 12 V cables on pins 10 and 11.
         
-    2. In order to identify the ends, you might want to *immediately* tie the cables to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
+    2. Cut the cables in two. The location does not matter much, but we recommend cutting about 50 mm from the connector attached to the mainboard for later accessibility of the cut.
+        
+    3. In order to identify the ends when putting them together later, you want to *immediately* tie the cables to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
 
-    3. Remove the insulation on both sides of the cut. 
+    4. Remove the insulation on both sides of the cut. 
     
         Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
         
@@ -113,5 +115,17 @@ In the following, we provide instructions for building a power measurement setup
 
 6. Cut the PCIe power cables.
     1. Consulte a trustworthy website with a diagram showing the pins on the cable, for instance on [Wikipedia](https://en.wikipedia.org/wiki/PCI_Express#Power).
+
+        For a 6-pin connector, there are two 12 V cables on pins 1 and 3 and two ground cables on pins 4 and 6. The 12 V pins should be on opposite side of the clamp that holds the connector in place.
+        
+        For an 8-pin connector, there are three 12 V cables on pins 1, 2 and 3 and three ground cables on pins 5, 7 and 8. The ground pins should be on the side of the clamp that holds the connector in place.
+        
+    2. Cut the cables in two. The location does not matter buch, but we recommend cutting about 50 mm from the connectors attached to the GPU for later accessibility of the cut.
+    
+    3. In order to identify the ends when putting them together later, you want to *immediately* tie the cables to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
+
+    4. Remove the insulation on both sides ot the cut.
+        
+        
         
         
