@@ -157,7 +157,7 @@ In the following, we provide instructions for building a power measurement setup
         
     5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
   
-7. Prepare the extension cables.
+7. Prepare the extension cables for ATX, EPS P4/P8 and the PCIe cables.
 
 9. Prepare the riser card for soldering by removing the pluggable fuses for the 3.3 V and 12 V rails.
 
