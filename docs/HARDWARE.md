@@ -157,9 +157,7 @@ In the following, we provide instructions for building a power measurement setup
 
     5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
   
-7. Prepare the extension cables for ATX, EPS P4/P8 and the PCIe cables.
-
-9. Prepare the riser card for soldering by removing the pluggable fuses for the 3.3 V and 12 V rails.
+7. Prepare the riser card for soldering by removing the pluggable fuses for the 3.3 V and 12 V rails.
 
     The following picture illustrates the fuses that need to be removed from the B side of an *Adex Electronics PEX16IX* we used. The remaining fuse is for 5 V.
     
@@ -173,11 +171,11 @@ In the following, we provide instructions for building a power measurement setup
         <img alt="Removed fuses on an Adex Electronics PEX16IX." src="fuses.jpg">
     </picture>
 
-9. Prepare the four cables cables for the PEG power rails of the riser.
+8. Prepare the four cables cables for the PEG power rails of the riser.
 
     The length of the cables depends on the application scenarios you want to cover: If you intend only using the Tinkerforge bricklets for measuring, you can determine the length such that you directly reach the bricklets. If you intend to only measure using oscilloscopes, you can solder a loop (two cables) directly on the riser that is long enough that you can put a current clamp around it. If you want to have both options, you can use short cables at the riser that you can either connect into a loop or extend to reach the bricklets.
 
-10. Solder extension cables to the riser.
+9. Solder extension cables to the riser.
 
     Consult the manual of your riser to identify the pins where to attach the cables. In case of the *Adex Electronics PEX16IX*, there are pins for an external power supply and pins for supplying power via PEG. You must make sure to connect the pins for supplying power via PEG.
 
@@ -186,3 +184,28 @@ In the following, we provide instructions for building a power measurement setup
     <picture>
         <img alt="Extension cables soldered to the riser card." src="cables.jpg">
     </picture>
+
+10. Build the Tinkerforge setup:
+
+    1. Assemble the workbench (or just use a flat mounting plate).
+
+        Using the workbench has the advantage that it is raised and you can route the large number of cables below the bricklets.
+
+    2. Assemble the stack of the Master Bricks using the spacers somewhere close to the middle of the plate.
+    3. Assemble the bricklets using the spacers on the mounting plate.
+
+        Leave sufficient space around each of them such that you can route the power cables. Ideally, the bricklets are placed over or next to the opening in the plate such that you can route the power cables below the plate.
+
+    4. Connect the bricklets using the 7p-7p cables.
+
+        Start at the bottom of the stack. The bottommost master brick is the one that will be connected to the computer via USB and the higher the stack is, the worse becomes the latency.
+
+    5. Connect the bottommost master brick via USB to the computer.
+    6. Install the [Brick Daemon](https://www.tinkerforge.com/en/doc/Software/Brickd.html) and the [Brick Viewer](https://www.tinkerforge.com/en/doc/Software/Brickv.html#brickv) on the computer.
+
+        Regardless of whether you have attached any device to any of the Voltage/Current Bricklets, you should be able to enumerate all of the bricklets in the Brick Viewer.
+
+
+
+
+XX. Prepare the extension cables for ATX, EPS P4/P8 and the PCIe cables.
