@@ -124,7 +124,7 @@ In the following, we provide instructions for building a power measurement setup
 
     7. We recommend printing labels for the individual bricklets such that you know which one is which.
 
-        The easiest way to find out the UIDs of the bricklets is opening each of them in the *Brick Viewer* one after the other and flashing their status LED from there.
+        The easiest way to find out the UIDs of the bricklets is opening each of them in the *Brick Viewer* one after the other and flashing their status LED from there (combobox on the top/right of the bricklet's tab).
 
 4. Cut the ATX power wires.
     1. Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard or [Wikipedia](https://en.wikipedia.org/wiki/ATX#Power_supply).
