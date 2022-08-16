@@ -280,4 +280,4 @@ In the following, we provide instructions for building a power measurement setup
 
     Unless used with *Isolator Bricklets,* *Voltage/Current Bricklets 2.0* are not galvanically isolated from the overall Tinkerforge system, i.e. they are grounded via the master bricks. If you want to connect the bricklets to the ground of the riser card, you can do so by preparing additional wires with alligator clamps that attach to the grounding point of the riser.
 
-At this point, you should be ready to perform your first measurements. We have compiled a [list of lessons learned for the software side](/docs/TINKERFORGE.md).
+At this point, you should be ready to perform your first measurements. We have compiled a [list of lessons learned for the software side](TINKERFORGE.md).
