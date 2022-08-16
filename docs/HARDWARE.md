@@ -46,7 +46,7 @@ In the following, we provide instructions for building a power measurement setup
 * 2 m litz wire with 2.5 mm² cross section. Again, we recommend having half in red and half in blue/black.
 * 60 &times; wire connectors for wires with a cross section of up to 1.5 mm², e.g. *WAGO 221-2411.* Due to the large number of connections, we strongly recommend using revisable wire connectors instead of soldering them.
 * 25 &times; 5-conductor lever nuts for wires with a cross section of up to 2.5 mm², e.g. *WAGO 221-415.*
-* 4 &times; ferrule for soldering wires to the riser card.
+* 4 &times; ferrule for soldering 1.5 mm² wires to the riser card.
 * ??? &times; ferrule. This is only required if you intend to solder the connections. Due to the large number of connections, we strongly advise against soldering them.
 * Cable tie. While optional, it facilitates the setup if you can tie wires that belong together.
 * Shrink tubing in different colours. This is required to mark the wires you have cut such that you know which ones need to be connected. Alternatively, you can also use tape for that.
