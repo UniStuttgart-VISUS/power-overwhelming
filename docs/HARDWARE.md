@@ -195,7 +195,7 @@ In the following, we provide instructions for building a power measurement setup
     > The illustration is specific for the very revision of the *Adex Electronics PEX16IX* we used. Consult the manual of your hardware to identify the correct fuses to remove!
 
     > **Warning**
-    > The fuses are most likely not identical. Remember which one you removed from which location in case you ever want to restore the original configuration of the riser.
+    > The fuses are most likely not identical (on the *Adex Electronics PEX16IX*, they definitely are not). Remember which one you removed from which location in case you ever want to restore the original configuration of the riser.
 
     <picture>
         <img alt="Removed fuses on an Adex Electronics PEX16IX." src="fuses.jpg">
@@ -267,3 +267,15 @@ In the following, we provide instructions for building a power measurement setup
     <picture>
         <img alt="Current flow through Voltage/Current Bricklet 2.0." src="current-flow.jpg">
     </picture>
+
+13. Connect the wires soldered to the riser to the bricklets.
+
+    > **Warning**
+    > The direction of the current matters for *Voltage/Current Bricklets!* Check the arrow indicating the direction of the current and the labels "input" and "output" printed on the bricklet.
+
+    > **Warning**
+    > Check the direction of the current through the riser in the manual.
+
+    In case of the *Adex Electronics PEX16IX*, the lower pins (closer to the PCIe slot) are the source that needs to be connected to the "input" side of the bricklet and the upper pins are the sink that needs to be connected to the "output" side.
+
+    Unless used with *Isolator Bricklets*, *Voltage/Current Bricklets 2.0* are not galvanically isolated from the overall Tinkerforge system, i.e. they are grounded via the master bricks. If you want to connect the bricklets to the riser, you can do so by preparing additional wires with alligator clamps that attach to the grounding point of the riser.
