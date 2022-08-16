@@ -52,8 +52,8 @@ In the following, we provide instructions for building a power measurement setup
 * Shrink tubing in different colours. This is required to mark the wires you have cut such that you know which ones need to be connected. Alternatively, you can also use tape for that.
 * Electrical tape in different colours. This is required to mark the wires you have cut sucht that you know which ones need to be connected. Alternatively, you can also use coloured shrink tubing.
 * 3 &times; *[Tinkerforge Master Brick 3.1](https://www.tinkerforge.com/en/shop/master-brick.html)*
-* 10 &times; *[Tinkerforge Voltage/Current Bricklet 2.0](https://www.tinkerforge.com/en/shop/voltage-current-v2-bricklet.html)* (if you plan to use a GPU with three PCIe power cables, you need 11 of these)
-* 10 &times; *[Tinkerforge Bricklet Cable 50 cm (7p-7p)](https://www.tinkerforge.com/en/shop/bricklet-cable-50cm-7p-7p.html)* (if you plan to use a GPU with three PCIe power cables, you need 11 of these)
+* 10 &times; *[Tinkerforge Voltage/Current Bricklet 2.0](https://www.tinkerforge.com/en/shop/voltage-current-v2-bricklet.html)* (If you plan to measure only GPUs with two PCIe power cables, nine of these will suffice.)
+* 10 &times; *[Tinkerforge Bricklet Cable 50 cm (7p-7p)](https://www.tinkerforge.com/en/shop/bricklet-cable-50cm-7p-7p.html)* (If you plan to measure only GPUs with two PCIe power cables, nine of these will suffice.)
 * 1 &times; *[Tinkerforge Workbench (34 &times; 20 cm)](https://www.tinkerforge.com/en/shop/tinkerforge-workbench-34x20cm.html)*
 * 15 &times; *[Tinkerforge Mounting Kit 12 mm](https://www.tinkerforge.com/en/shop/accessories/mounting/mounting-kit-12mm.html)*
 * 1 m (or longer) USB-C to USB-C cable or USB-C to USB-A cable.
@@ -227,7 +227,7 @@ In the following, we provide instructions for building a power measurement setup
 
     The insulation needs to be removed on both sides of the extension wires. Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
 
-11. Prepare the wires (2.5 mm² cross section) for connecting the extension cables to the bricklets.
+11. Prepare the wires (2.5 mm² cross section) for connecting the extension cables to the bricklets (8 &times; 2 = 16 for each of the two colours).
 
     The *Voltage/Current Bricklets* cannot accept the number of wires required, for instance, 5 &times; 1.5 mm² for the 5 V ATX rail. Therefore, we use a single wire with a larger cross section here.
 
@@ -257,3 +257,13 @@ In the following, we provide instructions for building a power measurement setup
         <img alt="Two stacked WAGO 221-415 5-conductor lever nuts for the 5 V ATX power rail." src="stacked-wago-221-415.jpg">
     </picture>
 
+13. Connect the 2.5 mm² wires to the bricklets.
+
+    > **Warning**
+    > The direction of the current matters for *Voltage/Current Bricklets!* Check the arrow indicating the direction of the current and the labels "input" and "output" printed on the bricklet.
+
+    Connect the "input" side of the bricklets to the power supply and the "output" side to the extension cables for the consumers (mainboard and GPU).
+
+    <picture>
+        <img alt="Current flow through Voltage/Current Bricklet 2.0." src="current-flow.jpg">
+    </picture>
