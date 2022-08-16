@@ -95,8 +95,29 @@ In the following, we provide instructions for building a power measurement setup
         On most bench table, the PSU is mounted on the bottom layer of the table below the mainboard.
 
     10. Connect all the cables for switches, USB, etc. as described in the manual of the mainboard.
+    11. Connect all power cables and test the machine.
 
-3. Cut the ATX power cables.
+3. Build the Tinkerforge setup:
+
+    1. Assemble the workbench (or just use a flat mounting plate).
+
+        Using the workbench has the advantage that it is raised and you can route the large number of cables below the bricklets.
+
+    2. Assemble the stack of the Master Bricks using the spacers somewhere close to the middle of the plate.
+    3. Assemble the bricklets using the spacers on the mounting plate.
+
+        Leave sufficient space around each of them such that you can route the power cables. Ideally, the bricklets are placed over or next to the opening in the plate such that you can route the power cables below the plate.
+
+    4. Connect the bricklets using the 7p-7p cables to the stack of master bricks.
+
+        Start at the bottom of the stack. The bottommost master brick is the one that will be connected to the computer via USB and the higher the stack is, the worse becomes the latency.
+
+    5. Connect the bottommost master brick via USB to a computer, which could be the bench table.
+    6. Install the [Brick Daemon](https://www.tinkerforge.com/en/doc/Software/Brickd.html) and the [Brick Viewer](https://www.tinkerforge.com/en/doc/Software/Brickv.html#brickv) on the computer.
+
+        Regardless of whether you have attached any device to any of the *Voltage/Current Bricklets*, you should be able to enumerate all of the bricklets in the *Brick Viewer*.
+
+4. Cut the ATX power cables.
     1. Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard or [Wikipedia](https://en.wikipedia.org/wiki/ATX#Power_supply).
 
        > **Warning**
@@ -114,7 +135,7 @@ In the following, we provide instructions for building a power measurement setup
 
     5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
 
-4. Cut the EPS P4/P8 CPU power cables.
+5. Cut the EPS P4/P8 CPU power cables.
     1. Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard or the manual of your power supply.
 
        > **Warning**
@@ -185,30 +206,8 @@ In the following, we provide instructions for building a power measurement setup
         <img alt="Extension cables soldered to the riser card." src="cables.jpg">
     </picture>
 
-10. Build the Tinkerforge setup:
-
-    1. Assemble the workbench (or just use a flat mounting plate).
-
-        Using the workbench has the advantage that it is raised and you can route the large number of cables below the bricklets.
-
-    2. Assemble the stack of the Master Bricks using the spacers somewhere close to the middle of the plate.
-    3. Assemble the bricklets using the spacers on the mounting plate.
-
-        Leave sufficient space around each of them such that you can route the power cables. Ideally, the bricklets are placed over or next to the opening in the plate such that you can route the power cables below the plate.
-
-    4. Connect the bricklets using the 7p-7p cables to the stack of master bricks.
-
-        Start at the bottom of the stack. The bottommost master brick is the one that will be connected to the computer via USB and the higher the stack is, the worse becomes the latency.
-
-    5. Connect the bottommost master brick via USB to the computer.
-    6. Install the [Brick Daemon](https://www.tinkerforge.com/en/doc/Software/Brickd.html) and the [Brick Viewer](https://www.tinkerforge.com/en/doc/Software/Brickv.html#brickv) on the computer.
-
-        Regardless of whether you have attached any device to any of the *Voltage/Current Bricklets*, you should be able to enumerate all of the bricklets in the *Brick Viewer*.
-
-11. Prepare the extension cables for ATX, EPS P4/P8 and the PCIe cables.
+10. Prepare the extension cables for ATX, EPS P4/P8 and the PCIe cables.
 
     We recommend measuring the required cables once you have assembled the Tinkerforge bricks and bricklets and have decided on where to place them. The cables should be as long as necessary, but as short as possible.
 
-    When deciding the length of the PCIe power cables, remember that some GPUs might be higher than others.
-
-
+    When deciding the length of the PCIe power cables, remember that some GPUs might be higher than others, so make sure to test it with your biggest card or do not make the cables too tight.
