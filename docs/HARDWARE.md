@@ -219,3 +219,13 @@ In the following, we provide instructions for building a power measurement setup
     We recommend measuring the required cables once you have assembled the Tinkerforge bricks and bricklets and have decided on where to place them. The cables should be as long as necessary, but as short as possible.
 
     When deciding the length of the PCIe power cables, remember that some GPUs might be higher than others, so make sure to test it with your biggest card or do not make the cables too tight.
+
+    The insulation needs to be removed on both sides of the extension cables. Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
+
+11. Connect the extension cables for ATX, EPS P4/P8 and the PCIe cables.
+
+    You can either solder these connections or use revisable wire connectors (recommended). On the sides of the (mainboard, GPU) connectors, we connected each cable individually using *WAGO 221-2411* wire connectors.
+
+    <picture>
+        <img alt="Connections for the ATX power cables using WAGO 221-2411 wire connectors." src="atx.jpg">
+    </picture>
