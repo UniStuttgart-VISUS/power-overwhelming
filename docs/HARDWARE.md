@@ -154,7 +154,7 @@ In the following, we provide instructions for building a power measurement setup
 
         For a P8 connector, there are four 12 V cables on pins 5, 6, 7 and 8 and four ground cables on pins 1, 2, 3 and 4. The 12 V pins should be *on the side of the clamp* that holds the connector in place.
 
-    2. Cut the wires in two. The location does not matter buch, but we recommend cutting about 50 mm from the connectors attached to the mainboard for later accessibility of the cut. Ideally, the remaining wire is long enough to reach the Tinkerforge bricklets without an additional extension
+    2. Cut the wires in two. The location does not matter much, but we recommend cutting about 50 mm from the connectors attached to the mainboard for later accessibility of the cut. Ideally, the remaining wire is long enough to reach the Tinkerforge bricklets without an additional extension
 
     3. In order to identify the ends when putting them together later, you want to *immediately* tie the wires to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
 
@@ -177,7 +177,7 @@ In the following, we provide instructions for building a power measurement setup
         
         For an 8-pin connector, there are three 12 V cables on pins 1, 2 and 3 and three ground cables on pins 5, 7 and 8. The ground pins should be *on the side of the clamp* that holds the connector in place.
 
-    2. Cut the wires in two. The location does not matter buch, but we recommend cutting about 50 mm from the connectors attached to the GPU for later accessibility of the cut. Ideally, the remaining wire is long enough to reach the Tinkerforge bricklets without an additional extension
+    2. Cut the wires in two. The location does not matter much, but we recommend cutting about 50 mm from the connectors attached to the GPU for later accessibility of the cut. Ideally, the remaining wire is long enough to reach the Tinkerforge bricklets without an additional extension
 
     3. In order to identify the ends when putting them together later, you want to *immediately* tie the cables to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
 
