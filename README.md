@@ -2,7 +2,7 @@
 This project provides a library for measuring the power consumption of GPUs (and other system components) by various means.
 
 > **Note**
-> If you are here for the [instructions for building a bench table for measuring GPU power consumption](docs/HARDWARE.md), look in the `docs` folder.
+> If you are here for the [instructions for building a bench table for measuring GPU power consumption](docs/HARDWARE.md), look in the `docs` folder. Over there, you also find some [lessons we learned about measuring power with Tinkerforge bricklets.](docs/TINKERFORGE.md)
 
 
 ## Building the library
