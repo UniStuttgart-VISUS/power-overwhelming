@@ -99,6 +99,10 @@ In the following, we provide instructions for building a power measurement setup
 
 3. Build the Tinkerforge setup:
 
+    <picture>
+        <img alt="Tinkerforge Bricks and Bricklets on the workbench." src="bricklets.jpg">
+    </picture>
+
     1. Assemble the workbench (or just use a flat mounting plate).
 
         Using the workbench has the advantage that it is raised and you can route the large number of cables below the bricklets.
