@@ -278,4 +278,4 @@ In the following, we provide instructions for building a power measurement setup
 
     In case of the *Adex Electronics PEX16IX*, the lower pins (closer to the PCIe slot) are the source that needs to be connected to the "input" side of the bricklet and the upper pins are the sink that needs to be connected to the "output" side.
 
-    Unless used with *Isolator Bricklets*, *Voltage/Current Bricklets 2.0* are not galvanically isolated from the overall Tinkerforge system, i.e. they are grounded via the master bricks. If you want to connect the bricklets to the riser, you can do so by preparing additional wires with alligator clamps that attach to the grounding point of the riser.
+    Unless used with *Isolator Bricklets,* *Voltage/Current Bricklets 2.0* are not galvanically isolated from the overall Tinkerforge system, i.e. they are grounded via the master bricks. If you want to connect the bricklets to the ground of the riser card, you can do so by preparing additional wires with alligator clamps that attach to the grounding point of the riser.
