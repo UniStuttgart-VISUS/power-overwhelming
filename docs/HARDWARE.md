@@ -55,7 +55,7 @@ In the following, we provide instructions for building a power measurement setup
 * 10 &times; *[Tinkerforge Voltage/Current Bricklet 2.0](https://www.tinkerforge.com/en/shop/voltage-current-v2-bricklet.html)* (If you plan to measure only GPUs with two PCIe power cables, nine of these will suffice.)
 * 10 &times; *[Tinkerforge Bricklet Cable 50 cm (7p-7p)](https://www.tinkerforge.com/en/shop/bricklet-cable-50cm-7p-7p.html)* (If you plan to measure only GPUs with two PCIe power cables, nine of these will suffice.)
 * 1 &times; *[Tinkerforge Workbench (34 &times; 20 cm)](https://www.tinkerforge.com/en/shop/tinkerforge-workbench-34x20cm.html)*
-* 15 &times; *[Tinkerforge Mounting Kit 12 mm](https://www.tinkerforge.com/en/shop/accessories/mounting/mounting-kit-12mm.html)*
+* 13 &times; *[Tinkerforge Mounting Kit 12 mm](https://www.tinkerforge.com/en/shop/accessories/mounting/mounting-kit-12mm.html)*
 * 1 m (or longer) USB-C to USB-C cable or USB-C to USB-A cable.
 
 ## Instructions
