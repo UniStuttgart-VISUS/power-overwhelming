@@ -245,4 +245,15 @@ In the following, we provide instructions for building a power measurement setup
 
 12. Connect the extension wires for ATX, EPS P4/P8 and the PCIe cables to the 2.5 mm² wires connecting to the bricklets.
 
-    
+    We strongly recommend using lever nuts for these connections. A single *WAGO 221-415* 5-conductor lever nut suffices for almost any connection. Attach all of the 1.5 mm² extension wires and the single 2.5 mm² wire of each connection into a single lever nut.
+
+    <picture>
+        <img alt="Connections made with WAGO 221-415 5-conductor lever nuts." src="wago-221-415.jpg">
+    </picture>
+
+    The 5 V ATX rail uses five wires and therefore does not fit into a single *WAGO 221-415* along with the 2.5 mm² connection to the bricklet. In this single case, we stack two of the lever nuts:
+
+    <picture>
+        <img alt="Two stacked WAGO 221-415 5-conductor lever nuts for the 5 V ATX power rail." src="stacked-wago-221-415.jpg">
+    </picture>
+
