@@ -24,9 +24,9 @@ In the following, we provide instructions for building a power measurement setup
 * Screwdrivers
 * Side-cutting pliers
 * 3D printer
+* Crimp tong.
 * Cable stripper, e.g. *Knipex 12 40 2000.* In principle, this is optional, but you will need to strip a lot of cables, so this is highly recommended.
 * Heat gun, e.g. *Bosch GHG 20-63 Professional.* This is also optional, but if you want to use shrink tubing to insulate and mark cables, you need one.
-* Crimp tong. This is optional and only required if you intend to solder the connections instead of clamping them together. Due to the large number of connections, we strongly advise against soldering them.
 * Label printer. This is optional, but we recommend labelling the bricklets such that you easily know what is connected to them.
 * Antistatic mat and/or antistatic wrist strap. We strongly recommend using this while working with expensive electronic parts.
 
@@ -46,6 +46,7 @@ In the following, we provide instructions for building a power measurement setup
 * ??? m litz wire with 2.5 mm² cross section. Again, we recommend having half in red and half in blue/black.
 * 60 &times; wire connectors for wires with a cross section of up to 1.5 mm², e.g. *WAGO 221-2411.* Due to the large number of connections, we strongly recommend using revisable wire connectors instead of soldering them.
 * 25 &times; 5-conductor lever nuts for wires with a cross section of up to 2.5 mm², e.g. *WAGO 221-415.*
+* 4 &times; ferrule for soldering wires to the riser card.
 * ??? &times; ferrule. This is only required if you intend to solder the connections. Due to the large number of connections, we strongly advise against soldering them.
 * Cable tie. While optional, it facilitates the setup if you can tie wires that belong together.
 * Shrink tubing in different colours. This is required to mark the wires you have cut such that you know which ones need to be connected. Alternatively, you can also use tape for that.
@@ -105,12 +106,12 @@ In the following, we provide instructions for building a power measurement setup
 
     1. Assemble the workbench (or just use a flat mounting plate).
 
-        Using the workbench has the advantage that it is raised and you can route the large number of cables below the bricklets.
+        Using the workbench has the advantage that it is raised and you can route the large number of wires below the bricklets.
 
     2. Assemble the stack of the Master Bricks using the spacers somewhere close to the middle of the plate.
     3. Assemble the bricklets using the spacers on the mounting plate.
 
-        Leave sufficient space around each of them such that you can route the power cables. Ideally, the bricklets are placed over or next to the opening in the plate such that you can route the power cables below the plate.
+        Leave sufficient space around each of them such that you can route the power wires. Ideally, the bricklets are placed over or next to the opening in the plate such that you can route the power wires below the plate.
 
     4. Connect the bricklets using the 7p-7p cables to the stack of master bricks.
 
@@ -125,58 +126,58 @@ In the following, we provide instructions for building a power measurement setup
 
         The easiest way to find out the UIDs of the bricklets is opening each of them in the *Brick Viewer* one after the other and flashing their status LED from there.
 
-4. Cut the ATX power cables.
+4. Cut the ATX power wires.
     1. Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard or [Wikipedia](https://en.wikipedia.org/wiki/ATX#Power_supply).
 
        > **Warning**
-       > Double check whether the diagram shows the socket or the cable before cutting any cable! The diagrams in the manual typically show the pins on the mainboard-side socket, not on the cable/plug side. You can identify this by matching the shapes (squared or rounded) of the heads or receptacles shown with the heads you want to cut.
+       > Double check whether the diagram shows the socket or the wire before cutting any wire! The diagrams in the manual typically show the pins on the mainboard-side socket, not on the cable/plug side. You can identify this by matching the shapes (squared or rounded) of the heads or receptacles shown with the heads you want to cut.
 
         Assuming the 24-pin ATX power supply connector, the pins are (i) four 3.3 V cables on pins 1, 2, 12 and 13, (ii) five 5 V cables on pins 4, 6, 21, 22 and 23 and (iii) two 12 V cables on pins 10 and 11.
 
-    2. Cut the cables in two. The location does not matter much, but we recommend cutting about 50 mm from the connector attached to the mainboard for later accessibility of the cut.
+    2. Cut the wires in two. The location does not matter much, but we recommend cutting about 50 mm from the connector attached to the mainboard for later accessibility of the cut.
 
-    3. In order to identify the ends when putting them together later, you want to *immediately* tie the cables to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
+    3. In order to identify the ends when putting them together later, you want to *immediately* tie the wires to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
 
     4. Remove the insulation on both sides of the cut. 
 
         Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
 
-    5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
+    5. If you intend to solder the wires instead of using level nuts, add the ferrules to the end of the wires.
 
-5. Cut the EPS P4/P8 CPU power cables.
+5. Cut the EPS P4/P8 CPU power wires.
     1. Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard or the manual of your power supply.
 
        > **Warning**
-       > Double check whether the diagram shows the socket or the cable before cutting any cable! The diagrams in the manual typically show the pins on the mainboard-side socket, not on the cable/plug side. You can identify this by matching the shapes (squared or rounded) of the headers or receptacles shown with the heads you want to cut.
+       > Double check whether the diagram shows the socket or the wire before cutting any wire! The diagrams in the manual typically show the pins on the mainboard-side socket, not on the cable/plug side. You can identify this by matching the shapes (squared or rounded) of the headers or receptacles shown with the heads you want to cut.
 
         For a P4 connector, there are two 12 V cables on pins 3 and 4 and two ground cables on pins 1 and 2. The 12 V pins should be *on the side of the clamp* that holds the connector in place.
 
         For a P8 connector, there are four 12 V cables on pins 5, 6, 7 and 8 and four ground cables on pins 1, 2, 3 and 4. The 12 V pins should be *on the side of the clamp* that holds the connector in place.
 
-    2. Cut the cables in two. The location does not matter buch, but we recommend cutting about 50 mm from the connectors attached to the mainboard for later accessibility of the cut.
+    2. Cut the wires in two. The location does not matter buch, but we recommend cutting about 50 mm from the connectors attached to the mainboard for later accessibility of the cut.
 
-    3. In order to identify the ends when putting them together later, you want to *immediately* tie the cables to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
+    3. In order to identify the ends when putting them together later, you want to *immediately* tie the wires to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
 
     4. Remove the insulation on both sides ot the cut.
 
         Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
 
-    5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
+    5. If you intend to solder the wires instead of using level nuts, add the ferrules to the end of the wires.
 
-6. Cut the PCIe power cables.
+6. Cut the PCIe power wires.
     1.  Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard, the manual of your power supply or [Wikipedia](https://en.wikipedia.org/wiki/PCI_Express#Power).
 
         > **Warning**
-        > Double check whether the diagram shows the socket or the cable before cutting any cable! You can identify this by matching the shapes (squared or rounded) of the headers or receptacles shown with the heads you want to cut.
+        > Double check whether the diagram shows the socket or the cable before cutting any wire! You can identify this by matching the shapes (squared or rounded) of the headers or receptacles shown with the heads you want to cut.
 
         > **Warning**
-        > The 8-pin connectors are frequently realised as a 6-pin connector and a 2-pin connector. Make sure that you arranged these correctly before cutting any cable!
+        > The 8-pin connectors are frequently realised as a 6-pin connector and a 2-pin connector. Make sure that you arranged these correctly before cutting any wire!
 
         For a 6-pin connector, there are three 12 V cables on pins 1, 2 and 3 and two ground cables on pins 4 and 6. The 12 V pins should be *opposite of the side of the clamp* that holds the connector in place.
         
         For an 8-pin connector, there are three 12 V cables on pins 1, 2 and 3 and three ground cables on pins 5, 7 and 8. The ground pins should be *on the side of the clamp* that holds the connector in place.
 
-    2. Cut the cables in two. The location does not matter buch, but we recommend cutting about 50 mm from the connectors attached to the GPU for later accessibility of the cut.
+    2. Cut the wires in two. The location does not matter buch, but we recommend cutting about 50 mm from the connectors attached to the GPU for later accessibility of the cut.
 
     3. In order to identify the ends when putting them together later, you want to *immediately* tie the cables to each voltage together using cable tie on both sides of the cut and mark them with a unique colour (either shrink tubing or tape).
 
@@ -184,7 +185,7 @@ In the following, we provide instructions for building a power measurement setup
 
         Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
 
-    5. If you intend to solder the cables instead of using level nuts, add the ferrules to the end of the cables.
+    5. If you intend to solder the wiress instead of using level nuts, add the ferrules to the end of the wires.
   
 7. Prepare the riser card for soldering by removing the pluggable fuses for the 3.3 V and 12 V rails.
 
@@ -200,42 +201,48 @@ In the following, we provide instructions for building a power measurement setup
         <img alt="Removed fuses on an Adex Electronics PEX16IX." src="fuses.jpg">
     </picture>
 
-8. Prepare the four cables cables with 1.5 mm² cross section for the PEG power rails of the riser.
+8. Prepare the four wires with 1.5 mm² cross section for the PEG power rails of the riser.
 
-    The length of the cables depends on the application scenarios you want to cover: If you intend only using the Tinkerforge bricklets for measuring, you can determine the length such that you directly reach the bricklets. If you intend to only measure using oscilloscopes, you can solder a loop (two cables) directly on the riser that is long enough that you can put a current clamp around it. If you want to have both options, you can use short cables at the riser that you can either connect into a loop or extend to reach the bricklets.
+    The length of the wires depends on the application scenarios you want to cover: If you intend only using the Tinkerforge bricklets for measuring, you can determine the length such that you directly reach the bricklets. If you intend to only measure using oscilloscopes, you can solder a loop (two cables) directly on the riser that is long enough that you can put a current clamp around it. If you want to have both options, you can use short wires at the riser that you can either connect into a loop or extend to reach the bricklets.
 
-9. Solder extension cables to the riser.
+    Add ferrules on the side you intend to solder to the riser.
 
-    Consult the manual of your riser to identify the pins where to attach the cables. In case of the *Adex Electronics PEX16IX*, there are pins for an external power supply and pins for supplying power via PEG. You must make sure to connect the pins for supplying power via PEG.
+    The other side does not need ferrules as it is either clamped into a bricklet or into a wire connector.
 
-    We strongly recommend to *immediately* add some identification in form of coloured tape or shrink tubing to each of the four cables such that you know which pair is 3.3 V/12 V and which of these are input and output.
+9. Solder extension wires to the riser.
+
+    Consult the manual of your riser to identify the pins where to attach the wires. In case of the *Adex Electronics PEX16IX*, there are pins for an external power supply and pins for supplying power via PEG. You must make sure to connect the pins for supplying power via PEG.
+
+    We strongly recommend to *immediately* add some identification in form of coloured tape or shrink tubing to each of the four wires such that you know which pair is 3.3 V/12 V and which of these are input and output.
 
     <picture>
         <img alt="Extension cables soldered to the riser card." src="cables.jpg">
     </picture>
 
-10. Prepare the extension cables for ATX, EPS P4/P8 and the PCIe cables with 1.5 mm² cross section.
+10. Prepare the extension wires with 1.5 mm² cross section for ATX, EPS P4/P8 and the PCIe cables.
 
-    We recommend measuring the required cables once you have assembled the Tinkerforge bricks and bricklets and have decided on where to place them. The cables should be as long as necessary, but as short as possible.
+    We recommend measuring the required wires once you have assembled the Tinkerforge bricks and bricklets and have decided on where to place them. The wires should be as long as necessary, but as short as possible.
 
-    When deciding the length of the PCIe power cables, remember that some GPUs might be higher than others, so make sure to test it with your biggest card or do not make the cables too tight.
+    When deciding the length of the PCIe power wires, remember that some GPUs might be higher than others, so make sure to test it with your biggest card or do not make the wires too tight.
 
-    The insulation needs to be removed on both sides of the extension cables. Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
+    The insulation needs to be removed on both sides of the extension wires. Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
 
-11. Prepare the cables (2.5 mm² cross section) for connecting the extension cables to the bricklets.
+11. Prepare the wires (2.5 mm² cross section) for connecting the extension cables to the bricklets.
 
-    The *Voltage/Current Bricklets* cannot accept the number of cables required, for instance, for the 5 V ATX rail. Therefore, we use a single cable with a larger cross section here.
+    The *Voltage/Current Bricklets* cannot accept the number of wires required, for instance, 5 &times; 1.5 mm² for the 5 V ATX rail. Therefore, we use a single wire with a larger cross section here.
 
-    As the cable cross section that fits into a *Voltage/Current Bricklet* is smaller than the sum of some connections (again the 5 V ATX rail as an example which uses five 1.5 mm² cables), these cables should be as short as possible. We found 50 mm to work for us.
+    As the wire cross section that fits into a *Voltage/Current Bricklet* is smaller than the sum of some connections, these wire should be as short as possible. We found 50 mm to work for us.
 
-    Remove the insulation on both sides of these short cables. On the side that is connected to the bricklet, remove around 10 mm. Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove on the other side. For the WAGO lever nuts we used, 11 mm are recommended.
+    Remove the insulation on both sides of these short wires. On the side that is connected to the bricklet, remove around 10 mm. Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove on the other side. For the WAGO lever nuts we used, 11 mm are recommended.
 
-12. Connect the extension cables for ATX, EPS P4/P8 and the PCIe cables.
+12. Connect the extension wires for ATX, EPS P4/P8 and the PCIe cables.
 
-    You can either solder these connections or use revisable wire connectors (recommended). On the sides of the (mainboard, GPU) connectors, we connected each cable individually using *WAGO 221-2411* wire connectors.
+    You can either solder these connections or use revisable wire connectors (recommended). On the sides of the (mainboard, GPU) connectors, we connected each wire individually using *WAGO 221-2411* wire connectors.
 
     <picture>
         <img alt="Connections for the ATX power cables using WAGO 221-2411 wire connectors." src="atx.jpg">
     </picture>
 
+12. Connect the extension wires for ATX, EPS P4/P8 and the PCIe cables to the 2.5 mm² wires connecting to the bricklets.
 
+    
