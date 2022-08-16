@@ -121,6 +121,10 @@ In the following, we provide instructions for building a power measurement setup
 
         Regardless of whether you have attached any device to any of the *Voltage/Current Bricklets*, you should be able to enumerate all of the bricklets in the *Brick Viewer*.
 
+    7. We recommend printing labels for the individual bricklets such that you know which one is which.
+
+        The easiest way to find out which bricklet is which is opening each of them in the *Brick Viewer* one after the other and flash their status LED from there.
+
 4. Cut the ATX power cables.
     1. Identify the relevant pins on the cable using a trustworthy source, for instance the manual of your mainboard or [Wikipedia](https://en.wikipedia.org/wiki/ATX#Power_supply).
 
