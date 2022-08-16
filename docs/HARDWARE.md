@@ -222,10 +222,20 @@ In the following, we provide instructions for building a power measurement setup
 
     The insulation needs to be removed on both sides of the extension cables. Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove. For the WAGO lever nuts we used, 11 mm are recommended.
 
-11. Connect the extension cables for ATX, EPS P4/P8 and the PCIe cables.
+11. Prepare the cables (2.5 mm² cross section) for connecting the extension cables to the bricklets.
+
+    The *Voltage/Current Bricklets* cannot accept the number of cables required, for instance, for the 5 V ATX rail. Therefore, we use a single cable with a larger cross section here.
+
+    As the cable cross section that fits into a *Voltage/Current Bricklet* is smaller than the sum of some connections (again the 5 V ATX rail as an example which uses five 1.5 mm² cables), these cables should be as short as possible. We found 50 mm to work for us.
+
+    Remove the insulation on both sides of these short cables. On the side that is connected to the bricklet, remove around 10 mm. Consult the manual of your lever nuts or ferrules on how much of the insulation you need to remove on the other side. For the WAGO lever nuts we used, 11 mm are recommended.
+
+12. Connect the extension cables for ATX, EPS P4/P8 and the PCIe cables.
 
     You can either solder these connections or use revisable wire connectors (recommended). On the sides of the (mainboard, GPU) connectors, we connected each cable individually using *WAGO 221-2411* wire connectors.
 
     <picture>
         <img alt="Connections for the ATX power cables using WAGO 221-2411 wire connectors." src="atx.jpg">
     </picture>
+
+
