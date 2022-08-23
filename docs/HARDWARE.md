@@ -12,6 +12,9 @@ In the following, we provide instructions for building a power measurement setup
 > The modifications described in the following will **invalidate the warranty** on the components and render them useless for normal operations.
 
 > **Warning**
+> The current rating of the Tinkerforge Voltage/Current Bricklets is less than modern power supplies can deliver on some rails (most notable ATX). This setup assumes that the software running on the system actually draws less power than there is available.
+
+> **Warning**
 > Universität Stuttgart, VISUS and any person involved in this project do not make any warranty of the permissibility, safety and fitness for any purpose of the process described herein. We are not electrical engineers, and in no event shall we be liable for any claim, damages or other liability, arising from, out of or in connection with following the process described here. **You do that at your own risk!**
 
 ## Parts and special tools
