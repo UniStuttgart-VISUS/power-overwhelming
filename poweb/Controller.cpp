@@ -216,6 +216,9 @@ void Controller::CreateWnd(HINSTANCE hInstance) {
         height = std::abs(workArea.bottom - workArea.top);
     }
 
+    //width = 1920;
+    //height = 1080;
+
     this->_hWnd = ::CreateWindow(WINDOW_CLASS, windowTitle, WS_OVERLAPPEDWINDOW,
         0, 0, width, height, nullptr, nullptr, hInstance, this);
     if (this->_hWnd == NULL) {
@@ -224,6 +227,7 @@ void Controller::CreateWnd(HINSTANCE hInstance) {
     }
 
     ::ShowWindow(this->_hWnd, SW_MAXIMIZE);
+    //::ShowWindow(this->_hWnd, SW_SHOW);
     ::UpdateWindow(this->_hWnd);
 #pragma endregion
 }

@@ -1,0 +1,138 @@
+{
+  "collectRequiresMarker": true,
+  "outputPath": "observable-3090.csv",
+  "samplingInterval": 5000,
+  "sensors": [
+    {
+      "name": "Rohde&Schwarz,HMC8015,043506929,01.403",
+      "path": "USB0::0x0AAD::0x0135::043506929::INSTR",
+      "timeout": 3000,
+      "type": "hmc8015_sensor"
+    },
+    {
+      "deviceGuid": "GPU-7c6b95b7-d0a6-9943-a9e8-2cf3ec224b76",
+      "name": "NVML/NVIDIA GeForce RTX 3090/0000:09:00.0",
+      "type": "nvml_sensor"
+    },
+    {
+      "host": "localhost",
+      "name": "Tinkerforge/localhost:4223/U5T",
+      "port": 4223,
+      "source": "all",
+      "type": "tinkerforge_sensor",
+      "uid": "U5T"
+    },
+    {
+      "host": "localhost",
+      "name": "Tinkerforge/localhost:4223/U6Q",
+      "port": 4223,
+      "source": "all",
+      "type": "tinkerforge_sensor",
+      "uid": "U6Q"
+    },
+    {
+      "host": "localhost",
+      "name": "Tinkerforge/localhost:4223/UeW",
+      "port": 4223,
+      "source": "all",
+      "type": "tinkerforge_sensor",
+      "uid": "UeW"
+    },
+    {
+      "host": "localhost",
+      "name": "Tinkerforge/localhost:4223/UfN",
+      "port": 4223,
+      "source": "all",
+      "type": "tinkerforge_sensor",
+      "uid": "UfN"
+    },
+    {
+      "host": "localhost",
+      "name": "Tinkerforge/localhost:4223/Ufm",
+      "port": 4223,
+      "source": "all",
+      "type": "tinkerforge_sensor",
+      "uid": "Ufm"
+    },
+    {
+      "host": "localhost",
+      "name": "Tinkerforge/localhost:4223/Uft",
+      "port": 4223,
+      "source": "all",
+      "type": "tinkerforge_sensor",
+      "uid": "Uft"
+    },
+    {
+      "host": "localhost",
+      "name": "Tinkerforge/localhost:4223/UgC",
+      "port": 4223,
+      "source": "all",
+      "type": "tinkerforge_sensor",
+      "uid": "UgC"
+    },
+    {
+      "host": "localhost",
+      "name": "Tinkerforge/localhost:4223/UgF",
+      "port": 4223,
+      "source": "all",
+      "type": "tinkerforge_sensor",
+      "uid": "UgF"
+    },
+    {
+      "host": "localhost",
+      "name": "Tinkerforge/localhost:4223/UgH",
+      "port": 4223,
+      "source": "all",
+      "type": "tinkerforge_sensor",
+      "uid": "UgH"
+    },
+    {
+      "host": "localhost",
+      "name": "Tinkerforge/localhost:4223/Ugo",
+      "port": 4223,
+      "source": "all",
+      "type": "tinkerforge_sensor",
+      "uid": "Ugo"
+    },
+    {
+      "host": "localhost",
+      "name": "Tinkerforge/localhost:4223/Ugu",
+      "port": 4223,
+      "source": "all",
+      "type": "tinkerforge_sensor",
+      "uid": "Ugu"
+    },
+    {
+      "host": "localhost",
+      "name": "Tinkerforge/localhost:4223/Ugx",
+      "port": 4223,
+      "source": "all",
+      "type": "tinkerforge_sensor",
+      "uid": "Ugx"
+    }
+  ],
+  "poweb": {
+    "blankPage": "about:blank",
+    "coolDown": 2000,
+    "iterations": 4,
+    "urls": [
+      "https://observablehq.com/@d3/sankey",
+      "https://observablehq.com/@d3/bar-chart",
+      "https://observablehq.com/@d3/bollinger-bands",
+      "https://observablehq.com/@d3/world-choropleth",
+      "https://observablehq.com/@d3/json-treemap",
+      "https://observablehq.com/@d3/density-contours/3",
+      "https://observablehq.com/@d3/chord-dependency-diagram",
+      "https://observablehq.com/@d3/brushable-parallel-coordinates",
+      "https://observablehq.com/@observablehq/plot-horizon",
+      "https://observablehq.com/@mbostock/hertzsprung-russell-diagram",
+      "https://observablehq.com/@mbostock/phases-of-the-moon",
+      "https://observablehq.com/@mbostock/yarn-lock-visualizer",
+      "https://observablehq.com/@robsutcliffe/dirty-planet/2",
+      "https://observablehq.com/@pamacha/platonic-gobstopper",
+      "https://observablehq.com/@observablehq/vispubdata"
+    ],
+    "visiblePeriod": 8000,
+    "initialWait": 5000
+  }
+}
