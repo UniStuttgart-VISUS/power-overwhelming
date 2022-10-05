@@ -12,6 +12,9 @@ In the following, we provide instructions for building a power measurement setup
 > The modifications described in the following will **invalidate the warranty** on the components and render them useless for normal operations.
 
 > **Warning**
+> The current rating of the Tinkerforge Voltage/Current Bricklets is less than modern power supplies can deliver on some rails (most notable ATX). This setup assumes that the software running on the system actually draws less power than there is available.
+
+> **Warning**
 > Universität Stuttgart, VISUS and any person involved in this project do not make any warranty of the permissibility, safety and fitness for any purpose of the process described herein. We are not electrical engineers, and in no event shall we be liable for any claim, damages or other liability, arising from, out of or in connection with following the process described here. **You do that at your own risk!**
 
 ## Parts and special tools
@@ -44,10 +47,10 @@ In the following, we provide instructions for building a power measurement setup
 ### Parts
 * 20 m litz wire with 1.5 mm² cross section. We recommend having half in red and half in blue/black. Depending on the placement of the components, you might need more or less wire. However, you should aim at keeping it as short as possible.
 * 2 m litz wire with 2.5 mm² cross section. Again, we recommend having half in red and half in blue/black.
-* 60 &times; wire connectors for wires with a cross section of up to 1.5 mm², e.g. *WAGO 221-2411.* Due to the large number of connections, we strongly recommend using revisable wire connectors instead of soldering them.
-* 25 &times; 5-conductor lever nuts for wires with a cross section of up to 2.5 mm², e.g. *WAGO 221-415.*
+* 49 &times; wire connectors for wires with a cross section of up to 1.5 mm², e.g. *WAGO 221-2411.* Due to the large number of connections, we strongly recommend using revisable wire connectors instead of soldering them. The number of connectors varies depending on your mainboard and GPU.
+* 34 &times; 5-conductor lever nuts for wires with a cross section of up to 2.5 mm², e.g. *WAGO 221-415.* The number of connectors varies depending on your mainboard and GPU.
 * 4 &times; ferrule for soldering 1.5 mm² wires to the riser card.
-* ??? &times; ferrule. This is only required if you intend to solder the connections. Due to the large number of connections, we strongly advise against soldering them.
+* 140 &times; ferrule. The number of ferrules required varies depending on your mainboard and GPU. This is only required if you intend to solder the connections. Due to the large number of connections, we strongly advise against soldering them.
 * Cable tie. While optional, it facilitates the setup if you can tie wires that belong together.
 * Shrink tubing in different colours. This is required to mark the wires you have cut such that you know which ones need to be connected. Alternatively, you can also use tape for that.
 * Electrical tape in different colours. This is required to mark the wires you have cut sucht that you know which ones need to be connected. Alternatively, you can also use coloured shrink tubing.
