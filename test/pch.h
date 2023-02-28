@@ -3,6 +3,7 @@
 #include <chrono>
 #include <sstream>
 
+#include <power_overwhelming/emi_sensor.h>
 #include <power_overwhelming/csv_iomanip.h>
 #include <power_overwhelming/measurement.h>
 #include <power_overwhelming/nvml_sensor.h>
