@@ -90,6 +90,7 @@ namespace detail {
     /// </summary>
     struct time_synchroniser_impl final {
 
+#if defined(POWER_OVERWHELMING_WITH_TIME_SYNCHRONISER)
         /// <summary>
         /// The grace period for out-of-sequence requests before they are
         /// discarded.
@@ -194,6 +195,7 @@ namespace detail {
         /// Stops the time synchroniser if it is running.
         /// </summary>
         void stop(void);
+#endif /* defined(POWER_OVERWHELMING_WITH_TIME_SYNCHRONISER) */
 
     };
 

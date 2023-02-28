@@ -9,6 +9,28 @@
 
 
 /*
+ * visus::power_overwhelming::time_synchroniser::create
+ */
+visus::power_overwhelming::time_synchroniser
+visus::power_overwhelming::time_synchroniser::create(const int address_family,
+        const std::uint16_t port) {
+    time_synchroniser retval;
+
+#if defined(POWER_OVERWHELMING_WITH_TIME_SYNCHRONISER)
+    // TODO: set other options.
+    retval._impl = new detail::time_synchroniser_impl();
+    retval._impl->start(address_family, port);
+
+#else /* defined(POWER_OVERWHELMING_WITH_TIME_SYNCHRONISER) */
+    throw std::logic_error("The library was compiled without support for "
+        "Cristian's algorithm.");
+#endif /* defined(POWER_OVERWHELMING_WITH_TIME_SYNCHRONISER) */
+
+    return retval;
+}
+
+
+/*
  * visus::power_overwhelming::time_synchroniser::~time_synchroniser
  */
 visus::power_overwhelming::time_synchroniser::~time_synchroniser(void) {

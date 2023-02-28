@@ -1,8 +1,9 @@
 // <copyright file="time_synchroniser_impl.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
+#if defined(POWER_OVERWHELMING_WITH_TIME_SYNCHRONISER)
 #include "time_synchroniser_impl.h"
 
 #if defined(_WIN32)
@@ -17,6 +18,10 @@
 
 
 #define TIMESYNC_MAX_DATAGRAM (1024)
+
+#if !defined(INVALID_SOCKET)
+#define INVALID_SOCKET (-1)
+#endif /* !defined(INVALID_SOCKET) */
 
 
 /*
@@ -257,3 +262,4 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::stop(void) {
         this->socket = INVALID_SOCKET;
     }
 }
+#endif /* defined(POWER_OVERWHELMING_WITH_TIME_SYNCHRONISER) */

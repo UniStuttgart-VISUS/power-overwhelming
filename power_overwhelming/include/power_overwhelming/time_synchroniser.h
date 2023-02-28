@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <cinttypes>
+
 #include "power_overwhelming/power_overwhelming_api.h"
 
 
@@ -22,6 +24,9 @@ namespace power_overwhelming {
 
     public:
 
+        static time_synchroniser create(const int address_family,
+            const std::uint16_t port);
+
         /// <summary>
         /// Initialise a new instance.
         /// </summary>
@@ -31,6 +36,8 @@ namespace power_overwhelming {
         /// static factory methods.
         /// </remarks>
         inline time_synchroniser(void) : _impl(nullptr) { }
+
+        time_synchroniser(const time_synchroniser&) = delete;
 
         /// <summary>
         /// Move <paramref name="rhs" /> into a new instance.
@@ -46,6 +53,8 @@ namespace power_overwhelming {
         /// Finalises the instance.
         /// </summary>
         ~time_synchroniser(void);
+
+        time_synchroniser& operator =(const time_synchroniser&) = delete;
 
         /// <summary>
         /// Move assignment.
