@@ -9,6 +9,7 @@
 #include "power_overwhelming/sample_averaging.h"
 #include "power_overwhelming/sensor.h"
 #include "power_overwhelming/tinkerforge_sensor_definiton.h"
+#include "power_overwhelming/tinkerforge_sensor_source.h"
 
 
 namespace visus {
@@ -160,7 +161,7 @@ namespace power_overwhelming {
         /// Move <paramref name="rhs" /> into a new instance.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        inline tinkerforge_sensor(tinkerforge_sensor && rhs) noexcept
+        inline tinkerforge_sensor(tinkerforge_sensor&& rhs) noexcept
                 : _impl(rhs._impl) {
             rhs._impl = nullptr;
         }
@@ -240,12 +241,19 @@ namespace power_overwhelming {
         /// arrived. If this is <c>nullptr</c>, the asynchronous sampling will
         /// be disabled. Only one callback can be registered, subsequent calls
         /// will fail.</param>
+        /// <param name="source">Specifies the data to be sampled from the
+        /// bricklet. If you are only interested in power, it is reasonable to
+        /// not request current and voltage in order to free up bandwidth.
+        /// </param>
         /// <param name="sampling_period">The desired sampling period in
         /// microseconds. Note that Tinkerforge only supports millisecond
         /// resolution for this parameter, so this number must be divisble by
         /// 1000. The sampling frequence will be clamped to 1 ms at the bottom.
         /// This parameter defaults to 1000 (1 millisecond).
         /// </param>
+        /// <param name="context">A user-defined context pointer that is passed
+        /// on to <see cref="on_measurement" />. This parameter defaults to
+        /// <c>nullptr</c>.</para>
         /// <exception cref="std::runtime_error">If the sensor has been moved.
         /// </exception>
         /// <exception cref="std::logic_error">If the sensor is already being
@@ -254,7 +262,9 @@ namespace power_overwhelming {
         /// <exception cref="tinkerforge_exception">If the sensor could not be
         /// sampled. </exception>
         void sample(const measurement_callback on_measurement,
-            const microseconds_type sampling_period = default_sampling_period);
+            const tinkerforge_sensor_source source,
+            const microseconds_type sampling_period = default_sampling_period,
+            void *context = nullptr);
 
         /// <summary>
         /// Move assignment.
