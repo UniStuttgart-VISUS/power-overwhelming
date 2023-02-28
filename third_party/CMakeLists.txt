@@ -15,9 +15,10 @@ set(AdlInclude ${AdlDir}/include PARENT_SCOPE)
 #  GIT_TAG v3.11.2
 #)
 
-set(JsonDir ${CMAKE_CURRENT_SOURCE_DIR}/json)
-set(JsonInclude ${JsonDir}/include PARENT_SCOPE)
+option(JSON_BuildTests OFF)
 set(JSON_BuildTests OFF)
+mark_as_advanced(JSON_BuildTests)
+add_subdirectory(json)
 
 set(NvmlDir ${CMAKE_CURRENT_SOURCE_DIR}/gdk_wddm_amd64_release/nvml)
 set(NvmlInclude ${NvmlDir}/include PARENT_SCOPE)
@@ -30,3 +31,18 @@ set(RsRtxInclude ${RsRtxDir} PARENT_SCOPE)
 
 set(TinkerforgeDir ${CMAKE_CURRENT_SOURCE_DIR}/tinkerforge_c_bindings_2_1_32/source PARENT_SCOPE)
 set(TinkerforgeInclude ${CMAKE_CURRENT_SOURCE_DIR}/tinkerforge_c_bindings_2_1_32/source PARENT_SCOPE)
+
+set(WilDir ${CMAKE_CURRENT_SOURCE_DIR}/tinkerforge_c_bindings_2_1_32/source PARENT_SCOPE)
+set(WilInclude ${WilDir}/include PARENT_SCOPE)
+
+# Cf. https://stackoverflow.com/questions/3766740/overriding-a-default-option-value-in-cmake-from-a-parent-cmakelists-txt
+option(FAST_BUILD OFF)
+set(FAST_BUILD OFF)
+mark_as_advanced(FAST_BUILD)
+option(WIL_BUILD_PACKAGING OFF)
+set(WIL_BUILD_PACKAGING OFF)
+mark_as_advanced(WIL_BUILD_PACKAGING)
+option(WIL_BUILD_TESTS OFF)
+set(WIL_BUILD_TESTS OFF)
+mark_as_advanced(WIL_BUILD_TESTS)
+add_subdirectory(wil)

@@ -31,7 +31,10 @@ target_include_directories(${PROJECT_NAME}
 # Configure the linker: besides the library to test, we also need to link the
 # Visual Studio testing framework.
 target_link_directories(${PROJECT_NAME} PRIVATE "${VcInstallDir}/Auxiliary/VS/UnitTest/lib/$(LibrariesArchitecture)")
-target_link_libraries(${PROJECT_NAME} power_overwhelming Microsoft.VisualStudio.TestTools.CppUnitTestFramework.lib)
+target_link_libraries(${PROJECT_NAME}
+    Microsoft.VisualStudio.TestTools.CppUnitTestFramework.lib
+    nlohmann_json
+    power_overwhelming)
 
 # Grab the DLLs to be tested and copy them to the output directory such that
 # the Visual Studio test driver finds everything.

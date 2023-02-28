@@ -9,6 +9,7 @@ project(power_overwhelming)
 # User-configurable options
 if (WIN32)
     option(ForceDirect3D11 "Force GPU enumeration via Direct3D 11" OFF)
+    mark_as_advanced(ForceDirect3D11)
 else (WIN32)
     set(ForceDirect3D11 OFF)
 endif (WIN32)
@@ -32,16 +33,16 @@ file(GLOB_RECURSE PublicHeaderFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${In
 file(GLOB_RECURSE PrivateHeaderFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${SourceDir}/*.h" "${SourceDir}/*.inl")
 file(GLOB_RECURSE SourceFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${SourceDir}/*.cpp")
 
-source_group(TREE ${IncludeDir} FILES ${PublicHeaderFiles})
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${PrivateHeaderFiles})
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SourceFiles})
+#source_group(TREE ${IncludeDir} FILES ${PublicHeaderFiles})
+#source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${PrivateHeaderFiles})
+#source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SourceFiles})
 
 message(STATUS "Including Tinkerforge API from ${TinkerforgeDir} ...")
 file(GLOB_RECURSE TinkerforgeHeaderFiles "${TinkerforgeDir}/*.h" "${TinkerforgeDir}/*.inl")
 file(GLOB_RECURSE TinkerforgeSourceFiles "${TinkerforgeDir}/*.c")
 
-source_group(tinkerforge ${TinkerforgeDir} FILES ${TinkerforgeHeaderFiles})
-source_group(tinkerforge ${TinkerforgeDir} FILES ${TinkerforgeSourceFiles})
+#source_group(tinkerforge ${TinkerforgeDir} FILES ${TinkerforgeHeaderFiles})
+#source_group(tinkerforge ${TinkerforgeDir} FILES ${TinkerforgeSourceFiles})
 
 # Define the output.
 add_library(${PROJECT_NAME} SHARED ${PublicHeaderFiles} ${PrivateHeaderFiles} ${SourceFiles} ${TinkerforgeHeaderFiles} ${TinkerforgeSourceFiles})
@@ -64,14 +65,13 @@ endif (WithTimeSynchronisation)
 if (VISA_FOUND)
     add_definitions("-DPOWER_OVERWHELMING_WITH_VISA")
     target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
-    target_link_libraries(${PROJECT_NAME} ${VISA_LIBRARY})
+    target_link_libraries(${PROJECT_NAME} ${VISA_LIBRARY} nlohmann_json)
 endif (VISA_FOUND)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC $<BUILD_INTERFACE:${IncludeDir}>
     PRIVATE $<BUILD_INTERFACE:${SourceDir}>
     PRIVATE ${AdlInclude}
-    PRIVATE ${JsonInclude}
     PRIVATE ${NvmlInclude}
     PRIVATE ${TinkerforgeInclude})
 
