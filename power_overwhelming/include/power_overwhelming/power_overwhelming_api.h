@@ -6,8 +6,15 @@
 #pragma once
 
 
+#if defined(_WIN32)
+
 #if defined(POWER_OVERWHELMING_EXPORTS)
 #define POWER_OVERWHELMING_API __declspec(dllexport)
 #else /* defined(POWER_OVERWHELMING_EXPORTS) */
 #define POWER_OVERWHELMING_API __declspec(dllimport)
 #endif /* defined(POWER_OVERWHELMING_EXPORTS) */
+
+#else /* defined(WIN32) */
+#define POWER_OVERWHELMING_API
+
+#endif /* defined(WIN32) */
