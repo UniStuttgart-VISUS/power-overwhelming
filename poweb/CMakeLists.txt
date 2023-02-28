@@ -33,7 +33,7 @@ if (${MakeProgramme} MATCHES ".*msbuild.*")
     message(STATUS "${CMAKE_MAKE_PROGRAM} -p:Platform=${CMAKE_VS_PLATFORM_NAME} -t:Restore -p:RestorePackagesConfig=true $(SolutionPath)")
     add_custom_command(TARGET ${PROJECT_NAME}
         PRE_BUILD
-        COMMAND ${CMAKE_MAKE_PROGRAM} -p:Platform=${CMAKE_VS_PLATFORM_NAME} -t:Restore -p:RestorePackagesConfig=true $(SolutionPath))
+        COMMAND ${CMAKE_COMMAND} -E copy ${PackagesConfig} ${CMAKE_BINARY_DIR} && ${CMAKE_MAKE_PROGRAM} -p:Platform=${CMAKE_VS_PLATFORM_NAME} -t:Restore -p:RestorePackagesConfig=true $(SolutionPath))
 else ()
     message(FATAL_ERROR "An MSBuild-based process is required to restore Nuget packages.")
 endif (${MakeProgramme} MATCHES ".*msbuild.*")
