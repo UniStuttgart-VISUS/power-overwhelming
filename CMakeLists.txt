@@ -7,24 +7,24 @@ cmake_minimum_required(VERSION 3.15.0)
 project(power-overwhelming)
 
 # User-configurable options.
-option(BuildDemo "Build demo programme" OFF)
+option(PWROVRWHLMG_BuildDemo "Build demo programme" OFF)
 
 if (WIN32)
-    option(BuildStablePower "Build setstablepowerstate tool" OFF)
+    option(PWROVRWHLMG_BuildStablePower "Build setstablepowerstate tool" OFF)
 else (WIN32)
-    set(BuildStablePower FALSE)
+    set(PWROVRWHLMG_BuildStablePower FALSE)
 endif (WIN32)
 
 if (WIN32)
-    option(BuildTests "Build unit tests." ON)
+    option(PWROVRWHLMG_BuildTests "Build unit tests." ON)
 else (WIN32)
-    set(BuildTests FALSE)
+    set(PWROVRWHLMG_BuildTests FALSE)
 endif (WIN32)
 
 if (WIN32)
-    option(BuildWeb "Build browser for benchmarking web-based visualisations" OFF)
+    option(PWROVRWHLMG_BuildWeb "Build browser for benchmarking web-based visualisations" OFF)
 else (WIN32)
-    set(BuildWeb FALSE)
+    set(PWROVRWHLMG_BuildWeb FALSE)
 endif (WIN32)
 
 
@@ -36,19 +36,19 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/power_overwhelming)
 
 # Unit tests
-if (BuildTests)
+if (PWROVRWHLMG_BuildTests)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/test)
-endif (BuildTests)
+endif (PWROVRWHLMG_BuildTests)
 
 # Demo programme
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/podump)
 
 # Browser
-if (BuildWeb)
+if (PWROVRWHLMG_BuildWeb)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/poweb)
-endif (BuildWeb)
+endif (PWROVRWHLMG_BuildWeb)
 
 # Stable power tool
-if (BuildStablePower)
+if (PWROVRWHLMG_BuildStablePower)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/setstablepowerstate)
-endif (BuildStablePower)
+endif (PWROVRWHLMG_BuildStablePower)

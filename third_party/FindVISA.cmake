@@ -6,6 +6,7 @@ include(FindPackageHandleStandardArgs)
 
 # Potential installation locations of VISA
 set(VisaDirs "$ENV{ProgramFiles}/IVI Foundation/VISA" "$ENV{ProgramFiles\(x86\)}/IVI Foundation/VISA")
+set(VisaDirs "$ENV{ProgramFiles\(x86\)}/IVI Foundation/VISA")
 message(STATUS "Searching VISA library in ${VisaDirs} ...")
 
 # Determine the name of the library for the current platform
