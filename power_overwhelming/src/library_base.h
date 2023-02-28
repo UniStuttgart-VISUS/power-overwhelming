@@ -8,7 +8,9 @@
 #include <array>
 #include <system_error>
 
+#if defined(_WIN32)
 #include <windows.h>
+#endif /* defined(_WIN32) */
 
 
 namespace visus {
@@ -29,6 +31,12 @@ namespace detail {
 
     public:
 
+#if defined(_WIN32)
+        typedef HMODULE handle_type;
+#else /* defined(_WIN32) */
+        typedef void *handle_type;
+#endif /* defined(_WIN32) */
+
         library_base(const library_base&) = delete;
 
         library_base(library_base&& rhs) noexcept;
@@ -45,7 +53,7 @@ namespace detail {
 
     protected:
 
-        library_base(HMODULE&& handle);
+        library_base(handle_type && handle);
 
         library_base(const TCHAR *path);
 
@@ -60,7 +68,7 @@ namespace detail {
 
     private:
 
-        HMODULE _handle;
+        handle_type _handle;
     };
 
 } /* namespace detail */
