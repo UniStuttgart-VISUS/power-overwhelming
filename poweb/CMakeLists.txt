@@ -40,18 +40,24 @@ endif (${MakeProgramme} MATCHES ".*msbuild.*")
 
 # Configure the compiler.
 add_definitions("-DUNICODE -D_UNICODE")
-target_include_directories(${PROJECT_NAME}
-    PRIVATE ${WebView2Dir}/include)
+target_include_directories(${PROJECT_NAME} PRIVATE ${WebView2Dir}/include)
 
+#WebView2LoaderPreference Static
 #target_precompile_headers(${PROJECT_NAME} PRIVATE pch.h)
 
 # Configure the linker.
+set(EffectivePlatform ${CMAKE_VS_PLATFORM_NAME})
+if (${EffectivePlatform} STREQUAL "Win32")
+    set(EffectivePlatform "x86")
+endif (${EffectivePlatform} STREQUAL "Win32")
+
 target_link_libraries(${PROJECT_NAME}
     nlohmann_json
     power_overwhelming
     WIL::WIL
     # I can't believe that actually worked ...
-    ${WebView2Dir}/Microsoft.Windows.ImplementationLibrary.targets)
+    ${WebView2Dir}/Microsoft.Windows.ImplementationLibrary.targets
+    ${WebView2Dir}/${EffectivePlatform}/WebView2LoaderStatic.lib)
 
 # Deploy DLLs with the executable.
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
