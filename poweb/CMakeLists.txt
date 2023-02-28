@@ -27,17 +27,13 @@ string(REGEX REPLACE ".*version=\"([0-9\\.]+)\".*" "\\1" WebView2Version ${Packa
 message(STATUS "WebView2 package has version ${WebView2Version}.")
 set(WebView2Dir ${CMAKE_BINARY_DIR}/packages/Microsoft.Web.WebView2.${WebView2Version}/build/native)
 
-set(WebView2Platform ${CMAKE_VS_PLATFORM_NAME})
-if (${WebView2Platform} STREQUAL "Win32")
-    set(WebView2Platform "x86")
-endif (${WebView2Platform} STREQUAL "Win32")
-
 string(TOLOWER ${CMAKE_MAKE_PROGRAM} MakeProgramme)
 if (${MakeProgramme} MATCHES ".*msbuild.*")
     message(STATUS "Restoring Nuget packages ...")
+    message(STATUS "${CMAKE_MAKE_PROGRAM} -p:Platform=${CMAKE_VS_PLATFORM_NAME} -t:Restore -p:RestorePackagesConfig=true $(SolutionPath)")
     add_custom_command(TARGET ${PROJECT_NAME}
         PRE_BUILD
-        COMMAND ${CMAKE_MAKE_PROGRAM} -p:Platform=${CMAKE_VS_PLATFORM_NAME} -t:Restore $(SolutionPath) -p:restorePackagesConfig=true)
+        COMMAND ${CMAKE_MAKE_PROGRAM} -p:Platform=${CMAKE_VS_PLATFORM_NAME} -t:Restore -p:RestorePackagesConfig=true $(SolutionPath))
 else ()
     message(FATAL_ERROR "An MSBuild-based process is required to restore Nuget packages.")
 endif (${MakeProgramme} MATCHES ".*msbuild.*")
@@ -50,12 +46,12 @@ target_include_directories(${PROJECT_NAME}
 #target_precompile_headers(${PROJECT_NAME} PRIVATE pch.h)
 
 # Configure the linker.
-message(STATUS ${WebView2Dir}/${WebView2Platform})
 target_link_libraries(${PROJECT_NAME}
     nlohmann_json
     power_overwhelming
     WIL::WIL
-    ${WebView2Dir}/${WebView2Platform}/WebView2LoaderStatic.lib)
+    # I can't believe that actually worked ...
+    ${WebView2Dir}/Microsoft.Windows.ImplementationLibrary.targets)
 
 # Deploy DLLs with the executable.
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
