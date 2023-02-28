@@ -3,7 +3,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "stdafx.h"
+#include "pch.h"
 #include "Configuration.h"
 
 
