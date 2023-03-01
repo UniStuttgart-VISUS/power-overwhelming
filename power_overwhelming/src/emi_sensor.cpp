@@ -5,10 +5,13 @@
 
 #include "power_overwhelming/emi_sensor.h"
 
+#include <cinttypes>
 #include <stdexcept>
 #include <system_error>
+#include <vector>
 
 #include "emi_sensor_impl.h"
+#include "setup_api.h"
 
 
 /*
@@ -16,24 +19,22 @@
  */
 std::size_t visus::power_overwhelming::emi_sensor::for_all(
         emi_sensor *out_sensors, const std::size_t cnt_sensors) {
-    auto hDev = SetupDiGetClassDevs(&::GUID_DEVICE_ENERGY_METER, nullptr, NULL,
-        DIGCF_DEVICEINTERFACE);
-    if (hDev == INVALID_HANDLE_VALUE) {
-        return 0;
-    }
+#if defined(_WIN32)
+    std::size_t i = 0;
 
-    SP_DEVICE_INTERFACE_DATA data;
-    ::ZeroMemory(&data, sizeof(data));
-    data.cbSize = sizeof(data);
+    return detail::enumerate_device_interface(::GUID_DEVICE_ENERGY_METER,
+            [out_sensors, &i, cnt_sensors](HDEVINFO h,
+            SP_DEVICE_INTERFACE_DATA& d) {
+        if ((out_sensors != nullptr) && (i < cnt_sensors)) {
+            out_sensors[i]._impl->open(h, d, 0);
+        }
 
-    for (DWORD i = 0;  ::SetupDiEnumDeviceInterfaces(hDev, nullptr,
-            &::GUID_DEVICE_ENERGY_METER, i, &data); ++i) {
-        auto x = i;
-    }
-
-    auto status = ::GetLastError();
-
+        ++i;
+        return true;
+    });
+#else /* defined(_WIN32) */
     return 0;
+#endif /* defined(_WIN32) */
 }
 
 #if 0
@@ -135,13 +136,63 @@ visus::power_overwhelming::emi_sensor::~emi_sensor(void) {
 
 
 /*
+ * visus::power_overwhelming::emi_sensor::name
+ */
+const wchar_t *visus::power_overwhelming::emi_sensor::name(
+        void) const noexcept {
+    return (this->_impl != nullptr)
+        ? this->_impl->sensor_name.c_str()
+        : nullptr;
+}
+
+
+/*
  * visus::power_overwhelming::emi_sensor::sample
  */
 visus::power_overwhelming::measurement
 visus::power_overwhelming::emi_sensor::sample(
         const timestamp_resolution resolution) const {
     this->check_not_disposed();
-    return this->_impl->sample(resolution);
+    throw "TODO";
+    //return this->_impl->sample(resolution);
+}
+
+
+/*
+ * visus::power_overwhelming::emi_sensor::sample
+ */
+EMI_MEASUREMENT_DATA_V1 *visus::power_overwhelming::emi_sensor::sample(
+        EMI_MEASUREMENT_DATA_V1& measurement) const {
+    this->check_not_disposed();
+
+    if (this->_impl->version.EmiVersion != EMI_VERSION_V1) {
+        throw std::invalid_argument("The given sensor does not use an EMIv1 "
+            "device.");
+    }
+
+    this->_impl->sample(&measurement, sizeof(measurement));
+    return &measurement;
+}
+
+
+/*
+ * visus::power_overwhelming::emi_sensor::sample
+ */
+EMI_MEASUREMENT_DATA_V2 *visus::power_overwhelming::emi_sensor::sample(
+        void *measurement, const std::size_t size) const {
+    this->check_not_disposed();
+
+    if (this->_impl->version.EmiVersion != EMI_VERSION_V2) {
+        throw std::invalid_argument("The given sensor does not use an EMIv2 "
+            "device.");
+    }
+    if (size < sizeof(EMI_MEASUREMENT_DATA_V2)) {
+        throw std::invalid_argument("The output buffer must be able to hold at "
+            "least the EMI_MEASUREMENT_DATA_V2 structure.");
+    }
+
+    this->_impl->sample(measurement, size);
+    return static_cast<EMI_MEASUREMENT_DATA_V2 *>(measurement);
 }
 
 
@@ -171,6 +222,16 @@ void visus::power_overwhelming::emi_sensor::sample(
 }
 #endif
 
+
+/*
+ * visus::power_overwhelming::emi_sensor::version
+ */
+decltype(EMI_VERSION::EmiVersion)
+visus::power_overwhelming::emi_sensor::version(void) const noexcept {
+    return (this->_impl != nullptr)
+        ? this->_impl->version.EmiVersion
+        : static_cast<decltype(EMI_VERSION::EmiVersion)>(0);
+}
 
 /*
  * visus::power_overwhelming::emi_sensor::operator =

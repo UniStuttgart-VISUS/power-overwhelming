@@ -19,6 +19,13 @@ namespace test {
 
         TEST_METHOD(test_for_all) {
             auto cnt = emi_sensor::for_all(nullptr, 0);
+            std::vector<emi_sensor> sensors(cnt);
+            emi_sensor::for_all(sensors.data(), cnt);
+
+            for (auto& s : sensors) {
+                std::vector<std::uint8_t> m(sizeof(EMI_MEASUREMENT_DATA_V2) + 4 * sizeof(EMI_CHANNEL_MEASUREMENT_DATA));
+                auto mm = s.sample(m.data(), m.size());
+            }
         }
 
     };

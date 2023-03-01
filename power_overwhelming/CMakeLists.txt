@@ -49,6 +49,7 @@ add_library(${PROJECT_NAME} SHARED ${PublicHeaderFiles} ${PrivateHeaderFiles} ${
 
 # Configure the compiler.
 add_definitions("-DPOWER_OVERWHELMING_EXPORTS")
+add_definitions("-DDUNICODE -D_UNICODE")
 
 if (PWROVRWHLMG_WithAdl)
     add_definitions("-DPOWER_OVERWHELMING_WITH_ADL")

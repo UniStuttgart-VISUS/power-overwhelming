@@ -5,6 +5,11 @@
 
 #pragma once
 
+#if defined(_WIN32)
+#include <Windows.h>
+#include <emi.h>
+#endif /* defined(_WIN32) */
+
 #include "sensor.h"
 
 
@@ -102,10 +107,58 @@ namespace power_overwhelming {
         virtual ~emi_sensor(void);
 
         /// <inheritdoc />
+        virtual const wchar_t *name(void) const noexcept override;
+
+        /// <inheritdoc />
         virtual measurement sample(
             const timestamp_resolution resolution) const override;
 
+        /// <summary>
+        /// Obtains a new sample from EMI using an IOCTL on the underlying
+        /// device handle.
+        /// </summary>
+        /// <param name="measurement">Receives the measurement results.</param>
+        /// <returns>A pointer to <paramref name="measurement" />.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on a
+        /// sensor that has been disposed.</exception>
+        /// <exception cref="std::invalid_argument">If the method is called on a
+        /// sensor that uses a different version than EMIv1.</exception>
+        /// <exception cref="std::system_error">If the IOCTL failed.</exception>
+        EMI_MEASUREMENT_DATA_V1 *sample(
+            EMI_MEASUREMENT_DATA_V1& measurement) const;
+
+        /// <summary>
+        /// Obtains a new sample from EMI using an IOCTL on the underlying
+        /// device handle.
+        /// </summary>
+        /// <param name="measurement">Receives the measurement results.</param>
+        /// <param name="size">The overall size of the buffer designated by
+        /// <paramref name="measurement" />, including the structure itself.
+        /// </param>
+        /// <returns>A pointer to <paramref name="measurement" />.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on a
+        /// sensor that has been disposed.</exception>
+        /// <exception cref="std::invalid_argument">If the method is called on a
+        /// sensor that uses a different version than EMIv2.</exception>
+        /// <exception cref="std::system_error">If the IOCTL failed.</exception>
+        EMI_MEASUREMENT_DATA_V2 *sample(void *measurement,
+            const std::size_t size) const;
+
         using sensor::sample;
+
+        /// <summary>
+        /// Answer the version of the Energy Meter Interface used by the sensor.
+        /// </summary>
+        /// <remarks>
+        /// <para>The sensor behaves differently depending on the EMI version
+        /// provided by the operating system: first, when using the raw
+        /// version of the sampling method, the caller needs to know which
+        /// structure to pass as input parameter. Second, when using EMI version
+        /// 2, the sensor reads multiple channels at once.</para>
+        /// </remarks>
+        /// <param name=""></param>
+        /// <returns></returns>
+        decltype(EMI_VERSION::EmiVersion) version(void) const noexcept;
 
         /// <summary>
         /// Move assignment.
