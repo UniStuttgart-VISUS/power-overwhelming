@@ -33,7 +33,7 @@ file(GLOB_RECURSE PublicHeaderFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${In
 file(GLOB_RECURSE PrivateHeaderFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${SourceDir}/*.h" "${SourceDir}/*.inl")
 file(GLOB_RECURSE SourceFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${SourceDir}/*.cpp")
 
-#source_group(TREE ${IncludeDir} FILES ${PublicHeaderFiles})
+source_group("Header Files\\include" FILES  ${PublicHeaderFiles})
 #source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${PrivateHeaderFiles})
 #source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SourceFiles})
 
