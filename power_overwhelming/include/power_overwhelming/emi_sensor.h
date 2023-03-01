@@ -40,7 +40,7 @@ namespace power_overwhelming {
         /// <paramref name="cntSensors" />, not all sensors have been returned.
         /// </returns>
         static std::size_t for_all(emi_sensor *out_sensors,
-            const std::size_t cnt_sensors);
+            std::size_t cnt_sensors);
 
 #if 0
 
@@ -106,6 +106,22 @@ namespace power_overwhelming {
         /// </summary>
         virtual ~emi_sensor(void);
 
+        /// <summary>
+        /// Answer the number of channels the underlying Energy Metering
+        /// Interface device reads at once.
+        /// </summary>
+        /// <remarks>
+        /// <para>This information is only relevant when using the raw sampling
+        /// method.</para>
+        /// </para>When performing raw sampling of EMIv2 data, the caller
+        /// needs to provide sufficient buffer to write all channels at once.
+        /// As the <c>EMI_MEASUREMENT_DATA_V2</c> only provides memory for the
+        /// first channel, the caller must allocate a buffer that is sufficient
+        /// to receive the remaining channels as reported by this method.</para>
+        /// </remarks>
+        /// <returns>The number of channels read at once.</returns>
+        decltype(EMI_METADATA_V2::ChannelCount) channels(void) const;
+
         /// <inheritdoc />
         virtual const wchar_t *name(void) const noexcept override;
 
@@ -141,7 +157,7 @@ namespace power_overwhelming {
         /// <exception cref="std::invalid_argument">If the method is called on a
         /// sensor that uses a different version than EMIv2.</exception>
         /// <exception cref="std::system_error">If the IOCTL failed.</exception>
-        EMI_MEASUREMENT_DATA_V2 *sample(void *measurement,
+        EMI_MEASUREMENT_DATA_V2 *sample(EMI_MEASUREMENT_DATA_V2 *measurement,
             const std::size_t size) const;
 
         using sensor::sample;

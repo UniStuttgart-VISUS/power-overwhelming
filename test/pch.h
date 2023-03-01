@@ -11,7 +11,9 @@
 #include <power_overwhelming/tinkerforge_sensor_definiton.h>
 
 #include <adl_exception.h>
+#include <emi_device.h>
 #include <on_exit.h>
 #include <timestamp.h>
 #include <nvml_exception.h>
 #include <nvml_scope.h>
+#include <setup_api.h>

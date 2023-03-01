@@ -38,7 +38,8 @@ namespace detail {
     /// <returns>The converted string.</returns>
     template<class TOutput, class TInput>
     typename std::enable_if<std::is_same<TOutput, TInput>::value,
-        std::basic_string<TOutput>>::type convert_string(const TInput *str);
+        std::basic_string<TOutput>>::type
+    convert_string(const TInput *str);
 
     /// <summary>
     /// Converts a string to the given character set.
@@ -53,7 +54,8 @@ namespace detail {
     /// <returns>The converted string.</returns>
     template<class TOutput, class TInput>
     typename std::enable_if<!std::is_same<TOutput, TInput>::value,
-        std::basic_string<TOutput>>::type convert_string(const TInput *str);
+        std::basic_string<TOutput>>::type
+    convert_string(const TInput *str);
 
     /// <summary>
     /// Converts a string to the given character set.

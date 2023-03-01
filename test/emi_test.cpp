@@ -23,8 +23,9 @@ namespace test {
             emi_sensor::for_all(sensors.data(), cnt);
 
             for (auto& s : sensors) {
-                std::vector<std::uint8_t> m(sizeof(EMI_MEASUREMENT_DATA_V2) + 4 * sizeof(EMI_CHANNEL_MEASUREMENT_DATA));
-                auto mm = s.sample(m.data(), m.size());
+                auto n = s.name();
+                std::vector<std::uint8_t> m(sizeof(EMI_MEASUREMENT_DATA_V2) + (s.channels() - 1) * sizeof(EMI_CHANNEL_MEASUREMENT_DATA));
+                auto mm = s.sample(reinterpret_cast<EMI_MEASUREMENT_DATA_V2 *>(m.data()), m.size());
             }
         }
 

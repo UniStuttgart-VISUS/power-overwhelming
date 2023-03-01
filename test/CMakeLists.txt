@@ -33,6 +33,7 @@ target_include_directories(${PROJECT_NAME}
 target_link_directories(${PROJECT_NAME} PRIVATE "${VcInstallDir}/Auxiliary/VS/UnitTest/lib/$(LibrariesArchitecture)")
 target_link_libraries(${PROJECT_NAME}
     Microsoft.VisualStudio.TestTools.CppUnitTestFramework.lib
+    SetupApi.lib
     nlohmann_json
     power_overwhelming)
 

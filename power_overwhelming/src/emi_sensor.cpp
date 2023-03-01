@@ -7,6 +7,7 @@
 
 #include <cinttypes>
 #include <stdexcept>
+#include <memory>
 #include <system_error>
 #include <vector>
 
@@ -18,23 +19,44 @@
  * visus::power_overwhelming::emi_sensor::for_all
  */
 std::size_t visus::power_overwhelming::emi_sensor::for_all(
-        emi_sensor *out_sensors, const std::size_t cnt_sensors) {
-#if defined(_WIN32)
-    std::size_t i = 0;
+        emi_sensor *out_sensors, std::size_t cnt_sensors) {
+    std::size_t retval = 0;
 
-    return detail::enumerate_device_interface(::GUID_DEVICE_ENERGY_METER,
-            [out_sensors, &i, cnt_sensors](HDEVINFO h,
+#if defined(_WIN32)
+    if (out_sensors == nullptr) {
+        cnt_sensors = 0;
+    }
+
+    detail::enumerate_device_interface(::GUID_DEVICE_ENERGY_METER,
+            [out_sensors, &retval, cnt_sensors](HDEVINFO h,
             SP_DEVICE_INTERFACE_DATA& d) {
-        if ((out_sensors != nullptr) && (i < cnt_sensors)) {
-            out_sensors[i]._impl->open(h, d, 0);
+        auto path = detail::get_device_path(h, d);
+        auto dev = std::make_shared<detail::emi_device>(path);
+
+        switch (dev->version().EmiVersion) {
+            case EMI_VERSION_V1:
+                if (retval < cnt_sensors) {
+                    out_sensors[retval]._impl->set(dev, path, 0);
+                }
+                ++retval;
+                break;
+
+            case EMI_VERSION_V2: {
+                const auto md = dev->metadata_as<EMI_METADATA_V2>();
+                const auto cnt = md->ChannelCount;
+                for (auto i = 0; i < cnt; ++i, ++retval) {
+                    if (retval < cnt_sensors) {
+                        out_sensors[retval]._impl->set(dev, path, i);
+                    }
+                }
+                } break;
         }
 
-        ++i;
         return true;
     });
-#else /* defined(_WIN32) */
-    return 0;
 #endif /* defined(_WIN32) */
+
+    return retval;
 }
 
 #if 0
@@ -136,6 +158,17 @@ visus::power_overwhelming::emi_sensor::~emi_sensor(void) {
 
 
 /*
+ * visus::power_overwhelming::emi_sensor::channels
+ */
+decltype(EMI_METADATA_V2::ChannelCount)
+visus::power_overwhelming::emi_sensor::channels(void) const {
+    return (*this)
+        ? this->_impl->device->channels()
+        : static_cast<decltype(EMI_METADATA_V2::ChannelCount)>(0);
+}
+
+
+/*
  * visus::power_overwhelming::emi_sensor::name
  */
 const wchar_t *visus::power_overwhelming::emi_sensor::name(
@@ -165,7 +198,7 @@ EMI_MEASUREMENT_DATA_V1 *visus::power_overwhelming::emi_sensor::sample(
         EMI_MEASUREMENT_DATA_V1& measurement) const {
     this->check_not_disposed();
 
-    if (this->_impl->version.EmiVersion != EMI_VERSION_V1) {
+    if (this->version() != EMI_VERSION_V1) {
         throw std::invalid_argument("The given sensor does not use an EMIv1 "
             "device.");
     }
@@ -179,10 +212,10 @@ EMI_MEASUREMENT_DATA_V1 *visus::power_overwhelming::emi_sensor::sample(
  * visus::power_overwhelming::emi_sensor::sample
  */
 EMI_MEASUREMENT_DATA_V2 *visus::power_overwhelming::emi_sensor::sample(
-        void *measurement, const std::size_t size) const {
+        EMI_MEASUREMENT_DATA_V2 *measurement, const std::size_t size) const {
     this->check_not_disposed();
 
-    if (this->_impl->version.EmiVersion != EMI_VERSION_V2) {
+    if (this->version() != EMI_VERSION_V2) {
         throw std::invalid_argument("The given sensor does not use an EMIv2 "
             "device.");
     }
@@ -192,7 +225,7 @@ EMI_MEASUREMENT_DATA_V2 *visus::power_overwhelming::emi_sensor::sample(
     }
 
     this->_impl->sample(measurement, size);
-    return static_cast<EMI_MEASUREMENT_DATA_V2 *>(measurement);
+    return measurement;
 }
 
 
@@ -228,8 +261,8 @@ void visus::power_overwhelming::emi_sensor::sample(
  */
 decltype(EMI_VERSION::EmiVersion)
 visus::power_overwhelming::emi_sensor::version(void) const noexcept {
-    return (this->_impl != nullptr)
-        ? this->_impl->version.EmiVersion
+    return (*this)
+        ? this->_impl->device->version().EmiVersion
         : static_cast<decltype(EMI_VERSION::EmiVersion)>(0);
 }
 
@@ -251,5 +284,5 @@ visus::power_overwhelming::emi_sensor::operator =(emi_sensor&& rhs) noexcept {
  * visus::power_overwhelming::emi_sensor::operator bool
  */
 visus::power_overwhelming::emi_sensor::operator bool(void) const noexcept {
-    return (this->_impl != nullptr);
+    return ((this->_impl != nullptr) && (this->_impl->device != nullptr));
 }

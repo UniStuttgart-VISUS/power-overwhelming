@@ -11,7 +11,7 @@
 template<class TCallback>
 std::size_t visus::power_overwhelming::detail::enumerate_device_interface(
         const GUID& interface_class, TCallback callback) {
-    auto hDev = SetupDiGetClassDevs(&::GUID_DEVICE_ENERGY_METER, nullptr, NULL,
+    auto hDev = SetupDiGetClassDevs(&interface_class, nullptr, NULL,
         DIGCF_DEVICEINTERFACE);
     if (hDev == INVALID_HANDLE_VALUE) {
         throw std::system_error(::GetLastError(), std::system_category());
