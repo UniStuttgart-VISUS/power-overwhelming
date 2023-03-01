@@ -41,8 +41,8 @@ message(STATUS "Including Tinkerforge API from ${TinkerforgeDir} ...")
 file(GLOB_RECURSE TinkerforgeHeaderFiles "${TinkerforgeDir}/*.h" "${TinkerforgeDir}/*.inl")
 file(GLOB_RECURSE TinkerforgeSourceFiles "${TinkerforgeDir}/*.c")
 
-#source_group(tinkerforge ${TinkerforgeDir} FILES ${TinkerforgeHeaderFiles})
-#source_group(tinkerforge ${TinkerforgeDir} FILES ${TinkerforgeSourceFiles})
+source_group("Header Files\\Tinkerforge" FILES ${TinkerforgeHeaderFiles})
+source_group("Source Files\\Tinkerforge" FILES ${TinkerforgeSourceFiles})
 
 # Define the output.
 add_library(${PROJECT_NAME} SHARED ${PublicHeaderFiles} ${PrivateHeaderFiles} ${SourceFiles} ${TinkerforgeHeaderFiles} ${TinkerforgeSourceFiles})
