@@ -48,8 +48,11 @@ visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
             // 100 [ns] = 10^-7 [s]
             auto value = static_cast<float>(de) * 0.036f;
             value /= static_cast<float>(dt);
-            return measurement(this->sensor_name.c_str(),
-                create_timestamp(resolution), value);
+
+            auto time = data.AbsoluteTime - dt / 2 + this->time_offset;
+            time = convert(time, resolution);
+
+            return measurement(this->sensor_name.c_str(), time, value);
             }
 
         default:
@@ -114,8 +117,12 @@ void visus::power_overwhelming::detail::emi_sensor_impl::set(
             // samples requested by the user.
             EMI_MEASUREMENT_DATA_V1 m;
             this->sample(&m, sizeof(m));
+            FILETIME t;
+            ::GetSystemTimePreciseAsFileTime(&t);
+
             this->last_energy = m.AbsoluteEnergy;
             this->last_time = m.AbsoluteTime;
+            this->time_offset = convert(t) - this->last_time;
             } break;
 
         case EMI_VERSION_V2: {
@@ -138,9 +145,13 @@ void visus::power_overwhelming::detail::emi_sensor_impl::set(
             // As for v1, obtain the initial sample now.
             std::vector<std::uint8_t> m(this->sample_size);
             this->sample(m.data(), m.size());
+            FILETIME t;
+            ::GetSystemTimePreciseAsFileTime(&t);
+
             auto mm = reinterpret_cast<EMI_MEASUREMENT_DATA_V2 *>(m.data());
             this->last_energy = mm->ChannelData[this->channel].AbsoluteEnergy;
             this->last_time = mm->ChannelData[this->channel].AbsoluteTime;
+            this->time_offset = convert(t) - this->last_time;
 
             // Determine the name of the channel and add it to the name of the
             // sensor.

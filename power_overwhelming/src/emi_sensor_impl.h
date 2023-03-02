@@ -107,6 +107,13 @@ namespace detail {
         std::wstring sensor_name;
 
         /// <summary>
+        /// The offset of the world clock time from the timestamps of the EMI
+        /// sensor as computed for the first sample in
+        /// <see cref="emi_sensor_impl::set" />.
+        /// </summary>
+        decltype(LARGE_INTEGER::QuadPart) time_offset;
+
+        /// <summary>
         /// The unit of <see cref="last_energy" />.
         /// </summary>
         EMI_MEASUREMENT_UNIT unit;
@@ -115,7 +122,8 @@ namespace detail {
         /// Initialises a new instance.
         /// </summary>
         inline emi_sensor_impl(void) : channel(0), last_energy(0), last_time(0),
-            sample_size(0), unit(EmiMeasurementUnitPicowattHours) { }
+            sample_size(0), time_offset(0),
+            unit(EmiMeasurementUnitPicowattHours) { }
 
         /// <summary>
         /// Finalises the instance.
