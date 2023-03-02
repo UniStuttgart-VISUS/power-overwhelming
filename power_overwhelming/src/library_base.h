@@ -10,6 +10,8 @@
 
 #if defined(_WIN32)
 #include <windows.h>
+#else /* defined(_WIN32) */
+#include <dlfcn.h>
 #endif /* defined(_WIN32) */
 
 

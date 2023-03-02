@@ -51,6 +51,11 @@ add_library(${PROJECT_NAME} SHARED ${PublicHeaderFiles} ${PrivateHeaderFiles} ${
 add_definitions("-DPOWER_OVERWHELMING_EXPORTS")
 add_definitions("-DDUNICODE -D_UNICODE")
 
+if (NOT WIN32)
+    # Required for ADL to work.
+    add_definitions("-DLINUX")
+endif (NOT WIN32)
+
 if (PWROVRWHLMG_WithAdl)
     add_definitions("-DPOWER_OVERWHELMING_WITH_ADL")
 endif (PWROVRWHLMG_WithAdl)

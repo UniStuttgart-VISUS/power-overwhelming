@@ -24,7 +24,7 @@ namespace power_overwhelming {
 #if defined(_WIN32)
     typedef decltype(LARGE_INTEGER::QuadPart) timestamp_type;
 #else  /* defined(_WIN32) */
-    typedef std::int64_t value_type;
+    typedef std::int64_t timestamp_type;
 #endif /* defined(_WIN32) */
 
 namespace detail {

@@ -11,7 +11,12 @@
 #include <new>
 #include <system_error>
 
+#if defined(_WIN32)
 #include <tchar.h>
+#else /* defined(_WIN32) */
+#define TEXT(t) (t)
+#endif /* defined(_WIN32) */
+
 #include "amd_display_library.h"
 
 
