@@ -114,7 +114,8 @@ namespace detail {
         /// <summary>
         /// A sampler for ADL sensors.
         /// </summary>
-        static detail::sampler<default_sampler_context<adl_sensor_impl>> sampler;
+        static detail::sampler<default_sampler_context<
+            adl_sensor_impl>> sampler;
 
         /// <summary>
         /// The adpater index of the device, which is required for a series of

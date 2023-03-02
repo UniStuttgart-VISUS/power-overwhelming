@@ -26,7 +26,8 @@ namespace detail {
         /// <summary>
         /// A sampler for NVML sensors.
         /// </summary>
-        static sampler<default_sampler_context<nvml_sensor_impl>> sampler;
+        static detail::sampler<default_sampler_context<
+            nvml_sensor_impl>> sampler;
 
         /// <summary>
         /// The NVML device the sensor is reading from.

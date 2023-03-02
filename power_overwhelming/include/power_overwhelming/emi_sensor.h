@@ -28,6 +28,24 @@ namespace power_overwhelming {
     public:
 
         /// <summary>
+        /// The type used to identify a channel in EMIv2.
+        /// </summary>
+#if defined(_WIN32)
+        typedef decltype(EMI_METADATA_V2::ChannelCount) channel_type;
+#else /* defined(_WIN32) */
+        typedef int channel_type;
+#endif /* defined(_WIN32) */
+
+        /// <summary>
+        /// The type used to store the version of the EMI.
+        /// </summary>
+#if defined(_WIN32)
+        typedef decltype(EMI_VERSION::EmiVersion) version_type;
+#else /* defined(_WIN32) */
+        typedef int version_type;
+#endif /* defined(_WIN32) */
+
+        /// <summary>
         /// Create sensors for all devices that support the Energy Meter
         /// Interface.
         /// </summary>
@@ -110,7 +128,7 @@ namespace power_overwhelming {
         /// Answer the channel that is actually sampled by this sensor.
         /// </summary>
         /// <returns>The index of the channel sampled by this sensor.</returns>
-        decltype(EMI_METADATA_V2::ChannelCount) channel(void) const;
+        channel_type channel(void) const;
 
         /// <summary>
         /// Answer the number of channels the underlying Energy Meter Interface
@@ -126,7 +144,7 @@ namespace power_overwhelming {
         /// to receive the remaining channels as reported by this method.</para>
         /// </remarks>
         /// <returns>The number of channels read at once.</returns>
-        decltype(EMI_METADATA_V2::ChannelCount) channels(void) const;
+        channel_type channels(void) const;
 
         /// <inheritdoc />
         virtual const wchar_t *name(void) const noexcept override;
@@ -135,6 +153,7 @@ namespace power_overwhelming {
         virtual measurement sample(
             const timestamp_resolution resolution) const override;
 
+#if defined(_WIN32)
         /// <summary>
         /// Obtains a new sample from EMI using an IOCTL on the underlying
         /// device handle.
@@ -153,7 +172,9 @@ namespace power_overwhelming {
         /// <exception cref="std::system_error">If the IOCTL failed.</exception>
         EMI_MEASUREMENT_DATA_V1 *sample(
             EMI_MEASUREMENT_DATA_V1& measurement) const;
+#endif /* defined(_WIN32) */
 
+#if defined(_WIN32)
         /// <summary>
         /// Obtains a new sample from EMI using an IOCTL on the underlying
         /// device handle.
@@ -175,6 +196,7 @@ namespace power_overwhelming {
         /// <exception cref="std::system_error">If the IOCTL failed.</exception>
         EMI_MEASUREMENT_DATA_V2 *sample(EMI_MEASUREMENT_DATA_V2 *measurement,
             const std::size_t size) const;
+#endif /* defined(_WIN32) */
 
         using sensor::sample;
 
@@ -190,7 +212,7 @@ namespace power_overwhelming {
         /// </remarks>
         /// <param name=""></param>
         /// <returns></returns>
-        decltype(EMI_VERSION::EmiVersion) version(void) const noexcept;
+        version_type version(void) const noexcept;
 
         /// <summary>
         /// Move assignment.

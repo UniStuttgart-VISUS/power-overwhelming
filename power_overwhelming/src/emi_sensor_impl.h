@@ -10,6 +10,7 @@
 #include <memory>
 #include <mutex>
 
+#include "power_overwhelming/emi_sensor.h"
 #include "power_overwhelming/measurement.h"
 
 #include "emi_device.h"
@@ -30,7 +31,7 @@ namespace detail {
         /// <summary>
         /// The type used to identify a channel in EMIv2.
         /// </summary>
-        typedef decltype(EMI_METADATA_V2::ChannelCount) channel_type;
+        typedef emi_sensor::channel_type channel_type;
 
         /// <summary>
         /// The type that EMI uses to store absolute energy.

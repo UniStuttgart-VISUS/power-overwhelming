@@ -161,22 +161,30 @@ visus::power_overwhelming::emi_sensor::~emi_sensor(void) {
 /*
  * visus::power_overwhelming::emi_sensor::channel
  */
-decltype(EMI_METADATA_V2::ChannelCount)
+visus::power_overwhelming::emi_sensor::channel_type
 visus::power_overwhelming::emi_sensor::channel(void) const {
+#if defined(_WIN32)
     return (*this)
         ? this->_impl->channel
         : static_cast<decltype(this->channel())>(0);
+#else /* defined(_WIN32) */
+    return 0;
+#endif /* defined(_WIN3) */
 }
 
 
 /*
  * visus::power_overwhelming::emi_sensor::channels
  */
-decltype(EMI_METADATA_V2::ChannelCount)
+visus::power_overwhelming::emi_sensor::channel_type
 visus::power_overwhelming::emi_sensor::channels(void) const {
+#if defined(_WIN32)
     return (*this)
         ? this->_impl->device->channels()
         : static_cast<decltype(this->channels())>(0);
+#else /* defined(_WIN32) */
+    return 0;
+#endif /* defined(_WIN32) */
 }
 
 
@@ -185,9 +193,13 @@ visus::power_overwhelming::emi_sensor::channels(void) const {
  */
 const wchar_t *visus::power_overwhelming::emi_sensor::name(
         void) const noexcept {
+#if defined(_WIN32)
     return (this->_impl != nullptr)
         ? this->_impl->sensor_name.c_str()
         : nullptr;
+#else /* defined(_WIN32) */
+    return nullptr;
+#endif /* defined(_WIN32) */
 }
 
 
@@ -197,6 +209,7 @@ const wchar_t *visus::power_overwhelming::emi_sensor::name(
 visus::power_overwhelming::measurement
 visus::power_overwhelming::emi_sensor::sample(
         const timestamp_resolution resolution) const {
+#if defined(_WIN32)
     this->check_not_disposed();
 
     switch (this->version()) {
@@ -216,9 +229,13 @@ visus::power_overwhelming::emi_sensor::sample(
             throw std::logic_error("The specified version of the Energy "
                 "Meter Interface is not supported by the implementation.");
     }
+#else /* defined(_WIN32) */
+    throw std::logic_error("The EMI sensor is not supported on this platform.");
+#endif /* defined(_WIN32) */
 }
 
 
+#if defined(_WIN32)
 /*
  * visus::power_overwhelming::emi_sensor::sample
  */
@@ -234,8 +251,10 @@ EMI_MEASUREMENT_DATA_V1 *visus::power_overwhelming::emi_sensor::sample(
     this->_impl->sample(&measurement, sizeof(measurement));
     return &measurement;
 }
+#endif /* defined(_WIN32) */
 
 
+#if defined(_WIN32)
 /*
  * visus::power_overwhelming::emi_sensor::sample
  */
@@ -255,6 +274,7 @@ EMI_MEASUREMENT_DATA_V2 *visus::power_overwhelming::emi_sensor::sample(
     this->_impl->sample(measurement, size);
     return measurement;
 }
+#endif /* defined(_WIN32) */
 
 
 #if 0
@@ -287,11 +307,15 @@ void visus::power_overwhelming::emi_sensor::sample(
 /*
  * visus::power_overwhelming::emi_sensor::version
  */
-decltype(EMI_VERSION::EmiVersion)
+visus::power_overwhelming::emi_sensor::version_type
 visus::power_overwhelming::emi_sensor::version(void) const noexcept {
+#if defined(_WIN32)
     return (*this)
         ? this->_impl->device->version().EmiVersion
         : static_cast<decltype(EMI_VERSION::EmiVersion)>(0);
+#else /* defined(_WIN32) */
+    return 0;
+#endif /* defined(_WIN32) */
 }
 
 /*
@@ -312,5 +336,9 @@ visus::power_overwhelming::emi_sensor::operator =(emi_sensor&& rhs) noexcept {
  * visus::power_overwhelming::emi_sensor::operator bool
  */
 visus::power_overwhelming::emi_sensor::operator bool(void) const noexcept {
+#if defined(_WIN32)
     return ((this->_impl != nullptr) && (this->_impl->device != nullptr));
+#else /* defined(_WIN32) */
+    return false;
+#endif /* defined(_WIN32) */
 }
