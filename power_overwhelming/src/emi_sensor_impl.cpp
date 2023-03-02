@@ -44,10 +44,9 @@ visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
     switch (this->unit) {
         case EmiMeasurementUnitPicowattHours: {
             // de / dt [pWh / 100ns]
-            // pW = 10^-12 W
-            // pWh = 10^-12 W * 3600 s = 3.6 * 10^-9 Ws
-            // 100ns = 10^-7 s
-            auto value = static_cast<float>(de) * 0.36f;
+            // 1 [pW] = 10^-12 [W]
+            // 100 [ns] = 10^-7 [s]
+            auto value = static_cast<float>(de) * 0.036f;
             value /= static_cast<float>(dt);
             return measurement(this->sensor_name.c_str(),
                 create_timestamp(resolution), value);
