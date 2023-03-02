@@ -34,8 +34,8 @@ file(GLOB_RECURSE PrivateHeaderFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${S
 file(GLOB_RECURSE SourceFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${SourceDir}/*.cpp")
 
 source_group("Header Files\\include" FILES  ${PublicHeaderFiles})
-#source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${PrivateHeaderFiles})
-#source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SourceFiles})
+source_group("Header Files\\src" FILES ${PrivateHeaderFiles})
+source_group("Source Files\\src" FILES ${SourceFiles})
 
 message(STATUS "Including Tinkerforge API from ${TinkerforgeDir} ...")
 file(GLOB_RECURSE TinkerforgeHeaderFiles "${TinkerforgeDir}/*.h" "${TinkerforgeDir}/*.inl")

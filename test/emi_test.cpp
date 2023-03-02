@@ -26,6 +26,7 @@ namespace test {
                 auto n = s.name();
                 std::vector<std::uint8_t> m(sizeof(EMI_MEASUREMENT_DATA_V2) + (s.channels() - 1) * sizeof(EMI_CHANNEL_MEASUREMENT_DATA));
                 auto mm = s.sample(reinterpret_cast<EMI_MEASUREMENT_DATA_V2 *>(m.data()), m.size());
+                auto mmm = s.sample(timestamp_resolution::seconds);
             }
         }
 

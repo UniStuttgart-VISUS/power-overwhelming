@@ -6,9 +6,10 @@
 #include "power_overwhelming/emi_sensor.h"
 
 #include <cinttypes>
-#include <stdexcept>
 #include <memory>
+#include <regex>
 #include <system_error>
+#include <stdexcept>
 #include <vector>
 
 #include "emi_sensor_impl.h"
@@ -59,8 +60,8 @@ std::size_t visus::power_overwhelming::emi_sensor::for_all(
     return retval;
 }
 
-#if 0
 
+#if 0
 /*
  * visus::power_overwhelming::emi_sensor::from_bus_id
  */
@@ -158,13 +159,24 @@ visus::power_overwhelming::emi_sensor::~emi_sensor(void) {
 
 
 /*
+ * visus::power_overwhelming::emi_sensor::channel
+ */
+decltype(EMI_METADATA_V2::ChannelCount)
+visus::power_overwhelming::emi_sensor::channel(void) const {
+    return (*this)
+        ? this->_impl->channel
+        : static_cast<decltype(this->channel())>(0);
+}
+
+
+/*
  * visus::power_overwhelming::emi_sensor::channels
  */
 decltype(EMI_METADATA_V2::ChannelCount)
 visus::power_overwhelming::emi_sensor::channels(void) const {
     return (*this)
         ? this->_impl->device->channels()
-        : static_cast<decltype(EMI_METADATA_V2::ChannelCount)>(0);
+        : static_cast<decltype(this->channels())>(0);
 }
 
 
@@ -186,8 +198,24 @@ visus::power_overwhelming::measurement
 visus::power_overwhelming::emi_sensor::sample(
         const timestamp_resolution resolution) const {
     this->check_not_disposed();
-    throw "TODO";
-    //return this->_impl->sample(resolution);
+
+    switch (this->version()) {
+        case EMI_VERSION_V1: {
+            EMI_MEASUREMENT_DATA_V1 s;
+            this->_impl->sample(&s, sizeof(s));
+            return this->_impl->evaluate(s, resolution);
+            }
+
+        case EMI_VERSION_V2: {
+            auto m = this->_impl->sample();
+            auto s = reinterpret_cast<EMI_MEASUREMENT_DATA_V2 *>(m.data());
+            return this->_impl->evaluate(*s, resolution);
+            }
+
+        default:
+            throw std::logic_error("The specified version of the Energy "
+                "Meter Interface is not supported by the implementation.");
+    }
 }
 
 

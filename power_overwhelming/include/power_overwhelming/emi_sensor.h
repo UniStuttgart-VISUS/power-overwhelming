@@ -107,8 +107,14 @@ namespace power_overwhelming {
         virtual ~emi_sensor(void);
 
         /// <summary>
-        /// Answer the number of channels the underlying Energy Metering
-        /// Interface device reads at once.
+        /// Answer the channel that is actually sampled by this sensor.
+        /// </summary>
+        /// <returns>The index of the channel sampled by this sensor.</returns>
+        decltype(EMI_METADATA_V2::ChannelCount) channel(void) const;
+
+        /// <summary>
+        /// Answer the number of channels the underlying Energy Meter Interface
+        /// device reads at once.
         /// </summary>
         /// <remarks>
         /// <para>This information is only relevant when using the raw sampling
@@ -133,6 +139,11 @@ namespace power_overwhelming {
         /// Obtains a new sample from EMI using an IOCTL on the underlying
         /// device handle.
         /// </summary>
+        /// <remarks>
+        /// <para>The interpretation of sample is documented at
+        /// https://learn.microsoft.com/en-us/windows/win32/api/emi/ns-emi-emi_channel_measurement_data
+        /// </para>
+        /// </remarks>
         /// <param name="measurement">Receives the measurement results.</param>
         /// <returns>A pointer to <paramref name="measurement" />.</returns>
         /// <exception cref="std::runtime_error">If the method is called on a
@@ -147,6 +158,11 @@ namespace power_overwhelming {
         /// Obtains a new sample from EMI using an IOCTL on the underlying
         /// device handle.
         /// </summary>
+        /// <remarks>
+        /// <para>The interpretation of sample is documented at
+        /// https://learn.microsoft.com/en-us/windows/win32/api/emi/ns-emi-emi_measurement_data_v2
+        /// </para>
+        /// </remarks>
         /// <param name="measurement">Receives the measurement results.</param>
         /// <param name="size">The overall size of the buffer designated by
         /// <paramref name="measurement" />, including the structure itself.

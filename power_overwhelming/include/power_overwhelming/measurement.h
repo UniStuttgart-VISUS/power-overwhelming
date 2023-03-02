@@ -47,7 +47,8 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <param name="sensor"></param>
+        /// <param name="sensor">The name of the sensor from which the
+        /// measurement originates.</param>
         /// <param name="timestamp"></param>
         /// <param name="voltage"></param>
         /// <param name="current"></param>
@@ -59,7 +60,8 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <param name="sensor"></param>
+        /// <param name="sensor">The name of the sensor from which the
+        /// measurement originates.</param>
         /// <param name="timestamp"></param>
         /// <param name="voltage"></param>
         /// <param name="current"></param>
@@ -69,7 +71,8 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <param name="sensor"></param>
+        /// <param name="sensor">The name of the sensor from which the
+        /// measurement originates.</param>
         /// <param name="timestamp"></param>
         /// <param name="power"></param>
         measurement(const char_type *sensor, const timestamp_type timestamp,

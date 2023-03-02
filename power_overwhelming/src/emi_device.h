@@ -72,6 +72,7 @@ namespace detail {
         /// <para>The interpretation of the buffer returned is dependent on the
         /// <see cref="emi_device::version" />. For more details, see
         /// https://learn.microsoft.com/en-us/windows/win32/api/emi/ni-emi-ioctl_emi_get_metadata.
+        /// </para>
         /// </remarks>
         /// <returns>The EMI metadata.</returns>
         /// <exception cref="std::system_error">In case one of the API calls
