@@ -32,12 +32,35 @@ std::size_t visus::power_overwhelming::emi_sensor::for_all(
 
 
 /*
+ * visus::power_overwhelming::emi_sensor::for_channel
+ */
+std::size_t visus::power_overwhelming::emi_sensor::for_channel(
+        emi_sensor *out_sensors, const std::size_t cnt_sensors,
+        const wchar_t *channel) {
+    if (channel == nullptr) {
+        throw std::invalid_argument("The regular expression selecting the "
+            "device must not be null.");
+    }
+
+#if defined(_WIN32)
+    typedef detail::emi_sensor_impl::string_type string_type;
+    std::basic_regex<wchar_t> rx(channel);
+    return detail::emi_sensor_impl::create(out_sensors, cnt_sensors,
+            [&rx](const string_type&, const EMI_CHANNEL_V2 *c) {
+        return std::regex_match(c->ChannelName, rx);
+    });
+#else /* defined(_WIN32) */
+    return 0;
+#endif /* defined(_WIN32) */
+}
+
+
+/*
  * visus::power_overwhelming::emi_sensor::for_device
  */
 std::size_t visus::power_overwhelming::emi_sensor::for_device(
-        emi_sensor *out_sensors, std::size_t cnt_sensors,
+        emi_sensor *out_sensors, const std::size_t cnt_sensors,
         const char_type *device) {
-
     if (device == nullptr) {
         throw std::invalid_argument("The regular expression selecting the "
             "device must not be null.");
@@ -54,88 +77,6 @@ std::size_t visus::power_overwhelming::emi_sensor::for_device(
     return 0;
 #endif /* defined(_WIN32) */
 }
-
-
-#if 0
-/*
- * visus::power_overwhelming::emi_sensor::from_bus_id
- */
-visus::power_overwhelming::emi_sensor
-visus::power_overwhelming::emi_sensor::from_bus_id(
-        const char *pciBusId) {
-    emi_sensor retval;
-
-    auto status = detail::nvidia_management_library::instance()
-        .nvmlDeviceGetHandleByPciBusId(pciBusId, &retval._impl->device);
-    if (status != NVML_SUCCESS) {
-        throw nvml_exception(status);
-    }
-
-    retval._impl->load_device_name();
-
-    return retval;
-}
-
-
-/*
- * visus::power_overwhelming::emi_sensor::from_guid
- */
-visus::power_overwhelming::emi_sensor
-visus::power_overwhelming::emi_sensor::from_guid(
-        const char *guid) {
-    emi_sensor retval;
-
-    auto status = detail::nvidia_management_library::instance()
-        .nvmlDeviceGetHandleByUUID(guid, &retval._impl->device);
-    if (status != NVML_SUCCESS) {
-        throw nvml_exception(status);
-    }
-
-    retval._impl->load_device_name();
-
-    return retval;
-}
-
-
-/*
- * visus::power_overwhelming::emi_sensor::from_index
- */
-visus::power_overwhelming::emi_sensor
-visus::power_overwhelming::emi_sensor::from_index(
-        const unsigned int index) {
-    emi_sensor retval;
-
-    auto status = detail::nvidia_management_library::instance()
-        .nvmlDeviceGetHandleByIndex(index, &retval._impl->device);
-    if (status != NVML_SUCCESS) {
-        throw nvml_exception(status);
-    }
-
-    retval._impl->load_device_name();
-
-    return retval;
-}
-
-
-/*
- * visus::power_overwhelming::emi_sensor::from_serial
- */
-visus::power_overwhelming::emi_sensor
-visus::power_overwhelming::emi_sensor::from_serial(
-        const char *serial) {
-    emi_sensor retval;
-
-    auto status = detail::nvidia_management_library::instance()
-        .nvmlDeviceGetHandleBySerial(serial, &retval._impl->device);
-    if (status != NVML_SUCCESS) {
-        throw nvml_exception(status);
-    }
-
-    retval._impl->load_device_name();
-
-    return retval;
-}
-#endif
 
 
 /*

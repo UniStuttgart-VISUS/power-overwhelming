@@ -73,6 +73,27 @@ namespace power_overwhelming {
             const std::size_t cnt_sensors);
 
         /// <summary>
+        /// Create sensors for all channels of all devices whose name matches
+        /// the given regular expression.
+        /// </summary>
+        /// <param name="out_sensors">Receives the sensors, if not
+        /// <c>nullptr</c>.</param>
+        /// <param name="cnt_sensors">The available space in
+        /// <paramref name="out_sensors" />.</param>
+        /// <param name="channel">A regular expression for matching the name
+        /// of the channel.</param>
+        /// <returns>The number of sensors available on the system, regardless
+        /// of the size of the output array. If this number is larger than
+        /// <paramref name="cntSensors" />, not all sensors have been returned.
+        /// </returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="channel" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::system_error">If enumerating or opening the
+        /// devices failed.</exception>
+        static std::size_t for_channel(emi_sensor *out_sensors,
+            const std::size_t cnt_sensors, const wchar_t *channel);
+
+        /// <summary>
         /// Create sensors for all devices whose name matches the given regular
         /// expression.
         /// </summary>
@@ -91,52 +112,7 @@ namespace power_overwhelming {
         /// <exception cref="std::system_error">If enumerating or opening the
         /// devices failed.</exception>
         static std::size_t for_device(emi_sensor *out_sensors,
-            std::size_t cnt_sensors, const char_type *device);
-
-#if 0
-        /// <summary>
-        /// Create a new instance for the device with the specified PCI bus ID.
-        /// </summary>
-        /// <param name="pciBusId"></param>
-        /// <returns></returns>
-        /// <exception cref="nvml_exception">If the specified device was not
-        /// found, is not unique or another error occurred in NVML.</exception>
-        static nvml_sensor from_bus_id(const char *pciBusId);
-
-        /// <summary>
-        /// Create a new instance for the device with the specified unique ID.
-        /// </summary>
-        /// <param name="guid"></param>
-        /// <returns></returns>
-        /// <exception cref="nvml_exception">If the specified device was not
-        /// found, is not unique or another error occurred in NVML.</exception>
-        static nvml_sensor from_guid(const char *guid);
-
-        /// <summary>
-        /// Create a new instance from a device index.
-        /// </summary>
-        /// <remarks>
-        /// <para>Device indices start at zero and go up to the number of
-        /// supported NVIDIA cards minus one.</para>
-        /// <para>Please note that the indices may not match the indices of
-        /// CUDA devices and/or DXGI adapters.</para>
-        /// </remarks>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        /// <exception cref="nvml_exception">If the specified device was not
-        /// found, is not unique or another error occurred in NVML.</exception>
-        static nvml_sensor from_index(const unsigned int index);
-
-        /// <summary>
-        /// Create a new instance for a specific device serial number printed on
-        /// the board.
-        /// </summary>
-        /// <param name="serial"></param>
-        /// <returns></returns>
-        /// <exception cref="nvml_exception">If the specified device was not
-        /// found, is not unique or another error occurred in NVML.</exception>
-        static nvml_sensor from_serial(const char *serial);
-#endif
+            const std::size_t cnt_sensors, const char_type *device);
 
         /// <summary>
         /// Initialises a new instance.
