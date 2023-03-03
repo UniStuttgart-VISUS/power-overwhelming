@@ -6,6 +6,7 @@
 #pragma once
 
 #if defined(_WIN32)
+#define NOMINMAX
 #include <Windows.h>
 #include <emi.h>
 #include <tchar.h>
@@ -156,6 +157,13 @@ namespace power_overwhelming {
 
         /// <inheritdoc />
         virtual const wchar_t *name(void) const noexcept override;
+
+        /// <summary>
+        /// Answer the path to the underlying device.
+        /// </summary>
+        /// <returns>The path of the EMI device or <c>nullptr</c> if the sensor
+        /// is invalid.</returns>
+        const char_type *path(void) const noexcept;
 
         /// <inheritdoc />
         virtual measurement sample(

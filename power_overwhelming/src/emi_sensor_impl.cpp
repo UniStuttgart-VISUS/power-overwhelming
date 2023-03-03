@@ -132,8 +132,9 @@ void visus::power_overwhelming::detail::emi_sensor_impl::set(
         const channel_type channel) {
     assert(device != nullptr);
     this->device = device;
+    this->path = path;
     this->sensor_name = L"EMI/"
-        + power_overwhelming::convert_string<wchar_t>(path);
+        + power_overwhelming::convert_string<wchar_t>(this->path);
 
     switch (this->device->version().EmiVersion) {
         case EMI_VERSION_V1: {

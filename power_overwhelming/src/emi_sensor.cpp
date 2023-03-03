@@ -140,6 +140,21 @@ const wchar_t *visus::power_overwhelming::emi_sensor::name(
 
 
 /*
+ * visus::power_overwhelming::emi_sensor::path
+ */
+const visus::power_overwhelming::emi_sensor::char_type *
+visus::power_overwhelming::emi_sensor::path(void) const noexcept {
+#if defined(_WIN32)
+    return (this->_impl != nullptr)
+        ? this->_impl->path.c_str()
+        : nullptr;
+#else /* defined(_WIN32) */
+    return nullptr;
+#endif /* defined(_WIN32) */
+}
+
+
+/*
  * visus::power_overwhelming::emi_sensor::sample
  */
 visus::power_overwhelming::measurement

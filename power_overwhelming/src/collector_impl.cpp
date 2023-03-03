@@ -1,5 +1,5 @@
 // <copyright file="collector_impl.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -8,6 +8,7 @@
 #include <system_error>
 
 #include "power_overwhelming/adl_sensor.h"
+#include "power_overwhelming/emi_sensor.h"
 #include "power_overwhelming/collector.h"
 #include "power_overwhelming/nvml_sensor.h"
 #include "power_overwhelming/hmc8015_sensor.h"
@@ -106,6 +107,19 @@ void visus::power_overwhelming::detail::collector_impl::start(void) {
                 auto ss = dynamic_cast<adl_sensor *>(s.get());
                 if (ss != nullptr) {
                     //ss->start(this->sampling_interval.count());
+                    const auto si = duration_cast<microseconds>(
+                        this->sampling_interval).count();
+                    ss->sample(on_measurement, si, this);
+                    continue;
+                }
+            }
+
+            {
+                // EMI is in principle synchronous, but we built a specialised
+                // sampling thread that minimises the number of reads of the EMI
+                // registers.
+                auto ss = dynamic_cast<emi_sensor *>(s.get());
+                if (ss != nullptr) {
                     const auto si = duration_cast<microseconds>(
                         this->sampling_interval).count();
                     ss->sample(on_measurement, si, this);

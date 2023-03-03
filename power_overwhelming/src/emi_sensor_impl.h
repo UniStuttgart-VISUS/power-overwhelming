@@ -107,6 +107,11 @@ namespace detail {
         time_type last_time;
 
         /// <summary>
+        /// The path of the <see cref="device" />.
+        /// </summary>
+        string_type path;
+
+        /// <summary>
         /// The size of a raw sample obtained from the this sensor in bytes.
         /// </summary>
         std::size_t sample_size;

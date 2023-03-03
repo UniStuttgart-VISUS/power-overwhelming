@@ -8,6 +8,7 @@
 #include <cassert>
 
 #include "power_overwhelming/adl_sensor.h"
+#include "power_overwhelming/emi_sensor.h"
 #include "power_overwhelming/hmc8015_sensor.h"
 #include "power_overwhelming/nvml_sensor.h"
 #include "power_overwhelming/rtb_sensor.h"
@@ -25,6 +26,13 @@ visus::power_overwhelming::detail::get_all_sensors(void) {
     try {
         move_sensors(retval, get_all_sensors_of<adl_sensor>());
     } catch (...) { /* Just ignore the sensor. */ }
+
+#if defined(_WIN32)
+    // Get all EMI sensors.
+    try {
+        move_sensors(retval, get_all_sensors_of<emi_sensor>());
+    } catch (...) { /* Just ignore the sensor. */ }
+#endif /* defined(_WIN32) */
 
     // Get all R&S HMC8015 sensors.
     try {
