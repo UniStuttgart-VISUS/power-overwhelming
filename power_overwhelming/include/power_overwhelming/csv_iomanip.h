@@ -47,7 +47,7 @@ namespace detail {
         /// Initialises a new instance.
         /// </summary>
         /// <param name="value">The character to be used as delimiter.</param>
-        inline csv_delimiter(const TChar value) : csv_char_value(value) { }
+        inline csv_delimiter(const TChar value) : csv_char_value<TChar>(value) { }
     };
 
     /// <summary>
@@ -60,7 +60,7 @@ namespace detail {
         /// Initialises a new instance.
         /// </summary>
         /// <param name="value">The character to be used as quote.</param>
-        inline csv_quote(const TChar value) : csv_char_value(value) { }
+        inline csv_quote(const TChar value) : csv_char_value<TChar>(value) { }
     };
 
     /// <summary>

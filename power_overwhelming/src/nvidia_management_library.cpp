@@ -24,7 +24,12 @@ visus::power_overwhelming::detail::nvidia_management_library::instance(void) {
  * ...::detail::nvidia_management_library::nvidia_management_library
  */
 visus::power_overwhelming::detail::nvidia_management_library
-::nvidia_management_library(void) : library_base(TEXT("nvml.dll")) {
+::nvidia_management_library(void)
+#if defined(_WIN32)
+        : library_base(TEXT("nvml.dll")) {
+#else /* defined(_WIN32) */
+        : library_base("nvidia-ml.so") {
+#endif /* defined(_WIN32) */
     __POWER_OVERWHELMING_GET_NVML_FUNC(nvmlDeviceGetCount);
     __POWER_OVERWHELMING_GET_NVML_FUNC(nvmlDeviceGetName);
     __POWER_OVERWHELMING_GET_NVML_FUNC(nvmlDeviceGetPciInfo);

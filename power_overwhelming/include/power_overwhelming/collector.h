@@ -1,11 +1,12 @@
 // <copyright file="collector.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #pragma once
 
 #include "power_overwhelming/adl_sensor.h"
+#include "power_overwhelming/emi_sensor.h"
 #include "power_overwhelming/hmc8015_sensor.h"
 #include "power_overwhelming/nvml_sensor.h"
 #include "power_overwhelming/rtb_sensor.h"

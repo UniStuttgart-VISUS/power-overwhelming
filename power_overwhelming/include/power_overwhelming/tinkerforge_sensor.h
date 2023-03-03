@@ -36,6 +36,12 @@ namespace power_overwhelming {
         static constexpr const std::uint16_t default_port = 4223;
 
         /// <summary>
+        /// The default source to sample.
+        /// </summary>
+        static constexpr const tinkerforge_sensor_source default_source
+            = tinkerforge_sensor_source::all;
+
+        /// <summary>
         /// Retrieve sensor definitions for all bricklets attacted to the
         /// specified host.
         /// </summary>
@@ -253,7 +259,7 @@ namespace power_overwhelming {
         /// </param>
         /// <param name="context">A user-defined context pointer that is passed
         /// on to <see cref="on_measurement" />. This parameter defaults to
-        /// <c>nullptr</c>.</para>
+        /// <c>nullptr</c>.</param>
         /// <exception cref="std::runtime_error">If the sensor has been moved.
         /// </exception>
         /// <exception cref="std::logic_error">If the sensor is already being
@@ -262,7 +268,7 @@ namespace power_overwhelming {
         /// <exception cref="tinkerforge_exception">If the sensor could not be
         /// sampled. </exception>
         void sample(const measurement_callback on_measurement,
-            const tinkerforge_sensor_source source,
+            const tinkerforge_sensor_source source = default_source,
             const microseconds_type sampling_period = default_sampling_period,
             void *context = nullptr);
 

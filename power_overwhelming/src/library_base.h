@@ -10,6 +10,8 @@
 
 #if defined(_WIN32)
 #include <windows.h>
+#else /* defined(_WIN32) */
+#include <dlfcn.h>
 #endif /* defined(_WIN32) */
 
 
@@ -32,9 +34,28 @@ namespace detail {
     public:
 
 #if defined(_WIN32)
+        typedef TCHAR char_type;
+#else /* defined(_WIN32) */
+        typedef char char_type;
+#endif /* defined(_WIN32) */
+
+#if defined(_WIN32)
+        typedef FARPROC function_type;
+#else /* defined(_WIN32) */
+        typedef void *function_type;
+#endif /* defined(_WIN32) */
+
+#if defined(_WIN32)
         typedef HMODULE handle_type;
 #else /* defined(_WIN32) */
         typedef void *handle_type;
+#endif /* defined(_WIN32) */
+
+        static constexpr handle_type invalid_handle
+#if defined(_WIN32)
+            = NULL;
+#else /* defined(_WIN32) */
+            = nullptr;
 #endif /* defined(_WIN32) */
 
         library_base(const library_base&) = delete;
@@ -48,18 +69,18 @@ namespace detail {
         library_base& operator =(library_base&& rhs) noexcept;
 
         inline operator bool(void) const noexcept {
-            return (this->_handle != NULL);
+            return (this->_handle != invalid_handle);
         }
 
     protected:
 
         library_base(handle_type && handle);
 
-        library_base(const TCHAR *path);
+        library_base(const char_type *path);
 
         template<class... TPaths> library_base(TPaths&&... paths);
 
-        FARPROC get_function(const char *name);
+        function_type get_function(const char *name);
 
         template<class TFunction>
         inline TFunction get_function(const char *name) {
@@ -81,18 +102,25 @@ namespace detail {
  */
 template<class... TPaths>
 visus::power_overwhelming::detail::library_base::library_base(
-        TPaths&&... paths) : _handle(NULL) {
-    std::array<const TCHAR *, sizeof...(TPaths)> ps = { paths... };
+        TPaths&&... paths) : _handle(invalid_handle) {
+    std::array<const char_type *, sizeof...(TPaths)> ps = { paths... };
 
     for (auto& p : ps) {
+#if defined(_WIN32)
         this->_handle = ::LoadLibrary(p);
-        if (this->_handle != NULL) {
+#else /* defined(_WIN32) */
+        this->_handle = ::dlopen(p, RTLD_LAZY);
+#endif /* defined(_WIN32) */
+        if (this->_handle != invalid_handle) {
             break;
         }
     }
 
-    if (this->_handle == NULL) {
+    if (this->_handle == invalid_handle) {
+#if defined(_WIN32)
         throw std::system_error(::GetLastError(), std::system_category());
+#else /* defined(_WIN32) */
+        throw std::runtime_error(::dlerror());
+#endif /* defined(_WIN32) */
     }
 }
-

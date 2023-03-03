@@ -80,7 +80,7 @@ namespace detail {
         bool remove(sensor_type sensor);
 
         /// <summary>
-        /// Answer whether this sampler samples the specified sensor ad any
+        /// Answer whether this sampler samples the specified sensor at any
         /// interval.
         /// </summary>
         /// <param name="sensor">The sensor to search. It is safe to pass

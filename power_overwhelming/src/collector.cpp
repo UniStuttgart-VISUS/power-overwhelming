@@ -1,5 +1,5 @@
 // <copyright file="collector.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -23,6 +23,7 @@ namespace visus {
 namespace power_overwhelming {
 namespace detail {
 
+    static constexpr const char *field_channel = "channel";
     static constexpr const char *field_dev_guid = "deviceGuid";
     static constexpr const char *field_host = "host";
     static constexpr const char *field_name = "name";
@@ -67,6 +68,21 @@ namespace detail {
                 });
             }
         } catch (...) { /* Just ignore the sensor. */ }
+
+        // Get descriptions for all EMI sensors.
+        try {
+            auto sensors = get_all_sensors_of<emi_sensor>();
+
+            for (auto& s : sensors) {
+                sensor_list.push_back({
+                    { field_type, "emi_sensor" },
+                    { field_name, convert_string<char>(s.name()) },
+                    { field_path, convert_string<char>(s.path()) },
+                    { field_channel, s.channel() }
+                });
+            }
+        } catch (...) { /* Just ignore the sensor. */ }
+
 
         // Get descriptionf for all R&S HMC8015 sensors.
         try {
@@ -159,6 +175,14 @@ namespace detail {
                 auto sensor = adl_sensor::from_udid(udid.c_str(),
                     parse_adl_sensor_source(source.c_str()));
                 dst->sensors.emplace_back(new adl_sensor(std::move(sensor)));
+
+            } else if (s[field_type] == "emi_sensor") {
+                auto path = s[field_path].get<std::string>();
+                auto channel = s[field_source].get<emi_sensor::channel_type>();
+                throw "TODO";
+                //auto sensor = adl_sensor::from_udid(udid.c_str(),
+                //    parse_adl_sensor_source(source.c_str()));
+                //dst->sensors.emplace_back(new emi_sensor(std::move(sensor)));
 
             } else if (s[field_type] == "hmc8015_sensor") {
                 auto path = s[field_path].get<std::string>();

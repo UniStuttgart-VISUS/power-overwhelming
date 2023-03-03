@@ -5,14 +5,9 @@
 
 #include "timestamp.h"
 
-#include <chrono>
 #include <stdexcept>
 
-
-/// <summary>
-/// The 100ns period defining the reolution of <see cref="FILETIME" />.
-/// </summary>
-typedef std::ratio<1, 10000000> filetime_period;
+#include "filetime_period.h"
 
 
 /*

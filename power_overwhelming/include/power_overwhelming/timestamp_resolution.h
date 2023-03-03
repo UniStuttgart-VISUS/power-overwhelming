@@ -14,12 +14,24 @@ namespace power_overwhelming {
     /// </summary>
     enum class timestamp_resolution {
 
+        /// <summary>
+        /// Timestamp is specified in seconds.
+        /// </summary>
         seconds,
 
+        /// <summary>
+        /// Timestamp is specified in milliseconds (1/1000th of a second).
+        /// </summary>
         milliseconds,
 
+        /// <summary>
+        /// Timestamp is specified in microsecond (Millionth of a second).
+        /// </summary>
         microseconds,
 
+        /// <summary>
+        /// Timestamp is specified in nanoseconds (Billionth of a second).
+        /// </summary>
         nanoseconds
     };
 

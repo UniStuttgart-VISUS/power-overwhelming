@@ -54,7 +54,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="resolution">The resolution of the timestamp to be
         /// created. This value basically determines the unit in which the
-        /// timestamp in the return value is measured.</para>
+        /// timestamp in the return value is measured.</param>
         /// <returns>A single measurement made by the sensor.</returns>
         /// <exception cref="std::runtime_error">If a sensor that has been moved
         /// (and therefore disposed) is sampled.</exception>

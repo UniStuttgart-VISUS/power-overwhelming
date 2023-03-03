@@ -43,8 +43,8 @@ visus::power_overwhelming::parse_adl_sensor_source(const wchar_t *str) {
     }
 
     const std::wstring s(str);
-#define _FROM_STRING_CASE(v) else if (to_string(adl_sensor_source::##v) == s) \
-    return adl_sensor_source::##v
+#define _FROM_STRING_CASE(v) else if (to_string(adl_sensor_source::v) == s) \
+    return adl_sensor_source::v
 
     if (false);
     _FROM_STRING_CASE(asic);
@@ -64,7 +64,8 @@ visus::power_overwhelming::parse_adl_sensor_source(const wchar_t *str) {
  */
 const wchar_t *visus::power_overwhelming::to_string(
         const adl_sensor_source source) {
-#define _TO_STRING_CASE(v) case adl_sensor_source::##v: return L#v
+#define _GCC_IS_SHIT(v) L##v
+#define _TO_STRING_CASE(v) case adl_sensor_source::v: return _GCC_IS_SHIT(#v)
 
     switch (source) {
         _TO_STRING_CASE(asic);
@@ -78,5 +79,6 @@ const wchar_t *visus::power_overwhelming::to_string(
                 "unknown. Make sure to add all new sources in to_string.");
     }
 
+#undef _GCC_IS_SHIT
 #undef _TO_STRING_CASE
 }
