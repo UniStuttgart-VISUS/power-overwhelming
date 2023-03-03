@@ -96,7 +96,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // Collector abstraction
-#if true
+#if false
 #if true
     ::collect_all(L"idle.csv", 20);
 #endif
