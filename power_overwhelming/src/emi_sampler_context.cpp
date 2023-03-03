@@ -102,7 +102,7 @@ void visus::power_overwhelming::detail::emi_sampler_context::sample(void) {
                     auto context = s.second.second;
 
                     if (sample.empty()) {
-                        sensor->sample();
+                        sample = sensor->sample();
                     }
 
                     callback(sensor->evaluate(sample, version,

@@ -52,6 +52,10 @@ int _tmain(const int argc, const TCHAR **argv) {
 #if true
     ::sample_emi_sensor();
 #endif
+
+#if true
+    ::sample_emi_sensor_async(5);
+#endif
 #endif
 
     // NVML sensors
