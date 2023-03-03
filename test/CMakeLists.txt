@@ -17,8 +17,11 @@ file(GLOB_RECURSE SourceFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.cpp")
 # Define the output.
 add_library(${PROJECT_NAME} SHARED ${HeaderFiles} ${SourceFiles})
 
-# Configure the compiler: in the test driver, the compiler needs to know about
-# the private includes of the library, so we add these manually.
+# Configure the compiler.
+add_definitions("-DUNICODE -D_UNICODE")
+
+# In the test driver, the compiler needs to know about the private includes of
+# the library, so we add these manually.
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${AdlInclude}
     PRIVATE ${NvmlInclude}

@@ -20,44 +20,39 @@
  * visus::power_overwhelming::emi_sensor::for_all
  */
 std::size_t visus::power_overwhelming::emi_sensor::for_all(
-        emi_sensor *out_sensors, std::size_t cnt_sensors) {
-    std::size_t retval = 0;
-
+        emi_sensor *out_sensors, const std::size_t cnt_sensors) {
 #if defined(_WIN32)
-    if (out_sensors == nullptr) {
-        cnt_sensors = 0;
+    typedef detail::emi_sensor_impl::string_type string_type;
+    return detail::emi_sensor_impl::create(out_sensors, cnt_sensors,
+        [](const string_type&, const EMI_CHANNEL_V2 *) { return true; });
+#else /* defined(_WIN32) */
+    return 0;
+#endif /* defined(_WIN32) */
+}
+
+
+/*
+ * visus::power_overwhelming::emi_sensor::for_device
+ */
+std::size_t visus::power_overwhelming::emi_sensor::for_device(
+        emi_sensor *out_sensors, std::size_t cnt_sensors,
+        const char_type *device) {
+
+    if (device == nullptr) {
+        throw std::invalid_argument("The regular expression selecting the "
+            "device must not be null.");
     }
 
-    detail::enumerate_device_interface(::GUID_DEVICE_ENERGY_METER,
-            [out_sensors, &retval, cnt_sensors](HDEVINFO h,
-            SP_DEVICE_INTERFACE_DATA& d) {
-        auto path = detail::get_device_path(h, d);
-        auto dev = std::make_shared<detail::emi_device>(path);
-
-        switch (dev->version().EmiVersion) {
-            case EMI_VERSION_V1:
-                if (retval < cnt_sensors) {
-                    out_sensors[retval]._impl->set(dev, path, 0);
-                }
-                ++retval;
-                break;
-
-            case EMI_VERSION_V2: {
-                const auto md = dev->metadata_as<EMI_METADATA_V2>();
-                const auto cnt = md->ChannelCount;
-                for (auto i = 0; i < cnt; ++i, ++retval) {
-                    if (retval < cnt_sensors) {
-                        out_sensors[retval]._impl->set(dev, path, i);
-                    }
-                }
-                } break;
-        }
-
-        return true;
+#if defined(_WIN32)
+    typedef detail::emi_sensor_impl::string_type string_type;
+    std::basic_regex<char_type> rx(device);
+    return detail::emi_sensor_impl::create(out_sensors, cnt_sensors,
+            [&rx](const string_type& n, const EMI_CHANNEL_V2 *) {
+        return std::regex_match(n, rx);
     });
+#else /* defined(_WIN32) */
+    return 0;
 #endif /* defined(_WIN32) */
-
-    return retval;
 }
 
 

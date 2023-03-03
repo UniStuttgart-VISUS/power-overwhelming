@@ -8,6 +8,7 @@
 #if defined(_WIN32)
 #include <Windows.h>
 #include <emi.h>
+#include <tchar.h>
 #endif /* defined(_WIN32) */
 
 #include "sensor.h"
@@ -37,6 +38,15 @@ namespace power_overwhelming {
 #endif /* defined(_WIN32) */
 
         /// <summary>
+        /// The type used for strings that are passed to the OS API.
+        /// </summary>
+#if defined(_WIN32)
+        typedef TCHAR char_type;
+#else /* defined(_WIN32) */
+        typedef char char_type;
+#endif /* defined(_WIN32) */
+
+        /// <summary>
         /// The type used to store the version of the EMI.
         /// </summary>
 #if defined(_WIN32)
@@ -57,11 +67,33 @@ namespace power_overwhelming {
         /// of the size of the output array. If this number is larger than
         /// <paramref name="cntSensors" />, not all sensors have been returned.
         /// </returns>
+        /// <exception cref="std::system_error">If enumerating or opening the
+        /// devices failed.</exception>
         static std::size_t for_all(emi_sensor *out_sensors,
-            std::size_t cnt_sensors);
+            const std::size_t cnt_sensors);
+
+        /// <summary>
+        /// Create sensors for all devices whose name matches the given regular
+        /// expression.
+        /// </summary>
+        /// <param name="out_sensors">Receives the sensors, if not
+        /// <c>nullptr</c>.</param>
+        /// <param name="cnt_sensors">The available space in
+        /// <paramref name="out_sensors" />.</param>
+        /// <param name="device">A regular expression for matching the name
+        /// of the device.</param>
+        /// <returns>The number of sensors available on the system, regardless
+        /// of the size of the output array. If this number is larger than
+        /// <paramref name="cntSensors" />, not all sensors have been returned.
+        /// </returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="device" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::system_error">If enumerating or opening the
+        /// devices failed.</exception>
+        static std::size_t for_device(emi_sensor *out_sensors,
+            std::size_t cnt_sensors, const char_type *device);
 
 #if 0
-
         /// <summary>
         /// Create a new instance for the device with the specified PCI bus ID.
         /// </summary>
@@ -228,6 +260,7 @@ namespace power_overwhelming {
 
         detail::emi_sensor_impl *_impl;
 
+        friend struct detail::emi_sensor_impl;
     };
 
 } /* namespace power_overwhelming */

@@ -1,7 +1,15 @@
+// <copyright file="pch.h" company="Visualisierungsinstitut der Universität Stuttgart">
+// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// </copyright>
+// <author>Christoph Müller</author>
+
 #pragma once
 
 #include <chrono>
+#include <regex>
 #include <sstream>
+
+#include <tchar.h>
 
 #include <power_overwhelming/emi_sensor.h>
 #include <power_overwhelming/csv_iomanip.h>

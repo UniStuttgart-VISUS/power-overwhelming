@@ -18,15 +18,25 @@ namespace test {
     public:
 
         TEST_METHOD(test_for_all) {
-            auto cnt = emi_sensor::for_all(nullptr, 0);
-            std::vector<emi_sensor> sensors(cnt);
-            emi_sensor::for_all(sensors.data(), cnt);
+            std::vector<emi_sensor> sensors(emi_sensor::for_all(nullptr, 0));
+            emi_sensor::for_all(sensors.data(), sensors.size());
 
             for (auto& s : sensors) {
-                auto n = s.name();
-                std::vector<std::uint8_t> m(sizeof(EMI_MEASUREMENT_DATA_V2) + (s.channels() - 1) * sizeof(EMI_CHANNEL_MEASUREMENT_DATA));
-                auto mm = s.sample(reinterpret_cast<EMI_MEASUREMENT_DATA_V2 *>(m.data()), m.size());
-                auto mmm = s.sample(timestamp_resolution::seconds);
+                Assert::IsNotNull(s.name(), L"Enumerated sensor has a name", LINE_INFO());
+            }
+        }
+
+        TEST_METHOD(test_for_device) {
+            const auto filter = _T(".*");
+            const std::basic_regex<TCHAR> rx(filter);
+
+            std::vector<emi_sensor> sensors(emi_sensor::for_device(nullptr, 0, filter));
+            emi_sensor::for_device(sensors.data(), sensors.size(), filter);
+
+
+            for (auto &s : sensors) {
+                Assert::IsNotNull(s.name(), L"Enumerated sensor has a name", LINE_INFO());
+                Assert::IsTrue(std::regex_match(s.name(), rx), L"Name matches filter", LINE_INFO());
             }
         }
 

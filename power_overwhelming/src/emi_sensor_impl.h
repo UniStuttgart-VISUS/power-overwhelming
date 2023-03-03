@@ -42,7 +42,7 @@ namespace detail {
         /// <summary>
         /// The type of string we use for Win32 API calls.
         /// </summary>
-        typedef std::basic_string<TCHAR> string_type;
+        typedef std::basic_string<emi_sensor::char_type> string_type;
 
         /// <summary>
         /// The type that EMI uses to store timestamps.
@@ -54,6 +54,14 @@ namespace detail {
         /// </remarks>
         typedef decltype(EMI_CHANNEL_MEASUREMENT_DATA::AbsoluteTime)
             time_type;
+
+        /// <summary>
+        /// Creates sensors for all devices matching
+        /// <paramref name="predicate" />.
+        /// </summary>
+        template<class TPredicate>
+        static std::size_t create(emi_sensor *out_sensors,
+            std::size_t cnt_sensors, TPredicate predicate);
 
         /// <summary>
         /// Caches all devices and makes them accessible via their path.
@@ -200,3 +208,5 @@ namespace detail {
 } /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
+
+#include "emi_sensor_impl.inl"
