@@ -10,3 +10,8 @@
 /// Samples all EMI sensors once and prints their values on the console.
 /// </summary>
 void sample_emi_sensor(void);
+
+/// <summary>
+/// Samples all EMI sensors for the specified number of seconds.
+/// </summary>
+void sample_emi_sensor_async(const unsigned int dt);

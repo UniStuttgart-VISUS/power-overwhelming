@@ -88,6 +88,17 @@ namespace detail {
             void *context);
 
         /// <summary>
+        /// Remove the sensor from the context.
+        /// </summary>
+        /// <param name="sensor">The sensor to be removed.</param>
+        /// <returns><c>true</c> if the sensor has been removed, <c>false</c> if
+        /// it has not been sampled in the first place.</returns>
+        inline bool remove(sensor_type sensor) {
+            std::lock_guard<decltype(this->lock)> l(this->lock);
+            return (this->sensors.erase(sensor) > 0);
+        }
+
+        /// <summary>
         /// Performs sampling in this context.
         /// </summary>
         /// <remarks>
@@ -101,6 +112,17 @@ namespace detail {
         /// </para>
         /// </remarks>
         void sample(void);
+
+        /// <summary>
+        /// Answer whether the given sensor is sampled in this context.
+        /// </summary>
+        /// <param name="sensor">The sensor to be tested.</param>
+        /// <returns><c>true</c> if the sensor is in the context, <c>false</c>
+        /// otherwise.</returns>
+        inline bool samples(const sensor_type sensor) {
+            std::lock_guard<decltype(this->lock)> l(this->lock);
+            return (this->sensors.find(sensor) != this->sensors.end());
+        }
     };
 
 } /* namespace detail */

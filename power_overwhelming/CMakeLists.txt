@@ -8,23 +8,23 @@ project(power_overwhelming)
 
 # User-configurable options
 if (WIN32)
-    option(PWROVRWHLMG_ForceDirect3D11 "Force GPU enumeration via Direct3D 11" OFF)
-    mark_as_advanced(PWROVRWHLMG_ForceDirect3D11)
+    option(PWROWG_ForceDirect3D11 "Force GPU enumeration via Direct3D 11" OFF)
+    mark_as_advanced(PWROWG_ForceDirect3D11)
 else (WIN32)
-    set(PWROVRWHLMG_ForceDirect3D11 OFF)
+    set(PWROWG_ForceDirect3D11 OFF)
 endif (WIN32)
 
-option(PWROVRWHLMG_WithAdl "Build support for the AMD Display Library" ON)
+option(PWROWG_WithAdl "Build support for the AMD Display Library" ON)
 
-option(PWROVRWHLMG_WithNvml "Build support for the NVIDIA Management Library" ON)
+option(PWROWG_WithNvml "Build support for the NVIDIA Management Library" ON)
 
-option(PWROVRWHLMG_WithTimeSynchronisation "Build support for Cristian's algorithm" OFF)
+option(PWROWG_WithTimeSynchronisation "Build support for Cristian's algorithm" OFF)
 
-option(PWROVRWHLMG_WithVisa "Build support for the VISA-based instruments" ON)
+option(PWROWG_WithVisa "Build support for the VISA-based instruments" ON)
 
-if (PWROVRWHLMG_WithVisa)
+if (PWROWG_WithVisa)
     find_package(VISA)
-endif (PWROVRWHLMG_WithVisa)
+endif (PWROWG_WithVisa)
 
 # Collect source files.
 set(IncludeDir "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -56,17 +56,17 @@ if (NOT WIN32)
     add_definitions("-DLINUX")
 endif (NOT WIN32)
 
-if (PWROVRWHLMG_WithAdl)
+if (PWROWG_WithAdl)
     add_definitions("-DPOWER_OVERWHELMING_WITH_ADL")
-endif (PWROVRWHLMG_WithAdl)
+endif (PWROWG_WithAdl)
 
-if (PWROVRWHLMG_WithNvml)
+if (PWROWG_WithNvml)
     add_definitions("-DPOWER_OVERWHELMING_WITH_NVML")
-endif (PWROVRWHLMG_WithNvml)
+endif (PWROWG_WithNvml)
 
-if (PWROVRWHLMG_WithTimeSynchronisation)
+if (PWROWG_WithTimeSynchronisation)
     add_definitions("-DPOWER_OVERWHELMING_WITH_TIME_SYNCHRONISER")
-endif (PWROVRWHLMG_WithTimeSynchronisation)
+endif (PWROWG_WithTimeSynchronisation)
 
 if (VISA_FOUND)
     add_definitions("-DPOWER_OVERWHELMING_WITH_VISA")

@@ -39,10 +39,15 @@ namespace detail {
         typedef std::vector<std::uint8_t> metadata_type;
 
         /// <summary>
+        /// The type used to specify device names.
+        /// </summary>
+        typedef std::basic_string<TCHAR> string_type;
+
+        /// <summary>
         /// Initialises a new instance.
         /// </summary>
         /// <param name="path">The path to the EMI device.</param>
-        explicit emi_device(const std::basic_string<TCHAR>& path);
+        explicit emi_device(const string_type& path);
 
         emi_device(const emi_device&) = delete;
 

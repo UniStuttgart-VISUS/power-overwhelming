@@ -16,8 +16,7 @@
  * visus::power_overwhelming::detail::emi_sensor_impl::sampler
  */
 visus::power_overwhelming::detail::sampler<
-    visus::power_overwhelming::detail::default_sampler_context<
-    visus::power_overwhelming::detail::emi_sensor_impl>>
+    visus::power_overwhelming::detail::emi_sampler_context>
 visus::power_overwhelming::detail::emi_sensor_impl::sampler;
 
 
@@ -25,6 +24,9 @@ visus::power_overwhelming::detail::emi_sensor_impl::sampler;
  * visus::power_overwhelming::detail::emi_sensor_impl::~emi_sensor_impl
  */
 visus::power_overwhelming::detail::emi_sensor_impl::~emi_sensor_impl(void) {
+    // Make sure that a sensor that is being destroyed is removed from all
+    // asynchronous sampling threads.
+    emi_sensor_impl::sampler.remove(this);
 }
 
 
@@ -58,6 +60,36 @@ visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
         default:
             throw std::logic_error("The sensor uses an unsupported unit that "
                 "cannot be converted to Watts.");
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::emi_sensor_impl::evaluate
+ */
+visus::power_overwhelming::measurement
+visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
+        const std::vector<std::uint8_t>& data,
+        const emi_sensor::version_type version,
+        const timestamp_resolution resolution) {
+    assert(this->device->version().EmiVersion == version);
+
+    switch (version) {
+        case EMI_VERSION_V1:
+            assert(data.size() >= sizeof(EMI_MEASUREMENT_DATA_V1));
+            return this->evaluate(
+                *reinterpret_cast<const EMI_MEASUREMENT_DATA_V1 *>(data.data()),
+                resolution);
+
+        case EMI_VERSION_V2:
+            assert(data.size() >= sizeof(EMI_MEASUREMENT_DATA_V2));
+            return this->evaluate(
+                *reinterpret_cast<const EMI_MEASUREMENT_DATA_V2 *>(data.data()),
+                resolution);
+
+        default:
+            throw std::logic_error("The specified version of the Energy "
+                "Meter Interface is not supported by the implementation.");
     }
 }
 

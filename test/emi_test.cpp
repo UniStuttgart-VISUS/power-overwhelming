@@ -53,7 +53,6 @@ namespace test {
                 Assert::IsTrue(std::regex_match(s.name(), rx), L"Name matches filter", LINE_INFO());
             }
         }
-
     };
 
 } /* namespace test */

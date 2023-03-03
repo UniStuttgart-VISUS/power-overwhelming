@@ -22,7 +22,7 @@ std::size_t visus::power_overwhelming::detail::emi_sensor_impl::create(
             [out_sensors, cnt_sensors, &retval, predicate](HDEVINFO h,
             SP_DEVICE_INTERFACE_DATA& d) {
         auto path = detail::get_device_path(h, d);
-        auto dev = std::make_shared<detail::emi_device>(path);
+        auto dev = emi_device_factory::create(path);
 
         switch (dev->version().EmiVersion) {
             case EMI_VERSION_V1:

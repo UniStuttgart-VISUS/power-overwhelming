@@ -15,7 +15,7 @@
  * visus::power_overwhelming::detail::emi_device::emi_device
  */
 visus::power_overwhelming::detail::emi_device::emi_device(
-        const std::basic_string<TCHAR> &path)
+        const string_type& path)
         : _handle(INVALID_HANDLE_VALUE), _version({ 0 }) {
     this->_handle = ::CreateFile(path.c_str(), GENERIC_READ, FILE_SHARE_READ,
         nullptr, OPEN_EXISTING, 0, NULL);

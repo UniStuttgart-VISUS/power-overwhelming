@@ -171,6 +171,31 @@ visus::power_overwhelming::emi_sensor::sample(
 }
 
 
+/*
+ * visus::power_overwhelming::emi_sensor::sample
+ */
+void visus::power_overwhelming::emi_sensor::sample(
+        const measurement_callback on_measurement,
+        const microseconds_type sampling_period,
+        void *context) {
+    typedef decltype(detail::emi_sensor_impl::sampler)::interval_type
+        interval_type;
+
+    this->check_not_disposed();
+
+    if (on_measurement != nullptr) {
+        if (!detail::emi_sensor_impl::sampler.add(this->_impl, on_measurement,
+                context, interval_type(sampling_period))) {
+            throw std::logic_error("Asynchronous sampling cannot be started "
+                "while it is already running.");
+        }
+
+    } else {
+        detail::emi_sensor_impl::sampler.remove(this->_impl);
+    }
+}
+
+
 #if defined(_WIN32)
 /*
  * visus::power_overwhelming::emi_sensor::sample

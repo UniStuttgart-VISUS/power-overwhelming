@@ -59,7 +59,7 @@ void sample_nvml_sensor_async(const unsigned int dt) {
             s.sample(nullptr);
         }
 
-    } catch (std::exception &ex) {
+    } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
 }

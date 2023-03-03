@@ -13,7 +13,8 @@
 #include "power_overwhelming/emi_sensor.h"
 #include "power_overwhelming/measurement.h"
 
-#include "emi_device.h"
+#include "emi_device_factory.h"
+#include "emi_sampler_context.h"
 #include "sampler.h"
 #include "timestamp.h"
 
@@ -83,7 +84,7 @@ namespace detail {
         /// <summary>
         /// A sampler for EMI sensors.
         /// </summary>
-        static sampler<default_sampler_context<emi_sensor_impl>> sampler;
+        static detail::sampler<emi_sampler_context> sampler;
 
         /// <summary>
         /// The channel that is sampled by this sensor.
@@ -93,7 +94,7 @@ namespace detail {
         /// <summary>
         /// The RAII wrapper for the EMI device handle.
         /// </summary>
-        std::shared_ptr<emi_device> device;
+        emi_device_factory::device_type device;
 
         /// <summary>
         /// Remembers the absolute energy from when the sensor was last sampled.
@@ -165,6 +166,20 @@ namespace detail {
             return this->evaluate(data.ChannelData[this->channel],
                 resolution);
         }
+
+        /// <summary>
+        /// Evaluate the given channel data as the specified version of EMI data
+        /// and  save them as the previous measurement in
+        /// <see cref="emi_sensor_impl::last_energy" /> and
+        /// <see cref="emi_sensor_impl::last_time" />.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="version"></param>
+        /// <param name="resolution"></param>
+        /// <returns></returns>
+        measurement evaluate(const std::vector<std::uint8_t>& data,
+            const emi_sensor::version_type version,
+            const timestamp_resolution resolution);
 
         /// <summary>
         /// Obtains a sample from the sensor by issuing the
