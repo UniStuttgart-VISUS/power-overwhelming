@@ -25,7 +25,6 @@ add_definitions("-DUNICODE -D_UNICODE")
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${AdlInclude}
     PRIVATE ${NvmlInclude}
-    PRIVATE ${JsonInclude}
     PRIVATE ${PowerOverwhelmingTestInclude}
     PRIVATE ${TinkerforgeInclude})
 

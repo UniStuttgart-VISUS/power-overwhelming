@@ -1,9 +1,0 @@
-[submodule "third_party/display-library"]
-	path = third_party/display-library
-	url = https://github.com/GPUOpen-LibrariesAndSDKs/display-library.git
-[submodule "third_party/json"]
-	path = third_party/json
-	url = https://github.com/nlohmann/json.git
-[submodule "third_party/wil"]
-	path = third_party/wil
-	url = https://github.com/microsoft/wil

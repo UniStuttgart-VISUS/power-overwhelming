@@ -71,7 +71,7 @@ endif (PWROWG_WithTimeSynchronisation)
 if (VISA_FOUND)
     add_definitions("-DPOWER_OVERWHELMING_WITH_VISA")
     target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
-    target_link_libraries(${PROJECT_NAME} ${VISA_LIBRARY} nlohmann_json)
+    target_link_libraries(${PROJECT_NAME} ${VISA_LIBRARY})
 endif (VISA_FOUND)
 
 target_include_directories(${PROJECT_NAME}
@@ -82,6 +82,9 @@ target_include_directories(${PROJECT_NAME}
     PRIVATE ${TinkerforgeInclude})
 
 # Configure the linker.
+target_link_libraries(${PROJECT_NAME}
+    nlohmann_json)
+
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} Ws2_32)
 endif (WIN32)

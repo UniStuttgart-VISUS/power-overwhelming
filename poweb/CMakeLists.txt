@@ -52,12 +52,19 @@ if (${EffectivePlatform} STREQUAL "Win32")
 endif (${EffectivePlatform} STREQUAL "Win32")
 
 target_link_libraries(${PROJECT_NAME}
-    nlohmann_json
     power_overwhelming
-    WIL::WIL
+    nlohmann_json
+    WIL
     # I can't believe that actually worked ...
     ${WebView2Dir}/Microsoft.Windows.ImplementationLibrary.targets
     ${WebView2Dir}/${EffectivePlatform}/WebView2LoaderStatic.lib)
+
+
+
+
+
+
+
 
 # Deploy DLLs with the executable.
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
