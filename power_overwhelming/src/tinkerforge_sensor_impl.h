@@ -11,12 +11,20 @@
 #include <functional>
 
 #include <bricklet_voltage_current_v2.h>
+
+#if defined(_WIN32)
 #include <Windows.h>
+#endif /* defined(_WIN32) */
 
 #include "power_overwhelming/measurement.h"
 
 #include "timestamp.h"
 #include "tinkerforge_scope.h"
+
+
+#if !defined(CALLBACK)
+#define CALLBACK
+#endif /* !defined(CALLBACK) */
 
 
 namespace visus {

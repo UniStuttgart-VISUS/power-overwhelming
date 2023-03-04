@@ -18,6 +18,11 @@
 #include "tinkerforge_bricklet.h"
 
 
+#if !defined(CALLBACK)
+#define CALLBACK
+#endif /* !defined(CALLBACK) */
+
+
 namespace visus {
 namespace power_overwhelming {
 namespace detail {
