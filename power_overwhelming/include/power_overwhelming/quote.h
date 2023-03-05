@@ -1,5 +1,5 @@
 // <copyright file="quote.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "literal.h"
-#include "power_overwhelming_api.h"
+#include "power_overwhelming/literal.h"
+#include "power_overwhelming/power_overwhelming_api.h"
 
 
 namespace visus {

@@ -1,5 +1,5 @@
 // <copyright file="adl_sensor_source.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -7,7 +7,6 @@
 
 #include <cinttypes>
 #include <limits>
-
 
 #include "power_overwhelming/power_overwhelming_api.h"
 

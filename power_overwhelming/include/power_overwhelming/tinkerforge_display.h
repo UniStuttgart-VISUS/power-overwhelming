@@ -1,11 +1,11 @@
 // <copyright file="tinkerforge_display.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #pragma once
 
-#include "tinkerforge_sensor.h"
+#include "power_overwhelming/tinkerforge_sensor.h"
 
 
 namespace visus {

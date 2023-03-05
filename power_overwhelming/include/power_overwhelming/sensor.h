@@ -1,5 +1,5 @@
 // <copyright file="sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -7,8 +7,8 @@
 
 #include <cinttypes>
 
-#include "measurement.h"
-#include "timestamp_resolution.h"
+#include "power_overwhelming/measurement.h"
+#include "power_overwhelming/timestamp_resolution.h"
 
 
 namespace visus {

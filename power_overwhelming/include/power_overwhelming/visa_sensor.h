@@ -1,11 +1,12 @@
 // <copyright file="visa_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #pragma once
 
-#include "sensor.h"
+#include "power_overwhelming/sensor.h"
+
 
 namespace visus {
 namespace power_overwhelming {

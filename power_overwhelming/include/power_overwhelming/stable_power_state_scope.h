@@ -1,11 +1,11 @@
 // <copyright file="stable_power_state_scope.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #pragma once
 
-#include "graphics_device.h"
+#include "power_overwhelming/graphics_device.h"
 
 
 namespace visus {
