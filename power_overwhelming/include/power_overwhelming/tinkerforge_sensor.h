@@ -114,9 +114,9 @@ namespace power_overwhelming {
         /// <param name="port">The port on which the Brick daemon is listening.
         /// This parameter defaults to 4223.</param>
         /// <exception cref="std::invalid_argument">If <paramref name="uid" />
-        /// is <c>nullptr</c>.</exceptions>
+        /// is <c>nullptr</c>.</exception>
         /// <exception cref="std::bad_alloc">If the required resources could not
-        /// be allocated.</exceptions>
+        /// be allocated.</exception>
         /// <exception cref="tinkerforge_exception">If the connection to the
         /// master brick could not be established.</exception>
         tinkerforge_sensor(const char *uid, const char *host = default_host,
@@ -135,9 +135,9 @@ namespace power_overwhelming {
         /// <param name="port">The port on which the Brick daemon is listening.
         /// This parameter defaults to 4223.</param>
         /// <exception cref="std::invalid_argument">If <paramref name="uid" />
-        /// is <c>nullptr</c>.</exceptions>
+        /// is <c>nullptr</c>.</exception>
         /// <exception cref="std::bad_alloc">If the required resources could not
-        /// be allocated.</exceptions>
+        /// be allocated.</exception>
         /// <exception cref="tinkerforge_exception">If the connection to the
         /// master brick could not be established.</exception>
         tinkerforge_sensor(const char *uid, const wchar_t *description,
@@ -154,9 +154,9 @@ namespace power_overwhelming {
         /// <param name="port">The port on which the Brick daemon is listening.
         /// This parameter defaults to 4223.</param>
         /// <exception cref="std::invalid_argument">If the UID in
-        /// <paramref name="definition" /> is invalid.</exceptions>
+        /// <paramref name="definition" /> is invalid.</exception>
         /// <exception cref="std::bad_alloc">If the required resources could not
-        /// be allocated.</exceptions>
+        /// be allocated.</exception>
         /// <exception cref="tinkerforge_exception">If the connection to the
         /// master brick could not be established.</exception>
         tinkerforge_sensor(const tinkerforge_sensor_definiton& definition,

@@ -22,7 +22,7 @@ namespace power_overwhelming {
     namespace detail { struct visa_sensor_impl; }
 
     /// <summary>
-    /// Allows for controlling a Rohde & Schwarz HMC8015 power analyser.
+    /// Allows for controlling a Rohde &amp; Schwarz HMC8015 power analyser.
     /// </summary>
     class POWER_OVERWHELMING_API hmc8015_sensor final
             : public detail::visa_sensor {
