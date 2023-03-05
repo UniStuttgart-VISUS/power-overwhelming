@@ -33,13 +33,13 @@ visus::power_overwhelming::detail::get_class_description(const GUID& guid) {
         }
     }
 
-    std::basic_string<TCHAR> retval(size, static_cast<TCHAR>(0));
-    if (!::SetupDiGetClassDescription(&guid, &retval[0], size, &size)) {
+    std::vector<TCHAR> retval(size);
+    if (!::SetupDiGetClassDescription(&guid, retval.data(), size, &size)) {
         auto e = ::GetLastError();
         throw std::system_error(e, std::system_category());
     }
 
-    return retval;
+    return retval.data();
 }
 
 

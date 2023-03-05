@@ -6,6 +6,8 @@
 #pragma once
 
 #include <cstddef>
+#include <string>
+#include <vector>
 
 #include "power_overwhelming/power_overwhelming_api.h"
 
@@ -27,7 +29,7 @@ namespace power_overwhelming {
     /// <param name="cnt">The size of <paramref name="dst" /> in number of
     /// characters.</param>
     /// <returns>The required size of the <paramref name="dst" /> buffer to
-    /// store the computer name.</returns>
+    /// store the computer name, including the terminating null.</returns>
     /// <exception cref="std::system_error">In case the operation failed.
     /// </exception>
     std::size_t POWER_OVERWHELMING_API computer_name(char *dst,
@@ -47,11 +49,26 @@ namespace power_overwhelming {
     /// <param name="cnt">The size of <paramref name="dst" /> in number of
     /// characters.</param>
     /// <returns>The required size of the <paramref name="dst" /> buffer to
-    /// store the computer name.</returns>
+    /// store the computer name, including the terminating null.</returns>
     /// <exception cref="std::system_error">In case the operation failed.
     /// </exception>
     std::size_t POWER_OVERWHELMING_API computer_name(wchar_t *dst,
         const std::size_t cnt);
+
+    /// <summary>
+    /// Answer the name of the computer the calling code is running on.
+    /// </summary>
+    /// <typeparam name="TChar">The type of the character to return, which can
+    /// be <c>char</c> or <c>whar_t</c>.</typeparam>
+    /// <returns>The computer name.</returns>
+    /// <exception cref="std::system_error">In case the operation failed.
+    /// </exception>
+    template<class TChar> inline std::basic_string<TChar> computer_name(void) {
+        static constexpr auto np = static_cast<TChar *>(nullptr);
+        std::vector<TChar> retval(computer_name(np, 0));
+        computer_name(retval.data(), retval.size());
+        return retval.data();
+    }
 
 } /* namespace power_overwhelming */
 } /* namespace visus */

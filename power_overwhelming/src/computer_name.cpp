@@ -12,7 +12,6 @@
 #else /* defined(_WIN32) */
 #include <algorithm>
 #include <cstring>
-#include <vector>
 
 #include <sys/utsname.h>
 
