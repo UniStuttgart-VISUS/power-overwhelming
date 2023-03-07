@@ -56,10 +56,12 @@ namespace detail {
         /// </summary>
         buffer_type buffer;
 
+#if defined(_WIN32)
         /// <summary>
         /// An event to wake the I/O thread.
         /// </summary>
         HANDLE evt_write;
+#endif /* defined(_WIN32) */
 
         /// <summary>
         /// Indicates whether a have a valid marker.
