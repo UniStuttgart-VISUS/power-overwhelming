@@ -3,7 +3,10 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
+#include "power_overwhelming/collector.h"
 #include "power_overwhelming/dump_sensors.h"
+
+#include <iostream>
 
 #if defined(_WIN32)
 #include <Windows.h>
@@ -24,5 +27,31 @@
 /// <param name="argv"></param>
 /// <returns></returns>
 int _tmain(const int argc, const TCHAR **argv) {
-    return 0;
+    std::wcout << L"dump_sensors" << std::endl;
+    std::wcout << L"© 2023 Visualisierungsinstitut der Universität Stuttgart."
+        << std::endl << std::endl;
+
+    auto show_help = (argc < 2);
+
+    if (show_help) {
+        // Input is wrong, so show the help.
+        std::wcout << L"Dumps the definition of all sensors that are currently "
+            << L"available on this machine " << std::endl
+            << L"into a JSON file." << std::endl << std::endl;
+        std::wcout << "Usage: dump_sensors <output path>" << std::endl;
+        return -2;
+
+    } else {
+        // Can go on with the real thing, which is just calling into the
+        // library to save the sensor definitions.
+        try {
+            auto cnt = visus::power_overwhelming::dump_sensors(argv[1]);
+            std::wcout << cnt << " sensor(s) dumped." << std::endl;
+            return 0;
+        } catch (std::exception& ex) {
+            std::cout << ex.what() << std::endl;
+            return -1;
+        }
+    }
+
 }

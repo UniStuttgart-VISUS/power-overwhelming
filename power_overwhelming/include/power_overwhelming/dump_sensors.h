@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include "power_overwhelming/power_overwhelming_api.h"
 
 
@@ -15,19 +17,21 @@ namespace power_overwhelming {
     /// Saves a JSON array of all sensors currently found on the the system.
     /// </summary>
     /// <param name="path">The path of the file to write the sensor data to.
-    /// </para>
+    /// </param>
+    /// <returns>The number of sensors actually dumped.</returns>
     /// <exception cref="std::ios_base::failure">If saving the sensor data
     /// failed.</exception>
-    void POWER_OVERWHELMING_API dump_sensors(const char *path);
+    std::size_t POWER_OVERWHELMING_API dump_sensors(const char *path);
 
     /// <summary>
     /// Saves a JSON array of all sensors currently found on the the system.
     /// </summary>
     /// <param name="path">The path of the file to write the sensor data to.
-    /// </para>
+    /// </param>
+    /// <returns>The number of sensors actually dumped.</returns>
     /// <exception cref="std::ios_base::failure">If saving the sensor data
     /// failed.</exception>
-    void POWER_OVERWHELMING_API dump_sensors(const wchar_t *path);
+    std::size_t POWER_OVERWHELMING_API dump_sensors(const wchar_t *path);
 
 } /* namespace power_overwhelming */
 } /* namespace visus */

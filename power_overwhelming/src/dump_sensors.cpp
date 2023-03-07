@@ -11,14 +11,18 @@
 /*
  * visus::power_overwhelming::dump_sensors
  */
-void visus::power_overwhelming::dump_sensors(const char *path) {
-    detail::write_json(path, detail::get_all_sensor_descs());
+std::size_t visus::power_overwhelming::dump_sensors(const char *path) {
+    const auto descs = detail::get_all_sensor_descs();
+    detail::write_json(path, descs);
+    return descs.size();
 }
 
 
 /*
  * visus::power_overwhelming::dump_sensors
  */
-void visus::power_overwhelming::dump_sensors(const wchar_t *path) {
-    detail::write_json(path, detail::get_all_sensor_descs());
+std::size_t visus::power_overwhelming::dump_sensors(const wchar_t *path) {
+    const auto descs = detail::get_all_sensor_descs();
+    detail::write_json(path, descs);
+    return descs.size();
 }
