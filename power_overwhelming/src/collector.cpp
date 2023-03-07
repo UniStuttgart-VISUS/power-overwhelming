@@ -84,7 +84,12 @@ visus::power_overwhelming::collector::for_all(const wchar_t *output_path,
 
     auto retval = collector(new detail::collector_impl());
     retval._impl->sensors = detail::get_all_sensors();
+#if defined(_WIN32)
     retval._impl->stream = std::wofstream(output_path, std::ofstream::trunc);
+#else /* defined(_WIN32) */
+    auto p = convert_string<char>(output_path);
+    retval._impl->stream = std::wofstream(p, std::ofstream::trunc);
+#endif /* defined(_WIN32) */
     retval._impl->sampling_interval = std::chrono::microseconds(
         sampling_interval);
 
