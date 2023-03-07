@@ -96,12 +96,12 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // Collector abstraction
-#if false
 #if true
+#if false
     ::collect_all(L"idle.csv", 20);
 #endif
 
-#if false
+#if true
     ::collect_template(L"tpl.json",  20);
 #endif
 #endif

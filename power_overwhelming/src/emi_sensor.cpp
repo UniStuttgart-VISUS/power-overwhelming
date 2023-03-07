@@ -83,7 +83,10 @@ std::size_t visus::power_overwhelming::emi_sensor::for_device(
  * visus::power_overwhelming::emi_sensor::emi_sensor
  */
 visus::power_overwhelming::emi_sensor::emi_sensor(void)
-    : _impl(new detail::emi_sensor_impl()) { }
+        : _impl(new detail::emi_sensor_impl()) {
+    // Note: EMI sensor must initialise here in order to allow for the sensor
+    // implementation create the instances in-place.
+}
 
 
 /*
