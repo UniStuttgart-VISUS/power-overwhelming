@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#if defined(_WIN32)
 #include <wrl.h>
+#endif /* defined(_WIN32) */
 
 #include "com_error_category.h"
 #include "safe_com.h"
@@ -20,6 +22,7 @@
 std::size_t visus::power_overwhelming::graphics_device::all(
         graphics_device *outDevices, const std::size_t cntDevices,
         const bool onlyHardware) {
+#if (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11)
     Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
     auto hr = S_OK;
     std::size_t retval = 0;
@@ -84,6 +87,9 @@ std::size_t visus::power_overwhelming::graphics_device::all(
     }
 
     return retval;
+#else /* (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11) */
+    return 0;
+#endif /* (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11) */
 }
 
 
