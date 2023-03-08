@@ -25,12 +25,14 @@ void query_hmc8015(void) {
             s.current_range(instrument_range::maximum);
             s.voltage_range(instrument_range::explicitly, 300);
 
+#if defined(_WIN32)
             SYSTEMTIME now;
             ::GetLocalTime(&now);
 
             std::wcout << now.wHour << ":"
                 << now.wMinute << ":"
                 << now.wSecond << std::endl;
+#endif /* defined(_WIN32) */
 
             //s.log_behaviour(std::numeric_limits<float>::lowest(),
             //    log_mode::time_span, 5, now.wYear, now.wMonth,
