@@ -29,6 +29,7 @@
 int _tmain(const int argc, const TCHAR **argv) {
     std::wcout << L"dump_sensors" << std::endl;
     std::wcout << L"© 2023 Visualisierungsinstitut der Universität Stuttgart."
+        << std::endl << L"All rights reserved."
         << std::endl << std::endl;
 
     auto show_help = (argc < 2);
@@ -46,7 +47,8 @@ int _tmain(const int argc, const TCHAR **argv) {
         // library to save the sensor definitions.
         try {
             auto cnt = visus::power_overwhelming::dump_sensors(argv[1]);
-            std::wcout << cnt << " sensor(s) dumped." << std::endl;
+            std::wcout << cnt << ((cnt == 1) ? L" sensor" : L" sensors")
+                << L" dumped." << std::endl;
             return 0;
         } catch (std::exception& ex) {
             std::cout << ex.what() << std::endl;
