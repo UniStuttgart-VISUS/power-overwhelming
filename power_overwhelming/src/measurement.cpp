@@ -29,7 +29,7 @@ visus::power_overwhelming::measurement::measurement(const char_type *sensor,
         throw std::invalid_argument("A valid sensor name must be specified.");
     }
 
-    this->_sensor = ::_wcsdup(sensor);
+    this->_sensor = ::wcsdup(sensor);
     if (this->_sensor == nullptr) {
         throw std::bad_alloc();
     }
@@ -56,7 +56,7 @@ visus::power_overwhelming::measurement::measurement(const char_type *sensor,
             "specified.");
     }
 
-    this->_sensor = ::_wcsdup(sensor);
+    this->_sensor = ::wcsdup(sensor);
     if (this->_sensor == nullptr) {
         throw std::bad_alloc();
     }
@@ -78,7 +78,7 @@ visus::power_overwhelming::measurement::measurement(const char_type *sensor,
             "specified.");
     }
 
-    this->_sensor = ::_wcsdup(sensor);
+    this->_sensor = ::wcsdup(sensor);
     if (this->_sensor == nullptr) {
         throw std::bad_alloc();
     }
@@ -103,7 +103,7 @@ visus::power_overwhelming::measurement::operator =(const measurement& rhs) {
     if (this != std::addressof(rhs)) {
         this->_current = rhs._current;
         this->_power = rhs._power;
-        this->_sensor = ::_wcsdup(rhs._sensor);
+        this->_sensor = ::wcsdup(rhs._sensor);
         if (this->_sensor == nullptr) {
             throw std::bad_alloc();
         }
