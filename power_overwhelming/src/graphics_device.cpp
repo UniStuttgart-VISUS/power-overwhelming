@@ -173,8 +173,10 @@ visus::power_overwhelming::graphics_device
 visus::power_overwhelming::graphics_device::operator =(
         graphics_device&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
+#if (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11)
         detail::safe_move(this->_adapter, std::move(rhs._adapter));
         detail::safe_move(this->_device, std::move(rhs._device));
+#endif /* (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11) */
 
         // Transfer the cached data as well.
         delete[] this->_id;
