@@ -1,13 +1,12 @@
-# CMakeLists.txt
+﻿# CMakeLists.txt
 # Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 
 find_package(Git REQUIRED)
 
 include(FetchContent)
-set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-mark_as_advanced(FETCHCONTENT_BASE_DIR)
 set(FETCHCONTENT_QUIET ON)
-mark_as_advanced(FETCHCONTENT_FULLY_DISCONNECTED
+mark_as_advanced(FETCHCONTENT_BASE_DIR
+    FETCHCONTENT_FULLY_DISCONNECTED
     FETCHCONTENT_QUIET
     FETCHONCENT_UPDATES_DISCONNECTED)
 
@@ -16,10 +15,9 @@ FetchContent_Declare(adl
     GIT_REPOSITORY "https://github.com/GPUOpen-LibrariesAndSDKs/display-library.git"
     GIT_TAG "17.0"
     GIT_PROGRESS TRUE
-    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/adl"
 )
 FetchContent_MakeAvailable(adl)
-set(AdlDir ${CMAKE_CURRENT_SOURCE_DIR}/adl)
+set(AdlDir ${adl_SOURCE_DIR})
 set(AdlInclude ${AdlDir}/include PARENT_SCOPE)
 
 # JSON library

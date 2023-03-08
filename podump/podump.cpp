@@ -48,7 +48,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // EMI sensors
-#if true
+#if false
 #if true
     ::sample_emi_sensor();
 #endif
@@ -59,7 +59,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // NVML sensors
-#if false
+#if true
 #if true
     ::sample_nvml_sensor();
 #endif
@@ -96,7 +96,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // Collector abstraction
-#if true
+#if false
 #if false
     ::collect_all(L"idle.csv", 20);
 #endif
