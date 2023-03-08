@@ -6,10 +6,11 @@
 #include "power_overwhelming/convert_string.h"
 
 #include <codecvt>
+#include <cwchar>
 #include <locale>
 #include <system_error>
 
-#include <wchar.h>
+#include <errno.h>
 
 
 /*
@@ -37,7 +38,7 @@ std::size_t visus::power_overwhelming::detail::convert_string(
         &state);
 
     if (retval != static_cast<std::size_t>(-1)) {
-        throw std::system_error(error, std::system_category());
+        throw std::system_error(errno, std::system_category());
     }
 
     ++retval;   // Add terminating zero.
@@ -72,7 +73,7 @@ std::size_t visus::power_overwhelming::detail::convert_string(
         &state);
 
     if (retval != static_cast<std::size_t>(-1)) {
-        throw std::system_error(error, std::system_category());
+        throw std::system_error(errno, std::system_category());
     }
 
     ++retval;   // Add terminating zero.
