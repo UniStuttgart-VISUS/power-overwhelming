@@ -40,7 +40,7 @@ namespace detail {
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
         inline on_exit_guard(on_exit_guard&& rhs)
-            : _exitHandler(std::move(rhs.exitHandler)),
+            : _exitHandler(std::move(rhs._exitHandler)),
                 _isInvoked(rhs._isInvoked) {
             rhs._isInvoked = true;
         }

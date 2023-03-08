@@ -6,24 +6,33 @@
 #if defined(POWER_OVERWHELMING_WITH_TIME_SYNCHRONISER)
 #include "time_synchroniser_impl.h"
 
+#include <cassert>
+#include <chrono>
+#include <cstring>
+#include <system_error>
+
 #if defined(_WIN32)
 #include <WS2tcpip.h>
 #else /* defined(_WIN32) */
-#include <netinet/in.h>
+#include <errno.h>
 #endif /* defined(_WIN32) */
-
-#include <cassert>
-#include <chrono>
-#include <system_error>
 
 #include "on_exit.h"
 
 
 #define TIMESYNC_MAX_DATAGRAM (1024)
 
+#if !defined(SOCKET_ERROR)
+#define SOCKET_ERROR (-1)
+#endif /* !defined(SOCKET_ERROR) */
+
 #if !defined(INVALID_SOCKET)
 #define INVALID_SOCKET (-1)
 #endif /* !defined(INVALID_SOCKET) */
+
+#if !defined(_WIN32)
+#define WSAGtLastError() errno
+#endif /* !defined(_WIN32) */
 
 
 /*
