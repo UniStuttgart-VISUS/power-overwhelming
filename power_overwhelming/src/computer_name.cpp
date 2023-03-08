@@ -99,6 +99,8 @@ std::size_t visus::power_overwhelming::computer_name(char *dst,
         ::strncpy(dst, names.nodename, cnt);
         dst[cnt - 1] = 0;
     }
+
+    return retval;
 #endif /* defined(_WIN32) */
 }
 
