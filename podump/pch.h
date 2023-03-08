@@ -25,3 +25,9 @@
 #include "power_overwhelming/stable_power_state_scope.h"
 #include "power_overwhelming/tinkerforge_display.h"
 #include "power_overwhelming/tinkerforge_sensor.h"
+
+
+#if !defined(_WIN32)
+#define TCHAR char
+#define _tmain main
+#endif /* !defined(_WIN32) */
