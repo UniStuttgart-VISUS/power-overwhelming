@@ -30,8 +30,14 @@
 #define INVALID_SOCKET (-1)
 #endif /* !defined(INVALID_SOCKET) */
 
+
 #if !defined(_WIN32)
-#define WSAGtLastError() errno
+/// <summary>
+/// Returns <c>errno</c>.
+/// </summary>
+static inline int WSAGetLastError(void) {
+    return errno;
+}
 #endif /* !defined(_WIN32) */
 
 
