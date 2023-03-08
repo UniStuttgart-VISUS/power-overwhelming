@@ -16,6 +16,10 @@
 #include "setup_api.h"
 
 
+#define ERROR_MSG_NOT_SUPPORTED ("The EMI sensor is not supported on this " \
+    "platform.")
+
+
 /*
  * visus::power_overwhelming::emi_sensor::for_all
  */
@@ -184,7 +188,7 @@ visus::power_overwhelming::emi_sensor::sample(
                 "Meter Interface is not supported by the implementation.");
     }
 #else /* defined(_WIN32) */
-    throw std::logic_error("The EMI sensor is not supported on this platform.");
+    throw std::logic_error(ERROR_MSG_NOT_SUPPORTED);
 #endif /* defined(_WIN32) */
 }
 
@@ -196,6 +200,7 @@ void visus::power_overwhelming::emi_sensor::sample(
         const measurement_callback on_measurement,
         const microseconds_type sampling_period,
         void *context) {
+#if defined(_WIN32)
     typedef decltype(detail::emi_sensor_impl::sampler)::interval_type
         interval_type;
 
@@ -211,6 +216,9 @@ void visus::power_overwhelming::emi_sensor::sample(
     } else {
         detail::emi_sensor_impl::sampler.remove(this->_impl);
     }
+#else /* defined(_WIN32) */
+    throw std::logic_error(ERROR_MSG_NOT_SUPPORTED);
+#endif /* defined(_WIN32) */
 }
 
 
@@ -254,33 +262,6 @@ EMI_MEASUREMENT_DATA_V2 *visus::power_overwhelming::emi_sensor::sample(
     return measurement;
 }
 #endif /* defined(_WIN32) */
-
-
-#if 0
-/*
- * visus::power_overwhelming::emi_sensor::sample
- */
-void visus::power_overwhelming::emi_sensor::sample(
-        const measurement_callback on_measurement,
-        const microseconds_type sampling_period,
-        void *context) {
-    typedef decltype(detail::emi_sensor_impl::sampler)::interval_type
-        interval_type;
-
-    this->check_not_disposed();
-
-    if (on_measurement != nullptr) {
-        if (!detail::emi_sensor_impl::sampler.add(this->_impl, on_measurement,
-                context, interval_type(sampling_period))) {
-            throw std::logic_error("Asynchronous sampling cannot be started "
-                "while it is already running.");
-        }
-
-    } else {
-        detail::emi_sensor_impl::sampler.remove(this->_impl);
-    }
-}
-#endif
 
 
 /*
