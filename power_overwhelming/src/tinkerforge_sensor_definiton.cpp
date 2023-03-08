@@ -61,7 +61,7 @@ void visus::power_overwhelming::tinkerforge_sensor_definiton::description(
     }
 
     if (description != nullptr) {
-        this->_description = ::_wcsdup(description);
+        this->_description = ::wcsdup(description);
         if (this->_description == nullptr) {
             throw std::bad_alloc();
         }
