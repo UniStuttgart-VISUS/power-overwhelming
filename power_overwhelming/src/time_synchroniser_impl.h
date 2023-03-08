@@ -22,6 +22,11 @@
 #include "timestamp.h"
 
 
+#if !defined(_WIN32)
+#define SOCKET int
+#endif /* !defined(_WIN32) */
+
+
 namespace std {
 
     /// <summary>

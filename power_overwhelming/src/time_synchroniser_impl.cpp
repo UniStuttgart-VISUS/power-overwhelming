@@ -143,6 +143,7 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::receive(
         this->state.store(0, std::memory_order::memory_order_release);
     });
 
+#if defined(_WIN32)
     // Winsock must be initialised per thread. Also, make sure to install
     // an exit handler cleaning it up if the scope is left.
     {
@@ -155,10 +156,15 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::receive(
     }
 
     const auto guard_wsa_cleanup = on_exit([](void) { ::WSACleanup(); });
+#endif /*defined(_WIN32) */
 
     // Create, configure and bind the local socket.
+#if defined(_WIN32)
     this->socket = ::WSASocket(address_family, SOCK_DGRAM, IPPROTO_UDP,
         nullptr, 0, WSA_FLAG_OVERLAPPED);
+#else /* defined(_WIN32) */
+    this->socket = ::socket(address_family, SOCK_DGRAM, IPPROTO_UDP);
+#endif /* defined(_WIN32) */
     if (this->socket == INVALID_SOCKET) {
         throw std::system_error(::WSAGetLastError(),
             std::system_category());
