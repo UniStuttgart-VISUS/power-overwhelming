@@ -85,5 +85,18 @@ collector.stop();
 
 Using the Tinkerforge bricklets for measuring the power lanes of the GPU requires a custom setup. We have compiled some [instructions](docs/HARDWARE.md) for doing that.
 
+## Extending the library
+Adding new kinds of sensors requires several steps. First, a new sensor class is required, which needs to satisfy the following requirements:
+
+* All sensors must inherit from `visus::power_overwhelming::sensor` and implement the interface defined therein.
+* The name should end with `_sensor`.
+* All implementation details must be hidden from the public interface using the [PIMPL pattern](https://learn.microsoft.com/en-us/cpp/cpp/pimpl-for-compile-time-encapsulation-modern-cpp).
+* The sensor class must support move semantics (move constructor and move assignment).
+* The sensor class must implement a method `static std::size_t for_all(emi_sensor *out_sensors, const std::size_t cnt_sensors)` that can be used to retrieve all sensors of this kind that are available on the machine. The method shall always return the number of sensors available, even if `out_sensors` is `nullptr` or the buffer is too small to hold all sensors. Sensors shall only be written to `out_sensors` if the buffer is valid and large enough to hold all of them.
+
+In order to be eligible for the automated enumeration by the sensor utility functions,
+* a template specialisation of `visus::power_overwhelming::detail::sensor_desc` must be provided in [sensor_desc.h](power_overwhelming/src/sensor_desc.h), which provides means to serialise and deserialise sensors,
+* the class must be added to the `sensor_list` template at the bottom of [sensor_desc.h](power_overwhelming/src/sensor_desc.h).
+
 ## Acknowledgments
 This work was partially funded by Deutsche Forschungsgemeinschaft (DFG) as part of [SFB/Transregio 161](https://www.sfbtrr161.de) (project ID 251654672).
