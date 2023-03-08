@@ -226,7 +226,7 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::receive(
     // Receive until indicated to leave.
     while (this->state.load(std::memory_order::memory_order_acquire) == 1) {
         sockaddr addr;
-        int addr_length = sizeof(addr);
+        socklen_t addr_length = sizeof(addr);
         char buffer[TIMESYNC_MAX_DATAGRAM];
 
         const auto cnt = ::recvfrom(this->socket, buffer, sizeof(buffer), 0,
@@ -281,7 +281,11 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::stop(void) {
         // Closing the socket will cause the receive to fail and the thread will
         // notice that the state has changed and it should exit.
         assert(this->socket != INVALID_SOCKET);
+#if defined(_WIN32)
         ::closesocket(this->socket);
+#else /* defined(_WIN3) */
+        ::close(this->socket);
+#endif /* defined(_WIN3) */
         this->socket = INVALID_SOCKET;
     }
 }
