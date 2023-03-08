@@ -75,4 +75,4 @@ void visus::power_overwhelming::visa_exception::throw_unless_succeeded(
  * visus::power_overwhelming::visa_exception::visa_exception
  */
 visus::power_overwhelming::visa_exception::visa_exception(const value_type code)
-    : std::exception(detail::visa_to_string(code).c_str()), _code(code) { }
+    : std::runtime_error(detail::visa_to_string(code).c_str()), _code(code) { }
