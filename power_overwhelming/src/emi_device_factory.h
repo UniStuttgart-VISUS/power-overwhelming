@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <memory>
 #include <mutex>
 #include <unordered_map>

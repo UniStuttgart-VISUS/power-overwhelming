@@ -19,6 +19,7 @@ visus::power_overwhelming::detail::emi_device_factory::create(
 #if defined(_WIN32)
         auto retval = std::make_shared<emi_device>(path);
 #else /* defined(_WIN32) */
+        assert(false);
         auto retval = std::make_shared<emi_device>();
 #endif /* defined(_WIN32) */
         _instances[path] = retval;

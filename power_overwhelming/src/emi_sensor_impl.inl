@@ -4,6 +4,8 @@
 // <author>Christoph Müller</author>
 
 
+#if defined(_WIN32)
+
 /*
  * visus::power_overwhelming::detail::emi_sensor_impl::create
  */
@@ -13,7 +15,6 @@ std::size_t visus::power_overwhelming::detail::emi_sensor_impl::create(
         TPredicate predicate) {
     std::size_t retval = 0;
 
-#if defined(_WIN32)
     if (out_sensors == nullptr) {
         cnt_sensors = 0;
     }
@@ -54,7 +55,7 @@ std::size_t visus::power_overwhelming::detail::emi_sensor_impl::create(
 
         return true;
     });
-#endif /* defined(_WIN32) */
 
     return retval;
 }
+#endif /* defined(_WIN32) */
