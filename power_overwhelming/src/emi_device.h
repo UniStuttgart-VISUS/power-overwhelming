@@ -30,7 +30,6 @@ namespace detail {
     /// </remarks>
     class emi_device final {
 
-#if defined(_WIN32)
     public:
 
         /// <summary>
@@ -43,6 +42,7 @@ namespace detail {
         /// </summary>
         typedef std::basic_string<wchar_t> string_type;
 
+#if defined(_WIN32)
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
