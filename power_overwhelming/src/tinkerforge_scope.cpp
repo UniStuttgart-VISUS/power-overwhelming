@@ -8,7 +8,9 @@
 #include <algorithm>
 #include <iterator>
 
+#if defined(_WIN32)
 #include <WinSock2.h>
+#endif /* defined(_WIN32) */
 
 #include "tinkerforge_exception.h"
 
