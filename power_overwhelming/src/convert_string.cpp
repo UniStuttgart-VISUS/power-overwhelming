@@ -1,7 +1,7 @@
-// <copyright file="convert_string.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="convert_string.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2022 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/convert_string.h"
 
@@ -38,7 +38,7 @@ std::size_t visus::power_overwhelming::detail::convert_string(
         (output == nullptr) ? 0 : cnt_output,
         &state);
 
-    if (retval != static_cast<std::size_t>(-1)) {
+    if (retval == static_cast<std::size_t>(-1)) {
         throw std::system_error(errno, std::system_category());
     }
 
@@ -74,7 +74,7 @@ std::size_t visus::power_overwhelming::detail::convert_string(
         (output == nullptr) ? 0 : cnt_output,
         &state);
 
-    if (retval != static_cast<std::size_t>(-1)) {
+    if (retval == static_cast<std::size_t>(-1)) {
         throw std::system_error(errno, std::system_category());
     }
 
