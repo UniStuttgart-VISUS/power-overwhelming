@@ -80,4 +80,4 @@ namespace std {
             visus::power_overwhelming::detail::com_category());
     }
 }
-#endif defined(_WIN32)
+#endif /* defined(_WIN32) */
