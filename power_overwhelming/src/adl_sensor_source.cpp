@@ -65,7 +65,7 @@ visus::power_overwhelming::parse_adl_sensor_source(const wchar_t *str) {
 const wchar_t *visus::power_overwhelming::to_string(
         const adl_sensor_source source) {
 #define _GCC_IS_SHIT(v) L##v
-#define _TO_STRING_CASE(v) case adl_sensor_source::##v: return _GCC_IS_SHIT(#v)
+#define _TO_STRING_CASE(v) case adl_sensor_source::v: return _GCC_IS_SHIT(#v)
 
     switch (source) {
         _TO_STRING_CASE(asic);

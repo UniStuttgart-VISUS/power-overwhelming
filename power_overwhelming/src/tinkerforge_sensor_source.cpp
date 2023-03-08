@@ -39,7 +39,7 @@ visus::power_overwhelming::operator &(const tinkerforge_sensor_source lhs,
 const wchar_t *visus::power_overwhelming::to_string(
         const tinkerforge_sensor_source source) {
 #define _GCC_IS_SHIT(v) L##v
-#define _TO_STRING_CASE(v) case tinkerforge_sensor_source::##v:\
+#define _TO_STRING_CASE(v) case tinkerforge_sensor_source::v:\
     return _GCC_IS_SHIT(#v)
 
     switch (source) {
