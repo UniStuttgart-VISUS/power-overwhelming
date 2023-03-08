@@ -1,4 +1,6 @@
 # Power Overwhelming
+[![Build Status](https://visualisierungsinstitut.visualstudio.com/Power%20Overwhelming/_apis/build/status/UniStuttgart-VISUS.power-overwhelming?branchName=master)](https://visualisierungsinstitut.visualstudio.com/Power%20Overwhelming/_build/latest?definitionId=5&branchName=master)
+
 This project provides a library for measuring the power consumption of GPUs (and other system components) by various means.
 
 > **Note**

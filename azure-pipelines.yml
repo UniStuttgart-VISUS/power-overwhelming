@@ -16,27 +16,35 @@ schedules:
   always: true
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'windows-2022'
 
-#variables:
-#  solution: '**/*.sln'
-#  buildPlatform: 'x64'
-#  buildConfiguration: 'Release'
-#
-#steps:
-#- task: NuGetToolInstaller@0
-#
+variables:
+  buildPlatform: 'x64'
+  buildConfiguration: 'Release'
+  generator: 'Visual Studio 17 2022'
+
+steps:
+- task: NuGetToolInstaller@0
+
+- task: CMake@1
+  displayName: 'CMake'
+  inputs:
+    workingDirectory: '_build'
+    cmakeArgs: .. -G"$(generator)" -A"$(buildPlatform)"
+
 #- task: NuGetCommand@2
 #  inputs:
 #    restoreSolution: '$(solution)'
-#
-#- task: VSBuild@1
-#  inputs:
-#    solution: '$(solution)'
-#    platform: '$(buildPlatform)'
-#    configuration: '$(buildConfiguration)'
-#
-#- task: VSTest@2
-#  inputs:
-#    platform: '$(buildPlatform)'
-#    configuration: '$(buildConfiguration)'
+
+- task: VSBuild@1
+  displayName: 'Build'
+  inputs:
+    solution: '_build/*.sln'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  displayName: 'Tests'
+  inputs:
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
