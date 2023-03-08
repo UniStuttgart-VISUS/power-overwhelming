@@ -1,7 +1,7 @@
-// <copyright file="rohde_und_schwarz.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="rohde_und_schwarz.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "pch.h"
 #include "rohde_und_schwarz.h"
@@ -19,7 +19,7 @@ void query_hmc8015(void) {
         hmc8015_sensor::for_all(sensors.data(), sensors.size());
 
         for (auto &s : sensors) {
-            s.display("Die Kraft ist überwältigend!");
+            s.display("Die Kraft ist Ã¼berwÃ¤ltigend!");
             s.synchronise_clock();
             s.log_file("podump.csv", true, true);
             s.current_range(instrument_range::maximum);
