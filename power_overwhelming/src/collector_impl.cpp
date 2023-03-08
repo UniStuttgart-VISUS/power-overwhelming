@@ -229,7 +229,7 @@ void visus::power_overwhelming::detail::collector_impl::write(void) {
     buffer_type buffer;
     const auto delimiter = getcsvdelimiter(this->stream);
     marker_list_type markers;
-    const auto timeout = static_cast<DWORD>(duration_cast<milliseconds>(
+    const auto timeout = static_cast<unsigned int>(duration_cast<milliseconds>(
         this->sampling_interval).count()) * 8;
 
     while (this->running.load()) {
