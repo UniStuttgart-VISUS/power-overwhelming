@@ -15,6 +15,7 @@
 #include <WS2tcpip.h>
 #else /* defined(_WIN32) */
 #include <errno.h>
+#include <unistd.h>
 #endif /* defined(_WIN32) */
 
 #include "on_exit.h"
