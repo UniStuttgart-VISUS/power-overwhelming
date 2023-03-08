@@ -9,7 +9,7 @@
 #if defined(_WIN32)
 #include <WS2tcpip.h>
 #else /* defined(_WIN32) */
-#include <sys/socket.h>
+#include <netinet/in.h>
 #endif /* defined(_WIN32) */
 
 #include <cassert>
