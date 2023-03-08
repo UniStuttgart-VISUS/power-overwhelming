@@ -91,7 +91,7 @@ std::size_t visus::power_overwhelming::computer_name(char *dst,
 #else /* defined(_WIN32) */
     struct utsname names; 
     if (uname(&names) != 0) {
-        throw std::system_error(::errno, std::system_category());
+        throw std::system_error(errno, std::system_category());
     }
 
     auto retval = std::strlen(names.nodename) + 1;
