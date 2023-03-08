@@ -94,7 +94,7 @@ Adding new kinds of sensors requires several steps. First, a new sensor class is
 * The sensor class must support move semantics (move constructor and move assignment).
 * The sensor class must implement a method `static std::size_t for_all(emi_sensor *out_sensors, const std::size_t cnt_sensors)` that can be used to retrieve all sensors of this kind that are available on the machine. The method shall always return the number of sensors available, even if `out_sensors` is `nullptr` or the buffer is too small to hold all sensors. Sensors shall only be written to `out_sensors` if the buffer is valid and large enough to hold all of them.
 
-Sedond, in order to be eligible for the automated enumeration by the sensor utility functions,
+Second, in order to be eligible for the automated enumeration by the sensor utility functions,
 * a template specialisation of `visus::power_overwhelming::detail::sensor_desc` must be provided in [sensor_desc.h](power_overwhelming/src/sensor_desc.h), which provides means to serialise and deserialise sensors,
 * the class must be added to the `sensor_list` template at the bottom of [sensor_desc.h](power_overwhelming/src/sensor_desc.h).
 
