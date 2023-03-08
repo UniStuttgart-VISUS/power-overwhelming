@@ -184,7 +184,7 @@ nlohmann::json visus::power_overwhelming::detail::read_json(
 #if defined(_WIN32)
     s.open(path);
 #else /* defined(_WIN32) */
-    auto p = convert_string<char>(path);
+    auto p = power_overhwlming::convert_string<char>(path);
     s.open(p);
 #endif /* defined(_WIN32) */
 
@@ -219,7 +219,7 @@ void visus::power_overwhelming::detail::write_json(const wchar_t *path,
 #if defined(_WIN32)
     s.open(path, std::ofstream::out | std::ofstream::trunc);
 #else /* defined(_WIN32) */
-    auto p = convert_string<char>(path);
+    auto p = power_overhwlming::convert_string<char>(path);
     s.open(p, std::ofstream::out | std::ofstream::trunc);
 #endif /* defined(_WIN32) */
 
