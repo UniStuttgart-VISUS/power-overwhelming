@@ -5,6 +5,12 @@
 
 #include "power_overwhelming/visa_sensor.h"
 
+#if !defined(_WIN32)
+#include <system_error>
+
+#include <sys/time.h>
+#endif /* !defined(_WIN32) */
+
 #include "power_overwhelming/convert_string.h"
 
 #include "visa_sensor_impl.h"
@@ -83,10 +89,10 @@ void visus::power_overwhelming::detail::visa_sensor::reset(void) {
  */
 void visus::power_overwhelming::detail::visa_sensor::synchronise_clock(
         const bool utc) {
-    SYSTEMTIME time;
-
     this->check_not_disposed();
 
+#if defined(_WIN32)
+    SYSTEMTIME time;
     if (utc) {
         ::GetSystemTime(&time);
     } else {
@@ -99,6 +105,29 @@ void visus::power_overwhelming::detail::visa_sensor::synchronise_clock(
     this->_impl->printf("SYST:DATE %d, %d, %d\n",
         time.wYear, time.wMonth, time.wDay);
     this->throw_on_system_error();
+
+#else /* defined(_WIN32) */
+    struct timeval tv;
+    struct timezone tz;
+
+    if (::gettimeofday(&tv, &tz) != 0) {
+        throw std::system_error(errno, std::system_category());
+    }
+
+    if (utc) {
+        tv.tv_sec -= tz.tz_minuteswest * 60;
+    }
+
+    auto time = localtime(&tv.tv_sec);
+
+    this->_impl->printf("SYST:TIME %d, %d, %d\n",
+        time->tm_hour, time->tm_min, time->tm_sec);
+    this->throw_on_system_error();
+    this->_impl->printf("SYST:DATE %d, %d, %d\n",
+        time->tm_year + 1900, time->tm_mon + 1, time->tm_mday);
+    this->throw_on_system_error();
+
+#endif /* defined(_WIN32) */
 }
 
 

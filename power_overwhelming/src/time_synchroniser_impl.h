@@ -6,6 +6,9 @@
 #if defined(_WIN32)
 #include <WinSock2.h>
 #include <Windows.h>
+#else /* defined(_WIN32) */
+#include <netinet/in.h>
+#include <sys/socket.h>
 #endif /* defined(_WIN32) */
 
 #include <atomic>
@@ -17,6 +20,11 @@
 #include <vector>
 
 #include "timestamp.h"
+
+
+#if !defined(_WIN32)
+#define SOCKET int
+#endif /* !defined(_WIN32) */
 
 
 namespace std {

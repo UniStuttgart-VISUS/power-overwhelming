@@ -1,7 +1,7 @@
-// <copyright file="measurement.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="measurement.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2022 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #pragma once
 
@@ -47,7 +47,8 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <param name="sensor"></param>
+        /// <param name="sensor">The name of the sensor from which the
+        /// measurement originates.</param>
         /// <param name="timestamp"></param>
         /// <param name="voltage"></param>
         /// <param name="current"></param>
@@ -59,7 +60,8 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <param name="sensor"></param>
+        /// <param name="sensor">The name of the sensor from which the
+        /// measurement originates.</param>
         /// <param name="timestamp"></param>
         /// <param name="voltage"></param>
         /// <param name="current"></param>
@@ -69,7 +71,8 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <param name="sensor"></param>
+        /// <param name="sensor">The name of the sensor from which the
+        /// measurement originates.</param>
         /// <param name="timestamp"></param>
         /// <param name="power"></param>
         measurement(const char_type *sensor, const timestamp_type timestamp,

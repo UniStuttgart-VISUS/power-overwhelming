@@ -1,5 +1,5 @@
 // <copyright file="nvml_exception.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -14,5 +14,5 @@ using visus::power_overwhelming::detail::nvidia_management_library;
  * visus::power_overwhelming::nvml_exception::nvml_exception
  */
 visus::power_overwhelming::nvml_exception::nvml_exception(const value_type code)
-    : std::exception(nvidia_management_library::instance().nvmlErrorString(
+    : std::runtime_error(nvidia_management_library::instance().nvmlErrorString(
     code)), _code(code) { }

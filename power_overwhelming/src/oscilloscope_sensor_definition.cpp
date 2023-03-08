@@ -31,7 +31,7 @@ visus::power_overwhelming::oscilloscope_sensor_definition::oscilloscope_sensor_d
             "the same as the one measuring current.");
     }
 
-    this->_description = ::_wcsdup(description);
+    this->_description = ::wcsdup(description);
     if (this->_description == nullptr) {
         throw std::bad_alloc();
     }
@@ -59,7 +59,7 @@ visus::power_overwhelming::oscilloscope_sensor_definition::oscilloscope_sensor_d
             "the same as the one measuring current.");
     }
 
-    this->_description = ::_wcsdup(description);
+    this->_description = ::wcsdup(description);
     if (this->_description == nullptr) {
         throw std::bad_alloc();
     }
@@ -97,7 +97,7 @@ visus::power_overwhelming::oscilloscope_sensor_definition::operator =(
         this->_channel_current = rhs._channel_current;
         this->_channel_voltage = rhs._channel_voltage;
 
-        this->_description = ::_wcsdup(rhs._description);
+        this->_description = ::wcsdup(rhs._description);
         if (this->_description == nullptr) {
             throw std::bad_alloc();
         }

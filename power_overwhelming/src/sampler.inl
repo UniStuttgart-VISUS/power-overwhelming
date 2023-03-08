@@ -81,9 +81,8 @@ bool visus::power_overwhelming::detail::sampler<TContext>::remove(
     std::lock_guard<decltype(this->_lock)> l(this->_lock);
     for (auto& c : this->_contexts) {
         assert(c != nullptr);
-        std::lock_guard<decltype(c->lock)> ll(c->lock);
-        if (c->sensors.erase(sensor) > 0) {
-            // Erase the sensor, but continue searching the other contexts.
+        if (c->remove(sensor)) {
+            // Continue searching the other contexts, but remember result.
             retval = true;
         }
     }
@@ -106,9 +105,8 @@ bool visus::power_overwhelming::detail::sampler<TContext>::samples(
     std::lock_guard<decltype(this->_lock)> l(this->_lock);
     for (auto& c : this->_contexts) {
         assert(c != nullptr);
-        std::lock_guard<decltype(c->lock)> ll(c->lock);
-        if (c->sensors.find(sensor) != c->sensors.end()) {
-            // It is sufficient if we find one.
+        if (c->samples(sensor)) {
+            // It is sufficient if we find one context with the sensor.
             return true;
         }
     }

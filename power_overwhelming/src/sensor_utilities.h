@@ -1,5 +1,5 @@
 // <copyright file="sensor_utilities.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -8,12 +8,22 @@
 #include <memory>
 #include <vector>
 
+#include <nlohmann/json.hpp>
+
+#include "power_overwhelming/convert_string.h"
 #include "power_overwhelming/sensor.h"
 
 
 namespace visus {
 namespace power_overwhelming {
 namespace detail {
+
+    /// <summary>
+    /// Get all serialised sensor descriptions for sensors on the current
+    /// machine.
+    /// </summary>
+    /// <returns>A JSON array holding all the descriptors.</returns>
+    nlohmann::json get_all_sensor_descs(void);
 
     /// <summary>
     /// Gets all sensors available on the current machine.
@@ -71,6 +81,42 @@ namespace detail {
 
         return dst;
     }
+
+    /// <summary>
+    /// Parse sensor instances from a JSON-based configuration.
+    /// </summary>
+    /// <param name="descs"></param>
+    /// <returns></returns>
+    std::vector<std::unique_ptr<sensor>> parse_sensors(
+        const nlohmann::json &descs);
+
+    /// <summary>
+    /// Read a JSON configuration file.
+    /// </summary>
+    /// <param name="path">The path to the JSON file.</param>
+    /// <returns>The contents of the JSON file.</returns>
+    nlohmann::json read_json(const char *path);
+
+    /// <summary>
+    /// Read a JSON configuration file.
+    /// </summary>
+    /// <param name="path">The path to the JSON file.</param>
+    /// <returns>The contents of the JSON file.</returns>
+    nlohmann::json read_json(const wchar_t *path);
+
+    /// <summary>
+    /// Write JSON configuration to a file.
+    /// </summary>
+    /// <param name="path">The path to the JSON file.</param>
+    /// <param name="json">The JSON content to write</param>
+    void write_json(const char *path, const nlohmann::json& json);
+
+    /// <summary>
+    /// Write JSON configuration to a file.
+    /// </summary>
+    /// <param name="path">The path to the JSON file.</param>
+    /// <param name="json">The JSON content to write</param>
+    void write_json(const wchar_t *path, const nlohmann::json& json);
 
 } /* namespace detail */
 } /* namespace power_overwhelming */

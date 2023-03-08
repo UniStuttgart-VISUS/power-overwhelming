@@ -1,11 +1,11 @@
 // <copyright file="adl_exception.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #pragma once
 
-#include <exception>
+#include <stdexcept>
 #include <string>
 
 
@@ -15,7 +15,7 @@ namespace power_overwhelming {
     /// <summary>
     /// An exception caused by a failure in the AMD Display Library.
     /// </summary>
-    class adl_exception : public std::exception {
+    class adl_exception : public std::runtime_error {
 
     public:
 
@@ -37,7 +37,7 @@ namespace power_overwhelming {
         /// <param name="code">The error code.</param>
         /// <param name="message">A custom error message.</param>
         adl_exception(const value_type code, const std::string& message)
-            : std::exception(message.c_str()), _code(code) { }
+            : std::runtime_error(message.c_str()), _code(code) { }
 
         /// <summary>
         /// Answer the native error code associated with the exception.

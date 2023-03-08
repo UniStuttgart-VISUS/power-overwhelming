@@ -6,6 +6,7 @@
 #include "power_overwhelming/adl_sensor.h"
 
 #include <algorithm>
+#include <cstring>
 #include <vector>
 
 #include "power_overwhelming/adl_sensor_source.h"
@@ -13,7 +14,7 @@
 #include "adl_exception.h"
 #include "adl_scope.h"
 #include "adl_sensor_impl.h"
-
+#include "zero_memory.h"
 
 
 namespace visus {

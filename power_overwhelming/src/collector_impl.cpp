@@ -1,5 +1,5 @@
 // <copyright file="collector_impl.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -8,6 +8,7 @@
 #include <system_error>
 
 #include "power_overwhelming/adl_sensor.h"
+#include "power_overwhelming/emi_sensor.h"
 #include "power_overwhelming/collector.h"
 #include "power_overwhelming/nvml_sensor.h"
 #include "power_overwhelming/hmc8015_sensor.h"
@@ -32,21 +33,17 @@ void visus::power_overwhelming::detail::collector_impl::on_measurement(
  * visus::power_overwhelming::detail::collector_impl::collector_impl
  */
 visus::power_overwhelming::detail::collector_impl::collector_impl(void)
-        : evt_write(::CreateEvent(nullptr, FALSE, FALSE, nullptr)),
+        : evt_write(create_event(false, false)),
         have_marker(false), running(false), sampling_interval(0),
         require_marker(false),
-        timestamp_resolution(timestamp_resolution::milliseconds) {
-    if (this->evt_write == NULL) {
-        throw std::system_error(::GetLastError(), std::system_category());
-    }
-}
+        timestamp_resolution(timestamp_resolution::milliseconds) { }
 
 
 /*
  * visus::power_overwhelming::detail::collector_impl::~collector_impl
  */
 visus::power_overwhelming::detail::collector_impl::~collector_impl(void) {
-    ::CloseHandle(this->evt_write);
+    destroy_event(this->evt_write);
 }
 
 
@@ -77,7 +74,7 @@ void visus::power_overwhelming::detail::collector_impl::marker(
 
         // Wake the I/O thread, because if we start a new phase, it is typically
         // a good idea to make sure that what we already have is persisted.
-        ::SetEvent(this->evt_write);
+        set_event(this->evt_write);
     }
 }
 
@@ -106,6 +103,19 @@ void visus::power_overwhelming::detail::collector_impl::start(void) {
                 auto ss = dynamic_cast<adl_sensor *>(s.get());
                 if (ss != nullptr) {
                     //ss->start(this->sampling_interval.count());
+                    const auto si = duration_cast<microseconds>(
+                        this->sampling_interval).count();
+                    ss->sample(on_measurement, si, this);
+                    continue;
+                }
+            }
+
+            {
+                // EMI is in principle synchronous, but we built a specialised
+                // sampling thread that minimises the number of reads of the EMI
+                // registers.
+                auto ss = dynamic_cast<emi_sensor *>(s.get());
+                if (ss != nullptr) {
                     const auto si = duration_cast<microseconds>(
                         this->sampling_interval).count();
                     ss->sample(on_measurement, si, this);
@@ -204,7 +214,7 @@ void visus::power_overwhelming::detail::collector_impl::stop(void) {
     }
 
     // Then, wake the I/O thread for a last time to make sure it exits.
-    ::SetEvent(this->evt_write);
+    set_event(this->evt_write);
     if (this->writer_thread.joinable()) {
         this->writer_thread.join();
     }
@@ -219,19 +229,11 @@ void visus::power_overwhelming::detail::collector_impl::write(void) {
     buffer_type buffer;
     const auto delimiter = getcsvdelimiter(this->stream);
     marker_list_type markers;
-    const auto timeout = static_cast<DWORD>(duration_cast<milliseconds>(
+    const auto timeout = static_cast<unsigned int>(duration_cast<milliseconds>(
         this->sampling_interval).count()) * 8;
 
     while (this->running.load()) {
-        switch (::WaitForSingleObject(this->evt_write, timeout)) {
-            case WAIT_OBJECT_0:
-            case WAIT_TIMEOUT:
-                break;
-
-            default:
-                throw std::system_error(::GetLastError(),
-                    std::system_category());
-        }
+        wait_event(this->evt_write, timeout);
 
         {
             std::lock_guard<decltype(this->lock)> l(this->lock);

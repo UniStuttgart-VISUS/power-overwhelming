@@ -6,22 +6,40 @@
 #if defined(POWER_OVERWHELMING_WITH_TIME_SYNCHRONISER)
 #include "time_synchroniser_impl.h"
 
-#if defined(_WIN32)
-#include <WS2tcpip.h>
-#endif /* defined(_WIN32) */
-
 #include <cassert>
 #include <chrono>
+#include <cstring>
 #include <system_error>
+
+#if defined(_WIN32)
+#include <WS2tcpip.h>
+#else /* defined(_WIN32) */
+#include <errno.h>
+#include <unistd.h>
+#endif /* defined(_WIN32) */
 
 #include "on_exit.h"
 
 
 #define TIMESYNC_MAX_DATAGRAM (1024)
 
+#if !defined(SOCKET_ERROR)
+#define SOCKET_ERROR (-1)
+#endif /* !defined(SOCKET_ERROR) */
+
 #if !defined(INVALID_SOCKET)
 #define INVALID_SOCKET (-1)
 #endif /* !defined(INVALID_SOCKET) */
+
+
+#if !defined(_WIN32)
+/// <summary>
+/// Returns <c>errno</c>.
+/// </summary>
+static inline int WSAGetLastError(void) {
+    return errno;
+}
+#endif /* !defined(_WIN32) */
 
 
 /*
@@ -141,6 +159,7 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::receive(
         this->state.store(0, std::memory_order::memory_order_release);
     });
 
+#if defined(_WIN32)
     // Winsock must be initialised per thread. Also, make sure to install
     // an exit handler cleaning it up if the scope is left.
     {
@@ -153,10 +172,15 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::receive(
     }
 
     const auto guard_wsa_cleanup = on_exit([](void) { ::WSACleanup(); });
+#endif /*defined(_WIN32) */
 
     // Create, configure and bind the local socket.
+#if defined(_WIN32)
     this->socket = ::WSASocket(address_family, SOCK_DGRAM, IPPROTO_UDP,
         nullptr, 0, WSA_FLAG_OVERLAPPED);
+#else /* defined(_WIN32) */
+    this->socket = ::socket(address_family, SOCK_DGRAM, IPPROTO_UDP);
+#endif /* defined(_WIN32) */
     if (this->socket == INVALID_SOCKET) {
         throw std::system_error(::WSAGetLastError(),
             std::system_category());
@@ -203,7 +227,7 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::receive(
     // Receive until indicated to leave.
     while (this->state.load(std::memory_order::memory_order_acquire) == 1) {
         sockaddr addr;
-        int addr_length = sizeof(addr);
+        socklen_t addr_length = sizeof(addr);
         char buffer[TIMESYNC_MAX_DATAGRAM];
 
         const auto cnt = ::recvfrom(this->socket, buffer, sizeof(buffer), 0,
@@ -258,7 +282,11 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::stop(void) {
         // Closing the socket will cause the receive to fail and the thread will
         // notice that the state has changed and it should exit.
         assert(this->socket != INVALID_SOCKET);
+#if defined(_WIN32)
         ::closesocket(this->socket);
+#else /* defined(_WIN3) */
+        ::close(this->socket);
+#endif /* defined(_WIN3) */
         this->socket = INVALID_SOCKET;
     }
 }

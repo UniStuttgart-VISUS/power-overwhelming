@@ -1,14 +1,14 @@
-// <copyright file="csv_iomanip.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="csv_iomanip.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2022 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #pragma once
 
 #include <iostream>
 
-#include "literal.h"
-#include "power_overwhelming_api.h"
+#include "power_overwhelming/literal.h"
+#include "power_overwhelming/power_overwhelming_api.h"
 
 
 namespace visus {
@@ -47,7 +47,7 @@ namespace detail {
         /// Initialises a new instance.
         /// </summary>
         /// <param name="value">The character to be used as delimiter.</param>
-        inline csv_delimiter(const TChar value) : csv_char_value(value) { }
+        inline csv_delimiter(const TChar value) : csv_char_value<TChar>(value) { }
     };
 
     /// <summary>
@@ -60,7 +60,7 @@ namespace detail {
         /// Initialises a new instance.
         /// </summary>
         /// <param name="value">The character to be used as quote.</param>
-        inline csv_quote(const TChar value) : csv_char_value(value) { }
+        inline csv_quote(const TChar value) : csv_char_value<TChar>(value) { }
     };
 
     /// <summary>

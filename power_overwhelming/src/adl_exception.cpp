@@ -86,4 +86,4 @@ static std::string adl_to_string(const int code) {
  * visus::power_overwhelming::adl_exception::adl_exception
  */
 visus::power_overwhelming::adl_exception::adl_exception(const value_type code)
-    : std::exception(adl_to_string(code).c_str()), _code(code) { }
+    : std::runtime_error(adl_to_string(code).c_str()), _code(code) { }

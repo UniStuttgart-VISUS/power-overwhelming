@@ -1,16 +1,16 @@
 // <copyright file="com_error_category.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #pragma once
 
+#if defined(_WIN32)
 #include <system_error>
 
 #include <Windows.h>
 
 
-#if defined(_WIN32)
 namespace visus {
 namespace power_overwhelming {
 namespace detail {
@@ -80,5 +80,4 @@ namespace std {
             visus::power_overwhelming::detail::com_category());
     }
 }
-
-#endif defined(_WIN32)
+#endif /* defined(_WIN32) */

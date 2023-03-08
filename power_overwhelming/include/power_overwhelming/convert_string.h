@@ -1,7 +1,7 @@
-// <copyright file="convert_string.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="convert_string.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2022 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #pragma once
 
@@ -38,7 +38,8 @@ namespace detail {
     /// <returns>The converted string.</returns>
     template<class TOutput, class TInput>
     typename std::enable_if<std::is_same<TOutput, TInput>::value,
-        std::basic_string<TOutput>>::type convert_string(const TInput *str);
+        std::basic_string<TOutput>>::type
+    convert_string(const TInput *str);
 
     /// <summary>
     /// Converts a string to the given character set.
@@ -53,7 +54,8 @@ namespace detail {
     /// <returns>The converted string.</returns>
     template<class TOutput, class TInput>
     typename std::enable_if<!std::is_same<TOutput, TInput>::value,
-        std::basic_string<TOutput>>::type convert_string(const TInput *str);
+        std::basic_string<TOutput>>::type
+    convert_string(const TInput *str);
 
     /// <summary>
     /// Converts a string to the given character set.

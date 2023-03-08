@@ -1,11 +1,11 @@
 // <copyright file="nvml_exception.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #pragma once
 
-#include <exception>
+#include <stdexcept>
 #include <string>
 
 #include <nvml.h>
@@ -17,7 +17,7 @@ namespace power_overwhelming {
     /// <summary>
     /// An exception caused by a failure in the NVIDIA Management Library.
     /// </summary>
-    class nvml_exception : public std::exception {
+    class nvml_exception : public std::runtime_error {
 
     public:
 
@@ -39,7 +39,7 @@ namespace power_overwhelming {
         /// <param name="code">The error code.</param>
         /// <param name="message">A custom error message.</param>
         nvml_exception(const value_type code, const char *message)
-            : std::exception(message), _code(code) { }
+            : std::runtime_error(message), _code(code) { }
 
         /// <summary>
         /// Answer the native error code associated with the exception.

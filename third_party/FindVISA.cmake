@@ -5,27 +5,35 @@ include(FindPackageHandleStandardArgs)
 
 
 # Determine where the platform-dependent library location is.
-if ("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4")
-    set(VisaDirs "$ENV{ProgramFiles\(x86\)}/IVI Foundation/VISA")
-else ()
-    set(VisaDirs "$ENV{ProgramFiles}/IVI Foundation/VISA")
-endif ()
+if (WIN32)
+    if ("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4")
+        set(VisaDirs "$ENV{ProgramFiles\(x86\)}/IVI Foundation/VISA")
+    else ()
+        set(VisaDirs "$ENV{ProgramFiles}/IVI Foundation/VISA")
+    endif ()
 
-message(STATUS "Searching VISA library in ${VisaDirs} ...")
+    set(VisaLib "visa32.lib")
+
+else (WIN32)
+    set(VisaDirs "/usr")
+    set(VisaLib "librsvisa.so")
+endif (WIN32)
+
+message(STATUS "Searching VISA library ${VisaLib} in ${VisaDirs} ...")
 
 # Find location of public headers
 find_path(VISA_INCLUDE_DIR
     NAMES visa.h
     PATHS ${VisaDirs}
-    PATH_SUFFIXES "WinNT/RsVisa/include" "Win64/RsVisa/include"
+    PATH_SUFFIXES "WinNT/RsVisa/include" "Win64/RsVisa/include" "include" "include/rsvisa"
 )
 mark_as_advanced(VISA_INCLUDE_DIR)
 
 # Find the library
 find_library(VISA_LIBRARY
-    NAMES visa32.lib
+    NAMES ${VisaLib}
     PATHS ${VisaDirs}
-    PATH_SUFFIXES "WinNT/RsVisa/Lib/msc" "Win64/RsVisa/Lib/msc"
+    PATH_SUFFIXES "WinNT/RsVisa/Lib/msc" "Win64/RsVisa/Lib/msc" "lib64" "lib"
 )
 mark_as_advanced(VISA_LIBRARY)
 

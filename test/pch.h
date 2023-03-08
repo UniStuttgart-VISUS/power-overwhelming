@@ -1,8 +1,18 @@
+// <copyright file="pch.h" company="Visualisierungsinstitut der Universität Stuttgart">
+// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// </copyright>
+// <author>Christoph Müller</author>
+
 #pragma once
 
 #include <chrono>
+#include <regex>
 #include <sstream>
+#include <thread>
 
+#include <power_overwhelming/emi_sensor.h>
+#include <power_overwhelming/event.h>
+#include <power_overwhelming/computer_name.h>
 #include <power_overwhelming/csv_iomanip.h>
 #include <power_overwhelming/measurement.h>
 #include <power_overwhelming/nvml_sensor.h>
@@ -10,7 +20,9 @@
 #include <power_overwhelming/tinkerforge_sensor_definiton.h>
 
 #include <adl_exception.h>
+#include <emi_device.h>
 #include <on_exit.h>
 #include <timestamp.h>
 #include <nvml_exception.h>
 #include <nvml_scope.h>
+#include <setup_api.h>

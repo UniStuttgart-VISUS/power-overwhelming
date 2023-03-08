@@ -14,7 +14,11 @@
 #include <thread>
 #include <vector>
 
+#if defined(_WIN32)
 #include <Windows.h>
+#endif /* defined(_WIN32) */
+
+#include "power_overwhelming/event.h"
 
 
 namespace visus {
@@ -57,7 +61,7 @@ namespace detail {
         /// <summary>
         /// An event to wake the I/O thread.
         /// </summary>
-        HANDLE evt_write;
+        event_type evt_write;
 
         /// <summary>
         /// Indicates whether a have a valid marker.
@@ -113,7 +117,7 @@ namespace detail {
         /// <summary>
         /// The resolution of the timestamps being created.
         /// </summary>
-        timestamp_resolution timestamp_resolution;
+        power_overwhelming::timestamp_resolution timestamp_resolution;
 
         /// <summary>
         /// The I/O thread executing <see cref="write" />.

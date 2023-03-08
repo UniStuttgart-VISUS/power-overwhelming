@@ -7,24 +7,26 @@ cmake_minimum_required(VERSION 3.15.0)
 project(power-overwhelming)
 
 # User-configurable options.
-option(PWROVRWHLMG_BuildDemo "Build demo programme" OFF)
+option(PWROWG_BuildDemo "Build demo programme" OFF)
+
+option(PWROWG_BuildDumpSensors "Build dump_sensors utility" ON)
 
 if (WIN32)
-    option(PWROVRWHLMG_BuildStablePower "Build setstablepowerstate tool" OFF)
+    option(PWROWG_BuildStablePower "Build setstablepowerstate tool" OFF)
 else (WIN32)
-    set(PWROVRWHLMG_BuildStablePower FALSE)
+    set(PWROWG_BuildStablePower FALSE)
 endif (WIN32)
 
 if (WIN32)
-    option(PWROVRWHLMG_BuildTests "Build unit tests." ON)
+    option(PWROWG_BuildTests "Build unit tests." ON)
 else (WIN32)
-    set(PWROVRWHLMG_BuildTests FALSE)
+    set(PWROWG_BuildTests FALSE)
 endif (WIN32)
 
 if (WIN32)
-    option(PWROVRWHLMG_BuildWeb "Build browser for benchmarking web-based visualisations" OFF)
+    option(PWROWG_BuildWeb "Build browser for benchmarking web-based visualisations" OFF)
 else (WIN32)
-    set(PWROVRWHLMG_BuildWeb FALSE)
+    set(PWROWG_BuildWeb FALSE)
 endif (WIN32)
 
 
@@ -36,19 +38,26 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/power_overwhelming)
 
 # Unit tests
-if (PWROVRWHLMG_BuildTests)
+if (PWROWG_BuildTests)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/test)
-endif (PWROVRWHLMG_BuildTests)
+endif (PWROWG_BuildTests)
 
 # Demo programme
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/podump)
+if (PWROWG_BuildDemo)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/podump)
+endif (PWROWG_BuildDemo)
+
+# dump_sensors utility
+if (PWROWG_BuildDumpSensors)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/dump_sensors)
+endif (PWROWG_BuildDumpSensors)
 
 # Browser
-if (PWROVRWHLMG_BuildWeb)
+if (PWROWG_BuildWeb)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/poweb)
-endif (PWROVRWHLMG_BuildWeb)
+endif (PWROWG_BuildWeb)
 
 # Stable power tool
-if (PWROVRWHLMG_BuildStablePower)
+if (PWROWG_BuildStablePower)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/setstablepowerstate)
-endif (PWROVRWHLMG_BuildStablePower)
+endif (PWROWG_BuildStablePower)

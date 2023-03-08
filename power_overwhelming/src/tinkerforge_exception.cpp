@@ -79,4 +79,4 @@ static std::string tinkerforge_to_string(const int code) {
  */
 visus::power_overwhelming::tinkerforge_exception::tinkerforge_exception(
         const value_type code)
-    : std::exception(tinkerforge_to_string(code).c_str()), _code(code) { }
+    : std::runtime_error(tinkerforge_to_string(code).c_str()), _code(code) { }

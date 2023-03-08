@@ -1,7 +1,7 @@
-// <copyright file="tinkerforge_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="tinkerforge_sensor.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #pragma once
 
@@ -34,6 +34,51 @@ namespace power_overwhelming {
         /// The default port on which brickd is assumed to listen on.
         /// </summary>
         static constexpr const std::uint16_t default_port = 4223;
+
+        /// <summary>
+        /// The default source to sample.
+        /// </summary>
+        static constexpr const tinkerforge_sensor_source default_source
+            = tinkerforge_sensor_source::all;
+
+        /// <summary>
+        /// Create sensors for all Tinkerforge bricklets attached to the
+        /// <see cref="host" /> on <see cref="port" />.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method is a utility method that retrieves all sensor
+        /// definition from <see cref="tinkerforge_sensor::get_definitions" />
+        /// and creates a sensor for all of them.</para>
+        /// <para>The method handles the fact that sensors may be attached and
+        /// detached at runtime by truncating the number of sensors actually
+        /// created should this happen during the measuring call and the
+        /// instantiation call to the method. Therefore, the number of sensors
+        /// acually created may be smaller than the buffer provided even if the
+        /// buffer has been measured before using the same method.</para>
+        /// </remarks>
+        /// <param name="out_sensors">Receives the sensors, if not
+        /// <c>nullptr</c>.</param>
+        /// <param name="cnt_sensors">The available space in
+        /// <paramref name="out_sensors" />.</param>
+        /// <param name="host">The host on which the Brick daemon is running.
+        /// This parameter defaults to &quot;localhost&quot;.</param>
+        /// <param name="port">The port on which the Brick daemon is listening.
+        /// This parameter defaults to 4223.</param>
+        /// <param name="timeout">The number of milliseconds to wait for the
+        /// bricklets to connect if none are cached. This value defaults to
+        /// 1000.</param>
+        /// <returns>The number of sensors available on the system, regardless
+        /// of the size of the output array. If this number is larger than
+        /// <paramref name="cntSensors" />, not all sensors have been returned.
+        /// </returns>
+        /// <exception cref="std::bad_alloc">If the required resources could not
+        /// be allocated.</exception>
+        /// <exception cref="tinkerforge_exception">If the connection to the
+        /// master brick could not be established.</exception>
+        static std::size_t for_all(tinkerforge_sensor *out_sensors,
+            const std::size_t cnt_sensors, const std::size_t timeout = 1000,
+            const char *host = default_host,
+            const std::uint16_t port = default_port);
 
         /// <summary>
         /// Retrieve sensor definitions for all bricklets attacted to the
@@ -101,6 +146,11 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
+        inline tinkerforge_sensor(void) : _impl(nullptr) { }
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
         /// <param name="uid">The unique identifier of the voltage/current
         /// bricklet addressed by the sensor.</param>
         /// <param name="host">The host on which the Brick daemon is running.
@@ -108,9 +158,9 @@ namespace power_overwhelming {
         /// <param name="port">The port on which the Brick daemon is listening.
         /// This parameter defaults to 4223.</param>
         /// <exception cref="std::invalid_argument">If <paramref name="uid" />
-        /// is <c>nullptr</c>.</exceptions>
+        /// is <c>nullptr</c>.</exception>
         /// <exception cref="std::bad_alloc">If the required resources could not
-        /// be allocated.</exceptions>
+        /// be allocated.</exception>
         /// <exception cref="tinkerforge_exception">If the connection to the
         /// master brick could not be established.</exception>
         tinkerforge_sensor(const char *uid, const char *host = default_host,
@@ -129,9 +179,9 @@ namespace power_overwhelming {
         /// <param name="port">The port on which the Brick daemon is listening.
         /// This parameter defaults to 4223.</param>
         /// <exception cref="std::invalid_argument">If <paramref name="uid" />
-        /// is <c>nullptr</c>.</exceptions>
+        /// is <c>nullptr</c>.</exception>
         /// <exception cref="std::bad_alloc">If the required resources could not
-        /// be allocated.</exceptions>
+        /// be allocated.</exception>
         /// <exception cref="tinkerforge_exception">If the connection to the
         /// master brick could not be established.</exception>
         tinkerforge_sensor(const char *uid, const wchar_t *description,
@@ -148,9 +198,9 @@ namespace power_overwhelming {
         /// <param name="port">The port on which the Brick daemon is listening.
         /// This parameter defaults to 4223.</param>
         /// <exception cref="std::invalid_argument">If the UID in
-        /// <paramref name="definition" /> is invalid.</exceptions>
+        /// <paramref name="definition" /> is invalid.</exception>
         /// <exception cref="std::bad_alloc">If the required resources could not
-        /// be allocated.</exceptions>
+        /// be allocated.</exception>
         /// <exception cref="tinkerforge_exception">If the connection to the
         /// master brick could not be established.</exception>
         tinkerforge_sensor(const tinkerforge_sensor_definiton& definition,
@@ -180,6 +230,10 @@ namespace power_overwhelming {
         /// time for voltage.</param>
         /// <param name="current_conversion_time">Receives the A/D conversion
         /// time for current.</param>
+        /// <exception cref="std::runtime_error">If the sensor has been disposed
+        /// by a move before.</exception>
+        /// <exception cref="tinkerforge_exception">If the operation failed.
+        /// </exception>
         void configuration(sample_averaging& averaging,
             conversion_time& voltage_conversion_time,
             conversion_time& current_conversion_time);
@@ -192,6 +246,10 @@ namespace power_overwhelming {
         /// voltage.</param>
         /// <param name="current_conversion_time">The A/D conversion time for
         /// current.</param>
+        /// <exception cref="std::runtime_error">If the sensor has been disposed
+        /// by a move before.</exception>
+        /// <exception cref="tinkerforge_exception">If the operation failed.
+        /// </exception>
         void configure(const sample_averaging averaging,
             const conversion_time voltage_conversion_time,
             const conversion_time current_conversion_time);
@@ -201,6 +259,40 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>The description of what the sensor is measuring.</returns>
         const wchar_t *description(void) const noexcept;
+
+        /// <summary>
+        /// Identify the bricklet used for the sensor.
+        /// </summary>
+        /// <param name="uid">Receives the UID of the sensor bricklet.</param>
+        /// <param name="connected_to_uid">Receives the UID of the brick the
+        /// sensor is connected to.</param>
+        /// <param name="position">Receives the position ('a' to 'h') where the
+        /// bricklet is connected to the brick.</param>
+        /// <param name="hardware_version">Receives the major, minor, revision
+        /// version of the hardware.</param>
+        /// <param name="firmware_version">Receives the major, minor, revision
+        /// version of the firmware.</param>
+        /// <param name="device_id">Receives the ID of the hardware type, which
+        /// should be 2105 for the Voltage/Current Bricklet 2.0. See
+        /// https://www.tinkerforge.com/de/doc/Software/Device_Identifier.html#device-identifier
+        /// for a list of identifiers.</param>
+        /// <exception cref="std::runtime_error">If the sensor has been disposed
+        /// by a move before.</exception>
+        /// <exception cref="tinkerforge_exception">If the operation failed.
+        /// </exception>
+        void identify(char uid[8], char connected_to_uid[8], char& position,
+            std::uint8_t hardware_version[3], std::uint8_t firmware_version[3],
+            std::uint16_t& device_id) const;
+
+        /// <summary>
+        /// Answer the UID of the bricklet used for the sensor.
+        /// </summary>
+        /// <param name="uid">Receives the UID of the sensor bricklet.</param>
+        /// <exception cref="std::runtime_error">If the sensor has been disposed
+        /// by a move before.</exception>
+        /// <exception cref="tinkerforge_exception">If the operation failed.
+        /// </exception>
+        void identify(char uid[8]) const;
 
         /// <summary>
         /// Gets the name of the sensor.
@@ -253,7 +345,7 @@ namespace power_overwhelming {
         /// </param>
         /// <param name="context">A user-defined context pointer that is passed
         /// on to <see cref="on_measurement" />. This parameter defaults to
-        /// <c>nullptr</c>.</para>
+        /// <c>nullptr</c>.</param>
         /// <exception cref="std::runtime_error">If the sensor has been moved.
         /// </exception>
         /// <exception cref="std::logic_error">If the sensor is already being
@@ -262,7 +354,7 @@ namespace power_overwhelming {
         /// <exception cref="tinkerforge_exception">If the sensor could not be
         /// sampled. </exception>
         void sample(const measurement_callback on_measurement,
-            const tinkerforge_sensor_source source,
+            const tinkerforge_sensor_source source = default_source,
             const microseconds_type sampling_period = default_sampling_period,
             void *context = nullptr);
 

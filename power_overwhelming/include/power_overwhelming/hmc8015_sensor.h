@@ -1,7 +1,7 @@
-// <copyright file="hmc8015_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="hmc8015_sensor.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #pragma once
 
@@ -22,7 +22,7 @@ namespace power_overwhelming {
     namespace detail { struct visa_sensor_impl; }
 
     /// <summary>
-    /// Allows for controlling a Rohde & Schwarz HMC8015 power analyser.
+    /// Allows for controlling a Rohde &amp; Schwarz HMC8015 power analyser.
     /// </summary>
     class POWER_OVERWHELMING_API hmc8015_sensor final
             : public detail::visa_sensor {

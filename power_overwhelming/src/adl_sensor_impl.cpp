@@ -1,16 +1,18 @@
 // <copyright file="adl_sensor_impl.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #include "adl_sensor_impl.h"
 
+#include <algorithm>
 #include <cassert>
 #include <limits>
 
 #include "power_overwhelming/convert_string.h"
 
 #include "adl_exception.h"
+#include "zero_memory.h"
 
 
 /*

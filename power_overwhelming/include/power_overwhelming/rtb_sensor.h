@@ -1,7 +1,7 @@
-// <copyright file="rtb_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="rtb_sensor.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #pragma once
 
@@ -10,8 +10,8 @@
 #include <cstdint>
 #include <cinttypes>
 
-#include "oscilloscope_sensor_definition.h"
-#include "visa_sensor.h"
+#include "power_overwhelming/oscilloscope_sensor_definition.h"
+#include "power_overwhelming/visa_sensor.h"
 
 
 namespace visus {

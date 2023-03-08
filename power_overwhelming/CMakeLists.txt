@@ -8,23 +8,23 @@ project(power_overwhelming)
 
 # User-configurable options
 if (WIN32)
-    option(PWROVRWHLMG_ForceDirect3D11 "Force GPU enumeration via Direct3D 11" OFF)
-    mark_as_advanced(PWROVRWHLMG_ForceDirect3D11)
+    option(PWROWG_ForceDirect3D11 "Force GPU enumeration via Direct3D 11" OFF)
+    mark_as_advanced(PWROWG_ForceDirect3D11)
 else (WIN32)
-    set(PWROVRWHLMG_ForceDirect3D11 OFF)
+    set(PWROWG_ForceDirect3D11 OFF)
 endif (WIN32)
 
-option(PWROVRWHLMG_WithAdl "Build support for the AMD Display Library" ON)
+option(PWROWG_WithAdl "Build support for the AMD Display Library" ON)
 
-option(PWROVRWHLMG_WithNvml "Build support for the NVIDIA Management Library" ON)
+option(PWROWG_WithNvml "Build support for the NVIDIA Management Library" ON)
 
-option(PWROVRWHLMG_WithTimeSynchronisation "Build support for Cristian's algorithm" OFF)
+option(PWROWG_WithTimeSynchronisation "Build support for Cristian's algorithm" OFF)
 
-option(PWROVRWHLMG_WithVisa "Build support for the VISA-based instruments" ON)
+option(PWROWG_WithVisa "Build support for the VISA-based instruments" ON)
 
-if (PWROVRWHLMG_WithVisa)
+if (PWROWG_WithVisa)
     find_package(VISA)
-endif (PWROVRWHLMG_WithVisa)
+endif (PWROWG_WithVisa)
 
 # Collect source files.
 set(IncludeDir "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -33,39 +33,45 @@ file(GLOB_RECURSE PublicHeaderFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${In
 file(GLOB_RECURSE PrivateHeaderFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${SourceDir}/*.h" "${SourceDir}/*.inl")
 file(GLOB_RECURSE SourceFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${SourceDir}/*.cpp")
 
-#source_group(TREE ${IncludeDir} FILES ${PublicHeaderFiles})
-#source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${PrivateHeaderFiles})
-#source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SourceFiles})
+source_group("Header Files\\include" FILES  ${PublicHeaderFiles})
+source_group("Header Files\\src" FILES ${PrivateHeaderFiles})
+source_group("Source Files\\src" FILES ${SourceFiles})
 
 message(STATUS "Including Tinkerforge API from ${TinkerforgeDir} ...")
 file(GLOB_RECURSE TinkerforgeHeaderFiles "${TinkerforgeDir}/*.h" "${TinkerforgeDir}/*.inl")
 file(GLOB_RECURSE TinkerforgeSourceFiles "${TinkerforgeDir}/*.c")
 
-#source_group(tinkerforge ${TinkerforgeDir} FILES ${TinkerforgeHeaderFiles})
-#source_group(tinkerforge ${TinkerforgeDir} FILES ${TinkerforgeSourceFiles})
+source_group("Header Files\\Tinkerforge" FILES ${TinkerforgeHeaderFiles})
+source_group("Source Files\\Tinkerforge" FILES ${TinkerforgeSourceFiles})
 
 # Define the output.
 add_library(${PROJECT_NAME} SHARED ${PublicHeaderFiles} ${PrivateHeaderFiles} ${SourceFiles} ${TinkerforgeHeaderFiles} ${TinkerforgeSourceFiles})
 
 # Configure the compiler.
 add_definitions("-DPOWER_OVERWHELMING_EXPORTS")
+add_definitions("-DDUNICODE -D_UNICODE")
 
-if (PWROVRWHLMG_WithAdl)
+if (NOT WIN32)
+    # Required for ADL to work.
+    add_definitions("-DLINUX")
+endif (NOT WIN32)
+
+if (PWROWG_WithAdl)
     add_definitions("-DPOWER_OVERWHELMING_WITH_ADL")
-endif (PWROVRWHLMG_WithAdl)
+endif (PWROWG_WithAdl)
 
-if (PWROVRWHLMG_WithNvml)
+if (PWROWG_WithNvml)
     add_definitions("-DPOWER_OVERWHELMING_WITH_NVML")
-endif (PWROVRWHLMG_WithNvml)
+endif (PWROWG_WithNvml)
 
-if (PWROVRWHLMG_WithTimeSynchronisation)
+if (PWROWG_WithTimeSynchronisation)
     add_definitions("-DPOWER_OVERWHELMING_WITH_TIME_SYNCHRONISER")
-endif (PWROVRWHLMG_WithTimeSynchronisation)
+endif (PWROWG_WithTimeSynchronisation)
 
 if (VISA_FOUND)
     add_definitions("-DPOWER_OVERWHELMING_WITH_VISA")
     target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
-    target_link_libraries(${PROJECT_NAME} ${VISA_LIBRARY} nlohmann_json)
+    target_link_libraries(${PROJECT_NAME})
 endif (VISA_FOUND)
 
 target_include_directories(${PROJECT_NAME}
@@ -76,8 +82,13 @@ target_include_directories(${PROJECT_NAME}
     PRIVATE ${TinkerforgeInclude})
 
 # Configure the linker.
+target_link_libraries(${PROJECT_NAME}
+    nlohmann_json)
+
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} Ws2_32)
+else (WIN32)
+    target_link_libraries(${PROJECT_NAME} dl pthread)
 endif (WIN32)
 
 # Provide the internal API to the unit tests.

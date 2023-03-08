@@ -24,7 +24,7 @@ namespace power_overwhelming {
 #if defined(_WIN32)
     typedef decltype(LARGE_INTEGER::QuadPart) timestamp_type;
 #else  /* defined(_WIN32) */
-    typedef std::int64_t value_type;
+    typedef std::int64_t timestamp_type;
 #endif /* defined(_WIN32) */
 
 namespace detail {
@@ -62,6 +62,22 @@ namespace detail {
 
 #if defined(_WIN32)
     /// <summary>
+    /// Convert the given raw <see cref="FILETIME" /> to a 64-bit integer of the
+    /// same 100ns resolution
+    /// </summary>
+    /// <param name="fileTime"></param>
+    /// <returns></returns>
+    inline POWER_OVERWHELMING_API decltype(LARGE_INTEGER::QuadPart) convert(
+            const FILETIME& fileTime) {
+        LARGE_INTEGER largeInteger;
+        largeInteger.HighPart = fileTime.dwHighDateTime;
+        largeInteger.LowPart = fileTime.dwLowDateTime;
+        return largeInteger.QuadPart;
+    }
+#endif /* defined(_WIN32) */
+
+#if defined(_WIN32)
+    /// <summary>
     /// Convert the given raw <see cref="FILETIME" /> to a timestamp of the
     /// specified resolution.
     /// </summary>
@@ -70,10 +86,7 @@ namespace detail {
     inline POWER_OVERWHELMING_API decltype(LARGE_INTEGER::QuadPart) convert(
             const FILETIME& fileTime,
             const timestamp_resolution resolution) {
-        LARGE_INTEGER largeInteger;
-        largeInteger.HighPart = fileTime.dwHighDateTime;
-        largeInteger.LowPart = fileTime.dwLowDateTime;
-        return convert(largeInteger.QuadPart, resolution);
+        return convert(convert(fileTime), resolution);
     }
 #endif /* defined(_WIN32) */
 } /* namespace detail */
