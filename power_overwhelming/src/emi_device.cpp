@@ -17,7 +17,7 @@
 visus::power_overwhelming::detail::emi_device::emi_device(
         const string_type& path)
         : _handle(INVALID_HANDLE_VALUE), _version({ 0 }) {
-    this->_handle = ::CreateFile(path.c_str(), GENERIC_READ, FILE_SHARE_READ,
+    this->_handle = ::CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ,
         nullptr, OPEN_EXISTING, 0, NULL);
     if (this->_handle == INVALID_HANDLE_VALUE) {
         // Nothing has been allocated in the object here, so it is OK to fail.

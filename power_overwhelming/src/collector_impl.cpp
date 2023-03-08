@@ -33,21 +33,17 @@ void visus::power_overwhelming::detail::collector_impl::on_measurement(
  * visus::power_overwhelming::detail::collector_impl::collector_impl
  */
 visus::power_overwhelming::detail::collector_impl::collector_impl(void)
-        : evt_write(::CreateEvent(nullptr, FALSE, FALSE, nullptr)),
+        : evt_write(create_event(false, false)),
         have_marker(false), running(false), sampling_interval(0),
         require_marker(false),
-        timestamp_resolution(timestamp_resolution::milliseconds) {
-    if (this->evt_write == NULL) {
-        throw std::system_error(::GetLastError(), std::system_category());
-    }
-}
+        timestamp_resolution(timestamp_resolution::milliseconds) { }
 
 
 /*
  * visus::power_overwhelming::detail::collector_impl::~collector_impl
  */
 visus::power_overwhelming::detail::collector_impl::~collector_impl(void) {
-    ::CloseHandle(this->evt_write);
+    destroy_event(this->evt_write);
 }
 
 
@@ -78,7 +74,7 @@ void visus::power_overwhelming::detail::collector_impl::marker(
 
         // Wake the I/O thread, because if we start a new phase, it is typically
         // a good idea to make sure that what we already have is persisted.
-        ::SetEvent(this->evt_write);
+        set_event(this->evt_write);
     }
 }
 
@@ -218,7 +214,7 @@ void visus::power_overwhelming::detail::collector_impl::stop(void) {
     }
 
     // Then, wake the I/O thread for a last time to make sure it exits.
-    ::SetEvent(this->evt_write);
+    set_event(this->evt_write);
     if (this->writer_thread.joinable()) {
         this->writer_thread.join();
     }
@@ -237,15 +233,7 @@ void visus::power_overwhelming::detail::collector_impl::write(void) {
         this->sampling_interval).count()) * 8;
 
     while (this->running.load()) {
-        switch (::WaitForSingleObject(this->evt_write, timeout)) {
-            case WAIT_OBJECT_0:
-            case WAIT_TIMEOUT:
-                break;
-
-            default:
-                throw std::system_error(::GetLastError(),
-                    std::system_category());
-        }
+        wait_event(this->evt_write, timeout);
 
         {
             std::lock_guard<decltype(this->lock)> l(this->lock);

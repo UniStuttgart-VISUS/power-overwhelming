@@ -41,7 +41,7 @@ namespace detail {
         /// <summary>
         /// The type used to specify device names.
         /// </summary>
-        typedef std::basic_string<TCHAR> string_type;
+        typedef std::basic_string<wchar_t> string_type;
 
         /// <summary>
         /// Initialises a new instance.
