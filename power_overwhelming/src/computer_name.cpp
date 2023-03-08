@@ -113,7 +113,7 @@ std::size_t visus::power_overwhelming::computer_name(wchar_t *dst,
 
 #else /* defined(_WIN32) */
     if ((dst == nullptr) || (cnt == 0)) {
-        return computer_name(nullptr, 0);
+        return computer_name(static_cast<char *>(nullptr), 0);
 
     } else {
         // Performance off ...
