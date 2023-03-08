@@ -20,7 +20,7 @@ visus::power_overwhelming::tinkerforge_sensor_definiton::tinkerforge_sensor_defi
             "be null.");
     }
 
-    this->_uid = ::_strdup(uid);
+    this->_uid = ::strdup(uid);
     if (this->_uid == nullptr) {
         throw std::bad_alloc();
     }
@@ -61,7 +61,7 @@ void visus::power_overwhelming::tinkerforge_sensor_definiton::description(
     }
 
     if (description != nullptr) {
-        this->_description = ::_wcsdup(description);
+        this->_description = ::wcsdup(description);
         if (this->_description == nullptr) {
             throw std::bad_alloc();
         }
@@ -86,7 +86,7 @@ visus::power_overwhelming::tinkerforge_sensor_definiton::operator =(
         }
 
         if (rhs._uid != nullptr) {
-            this->_uid = ::_strdup(rhs._uid);
+            this->_uid = ::strdup(rhs._uid);
             if (this->_uid == nullptr) {
                 throw std::bad_alloc();
             }

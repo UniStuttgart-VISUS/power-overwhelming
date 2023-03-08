@@ -1,7 +1,7 @@
-// <copyright file="nvidia_management_library.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="nvidia_management_library.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "nvidia_management_library.h"
 
@@ -28,7 +28,7 @@ visus::power_overwhelming::detail::nvidia_management_library
 #if defined(_WIN32)
         : library_base(TEXT("nvml.dll")) {
 #else /* defined(_WIN32) */
-        : library_base("nvidia-ml.so") {
+        : library_base("libnvidia-ml.so") {
 #endif /* defined(_WIN32) */
     __POWER_OVERWHELMING_GET_NVML_FUNC(nvmlDeviceGetCount);
     __POWER_OVERWHELMING_GET_NVML_FUNC(nvmlDeviceGetName);

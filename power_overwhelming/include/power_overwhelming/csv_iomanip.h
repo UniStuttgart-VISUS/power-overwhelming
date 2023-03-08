@@ -1,14 +1,14 @@
-// <copyright file="csv_iomanip.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="csv_iomanip.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2022 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #pragma once
 
 #include <iostream>
 
-#include "literal.h"
-#include "power_overwhelming_api.h"
+#include "power_overwhelming/literal.h"
+#include "power_overwhelming/power_overwhelming_api.h"
 
 
 namespace visus {

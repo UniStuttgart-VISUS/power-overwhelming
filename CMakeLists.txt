@@ -9,6 +9,8 @@ project(power-overwhelming)
 # User-configurable options.
 option(PWROWG_BuildDemo "Build demo programme" OFF)
 
+option(PWROWG_BuildDumpSensors "Build dump_sensors utility" ON)
+
 if (WIN32)
     option(PWROWG_BuildStablePower "Build setstablepowerstate tool" OFF)
 else (WIN32)
@@ -41,7 +43,14 @@ if (PWROWG_BuildTests)
 endif (PWROWG_BuildTests)
 
 # Demo programme
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/podump)
+if (PWROWG_BuildDemo)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/podump)
+endif (PWROWG_BuildDemo)
+
+# dump_sensors utility
+if (PWROWG_BuildDumpSensors)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/dump_sensors)
+endif (PWROWG_BuildDumpSensors)
 
 # Browser
 if (PWROWG_BuildWeb)

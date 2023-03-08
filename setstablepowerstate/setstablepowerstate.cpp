@@ -1,7 +1,7 @@
-// <copyright file="setstablepowerstate.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="setstablepowerstate.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2022 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include <iostream>
 
@@ -27,8 +27,8 @@
 int main(void) {
     try {
         std::cout << "Power Overwhelming" << std::endl;
-        std::cout << "Copyright (C) 2021 - 2022 Visualisierungsinstitut "
-            "der Universität Stuttgart."
+        std::cout << "Copyright Â© 2021 - 2023 Visualisierungsinstitut "
+            "der UniversitÃ¤t Stuttgart."
             << std::endl << "All rights reserved."
             << std::endl << std::endl;
 

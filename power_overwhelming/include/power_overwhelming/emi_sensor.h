@@ -1,7 +1,7 @@
-// <copyright file="emi_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="emi_sensor.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #pragma once
 
@@ -42,7 +42,7 @@ namespace power_overwhelming {
         /// The type used for strings that are passed to the OS API.
         /// </summary>
 #if defined(_WIN32)
-        typedef TCHAR char_type;
+        typedef wchar_t char_type;
 #else /* defined(_WIN32) */
         typedef char char_type;
 #endif /* defined(_WIN32) */
@@ -114,6 +114,53 @@ namespace power_overwhelming {
         /// devices failed.</exception>
         static std::size_t for_device(emi_sensor *out_sensors,
             const std::size_t cnt_sensors, const char_type *device);
+
+        /// <summary>
+        /// Create sensors for all devices and channels whose names matches the
+        /// given regular expressions.
+        /// </summary>
+        /// <param name="out_sensors">Receives the sensors, if not
+        /// <c>nullptr</c>.</param>
+        /// <param name="cnt_sensors">The available space in
+        /// <paramref name="out_sensors" />.</param>
+        /// <param name="device">A regular expression for matching the name
+        /// of the device.</param>
+        /// <param name="channel">A regular expression for matching the name
+        /// of the channel.</param>
+        /// <returns>The number of sensors available on the system, regardless
+        /// of the size of the output array. If this number is larger than
+        /// <paramref name="cntSensors" />, not all sensors have been returned.
+        /// </returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="device" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::system_error">If enumerating or opening the
+        /// devices failed.</exception>
+        static std::size_t for_device_and_channel(emi_sensor *out_sensors,
+            const std::size_t cnt_sensors, const char_type *device,
+            const char_type *channel);
+
+        /// <summary>
+        /// Create sensors for all devices whose name matches the given regular
+        /// expression and the channel with the specified index.
+        /// </summary>
+        /// <param name="out_sensors">Receives the sensors, if not
+        /// <c>nullptr</c>.</param>
+        /// <param name="cnt_sensors">The available space in
+        /// <paramref name="out_sensors" />.</param>
+        /// <param name="device">A regular expression for matching the name
+        /// of the device.</param>
+        /// <param name="channel">The zero-based index of the channel.</param>
+        /// <returns>The number of sensors available on the system, regardless
+        /// of the size of the output array. If this number is larger than
+        /// <paramref name="cntSensors" />, not all sensors have been returned.
+        /// </returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="device" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::system_error">If enumerating or opening the
+        /// devices failed.</exception>
+        static std::size_t for_device_and_channel(emi_sensor *out_sensors,
+            const std::size_t cnt_sensors, const char_type *device,
+            const channel_type channel);
 
         /// <summary>
         /// Initialises a new instance.

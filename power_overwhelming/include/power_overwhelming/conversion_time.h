@@ -1,7 +1,7 @@
-// <copyright file="conversion_time.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="conversion_time.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2022 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #pragma once
 
@@ -17,22 +17,22 @@ namespace power_overwhelming {
     enum class conversion_time : std::uint8_t {
 
         /// <summary>
-        /// A conversion time of 140 µs.
+        /// A conversion time of 140 Âµs.
         /// </summary>
         microseconds_140 = 0,
 
         /// <summary>
-        /// A conversion time of 204 µs.
+        /// A conversion time of 204 Âµs.
         /// </summary>
         microseconds_204 = 1,
 
         /// <summary>
-        /// A conversion time of 332 µs.
+        /// A conversion time of 332 Âµs.
         /// </summary>
         microseconds_332 = 2,
 
         /// <summary>
-        /// A conversion time of 588 µs.
+        /// A conversion time of 588 Âµs.
         /// </summary>
         microseconds_588 = 3,
 

@@ -1,7 +1,7 @@
-// <copyright file="podump.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="podump.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "pch.h"
 
@@ -48,7 +48,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // EMI sensors
-#if true
+#if false
 #if true
     ::sample_emi_sensor();
 #endif
@@ -59,7 +59,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // NVML sensors
-#if false
+#if true
 #if true
     ::sample_nvml_sensor();
 #endif
@@ -97,11 +97,11 @@ int _tmain(const int argc, const TCHAR **argv) {
 
     // Collector abstraction
 #if false
-#if true
+#if false
     ::collect_all(L"idle.csv", 20);
 #endif
 
-#if false
+#if true
     ::collect_template(L"tpl.json",  20);
 #endif
 #endif

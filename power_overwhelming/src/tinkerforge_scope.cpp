@@ -1,14 +1,17 @@
 // <copyright file="tinkerforge_scope.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 -2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #include "tinkerforge_scope.h"
 
 #include <algorithm>
+#include <cctype>
 #include <iterator>
 
+#if defined(_WIN32)
 #include <WinSock2.h>
+#endif /* defined(_WIN32) */
 
 #include "tinkerforge_exception.h"
 
@@ -110,12 +113,12 @@ void CALLBACK visus::power_overwhelming::detail::tinkerforge_scope::on_enumerate
  * visus::power_overwhelming::detail::tinkerforge_scope::to_endpoint
  */
 std::string visus::power_overwhelming::detail::tinkerforge_scope::to_endpoint(
-    const std::string &host, const std::uint16_t port) {
+        const std::string& host, const std::uint16_t port) {
     std::string retval;
     retval.reserve(host.size() + 1 + 6);
 
     std::transform(host.begin(), host.end(), std::back_inserter(retval),
-        std::tolower);
+        [](const char c) { return std::tolower(c); });
     retval += ":";
     retval += std::to_string(port);
 

@@ -18,6 +18,8 @@
 #include <Windows.h>
 #endif /* defined(_WIN32) */
 
+#include "power_overwhelming/event.h"
+
 
 namespace visus {
 namespace power_overwhelming {
@@ -59,7 +61,7 @@ namespace detail {
         /// <summary>
         /// An event to wake the I/O thread.
         /// </summary>
-        HANDLE evt_write;
+        event_type evt_write;
 
         /// <summary>
         /// Indicates whether a have a valid marker.

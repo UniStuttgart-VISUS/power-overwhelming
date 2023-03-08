@@ -1,23 +1,29 @@
-# CMakeLists.txt
+﻿# CMakeLists.txt
 # Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 
 find_package(Git REQUIRED)
 
 include(FetchContent)
-set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-mark_as_advanced(FETCHCONTENT_BASE_DIR)
 set(FETCHCONTENT_QUIET ON)
-mark_as_advanced(FETCHCONTENT_QUIET)
+mark_as_advanced(FETCHCONTENT_BASE_DIR
+    FETCHCONTENT_FULLY_DISCONNECTED
+    FETCHCONTENT_QUIET
+    FETCHCONTENT_SOURCE_DIR_ADL
+    FETCHCONTENT_SOURCE_DIR_NLOHMANN_JSON
+    FETCHCONTENT_SOURCE_DIR_WIL
+    FETCHCONTENT_UPDATES_DISCONNECTED
+    FETCHCONTENT_UPDATES_DISCONNECTED_ADL
+    FETCHCONTENT_UPDATES_DISCONNECTED_NLOHMANN_JSON
+    FETCHCONTENT_UPDATES_DISCONNECTED_WIL)
 
 # AMD Display Library (this is a bit hacky ...)
 FetchContent_Declare(adl
     GIT_REPOSITORY "https://github.com/GPUOpen-LibrariesAndSDKs/display-library.git"
     GIT_TAG "17.0"
     GIT_PROGRESS TRUE
-    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/adl"
 )
 FetchContent_MakeAvailable(adl)
-set(AdlDir ${CMAKE_CURRENT_SOURCE_DIR}/adl)
+set(AdlDir ${adl_SOURCE_DIR})
 set(AdlInclude ${AdlDir}/include PARENT_SCOPE)
 
 # JSON library
@@ -29,7 +35,16 @@ FetchContent_Declare(nlohmann_json
 # Cf. https://stackoverflow.com/questions/3766740/overriding-a-default-option-value-in-cmake-from-a-parent-cmakelists-txt
 option(JSON_BuildTests OFF)
 set(JSON_BuildTests OFF)
-mark_as_advanced(JSON_BuildTests)
+mark_as_advanced(JSON_BuildTests
+    JSON_CI
+    JSON_Diagnostics
+    JSON_DisableEnumSerialization
+    JSON_GlobalUDLs
+    JSON_ImplicitConversions
+    JSON_Install
+    JSON_LegacyDiscardedValueComparison
+    JSON_MultipleHeaders
+    JSON_SystemInclude)
 FetchContent_MakeAvailable(nlohmann_json)
 
 # NVIDIA Management Library
