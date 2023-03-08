@@ -28,7 +28,7 @@ visus::power_overwhelming::detail::nvidia_management_library
 #if defined(_WIN32)
         : library_base(TEXT("nvml.dll")) {
 #else /* defined(_WIN32) */
-        : library_base("nvidia-ml.so") {
+        : library_base("libnvidia-ml.so") {
 #endif /* defined(_WIN32) */
     __POWER_OVERWHELMING_GET_NVML_FUNC(nvmlDeviceGetCount);
     __POWER_OVERWHELMING_GET_NVML_FUNC(nvmlDeviceGetName);
