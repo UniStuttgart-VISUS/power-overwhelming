@@ -11,6 +11,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "power_overwhelming/computer_name.h"
 #include "power_overwhelming/convert_string.h"
 
 #include "collector_impl.h"
@@ -22,6 +23,7 @@ namespace visus {
 namespace power_overwhelming {
 namespace detail {
 
+    static constexpr const char *field_computer_name = "machine";
     static constexpr const char *field_output = "outputPath";
     static constexpr const char *field_require_marker = "collectRequiresMarker";
     static constexpr const char *field_sampling = "samplingInterval";
@@ -38,6 +40,7 @@ namespace detail {
 
         nlohmann::json retval;
 
+        retval[field_computer_name] = computer_name<char>();
         retval[field_output] = "output.csv";
         retval[field_sampling] = 5000;  // 5000 µs == 5 ms
         retval[field_require_marker] = true;
