@@ -21,6 +21,7 @@ std::size_t visus::power_overwhelming::detail::convert_string(
     std::size_t retval = 0;
     auto state = std::mbstate_t();
 
+#if defined(_WIN32)
     auto error = ::wcsrtombs_s(&retval,
         output, (output == nullptr) ? 0 : cnt_output,
         &input, cnt_input,
@@ -30,9 +31,19 @@ std::size_t visus::power_overwhelming::detail::convert_string(
         throw std::system_error(error, std::system_category());
     }
 
-    return retval;
+#else /* defined(_WIN32) */
+    auto retval = std::wcsrtombs(output, &input,
+        (output == nullptr) ? 0 : cnt_output,
+        &state);
 
-    //return std::wcsrtombs_s(output, &input, cnt_output, &state) + 1;
+    if (retval != static_cast<std::size_t>(-1)) {
+        throw std::system_error(error, std::system_category());
+    }
+
+    ++retval;   // Add terminating zero.
+#endif /* defined(_WIN32) */
+
+    return retval;
 }
 
 
@@ -45,6 +56,7 @@ std::size_t visus::power_overwhelming::detail::convert_string(
     std::size_t retval = 0;
     auto state = std::mbstate_t();
 
+#if defined(_WIN32)
     auto error = ::mbsrtowcs_s(&retval,
         output, (output == nullptr) ? 0 : cnt_output,
         &input, cnt_input,
@@ -54,7 +66,17 @@ std::size_t visus::power_overwhelming::detail::convert_string(
         throw std::system_error(error, std::system_category());
     }
 
-    return retval;
+#else /* defined(_WIN32) */
+    auto retval = std::mbsrtowcs(output, &input,
+        (output == nullptr) ? 0 : cnt_output,
+        &state);
 
-    //return std::mbsrtowcs(output, &input, cnt_output, &state) + 1;
+    if (retval != static_cast<std::size_t>(-1)) {
+        throw std::system_error(error, std::system_category());
+    }
+
+    ++retval;   // Add terminating zero.
+#endif /* defined(_WIN32) */
+
+    return retval;
 }
