@@ -133,7 +133,24 @@ namespace detail {
         static constexpr const char *type_name = "emi_sensor";
 
         static inline value_type deserialise(const nlohmann::json& value) {
-            throw "TODO: Not implemented yet";
+            auto channel = value[json_field_channel]
+                .get<emi_sensor::channel_type>();
+            auto path0 = value[json_field_path].get<std::string>();
+            auto path = power_overwhelming::convert_string<wchar_t>(path0);
+
+            value_type retval;
+            auto cnt = value_type::for_device_and_channel(&retval, 1,
+                path.c_str(), channel);
+
+            if (cnt == 0) {
+                throw std::invalid_argument("The specified EMI device and "
+                    "channel are not available on this machine.");
+            } else if (cnt > 1) {
+                throw std::invalid_argument("The specified EMI device and "
+                    "channel are ambiguous.");
+            }
+
+            return retval;
         }
 
         static inline nlohmann::json serialise(const value_type& value) {

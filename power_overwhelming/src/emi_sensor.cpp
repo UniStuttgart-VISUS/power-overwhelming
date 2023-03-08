@@ -28,7 +28,9 @@ std::size_t visus::power_overwhelming::emi_sensor::for_all(
 #if defined(_WIN32)
     typedef detail::emi_sensor_impl::string_type string_type;
     return detail::emi_sensor_impl::create(out_sensors, cnt_sensors,
-        [](const string_type&, const EMI_CHANNEL_V2 *) { return true; });
+            [](const string_type&, const EMI_CHANNEL_V2 *, const std::size_t) {
+        return true;
+    });
 #else /* defined(_WIN32) */
     return 0;
 #endif /* defined(_WIN32) */
@@ -43,14 +45,15 @@ std::size_t visus::power_overwhelming::emi_sensor::for_channel(
         const wchar_t *channel) {
     if (channel == nullptr) {
         throw std::invalid_argument("The regular expression selecting the "
-            "device must not be null.");
+            "channel must not be null.");
     }
 
 #if defined(_WIN32)
     typedef detail::emi_sensor_impl::string_type string_type;
     std::basic_regex<wchar_t> rx(channel);
     return detail::emi_sensor_impl::create(out_sensors, cnt_sensors,
-            [&rx](const string_type&, const EMI_CHANNEL_V2 *c) {
+            [&rx](const string_type&, const EMI_CHANNEL_V2 *c,
+            const std::size_t) {
         return std::regex_match(c->ChannelName, rx);
     });
 #else /* defined(_WIN32) */
@@ -74,8 +77,65 @@ std::size_t visus::power_overwhelming::emi_sensor::for_device(
     typedef detail::emi_sensor_impl::string_type string_type;
     std::basic_regex<char_type> rx(device);
     return detail::emi_sensor_impl::create(out_sensors, cnt_sensors,
-            [&rx](const string_type& n, const EMI_CHANNEL_V2 *) {
-        return std::regex_match(n, rx);
+            [&rx](const string_type& d, const EMI_CHANNEL_V2 *,
+            const std::size_t) {
+        return std::regex_match(d, rx);
+    });
+#else /* defined(_WIN32) */
+    return 0;
+#endif /* defined(_WIN32) */
+}
+
+
+/*
+ * visus::power_overwhelming::emi_sensor::for_device_and_channel
+ */
+std::size_t visus::power_overwhelming::emi_sensor::for_device_and_channel(
+        emi_sensor *out_sensors, const std::size_t cnt_sensors,
+        const char_type *device, const char_type *channel) {
+    if (device == nullptr) {
+        throw std::invalid_argument("The regular expression selecting the "
+            "device must not be null.");
+    }
+    if (channel == nullptr) {
+        throw std::invalid_argument("The regular expression selecting the "
+            "channel must not be null.");
+    }
+
+#if defined(_WIN32)
+    typedef detail::emi_sensor_impl::string_type string_type;
+    std::basic_regex<char_type> rxc(channel);
+    std::basic_regex<char_type> rxd(device);
+    return detail::emi_sensor_impl::create(out_sensors, cnt_sensors,
+            [&rxc, &rxd](const string_type& d, const EMI_CHANNEL_V2 *c,
+            const std::size_t) {
+        return (std::regex_match(d, rxd)
+            && std::regex_match(c->ChannelName, rxc));
+    });
+#else /* defined(_WIN32) */
+    return 0;
+#endif /* defined(_WIN32) */
+}
+
+
+/*
+ * visus::power_overwhelming::emi_sensor::for_device_and_channel
+ */
+std::size_t visus::power_overwhelming::emi_sensor::for_device_and_channel(
+        emi_sensor *out_sensors, const std::size_t cnt_sensors,
+        const char_type *device, const channel_type channel) {
+    if (device == nullptr) {
+        throw std::invalid_argument("The regular expression selecting the "
+            "device must not be null.");
+    }
+
+#if defined(_WIN32)
+    typedef detail::emi_sensor_impl::string_type string_type;
+    std::basic_regex<char_type> rx(device);
+    return detail::emi_sensor_impl::create(out_sensors, cnt_sensors,
+            [channel, &rx](const string_type &d, const EMI_CHANNEL_V2 *,
+            const std::size_t c) {
+        return ((channel == c) && std::regex_match(d, rx));
     });
 #else /* defined(_WIN32) */
     return 0;

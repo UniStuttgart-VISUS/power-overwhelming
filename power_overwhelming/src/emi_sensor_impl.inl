@@ -27,7 +27,7 @@ std::size_t visus::power_overwhelming::detail::emi_sensor_impl::create(
 
         switch (dev->version().EmiVersion) {
             case EMI_VERSION_V1:
-                if (predicate(path, nullptr)) {
+                if (predicate(path, nullptr, 0)) {
                     if (retval < cnt_sensors) {
                         out_sensors[retval]._impl->set(dev, path, 0);
                     }
@@ -41,7 +41,7 @@ std::size_t visus::power_overwhelming::detail::emi_sensor_impl::create(
                 auto c = md->Channels;
 
                 for (auto i = 0; i < cnt; ++i) {
-                    if (predicate(path, c)) {
+                    if (predicate(path, c, i)) {
                         if (retval < cnt_sensors) {
                             out_sensors[retval]._impl->set(dev, path, i);
                         }
