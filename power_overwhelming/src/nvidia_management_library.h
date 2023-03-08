@@ -14,7 +14,7 @@ namespace visus {
 namespace power_overwhelming {
 namespace detail {
 
-#define __POWER_OVERWHELMING_NVML_FUNC(f) decltype(&f) f = nullptr
+#define __POWER_OVERWHELMING_NVML_FUNC(f) decltype(&::f) f = nullptr
 
     /// <summary>
     /// Wrapper for lazily loading NVML.
