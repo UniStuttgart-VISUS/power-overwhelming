@@ -71,7 +71,7 @@ endif (PWROWG_WithTimeSynchronisation)
 if (VISA_FOUND)
     add_definitions("-DPOWER_OVERWHELMING_WITH_VISA")
     target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
-    target_link_libraries(${PROJECT_NAME} ${VISA_LIBRARY})
+    target_link_libraries(${PROJECT_NAME})
 endif (VISA_FOUND)
 
 target_include_directories(${PROJECT_NAME}
@@ -87,6 +87,8 @@ target_link_libraries(${PROJECT_NAME}
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} Ws2_32)
+else (WIN32)
+    target_link_libraries(${PROJECT_NAME} dl pthread)
 endif (WIN32)
 
 # Provide the internal API to the unit tests.

@@ -7,7 +7,9 @@ include(FetchContent)
 set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 mark_as_advanced(FETCHCONTENT_BASE_DIR)
 set(FETCHCONTENT_QUIET ON)
-mark_as_advanced(FETCHCONTENT_QUIET)
+mark_as_advanced(FETCHCONTENT_FULLY_DISCONNECTED
+    FETCHCONTENT_QUIET
+    FETCHONCENT_UPDATES_DISCONNECTED)
 
 # AMD Display Library (this is a bit hacky ...)
 FetchContent_Declare(adl
@@ -29,7 +31,16 @@ FetchContent_Declare(nlohmann_json
 # Cf. https://stackoverflow.com/questions/3766740/overriding-a-default-option-value-in-cmake-from-a-parent-cmakelists-txt
 option(JSON_BuildTests OFF)
 set(JSON_BuildTests OFF)
-mark_as_advanced(JSON_BuildTests)
+mark_as_advanced(JSON_BuildTests
+    JSON_CI
+    JSON_Diagnostics
+    JSON_DisableEnumSerialization
+    JSON_GlobalUDLs
+    JSON_ImplicitConversions
+    JSON_Install
+    JSON_LegacyDiscardedValueComparison
+    JSON_MultipleHeaders
+    JSON_SystemInclude)
 FetchContent_MakeAvailable(nlohmann_json)
 
 # NVIDIA Management Library
