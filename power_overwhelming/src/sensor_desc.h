@@ -133,6 +133,7 @@ namespace detail {
         static constexpr const char *type_name = "emi_sensor";
 
         static inline value_type deserialise(const nlohmann::json& value) {
+#if defined(_WIN32)
             auto channel = value[json_field_channel]
                 .get<emi_sensor::channel_type>();
             auto path0 = value[json_field_path].get<std::string>();
@@ -151,6 +152,10 @@ namespace detail {
             }
 
             return retval;
+#else /* defined(_WIN32) */
+            throw std::logic_error("The Energy Meter Interface is not "
+                "available on this platform.");
+#endif /* defined(_WIN32) */
         }
 
         static inline nlohmann::json serialise(const value_type& value) {
