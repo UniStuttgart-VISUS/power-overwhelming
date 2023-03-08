@@ -1,7 +1,7 @@
-// <copyright file="dump_sensors.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="dump_sensors.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/collector.h"
 #include "power_overwhelming/dump_sensors.h"
@@ -28,7 +28,7 @@
 /// <returns></returns>
 int _tmain(const int argc, const TCHAR **argv) {
     std::wcout << L"dump_sensors" << std::endl;
-    std::wcout << L"© 2023 Visualisierungsinstitut der Universität Stuttgart."
+    std::wcout << L"Â© 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart."
         << std::endl << std::endl;
 
     auto show_help = (argc < 2);
