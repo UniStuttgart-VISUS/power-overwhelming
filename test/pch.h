@@ -27,4 +27,5 @@
 #include <timestamp.h>
 #include <nvml_exception.h>
 #include <nvml_scope.h>
+#include <sensor_desc.h>
 #include <setup_api.h>

@@ -103,5 +103,12 @@ Second, in order to be eligible for the automated enumeration by the sensor util
 * a template specialisation of `visus::power_overwhelming::detail::sensor_desc` must be provided in [sensor_desc.h](power_overwhelming/src/sensor_desc.h), which provides means to serialise and deserialise sensors,
 * the class must be added to the `sensor_list` template at the bottom of [sensor_desc.h](power_overwhelming/src/sensor_desc.h).
 
+The specialisation of `visus::power_overwhelming::detail::sensor_desc` must fulfil the following contract:
+* It must have a member `static constexpr const char *type_name` specifing the unique name of the sensor, which can be declared using the `POWER_OVERWHELMING_DECLARE_SENSOR_NAME` macro.
+* It must have a member `static constexpr bool intrinsic_async` specifying whether the sensor can run asynchronously without emulating it by starting a sampler thread that regularly polls the sensor.
+* It must have a method `static inline nlohmann::json serialise(const value_type& value)` which serialises the given sensor into a JSON representation.
+* It must have a method `static inline value_type deserialise(const nlohmann::json& value)` which restores a sensor from a given JSON representation.
+* If the sensor can serialise all of its instances more efficiently than creating an instance of it and converting these instances to JSON, it can implement a method `static inline nlohmann::json serialise_all(void)` which serialises all sensors into a JSON array. The library will prefer this method if it is provided.
+
 ## Acknowledgments
 This work was partially funded by Deutsche Forschungsgemeinschaft (DFG) as part of [SFB/Transregio 161](https://www.sfbtrr161.de) (project ID 251654672).
