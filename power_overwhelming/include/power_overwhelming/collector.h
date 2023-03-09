@@ -5,6 +5,10 @@
 
 #pragma once
 
+#include <algorithm>
+#include <array>
+#include <vector>
+
 #include "power_overwhelming/sensor.h"
 
 
@@ -50,6 +54,19 @@ namespace power_overwhelming {
         /// <returns>A new collector configured with the sensors in the
         /// specified file.</returns>
         static collector from_json(const wchar_t *path);
+
+        /// <summary>
+        /// Initialise a new instance from the given list of (possibly
+        /// different kinds of) sensors.
+        /// </summary>
+        /// <typeparam name="TSensors>The types of the sensors to be used by
+        /// the collector.</typeparam>
+        /// <param name="sensors">A compile-time list of sensors. The new
+        /// instance will take ownership of these sensors, ie they will be
+        /// disposed by moving them once the method returns.</param>
+        /// <returns>A new collector using the given sensors.</returns>
+        template<class... TSensors>
+        static collector from_sensors(TSensors&&... sensors);
 
         /// <summary>
         /// Creates a configuration file for all sensors currently attached to
@@ -141,10 +158,31 @@ namespace power_overwhelming {
     private:
 
         /// <summary>
+        /// Creates a new collector that has no sensors, reserved space for the
+        /// given number of sensors.
+        /// </summary>
+        /// <param name="capacity"></param>
+        /// <returns>A new collector without sensors.</returns>
+        static collector prepare(const std::size_t capacity);
+
+        /// <summary>
         /// Initialise a new instance.
         /// </summary>
         /// <param name="impl"></param>
         inline collector(detail::collector_impl *impl) : _impl(impl) { }
+
+        /// <summary>
+        /// Adds a new sensor to the collector.
+        /// </summary>
+        /// <remarks>
+        /// This method is not thread-safe and must only be called while the
+        /// collector is not running. It is therefore purposefully not part of
+        /// the public interface.
+        /// </remarks>
+        /// <param name="sensor">The sensor to be added. The object takes
+        /// ownership of the object designated by this pointer. The object
+        /// must have been allocated using C++ <c>new</c>.</param>
+        void add(sensor *sensor);
 
         detail::collector_impl *_impl;
 
@@ -152,3 +190,5 @@ namespace power_overwhelming {
 
 } /* namespace power_overwhelming */
 } /* namespace visus */
+
+#include "power_overwhelming/collector.inl"

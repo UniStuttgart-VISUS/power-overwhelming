@@ -211,3 +211,34 @@ visus::power_overwhelming::collector::operator =(collector&& rhs) noexcept {
 visus::power_overwhelming::collector::operator bool(void) const noexcept {
     return (this->_impl != nullptr);
 }
+
+
+/*
+ * visus::power_overwhelming::collector::prepare
+ */
+visus::power_overwhelming::collector
+visus::power_overwhelming::collector::prepare(const std::size_t capacity) {
+    auto retval = collector(new detail::collector_impl());
+    retval._impl->sensors.reserve(capacity);
+    return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::collector::add
+ */
+void visus::power_overwhelming::collector::add(sensor *sensor) {
+    assert(*this);
+
+    if (sensor == nullptr) {
+        throw std::invalid_argument("None of the sensors added to a collector "
+            "must be null.");
+    }
+    if (!*sensor) {
+        throw std::invalid_argument("None of the sensors added to a collector "
+            "must have been disposed.");
+    }
+
+    this->_impl->sensors.emplace_back(sensor);
+}
+

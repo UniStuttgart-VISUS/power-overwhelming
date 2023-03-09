@@ -13,6 +13,7 @@
 #include "power_overwhelming/emi_sensor.h"
 #include "power_overwhelming/hmc8015_sensor.h"
 #include "power_overwhelming/nvml_sensor.h"
+#include "power_overwhelming/regex_escape.h"
 #include "power_overwhelming/rtb_sensor.h"
 #include "power_overwhelming/tinkerforge_sensor.h"
 
@@ -139,9 +140,20 @@ namespace detail {
             auto path0 = value[json_field_path].get<std::string>();
             auto path = power_overwhelming::convert_string<wchar_t>(path0);
 
+            std::size_t cnt = 0;
             value_type retval;
-            auto cnt = value_type::for_device_and_channel(&retval, 1,
-                path.c_str(), channel);
+
+            try {
+                cnt = value_type::for_device_and_channel(&retval, 1,
+                    path.c_str(), channel);
+            } catch (std::regex_error) {
+                // Second chance: User might have specified a literal name,
+                // which is usually not a valid regular expression, so we
+                // escape it now and retry.
+                path = power_overwhelming::regex_escape(path);
+                cnt = value_type::for_device_and_channel(&retval, 1,
+                    path.c_str(), channel);
+            }
 
             if (cnt == 0) {
                 throw std::invalid_argument("The specified EMI device and "
