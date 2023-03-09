@@ -17,6 +17,11 @@ namespace test {
 
     public:
 
+        TEST_METHOD(test_for_all) {
+            auto collector = collector::for_all(L"test.csv");
+            Assert::IsTrue(bool(collector), L"New collector is valid.", LINE_INFO());
+        }
+
         TEST_METHOD(test_from_defaults) {
             auto collector = collector::from_defaults();
             Assert::IsTrue(bool(collector), L"New collector is valid.", LINE_INFO());
