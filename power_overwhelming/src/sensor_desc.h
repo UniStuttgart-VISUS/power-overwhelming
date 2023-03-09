@@ -13,11 +13,28 @@
 #include "power_overwhelming/emi_sensor.h"
 #include "power_overwhelming/hmc8015_sensor.h"
 #include "power_overwhelming/nvml_sensor.h"
+#include "power_overwhelming/regex_escape.h"
 #include "power_overwhelming/rtb_sensor.h"
 #include "power_overwhelming/tinkerforge_sensor.h"
 
 #include "described_sensor_type.h"
 #include "tinkerforge_sensor_impl.h"
+
+
+/// <summary>
+/// Declares the static constant <c>type_name</c> for the sensor with the
+/// given name.
+/// </summary>
+#define POWER_OVERWHELMING_DECLARE_SENSOR_NAME(name)\
+    static constexpr const char *type_name = #name
+
+/// <summary>
+/// Declares the static constant <c>intrinsic_async</c> specifying whether a
+/// sensor is intrinsically asynchronous and should not be sampled by polling if
+/// used in a <see cref="visus::power_overwhelming::collector" />.
+/// </summary>
+#define POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC(value)\
+    static constexpr bool intrinsic_async = (value)
 
 
 namespace visus {
@@ -101,7 +118,8 @@ namespace detail {
     /// </summary>
     template<> struct sensor_desc<adl_sensor> final
             : detail::sensor_desc_base<sensor_desc<adl_sensor>> {
-        static constexpr const char *type_name = "adl_sensor";
+        POWER_OVERWHELMING_DECLARE_SENSOR_NAME(adl_sensor);
+        POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC(false);
 
         static inline value_type deserialise(const nlohmann::json& value) {
             auto source0 = value[json_field_source].get<std::string>();
@@ -130,7 +148,8 @@ namespace detail {
     /// </summary>
     template<> struct sensor_desc<emi_sensor> final
             : detail::sensor_desc_base<sensor_desc<emi_sensor>> {
-        static constexpr const char *type_name = "emi_sensor";
+        POWER_OVERWHELMING_DECLARE_SENSOR_NAME(emi_sensor);
+        POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC(false);
 
         static inline value_type deserialise(const nlohmann::json& value) {
 #if defined(_WIN32)
@@ -139,9 +158,20 @@ namespace detail {
             auto path0 = value[json_field_path].get<std::string>();
             auto path = power_overwhelming::convert_string<wchar_t>(path0);
 
+            std::size_t cnt = 0;
             value_type retval;
-            auto cnt = value_type::for_device_and_channel(&retval, 1,
-                path.c_str(), channel);
+
+            try {
+                cnt = value_type::for_device_and_channel(&retval, 1,
+                    path.c_str(), channel);
+            } catch (std::regex_error) {
+                // Second chance: User might have specified a literal name,
+                // which is usually not a valid regular expression, so we
+                // escape it now and retry.
+                path = power_overwhelming::regex_escape(path);
+                cnt = value_type::for_device_and_channel(&retval, 1,
+                    path.c_str(), channel);
+            }
 
             if (cnt == 0) {
                 throw std::invalid_argument("The specified EMI device and "
@@ -177,7 +207,8 @@ namespace detail {
     /// </summary>
     template<> struct sensor_desc<hmc8015_sensor> final
             : detail::sensor_desc_base<sensor_desc<hmc8015_sensor>> {
-        static constexpr const char *type_name = "hmc8015_sensor";
+        POWER_OVERWHELMING_DECLARE_SENSOR_NAME(hmc8015_sensor);
+        POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC(false);
 
         static inline value_type deserialise(const nlohmann::json& value) {
             auto path = value[json_field_path].get<std::string>();
@@ -203,7 +234,8 @@ namespace detail {
     /// </summary>
     template<> struct sensor_desc<nvml_sensor> final
             : detail::sensor_desc_base<sensor_desc<nvml_sensor>> {
-        static constexpr const char *type_name = "nvml_sensor";
+        POWER_OVERWHELMING_DECLARE_SENSOR_NAME(nvml_sensor);
+        POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC(false);
 
         static inline value_type deserialise(const nlohmann::json& value) {
             auto guid = value[json_field_dev_guid].get<std::string>();
@@ -227,7 +259,8 @@ namespace detail {
     /// </summary>
     template<> struct sensor_desc<rtb_sensor> final
             : detail::sensor_desc_base<sensor_desc<rtb_sensor>> {
-        static constexpr const char *type_name = "rtb_sensor";
+        POWER_OVERWHELMING_DECLARE_SENSOR_NAME(rtb_sensor);
+        POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC(false);
 
         static inline value_type deserialise(const nlohmann::json& value) {
             auto path = value[json_field_path].get<std::string>();
@@ -253,7 +286,8 @@ namespace detail {
     /// </summary>
     template<> struct sensor_desc<tinkerforge_sensor> final
             : detail::sensor_desc_base<sensor_desc<tinkerforge_sensor>> {
-        static constexpr const char *type_name = "tinkerforge_sensor";
+        POWER_OVERWHELMING_DECLARE_SENSOR_NAME(tinkerforge_sensor);
+        POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC(true);
 
         static inline value_type deserialise(const nlohmann::json& value) {
             const auto dit = value.find(json_field_description);
@@ -335,6 +369,9 @@ namespace detail {
         }
     };
 
+
+#undef POWER_OVERWHELMING_DECLARE_SENSOR_NAME
+#undef POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC
 
     /// <summary>
     /// A type list of all known sensors, which allows for compile-time

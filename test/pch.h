@@ -10,6 +10,8 @@
 #include <sstream>
 #include <thread>
 
+#include <power_overwhelming/adl_sensor.h>
+#include <power_overwhelming/collector.h>
 #include <power_overwhelming/emi_sensor.h>
 #include <power_overwhelming/event.h>
 #include <power_overwhelming/computer_name.h>
@@ -25,4 +27,5 @@
 #include <timestamp.h>
 #include <nvml_exception.h>
 #include <nvml_scope.h>
+#include <sensor_desc.h>
 #include <setup_api.h>
