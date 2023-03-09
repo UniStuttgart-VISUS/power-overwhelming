@@ -7,6 +7,10 @@
 
 #include <algorithm>
 #include <array>
+#include <initializer_list>
+#include <memory>
+#include <numeric>
+#include <type_traits>
 #include <vector>
 
 #include "power_overwhelming/sensor.h"
@@ -56,8 +60,19 @@ namespace power_overwhelming {
         static collector from_json(const wchar_t *path);
 
         /// <summary>
-        /// Initialise a new instance from the given list of (possibly
-        /// different kinds of) sensors.
+        /// Initialise a new instance from the given lists of sensors.
+        /// </summary>
+        /// <typeparam name="TSensorLists">The types of the lists of sensors,
+        /// which must be STL collection types (with <c>begin</c> and
+        /// <c>end</c>) or sensors.</typeparam>
+        /// <param name="sensors">The lists of sensors.</param>
+        /// <returns></returns>
+        template<class... TSensorLists>
+        static collector from_sensor_lists(TSensorLists&&... sensors);
+
+        /// <summary>
+        /// Initialise a new instance from the given compile-time list of
+        /// (possibly different kinds of) sensors.
         /// </summary>
         /// <typeparam name="TSensors>The types of the sensors to be used by
         /// the collector.</typeparam>
@@ -156,6 +171,16 @@ namespace power_overwhelming {
         operator bool(void) const noexcept;
 
     private:
+
+        /// <summary>
+        /// Moves the given list of sensors to the heap.
+        /// </summary>
+        /// <typeparam name="TSensorList"></typeparam>
+        /// <param name="sensors"></param>
+        /// <returns></returns>
+        template<class TSensorList>
+        static std::vector<std::unique_ptr<sensor>> move_to_heap(
+            TSensorList&& sensors);
 
         /// <summary>
         /// Creates a new collector that has no sensors, reserved space for the
