@@ -71,7 +71,7 @@ visus::power_overwhelming::collector::move_to_heap(TSensorList&& sensors) {
     retval.reserve(std::size(sensors));
 
     std::transform(sensors.begin(), sensors.end(), std::back_inserter(retval),
-            [](typename sensor_type& s) {
+            [](sensor_type& s) {
         return std::unique_ptr<sensor>(new sensor_type(std::move(s)));
     });
 

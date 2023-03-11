@@ -17,6 +17,20 @@ namespace test {
 
     public:
 
+        TEST_METHOD(test_settings) {
+            collector_settings settings;
+            Assert::AreEqual(collector_settings::default_output_path, settings.output_path(), L"Default for output_path", LINE_INFO());
+            Assert::AreEqual(collector_settings::default_sampling_interval, settings.sampling_interval(), L"Default for sampling_interval", LINE_INFO());
+
+            settings.output_path(L"bla.txt").sampling_interval(42);
+            Assert::AreEqual(L"bla.txt", settings.output_path(), L"Set output_path", LINE_INFO());
+            Assert::AreEqual(collector_settings::sampling_interval_type(42), settings.sampling_interval(), L"Set sampling_interval", LINE_INFO());
+
+            auto copy = settings;
+            Assert::AreEqual(settings.output_path(), copy.output_path(), L"Copy output_path", LINE_INFO());
+            Assert::AreEqual(settings.sampling_interval(), copy.sampling_interval(), L"Copy sampling_interval", LINE_INFO());
+        }
+
         TEST_METHOD(test_for_all) {
             auto collector = collector::for_all(L"test.csv");
             Assert::IsTrue(bool(collector), L"New collector is valid.", LINE_INFO());
