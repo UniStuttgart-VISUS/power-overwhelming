@@ -75,5 +75,6 @@ jobs:
 
   - task: CMake@1
     displayName: 'Build'
+    inputs:
       workingDirectory: '_build'
       cmakeArgs: '--build'
