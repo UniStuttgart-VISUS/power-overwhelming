@@ -13,10 +13,11 @@ visus::power_overwhelming::collector::from_sensor_lists(
         const collector_settings& settings, TSensorLists&&... sensors) {
     std::array<std::vector<std::unique_ptr<sensor>>,
         sizeof...(sensors)> instances = { move_to_heap(sensors)... };
+    typedef typename decltype(instances)::value_type sensor_type;
 
     const auto cnt = std::accumulate(instances.begin(),
         instances.end(), static_cast<std::size_t>(0),
-            [](const std::size_t s, const decltype(instances)::value_type& v) {
+            [](const std::size_t s, const sensor_type& v) {
         return std::size(v) + s;
     });
 
@@ -71,7 +72,7 @@ visus::power_overwhelming::collector::move_to_heap(TSensorList&& sensors) {
 
     std::transform(sensors.begin(), sensors.end(), std::back_inserter(retval),
             [](typename sensor_type& s) {
-        return std::unique_ptr<sensor>(new typename sensor_type(std::move(s)));
+        return std::unique_ptr<sensor>(new sensor_type(std::move(s)));
     });
 
     return retval;
