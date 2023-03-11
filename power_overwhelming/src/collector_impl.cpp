@@ -60,7 +60,7 @@ void visus::power_overwhelming::detail::collector_impl::apply(
     this->stream = std::wofstream(output_path, std::ofstream::trunc);
 #else /* defined(_WIN32) */
     auto p = convert_string<char>(output_path);
-    retval._impl->stream = std::wofstream(p, std::ofstream::trunc);
+    this->stream = std::wofstream(p, std::ofstream::trunc);
 #endif /* defined(_WIN32) */
 
     this->sampling_interval = std::chrono::microseconds(
