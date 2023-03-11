@@ -77,4 +77,4 @@ jobs:
     displayName: 'Build'
     inputs:
       workingDirectory: '_build'
-      cmakeArgs: '--build'
+      cmakeArgs: '--build .'
