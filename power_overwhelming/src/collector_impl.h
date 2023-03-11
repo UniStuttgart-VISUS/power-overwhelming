@@ -18,6 +18,7 @@
 #include <Windows.h>
 #endif /* defined(_WIN32) */
 
+#include "power_overwhelming/collector_settings.h"
 #include "power_overwhelming/event.h"
 
 
@@ -133,6 +134,12 @@ namespace detail {
         /// Finalises the instance.
         /// </summary>
         ~collector_impl(void);
+
+        /// <summary>
+        /// Applies the given settings.
+        /// </summary>
+        /// <param name="settings"></param>
+        void apply(const collector_settings& settings);
 
         /// <summary>
         /// Answer whether data can be written to the buffer.

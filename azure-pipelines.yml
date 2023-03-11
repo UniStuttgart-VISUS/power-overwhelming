@@ -18,36 +18,63 @@ schedules:
     - master
   always: true
 
-pool:
-  vmImage: 'windows-2022'
 
-variables:
-  buildPlatform: 'x64'
-  buildConfiguration: 'Release'
-  generator: 'Visual Studio 17 2022'
+jobs:
+- job: Windows
 
-steps:
-- task: NuGetToolInstaller@0
+  variables:
+    buildPlatform: 'x64'
+    buildConfiguration: 'Release'
+    generator: 'Visual Studio 17 2022'
 
-- task: CMake@1
-  displayName: 'CMake'
-  inputs:
-    workingDirectory: '_build'
-    cmakeArgs: .. -G"$(generator)" -A"$(buildPlatform)"
+  pool:
+    vmImage: 'windows-2022'
 
-#- task: NuGetCommand@2
-#  inputs:
-#    restoreSolution: '$(solution)'
+  steps:
+  - task: NuGetToolInstaller@0
+  
+  - task: CMake@1
+    displayName: 'Configure'
+    inputs:
+      workingDirectory: '_build'
+      cmakeArgs: '.. -G"$(generator)" -A"$(buildPlatform)"'
+  
+  #- task: NuGetCommand@2
+  #  inputs:
+  #    restoreSolution: '$(solution)'
+  
+  - task: VSBuild@1
+    displayName: 'Build'
+    inputs:
+      solution: '_build/*.sln'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+  
+  - task: VSTest@2
+    displayName: 'Tests'
+    inputs:
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
 
-- task: VSBuild@1
-  displayName: 'Build'
-  inputs:
-    solution: '_build/*.sln'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
-  displayName: 'Tests'
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+- job: Linux
+
+  variables:
+    buildConfiguration: 'Release'
+    generator: 'Unix Makefiles'
+
+  pool:
+    vmImage: 'ubuntu-22.04'
+
+  steps:
+  - task: CMake@1
+    displayName: 'Configure'
+    inputs:
+      workingDirectory: '_build'
+      cmakeArgs: '.. -G"$(generator)" -DCMAKE_BUILD_TYPE="$(buildConfiguration)"'
+
+  - task: CMake@1
+    displayName: 'Build'
+    inputs:
+      workingDirectory: '_build'
+      cmakeArgs: '--build .'

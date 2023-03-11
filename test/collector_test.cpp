@@ -17,6 +17,20 @@ namespace test {
 
     public:
 
+        TEST_METHOD(test_settings) {
+            collector_settings settings;
+            Assert::AreEqual(collector_settings::default_output_path, settings.output_path(), L"Default for output_path", LINE_INFO());
+            Assert::AreEqual(collector_settings::default_sampling_interval, settings.sampling_interval(), L"Default for sampling_interval", LINE_INFO());
+
+            settings.output_path(L"bla.txt").sampling_interval(42);
+            Assert::AreEqual(L"bla.txt", settings.output_path(), L"Set output_path", LINE_INFO());
+            Assert::AreEqual(collector_settings::sampling_interval_type(42), settings.sampling_interval(), L"Set sampling_interval", LINE_INFO());
+
+            auto copy = settings;
+            Assert::AreEqual(settings.output_path(), copy.output_path(), L"Copy output_path", LINE_INFO());
+            Assert::AreEqual(settings.sampling_interval(), copy.sampling_interval(), L"Copy sampling_interval", LINE_INFO());
+        }
+
         TEST_METHOD(test_for_all) {
             auto collector = collector::for_all(L"test.csv");
             Assert::IsTrue(bool(collector), L"New collector is valid.", LINE_INFO());
@@ -35,7 +49,7 @@ namespace test {
             std::vector<nvml_sensor> nvml_sensors(nvml_sensor::for_all(nullptr, 0));
             nvml_sensor::for_all(nvml_sensors.data(), nvml_sensors.size());
 
-            auto collector = collector::from_sensor_lists(adl_sensors, emi_sensors, nvml_sensors);
+            auto collector = collector::from_sensor_lists(collector_settings(), adl_sensors, emi_sensors, nvml_sensors);
             Assert::IsTrue(bool(collector), L"New collector is valid.", LINE_INFO());
             Assert::IsTrue(std::none_of(adl_sensors.begin(), adl_sensors.end(),
                 [](const adl_sensor& s) {return bool(s); }), L"ADL sensors have been moved.", LINE_INFO());
@@ -51,7 +65,7 @@ namespace test {
                 adl_sensor::for_all(sensors.data(), sensors.size());
 
                 if (!sensors.empty()) {
-                    auto collector = collector::from_sensors(sensors[0]);
+                    auto collector = collector::from_sensors(collector_settings(), sensors[0]);
                     Assert::IsTrue(bool(collector), L"New collector is valid.", LINE_INFO());
                     Assert::IsFalse(bool(sensors[0]), L"Sensor has been moved.", LINE_INFO());
                 }
@@ -62,7 +76,7 @@ namespace test {
                 emi_sensor::for_all(sensors.data(), sensors.size());
 
                 if (!sensors.empty()) {
-                    auto collector = collector::from_sensors(sensors[0]);
+                    auto collector = collector::from_sensors(collector_settings(), sensors[0]);
                     Assert::IsTrue(bool(collector), L"New collector is valid.", LINE_INFO());
                     Assert::IsFalse(bool(sensors[0]), L"Sensor has been moved.", LINE_INFO());
                 }
@@ -73,7 +87,7 @@ namespace test {
                 nvml_sensor::for_all(sensors.data(), sensors.size());
 
                 if (!sensors.empty()) {
-                    auto collector = collector::from_sensors(sensors[0]);
+                    auto collector = collector::from_sensors(collector_settings(), sensors[0]);
                     Assert::IsTrue(bool(collector), L"New collector is valid.", LINE_INFO());
                     Assert::IsFalse(bool(sensors[0]), L"Sensor has been moved.", LINE_INFO());
                 }

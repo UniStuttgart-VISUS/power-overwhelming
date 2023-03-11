@@ -78,24 +78,11 @@ namespace detail {
  * visus::power_overwhelming::collector::for_all
  */
 visus::power_overwhelming::collector
-visus::power_overwhelming::collector::for_all(const wchar_t *output_path,
-        const sensor::microseconds_type sampling_interval) {
-    if (output_path == nullptr) {
-        throw std::invalid_argument("The output path of a collector cannot be "
-            "null.");
-    }
-
+visus::power_overwhelming::collector::for_all(
+        const collector_settings& settings) {
     auto retval = collector(new detail::collector_impl());
+    retval._impl->apply(settings);
     retval._impl->sensors = detail::get_all_sensors();
-#if defined(_WIN32)
-    retval._impl->stream = std::wofstream(output_path, std::ofstream::trunc);
-#else /* defined(_WIN32) */
-    auto p = convert_string<char>(output_path);
-    retval._impl->stream = std::wofstream(p, std::ofstream::trunc);
-#endif /* defined(_WIN32) */
-    retval._impl->sampling_interval = std::chrono::microseconds(
-        sampling_interval);
-
     return retval;
 }
 
@@ -217,9 +204,11 @@ visus::power_overwhelming::collector::operator bool(void) const noexcept {
  * visus::power_overwhelming::collector::prepare
  */
 visus::power_overwhelming::collector
-visus::power_overwhelming::collector::prepare(const std::size_t capacity) {
+visus::power_overwhelming::collector::prepare(
+        const collector_settings& settings, const std::size_t capacity) {
     auto retval = collector(new detail::collector_impl());
     retval._impl->sensors.reserve(capacity);
+    retval._impl->apply(settings);
     return retval;
 }
 
