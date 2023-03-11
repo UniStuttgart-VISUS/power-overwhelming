@@ -11,6 +11,7 @@
 #include "power_overwhelming/adl_sensor.h"
 #include "power_overwhelming/emi_sensor.h"
 #include "power_overwhelming/collector.h"
+#include "power_overwhelming/convert_string.h"
 #include "power_overwhelming/nvml_sensor.h"
 #include "power_overwhelming/hmc8015_sensor.h"
 #include "power_overwhelming/tinkerforge_sensor.h"
@@ -59,7 +60,7 @@ void visus::power_overwhelming::detail::collector_impl::apply(
 #if defined(_WIN32)
     this->stream = std::wofstream(output_path, std::ofstream::trunc);
 #else /* defined(_WIN32) */
-    auto p = convert_string<char>(output_path);
+    auto p = power_overwhelming::convert_string<char>(output_path);
     this->stream = std::wofstream(p, std::ofstream::trunc);
 #endif /* defined(_WIN32) */
 
