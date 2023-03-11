@@ -5,6 +5,7 @@
 
 #include "collector_impl.h"
 
+#include <cassert>
 #include <system_error>
 
 #include "power_overwhelming/adl_sensor.h"
@@ -44,6 +45,26 @@ visus::power_overwhelming::detail::collector_impl::collector_impl(void)
  */
 visus::power_overwhelming::detail::collector_impl::~collector_impl(void) {
     destroy_event(this->evt_write);
+}
+
+
+/*
+ * visus::power_overwhelming::detail::collector_impl::apply
+ */
+void visus::power_overwhelming::detail::collector_impl::apply(
+        const collector_settings& settings) {
+    assert(settings.output_path() != nullptr);
+    auto output_path = settings.output_path();
+
+#if defined(_WIN32)
+    this->stream = std::wofstream(output_path, std::ofstream::trunc);
+#else /* defined(_WIN32) */
+    auto p = convert_string<char>(output_path);
+    retval._impl->stream = std::wofstream(p, std::ofstream::trunc);
+#endif /* defined(_WIN32) */
+
+    this->sampling_interval = std::chrono::microseconds(
+        settings.sampling_interval());
 }
 
 

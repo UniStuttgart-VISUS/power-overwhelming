@@ -10,7 +10,7 @@
 template<class... TSensorLists>
 visus::power_overwhelming::collector
 visus::power_overwhelming::collector::from_sensor_lists(
-        TSensorLists&&... sensors) {
+        const collector_settings& settings, TSensorLists&&... sensors) {
     std::array<std::vector<std::unique_ptr<sensor>>,
         sizeof...(sensors)> instances = { move_to_heap(sensors)... };
 
@@ -20,7 +20,7 @@ visus::power_overwhelming::collector::from_sensor_lists(
         return std::size(v) + s;
     });
 
-    auto retval = collector::prepare(cnt);
+    auto retval = collector::prepare(settings, cnt);
 
     for (auto& l : instances) {
         for (auto& i : l) {
@@ -37,13 +37,14 @@ visus::power_overwhelming::collector::from_sensor_lists(
  */
 template<class... TSensors>
 visus::power_overwhelming::collector
-visus::power_overwhelming::collector::from_sensors(TSensors&&... sensors) {
+visus::power_overwhelming::collector::from_sensors(
+        const collector_settings& settings, TSensors&&... sensors) {
     std::array<std::unique_ptr<sensor>, sizeof...(sensors)> instances = {
         std::unique_ptr<sensor>(new typename std::decay<TSensors>::type(
             std::move(sensors)))...
     };
 
-    auto retval = collector::prepare(instances.size());
+    auto retval = collector::prepare(settings, instances.size());
 
     for (auto& i : instances) {
         // Note: We release this on purpose as the library and the calling code

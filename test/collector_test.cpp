@@ -35,7 +35,7 @@ namespace test {
             std::vector<nvml_sensor> nvml_sensors(nvml_sensor::for_all(nullptr, 0));
             nvml_sensor::for_all(nvml_sensors.data(), nvml_sensors.size());
 
-            auto collector = collector::from_sensor_lists(adl_sensors, emi_sensors, nvml_sensors);
+            auto collector = collector::from_sensor_lists(collector_settings(), adl_sensors, emi_sensors, nvml_sensors);
             Assert::IsTrue(bool(collector), L"New collector is valid.", LINE_INFO());
             Assert::IsTrue(std::none_of(adl_sensors.begin(), adl_sensors.end(),
                 [](const adl_sensor& s) {return bool(s); }), L"ADL sensors have been moved.", LINE_INFO());
@@ -51,7 +51,7 @@ namespace test {
                 adl_sensor::for_all(sensors.data(), sensors.size());
 
                 if (!sensors.empty()) {
-                    auto collector = collector::from_sensors(sensors[0]);
+                    auto collector = collector::from_sensors(collector_settings(), sensors[0]);
                     Assert::IsTrue(bool(collector), L"New collector is valid.", LINE_INFO());
                     Assert::IsFalse(bool(sensors[0]), L"Sensor has been moved.", LINE_INFO());
                 }
@@ -62,7 +62,7 @@ namespace test {
                 emi_sensor::for_all(sensors.data(), sensors.size());
 
                 if (!sensors.empty()) {
-                    auto collector = collector::from_sensors(sensors[0]);
+                    auto collector = collector::from_sensors(collector_settings(), sensors[0]);
                     Assert::IsTrue(bool(collector), L"New collector is valid.", LINE_INFO());
                     Assert::IsFalse(bool(sensors[0]), L"Sensor has been moved.", LINE_INFO());
                 }
@@ -73,7 +73,7 @@ namespace test {
                 nvml_sensor::for_all(sensors.data(), sensors.size());
 
                 if (!sensors.empty()) {
-                    auto collector = collector::from_sensors(sensors[0]);
+                    auto collector = collector::from_sensors(collector_settings(), sensors[0]);
                     Assert::IsTrue(bool(collector), L"New collector is valid.", LINE_INFO());
                     Assert::IsFalse(bool(sensors[0]), L"Sensor has been moved.", LINE_INFO());
                 }
