@@ -18,25 +18,28 @@ file(GLOB_RECURSE SourceFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.cpp")
 add_library(${PROJECT_NAME} SHARED ${HeaderFiles} ${SourceFiles})
 
 # Configure the compiler.
-add_definitions("-DUNICODE -D_UNICODE")
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+      UNICODE
+      _UNICODE)
 
 # In the test driver, the compiler needs to know about the private includes of
 # the library, so we add these manually.
 target_include_directories(${PROJECT_NAME}
-    PRIVATE ${AdlInclude}
-    PRIVATE ${NvmlInclude}
-    PRIVATE ${PowerOverwhelmingTestInclude}
-    PRIVATE ${TinkerforgeInclude})
+    PRIVATE ${PowerOverwhelmingTestInclude})
 
 #target_precompile_headers(${PROJECT_NAME} PRIVATE pch.h)
 
 # Configure the linker: besides the library to test, we also need to link the
 # Visual Studio testing framework.
 target_link_directories(${PROJECT_NAME} PRIVATE "${VcInstallDir}/Auxiliary/VS/UnitTest/lib/$(LibrariesArchitecture)")
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} PRIVATE
     Microsoft.VisualStudio.TestTools.CppUnitTestFramework.lib
     SetupApi.lib
     nlohmann_json
+    adl
+    nvml
+    tinkerforge
     power_overwhelming)
 
 # Grab the DLLs to be tested and copy them to the output directory such that

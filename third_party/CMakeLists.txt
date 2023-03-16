@@ -1,41 +1,39 @@
 ﻿# CMakeLists.txt
 # Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 
-find_package(Git REQUIRED)
-
 include(FetchContent)
 set(FETCHCONTENT_QUIET ON)
-mark_as_advanced(FETCHCONTENT_BASE_DIR
+mark_as_advanced(FORCE
+    FETCHCONTENT_BASE_DIR
     FETCHCONTENT_FULLY_DISCONNECTED
     FETCHCONTENT_QUIET
-    FETCHCONTENT_SOURCE_DIR_ADL
-    FETCHCONTENT_SOURCE_DIR_NLOHMANN_JSON
-    FETCHCONTENT_SOURCE_DIR_WIL
-    FETCHCONTENT_UPDATES_DISCONNECTED
-    FETCHCONTENT_UPDATES_DISCONNECTED_ADL
-    FETCHCONTENT_UPDATES_DISCONNECTED_NLOHMANN_JSON
-    FETCHCONTENT_UPDATES_DISCONNECTED_WIL)
+    FETCHCONTENT_UPDATES_DISCONNECTED)
 
 # AMD Display Library (this is a bit hacky ...)
 FetchContent_Declare(adl
-    GIT_REPOSITORY "https://github.com/GPUOpen-LibrariesAndSDKs/display-library.git"
-    GIT_TAG "17.0"
-    GIT_PROGRESS TRUE
+    URL "https://github.com/GPUOpen-LibrariesAndSDKs/display-library/archive/17.0.tar.gz"
 )
 FetchContent_MakeAvailable(adl)
-set(AdlDir ${adl_SOURCE_DIR})
-set(AdlInclude ${AdlDir}/include PARENT_SCOPE)
+add_library(adl INTERFACE IMPORTED GLOBAL)
+set_target_properties(adl PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${adl_SOURCE_DIR}/include")
+if (NOT WIN32)
+    set_target_properties(adl PROPERTIES INTERFACE_COMPILE_DEFINITIONS "LINUX")
+endif ()
+
+mark_as_advanced(FORCE
+    FETCHCONTENT_SOURCE_DIR_ADL
+    FETCHCONTENT_UPDATES_DISCONNECTED_ADL)
 
 # JSON library
 FetchContent_Declare(nlohmann_json
-    GIT_REPOSITORY "https://github.com/nlohmann/json.git"
-    GIT_TAG "v3.11.2"
-    GIT_PROGRESS TRUE
+    URL "https://github.com/nlohmann/json/archive/v3.11.2.tar.gz"
 )
-# Cf. https://stackoverflow.com/questions/3766740/overriding-a-default-option-value-in-cmake-from-a-parent-cmakelists-txt
-option(JSON_BuildTests OFF)
-set(JSON_BuildTests OFF)
-mark_as_advanced(JSON_BuildTests
+FetchContent_MakeAvailable(nlohmann_json)
+mark_as_advanced(FORCE
+    FETCHCONTENT_SOURCE_DIR_NLOHMANN_JSON
+    FETCHCONTENT_UPDATES_DISCONNECTED_NLOHMANN_JSON
+    JSON_BuildTests
     JSON_CI
     JSON_Diagnostics
     JSON_DisableEnumSerialization
@@ -45,11 +43,11 @@ mark_as_advanced(JSON_BuildTests
     JSON_LegacyDiscardedValueComparison
     JSON_MultipleHeaders
     JSON_SystemInclude)
-FetchContent_MakeAvailable(nlohmann_json)
 
 # NVIDIA Management Library
-set(NvmlDir ${CMAKE_CURRENT_SOURCE_DIR}/gdk_wddm_amd64_release/nvml)
-set(NvmlInclude ${NvmlDir}/include PARENT_SCOPE)
+add_library(nvml INTERFACE IMPORTED GLOBAL)
+set_target_properties(nvml PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/gdk_wddm_amd64_release/nvml/include")
 
 # Rohde & Schwarz HMC 8015
 set(RsHmc8015Dir ${CMAKE_CURRENT_SOURCE_DIR}/rshmc8015-cvi-1.0.3)
@@ -60,22 +58,30 @@ set(RsRtxDir ${CMAKE_CURRENT_SOURCE_DIR}/rsrtx-cvi-1.4.0)
 set(RsRtxInclude ${RsRtxDir} PARENT_SCOPE)
 
 # Tinkerforge API
-set(TinkerforgeDir ${CMAKE_CURRENT_SOURCE_DIR}/tinkerforge_c_bindings_2_1_32/source PARENT_SCOPE)
-set(TinkerforgeInclude ${CMAKE_CURRENT_SOURCE_DIR}/tinkerforge_c_bindings_2_1_32/source PARENT_SCOPE)
+set(TinkerforgeDir ${CMAKE_CURRENT_SOURCE_DIR}/tinkerforge_c_bindings_2_1_32/source)
+file(GLOB_RECURSE TinkerforgeHeaderFiles "${TinkerforgeDir}/*.h" "${TinkerforgeDir}/*.inl")
+file(GLOB_RECURSE TinkerforgeSourceFiles "${TinkerforgeDir}/*.c")
+add_library(tinkerforge STATIC ${TinkerforgeHeaderFiles} ${TinkerforgeSourceFiles})
+target_include_directories(tinkerforge PUBLIC
+    PUBLIC $<BUILD_INTERFACE:${TinkerforgeDir}>)
+source_group("Header Files\\Tinkerforge" FILES ${TinkerforgeHeaderFiles})
+source_group("Source Files\\Tinkerforge" FILES ${TinkerforgeSourceFiles})
 
 # Windows Implementation Library
 FetchContent_Declare(wil
-    GIT_REPOSITORY "https://github.com/microsoft/wil"
-    GIT_TAG "v1.0.230202.1"
-    GIT_PROGRESS TRUE
+    URL "https://github.com/microsoft/wil/archive/v1.0.230202.1.tar.gz"
 )
-option(FAST_BUILD OFF)
-set(FAST_BUILD OFF)
-mark_as_advanced(FAST_BUILD)
-option(WIL_BUILD_PACKAGING OFF)
-set(WIL_BUILD_PACKAGING OFF)
-mark_as_advanced(WIL_BUILD_PACKAGING)
-option(WIL_BUILD_TESTS OFF)
-set(WIL_BUILD_TESTS OFF)
-mark_as_advanced(WIL_BUILD_TESTS)
-FetchContent_MakeAvailable(wil)
+option(FAST_BUILD "" OFF)
+option(WIL_BUILD_PACKAGING "" OFF)
+option(WIL_BUILD_TESTS "" OFF)
+FetchContent_GetProperties(wil)
+if (NOT wil_POPULATED)
+    FetchContent_Populate(wil)
+    add_subdirectory(${wil_SOURCE_DIR} ${wil_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif ()
+mark_as_advanced(FORCE
+    FETCHCONTENT_SOURCE_DIR_WIL
+    FETCHCONTENT_UPDATES_DISCONNECTED_WIL
+    FAST_BUILD
+    WIL_BUILD_PACKAGING
+    WIL_BUILD_TESTS)
