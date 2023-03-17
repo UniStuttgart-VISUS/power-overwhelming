@@ -66,7 +66,7 @@ jobs:
     displayName: 'Publish artefact'
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: '$(Build.Repository.Name)'
+      artifactName: '$(Build.Repository.Name)-win-$(Build.SourceVersion)'
 
 
 - job: Linux
@@ -101,4 +101,4 @@ jobs:
     displayName: 'Publish artefact'
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: '$(Build.Repository.Name)'
+      artifactName: '$(Build.Repository.Name)-lin-$(Build.SourceVersion)'
