@@ -37,7 +37,7 @@ jobs:
     displayName: 'Configure'
     inputs:
       workingDirectory: '_build'
-      cmakeArgs: '.. -G"$(generator)" -A"$(buildPlatform)" -DPWROWG_BuildDemo=ON -DPWROWG_BuildStablePower=ON -DPWROWG_BuildWeb=ON'
+      cmakeArgs: '.. -G"$(generator)" -A"$(buildPlatform)" -DCMAKE_INSTALL_PREFIX="$(Build.ArtifactStagingDirectory)" -DPWROWG_BuildDemo=ON -DPWROWG_BuildStablePower=ON -DPWROWG_BuildWeb=ON'
   
 #  - task: NuGetCommand@2
 #    inputs:
@@ -56,6 +56,18 @@ jobs:
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
 
+  - task: CMake@1
+    displayName: 'Stage'
+    inputs:
+      workingDirectory: '_build'
+      cmakeArgs: '--install .'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artefact'
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: '$(Build.Repository.Name)-win-$(Build.SourceVersion)'
+
 
 - job: Linux
 
@@ -71,10 +83,22 @@ jobs:
     displayName: 'Configure'
     inputs:
       workingDirectory: '_build'
-      cmakeArgs: '.. -G"$(generator)" -DCMAKE_BUILD_TYPE="$(buildConfiguration)"  -DPWROWG_BuildDemo=ON'
+      cmakeArgs: '.. -G"$(generator)" -DCMAKE_BUILD_TYPE="$(buildConfiguration)" -DCMAKE_INSTALL_PREFIX="$(Build.ArtifactStagingDirectory)" -DPWROWG_BuildDemo=ON'
 
   - task: CMake@1
     displayName: 'Build'
     inputs:
       workingDirectory: '_build'
       cmakeArgs: '--build .'
+
+  - task: CMake@1
+    displayName: 'Stage'
+    inputs:
+      workingDirectory: '_build'
+      cmakeArgs: '--install .'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artefact'
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: '$(Build.Repository.Name)-lin-$(Build.SourceVersion)'
