@@ -1,18 +1,9 @@
 # CMakeLists.txt
 # Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 
-cmake_minimum_required(VERSION 3.15.0)
-
-
-project(power_overwhelming)
-
 # User-configurable options
-if (WIN32)
-    option(PWROWG_ForceDirect3D11 "Force GPU enumeration via Direct3D 11" OFF)
-    mark_as_advanced(PWROWG_ForceDirect3D11)
-else (WIN32)
-    set(PWROWG_ForceDirect3D11 OFF)
-endif (WIN32)
+cmake_dependent_option(PWROWG_ForceDirect3D11 "Force GPU enumeration via Direct3D 11" OFF WIN32 OFF)
+mark_as_advanced(FORCE PWROWG_ForceDirect3D11)
 
 option(PWROWG_WithAdl "Build support for the AMD Display Library" ON)
 
@@ -24,7 +15,7 @@ option(PWROWG_WithVisa "Build support for the VISA-based instruments" ON)
 
 if (PWROWG_WithVisa)
     find_package(VISA)
-endif (PWROWG_WithVisa)
+endif ()
 
 # Collect source files.
 set(IncludeDir "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -37,59 +28,68 @@ source_group("Header Files\\include" FILES  ${PublicHeaderFiles})
 source_group("Header Files\\src" FILES ${PrivateHeaderFiles})
 source_group("Source Files\\src" FILES ${SourceFiles})
 
-message(STATUS "Including Tinkerforge API from ${TinkerforgeDir} ...")
-file(GLOB_RECURSE TinkerforgeHeaderFiles "${TinkerforgeDir}/*.h" "${TinkerforgeDir}/*.inl")
-file(GLOB_RECURSE TinkerforgeSourceFiles "${TinkerforgeDir}/*.c")
-
-source_group("Header Files\\Tinkerforge" FILES ${TinkerforgeHeaderFiles})
-source_group("Source Files\\Tinkerforge" FILES ${TinkerforgeSourceFiles})
-
 # Define the output.
-add_library(${PROJECT_NAME} SHARED ${PublicHeaderFiles} ${PrivateHeaderFiles} ${SourceFiles} ${TinkerforgeHeaderFiles} ${TinkerforgeSourceFiles})
+add_library(${PROJECT_NAME} SHARED ${PublicHeaderFiles} ${PrivateHeaderFiles} ${SourceFiles})
 
 # Configure the compiler.
-add_definitions("-DPOWER_OVERWHELMING_EXPORTS")
-add_definitions("-DDUNICODE -D_UNICODE")
-
-if (NOT WIN32)
-    # Required for ADL to work.
-    add_definitions("-DLINUX")
-endif (NOT WIN32)
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+      POWER_OVERWHELMING_EXPORTS
+      UNICODE
+      _UNICODE)
 
 if (PWROWG_WithAdl)
-    add_definitions("-DPOWER_OVERWHELMING_WITH_ADL")
-endif (PWROWG_WithAdl)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_ADL)
+endif ()
 
 if (PWROWG_WithNvml)
-    add_definitions("-DPOWER_OVERWHELMING_WITH_NVML")
-endif (PWROWG_WithNvml)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_NVML)
+endif ()
 
 if (PWROWG_WithTimeSynchronisation)
-    add_definitions("-DPOWER_OVERWHELMING_WITH_TIME_SYNCHRONISER")
-endif (PWROWG_WithTimeSynchronisation)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_TIME_SYNCHRONISER)
+endif ()
 
 if (VISA_FOUND)
     add_definitions("-DPOWER_OVERWHELMING_WITH_VISA")
     target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
     target_link_libraries(${PROJECT_NAME})
-endif (VISA_FOUND)
+endif ()
 
 target_include_directories(${PROJECT_NAME}
-    PUBLIC $<BUILD_INTERFACE:${IncludeDir}>
-    PRIVATE $<BUILD_INTERFACE:${SourceDir}>
-    PRIVATE ${AdlInclude}
-    PRIVATE ${NvmlInclude}
-    PRIVATE ${TinkerforgeInclude})
+    PUBLIC
+      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+      $<BUILD_INTERFACE:${IncludeDir}>
+    PRIVATE
+      $<BUILD_INTERFACE:${SourceDir}>)
 
-# Configure the linker.
-target_link_libraries(${PROJECT_NAME}
-    nlohmann_json)
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    nlohmann_json
+    adl
+    nvml
+    tinkerforge)
 
 if (WIN32)
-    target_link_libraries(${PROJECT_NAME} Ws2_32)
-else (WIN32)
-    target_link_libraries(${PROJECT_NAME} dl pthread)
-endif (WIN32)
+    target_link_libraries(${PROJECT_NAME} PUBLIC Ws2_32)
+else ()
+    find_package(Threads REQUIRED)
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS} Threads::Threads)
+endif ()
 
 # Provide the internal API to the unit tests.
 set(PowerOverwhelmingTestInclude "${CMAKE_CURRENT_SOURCE_DIR}/src" PARENT_SCOPE)
+
+# Install
+install(TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}Targets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+install(DIRECTORY include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(EXPORT ${PROJECT_NAME}Targets
+    FILE ${PROJECT_NAME}Config.cmake
+    NAMESPACE ${PROJECT_NAME}::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
