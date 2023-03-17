@@ -62,6 +62,12 @@ jobs:
       workingDirectory: '_build'
       cmakeArgs: '--install .'
 
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artefact'
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: '$(Build.Repository.Name)'
+
 
 - job: Linux
 
@@ -77,10 +83,22 @@ jobs:
     displayName: 'Configure'
     inputs:
       workingDirectory: '_build'
-      cmakeArgs: '.. -G"$(generator)" -DCMAKE_BUILD_TYPE="$(buildConfiguration)"  -DPWROWG_BuildDemo=ON'
+      cmakeArgs: '.. -G"$(generator)" -DCMAKE_BUILD_TYPE="$(buildConfiguration)" -DCMAKE_INSTALL_PREFIX="$(Build.ArtifactStagingDirectory)" -DPWROWG_BuildDemo=ON'
 
   - task: CMake@1
     displayName: 'Build'
     inputs:
       workingDirectory: '_build'
       cmakeArgs: '--build .'
+
+  - task: CMake@1
+    displayName: 'Stage'
+    inputs:
+      workingDirectory: '_build'
+      cmakeArgs: '--install .'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artefact'
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: '$(Build.Repository.Name)'
