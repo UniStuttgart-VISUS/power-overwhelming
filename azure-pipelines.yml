@@ -37,11 +37,11 @@ jobs:
     displayName: 'Configure'
     inputs:
       workingDirectory: '_build'
-      cmakeArgs: '.. -G"$(generator)" -A"$(buildPlatform)"'
+      cmakeArgs: '.. -G"$(generator)" -A"$(buildPlatform) -DPWROWG_NoPackageRestore=ON"'
   
-  #- task: NuGetCommand@2
-  #  inputs:
-  #    restoreSolution: '$(solution)'
+  - task: NuGetCommand@2
+    inputs:
+      restoreSolution: '_build/*.sln'
   
   - task: VSBuild@1
     displayName: 'Build'

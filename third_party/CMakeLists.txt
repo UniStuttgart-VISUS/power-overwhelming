@@ -2,6 +2,7 @@
 # Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 
 include(FetchContent)
+
 set(FETCHCONTENT_QUIET ON)
 mark_as_advanced(FORCE
     FETCHCONTENT_BASE_DIR
@@ -64,8 +65,6 @@ file(GLOB_RECURSE TinkerforgeSourceFiles "${TinkerforgeDir}/*.c")
 add_library(tinkerforge STATIC ${TinkerforgeHeaderFiles} ${TinkerforgeSourceFiles})
 target_include_directories(tinkerforge PUBLIC
     PUBLIC $<BUILD_INTERFACE:${TinkerforgeDir}>)
-source_group("Header Files\\Tinkerforge" FILES ${TinkerforgeHeaderFiles})
-source_group("Source Files\\Tinkerforge" FILES ${TinkerforgeSourceFiles})
 
 # Windows Implementation Library
 FetchContent_Declare(wil

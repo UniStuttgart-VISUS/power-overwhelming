@@ -10,14 +10,12 @@ include(GNUInstallDirs)
 
 # User-configurable options.
 option(PWROWG_BuildDemo "Build demo programme" OFF)
-
 option(PWROWG_BuildDumpSensors "Build dump_sensors utility" ON)
-
 cmake_dependent_option(PWROWG_BuildStablePower "Build setstablepowerstate tool" OFF WIN32 OFF)
-
 cmake_dependent_option(PWROWG_BuildTests "Build unit tests." ON WIN32 OFF)
-
 cmake_dependent_option(PWROWG_BuildWeb "Build browser for benchmarking web-based visualisations" OFF WIN32 OFF)
+option(PWROWG_NoPackageRestore "Disable automatic restore of Nuget packages as pre-build step" OFF)
+mark_as_advanced(PWROWG_NoPackageRestore)
 
 # Dependencies
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/third_party)

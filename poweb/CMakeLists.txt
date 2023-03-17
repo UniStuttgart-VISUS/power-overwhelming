@@ -27,19 +27,23 @@ string(REGEX REPLACE ".*version=\"([0-9\\.]+)\".*" "\\1" WebView2Version ${Packa
 message(STATUS "WebView2 package has version ${WebView2Version}.")
 set(WebView2Dir ${CMAKE_BINARY_DIR}/packages/Microsoft.Web.WebView2.${WebView2Version}/build/native)
 
-string(TOLOWER ${CMAKE_MAKE_PROGRAM} MakeProgramme)
-if (${MakeProgramme} MATCHES ".*msbuild.*")
-    message(STATUS "Restoring Nuget packages ...")
-    message(STATUS "${CMAKE_MAKE_PROGRAM} -p:Platform=${CMAKE_VS_PLATFORM_NAME} -t:Restore -p:RestorePackagesConfig=true $(SolutionPath)")
-    add_custom_command(TARGET ${PROJECT_NAME}
-        PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${PackagesConfig} ${CMAKE_BINARY_DIR} && ${CMAKE_MAKE_PROGRAM} -p:Platform=${CMAKE_VS_PLATFORM_NAME} -t:Restore -p:RestorePackagesConfig=true $(SolutionPath))
-else ()
-    message(FATAL_ERROR "An MSBuild-based process is required to restore Nuget packages.")
-endif (${MakeProgramme} MATCHES ".*msbuild.*")
+# Unless disabled for CI, restore packages as pre-build step.
+if (NOT ${PWROWG_NoPackageRestore})
+    string(TOLOWER ${CMAKE_MAKE_PROGRAM} MakeProgramme)
+
+    if (${MakeProgramme} MATCHES ".*msbuild.*")
+        message(STATUS "Restoring Nuget packages ...")
+        message(STATUS "${CMAKE_MAKE_PROGRAM} -p:Platform=${CMAKE_VS_PLATFORM_NAME} -t:Restore -p:RestorePackagesConfig=true $(SolutionPath)")
+        add_custom_command(TARGET ${PROJECT_NAME}
+            PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy ${PackagesConfig} ${CMAKE_BINARY_DIR} && ${CMAKE_MAKE_PROGRAM} -p:Platform=${CMAKE_VS_PLATFORM_NAME} -t:Restore -p:RestorePackagesConfig=true $(SolutionPath))
+    else ()
+        message(FATAL_ERROR "An MSBuild-based process is required to restore Nuget packages.")
+    endif ()
+endif()
 
 # Configure the compiler.
-add_definitions("-DUNICODE -D_UNICODE")
+target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE _UNICODE)
 target_include_directories(${PROJECT_NAME} PRIVATE ${WebView2Dir}/include)
 
 #WebView2LoaderPreference Static

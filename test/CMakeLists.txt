@@ -8,7 +8,11 @@ project(test)
 
 # First-class hack adapted from https://jslav.livejournal.com/13059.html to get
 # access to the VC installation directory.
-string(REGEX REPLACE "/MSBuild.+" "/VC" VcInstallDir ${CMAKE_MAKE_PROGRAM})
+string(TOLOWER ${CMAKE_MAKE_PROGRAM} MakeProgramme)
+if (NOT ${MakeProgramme} MATCHES "/msbuild.+")
+    message(FATAL_ERROR "An MSBuild-based process is required for building the tests.")
+endif ()
+string(REGEX REPLACE "/msbuild.+" "/VC" VcInstallDir ${MakeProgramme})
 
 # Collect source files.
 file(GLOB_RECURSE HeaderFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.h" "*.inl")
@@ -18,15 +22,11 @@ file(GLOB_RECURSE SourceFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.cpp")
 add_library(${PROJECT_NAME} SHARED ${HeaderFiles} ${SourceFiles})
 
 # Configure the compiler.
-target_compile_definitions(${PROJECT_NAME}
-    PRIVATE
-      UNICODE
-      _UNICODE)
+target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE _UNICODE)
 
 # In the test driver, the compiler needs to know about the private includes of
 # the library, so we add these manually.
-target_include_directories(${PROJECT_NAME}
-    PRIVATE ${PowerOverwhelmingTestInclude})
+target_include_directories(${PROJECT_NAME} PRIVATE ${PowerOverwhelmingTestInclude})
 
 #target_precompile_headers(${PROJECT_NAME} PRIVATE pch.h)
 
