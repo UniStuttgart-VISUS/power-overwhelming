@@ -37,7 +37,7 @@ jobs:
     displayName: 'Configure'
     inputs:
       workingDirectory: '_build'
-      cmakeArgs: '.. -G"$(generator)" -A"$(buildPlatform) -DPWROWG_NoPackageRestore=ON"'
+      cmakeArgs: '.. -G"$(generator)" -A"$(buildPlatform)" -DPWROWG_NoPackageRestore=ON'
   
   - task: NuGetCommand@2
     inputs:
