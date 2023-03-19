@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "power_overwhelming/adl_sensor_source.h"
+#include "power_overwhelming/convert_string.h"
 
 #include "adl_exception.h"
 #include "adl_scope.h"
@@ -266,6 +267,17 @@ visus::power_overwhelming::adl_sensor::from_udid(_In_z_ const char *udid,
 
 
 /*
+ * visus::power_overwhelming::adl_sensor::from_udid
+ */
+visus::power_overwhelming::adl_sensor
+visus::power_overwhelming::adl_sensor::from_udid(_In_z_ const wchar_t *udid,
+        _In_ const adl_sensor_source source) {
+    auto u = convert_string<char>(udid);
+    return from_udid(u.c_str(), source);
+}
+
+
+/*
  * visus::power_overwhelming::adl_sensor::adl_sensor
  */
 visus::power_overwhelming::adl_sensor::adl_sensor(void)
@@ -283,7 +295,7 @@ visus::power_overwhelming::adl_sensor::~adl_sensor(void) {
 /*
  * visus::power_overwhelming::adl_sensor::name
  */
-_Ret_opt_z_ const wchar_t *visus::power_overwhelming::adl_sensor::name(
+_Ret_maybenull_z_ const wchar_t *visus::power_overwhelming::adl_sensor::name(
         void) const noexcept {
     if (this->_impl == nullptr) {
         return nullptr;
@@ -398,7 +410,7 @@ visus::power_overwhelming::adl_sensor::source(void) const {
 /*
  * visus::power_overwhelming::adl_sensor::udid
  */
-_Ret_opt_z_ const char *visus::power_overwhelming::adl_sensor::udid(
+_Ret_maybenull_z_ const char *visus::power_overwhelming::adl_sensor::udid(
         void) const noexcept {
     if (this->_impl == nullptr) {
         return nullptr;

@@ -48,7 +48,7 @@ namespace power_overwhelming {
         /// <returns>The implementation-defined, human-readable name of the
         /// sensor. This value may be <c>nullptr</c> if the sensor has been
         /// disposed.</returns>
-        virtual _Ret_opt_z_ const wchar_t *name(void) const noexcept = 0;
+        virtual _Ret_maybenull_z_ const wchar_t *name(void) const noexcept = 0;
 
         /// <summary>
         /// Sample the sensor using a timestamp with the specified resolution.

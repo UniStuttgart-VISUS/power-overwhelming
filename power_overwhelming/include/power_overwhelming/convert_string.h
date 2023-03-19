@@ -17,12 +17,16 @@ namespace power_overwhelming {
 namespace detail {
 
     extern std::size_t POWER_OVERWHELMING_API convert_string(
-        char *output, const std::size_t cnt_output,
-        const wchar_t *input, const std::size_t cnt_input);
+        _Out_writes_z_(cnt_coutput) char *output,
+        _In_ const std::size_t cnt_output,
+        _In_z_ const wchar_t *input,
+        _In_ const std::size_t cnt_input);
 
     extern std::size_t POWER_OVERWHELMING_API convert_string(
-        wchar_t *output, const std::size_t cnt_output,
-        const char *input, const std::size_t cnt_input);
+        _Out_writes_z_(cnt_coutput) wchar_t *output,
+        _In_ const std::size_t cnt_output,
+        _In_z_ const char *input,
+        _In_ const std::size_t cnt_input);
 }
 
     /// <summary>
@@ -39,7 +43,7 @@ namespace detail {
     template<class TOutput, class TInput>
     typename std::enable_if<std::is_same<TOutput, TInput>::value,
         std::basic_string<TOutput>>::type
-    convert_string(const TInput *str);
+    convert_string(_In_opt_z_ const TInput *str);
 
     /// <summary>
     /// Converts a string to the given character set.
@@ -55,7 +59,7 @@ namespace detail {
     template<class TOutput, class TInput>
     typename std::enable_if<!std::is_same<TOutput, TInput>::value,
         std::basic_string<TOutput>>::type
-    convert_string(const TInput *str);
+    convert_string(_In_opt_z_ const TInput *str);
 
     /// <summary>
     /// Converts a string to the given character set.

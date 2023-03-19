@@ -71,6 +71,22 @@ namespace power_overwhelming {
             _In_ const adl_sensor_source source);
 
         /// <summary>
+        /// Create a new instance for the unique device ID.
+        /// </summary>
+        /// <param name="udid">The unique device ID to create the sensor for.
+        /// </param>
+        /// <param name="source">The sensor source to retrieve. If the source
+        /// is not supported, the method will fail.</param>
+        /// <returns></returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="udid" />
+        /// is <c>nullptr</c> or if it did not match exactly one device.
+        /// </exception>
+        /// <exception cref="adl_exception">If the specified device was not
+        /// found, or another error occurred in ADL.</exception>
+        static adl_sensor from_udid(_In_z_ const wchar_t *udid,
+            _In_ const adl_sensor_source source);
+
+        /// <summary>
         /// Initialises a new instance.
         /// </summary>
         /// <exception cref="std::bad_alloc">If the memory for the sensor state
@@ -115,7 +131,8 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>The implementation-defined, human-readable name of the
         /// sensor.</returns>
-        virtual _Ret_opt_z_ const wchar_t *name(void) const noexcept override;
+        virtual _Ret_maybenull_z_ const wchar_t *name(
+            void) const noexcept override;
 
         /// <summary>
         /// Sample the sensor.
@@ -210,7 +227,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name=""></param>
         /// <returns></returns>
-        _Ret_opt_z_ const char *udid(void) const noexcept;
+        _Ret_maybenull_z_ const char *udid(void) const noexcept;
 
         /// <summary>
         /// Move assignment.
