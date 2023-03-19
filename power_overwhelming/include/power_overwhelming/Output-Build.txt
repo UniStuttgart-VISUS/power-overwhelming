@@ -1,8 +1,0 @@
-﻿Build started...
-1>------ Build started: Project: power_overwhelming, Configuration: Debug x64 ------
-1>collector.cpp
-1>computer_name.cpp
-1>Generating Code...
-1>power_overwhelming.vcxproj -> C:\Users\mueller\source\repos\power-overwhelming\_build64\power_overwhelming\Debug\power_overwhelming.dll
-2>------ Build started: Project: test, Configuration: Debug x64 ------
-2>adl_test.cpp
