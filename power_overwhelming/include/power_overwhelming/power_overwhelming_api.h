@@ -17,3 +17,7 @@
 #define POWER_OVERWHELMING_API
 
 #endif /* defined(WIN32) */
+
+
+// Empty SAL annotations for rancid platforms.
+#include "salieri.h"
