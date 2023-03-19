@@ -48,35 +48,45 @@ namespace power_overwhelming {
         /// Initialises a new instance.
         /// </summary>
         /// <param name="sensor">The name of the sensor from which the
-        /// measurement originates.</param>
-        /// <param name="timestamp"></param>
-        /// <param name="voltage"></param>
-        /// <param name="current"></param>
-        /// <param name="power"></param>
-        measurement(const char_type *sensor, const timestamp_type timestamp,
-            const value_type voltage, const value_type current,
-            const value_type power);
+        /// measurement originates, which must be a non-<c>nullptr</c> string.
+        /// </param>
+        /// <param name="timestamp">The timestamp of the sensor. The unit is
+        /// defined by the configuration of the sensor.</param>
+        /// <param name="voltage">The measured voltage in Volts.</param>
+        /// <param name="current">The measured current in Amperes.</param>
+        /// <param name="power">The measured power in Watts.</param>
+        measurement(_In_z_ const char_type *sensor,
+            _In_ const timestamp_type timestamp,
+            _In_ const value_type voltage,
+            _In_ const value_type current,
+            _In_ const value_type power);
 
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
         /// <param name="sensor">The name of the sensor from which the
         /// measurement originates.</param>
-        /// <param name="timestamp"></param>
-        /// <param name="voltage"></param>
-        /// <param name="current"></param>
-        measurement(const char_type *sensor, const timestamp_type timestamp,
-            const value_type voltage, const value_type current);
+        /// <param name="timestamp">The timestamp of the sensor. The unit is
+        /// defined by the configuration of the sensor.</param>
+        /// <param name="voltage">The measured voltage in Volts.</param>
+        /// <param name="current">The measured current in Amperes.</param>
+        measurement(_In_z_ const char_type *sensor,
+            _In_ const timestamp_type timestamp,
+            _In_ const value_type voltage,
+            _In_ const value_type current);
 
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
         /// <param name="sensor">The name of the sensor from which the
         /// measurement originates.</param>
-        /// <param name="timestamp"></param>
+        /// <param name="timestamp">The timestamp of the sensor. The unit is
+        /// defined by the configuration of the sensor.</param>
         /// <param name="power"></param>
-        measurement(const char_type *sensor, const timestamp_type timestamp,
-            const value_type power);
+        /// <param name="power">The measured power in Watts.</param>
+        measurement(_In_z_ const char_type *sensor,
+            _In_ const timestamp_type timestamp,
+            _In_ const value_type power);
 
         /// <summary>
         /// Clone <paramref name="rhs" />.
@@ -128,7 +138,7 @@ namespace power_overwhelming {
         /// Gets the name of the sensor the measurement comes from.
         /// </summary>
         /// <returns></returns>
-        inline const char_type *sensor(void) const noexcept {
+        inline _Ret_z_ const char_type *sensor(void) const noexcept {
             return this->_sensor;
         }
 
@@ -184,7 +194,7 @@ namespace power_overwhelming {
     /// A callback for <see cref="measurement" />s that are received
     /// asynchronously.
     /// </summary>
-    typedef void (*measurement_callback)(const measurement&, void *);
+    typedef void (*measurement_callback)(const measurement&, _In_opt_ void *);
 
 } /* namespace power_overwhelming */
 } /* namespace visus */

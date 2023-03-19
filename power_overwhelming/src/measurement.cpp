@@ -1,7 +1,7 @@
-// <copyright file="measurement.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="measurement.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/measurement.h"
 
@@ -20,9 +20,12 @@ visus::power_overwhelming::measurement::invalid_value
 /*
  * visus::power_overwhelming::measurement::measurement
  */
-visus::power_overwhelming::measurement::measurement(const char_type *sensor,
-        const timestamp_type timestamp, const value_type voltage,
-        const value_type current, const value_type power) 
+visus::power_overwhelming::measurement::measurement(
+        _In_z_ const char_type *sensor,
+        _In_ const timestamp_type timestamp,
+        _In_ const value_type voltage,
+        _In_ const value_type current,
+        _In_ const value_type power)
     :_current(current), _power(power), _sensor(nullptr),
         _timestamp(timestamp), _voltage(voltage) {
     if (sensor == nullptr) {
@@ -39,9 +42,11 @@ visus::power_overwhelming::measurement::measurement(const char_type *sensor,
 /*
  * visus::power_overwhelming::measurement::measurement
  */
-visus::power_overwhelming::measurement::measurement(const char_type *sensor,
-        const timestamp_type timestamp, const value_type voltage,
-        const value_type current) 
+visus::power_overwhelming::measurement::measurement(
+        _In_z_ const char_type *sensor,
+        _In_ const timestamp_type timestamp,
+        _In_ const value_type voltage,
+        _In_ const value_type current)
     :_current(current), _power(invalid_value), _sensor(nullptr),
         _timestamp(timestamp), _voltage(voltage) {
     if (sensor == nullptr) {
@@ -66,8 +71,10 @@ visus::power_overwhelming::measurement::measurement(const char_type *sensor,
 /*
  * visus::power_overwhelming::measurement::measurement
  */
-visus::power_overwhelming::measurement::measurement(const char_type *sensor,
-        const timestamp_type timestamp, const value_type power)
+visus::power_overwhelming::measurement::measurement(
+        _In_z_ const char_type *sensor,
+        _In_ const timestamp_type timestamp,
+        _In_z_ const value_type power)
     :_current(invalid_value), _power(power), _sensor(nullptr),
         _timestamp(timestamp), _voltage(invalid_value) {
     if (sensor == nullptr) {
