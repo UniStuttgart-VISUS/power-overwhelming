@@ -17,13 +17,13 @@ namespace power_overwhelming {
 namespace detail {
 
     extern std::size_t POWER_OVERWHELMING_API convert_string(
-        _Out_writes_z_(cnt_coutput) char *output,
+        _Out_writes_opt_z_(cnt_coutput) char *output,
         _In_ const std::size_t cnt_output,
         _In_z_ const wchar_t *input,
         _In_ const std::size_t cnt_input);
 
     extern std::size_t POWER_OVERWHELMING_API convert_string(
-        _Out_writes_z_(cnt_coutput) wchar_t *output,
+        _Out_writes_opt_z_(cnt_coutput) wchar_t *output,
         _In_ const std::size_t cnt_output,
         _In_z_ const char *input,
         _In_ const std::size_t cnt_input);
