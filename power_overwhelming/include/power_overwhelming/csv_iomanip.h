@@ -34,7 +34,7 @@ namespace detail {
         /// Initialises a new instance.
         /// </summary>
         /// <param name="value">The character to be embedded in the stream.</param>
-        inline csv_char_value(const TChar value) : value(value) { }
+        inline csv_char_value(_In_ const TChar value) : value(value) { }
     };
 
     /// <summary>
@@ -47,7 +47,8 @@ namespace detail {
         /// Initialises a new instance.
         /// </summary>
         /// <param name="value">The character to be used as delimiter.</param>
-        inline csv_delimiter(const TChar value) : csv_char_value<TChar>(value) { }
+        inline csv_delimiter(_In_ const TChar value)
+            : csv_char_value<TChar>(value) { }
     };
 
     /// <summary>
@@ -60,7 +61,8 @@ namespace detail {
         /// Initialises a new instance.
         /// </summary>
         /// <param name="value">The character to be used as quote.</param>
-        inline csv_quote(const TChar value) : csv_char_value<TChar>(value) { }
+        inline csv_quote(_In_ const TChar value)
+            : csv_char_value<TChar>(value) { }
     };
 
     /// <summary>
@@ -92,7 +94,7 @@ namespace detail {
     /// </summary>
     /// <param name="stream">The stream to manipulate.</param>
     /// <returns><paramref name="stream" /></returns>
-    inline std::ios_base& csvdata(std::ios_base& stream) {
+    inline std::ios_base& csvdata(_In_ std::ios_base& stream) {
         stream.iword(detail::io_index_header()) = static_cast<long>(0);
         return stream;
     }
@@ -103,7 +105,7 @@ namespace detail {
     /// </summary>
     /// <param name="stream">The stream to manipulate.</param>
     /// <returns><paramref name="stream" /></returns>
-    inline std::ios_base& csvheader(std::ios_base &stream) {
+    inline std::ios_base& csvheader(_In_ std::ios_base& stream) {
         stream.iword(detail::io_index_header()) = static_cast<long>(1);
         return stream;
     }
@@ -118,7 +120,7 @@ namespace detail {
     /// </remarks>
     /// <param name="stream">The stream to manipulate.</param>
     /// <returns><paramref name="stream" /></returns>
-    inline std::ios_base& csvnoquote(std::ios_base& stream) {
+    inline std::ios_base& csvnoquote(_In_ std::ios_base& stream) {
         stream.iword(detail::io_index_quote()) = static_cast<long>(0);
         return stream;
     }
@@ -138,7 +140,7 @@ namespace detail {
     /// <returns><paramref name="stream" /></returns>
     template<class TChar, class TTraits>
     inline std::basic_ostream<TChar, TTraits>& csvquote(
-            std::basic_ostream<TChar, TTraits>& stream) {
+            _In_ std::basic_ostream<TChar, TTraits>& stream) {
         return stream << setcsvquote(POWER_OVERWHELMING_TPL_LITERAL(
             TChar, '"'));
     }
@@ -156,7 +158,7 @@ namespace detail {
     /// <param name="stream">The stream to retrieve the delimiter for.</param>
     /// <returns>The configured CSV delimiter for the given stream.</returns>
     template<class TChar, class TTraits> inline TChar getcsvdelimiter(
-            std::basic_ostream<TChar, TTraits>& stream) {
+            _In_ std::basic_ostream<TChar, TTraits>& stream) {
         auto retval = stream.iword(detail::io_index_delimiter());
         return (retval > 0)
             ? static_cast<TChar>(retval)
@@ -174,7 +176,7 @@ namespace detail {
     /// <returns>The configured CSV quote character for the given stream. If
     /// this value is zero, no quotes will be added.</returns>
     template<class TChar, class TTraits> inline TChar getcsvquote(
-            std::basic_ostream<TChar, TTraits>& stream) {
+            _In_ std::basic_ostream<TChar, TTraits>& stream) {
         return static_cast<TChar>(stream.iword(detail::io_index_quote()));
     }
 
@@ -187,7 +189,8 @@ namespace detail {
     /// <param name="delimiter">The delimiter to be set.</param>
     /// <returns>A proxy that can be piped into a stream.</returns>
     template<class TChar>
-    inline detail::csv_delimiter<TChar> setcsvdelimiter(const TChar delimiter) {
+    inline detail::csv_delimiter<TChar> setcsvdelimiter(
+            _In_ const TChar delimiter) {
         return detail::csv_delimiter<TChar>(delimiter);
     }
 
@@ -200,7 +203,7 @@ namespace detail {
     /// <param name="quote">The quote character to be set.</param>
     /// <returns>A proxy that can be piped into a stream.</returns>
     template<class TChar>
-    inline detail::csv_quote<TChar> setcsvquote(const TChar quote) {
+    inline detail::csv_quote<TChar> setcsvquote(_In_ const TChar quote) {
         return detail::csv_quote<TChar>(quote);
     }
 
@@ -223,8 +226,8 @@ namespace std {
     /// <returns><paramref name="lhs" /></returns>
     template<class TChar, class TTraits>
     inline std::basic_ostream<TChar, TTraits>& operator <<(
-            std::basic_ostream<TChar, TTraits>& lhs,
-            const visus::power_overwhelming::detail::csv_delimiter<TChar> rhs) {
+            _In_ std::basic_ostream<TChar, TTraits>& lhs,
+            _In_ const visus::power_overwhelming::detail::csv_delimiter<TChar> rhs) {
         lhs.iword(visus::power_overwhelming::detail::io_index_delimiter())
             = rhs.value;
         return lhs;
@@ -244,8 +247,8 @@ namespace std {
     /// <returns><paramref name="lhs" /></returns>
     template<class TChar, class TTraits>
     inline std::basic_ostream<TChar, TTraits>& operator <<(
-            std::basic_ostream<TChar, TTraits>& lhs,
-            const visus::power_overwhelming::detail::csv_quote<TChar> rhs) {
+            _In_ std::basic_ostream<TChar, TTraits>& lhs,
+            _In_ const visus::power_overwhelming::detail::csv_quote<TChar> rhs) {
         lhs.iword(visus::power_overwhelming::detail::io_index_quote()) = rhs.value;
         return lhs;
     }

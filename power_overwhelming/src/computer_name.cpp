@@ -83,8 +83,9 @@ namespace detail {
 /*
  * visus::power_overwhelming::computer_name
  */
-std::size_t visus::power_overwhelming::computer_name(char *dst,
-        const std::size_t cnt) {
+std::size_t visus::power_overwhelming::computer_name(
+        _Out_writes_opt_z_(cnt) char *dst,
+        _In_ const std::size_t cnt) {
 #if defined(_WIN32)
     return detail::computer_name(dst, cnt);
 
@@ -108,8 +109,9 @@ std::size_t visus::power_overwhelming::computer_name(char *dst,
 /*
  * visus::power_overwhelming::computer_name
  */
-std::size_t visus::power_overwhelming::computer_name(wchar_t *dst,
-        const std::size_t cnt) {
+std::size_t visus::power_overwhelming::computer_name(
+        _Out_writes_opt_z_(cnt) wchar_t *dst,
+        _In_ const std::size_t cnt) {
 #if defined(_WIN32)
     return detail::computer_name(dst, cnt);
 

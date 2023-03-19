@@ -321,6 +321,7 @@ visus::power_overwhelming::hmc8015_sensor::sample(
     auto c = static_cast<measurement::value_type>(::atof(tokens[1].c_str()));
     auto p = static_cast<measurement::value_type>(::atof(tokens[2].c_str()));
 
+    assert(this->name() != nullptr);
     return measurement(this->name(), timestamp, v, c, p);
 }
 

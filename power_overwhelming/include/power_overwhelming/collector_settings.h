@@ -48,7 +48,7 @@ namespace power_overwhelming {
         /// Clone <paramref name="rhs" />.
         /// </summary>
         /// <param name="rhs">The object to be cloned.</param>
-        collector_settings(const collector_settings& rhs);
+        collector_settings(_In_ const collector_settings& rhs);
 
         /// <summary>
         /// Finalises the instance.
@@ -60,7 +60,7 @@ namespace power_overwhelming {
         /// output to.
         /// </summary>
         /// <returns>The path to the output file.</returns>
-        inline const wchar_t *output_path(void) const noexcept {
+        inline _Ret_z_ const wchar_t *output_path(void) const noexcept {
             return this->_output_path;
         }
 
@@ -72,7 +72,7 @@ namespace power_overwhelming {
         /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::invalid_argument">If
         /// <paramref name="output_path" /> is <c>nullptr</c>.</exception>
-        collector_settings& output_path(const wchar_t *path);
+        collector_settings& output_path(_In_z_ const wchar_t *path);
 
         /// <summary>
         /// Gets the time interval in which the collector should sample the
@@ -89,14 +89,14 @@ namespace power_overwhelming {
         /// <param name="interval">The sampling interval.</param>
         /// <returns><c>*this</c>.</returns>
         collector_settings& sampling_interval(
-            const sampling_interval_type interval);
+            _In_ const sampling_interval_type interval);
 
         /// <summary>
         /// Assignment.
         /// </summary>
         /// <param name="rhs">The right hand side operand.</param>
         /// <returns><c>*this</c>.</returns>
-        collector_settings& operator =(const collector_settings& rhs);
+        collector_settings& operator =(_In_ const collector_settings& rhs);
 
     private:
 

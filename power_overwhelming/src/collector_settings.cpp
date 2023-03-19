@@ -1,7 +1,7 @@
-// <copyright file="collector_settings.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="collector_settings.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/collector_settings.h"
 
@@ -31,7 +31,7 @@ visus::power_overwhelming::collector_settings::collector_settings(void)
  * visus::power_overwhelming::collector_settings::collector_settings
  */
 visus::power_overwhelming::collector_settings::collector_settings(
-        const collector_settings& rhs) : _output_path(nullptr) {
+        _In_ const collector_settings& rhs) : _output_path(nullptr) {
     *this = rhs;
 }
 
@@ -51,7 +51,7 @@ visus::power_overwhelming::collector_settings::~collector_settings(void) {
  */
 visus::power_overwhelming::collector_settings&
 visus::power_overwhelming::collector_settings::output_path(
-        const wchar_t *path) {
+        _In_z_ const wchar_t *path) {
     if (path == nullptr) {
         throw std::invalid_argument("The output path must be a valid string.");
     }
@@ -75,7 +75,7 @@ visus::power_overwhelming::collector_settings::output_path(
  */
 visus::power_overwhelming::collector_settings&
 visus::power_overwhelming::collector_settings::sampling_interval(
-        const sampling_interval_type interval) {
+        _In_ const sampling_interval_type interval) {
     this->_sampling_interval = interval;
     return *this;
 }
@@ -86,7 +86,7 @@ visus::power_overwhelming::collector_settings::sampling_interval(
  */
 visus::power_overwhelming::collector_settings&
 visus::power_overwhelming::collector_settings::operator =(
-        const collector_settings& rhs) {
+        _In_ const collector_settings& rhs) {
     if (this != std::addressof(rhs)) {
         this->output_path(rhs._output_path);
         this->sampling_interval(rhs._sampling_interval);

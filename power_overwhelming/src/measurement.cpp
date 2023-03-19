@@ -74,7 +74,7 @@ visus::power_overwhelming::measurement::measurement(
 visus::power_overwhelming::measurement::measurement(
         _In_z_ const char_type *sensor,
         _In_ const timestamp_type timestamp,
-        _In_z_ const value_type power)
+        _In_ const value_type power)
     :_current(invalid_value), _power(power), _sensor(nullptr),
         _timestamp(timestamp), _voltage(invalid_value) {
     if (sensor == nullptr) {

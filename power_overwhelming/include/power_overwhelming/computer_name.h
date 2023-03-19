@@ -32,8 +32,9 @@ namespace power_overwhelming {
     /// store the computer name, including the terminating null.</returns>
     /// <exception cref="std::system_error">In case the operation failed.
     /// </exception>
-    std::size_t POWER_OVERWHELMING_API computer_name(char *dst,
-        const std::size_t cnt);
+    std::size_t POWER_OVERWHELMING_API computer_name(
+        _Out_writes_opt_z_(cnt) char *dst,
+        _In_ const std::size_t cnt);
 
     /// <summary>
     /// Answer the name of the computer the calling code is running on.
@@ -52,8 +53,9 @@ namespace power_overwhelming {
     /// store the computer name, including the terminating null.</returns>
     /// <exception cref="std::system_error">In case the operation failed.
     /// </exception>
-    std::size_t POWER_OVERWHELMING_API computer_name(wchar_t *dst,
-        const std::size_t cnt);
+    std::size_t POWER_OVERWHELMING_API computer_name(
+        _Out_writes_opt_z_(cnt) wchar_t *dst,
+        _In_ const std::size_t cnt);
 
     /// <summary>
     /// Answer the name of the computer the calling code is running on.

@@ -17,9 +17,9 @@
  * visus::power_overwhelming::detail::convert_string
  */
 std::size_t visus::power_overwhelming::detail::convert_string(
-        _Out_writes_opt_z_(cnt_coutput) char *output,
+        _Out_writes_opt_z_(cnt_output) char *output,
         _In_ const std::size_t cnt_output,
-        _In_z_ const wchar_t *input,
+        _In_reads_or_z_(cnt_input) const wchar_t *input,
         _In_ const std::size_t cnt_input) {
     auto state = std::mbstate_t();
 
@@ -55,9 +55,9 @@ std::size_t visus::power_overwhelming::detail::convert_string(
  * visus::power_overwhelming::detail::convert_string
  */
 std::size_t visus::power_overwhelming::detail::convert_string(
-        _Out_writes_opt_z_(cnt_coutput) wchar_t *output,
+        _Out_writes_opt_z_(cnt_output) wchar_t *output,
         _In_ const std::size_t cnt_output,
-        _In_z_ const char *input,
+        _In_reads_or_z_(cnt_input) const char *input,
         _In_ const std::size_t cnt_input) {
     auto state = std::mbstate_t();
 
