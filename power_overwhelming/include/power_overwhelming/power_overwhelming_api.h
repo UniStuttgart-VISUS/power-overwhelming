@@ -19,5 +19,9 @@
 #endif /* defined(WIN32) */
 
 
+#if defined(_WIN32)
+#include <sal.h>
+#else /* defined(_WIN32) */
 // Empty SAL annotations for rancid platforms.
 #include "salieri.h"
+#endif /* defined(_WIN32) */

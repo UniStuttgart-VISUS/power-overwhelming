@@ -10,7 +10,8 @@
 template<class... TSensorLists>
 visus::power_overwhelming::collector
 visus::power_overwhelming::collector::from_sensor_lists(
-        const collector_settings& settings, TSensorLists&&... sensors) {
+        _In_ const collector_settings& settings,
+        _In_ TSensorLists&&... sensors) {
     std::array<std::vector<std::unique_ptr<sensor>>,
         sizeof...(sensors)> instances = { move_to_heap(sensors)... };
     typedef typename decltype(instances)::value_type sensor_type;
@@ -39,7 +40,8 @@ visus::power_overwhelming::collector::from_sensor_lists(
 template<class... TSensors>
 visus::power_overwhelming::collector
 visus::power_overwhelming::collector::from_sensors(
-        const collector_settings& settings, TSensors&&... sensors) {
+        _In_ const collector_settings& settings,
+        _In_ TSensors&&... sensors) {
     std::array<std::unique_ptr<sensor>, sizeof...(sensors)> instances = {
         std::unique_ptr<sensor>(new typename std::decay<TSensors>::type(
             std::move(sensors)))...
@@ -64,7 +66,7 @@ visus::power_overwhelming::collector::from_sensors(
  */
 template<class TSensorList>
 std::vector<std::unique_ptr<visus::power_overwhelming::sensor>>
-visus::power_overwhelming::collector::move_to_heap(TSensorList&& sensors) {
+visus::power_overwhelming::collector::move_to_heap(_In_ TSensorList&& sensors) {
     typedef typename std::decay<decltype(sensors.front())>::type sensor_type;
 
     decltype(move_to_heap(sensors)) retval;
