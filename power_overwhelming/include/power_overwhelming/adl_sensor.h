@@ -37,8 +37,9 @@ namespace power_overwhelming {
         /// of the size of the output array. If this number is larger than
         /// <paramref name="cntSensors" />, not all sensors have been returned.
         /// </returns>
-        static std::size_t for_all(adl_sensor *outSensors,
-            const std::size_t cntSensors);
+        static std::size_t for_all(
+            _Out_writes_all_(cntSensors) adl_sensor *outSensors,
+            _In_ const std::size_t cntSensors);
 
         /// <summary>
         /// Create a new instance for the specified adapter index.
@@ -50,8 +51,8 @@ namespace power_overwhelming {
         /// <returns></returns>
         /// <exception cref="adl_exception">If the specified device was not
         /// found, or another error occurred in ADL.</exception>
-        static adl_sensor from_index(const int index,
-            const adl_sensor_source source);
+        static adl_sensor from_index(_In_ const int index,
+            _In_ const adl_sensor_source source);
 
         /// <summary>
         /// Create a new instance for the unique device ID.
@@ -66,8 +67,8 @@ namespace power_overwhelming {
         /// </exception>
         /// <exception cref="adl_exception">If the specified device was not
         /// found, or another error occurred in ADL.</exception>
-        static adl_sensor from_udid(const char *udid,
-            const adl_sensor_source source);
+        static adl_sensor from_udid(_In_z_ const char *udid,
+            _In_ const adl_sensor_source source);
 
         /// <summary>
         /// Initialises a new instance.
@@ -85,7 +86,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs"></param>
         /// <returns></returns>
-        inline adl_sensor(adl_sensor&& rhs) noexcept : _impl(rhs._impl) {
+        inline adl_sensor(_In_ adl_sensor&& rhs) noexcept : _impl(rhs._impl) {
             rhs._impl = nullptr;
         }
 
@@ -98,7 +99,8 @@ namespace power_overwhelming {
         /// <param name="impl">The status block, which must have been allocated
         /// using <c>new</c>. The object takes ownership of the status block.
         /// </param>
-        inline explicit adl_sensor(detail::adl_sensor_impl *&& impl) noexcept
+        inline explicit adl_sensor(
+                _In_ detail::adl_sensor_impl *&& impl) noexcept
                 : _impl(impl) {
             impl = nullptr;
         }
@@ -113,7 +115,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>The implementation-defined, human-readable name of the
         /// sensor.</returns>
-        virtual const wchar_t *name(void) const noexcept override;
+        virtual _Ret_opt_z_ const wchar_t *name(void) const noexcept override;
 
         /// <summary>
         /// Sample the sensor.
@@ -127,7 +129,7 @@ namespace power_overwhelming {
         /// <exception cref="adl_exception">If the sensor could not be sampled.
         /// </exception>
         virtual measurement sample(
-            const timestamp_resolution resolution) const override;
+            _In_ const timestamp_resolution resolution) const override;
 
         /// <summary>
         /// Asynchronously sample the sensor every
@@ -156,9 +158,10 @@ namespace power_overwhelming {
         /// </exception>
         /// <exception cref="tinkerforge_exception">If the sensor could not be
         /// sampled. </exception>
-        void sample(const measurement_callback on_measurement,
-            const microseconds_type sampling_period = default_sampling_period,
-            void *context = nullptr);
+        void sample(_In_ const measurement_callback on_measurement,
+            _In_ const microseconds_type sampling_period
+            = default_sampling_period,
+            _In_opt_ void *context = nullptr);
 
         using sensor::sample;
 
@@ -181,7 +184,7 @@ namespace power_overwhelming {
         /// the sensor is already asynchronously collecting data.</exception>
         /// <exception cref="adl_exception">If the source could not be
         /// started.</exception>
-        void start(const microseconds_type sampling_period);
+        void start(_In_ const microseconds_type sampling_period);
 
         /// <summary>
         /// Stops the sensor from asynchronously collecting data.
@@ -207,14 +210,14 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name=""></param>
         /// <returns></returns>
-        const char *udid(void) const noexcept;
+        _Ret_opt_z_ const char *udid(void) const noexcept;
 
         /// <summary>
         /// Move assignment.
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        adl_sensor& operator =(adl_sensor&& rhs) noexcept;
+        adl_sensor& operator =(_In_ adl_sensor&& rhs) noexcept;
 
         /// <summary>
         /// Determines whether the sensor is valid.

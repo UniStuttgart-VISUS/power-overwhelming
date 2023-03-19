@@ -46,8 +46,9 @@ namespace power_overwhelming {
         /// are supported on a single machine.
         /// </remarks>
         /// <returns>The implementation-defined, human-readable name of the
-        /// sensor.</returns>
-        virtual _Ret_z_ const wchar_t *name(void) const noexcept = 0;
+        /// sensor. This value may be <c>nullptr</c> if the sensor has been
+        /// disposed.</returns>
+        virtual _Ret_opt_z_ const wchar_t *name(void) const noexcept = 0;
 
         /// <summary>
         /// Sample the sensor using a timestamp with the specified resolution.

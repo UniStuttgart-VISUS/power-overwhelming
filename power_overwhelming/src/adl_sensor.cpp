@@ -170,7 +170,8 @@ namespace detail {
  * visus::power_overwhelming::adl_sensor::for_all
  */
 std::size_t visus::power_overwhelming::adl_sensor::for_all(
-        adl_sensor *outSensors, const std::size_t cntSensors) {
+        _Out_writes_all_(cntSensors) adl_sensor *outSensors,
+        _In_ const std::size_t cntSensors) {
     try {
         int cnt = 0;
         std::vector<adl_sensor> retval;
@@ -224,8 +225,8 @@ std::size_t visus::power_overwhelming::adl_sensor::for_all(
  * visus::power_overwhelming::adl_sensor::from_index
  */
 visus::power_overwhelming::adl_sensor
-visus::power_overwhelming::adl_sensor::from_index(const int index,
-        const adl_sensor_source source) {
+visus::power_overwhelming::adl_sensor::from_index(_In_ const int index,
+        _In_ const adl_sensor_source source) {
     adl_sensor retval;
 
     auto status = detail::amd_display_library::instance()
@@ -244,8 +245,8 @@ visus::power_overwhelming::adl_sensor::from_index(const int index,
  * visus::power_overwhelming::adl_sensor::from_udid
  */
 visus::power_overwhelming::adl_sensor
-visus::power_overwhelming::adl_sensor::from_udid(const char *udid,
-        const adl_sensor_source source) {
+visus::power_overwhelming::adl_sensor::from_udid(_In_z_ const char *udid,
+        _In_ const adl_sensor_source source) {
     if (udid == nullptr) {
         throw std::invalid_argument("The unique device identifier cannot be "
             "null.");
@@ -282,7 +283,7 @@ visus::power_overwhelming::adl_sensor::~adl_sensor(void) {
 /*
  * visus::power_overwhelming::adl_sensor::name
  */
-const wchar_t *visus::power_overwhelming::adl_sensor::name(
+_Ret_opt_z_ const wchar_t *visus::power_overwhelming::adl_sensor::name(
         void) const noexcept {
     if (this->_impl == nullptr) {
         return nullptr;
@@ -297,7 +298,7 @@ const wchar_t *visus::power_overwhelming::adl_sensor::name(
  */
 visus::power_overwhelming::measurement
 visus::power_overwhelming::adl_sensor::sample(
-        const timestamp_resolution resolution) const {
+        _In_ const timestamp_resolution resolution) const {
     this->check_not_disposed();
     const auto is_running = this->_impl->running();
 
@@ -322,9 +323,9 @@ visus::power_overwhelming::adl_sensor::sample(
  * visus::power_overwhelming::adl_sensor::sample
  */
 void visus::power_overwhelming::adl_sensor::sample(
-        const measurement_callback on_measurement,
-        const microseconds_type sampling_period,
-        void *context) {
+        _In_ const measurement_callback on_measurement,
+        _In_ const microseconds_type sampling_period,
+        _In_opt_ void *context) {
     using std::chrono::duration_cast;
     typedef decltype(detail::adl_sensor_impl::sampler)::interval_type
         interval_type;
@@ -361,7 +362,7 @@ void visus::power_overwhelming::adl_sensor::sample(
  * visus::power_overwhelming::adl_sensor::start
  */
 void visus::power_overwhelming::adl_sensor::start(
-        const microseconds_type sampling_period) {
+        _In_ const microseconds_type sampling_period) {
     using std::chrono::duration_cast;
     typedef decltype(detail::adl_sensor_impl::sampler)::interval_type
         interval_type;
@@ -397,7 +398,8 @@ visus::power_overwhelming::adl_sensor::source(void) const {
 /*
  * visus::power_overwhelming::adl_sensor::udid
  */
-const char *visus::power_overwhelming::adl_sensor::udid(void) const noexcept {
+_Ret_opt_z_ const char *visus::power_overwhelming::adl_sensor::udid(
+        void) const noexcept {
     if (this->_impl == nullptr) {
         return nullptr;
     } else {
@@ -410,7 +412,8 @@ const char *visus::power_overwhelming::adl_sensor::udid(void) const noexcept {
  * visus::power_overwhelming::adl_sensor::operator =
  */
 visus::power_overwhelming::adl_sensor&
-visus::power_overwhelming::adl_sensor::operator =(adl_sensor&& rhs) noexcept {
+visus::power_overwhelming::adl_sensor::operator =(
+        _In_ adl_sensor&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         this->_impl = rhs._impl;
         rhs._impl = nullptr;
