@@ -175,7 +175,7 @@ namespace power_overwhelming {
         /// </exception>
         /// <exception cref="tinkerforge_exception">If the sensor could not be
         /// sampled. </exception>
-        void sample(_In_ const measurement_callback on_measurement,
+        void sample(_In_opt_ const measurement_callback on_measurement,
             _In_ const microseconds_type sampling_period
             = default_sampling_period,
             _In_opt_ void *context = nullptr);

@@ -335,7 +335,7 @@ visus::power_overwhelming::adl_sensor::sample(
  * visus::power_overwhelming::adl_sensor::sample
  */
 void visus::power_overwhelming::adl_sensor::sample(
-        _In_ const measurement_callback on_measurement,
+        _In_opt_ const measurement_callback on_measurement,
         _In_ const microseconds_type sampling_period,
         _In_opt_ void *context) {
     using std::chrono::duration_cast;
