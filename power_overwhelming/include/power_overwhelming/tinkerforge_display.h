@@ -47,10 +47,12 @@ namespace power_overwhelming {
         /// <param name="port"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        static std::size_t for_all(tinkerforge_display *out_displays,
-            const std::size_t cnt_displays, const char *host = default_host,
-            const std::uint16_t port = default_port,
-            const std::size_t timeout = 1000);
+        static std::size_t for_all(
+            _Out_writes_(cnt_displays) tinkerforge_display *out_displays,
+            _In_ const std::size_t cnt_displays,
+            _In_opt_z_ const char *host = default_host,
+            _In_ const std::uint16_t port = default_port,
+            _In_ const std::size_t timeout = 1000);
 
         /// <summary>
         /// Initialises a new instance.
@@ -72,14 +74,15 @@ namespace power_overwhelming {
         /// be allocated.</exceptions>
         /// <exception cref="tinkerforge_exception">If the connection to the
         /// master brick could not be established.</exception>
-        tinkerforge_display(const char *uid, const char *host = default_host,
-            const std::uint16_t port = default_port);
+        tinkerforge_display(_In_z_ const char *uid,
+            _In_opt_z_ const char *host = default_host,
+            _In_ const std::uint16_t port = default_port);
 
         /// <summary>
         /// Move <paramref name="rhs" /> into a new instance.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        inline tinkerforge_display(tinkerforge_display&& rhs) noexcept
+        inline tinkerforge_display(_In_ tinkerforge_display&& rhs) noexcept
                 : _impl(rhs._impl) {
             rhs._impl = nullptr;
         }
@@ -99,16 +102,19 @@ namespace power_overwhelming {
         /// one of the constants like <c>LCD_128X64_FONT_6X8</c>.</param>
         /// <param name="colour">If <c>true</c> (the default), print the text
         /// in black. Otherwise, print in white.</param>
-        void print(const char *text, const std::uint8_t x = 0,
-            const std::uint8_t y = 0, const std::uint8_t font = 0,
-            const bool colour = true);
+        void print(_In_z_ const char *text,
+            _In_ const std::uint8_t x = 0,
+            _In_ const std::uint8_t y = 0,
+            _In_ const std::uint8_t font = 0,
+            _In_ const bool colour = true);
 
         /// <summary>
         /// Move assignment.
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        tinkerforge_display& operator =(tinkerforge_display&& rhs) noexcept;
+        tinkerforge_display& operator =(
+            _In_ tinkerforge_display&& rhs) noexcept;
 
         /// <summary>
         /// Determines whether the LCD display is valid.
