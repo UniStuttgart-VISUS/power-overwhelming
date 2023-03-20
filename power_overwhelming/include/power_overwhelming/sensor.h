@@ -68,7 +68,7 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If a sensor based on a VISA
         /// instrument could not be sampled.</exception>
         virtual measurement sample(
-            const timestamp_resolution resolution) const = 0;
+            _In_ const timestamp_resolution resolution) const = 0;
 
         /// <summary>
         /// Sample the sensor using a timestamp with millisecond resolution.
