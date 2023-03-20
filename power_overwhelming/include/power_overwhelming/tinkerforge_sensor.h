@@ -1,5 +1,5 @@
 ﻿// <copyright file="tinkerforge_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -8,7 +8,7 @@
 #include "power_overwhelming/conversion_time.h"
 #include "power_overwhelming/sample_averaging.h"
 #include "power_overwhelming/sensor.h"
-#include "power_overwhelming/tinkerforge_sensor_definiton.h"
+#include "power_overwhelming/tinkerforge_sensor_definition.h"
 #include "power_overwhelming/tinkerforge_sensor_source.h"
 
 
@@ -138,7 +138,7 @@ namespace power_overwhelming {
         /// <returns>The number of current/voltage bricklets available,
         /// regardless of how many have been copied.</returns>
         static std::size_t get_definitions(
-            tinkerforge_sensor_definiton *out_definitions,
+            tinkerforge_sensor_definition *out_definitions,
             const std::size_t cnt_definitions, const std::size_t timeout = 1000,
             const char *host = default_host,
             const std::uint16_t port = default_port);
@@ -203,7 +203,7 @@ namespace power_overwhelming {
         /// be allocated.</exception>
         /// <exception cref="tinkerforge_exception">If the connection to the
         /// master brick could not be established.</exception>
-        tinkerforge_sensor(const tinkerforge_sensor_definiton& definition,
+        tinkerforge_sensor(const tinkerforge_sensor_definition& definition,
             const char *host = default_host,
             const std::uint16_t port = default_port);
 

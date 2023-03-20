@@ -37,7 +37,7 @@ Some sensors have a slightly different API. For instance, sensors using *Tinkerf
 ```c++
 using namespace visus::power_overwhelming;
 
-std::vector<tinkerforge_sensor_definiton> descs;
+std::vector<tinkerforge_sensor_definition> descs;
 // Call 'get_definitions' to find out how many definitions there are.
 descs.resize(tinkerforge_sensor::get_definitions(nullptr, 0));
 // Call 'get_definitions' to get the actual descriptors.

@@ -1,7 +1,7 @@
-// <copyright file="tinkerforge_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="tinkerforge_sensor.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/tinkerforge_sensor.h"
 
@@ -30,7 +30,7 @@ std::size_t visus::power_overwhelming::tinkerforge_sensor::for_all(
             port);
 
     } else {
-        std::vector<tinkerforge_sensor_definiton> descs(cnt_sensors);
+        std::vector<tinkerforge_sensor_definition> descs(cnt_sensors);
         auto retval = tinkerforge_sensor::get_definitions(descs.data(),
             descs.size(), timeout, host, port);
 
@@ -53,7 +53,7 @@ std::size_t visus::power_overwhelming::tinkerforge_sensor::for_all(
  * visus::power_overwhelming::tinkerforge_sensor::get_definitions
  */
 std::size_t visus::power_overwhelming::tinkerforge_sensor::get_definitions(
-        tinkerforge_sensor_definiton *out_definitions,
+        tinkerforge_sensor_definition *out_definitions,
         const std::size_t cnt_definitions, const std::size_t timeout,
         const char *host, const std::uint16_t port) {
     std::vector<detail::tinkerforge_bricklet> bricklets;
@@ -66,7 +66,7 @@ std::size_t visus::power_overwhelming::tinkerforge_sensor::get_definitions(
 
     if (out_definitions != nullptr) {
         for (std::size_t i = 0; (i < cnt_definitions) && (i < retval); ++i) {
-            out_definitions[i] = tinkerforge_sensor_definiton(
+            out_definitions[i] = tinkerforge_sensor_definition(
                 bricklets[i].uid().c_str());
         }
     }
@@ -112,7 +112,7 @@ visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
  * visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor
  */
 visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
-        const tinkerforge_sensor_definiton& definition,
+        const tinkerforge_sensor_definition& definition,
         const char *host, const std::uint16_t port) : _impl(nullptr) {
     this->_impl = new detail::tinkerforge_sensor_impl(
         (host != nullptr) ? host : default_host,

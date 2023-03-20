@@ -345,7 +345,7 @@ namespace detail {
 
             // We do not need to create the sensor to write its properties,
             // the definition and the API for the sensor name suffice.
-            std::vector<tinkerforge_sensor_definiton> descs;
+            std::vector<tinkerforge_sensor_definition> descs;
             descs.resize(tinkerforge_sensor::get_definitions(nullptr, 0));
             const auto cnt = tinkerforge_sensor::get_definitions(descs.data(),
                 descs.size());
