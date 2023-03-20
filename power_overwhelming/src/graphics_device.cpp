@@ -1,7 +1,7 @@
-// <copyright file="graphics_device.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="graphics_device.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2022 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/graphics_device.h"
 
@@ -20,8 +20,9 @@
  * visus::power_overwhelming::graphics_device::all
  */
 std::size_t visus::power_overwhelming::graphics_device::all(
-        graphics_device *outDevices, const std::size_t cntDevices,
-        const bool onlyHardware) {
+        _Out_writes_all_(cntDevices) graphics_device *outDevices,
+        _In_ const std::size_t cntDevices,
+        _In_ const bool onlyHardware) {
 #if (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11)
     Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
     auto hr = S_OK;
@@ -104,7 +105,7 @@ visus::power_overwhelming::graphics_device::graphics_device(void) noexcept
  * visus::power_overwhelming::graphics_device::graphics_device
  */
 visus::power_overwhelming::graphics_device::graphics_device(
-        const graphics_device& rhs)
+        _In_ const graphics_device& rhs)
     : _adapter(rhs._adapter), _device(rhs._device),
         _id(nullptr), _name(nullptr) {
 #if (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11)
@@ -118,7 +119,7 @@ visus::power_overwhelming::graphics_device::graphics_device(
  * visus::power_overwhelming::graphics_device::graphics_device
  */
 visus::power_overwhelming::graphics_device::graphics_device(
-        graphics_device&& rhs) noexcept
+        _In_ graphics_device&& rhs) noexcept
     : _adapter(rhs._adapter), _device(rhs._device),
         _id(rhs._id), _name(rhs._name) {
     rhs._adapter = nullptr;
@@ -147,7 +148,7 @@ visus::power_overwhelming::graphics_device::~graphics_device(void) {
  */
 visus::power_overwhelming::graphics_device
 visus::power_overwhelming::graphics_device::operator =(
-        const graphics_device& rhs) {
+        _In_ const graphics_device& rhs) {
     if (this != std::addressof(rhs)) {
 #if (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11)
         detail::safe_replace(this->_adapter, rhs._adapter);
@@ -171,7 +172,7 @@ visus::power_overwhelming::graphics_device::operator =(
  */
 visus::power_overwhelming::graphics_device
 visus::power_overwhelming::graphics_device::operator =(
-        graphics_device&& rhs) noexcept {
+        _In_ graphics_device&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
 #if (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11)
         detail::safe_move(this->_adapter, std::move(rhs._adapter));

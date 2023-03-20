@@ -103,8 +103,10 @@ namespace power_overwhelming {
         /// <paramref name="cntDevices" /> is not zero.</exception>
         /// <exception cref="std::system_error">If the devices could not be
         /// enumerated due to an error in the underlying APIs.</exception>
-        static std::size_t all(graphics_device *outDevices,
-            const std::size_t cntDevices, const bool onlyHardware = true);
+        static std::size_t all(
+            _Out_writes_all_(cntDevices) graphics_device *outDevices,
+            _In_ const std::size_t cntDevices,
+            _In_ const bool onlyHardware = true);
 
         /// <summary>
         /// Initialises a new instance.
@@ -120,13 +122,13 @@ namespace power_overwhelming {
         /// Clone <paramref name="rhs" />.
         /// </summary>
         /// <param name="rhs">The object to be cloned.</param>
-        graphics_device(const graphics_device& rhs);
+        graphics_device(_In_ const graphics_device& rhs);
 
         /// <summary>
         /// Move <paramref name="rhs" />.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        graphics_device(graphics_device&& rhs) noexcept;
+        graphics_device(_In_ graphics_device&& rhs) noexcept;
 
         /// <summary>
         /// Finalises the instance.
@@ -142,8 +144,8 @@ namespace power_overwhelming {
         /// <exception cref="std::bad_alloc">If the there was not enough memory
         /// to store the device ID.</exception>
         /// <exception cref="std::system_error">If the device ID could not be
-        /// determines.</exception>
-        inline const wchar_t *id(void) const {
+        /// determined.</exception>
+        inline _Ret_ const wchar_t *id(void) const {
             this->assert_id_and_name();
             return this->_id;
         }
@@ -158,7 +160,7 @@ namespace power_overwhelming {
         /// to store the device name.</exception>
         /// <exception cref="std::system_error">If the device name could not be
         /// determines.</exception>
-        inline const wchar_t *name(void) const {
+        inline _Ret_ const wchar_t *name(void) const {
             this->assert_id_and_name();
             return this->_name;
         }
@@ -168,14 +170,14 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs">The right hand side operand.</param>
         /// <returns><c>*this</c>.</returns>
-        graphics_device operator =(const graphics_device& rhs);
+        graphics_device operator =(_In_ const graphics_device& rhs);
 
         /// <summary>
         /// Move assignment.
         /// </summary>
         /// <param name="rhs">The right hand side operand.</param>
         /// <returns><c>*this</c>.</returns>
-        graphics_device operator =(graphics_device&& rhs) noexcept;
+        graphics_device operator =(_In_ graphics_device&& rhs) noexcept;
 
         /// <summary>
         /// Determines whether the device is valid.
@@ -193,7 +195,7 @@ namespace power_overwhelming {
         /// reference count by itself.
         /// </remarks>
         /// <returns>The underlying native device.</returns>
-        inline operator device_type *(void) noexcept {
+        inline _Ret_maybenull_ operator device_type *(void) noexcept {
             return this->_device;
         }
 
