@@ -1,0 +1,13 @@
+﻿Build started...
+1>------ Build started: Project: power_overwhelming, Configuration: Debug x64 ------
+1>adl_sensor.cpp
+1>collector.cpp
+1>collector_impl.cpp
+1>collector_settings.cpp
+1>dump_sensors.cpp
+1>emi_sampler_context.cpp
+1>emi_sensor.cpp
+1>emi_sensor_impl.cpp
+1>hmc8015_sensor.cpp
+1>nvml_sensor.cpp
+1>rtb_sensor.cpp
