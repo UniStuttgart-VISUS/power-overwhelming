@@ -1,7 +1,7 @@
-// <copyright file="tinkerforge_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="tinkerforge_sensor.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/tinkerforge_sensor.h"
 
@@ -22,15 +22,17 @@
  * visus::power_overwhelming::tinkerforge_sensor::for_all
  */
 std::size_t visus::power_overwhelming::tinkerforge_sensor::for_all(
-        tinkerforge_sensor *out_sensors, const std::size_t timeout,
-        const std::size_t cnt_sensors, const char *host,
-        const std::uint16_t port) {
+        _Out_writes_opt_(cnt_sensors) tinkerforge_sensor *out_sensors,
+        _In_ const std::size_t cnt_sensors,
+        _In_ const std::size_t timeout,
+        _In_opt_z_ const char *host,
+        _In_ const std::uint16_t port) {
     if ((out_sensors == nullptr) || (cnt_sensors == 0)) {
         return tinkerforge_sensor::get_definitions(nullptr, 0, timeout, host,
             port);
 
     } else {
-        std::vector<tinkerforge_sensor_definiton> descs(cnt_sensors);
+        std::vector<tinkerforge_sensor_definition> descs(cnt_sensors);
         auto retval = tinkerforge_sensor::get_definitions(descs.data(),
             descs.size(), timeout, host, port);
 
@@ -50,23 +52,40 @@ std::size_t visus::power_overwhelming::tinkerforge_sensor::for_all(
 
 
 /*
+ * visus::power_overwhelming::tinkerforge_sensor::for_all
+ */
+std::size_t visus::power_overwhelming::tinkerforge_sensor::for_all(
+        _Out_writes_(cnt_sensors) tinkerforge_sensor *out_sensors,
+        _In_ const std::size_t cnt_sensors,
+        _In_opt_z_ const wchar_t *host,
+        _In_ const std::uint16_t port,
+        _In_ const std::size_t timeout) {
+    auto h = convert_string<char>(host);
+    return for_all(out_sensors, cnt_sensors, timeout, h.c_str(), port);
+}
+
+
+/*
  * visus::power_overwhelming::tinkerforge_sensor::get_definitions
  */
 std::size_t visus::power_overwhelming::tinkerforge_sensor::get_definitions(
-        tinkerforge_sensor_definiton *out_definitions,
-        const std::size_t cnt_definitions, const std::size_t timeout,
-        const char *host, const std::uint16_t port) {
+        _Out_writes_opt_(cnt) tinkerforge_sensor_definition *out_definitions,
+        _In_ const std::size_t cnt,
+        _In_ const std::size_t timeout,
+        _In_opt_z_ const char *host,
+        _In_ const std::uint16_t port) {
     std::vector<detail::tinkerforge_bricklet> bricklets;
-    detail::tinkerforge_scope scope(host, port);
+    const auto h = (host != nullptr) ? host : default_host;
+    detail::tinkerforge_scope scope(h, port);
 
     auto retval = scope.copy_bricklets(std::back_inserter(bricklets),
         [](const detail::tinkerforge_bricklet& b) {
             return (b.device_type() == VOLTAGE_CURRENT_V2_DEVICE_IDENTIFIER);
-        }, std::chrono::milliseconds(timeout), cnt_definitions);
+        }, std::chrono::milliseconds(timeout), cnt);
 
     if (out_definitions != nullptr) {
-        for (std::size_t i = 0; (i < cnt_definitions) && (i < retval); ++i) {
-            out_definitions[i] = tinkerforge_sensor_definiton(
+        for (std::size_t i = 0; (i < cnt) && (i < retval); ++i) {
+            out_definitions[i] = tinkerforge_sensor_definition(
                 bricklets[i].uid().c_str());
         }
     }
@@ -79,8 +98,9 @@ std::size_t visus::power_overwhelming::tinkerforge_sensor::get_definitions(
  * visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor
  */
 visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
-        const char *uid, const char *host, const std::uint16_t port)
-        : _impl(nullptr) {
+        _In_z_ const char *uid,
+        _In_opt_z_ const char *host,
+        _In_ const std::uint16_t port) : _impl(nullptr) {
     // The implementation will (i) obtain and manage the scope with the
     // connection to the master brick, (ii) allocate the voltage/current
     // bricklet and manage its life time.
@@ -95,8 +115,10 @@ visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
  * visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor
  */
 visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
-        const char *uid, const wchar_t *description, const char *host,
-        const std::uint16_t port) : _impl(nullptr) {
+        _In_z_ const char *uid,
+        _In_opt_z_ const wchar_t *description,
+        _In_opt_z_ const char *host,
+        _In_ const std::uint16_t port) : _impl(nullptr) {
     this->_impl = new detail::tinkerforge_sensor_impl(
         (host != nullptr) ? host : default_host,
         port,
@@ -112,8 +134,9 @@ visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
  * visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor
  */
 visus::power_overwhelming::tinkerforge_sensor::tinkerforge_sensor(
-        const tinkerforge_sensor_definiton& definition,
-        const char *host, const std::uint16_t port) : _impl(nullptr) {
+        _In_ const tinkerforge_sensor_definition& definition,
+        _In_opt_z_ const char *host,
+        _In_ const std::uint16_t port) : _impl(nullptr) {
     this->_impl = new detail::tinkerforge_sensor_impl(
         (host != nullptr) ? host : default_host,
         port,
@@ -138,8 +161,9 @@ visus::power_overwhelming::tinkerforge_sensor::~tinkerforge_sensor(
  * visus::power_overwhelming::tinkerforge_sensor::configuration
  */
 void visus::power_overwhelming::tinkerforge_sensor::configuration(
-        sample_averaging& averaging, conversion_time& voltage_conversion_time,
-        conversion_time& current_conversion_time) {
+        _Out_ sample_averaging& averaging,
+        _Out_ conversion_time& voltage_conversion_time,
+        _Out_ conversion_time& current_conversion_time) {
     typedef std::underlying_type<conversion_time>::type native_adc_type;
     typedef std::underlying_type<conversion_time>::type native_avg_type;
 
@@ -163,9 +187,9 @@ void visus::power_overwhelming::tinkerforge_sensor::configuration(
  * visus::power_overwhelming::tinkerforge_sensor::configure
  */
 void visus::power_overwhelming::tinkerforge_sensor::configure(
-        const sample_averaging averaging,
-        const conversion_time voltage_conversion_time,
-        const conversion_time current_conversion_time) {
+        _In_ const sample_averaging averaging,
+        _In_ const conversion_time voltage_conversion_time,
+        _In_ const conversion_time current_conversion_time) {
     typedef std::underlying_type<conversion_time>::type native_adc_type;
     typedef std::underlying_type<conversion_time>::type native_avg_type;
 
@@ -188,7 +212,8 @@ void visus::power_overwhelming::tinkerforge_sensor::configure(
 /*
  * visus::power_overwhelming::tinkerforge_sensor::description
  */
-const wchar_t *visus::power_overwhelming::tinkerforge_sensor::description(
+_Ret_maybenull_z_ const wchar_t *
+visus::power_overwhelming::tinkerforge_sensor::description(
         void) const noexcept {
     if (this->_impl != nullptr) {
         return this->_impl->description.c_str();
@@ -201,10 +226,13 @@ const wchar_t *visus::power_overwhelming::tinkerforge_sensor::description(
 /*
  * visus::power_overwhelming::tinkerforge_sensor::identify
  */
-void visus::power_overwhelming::tinkerforge_sensor::identify(char uid[8],
-        char connected_to_uid[8], char& position,
-        std::uint8_t hardware_version[3], std::uint8_t firmware_version[3],
-        std::uint16_t& device_id) const {
+void visus::power_overwhelming::tinkerforge_sensor::identify(
+        _Out_writes_(8) char uid[8],
+        _Out_writes_(8) char connected_to_uid[8],
+        _Out_ char& position,
+        _Out_writes_(3) std::uint8_t hardware_version[3],
+        _Out_writes_(3) std::uint8_t firmware_version[3],
+        _Out_ std::uint16_t& device_id) const {
     if (!*this) {
         throw std::runtime_error("A disposed instance of tinkerforge_sensor "
             "cannot be identified.");
@@ -223,7 +251,7 @@ void visus::power_overwhelming::tinkerforge_sensor::identify(char uid[8],
  * visus::power_overwhelming::tinkerforge_sensor::identify
  */
 void visus::power_overwhelming::tinkerforge_sensor::identify(
-        char uid[8]) const {
+        _Out_writes_(8) char uid[8]) const {
     char dummy0[8];
     char dummy1;
     std::uint8_t dummy2[3];
@@ -236,8 +264,8 @@ void visus::power_overwhelming::tinkerforge_sensor::identify(
 /*
  * visus::power_overwhelming::tinkerforge_sensor::name
  */
-const wchar_t *visus::power_overwhelming::tinkerforge_sensor::name(
-        void) const noexcept {
+_Ret_maybenull_z_ const wchar_t *
+visus::power_overwhelming::tinkerforge_sensor::name(void) const noexcept {
     if (this->_impl != nullptr) {
         return this->_impl->sensor_name.c_str();
     } else {
@@ -267,7 +295,7 @@ void visus::power_overwhelming::tinkerforge_sensor::reset(void) {
  */
 visus::power_overwhelming::measurement
 visus::power_overwhelming::tinkerforge_sensor::sample(
-        const timestamp_resolution resolution) const {
+        _In_ const timestamp_resolution resolution) const {
     if (!*this) {
         throw std::runtime_error("A disposed instance of tinkerforge_sensor "
             "cannot be sampled.");
@@ -314,10 +342,10 @@ visus::power_overwhelming::tinkerforge_sensor::sample(
  * visus::power_overwhelming::tinkerforge_sensor::sample
  */
 void visus::power_overwhelming::tinkerforge_sensor::sample(
-        const measurement_callback on_measurement,
-        const tinkerforge_sensor_source source,
-        const microseconds_type sampling_period,
-        void *context) {
+        _In_opt_ const measurement_callback on_measurement,
+        _In_ const tinkerforge_sensor_source source,
+        _In_ const microseconds_type period,
+        _In_opt_ void *context) {
     static constexpr auto one = static_cast<microseconds_type>(1);
     static constexpr auto thousand = static_cast<microseconds_type>(1000);
 
@@ -338,7 +366,7 @@ void visus::power_overwhelming::tinkerforge_sensor::sample(
 
         try {
             auto millis = static_cast<std::int32_t>((std::max)(one,
-                sampling_period / thousand));
+                period / thousand));
 
             this->_impl->on_measurement_context = context;
 
@@ -383,7 +411,7 @@ void visus::power_overwhelming::tinkerforge_sensor::sample(
  */
 visus::power_overwhelming::tinkerforge_sensor&
 visus::power_overwhelming::tinkerforge_sensor::operator =(
-        tinkerforge_sensor&& rhs) noexcept {
+        _In_ tinkerforge_sensor&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         this->_impl = rhs._impl;
         rhs._impl = nullptr;

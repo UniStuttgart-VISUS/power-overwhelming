@@ -1,11 +1,13 @@
-// <copyright file="visa_sensor_impl.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="visa_sensor_impl.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "visa_sensor_impl.h"
 
 #include <algorithm>
+
+#include "power_overwhelming/convert_string.h"
 
 
 /*
@@ -14,6 +16,17 @@
 visus::power_overwhelming::detail::visa_sensor_impl::visa_sensor_impl(
         const char *path, const std::int32_t timeout)
         : scope(path, timeout), path(path) {
+    this->clear();
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_sensor_impl::visa_sensor_impl
+ */
+visus::power_overwhelming::detail::visa_sensor_impl::visa_sensor_impl(
+        const wchar_t *path, const std::int32_t timeout) 
+    : scope(power_overwhelming::convert_string<char>(path).c_str(), timeout),
+        path(power_overwhelming::convert_string<char>(path)) {
     this->clear();
 }
 

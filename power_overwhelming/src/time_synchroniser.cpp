@@ -1,7 +1,7 @@
-// <copyright file="time_synchroniser.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="time_synchroniser.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2022 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/time_synchroniser.h"
 
@@ -12,8 +12,9 @@
  * visus::power_overwhelming::time_synchroniser::create
  */
 visus::power_overwhelming::time_synchroniser
-visus::power_overwhelming::time_synchroniser::create(const int address_family,
-        const std::uint16_t port) {
+visus::power_overwhelming::time_synchroniser::create(
+        _In_ const int address_family,
+        _In_ const std::uint16_t port) {
     time_synchroniser retval;
 
 #if defined(POWER_OVERWHELMING_WITH_TIME_SYNCHRONISER)
@@ -43,7 +44,7 @@ visus::power_overwhelming::time_synchroniser::~time_synchroniser(void) {
  */
 visus::power_overwhelming::time_synchroniser&
 visus::power_overwhelming::time_synchroniser::operator =(
-        time_synchroniser&& rhs) noexcept {
+        _In_ time_synchroniser&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         this->_impl = rhs._impl;
         rhs._impl = nullptr;

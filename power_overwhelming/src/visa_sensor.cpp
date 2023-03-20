@@ -1,7 +1,7 @@
-// <copyright file="visa_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="visa_sensor.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/visa_sensor.h"
 
@@ -27,20 +27,19 @@ visus::power_overwhelming::detail::visa_sensor::visa_sensor(void)
  * visus::power_overwhelming::detail::visa_sensor::visa_sensor
  */
 visus::power_overwhelming::detail::visa_sensor::visa_sensor(
-        const char *path, const std::int32_t timeout)
+        _In_z_ const char *path, _In_ const std::int32_t timeout)
         : _impl(new detail::visa_sensor_impl(path, timeout)) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    // Query the instrument name for use a sensor name.
-    this->_impl->sensor_name = power_overwhelming::convert_string<wchar_t>(
-        this->_impl->identify());
+    this->initialise();
+}
 
-    // Reset the device to default state, but do not throw.
-    this->_impl->printf("*RST\n");
 
-    // Clear any error that might have been caused by our setup. We do not want
-    // to abort just because the display does not look as expected.
-    this->_impl->clear_status();
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+/*
+ * visus::power_overwhelming::detail::visa_sensor::visa_sensor
+ */
+visus::power_overwhelming::detail::visa_sensor::visa_sensor(
+        _In_z_ const wchar_t *path, _In_ const std::int32_t timeout)
+        : _impl(new detail::visa_sensor_impl(path, timeout)) {
+    this->initialise();
 }
 
 
@@ -55,8 +54,8 @@ visus::power_overwhelming::detail::visa_sensor::~visa_sensor(void) {
 /*
  * visus::power_overwhelming::detail::visa_sensor::name
  */
-const wchar_t *visus::power_overwhelming::detail::visa_sensor::name(
-        void) const noexcept {
+_Ret_maybenull_z_ const wchar_t *
+visus::power_overwhelming::detail::visa_sensor::name(void) const noexcept {
     return (this->_impl != nullptr)
         ? this->_impl->sensor_name.c_str()
         : nullptr;
@@ -66,8 +65,8 @@ const wchar_t *visus::power_overwhelming::detail::visa_sensor::name(
 /*
  * visus::power_overwhelming::detail::visa_sensor::path
  */
-const char *visus::power_overwhelming::detail::visa_sensor::path(
-        void) const noexcept {
+_Ret_maybenull_z_ const char *
+visus::power_overwhelming::detail::visa_sensor::path(void) const noexcept {
     return (this->_impl != nullptr)
         ? this->_impl->path.c_str()
         : nullptr;
@@ -88,7 +87,7 @@ void visus::power_overwhelming::detail::visa_sensor::reset(void) {
  * visus::power_overwhelming::detail::visa_sensor::synchronise_clock
  */
 void visus::power_overwhelming::detail::visa_sensor::synchronise_clock(
-        const bool utc) {
+        _In_ const bool utc) {
     this->check_not_disposed();
 
 #if defined(_WIN32)
@@ -136,7 +135,7 @@ void visus::power_overwhelming::detail::visa_sensor::synchronise_clock(
  */
 visus::power_overwhelming::detail::visa_sensor&
 visus::power_overwhelming::detail::visa_sensor::operator =(
-        visa_sensor&& rhs) noexcept {
+        _In_ visa_sensor&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         this->_impl = rhs._impl;
         rhs._impl = nullptr;
@@ -162,6 +161,25 @@ void visus::power_overwhelming::detail::visa_sensor::clear_status(void) {
     this->check_not_disposed();
     this->_impl->clear_status();
     this->throw_on_system_error();
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_sensor::initialise
+ */
+void visus::power_overwhelming::detail::visa_sensor::initialise(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    // Query the instrument name for use a sensor name.
+    this->_impl->sensor_name = power_overwhelming::convert_string<wchar_t>(
+        this->_impl->identify());
+
+    // Reset the device to default state, but do not throw.
+    this->_impl->printf("*RST\n");
+
+    // Clear any error that might have been caused by our setup. We do not want
+    // to abort just because the display does not look as expected.
+    this->_impl->clear_status();
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

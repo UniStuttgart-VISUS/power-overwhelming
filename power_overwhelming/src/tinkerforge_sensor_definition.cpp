@@ -1,9 +1,9 @@
-// <copyright file="tinkerforge_sensor_definiton.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="tinkerforge_sensor_definition.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
-#include "power_overwhelming/tinkerforge_sensor_definiton.h"
+#include "power_overwhelming/tinkerforge_sensor_definition.h"
 
 #include <cstring>
 #include <memory>
@@ -11,10 +11,10 @@
 
 
 /*
- * ...::tinkerforge_sensor_definiton::tinkerforge_sensor_definiton
+ * ...::tinkerforge_sensor_definition::tinkerforge_sensor_definition
  */
-visus::power_overwhelming::tinkerforge_sensor_definiton::tinkerforge_sensor_definiton(
-        const char *uid) : _description(nullptr), _uid(nullptr) {
+visus::power_overwhelming::tinkerforge_sensor_definition::tinkerforge_sensor_definition(
+        _In_z_ const char *uid) : _description(nullptr), _uid(nullptr) {
     if (uid == nullptr) {
         throw std::invalid_argument("The UID of a Tinkerforge sensor cannot "
             "be null.");
@@ -28,19 +28,19 @@ visus::power_overwhelming::tinkerforge_sensor_definiton::tinkerforge_sensor_defi
 
 
 /*
- * ...::tinkerforge_sensor_definiton::tinkerforge_sensor_definiton
+ * ...::tinkerforge_sensor_definition::tinkerforge_sensor_definition
  */
-visus::power_overwhelming::tinkerforge_sensor_definiton::tinkerforge_sensor_definiton(
-        const tinkerforge_sensor_definiton& rhs)
+visus::power_overwhelming::tinkerforge_sensor_definition::tinkerforge_sensor_definition(
+        _In_ const tinkerforge_sensor_definition& rhs)
         : _description(nullptr), _uid(nullptr) {
     *this = rhs;
 }
 
 
 /*
- * ...::tinkerforge_sensor_definiton::~tinkerforge_sensor_definiton
+ * ...::tinkerforge_sensor_definition::~tinkerforge_sensor_definition
  */
-visus::power_overwhelming::tinkerforge_sensor_definiton::~tinkerforge_sensor_definiton(
+visus::power_overwhelming::tinkerforge_sensor_definition::~tinkerforge_sensor_definition(
         void) {
     if (this->_description != nullptr) {
         ::free(this->_description);
@@ -52,10 +52,10 @@ visus::power_overwhelming::tinkerforge_sensor_definiton::~tinkerforge_sensor_def
 
 
 /*
- * visus::power_overwhelming::tinkerforge_sensor_definiton::description
+ * visus::power_overwhelming::tinkerforge_sensor_definition::description
  */
-void visus::power_overwhelming::tinkerforge_sensor_definiton::description(
-        const wchar_t *description) {
+void visus::power_overwhelming::tinkerforge_sensor_definition::description(
+        _In_opt_z_ const wchar_t *description) {
     if (this->_description != nullptr) {
         ::free(this->_description);
     }
@@ -73,11 +73,11 @@ void visus::power_overwhelming::tinkerforge_sensor_definiton::description(
 
 
 /*
- * visus::power_overwhelming::tinkerforge_sensor_definiton::operator =
+ * visus::power_overwhelming::tinkerforge_sensor_definition::operator =
  */
-visus::power_overwhelming::tinkerforge_sensor_definiton&
-visus::power_overwhelming::tinkerforge_sensor_definiton::operator =(
-        const tinkerforge_sensor_definiton& rhs) {
+visus::power_overwhelming::tinkerforge_sensor_definition&
+visus::power_overwhelming::tinkerforge_sensor_definition::operator =(
+        _In_ const tinkerforge_sensor_definition& rhs) {
     if (this != std::addressof(rhs)) {
         this->description(rhs._description);
 
@@ -101,11 +101,11 @@ visus::power_overwhelming::tinkerforge_sensor_definiton::operator =(
 
 
 /*
- * visus::power_overwhelming::tinkerforge_sensor_definiton::operator =
+ * visus::power_overwhelming::tinkerforge_sensor_definition::operator =
  */
-visus::power_overwhelming::tinkerforge_sensor_definiton&
-visus::power_overwhelming::tinkerforge_sensor_definiton::operator =(
-        tinkerforge_sensor_definiton&& rhs) noexcept {
+visus::power_overwhelming::tinkerforge_sensor_definition&
+visus::power_overwhelming::tinkerforge_sensor_definition::operator =(
+        _In_ tinkerforge_sensor_definition&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         if (this->_description != nullptr) {
             ::free(this->_description);

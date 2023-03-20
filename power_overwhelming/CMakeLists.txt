@@ -56,11 +56,9 @@ target_include_directories(${PROJECT_NAME}
     PRIVATE
         $<BUILD_INTERFACE:${SourceDir}>)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-    nlohmann_json
-    adl
-    nvml
-    tinkerforge)
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC salieri
+    PRIVATE adl nlohmann_json nvml tinkerforge)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PUBLIC Ws2_32)

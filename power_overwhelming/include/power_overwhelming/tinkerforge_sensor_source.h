@@ -1,5 +1,5 @@
 ﻿// <copyright file="tinkerforge_sensor_source.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -46,8 +46,8 @@ namespace power_overwhelming {
     /// <param name="rhs"></param>
     /// <returns></returns>
     POWER_OVERWHELMING_API tinkerforge_sensor_source operator |(
-        const tinkerforge_sensor_source lhs,
-        const tinkerforge_sensor_source rhs);
+        _In_ const tinkerforge_sensor_source lhs,
+        _In_ const tinkerforge_sensor_source rhs);
 
     /// <summary>
     /// Test two <see cref="tinkerforge_sensor_source" />s.
@@ -56,8 +56,8 @@ namespace power_overwhelming {
     /// <param name="rhs"></param>
     /// <returns></returns>
     POWER_OVERWHELMING_API tinkerforge_sensor_source operator &(
-        const tinkerforge_sensor_source lhs,
-        const tinkerforge_sensor_source rhs);
+        _In_ const tinkerforge_sensor_source lhs,
+        _In_ const tinkerforge_sensor_source rhs);
 
     /// <summary>
     /// Convert the given sensor source to a human-readable string
@@ -65,8 +65,10 @@ namespace power_overwhelming {
     /// </summary>
     /// <param name="source">The source to be converted.</param>
     /// <returns>The name of the source.</returns>
-    extern POWER_OVERWHELMING_API const wchar_t *to_string(
-        const tinkerforge_sensor_source source);
+    /// <exception cref="std::invalid_argument">If the source is not
+    /// valid and therefore could not be converted.</exception>
+    extern POWER_OVERWHELMING_API _Ret_valid_ const wchar_t *to_string(
+        _In_ const tinkerforge_sensor_source source);
 
 } /* namespace power_overwhelming */
 } /* namespace visus */

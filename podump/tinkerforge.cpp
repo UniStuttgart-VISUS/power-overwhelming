@@ -14,7 +14,7 @@ void sample_tinkerforge_sensor(void) {
     using namespace visus::power_overwhelming;
 
     try {
-        std::vector<tinkerforge_sensor_definiton> descs;
+        std::vector<tinkerforge_sensor_definition> descs;
         descs.resize(tinkerforge_sensor::get_definitions(nullptr, 0));
         auto cnt = tinkerforge_sensor::get_definitions(descs.data(),
             descs.size());
@@ -47,7 +47,7 @@ void sample_tinkerforge_sensor_async(const unsigned int dt) {
     using namespace visus::power_overwhelming;
 
     try {
-        std::vector<tinkerforge_sensor_definiton> descs;
+        std::vector<tinkerforge_sensor_definition> descs;
         std::vector<tinkerforge_sensor> sensors;
         descs.resize(tinkerforge_sensor::get_definitions(nullptr, 0));
         auto cnt = tinkerforge_sensor::get_definitions(descs.data(),

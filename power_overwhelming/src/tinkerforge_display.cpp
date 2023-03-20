@@ -1,7 +1,7 @@
-// <copyright file="tinkerforge_display.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="tinkerforge_display.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/tinkerforge_display.h"
 
@@ -17,8 +17,11 @@
  * visus::power_overwhelming::tinkerforge_display::for_all
  */
 std::size_t visus::power_overwhelming::tinkerforge_display::for_all(
-        tinkerforge_display *out_displays, const std::size_t cnt_displays,
-        const char *host, const std::uint16_t port, const std::size_t timeout) {
+        _Out_writes_opt_(cnt_displays) tinkerforge_display *out_displays,
+        _In_ const std::size_t cnt_displays,
+        _In_opt_z_ const char *host,
+        _In_ const std::uint16_t port,
+        _In_ const std::size_t timeout) {
     std::vector<detail::tinkerforge_bricklet> bricklets;
     const std::string safe_host = (host != nullptr) ? host : default_host;
     detail::tinkerforge_scope scope(safe_host, port);
@@ -43,7 +46,9 @@ std::size_t visus::power_overwhelming::tinkerforge_display::for_all(
  * visus::power_overwhelming::tinkerforge_display::tinkerforge_display
  */
 visus::power_overwhelming::tinkerforge_display::tinkerforge_display(
-        const char *uid, const char *host, const std::uint16_t port)
+        _In_z_ const char *uid,
+        _In_opt_z_ const char *host,
+        _In_ const std::uint16_t port)
         : _impl(nullptr) {
     this->_impl = new detail::tinkerforge_display_impl(
         (host != nullptr) ? host : default_host,
@@ -71,9 +76,12 @@ void visus::power_overwhelming::tinkerforge_display::clear(void) {
 /*
  * visus::power_overwhelming::tinkerforge_display::print
  */
-void visus::power_overwhelming::tinkerforge_display::print(const char *text,
-        const std::uint8_t x, const std::uint8_t y, const std::uint8_t font,
-        const bool colour) {
+void visus::power_overwhelming::tinkerforge_display::print(
+        _In_z_ const char *text,
+        _In_ const std::uint8_t x,
+        _In_ const std::uint8_t y,
+        _In_ const std::uint8_t font,
+        _In_ const bool colour) {
     if (!*this) {
         throw std::runtime_error("A disposed instance of tinkerforge_display "
             "cannot be used to print text.");
@@ -91,11 +99,11 @@ void visus::power_overwhelming::tinkerforge_display::print(const char *text,
 
 
 /*
- *
+ * visus::power_overwhelming::tinkerforge_display::operator =
  */
 visus::power_overwhelming::tinkerforge_display& 
 visus::power_overwhelming::tinkerforge_display::operator =(
-        tinkerforge_display&& rhs) noexcept {
+        _In_ tinkerforge_display&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         this->_impl = rhs._impl;
         rhs._impl = nullptr;

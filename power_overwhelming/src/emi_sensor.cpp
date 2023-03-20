@@ -1,7 +1,7 @@
-// <copyright file="emi_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="emi_sensor.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/emi_sensor.h"
 
@@ -24,7 +24,8 @@
  * visus::power_overwhelming::emi_sensor::for_all
  */
 std::size_t visus::power_overwhelming::emi_sensor::for_all(
-        emi_sensor *out_sensors, const std::size_t cnt_sensors) {
+        _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
+        _In_ const std::size_t cnt_sensors) {
 #if defined(_WIN32)
     typedef detail::emi_sensor_impl::string_type string_type;
     return detail::emi_sensor_impl::create(out_sensors, cnt_sensors,
@@ -41,8 +42,9 @@ std::size_t visus::power_overwhelming::emi_sensor::for_all(
  * visus::power_overwhelming::emi_sensor::for_channel
  */
 std::size_t visus::power_overwhelming::emi_sensor::for_channel(
-        emi_sensor *out_sensors, const std::size_t cnt_sensors,
-        const wchar_t *channel) {
+        _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
+        _In_ const std::size_t cnt_sensors,
+        _In_z_ const wchar_t *channel) {
     if (channel == nullptr) {
         throw std::invalid_argument("The regular expression selecting the "
             "channel must not be null.");
@@ -66,8 +68,9 @@ std::size_t visus::power_overwhelming::emi_sensor::for_channel(
  * visus::power_overwhelming::emi_sensor::for_device
  */
 std::size_t visus::power_overwhelming::emi_sensor::for_device(
-        emi_sensor *out_sensors, const std::size_t cnt_sensors,
-        const char_type *device) {
+        _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
+        _In_ const std::size_t cnt_sensors,
+        _In_z_ const char_type *device) {
     if (device == nullptr) {
         throw std::invalid_argument("The regular expression selecting the "
             "device must not be null.");
@@ -91,8 +94,10 @@ std::size_t visus::power_overwhelming::emi_sensor::for_device(
  * visus::power_overwhelming::emi_sensor::for_device_and_channel
  */
 std::size_t visus::power_overwhelming::emi_sensor::for_device_and_channel(
-        emi_sensor *out_sensors, const std::size_t cnt_sensors,
-        const char_type *device, const char_type *channel) {
+        _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
+        _In_ const std::size_t cnt_sensors,
+        _In_z_ const char_type *device,
+        _In_z_ const char_type *channel) {
     if (device == nullptr) {
         throw std::invalid_argument("The regular expression selecting the "
             "device must not be null.");
@@ -122,8 +127,10 @@ std::size_t visus::power_overwhelming::emi_sensor::for_device_and_channel(
  * visus::power_overwhelming::emi_sensor::for_device_and_channel
  */
 std::size_t visus::power_overwhelming::emi_sensor::for_device_and_channel(
-        emi_sensor *out_sensors, const std::size_t cnt_sensors,
-        const char_type *device, const channel_type channel) {
+        _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
+        _In_ const std::size_t cnt_sensors,
+        _In_z_ const char_type *device,
+        _In_ const channel_type channel) {
     if (device == nullptr) {
         throw std::invalid_argument("The regular expression selecting the "
             "device must not be null.");
@@ -194,7 +201,7 @@ visus::power_overwhelming::emi_sensor::channels(void) const {
 /*
  * visus::power_overwhelming::emi_sensor::name
  */
-const wchar_t *visus::power_overwhelming::emi_sensor::name(
+_Ret_maybenull_z_ const wchar_t *visus::power_overwhelming::emi_sensor::name(
         void) const noexcept {
 #if defined(_WIN32)
     return (this->_impl != nullptr)
@@ -209,7 +216,7 @@ const wchar_t *visus::power_overwhelming::emi_sensor::name(
 /*
  * visus::power_overwhelming::emi_sensor::path
  */
-const visus::power_overwhelming::emi_sensor::char_type *
+_Ret_maybenull_z_ const visus::power_overwhelming::emi_sensor::char_type *
 visus::power_overwhelming::emi_sensor::path(void) const noexcept {
 #if defined(_WIN32)
     return (this->_impl != nullptr)
@@ -226,7 +233,7 @@ visus::power_overwhelming::emi_sensor::path(void) const noexcept {
  */
 visus::power_overwhelming::measurement
 visus::power_overwhelming::emi_sensor::sample(
-        const timestamp_resolution resolution) const {
+        _In_ const timestamp_resolution resolution) const {
 #if defined(_WIN32)
     this->check_not_disposed();
 
@@ -257,9 +264,9 @@ visus::power_overwhelming::emi_sensor::sample(
  * visus::power_overwhelming::emi_sensor::sample
  */
 void visus::power_overwhelming::emi_sensor::sample(
-        const measurement_callback on_measurement,
-        const microseconds_type sampling_period,
-        void *context) {
+        _In_opt_ const measurement_callback on_measurement,
+        _In_ const microseconds_type period,
+        _In_opt_ void *context) {
 #if defined(_WIN32)
     typedef decltype(detail::emi_sensor_impl::sampler)::interval_type
         interval_type;
@@ -268,7 +275,7 @@ void visus::power_overwhelming::emi_sensor::sample(
 
     if (on_measurement != nullptr) {
         if (!detail::emi_sensor_impl::sampler.add(this->_impl, on_measurement,
-                context, interval_type(sampling_period))) {
+                context, interval_type(period))) {
             throw std::logic_error("Asynchronous sampling cannot be started "
                 "while it is already running.");
         }
@@ -286,8 +293,8 @@ void visus::power_overwhelming::emi_sensor::sample(
 /*
  * visus::power_overwhelming::emi_sensor::sample
  */
-EMI_MEASUREMENT_DATA_V1 *visus::power_overwhelming::emi_sensor::sample(
-        EMI_MEASUREMENT_DATA_V1& measurement) const {
+_Ret_ EMI_MEASUREMENT_DATA_V1 *visus::power_overwhelming::emi_sensor::sample(
+        _In_ EMI_MEASUREMENT_DATA_V1& measurement) const {
     this->check_not_disposed();
 
     if (this->version() != EMI_VERSION_V1) {
@@ -305,8 +312,9 @@ EMI_MEASUREMENT_DATA_V1 *visus::power_overwhelming::emi_sensor::sample(
 /*
  * visus::power_overwhelming::emi_sensor::sample
  */
-EMI_MEASUREMENT_DATA_V2 *visus::power_overwhelming::emi_sensor::sample(
-        EMI_MEASUREMENT_DATA_V2 *measurement, const std::size_t size) const {
+_Ret_ EMI_MEASUREMENT_DATA_V2 *visus::power_overwhelming::emi_sensor::sample(
+        _Inout_updates_bytes_(size) EMI_MEASUREMENT_DATA_V2 *measurement,
+        _In_ const std::size_t size) const {
     this->check_not_disposed();
 
     if (this->version() != EMI_VERSION_V2) {
@@ -342,7 +350,7 @@ visus::power_overwhelming::emi_sensor::version(void) const noexcept {
  * visus::power_overwhelming::emi_sensor::operator =
  */
 visus::power_overwhelming::emi_sensor&
-visus::power_overwhelming::emi_sensor::operator =(emi_sensor&& rhs) noexcept {
+visus::power_overwhelming::emi_sensor::operator =(_In_ emi_sensor&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         this->_impl = rhs._impl;
         rhs._impl = nullptr;

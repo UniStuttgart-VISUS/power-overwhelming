@@ -17,3 +17,16 @@
 #define POWER_OVERWHELMING_API
 
 #endif /* defined(WIN32) */
+
+
+#if defined(_WIN32)
+#include <sal.h>
+
+#else /* defined(_WIN32) */
+// Empty SAL annotations for rancid platforms.
+#include "salieri.h"
+
+// These are missing in the salieri header.
+#define _Analysis_assume_(expr)
+#define _Ret_valid_
+#endif /* defined(_WIN32) */

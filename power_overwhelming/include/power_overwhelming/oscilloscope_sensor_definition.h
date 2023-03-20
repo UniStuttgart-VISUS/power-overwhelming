@@ -37,9 +37,9 @@ namespace power_overwhelming {
         /// <paramref name="channel_current" /> are the same.</exception>
         /// <exception cref="std::bad_alloc">If the memory for storing the
         /// description could not be allocated.</exception>
-        oscilloscope_sensor_definition(const wchar_t *description,
-            const std::uint32_t channel_voltage,
-            const std::uint32_t channel_current);
+        oscilloscope_sensor_definition(_In_z_ const wchar_t *description,
+            _In_ const std::uint32_t channel_voltage,
+            _In_ const std::uint32_t channel_current);
 
         /// <summary>
         /// Initialises a new instance.
@@ -63,18 +63,18 @@ namespace power_overwhelming {
         /// <paramref name="channel_current" /> are the same.</exception>
         /// <exception cref="std::bad_alloc">If the memory for storing the
         /// description could not be allocated.</exception>
-        oscilloscope_sensor_definition(const wchar_t *description,
-            const std::uint32_t channel_voltage,
-            const float attenuation_voltage,
-            const std::uint32_t channel_current,
-            const float attenuation_current);
+        oscilloscope_sensor_definition(_In_z_ const wchar_t *description,
+            _In_ const std::uint32_t channel_voltage,
+            _In_ const float attenuation_voltage,
+            _In_ const std::uint32_t channel_current,
+            _In_ const float attenuation_current);
 
         /// <summary>
         /// Clone <paramref name="rhs" />.
         /// </summary>
         /// <param name="rhs">The object to be cloned.</param>
         oscilloscope_sensor_definition(
-            const oscilloscope_sensor_definition& rhs);
+            _In_ const oscilloscope_sensor_definition& rhs);
 
         /// <summary>
         /// Finalises the instance.
@@ -142,7 +142,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>The description of the sensor. The object remains owner of
         /// the string returned.</returns>
-        inline const wchar_t *description(void) const noexcept {
+        inline _Ret_z_ const wchar_t *description(void) const noexcept {
             return this->_description;
         }
 
@@ -154,7 +154,7 @@ namespace power_overwhelming {
         /// <exception cref="std::bad_alloc">If the necessary memory for the
         /// copy could not be acquired.</exception>
         oscilloscope_sensor_definition& operator =(
-            const oscilloscope_sensor_definition& rhs);
+            _In_ const oscilloscope_sensor_definition& rhs);
 
     private:
 

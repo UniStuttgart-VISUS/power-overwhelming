@@ -1,7 +1,7 @@
-// <copyright file="stable_power_state_scope.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="stable_power_state_scope.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2022 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/stable_power_state_scope.h"
 
@@ -23,8 +23,14 @@ visus::power_overwhelming::stable_power_state_scope::stable_power_state_scope(
     devices.resize(graphics_device::all(nullptr, 0, true));
     graphics_device::all(devices.data(), devices.size(), true);
 
-    for (auto& d : devices) {
-        this->enable(d);
+    for (auto it = devices.begin(); it != devices.end(); ) {
+        auto d = static_cast<graphics_device::device_type *>(*it);
+        if (d != nullptr) {
+            this->enable(d);
+            ++it;
+        } else {
+            it = devices.erase(it);
+        }
     }
 
     this->_devices = new graphics_device[devices.size()];
@@ -37,12 +43,14 @@ visus::power_overwhelming::stable_power_state_scope::stable_power_state_scope(
  * visus::power_overwhelming::stable_power_state_scope::stable_power_state_scope
  */
 visus::power_overwhelming::stable_power_state_scope::stable_power_state_scope(
-        graphics_device& device) : _cnt_devices(0), _devices(nullptr) {
-    this->enable(device);
+        _In_ graphics_device& device) : _cnt_devices(0), _devices(nullptr) {
+    if (device != nullptr) {
+        this->enable(device);
 
-    this->_devices = new graphics_device[1];
-    this->_cnt_devices = 1;
-    this->_devices[0] = device;
+        this->_devices = new graphics_device[1];
+        this->_cnt_devices = 1;
+        this->_devices[0] = device;
+    }
 }
 
 
@@ -59,7 +67,7 @@ visus::power_overwhelming::stable_power_state_scope::~stable_power_state_scope(
  * visus::power_overwhelming::stable_power_state_scope::enable
  */
 void visus::power_overwhelming::stable_power_state_scope::enable(
-        graphics_device::device_type *device) {
+        _In_ graphics_device::device_type *device) {
 #if (POWER_OVERWHELMING_GPU_ABSTRACTION == 12)
     if (device == nullptr) {
         throw std::invalid_argument("A valid Direct3D 12 device must be "

@@ -1,4 +1,4 @@
-// <copyright file="sensor_desc.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+// <copyright file="sensor_desc_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -13,7 +13,7 @@ namespace visus {
 namespace power_overwhelming {
 namespace test {
 
-    TEST_CLASS(sensor_desc) {
+    TEST_CLASS(sensor_desc_test) {
 
     public:
 

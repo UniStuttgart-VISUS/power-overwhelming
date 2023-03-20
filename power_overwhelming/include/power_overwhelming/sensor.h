@@ -46,8 +46,9 @@ namespace power_overwhelming {
         /// are supported on a single machine.
         /// </remarks>
         /// <returns>The implementation-defined, human-readable name of the
-        /// sensor.</returns>
-        virtual const wchar_t *name(void) const noexcept = 0;
+        /// sensor. This value may be <c>nullptr</c> if the sensor has been
+        /// disposed.</returns>
+        virtual _Ret_maybenull_z_ const wchar_t *name(void) const noexcept = 0;
 
         /// <summary>
         /// Sample the sensor using a timestamp with the specified resolution.
@@ -67,7 +68,7 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If a sensor based on a VISA
         /// instrument could not be sampled.</exception>
         virtual measurement sample(
-            const timestamp_resolution resolution) const = 0;
+            _In_ const timestamp_resolution resolution) const = 0;
 
         /// <summary>
         /// Sample the sensor using a timestamp with millisecond resolution.

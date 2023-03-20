@@ -40,9 +40,10 @@ namespace power_overwhelming {
         /// to 3000.</param>
         /// <returns>The number of HMC8015 instruments found, regardless of how
         /// many have been returned to <paramref name="out_sensors" />.</returns>
-        static std::size_t for_all(rtb_sensor *out_sensors,
-            const std::size_t cnt_sensors,
-            const std::int32_t timeout = 3000);
+        static std::size_t for_all(
+            _Out_writes_opt_(cnt_sensors) rtb_sensor *out_sensors,
+            _In_ std::size_t cnt_sensors,
+            _In_ const std::int32_t timeout = 3000);
 
         /// <summary>
         /// The product ID of the RTB2004.
@@ -72,13 +73,28 @@ namespace power_overwhelming {
         /// loaded.</exception>
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
-        rtb_sensor(const char *path, const std::int32_t timeout);
+        rtb_sensor(_In_z_ const char *path, _In_ const std::int32_t timeout);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="timeout"></param>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the sensor state
+        /// could not be allocated.</exception>
+        /// <exception cref="std::system_error">If the VISA library could not be
+        /// loaded.</exception>
+        /// <exception cref="visa_exception">If the sensor could not be
+        /// initialised.</exception>
+        rtb_sensor(_In_z_ const wchar_t *path, _In_ const std::int32_t timeout);
 
         /// <summary>
         /// Move <paramref name="rhs" /> into a new instance.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        inline rtb_sensor(rtb_sensor&& rhs) noexcept
+        inline rtb_sensor(_In_ rtb_sensor&& rhs) noexcept
             : detail::visa_sensor(std::move(rhs)) { }
 
         /// <summary>
@@ -86,8 +102,9 @@ namespace power_overwhelming {
         /// </summary>
         ~rtb_sensor(void);
 
-        void configure(const oscilloscope_sensor_definition *sensors,
-            const std::size_t cnt_sensors);
+        void configure(
+            _In_reads_(cnt) const oscilloscope_sensor_definition *sensors,
+            _In_ const std::size_t cnt);
 
         /// <summary>
         /// Enable an configure one of the mathematical expressions.
@@ -99,8 +116,9 @@ namespace power_overwhelming {
         /// <param name="unit">The unit of the resulting values. If
         /// <c>nullptr</c>, the currently set unit will be unchanged. This
         /// parameter defaults to <c>nullptr</c>.</param>
-        void expression(const std::uint32_t channel, const char *expression,
-            const char *unit = nullptr);
+        void expression(_In_ const std::uint32_t channel,
+            _In_opt_z_ const char *expression,
+            _In_opt_z_ const char *unit = nullptr);
 
         ///// <summary>
         ///// Sets the path to the log file.
@@ -122,7 +140,7 @@ namespace power_overwhelming {
 
         /// <inheritdoc />
         virtual measurement sample(
-            const timestamp_resolution resolution) const override;
+            _In_ const timestamp_resolution resolution) const override;
 
         /// <summary>
         /// Sets the unit of the specified channel.
@@ -133,7 +151,7 @@ namespace power_overwhelming {
         /// or &quot;V&quot;).</param>
         /// <exception cref="std::invalid_argument">If <paramref name="unit" />
         /// is <c>nullptr</c>.</exception>
-        void unit(const std::uint32_t channel, const char *unit);
+        void unit(_In_ const std::uint32_t channel, _In_z_ const char *unit);
 
         /// <summary>
         /// Move assignment.
@@ -144,7 +162,6 @@ namespace power_overwhelming {
             visa_sensor::operator =(std::move(rhs));
             return *this;
         }
-
 
     };
 

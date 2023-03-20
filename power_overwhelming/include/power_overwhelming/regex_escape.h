@@ -23,7 +23,8 @@ namespace power_overwhelming {
     /// </param>
     /// <returns>The escaped string.</returns>
     template<class TChar>
-    std::basic_string<TChar> regex_escape(const std::basic_string<TChar>& str) {
+    std::basic_string<TChar> regex_escape(
+            _In_ const std::basic_string<TChar>& str) {
         static const std::basic_string<TChar> special
             = POWER_OVERWHELMING_TPL_LITERAL(TChar, "-[]{}()*+?.,\\^$|#");
         std::basic_string<TChar> retval;

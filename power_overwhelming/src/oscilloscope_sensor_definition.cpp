@@ -1,7 +1,7 @@
-// <copyright file="oscilloscope_sensor_definition.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="oscilloscope_sensor_definition.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/oscilloscope_sensor_definition.h"
 
@@ -14,9 +14,9 @@
  * ...::oscilloscope_sensor_definition
  */
 visus::power_overwhelming::oscilloscope_sensor_definition::oscilloscope_sensor_definition(
-        const wchar_t *description,
-        const std::uint32_t channel_voltage,
-        const std::uint32_t channel_current)
+        _In_z_ const wchar_t *description,
+        _In_ const std::uint32_t channel_voltage,
+        _In_ const std::uint32_t channel_current)
     : _attenuation_current(0.0f),
         _attenuation_voltage(0.0f),
         _channel_current(channel_current),
@@ -42,9 +42,11 @@ visus::power_overwhelming::oscilloscope_sensor_definition::oscilloscope_sensor_d
  * ...::oscilloscope_sensor_definition
  */
 visus::power_overwhelming::oscilloscope_sensor_definition::oscilloscope_sensor_definition(
-        const wchar_t *description, const std::uint32_t channel_voltage,
-        const float attenuation_voltage, const std::uint32_t channel_current,
-        const float attenuation_current)
+        _In_z_ const wchar_t *description,
+        _In_ const std::uint32_t channel_voltage,
+        _In_ const float attenuation_voltage,
+        _In_ const std::uint32_t channel_current,
+        _In_ const float attenuation_current)
     : _attenuation_current(attenuation_current),
         _attenuation_voltage(attenuation_voltage),
         _channel_current(channel_current),
@@ -70,7 +72,7 @@ visus::power_overwhelming::oscilloscope_sensor_definition::oscilloscope_sensor_d
  * ...::oscilloscope_sensor_definition
  */
 visus::power_overwhelming::oscilloscope_sensor_definition::oscilloscope_sensor_definition(
-        const oscilloscope_sensor_definition& rhs) : _description(nullptr) {
+        _In_ const oscilloscope_sensor_definition& rhs) : _description(nullptr) {
     *this = rhs;
 }
 
@@ -90,7 +92,7 @@ visus::power_overwhelming::oscilloscope_sensor_definition::~oscilloscope_sensor_
  */
 visus::power_overwhelming::oscilloscope_sensor_definition&
 visus::power_overwhelming::oscilloscope_sensor_definition::operator =(
-        const oscilloscope_sensor_definition& rhs) {
+        _In_ const oscilloscope_sensor_definition& rhs) {
     if (this != std::addressof(rhs)) {
         this->_attenuation_current = rhs._attenuation_current;
         this->_attenuation_voltage = rhs._attenuation_voltage;

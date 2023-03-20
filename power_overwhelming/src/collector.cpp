@@ -1,7 +1,7 @@
-// <copyright file="collector.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="collector.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2022 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/collector.h"
 
@@ -42,7 +42,7 @@ namespace detail {
 
         retval[field_computer_name] = computer_name<char>();
         retval[field_output] = "output.csv";
-        retval[field_sampling] = 5000;  // 5000 µs == 5 ms
+        retval[field_sampling] = 5000;  // 5000 Âµs == 5 ms
         retval[field_require_marker] = true;
         retval[field_sensors] = get_all_sensor_descs();
 
@@ -79,7 +79,7 @@ namespace detail {
  */
 visus::power_overwhelming::collector
 visus::power_overwhelming::collector::for_all(
-        const collector_settings& settings) {
+        _In_ const collector_settings& settings) {
     auto retval = collector(new detail::collector_impl());
     retval._impl->apply(settings);
     retval._impl->sensors = detail::get_all_sensors();
@@ -103,7 +103,7 @@ visus::power_overwhelming::collector::from_defaults(void) {
  * visus::power_overwhelming::collector::from_json
  */
 visus::power_overwhelming::collector
-visus::power_overwhelming::collector::from_json(const wchar_t *path) {
+visus::power_overwhelming::collector::from_json(_In_z_ const wchar_t *path) {
     if (path == nullptr) {
         throw std::invalid_argument("The path to the configuration file must "
             "not be null.");
@@ -120,7 +120,7 @@ visus::power_overwhelming::collector::from_json(const wchar_t *path) {
  * visus::power_overwhelming::collector::make_configuration_template
  */
 void visus::power_overwhelming::collector::make_configuration_template(
-        const wchar_t *path) {
+        _In_z_ const wchar_t *path) {
     detail::write_json(path, detail::make_json_template());
 }
 
@@ -137,7 +137,8 @@ visus::power_overwhelming::collector::~collector(void) {
 /*
  * visus::power_overwhelming::collector::marker
  */
-void visus::power_overwhelming::collector::marker(const wchar_t *marker) {
+void visus::power_overwhelming::collector::marker(
+        _In_opt_z_ const wchar_t *marker) {
     if (this->_impl == nullptr) {
         throw std::runtime_error("The collector has been moved to another "
             "instance wherefore no marker can be set.");
@@ -182,7 +183,8 @@ void visus::power_overwhelming::collector::stop(void) {
  * visus::power_overwhelming::collector::operator =
  */
 visus::power_overwhelming::collector&
-visus::power_overwhelming::collector::operator =(collector&& rhs) noexcept {
+visus::power_overwhelming::collector::operator =(
+        _In_ collector&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         this->_impl = rhs._impl;
         rhs._impl = nullptr;
@@ -205,7 +207,8 @@ visus::power_overwhelming::collector::operator bool(void) const noexcept {
  */
 visus::power_overwhelming::collector
 visus::power_overwhelming::collector::prepare(
-        const collector_settings& settings, const std::size_t capacity) {
+        _In_ const collector_settings& settings,
+        _In_ const std::size_t capacity) {
     auto retval = collector(new detail::collector_impl());
     retval._impl->sensors.reserve(capacity);
     retval._impl->apply(settings);
@@ -216,7 +219,7 @@ visus::power_overwhelming::collector::prepare(
 /*
  * visus::power_overwhelming::collector::add
  */
-void visus::power_overwhelming::collector::add(sensor *sensor) {
+void visus::power_overwhelming::collector::add(_In_ sensor *sensor) {
     assert(*this);
 
     if (sensor == nullptr) {

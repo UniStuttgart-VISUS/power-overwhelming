@@ -32,7 +32,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="device">The device to be put into a stable power
         /// state.</param>
-        stable_power_state_scope(graphics_device& device);
+        stable_power_state_scope(_In_ graphics_device& device);
 
         stable_power_state_scope(const stable_power_state_scope&) = delete;
 
@@ -50,12 +50,12 @@ namespace power_overwhelming {
             return this->_cnt_devices;
         }
 
-        stable_power_state_scope &operator =(
+        stable_power_state_scope& operator =(
             const stable_power_state_scope&) = delete;
 
     private:
 
-        void enable(graphics_device::device_type *device);
+        void enable(_In_ graphics_device::device_type *device);
 
         std::size_t _cnt_devices;
         graphics_device *_devices;

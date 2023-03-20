@@ -1,7 +1,7 @@
-// <copyright file="hmc8015_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="hmc8015_sensor.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/hmc8015_sensor.h"
 
@@ -23,8 +23,9 @@
  * visus::power_overwhelming::hmc8015_sensor::for_all
  */
 std::size_t visus::power_overwhelming::hmc8015_sensor::for_all(
-        hmc8015_sensor *out_sensors, const std::size_t cnt_sensors,
-        const std::int32_t timeout) {
+        _Out_writes_opt_(cnt_sensors) hmc8015_sensor *out_sensors,
+        _In_ std::size_t cnt_sensors,
+        _In_ const std::int32_t timeout) {
     // Build the query for all R&S HMC8015 instruments.
     std::string query("?*::");      // Any protocol
     query += rohde_und_schwarz;     // Only R&S
@@ -35,6 +36,11 @@ std::size_t visus::power_overwhelming::hmc8015_sensor::for_all(
     // Search the instruments using VISA.
     auto devices = detail::visa_library::instance().find_resource(
         query.c_str());
+
+    // Guard against misuse.
+    if (out_sensors == nullptr) {
+        cnt_sensors = 0;
+    }
 
     // Create a sensor for each instrument we found.
     for (std::size_t i = 0; (i < cnt_sensors) && (i < devices.size()); ++i) {
@@ -49,7 +55,7 @@ std::size_t visus::power_overwhelming::hmc8015_sensor::for_all(
  * visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor
  */
 visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
-        const char *path, const std::int32_t timeout)
+        _In_z_ const char *path, _In_ const std::int32_t timeout)
         : detail::visa_sensor(path, timeout) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto impl = static_cast<detail::visa_sensor_impl&>(*this);
@@ -95,7 +101,8 @@ visus::power_overwhelming::hmc8015_sensor::~hmc8015_sensor(void) {
 /*
  * visus::power_overwhelming::hmc8015_sensor::display
  */
-void visus::power_overwhelming::hmc8015_sensor::display(const char *text) {
+void visus::power_overwhelming::hmc8015_sensor::display(
+        _In_opt_z_ const char *text) {
     auto impl = static_cast<detail::visa_sensor_impl &>(*this);
 
     if (text != nullptr) {
@@ -106,6 +113,21 @@ void visus::power_overwhelming::hmc8015_sensor::display(const char *text) {
 
     this->throw_on_system_error();
 }
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::display
+ */
+void visus::power_overwhelming::hmc8015_sensor::display(
+        _In_opt_z_ const wchar_t *text) {
+    if (text == nullptr) {
+        this->display(static_cast<char *>(nullptr));
+    } else {
+        auto t = convert_string<char>(text);
+        this->display(t.c_str());
+    }
+}
+
 
 /*
  * visus::power_overwhelming::hmc8015_sensor::is_log
@@ -120,7 +142,7 @@ bool visus::power_overwhelming::hmc8015_sensor::is_log(void) {
 /*
  * visus::power_overwhelming::hmc8015_sensor::log
  */
-void visus::power_overwhelming::hmc8015_sensor::log(const bool enable) {
+void visus::power_overwhelming::hmc8015_sensor::log(_In_ const bool enable) {
     auto impl = static_cast<detail::visa_sensor_impl&>(*this);
 
     //if (enable) {
@@ -150,10 +172,15 @@ void visus::power_overwhelming::hmc8015_sensor::log(const bool enable) {
  * visus::power_overwhelming::hmc8015_sensor::log_behaviour
  */
 void visus::power_overwhelming::hmc8015_sensor::log_behaviour(
-        const float interval, const log_mode mode, const int value,
-        const std::int32_t year, const std::int32_t month,
-        const std::int32_t day, const std::int32_t hour,
-        const std::int32_t minute, const std::int32_t second) {
+        _In_ const float interval,
+        _In_ const log_mode mode,
+        _In_ const int value,
+        _In_ const std::int32_t year,
+        _In_ const std::int32_t month,
+        _In_ const std::int32_t day,
+        _In_ const std::int32_t hour,
+        _In_ const std::int32_t minute,
+        _In_ const std::int32_t second) {
     auto impl = static_cast<detail::visa_sensor_impl&>(*this);
 
     // Configure the logging mode.
@@ -249,7 +276,7 @@ void visus::power_overwhelming::hmc8015_sensor::log_behaviour(
  * visus::power_overwhelming::hmc8015_sensor::log_file
  */
 std::size_t visus::power_overwhelming::hmc8015_sensor::log_file(
-        char *path, const std::size_t cnt) {
+        _Out_writes_opt_z_(cnt) char *path, _In_ const std::size_t cnt) {
     auto impl = static_cast<detail::visa_sensor_impl&>(*this);
 
     this->check_not_disposed();
@@ -276,8 +303,10 @@ std::size_t visus::power_overwhelming::hmc8015_sensor::log_file(
 /*
  * visus::power_overwhelming::hmc8015_sensor::log_file
  */
-void visus::power_overwhelming::hmc8015_sensor::log_file(const char *path,
-        const bool overwrite, const bool use_usb) {
+void visus::power_overwhelming::hmc8015_sensor::log_file(
+        _In_z_ const char *path,
+        _In_ const bool overwrite,
+        _In_ const bool use_usb) {
     if (path == nullptr) {
         throw std::invalid_argument("The path to the log file cannot be null.");
     }
@@ -290,6 +319,22 @@ void visus::power_overwhelming::hmc8015_sensor::log_file(const char *path,
 
     impl.printf("LOG:FNAM \"%s\", %s\n", path, location);
     this->throw_on_system_error();
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::log_file
+ */
+void visus::power_overwhelming::hmc8015_sensor::log_file(
+        _In_z_ const wchar_t *path,
+        _In_ const bool overwrite,
+        _In_ const bool use_usb) {
+    if (path == nullptr) {
+        throw std::invalid_argument("The path to the log file cannot be null.");
+    }
+
+    auto p = convert_string<char>(path);
+    this->log_file(p.c_str(), overwrite, use_usb);
 }
 
 
@@ -310,7 +355,7 @@ void visus::power_overwhelming::hmc8015_sensor::reset(void) {
  */
 visus::power_overwhelming::measurement
 visus::power_overwhelming::hmc8015_sensor::sample(
-        const timestamp_resolution resolution) const {
+        _In_ const timestamp_resolution resolution) const {
     auto impl = static_cast<detail::visa_sensor_impl&>(*this);
     auto response = impl.query("CHAN1:MEAS:DATA?\n");
     auto timestamp = create_timestamp(resolution);
@@ -321,6 +366,7 @@ visus::power_overwhelming::hmc8015_sensor::sample(
     auto c = static_cast<measurement::value_type>(::atof(tokens[1].c_str()));
     auto p = static_cast<measurement::value_type>(::atof(tokens[2].c_str()));
 
+    _Analysis_assume_(this->name() != nullptr);
     return measurement(this->name(), timestamp, v, c, p);
 }
 
@@ -361,8 +407,8 @@ void visus::power_overwhelming::hmc8015_sensor::configure(void) {
  * visus::power_overwhelming::hmc8015_sensor::set_range
  */
 void visus::power_overwhelming::hmc8015_sensor::set_range(
-        const std::int32_t channel, const char *quantity,
-        const instrument_range range, const float value) {
+        _In_ const std::int32_t channel, _In_z_ const char *quantity,
+        _In_ const instrument_range range, _In_ const float value) {
     assert(quantity != nullptr);
     auto impl = static_cast<detail::visa_sensor_impl &>(*this);
 

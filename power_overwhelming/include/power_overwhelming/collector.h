@@ -37,7 +37,7 @@ namespace power_overwhelming {
         /// <param name="settings">The general settings for the collector,
         /// including the sampling interval.</param>
         /// <returns>A collector for all available sensors.</returns>
-        static collector for_all(const collector_settings& settings);
+        static collector for_all(_In_ const collector_settings& settings);
 
         /// <summary>
         /// Creates a collector for all sensors that could be found and
@@ -50,8 +50,8 @@ namespace power_overwhelming {
         /// <returns>A collector for all available sensors.</returns>
         /// <exception std::invalid_argument">If <paramref name="output_path" />
         /// is <c>nullptr</c>.</exception>
-        inline static collector for_all(const wchar_t *output_path,
-                const sensor::microseconds_type sampling_interval
+        inline static collector for_all(_In_z_ const wchar_t *output_path,
+                _In_ const sensor::microseconds_type sampling_interval
                 = collector_settings::default_sampling_interval) {
             return for_all(collector_settings().output_path(output_path)
                 .sampling_interval(sampling_interval));
@@ -71,7 +71,7 @@ namespace power_overwhelming {
         /// <param name="path">The path to the JSON configuration file.</param>
         /// <returns>A new collector configured with the sensors in the
         /// specified file.</returns>
-        static collector from_json(const wchar_t *path);
+        static collector from_json(_In_z_ const wchar_t *path);
 
         /// <summary>
         /// Initialise a new instance from the given lists of sensors.
@@ -84,7 +84,8 @@ namespace power_overwhelming {
         /// <param name="sensors">The lists of sensors.</param>
         /// <returns></returns>
         template<class... TSensorLists>
-        static collector from_sensor_lists(const collector_settings& settings,
+        static collector from_sensor_lists(
+            _In_ const collector_settings& settings,
             TSensorLists&&... sensors);
 
         /// <summary>
@@ -100,7 +101,7 @@ namespace power_overwhelming {
         /// disposed by moving them once the method returns.</param>
         /// <returns>A new collector using the given sensors.</returns>
         template<class... TSensors>
-        static collector from_sensors(const collector_settings& settings,
+        static collector from_sensors(_In_ const collector_settings& settings,
             TSensors&&... sensors);
 
         /// <summary>
@@ -118,7 +119,7 @@ namespace power_overwhelming {
         /// </remarks>
         /// <param name="path">The path where the configuration file should be
         /// stored.</param>
-        static void make_configuration_template(const wchar_t *path);
+        static void make_configuration_template(_In_z_ const wchar_t *path);
 
         /// <summary>
         /// Initialise a new instance.
@@ -135,7 +136,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs"></param>
         /// <returns></returns>
-        inline collector(collector&& rhs) noexcept : _impl(rhs._impl) {
+        inline collector(_In_ collector&& rhs) noexcept : _impl(rhs._impl) {
             rhs._impl = nullptr;
         }
 
@@ -149,7 +150,7 @@ namespace power_overwhelming {
         /// output.
         /// </summary>
         /// <param name="marker"></param>
-        void marker(const wchar_t *marker);
+        void marker(_In_opt_z_ const wchar_t *marker);
 
         /// <summary>
         /// Answer the number of sensors in the collector.
@@ -177,7 +178,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        collector& operator =(collector&& rhs) noexcept;
+        collector& operator =(_In_ collector&& rhs) noexcept;
 
         /// <summary>
         /// Determines whether the object is valid.
@@ -209,14 +210,15 @@ namespace power_overwhelming {
         /// <param name="settings"></param>
         /// <param name="capacity"></param>
         /// <returns>A new collector without sensors.</returns>
-        static collector prepare(const collector_settings& settings,
-            const std::size_t capacity);
+        static collector prepare(_In_ const collector_settings& settings,
+            _In_ const std::size_t capacity);
 
         /// <summary>
         /// Initialise a new instance.
         /// </summary>
         /// <param name="impl"></param>
-        inline collector(detail::collector_impl *impl) : _impl(impl) { }
+        inline collector(_In_opt_ detail::collector_impl *impl)
+            : _impl(impl) { }
 
         /// <summary>
         /// Adds a new sensor to the collector.
@@ -229,7 +231,7 @@ namespace power_overwhelming {
         /// <param name="sensor">The sensor to be added. The object takes
         /// ownership of the object designated by this pointer. The object
         /// must have been allocated using C++ <c>new</c>.</param>
-        void add(sensor *sensor);
+        void add(_In_ sensor *sensor);
 
         detail::collector_impl *_impl;
 

@@ -1,7 +1,7 @@
-// <copyright file="tinkerforge_sensor_source.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="tinkerforge_sensor_source.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2022 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/tinkerforge_sensor_source.h"
 
@@ -13,8 +13,8 @@
  * visus::power_overwhelming::operator |
  */
 visus::power_overwhelming::tinkerforge_sensor_source
-visus::power_overwhelming::operator |(const tinkerforge_sensor_source lhs,
-        const tinkerforge_sensor_source rhs) {
+visus::power_overwhelming::operator |(_In_ const tinkerforge_sensor_source lhs,
+        _In_ const tinkerforge_sensor_source rhs) {
     typedef std::underlying_type<tinkerforge_sensor_source>::type mask_type;
     auto retval = static_cast<mask_type>(lhs) | static_cast<mask_type>(rhs);
     return static_cast<tinkerforge_sensor_source>(retval);
@@ -25,8 +25,8 @@ visus::power_overwhelming::operator |(const tinkerforge_sensor_source lhs,
  * visus::power_overwhelming::operator &
  */
 visus::power_overwhelming::tinkerforge_sensor_source
-visus::power_overwhelming::operator &(const tinkerforge_sensor_source lhs,
-        const tinkerforge_sensor_source rhs) {
+visus::power_overwhelming::operator &(_In_ const tinkerforge_sensor_source lhs,
+        _In_ const tinkerforge_sensor_source rhs) {
     typedef std::underlying_type<tinkerforge_sensor_source>::type mask_type;
     auto retval = static_cast<mask_type>(lhs) & static_cast<mask_type>(rhs);
     return static_cast<tinkerforge_sensor_source>(retval);
@@ -36,8 +36,8 @@ visus::power_overwhelming::operator &(const tinkerforge_sensor_source lhs,
 /*
  * visus::power_overwhelming::to_string
  */
-const wchar_t *visus::power_overwhelming::to_string(
-        const tinkerforge_sensor_source source) {
+_Ret_valid_ const wchar_t *visus::power_overwhelming::to_string(
+        _In_ const tinkerforge_sensor_source source) {
 #define _GCC_IS_SHIT(v) L##v
 #define _TO_STRING_CASE(v) case tinkerforge_sensor_source::v:\
     return _GCC_IS_SHIT(#v)
