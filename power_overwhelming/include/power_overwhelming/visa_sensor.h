@@ -50,13 +50,33 @@ namespace detail {
         /// loaded.</exception>
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
-        visa_sensor(const char *path, const std::int32_t timeout);
+        visa_sensor(_In_z_ const char *path, _In_ const std::int32_t timeout);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <remarks>
+        /// This constructor will set the name of the sensor to the identity
+        /// string of the instrument, reset the instrument and clear any error
+        /// state in the instrument.
+        /// </remarks>
+        /// <param name="path"></param>
+        /// <param name="timeout"></param>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the sensor state
+        /// could not be allocated.</exception>
+        /// <exception cref="std::system_error">If the VISA library could not be
+        /// loaded.</exception>
+        /// <exception cref="visa_exception">If the sensor could not be
+        /// initialised.</exception>
+        visa_sensor(_In_z_ const wchar_t *path, _In_ const std::int32_t timeout);
 
         /// <summary>
         /// Move <paramref name="rhs" /> into a new instance.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        inline visa_sensor(visa_sensor&& rhs) noexcept : _impl(rhs._impl) {
+        inline visa_sensor(_In_ visa_sensor&& rhs) noexcept : _impl(rhs._impl) {
             rhs._impl = nullptr;
         }
 
@@ -74,13 +94,14 @@ namespace detail {
         /// </remarks>
         /// <returns>The implementation-defined, human-readable name of the
         /// sensor.</returns>
-        virtual const wchar_t *name(void) const noexcept override;
+        _Ret_maybenull_z_ virtual const wchar_t *name(
+            void) const noexcept override;
 
         /// <summary>
         /// Gets the VISA path of the device.
         /// </summary>
         /// <returns>The VISA path used to open the device.</returns>
-        const char *path(void) const noexcept;
+        _Ret_maybenull_z_ const char *path(void) const noexcept;
 
         /// <summary>
         /// Resets the instrument to its default state.
@@ -101,14 +122,14 @@ namespace detail {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        void synchronise_clock(const bool utc = false);
+        void synchronise_clock(_In_ const bool utc = false);
 
         /// <summary>
         /// Move assignment.
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        visa_sensor& operator =(visa_sensor&& rhs) noexcept;
+        visa_sensor& operator =(_In_ visa_sensor&& rhs) noexcept;
 
         /// <summary>
         /// Determines whether the sensor is valid.
@@ -127,6 +148,12 @@ namespace detail {
         /// Clear all queued error codes.
         /// </summary>
         void clear_status(void);
+
+        /// <summary>
+        /// Initialises the instance by retreving the name and resetting the
+        /// device.
+        /// </summary>
+        void initialise(void);
 
         /// <summary>
         /// Checks <see cref="system_error" /> and throws a
@@ -150,7 +177,8 @@ namespace detail {
         /// </summary>
         /// <param name=""></param>
         /// <returns></returns>
-        inline operator visa_sensor_impl *(void) const noexcept {
+        _Ret_maybenull_ inline operator visa_sensor_impl *(
+                void) const noexcept {
             return this->_impl;
         }
 

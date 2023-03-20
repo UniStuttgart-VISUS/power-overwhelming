@@ -1,7 +1,7 @@
-// <copyright file="rtb_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="rtb_sensor.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/rtb_sensor.h"
 
@@ -23,8 +23,9 @@
  * visus::power_overwhelming::rtb_sensor::for_all
  */
 std::size_t visus::power_overwhelming::rtb_sensor::for_all(
-        rtb_sensor *out_sensors, const std::size_t cnt_sensors,
-        const std::int32_t timeout) {
+        _Out_writes_(cntSensors) rtb_sensor *out_sensors,
+        _In_ const std::size_t cnt_sensors,
+        _In_ const std::int32_t timeout) {
     // Build the query for all R&S RTB2004 instruments.
     std::string query("?*::");      // Any protocol
     query += rohde_und_schwarz;     // Only R&S
@@ -50,7 +51,18 @@ std::size_t visus::power_overwhelming::rtb_sensor::for_all(
  * visus::power_overwhelming::rtb_sensor::rtb_sensor
  */
 visus::power_overwhelming::rtb_sensor::rtb_sensor(
-        const char *path, const std::int32_t timeout)
+        _In_z_ const char *path, _In_ const std::int32_t timeout)
+        : detail::visa_sensor(path, timeout) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtb_sensor::rtb_sensor
+ */
+visus::power_overwhelming::rtb_sensor::rtb_sensor(
+        _In_z_ const wchar_t *path, _In_ const std::int32_t timeout)
         : detail::visa_sensor(path, timeout) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -67,10 +79,10 @@ visus::power_overwhelming::rtb_sensor::~rtb_sensor(void) { }
  * visus::power_overwhelming::rtb_sensor::configure
  */
 void visus::power_overwhelming::rtb_sensor::configure(
-        const oscilloscope_sensor_definition *sensors,
-        const std::size_t cnt_sensors) {
+        _In_reads_(cnt) const oscilloscope_sensor_definition *sensors,
+        _In_ const std::size_t cnt) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    if ((cnt_sensors > 0) && (sensors == nullptr)) {
+    if ((cnt > 0) && (sensors == nullptr)) {
         throw std::invalid_argument("The sensor definitions must be valid.");
     }
 
@@ -80,7 +92,7 @@ void visus::power_overwhelming::rtb_sensor::configure(
         impl.printf("CHAN%u:STAT OFF\n", i);
     }
 
-    for (std::size_t i = 0; i < cnt_sensors; ++i) {
+    for (std::size_t i = 0; i < cnt; ++i) {
         {
             auto c = sensors[i].channel_current();
             impl.printf("PROB%u:SET:ATT:UNIT %s\n", c, "A");
@@ -122,8 +134,9 @@ void visus::power_overwhelming::rtb_sensor::configure(
  * visus::power_overwhelming::rtb_sensor::expression
  */
 void visus::power_overwhelming::rtb_sensor::expression(
-        const std::uint32_t channel, const char *expression,
-        const char *unit) {
+        _In_ const std::uint32_t channel,
+        _In_opt_z_  const char *expression,
+        _In_opt_z_ const char *unit) {
     auto impl = static_cast<detail::visa_sensor_impl &>(*this);
 
     if (expression != nullptr) {
@@ -149,7 +162,7 @@ void visus::power_overwhelming::rtb_sensor::expression(
  */
 visus::power_overwhelming::measurement
 visus::power_overwhelming::rtb_sensor::sample(
-        const timestamp_resolution resolution) const {
+        _In_ const timestamp_resolution resolution) const {
     throw "TODO";
 }
 
@@ -157,8 +170,8 @@ visus::power_overwhelming::rtb_sensor::sample(
 /*
  * visus::power_overwhelming::rtb_sensor::unit
  */
-void visus::power_overwhelming::rtb_sensor::unit(const std::uint32_t channel,
-        const char *unit) {
+void visus::power_overwhelming::rtb_sensor::unit(
+        _In_ const std::uint32_t channel, _In_z_ const char *unit) {
     if (unit == nullptr) {
         throw std::invalid_argument("The unit for a probe cannot be null.");
     }

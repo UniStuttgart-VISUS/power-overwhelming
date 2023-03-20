@@ -8,7 +8,6 @@
 #include <string>
 
 #include "power_overwhelming/literal.h"
-#include "power_overwhelming/power_overwhelming_api.h"
 
 
 namespace visus {
@@ -26,8 +25,8 @@ namespace power_overwhelming {
     /// quotes.</param>
     /// <returns>The quoted input string.</returns>
     template<class TChar>
-    std::basic_string<TChar> quote(const TChar *str,
-        const TChar quote = POWER_OVERWHELMING_TPL_LITERAL(TChar, '"'));
+    std::basic_string<TChar> quote(_In_opt_z_ const TChar *str,
+        _In_ const TChar quote = POWER_OVERWHELMING_TPL_LITERAL(TChar, '"'));
 
 } /* namespace power_overwhelming */
 } /* namespace visus */

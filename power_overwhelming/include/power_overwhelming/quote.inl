@@ -8,8 +8,8 @@
  * visus::power_overwhelming::quote
  */
 template<class TChar>
-std::basic_string<TChar> visus::power_overwhelming::quote(const TChar *str,
-        const TChar quote) {
+std::basic_string<TChar> visus::power_overwhelming::quote(
+        _In_opt_z_ const TChar *str, _In_ const TChar quote) {
     std::basic_string<TChar> retval;
 
     if (str != nullptr) {
