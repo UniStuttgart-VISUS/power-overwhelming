@@ -1,5 +1,5 @@
 ﻿// <copyright file="measurement.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -212,8 +212,8 @@ namespace std {
     /// <returns></returns>
     template<class TChar, class TTraits>
     basic_ostream<TChar, TTraits>& operator <<(
-        basic_ostream<TChar, TTraits>& lhs,
-        const visus::power_overwhelming::measurement &rhs);
+        _In_ basic_ostream<TChar, TTraits>& lhs,
+        _In_ const visus::power_overwhelming::measurement &rhs);
 
 }
 

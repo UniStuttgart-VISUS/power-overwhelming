@@ -20,7 +20,7 @@
  * visus::power_overwhelming::graphics_device::all
  */
 std::size_t visus::power_overwhelming::graphics_device::all(
-        _Out_writes_all_(cntDevices) graphics_device *outDevices,
+        _Out_writes_(cntDevices) graphics_device *outDevices,
         _In_ const std::size_t cntDevices,
         _In_ const bool onlyHardware) {
 #if (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11)

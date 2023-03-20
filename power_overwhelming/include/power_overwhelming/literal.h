@@ -1,9 +1,11 @@
 ﻿// <copyright file="literal.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2017 - 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2017 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #pragma once
+
+#include "power_overwhelming/power_overwhelming_api.h"
 
 
 namespace visus {
@@ -28,10 +30,11 @@ namespace detail {
     /// </summary>
     template<> struct literal_selector<char> {
         typedef char char_type;
-        static const char_type select(const char n, const wchar_t w) {
+        static const char_type select(_In_ const char n, _In_ const wchar_t w) {
             return n;
         }
-        static const char_type *select(const char *n, const wchar_t *w) {
+        static _Ret_maybenull_z_ const char_type *select(_In_opt_z_ const char *n,
+                _In_opt_z_ const wchar_t *w) {
             return n;
         }
     };
@@ -41,10 +44,11 @@ namespace detail {
     /// </summary>
     template<> struct literal_selector<wchar_t> {
         typedef wchar_t char_type;
-        static const char_type select(const char n, const wchar_t w) {
+        static const char_type select(_In_ const char n, _In_ const wchar_t w) {
             return w;
         }
-        static const char_type *select(const char *n, const wchar_t *w) {
+        static _Ret_maybenull_z_ const char_type *select(_In_opt_z_ const char *n,
+                _In_opt_z_ const wchar_t *w) {
             return w;
         }
     };

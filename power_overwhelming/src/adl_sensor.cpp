@@ -171,7 +171,7 @@ namespace detail {
  * visus::power_overwhelming::adl_sensor::for_all
  */
 std::size_t visus::power_overwhelming::adl_sensor::for_all(
-        _Out_writes_all_(cntSensors) adl_sensor *outSensors,
+        _Out_writes_(cntSensors) adl_sensor *outSensors,
         _In_ const std::size_t cntSensors) {
     try {
         int cnt = 0;
@@ -336,7 +336,7 @@ visus::power_overwhelming::adl_sensor::sample(
  */
 void visus::power_overwhelming::adl_sensor::sample(
         _In_opt_ const measurement_callback on_measurement,
-        _In_ const microseconds_type sampling_period,
+        _In_ const microseconds_type period,
         _In_opt_ void *context) {
     using std::chrono::duration_cast;
     typedef decltype(detail::adl_sensor_impl::sampler)::interval_type
@@ -345,7 +345,7 @@ void visus::power_overwhelming::adl_sensor::sample(
     this->check_not_disposed();
 
     if (on_measurement != nullptr) {
-        auto sampler_rate = interval_type(sampling_period);
+        auto sampler_rate = interval_type(period);
         auto adl_rate = duration_cast<std::chrono::milliseconds>(sampler_rate);
 
         // Make sure that the sensor is running before queuing to the thread.

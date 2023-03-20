@@ -1,5 +1,5 @@
 ﻿// <copyright file="nvml_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -37,8 +37,9 @@ namespace power_overwhelming {
         /// of the size of the output array. If this number is larger than
         /// <paramref name="cntSensors" />, not all sensors have been returned.
         /// </returns>
-        static std::size_t for_all(nvml_sensor *outSensors,
-            const std::size_t cntSensors);
+        static std::size_t for_all(
+            _Out_writes_(cntSensors) nvml_sensor *outSensors,
+            _In_ const std::size_t cntSensors);
 
         /// <summary>
         /// Create a new instance for the device with the specified PCI bus ID.
@@ -47,7 +48,16 @@ namespace power_overwhelming {
         /// <returns></returns>
         /// <exception cref="nvml_exception">If the specified device was not
         /// found, is not unique or another error occurred in NVML.</exception>
-        static nvml_sensor from_bus_id(const char *pciBusId);
+        static nvml_sensor from_bus_id(_In_z_ const char *pciBusId);
+
+        /// <summary>
+        /// Create a new instance for the device with the specified PCI bus ID.
+        /// </summary>
+        /// <param name="pciBusId"></param>
+        /// <returns></returns>
+        /// <exception cref="nvml_exception">If the specified device was not
+        /// found, is not unique or another error occurred in NVML.</exception>
+        static nvml_sensor from_bus_id(_In_z_ const wchar_t *pciBusId);
 
         /// <summary>
         /// Create a new instance for the device with the specified unique ID.
@@ -56,7 +66,16 @@ namespace power_overwhelming {
         /// <returns></returns>
         /// <exception cref="nvml_exception">If the specified device was not
         /// found, is not unique or another error occurred in NVML.</exception>
-        static nvml_sensor from_guid(const char *guid);
+        static nvml_sensor from_guid(_In_z_ const char *guid);
+
+        /// <summary>
+        /// Create a new instance for the device with the specified unique ID.
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        /// <exception cref="nvml_exception">If the specified device was not
+        /// found, is not unique or another error occurred in NVML.</exception>
+        static nvml_sensor from_guid(_In_z_ const wchar_t *guid);
 
         /// <summary>
         /// Create a new instance from a device index.
@@ -71,7 +90,7 @@ namespace power_overwhelming {
         /// <returns></returns>
         /// <exception cref="nvml_exception">If the specified device was not
         /// found, is not unique or another error occurred in NVML.</exception>
-        static nvml_sensor from_index(const unsigned int index);
+        static nvml_sensor from_index(_In_ const unsigned int index);
 
         /// <summary>
         /// Create a new instance for a specific device serial number printed on
@@ -81,7 +100,17 @@ namespace power_overwhelming {
         /// <returns></returns>
         /// <exception cref="nvml_exception">If the specified device was not
         /// found, is not unique or another error occurred in NVML.</exception>
-        static nvml_sensor from_serial(const char *serial);
+        static nvml_sensor from_serial(_In_z_ const char *serial);
+
+        /// <summary>
+        /// Create a new instance for a specific device serial number printed on
+        /// the board.
+        /// </summary>
+        /// <param name="serial"></param>
+        /// <returns></returns>
+        /// <exception cref="nvml_exception">If the specified device was not
+        /// found, is not unique or another error occurred in NVML.</exception>
+        static nvml_sensor from_serial(_In_z_ const wchar_t *serial);
 
         /// <summary>
         /// Initialises a new instance.
@@ -98,7 +127,7 @@ namespace power_overwhelming {
         /// Move <paramref name="rhs" /> into a new instance.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        inline nvml_sensor(nvml_sensor&& rhs) noexcept : _impl(rhs._impl) {
+        inline nvml_sensor(_In_ nvml_sensor&& rhs) noexcept : _impl(rhs._impl) {
             rhs._impl = nullptr;
         }
 
@@ -112,18 +141,19 @@ namespace power_overwhelming {
         /// is for.
         /// </summary>
         /// <returns>The GUID of the device.</returns>
-        const char *device_guid(void) const noexcept;
+        _Ret_maybenull_z_ const char *device_guid(void) const noexcept;
 
         /// <summary>
         /// Gets the name of the sensor.
         /// </summary>
         /// <returns>The implementation-defined, human-readable name of the
         /// sensor.</returns>
-        virtual const wchar_t *name(void) const noexcept override;
+        virtual _Ret_maybenull_z_ const wchar_t *name(
+            void) const noexcept override;
 
         /// <inheritdoc />
         virtual measurement sample(
-            const timestamp_resolution resolution) const override;
+            _In_ const timestamp_resolution resolution) const override;
 
         using sensor::sample;
 
@@ -134,7 +164,7 @@ namespace power_overwhelming {
         /// <param name="on_measurement">The callback to be invoked if new data
         /// arrived. If this is <c>nullptr</c>, the asynchronous sampling will
         /// be disabled.</param>
-        /// <param name="sampling_period">The desired sampling period in
+        /// <param name="period">The desired sampling period in
         /// microseconds. This parameter defaults to 1 millisecond.</param>
         /// <param name="context">A user-defined context pointer that is passed
         /// on to <see cref="on_measurement" />. This parameter defaults to
@@ -146,16 +176,16 @@ namespace power_overwhelming {
         /// </exception>
         /// <exception cref="tinkerforge_exception">If the sensor could not be
         /// sampled. </exception>
-        void sample(const measurement_callback on_measurement,
-            const microseconds_type sampling_period = default_sampling_period,
-            void *context = nullptr);
+        void sample(_In_opt_ const measurement_callback on_measurement,
+            _In_ const microseconds_type period = default_sampling_period,
+            _In_opt_ void *context = nullptr);
 
         /// <summary>
         /// Move assignment.
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        nvml_sensor& operator =(nvml_sensor&& rhs) noexcept;
+        nvml_sensor& operator =(_In_ nvml_sensor&& rhs) noexcept;
 
         /// <inheritdoc />
         virtual operator bool(void) const noexcept override;

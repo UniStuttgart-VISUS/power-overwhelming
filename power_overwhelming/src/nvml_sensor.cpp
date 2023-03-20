@@ -1,7 +1,7 @@
-// <copyright file="nvml_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="nvml_sensor.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "power_overwhelming/nvml_sensor.h"
 
@@ -16,7 +16,8 @@
  * visus::power_overwhelming::nvml_sensor::for_all
  */
 std::size_t visus::power_overwhelming::nvml_sensor::for_all(
-        nvml_sensor *outSensors, const std::size_t cntSensors) {
+        _Out_writes_(cntSensors) nvml_sensor *outSensors,
+        _In_ const std::size_t cntSensors) {
     try {
         unsigned int retval = 0;
         detail::nvml_scope scope;
@@ -54,7 +55,7 @@ std::size_t visus::power_overwhelming::nvml_sensor::for_all(
  */
 visus::power_overwhelming::nvml_sensor
 visus::power_overwhelming::nvml_sensor::from_bus_id(
-        const char *pciBusId) {
+        _In_z_ const char *pciBusId) {
     nvml_sensor retval;
 
     auto status = detail::nvidia_management_library::instance()
@@ -70,11 +71,21 @@ visus::power_overwhelming::nvml_sensor::from_bus_id(
 
 
 /*
+ * visus::power_overwhelming::nvml_sensor::from_bus_id
+ */
+visus::power_overwhelming::nvml_sensor
+visus::power_overwhelming::nvml_sensor::from_bus_id(
+        _In_z_ const wchar_t *pciBusId) {
+    auto b = convert_string<char>(pciBusId);
+    return from_bus_id(b.c_str());
+}
+
+
+/*
  * visus::power_overwhelming::nvml_sensor::from_guid
  */
 visus::power_overwhelming::nvml_sensor
-visus::power_overwhelming::nvml_sensor::from_guid(
-        const char *guid) {
+visus::power_overwhelming::nvml_sensor::from_guid(_In_z_ const char *guid) {
     nvml_sensor retval;
 
     auto status = detail::nvidia_management_library::instance()
@@ -90,11 +101,21 @@ visus::power_overwhelming::nvml_sensor::from_guid(
 
 
 /*
+ * visus::power_overwhelming::nvml_sensor::from_guid
+ */
+visus::power_overwhelming::nvml_sensor
+visus::power_overwhelming::nvml_sensor::from_guid(_In_z_ const wchar_t *guid) {
+    auto g = convert_string<char>(guid);
+    return from_guid(g.c_str());
+}
+
+
+/*
  * visus::power_overwhelming::nvml_sensor::from_index
  */
 visus::power_overwhelming::nvml_sensor
 visus::power_overwhelming::nvml_sensor::from_index(
-        const unsigned int index) {
+        _In_ const unsigned int index) {
     nvml_sensor retval;
 
     auto status = detail::nvidia_management_library::instance()
@@ -114,7 +135,7 @@ visus::power_overwhelming::nvml_sensor::from_index(
  */
 visus::power_overwhelming::nvml_sensor
 visus::power_overwhelming::nvml_sensor::from_serial(
-        const char *serial) {
+        _In_z_ const char *serial) {
     nvml_sensor retval;
 
     auto status = detail::nvidia_management_library::instance()
@@ -127,6 +148,18 @@ visus::power_overwhelming::nvml_sensor::from_serial(
 
     return retval;
 }
+
+
+/*
+ * visus::power_overwhelming::nvml_sensor::from_serial
+ */
+visus::power_overwhelming::nvml_sensor
+visus::power_overwhelming::nvml_sensor::from_serial(
+        const _In_z_ wchar_t *serial) {
+    auto s = convert_string<char>(serial);
+    return from_serial(s.c_str());
+}
+
 
 /*
  * visus::power_overwhelming::nvml_sensor::nvml_sensor
@@ -146,8 +179,8 @@ visus::power_overwhelming::nvml_sensor::~nvml_sensor(void) {
 /*
  * visus::power_overwhelming::nvml_sensor::device_guid
  */
-const char *visus::power_overwhelming::nvml_sensor::device_guid(
-        void) const noexcept {
+_Ret_maybenull_z_ const char *
+visus::power_overwhelming::nvml_sensor::device_guid(void) const noexcept {
     if (this->_impl == nullptr) {
         return nullptr;
     } else {
@@ -159,7 +192,7 @@ const char *visus::power_overwhelming::nvml_sensor::device_guid(
 /*
  * visus::power_overwhelming::nvml_sensor::name
  */
-const wchar_t *visus::power_overwhelming::nvml_sensor::name(
+_Ret_maybenull_z_ const wchar_t *visus::power_overwhelming::nvml_sensor::name(
         void) const noexcept {
     if (this->_impl == nullptr) {
         return nullptr;
@@ -174,7 +207,7 @@ const wchar_t *visus::power_overwhelming::nvml_sensor::name(
  */
 visus::power_overwhelming::measurement
 visus::power_overwhelming::nvml_sensor::sample(
-        const timestamp_resolution resolution) const {
+        _In_ const timestamp_resolution resolution) const {
     this->check_not_disposed();
     return this->_impl->sample(resolution);
 }
@@ -184,9 +217,9 @@ visus::power_overwhelming::nvml_sensor::sample(
  * visus::power_overwhelming::nvml_sensor::sample
  */
 void visus::power_overwhelming::nvml_sensor::sample(
-        const measurement_callback on_measurement,
-        const microseconds_type sampling_period,
-        void *context) {
+        _In_opt_ const measurement_callback on_measurement,
+        _In_ const microseconds_type period,
+        _In_opt_ void *context) {
     typedef decltype(detail::nvml_sensor_impl::sampler)::interval_type
         interval_type;
 
@@ -194,7 +227,7 @@ void visus::power_overwhelming::nvml_sensor::sample(
 
     if (on_measurement != nullptr) {
         if (!detail::nvml_sensor_impl::sampler.add(this->_impl, on_measurement,
-                context, interval_type(sampling_period))) {
+                context, interval_type(period))) {
             throw std::logic_error("Asynchronous sampling cannot be started "
                 "while it is already running.");
         }
@@ -209,7 +242,8 @@ void visus::power_overwhelming::nvml_sensor::sample(
  * visus::power_overwhelming::nvml_sensor::operator =
  */
 visus::power_overwhelming::nvml_sensor&
-visus::power_overwhelming::nvml_sensor::operator =(nvml_sensor&& rhs) noexcept {
+visus::power_overwhelming::nvml_sensor::operator =(
+        _In_ nvml_sensor&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         this->_impl = rhs._impl;
         rhs._impl = nullptr;

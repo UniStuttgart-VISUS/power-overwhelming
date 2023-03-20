@@ -104,7 +104,7 @@ namespace power_overwhelming {
         /// <exception cref="std::system_error">If the devices could not be
         /// enumerated due to an error in the underlying APIs.</exception>
         static std::size_t all(
-            _Out_writes_all_(cntDevices) graphics_device *outDevices,
+            _Out_writes_(cntDevices) graphics_device *outDevices,
             _In_ const std::size_t cntDevices,
             _In_ const bool onlyHardware = true);
 

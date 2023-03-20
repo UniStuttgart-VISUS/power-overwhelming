@@ -1,5 +1,5 @@
 ﻿// <copyright file="hmc8015_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -42,9 +42,10 @@ namespace power_overwhelming {
         /// to 3000.</param>
         /// <returns>The number of HMC8015 instruments found, regardless of how
         /// many have been returned to <paramref name="out_sensors" />.</returns>
-        static std::size_t for_all(hmc8015_sensor *out_sensors,
-            const std::size_t cnt_sensors,
-            const std::int32_t timeout = 3000);
+        static std::size_t for_all(
+            _Out_writes_(cnt_sensors) hmc8015_sensor *out_sensors,
+            _In_ const std::size_t cnt_sensors,
+            _In_ const std::int32_t timeout = 3000);
 
         /// <summary>
         /// The product ID of the HMC8015.
@@ -74,13 +75,14 @@ namespace power_overwhelming {
         /// loaded.</exception>
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
-        hmc8015_sensor(const char *path, const std::int32_t timeout);
+        hmc8015_sensor(_In_z_ const char *path,
+            _In_ const std::int32_t timeout);
 
         /// <summary>
         /// Move <paramref name="rhs" /> into a new instance.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        inline hmc8015_sensor(hmc8015_sensor&& rhs) noexcept
+        inline hmc8015_sensor(_In_ hmc8015_sensor&& rhs) noexcept
             : detail::visa_sensor(std::move(rhs)) { }
 
         /// <summary>
@@ -109,8 +111,8 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        inline void current_range(const instrument_range range,
-                const float value = 0.0f) {
+        inline void current_range(_In_ const instrument_range range,
+                _In_ const float value = 0.0f) {
             // Note: HMC8015 supports only one channel, so this is hard coded.
             this->set_range(1, "CURR", range, value);
         }
@@ -124,7 +126,18 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        void display(const char *text);
+        void display(_In_opt_z_ const char *text);
+
+        /// <summary>
+        /// Displays the given text or clears the display.
+        /// </summary>
+        /// <param name="text">The text to be displayed or <c>nullptr</c> to
+        /// clear the display.</param>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        void display(_In_opt_z_ const wchar_t *text);
 
         /// <summary>
         /// Gets whether logging is enabled or not.
@@ -146,7 +159,7 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        void log(const bool enable);
+        void log(_In_ const bool enable);
 
         /// <summary>
         /// Configures how logging started by <see cref="log" /> behaves.
@@ -177,11 +190,15 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        void log_behaviour(const float interval, const log_mode mode,
-            const int value = INT_MAX,
-            const std::int32_t year = 0, const std::int32_t month = 0,
-            const std::int32_t day = 0, const std::int32_t hour = 0,
-            const std::int32_t minute = 0, const std::int32_t second = 0);
+        void log_behaviour(_In_ const float interval,
+            _In_ const log_mode mode,
+            _In_ const int value = INT_MAX,
+            _In_ const std::int32_t year = 0,
+            _In_ const std::int32_t month = 0,
+            _In_ const std::int32_t day = 0,
+            _In_ const std::int32_t hour = 0,
+            _In_ const std::int32_t minute = 0,
+            _In_ const std::int32_t second = 0);
 
         /// <summary>
         /// Gets the path to the log file.
@@ -199,7 +216,8 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        std::size_t log_file(char *path, const std::size_t cnt);
+        std::size_t log_file(_Out_writes_opt_z_(cnt) char *path,
+            _In_ const std::size_t cnt);
 
         /// <summary>
         /// Sets the path to the log file.
@@ -216,8 +234,28 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        void log_file(const char *path, const bool overwrite = false,
-            const bool use_usb = false);
+        void log_file(_In_z_ const char *path,
+            _In_ const bool overwrite = false,
+            _In_ const bool use_usb = false);
+
+        /// <summary>
+        /// Sets the path to the log file.
+        /// </summary>
+        /// <param name="path">The path to the log file, usually just the
+        /// file name.</param>
+        /// <param name="overwrite">If <c>true</c>, the file will be cleared
+        /// if it already exists. This parameter defaults to <c>false</c>.
+        /// </param>
+        /// <param name="use_usb">If <c>true</c>, the file will be written to
+        /// the attached USB stick instead of internal memory. This parameter
+        /// defaults to <c>false</c>.</param>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        void log_file(_In_z_ const wchar_t *path,
+            _In_ const bool overwrite = false,
+            _In_ const bool use_usb = false);
 
         /// <summary>
         /// Resets the instrument to its default state.
@@ -239,7 +277,7 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
         virtual measurement sample(
-            const timestamp_resolution resolution) const override;
+            _In_ const timestamp_resolution resolution) const override;
 
         using sensor::sample;
 
@@ -264,8 +302,8 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        inline void voltage_range(const instrument_range range,
-                const std::int32_t value = 0) {
+        inline void voltage_range(_In_ const instrument_range range,
+                _In_ const std::int32_t value = 0) {
             // Note: HMC8015 supports only one channel, so this is hard coded.
             this->set_range(1, "VOLT", range, static_cast<float>(value));
         }
@@ -275,7 +313,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        inline hmc8015_sensor& operator =(hmc8015_sensor&& rhs) noexcept {
+        inline hmc8015_sensor& operator =(_In_ hmc8015_sensor&& rhs) noexcept {
             visa_sensor::operator =(std::move(rhs));
             return *this;
         }
@@ -284,8 +322,10 @@ namespace power_overwhelming {
 
         void configure(void);
 
-        void set_range(const std::int32_t channel, const char *quantity,
-            const instrument_range range, const float value);
+        void set_range(_In_ const std::int32_t channel,
+            _In_z_ const char *quantity,
+            _In_ const instrument_range range,
+            _In_ const float value);
     };
 
 } /* namespace power_overwhelming */
