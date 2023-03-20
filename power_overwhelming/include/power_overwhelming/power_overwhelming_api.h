@@ -28,4 +28,5 @@
 
 // These are missing in the salieri header.
 #define _Analysis_assume_(expr)
+#define _Ret_valid_
 #endif /* defined(_WIN32) */
