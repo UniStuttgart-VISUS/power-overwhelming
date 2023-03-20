@@ -1,5 +1,5 @@
 ﻿// <copyright file="time_synchroniser.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -24,8 +24,8 @@ namespace power_overwhelming {
 
     public:
 
-        static time_synchroniser create(const int address_family,
-            const std::uint16_t port);
+        static time_synchroniser create(_In_ const int address_family,
+            _In_ const std::uint16_t port);
 
         /// <summary>
         /// Initialise a new instance.
@@ -44,7 +44,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs"></param>
         /// <returns></returns>
-        inline time_synchroniser(time_synchroniser&& rhs) noexcept
+        inline time_synchroniser(_In_ time_synchroniser&& rhs) noexcept
                 : _impl(rhs._impl) {
             rhs._impl = nullptr;
         }
@@ -61,7 +61,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        time_synchroniser& operator =(time_synchroniser&& rhs) noexcept;
+        time_synchroniser& operator =(_In_ time_synchroniser&& rhs) noexcept;
 
         /// <summary>
         /// Determines whether the object is valid.
