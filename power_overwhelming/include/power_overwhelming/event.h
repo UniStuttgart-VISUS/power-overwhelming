@@ -6,8 +6,11 @@
 #pragma once
 
 #if defined(_WIN32)
+#pragma push_macro("NOMINMAX")
 #define NOMINMAX
 #include <Windows.h>
+#pragma pop_macro("NOMINMAX")
+
 #else /*defined(_WIN32) */
 #define POWER_OVERWHELMING_EVENT_EMULATION
 #endif /* defined(_WIN32) */
@@ -44,15 +47,16 @@ namespace power_overwhelming {
     /// <returns></returns>
     /// <exception cref="std::bad_alloc"></exception>
     /// <exception cref="std::system_error"></exception>
-    extern event_type POWER_OVERWHELMING_API create_event(
-        const bool manual_reset = false,
-        const bool initially_signalled = false);
+    extern _Ret_ event_type POWER_OVERWHELMING_API create_event(
+        _In_ const bool manual_reset = false,
+        _In_ const bool initially_signalled = false);
 
     /// <summary>
     /// Destroys the given event.
     /// </summary>
     /// <param name="event">The event to be released.</param>
-    extern void POWER_OVERWHELMING_API destroy_event(event_type& event);
+    extern void POWER_OVERWHELMING_API destroy_event(
+        _Inout_opt_ event_type& event);
 
     /// <summary>
     /// Resets a manual reset event.
@@ -60,7 +64,7 @@ namespace power_overwhelming {
     /// <param name="event">The handle of the event to reset.</param>
     /// <exception cref="std::system_error">In case the operation failed.
     /// </exception>
-    extern void POWER_OVERWHELMING_API reset_event(event_type event);
+    extern void POWER_OVERWHELMING_API reset_event(_In_ event_type event);
 
     /// <summary>
     /// Signals an event.
@@ -68,7 +72,7 @@ namespace power_overwhelming {
     /// <param name="event">The handle of the event to set.</param>
     /// <exception cref="std::system_error">In case the operation failed.
     /// </exception>
-    extern void POWER_OVERWHELMING_API set_event(event_type event);
+    extern void POWER_OVERWHELMING_API set_event(_In_ event_type event);
 
     /// <summary>
     /// Waits for an event to become signalled.
@@ -76,7 +80,7 @@ namespace power_overwhelming {
     /// <param name="event">The handle of the event to wait for.</param>
     /// <exception cref="std::system_error">In case the operation failed.
     /// </exception>
-    extern void POWER_OVERWHELMING_API wait_event(event_type event);
+    extern void POWER_OVERWHELMING_API wait_event(_In_ event_type event);
 
     /// <summary>
     /// Waits for an event to become signalled.
@@ -87,8 +91,8 @@ namespace power_overwhelming {
     /// the operation timed out without another error.</returns>
     /// <exception cref="std::system_error">In case the operation failed.
     /// </exception>
-    extern bool POWER_OVERWHELMING_API wait_event(event_type event,
-        const unsigned int timeout);
+    extern bool POWER_OVERWHELMING_API wait_event(_In_ event_type event,
+        _In_ const unsigned int timeout);
 
 } /* namespace power_overwhelming */
 } /* namespace visus */
