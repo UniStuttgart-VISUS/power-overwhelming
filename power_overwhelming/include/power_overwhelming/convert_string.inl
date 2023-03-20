@@ -32,5 +32,6 @@ visus::power_overwhelming::convert_string(_In_opt_z_ const TInput *str) {
         detail::convert_string(retval.data(), retval.size(), str, len);
     }
 
+    retval.emplace_back(0); // Make sure that result is always terminated.
     return retval.data();
 }
