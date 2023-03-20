@@ -70,8 +70,9 @@ namespace power_overwhelming {
         /// </returns>
         /// <exception cref="std::system_error">If enumerating or opening the
         /// devices failed.</exception>
-        static std::size_t for_all(emi_sensor *out_sensors,
-            const std::size_t cnt_sensors);
+        static std::size_t for_all(
+            _Out_writes_all_(cntSensors) emi_sensor *out_sensors,
+            _In_ const std::size_t cnt_sensors);
 
         /// <summary>
         /// Create sensors for all channels of all devices whose name matches
@@ -91,8 +92,10 @@ namespace power_overwhelming {
         /// <paramref name="channel" /> is <c>nullptr</c>.</exception>
         /// <exception cref="std::system_error">If enumerating or opening the
         /// devices failed.</exception>
-        static std::size_t for_channel(emi_sensor *out_sensors,
-            const std::size_t cnt_sensors, const wchar_t *channel);
+        static std::size_t for_channel(
+            _Out_writes_all_(cntSensors) emi_sensor *out_sensors,
+            _In_ const std::size_t cnt_sensors,
+            _In_z_ const wchar_t *channel);
 
         /// <summary>
         /// Create sensors for all devices whose name matches the given regular
@@ -112,8 +115,10 @@ namespace power_overwhelming {
         /// <paramref name="device" /> is <c>nullptr</c>.</exception>
         /// <exception cref="std::system_error">If enumerating or opening the
         /// devices failed.</exception>
-        static std::size_t for_device(emi_sensor *out_sensors,
-            const std::size_t cnt_sensors, const char_type *device);
+        static std::size_t for_device(
+            _Out_writes_all_(cntSensors) emi_sensor *out_sensors,
+            _In_ const std::size_t cnt_sensors,
+            _In_z_ const char_type *device);
 
         /// <summary>
         /// Create sensors for all devices and channels whose names matches the
@@ -132,12 +137,15 @@ namespace power_overwhelming {
         /// <paramref name="cntSensors" />, not all sensors have been returned.
         /// </returns>
         /// <exception cref="std::invalid_argument">If
-        /// <paramref name="device" /> is <c>nullptr</c>.</exception>
+        /// <paramref name="device" /> is <c>nullptr</c>, of
+        /// <paramref name="channel" /> is <c>nullptr</c>.</exception>
         /// <exception cref="std::system_error">If enumerating or opening the
         /// devices failed.</exception>
-        static std::size_t for_device_and_channel(emi_sensor *out_sensors,
-            const std::size_t cnt_sensors, const char_type *device,
-            const char_type *channel);
+        static std::size_t for_device_and_channel(
+            _Out_writes_all_(cntSensors) emi_sensor *out_sensors,
+            _In_ const std::size_t cnt_sensors,
+            _In_z_ const char_type *device,
+            _In_z_ const char_type *channel);
 
         /// <summary>
         /// Create sensors for all devices whose name matches the given regular
@@ -158,9 +166,11 @@ namespace power_overwhelming {
         /// <paramref name="device" /> is <c>nullptr</c>.</exception>
         /// <exception cref="std::system_error">If enumerating or opening the
         /// devices failed.</exception>
-        static std::size_t for_device_and_channel(emi_sensor *out_sensors,
-            const std::size_t cnt_sensors, const char_type *device,
-            const channel_type channel);
+        static std::size_t for_device_and_channel(
+            _Out_writes_all_(cntSensors) emi_sensor *out_sensors,
+            _In_ const std::size_t cnt_sensors,
+            _In_z_ const char_type *device,
+            _In_ const channel_type channel);
 
         /// <summary>
         /// Initialises a new instance.
@@ -171,7 +181,7 @@ namespace power_overwhelming {
         /// Move <paramref name="rhs" /> into a new instance.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        inline emi_sensor(emi_sensor&& rhs) noexcept : _impl(rhs._impl) {
+        inline emi_sensor(_In_ emi_sensor&& rhs) noexcept : _impl(rhs._impl) {
             rhs._impl = nullptr;
         }
 
@@ -203,18 +213,19 @@ namespace power_overwhelming {
         channel_type channels(void) const;
 
         /// <inheritdoc />
-        virtual const wchar_t *name(void) const noexcept override;
+        virtual _Ret_maybenull_z_ const wchar_t *name(
+            void) const noexcept override;
 
         /// <summary>
         /// Answer the path to the underlying device.
         /// </summary>
         /// <returns>The path of the EMI device or <c>nullptr</c> if the sensor
         /// is invalid.</returns>
-        const char_type *path(void) const noexcept;
+        _Ret_maybenull_z_ const char_type *path(void) const noexcept;
 
         /// <inheritdoc />
         virtual measurement sample(
-            const timestamp_resolution resolution) const override;
+            _In_ const timestamp_resolution resolution) const override;
 
         /// <summary>
         /// Asynchronously sample the sensor every
@@ -223,7 +234,7 @@ namespace power_overwhelming {
         /// <param name="on_measurement">The callback to be invoked if new data
         /// arrived. If this is <c>nullptr</c>, the asynchronous sampling will
         /// be disabled.</param>
-        /// <param name="sampling_period">The desired sampling period in
+        /// <param name="period">The desired sampling period in
         /// microseconds. This parameter defaults to 1 millisecond.</param>
         /// <param name="context">A user-defined context pointer that is passed
         /// on to <see cref="on_measurement" />. This parameter defaults to
@@ -235,9 +246,9 @@ namespace power_overwhelming {
         /// </exception>
         /// <exception cref="tinkerforge_exception">If the sensor could not be
         /// sampled. </exception>
-        void sample(const measurement_callback on_measurement,
-            const microseconds_type sampling_period = default_sampling_period,
-            void *context = nullptr);
+        void sample(_In_opt_ const measurement_callback on_measurement,
+            _In_ const microseconds_type period = default_sampling_period,
+            _In_opt_ void *context = nullptr);
 
 #if defined(_WIN32)
         /// <summary>
@@ -256,8 +267,8 @@ namespace power_overwhelming {
         /// <exception cref="std::invalid_argument">If the method is called on a
         /// sensor that uses a different version than EMIv1.</exception>
         /// <exception cref="std::system_error">If the IOCTL failed.</exception>
-        EMI_MEASUREMENT_DATA_V1 *sample(
-            EMI_MEASUREMENT_DATA_V1& measurement) const;
+        _Ret_ EMI_MEASUREMENT_DATA_V1 *sample(
+            _In_ EMI_MEASUREMENT_DATA_V1& measurement) const;
 #endif /* defined(_WIN32) */
 
 #if defined(_WIN32)
@@ -280,8 +291,9 @@ namespace power_overwhelming {
         /// <exception cref="std::invalid_argument">If the method is called on a
         /// sensor that uses a different version than EMIv2.</exception>
         /// <exception cref="std::system_error">If the IOCTL failed.</exception>
-        EMI_MEASUREMENT_DATA_V2 *sample(EMI_MEASUREMENT_DATA_V2 *measurement,
-            const std::size_t size) const;
+        _Ret_ EMI_MEASUREMENT_DATA_V2 *sample(
+            _Inout_updates_bytes_(size) EMI_MEASUREMENT_DATA_V2 *measurement,
+            _In_ const std::size_t size) const;
 #endif /* defined(_WIN32) */
 
         using sensor::sample;
@@ -305,7 +317,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        emi_sensor& operator =(emi_sensor&& rhs) noexcept;
+        emi_sensor& operator =(_In_ emi_sensor&& rhs) noexcept;
 
         /// <inheritdoc />
         virtual operator bool(void) const noexcept override;

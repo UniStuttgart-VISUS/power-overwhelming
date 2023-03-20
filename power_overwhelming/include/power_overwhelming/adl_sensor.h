@@ -163,7 +163,7 @@ namespace power_overwhelming {
         /// <param name="on_measurement">The callback to be invoked if new data
         /// arrived. If this is <c>nullptr</c>, the asynchronous sampling will
         /// be disabled.</param>
-        /// <param name="sampling_period">The desired sampling period in
+        /// <param name="period">The desired sampling period in
         /// microseconds. This parameter defaults to 1 millisecond.</param>
         /// <param name="context">A user-defined context pointer that is passed
         /// on to <see cref="on_measurement" />. This parameter defaults to
@@ -176,8 +176,7 @@ namespace power_overwhelming {
         /// <exception cref="tinkerforge_exception">If the sensor could not be
         /// sampled. </exception>
         void sample(_In_opt_ const measurement_callback on_measurement,
-            _In_ const microseconds_type sampling_period
-            = default_sampling_period,
+            _In_ const microseconds_type period = default_sampling_period,
             _In_opt_ void *context = nullptr);
 
         using sensor::sample;
