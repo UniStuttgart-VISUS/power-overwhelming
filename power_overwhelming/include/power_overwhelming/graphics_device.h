@@ -145,7 +145,7 @@ namespace power_overwhelming {
         /// to store the device ID.</exception>
         /// <exception cref="std::system_error">If the device ID could not be
         /// determined.</exception>
-        inline _Ret_ const wchar_t *id(void) const {
+        inline _Ret_valid_ const wchar_t *id(void) const {
             this->assert_id_and_name();
             return this->_id;
         }
@@ -160,7 +160,7 @@ namespace power_overwhelming {
         /// to store the device name.</exception>
         /// <exception cref="std::system_error">If the device name could not be
         /// determines.</exception>
-        inline _Ret_ const wchar_t *name(void) const {
+        inline _Ret_valid_ const wchar_t *name(void) const {
             this->assert_id_and_name();
             return this->_name;
         }

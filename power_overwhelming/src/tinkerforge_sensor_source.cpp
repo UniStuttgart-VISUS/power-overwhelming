@@ -36,7 +36,7 @@ visus::power_overwhelming::operator &(_In_ const tinkerforge_sensor_source lhs,
 /*
  * visus::power_overwhelming::to_string
  */
-_Ret_ const wchar_t *visus::power_overwhelming::to_string(
+_Ret_valid_ const wchar_t *visus::power_overwhelming::to_string(
         _In_ const tinkerforge_sensor_source source) {
 #define _GCC_IS_SHIT(v) L##v
 #define _TO_STRING_CASE(v) case tinkerforge_sensor_source::v:\

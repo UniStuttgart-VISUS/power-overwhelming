@@ -67,7 +67,7 @@ namespace power_overwhelming {
     /// <returns>The name of the source.</returns>
     /// <exception cref="std::invalid_argument">If the source is not
     /// valid and therefore could not be converted.</exception>
-    extern POWER_OVERWHELMING_API _Ret_ const wchar_t *to_string(
+    extern POWER_OVERWHELMING_API _Ret_valid_ const wchar_t *to_string(
         _In_ const tinkerforge_sensor_source source);
 
 } /* namespace power_overwhelming */

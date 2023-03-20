@@ -31,7 +31,7 @@ namespace detail {
 /*
  * visus::power_overwhelming::create_event
  */
-_Ret_ visus::power_overwhelming::event_type
+_Ret_valid_ visus::power_overwhelming::event_type
 visus::power_overwhelming::create_event(_In_ const bool manual_reset,
         _In_ const bool initially_signalled) {
 #if defined(POWER_OVERWHELMING_EVENT_EMULATION)

@@ -47,7 +47,7 @@ namespace power_overwhelming {
     /// <returns></returns>
     /// <exception cref="std::bad_alloc"></exception>
     /// <exception cref="std::system_error"></exception>
-    extern _Ret_ event_type POWER_OVERWHELMING_API create_event(
+    extern _Ret_valid_ event_type POWER_OVERWHELMING_API create_event(
         _In_ const bool manual_reset = false,
         _In_ const bool initially_signalled = false);
 
