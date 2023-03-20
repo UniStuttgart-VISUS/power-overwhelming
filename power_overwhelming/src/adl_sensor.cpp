@@ -171,7 +171,7 @@ namespace detail {
  * visus::power_overwhelming::adl_sensor::for_all
  */
 std::size_t visus::power_overwhelming::adl_sensor::for_all(
-        _Out_writes_(cntSensors) adl_sensor *outSensors,
+        _Out_writes_opt_(cntSensors) adl_sensor *outSensors,
         _In_ const std::size_t cntSensors) {
     try {
         int cnt = 0;

@@ -23,8 +23,8 @@
  * visus::power_overwhelming::hmc8015_sensor::for_all
  */
 std::size_t visus::power_overwhelming::hmc8015_sensor::for_all(
-        _Out_writes_(cnt_sensors) hmc8015_sensor *out_sensors,
-        _In_ const std::size_t cnt_sensors,
+        _Out_writes_opt_(cnt_sensors) hmc8015_sensor *out_sensors,
+        _In_ std::size_t cnt_sensors,
         _In_ const std::int32_t timeout) {
     // Build the query for all R&S HMC8015 instruments.
     std::string query("?*::");      // Any protocol
@@ -36,6 +36,11 @@ std::size_t visus::power_overwhelming::hmc8015_sensor::for_all(
     // Search the instruments using VISA.
     auto devices = detail::visa_library::instance().find_resource(
         query.c_str());
+
+    // Guard against misuse.
+    if (out_sensors == nullptr) {
+        cnt_sensors = 0;
+    }
 
     // Create a sensor for each instrument we found.
     for (std::size_t i = 0; (i < cnt_sensors) && (i < devices.size()); ++i) {

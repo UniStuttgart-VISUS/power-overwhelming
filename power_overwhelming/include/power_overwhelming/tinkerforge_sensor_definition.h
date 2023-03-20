@@ -33,7 +33,7 @@ namespace power_overwhelming {
         /// is <c>nullptr</c>.</exception>
         /// <exception cref="std::bad_alloc">If the memory for the UID
         /// could not be allocated.</exception>
-        tinkerforge_sensor_definition(const char *uid);
+        tinkerforge_sensor_definition(_In_z_ const char *uid);
 
         /// <summary>
         /// Clone <paramref name="rhs" />.
@@ -41,14 +41,15 @@ namespace power_overwhelming {
         /// <param name="rhs">The object to be cloned.</param>
         /// <exception cref="std::bad_alloc">If the memory for the copied data
         /// could not be allocated.</exception>
-        tinkerforge_sensor_definition(const tinkerforge_sensor_definition& rhs);
+        tinkerforge_sensor_definition(
+            _In_ const tinkerforge_sensor_definition& rhs);
 
         /// <summary>
         /// Move <paramref name="rhs" /> into a new object.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
         inline tinkerforge_sensor_definition(
-                tinkerforge_sensor_definition&& rhs) noexcept
+                _In_ tinkerforge_sensor_definition&& rhs) noexcept
                 : _description(rhs._description), _uid(rhs._uid) {
             rhs._description = nullptr;
             rhs._uid = nullptr;
@@ -64,7 +65,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>The description of the sensor. The object remains owner of
         /// the memory returned.</returns>
-        const wchar_t *description(void) const noexcept {
+        _Ret_maybenull_z_ const wchar_t *description(void) const noexcept {
             return this->_description;
         }
 
@@ -75,14 +76,14 @@ namespace power_overwhelming {
         /// safe to pass <c>nullptr</c>.</param>
         /// <exception cref="std::bad_alloc">If the memory for the description
         /// could not be allocated.</exception>
-        void description(const wchar_t *description);
+        void description(_In_opt_z_ const wchar_t *description);
 
         /// <summary>
         /// Gets the UID of the sensor.
         /// </summary>
         /// <returns>The UID of the sensor. The object remains owner of the
         /// memory returned.</returns>
-        const char *uid(void) const noexcept {
+        _Ret_maybenull_z_ const char *uid(void) const noexcept {
             return this->_uid;
         }
 
@@ -94,7 +95,7 @@ namespace power_overwhelming {
         /// <exception cref="std::bad_alloc">If the memory for the copied data
         /// could not be allocated.</exception>
         tinkerforge_sensor_definition& operator =(
-            const tinkerforge_sensor_definition& rhs);
+            _In_ const tinkerforge_sensor_definition& rhs);
 
         /// <summary>
         /// Move-assignment operator.
@@ -102,7 +103,7 @@ namespace power_overwhelming {
         /// <param name="rhs">The right-hand side operand.</param>
         /// <returns><c>*this</c></returns>
         tinkerforge_sensor_definition& operator =(
-            tinkerforge_sensor_definition&& rhs) noexcept;
+            _In_ tinkerforge_sensor_definition&& rhs) noexcept;
 
     private:
 

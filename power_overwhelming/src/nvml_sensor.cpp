@@ -16,7 +16,7 @@
  * visus::power_overwhelming::nvml_sensor::for_all
  */
 std::size_t visus::power_overwhelming::nvml_sensor::for_all(
-        _Out_writes_(cntSensors) nvml_sensor *outSensors,
+        _Out_writes_opt_(cntSensors) nvml_sensor *outSensors,
         _In_ const std::size_t cntSensors) {
     try {
         unsigned int retval = 0;

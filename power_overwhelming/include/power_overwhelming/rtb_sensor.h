@@ -41,8 +41,8 @@ namespace power_overwhelming {
         /// <returns>The number of HMC8015 instruments found, regardless of how
         /// many have been returned to <paramref name="out_sensors" />.</returns>
         static std::size_t for_all(
-            _Out_writes_(cntSensors) rtb_sensor *out_sensors,
-            _In_ const std::size_t cnt_sensors,
+            _Out_writes_opt_(cnt_sensors) rtb_sensor *out_sensors,
+            _In_ std::size_t cnt_sensors,
             _In_ const std::int32_t timeout = 3000);
 
         /// <summary>

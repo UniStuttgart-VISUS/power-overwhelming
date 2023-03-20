@@ -86,7 +86,7 @@ namespace power_overwhelming {
         template<class... TSensorLists>
         static collector from_sensor_lists(
             _In_ const collector_settings& settings,
-            _In_ TSensorLists&&... sensors);
+            TSensorLists&&... sensors);
 
         /// <summary>
         /// Initialise a new instance from the given compile-time list of
@@ -102,7 +102,7 @@ namespace power_overwhelming {
         /// <returns>A new collector using the given sensors.</returns>
         template<class... TSensors>
         static collector from_sensors(_In_ const collector_settings& settings,
-            _In_ TSensors&&... sensors);
+            TSensors&&... sensors);
 
         /// <summary>
         /// Creates a configuration file for all sensors currently attached to
@@ -201,7 +201,7 @@ namespace power_overwhelming {
         /// <returns></returns>
         template<class TSensorList>
         static std::vector<std::unique_ptr<sensor>> move_to_heap(
-            _In_ TSensorList&& sensors);
+            TSensorList&& sensors);
 
         /// <summary>
         /// Creates a new collector that has no sensors, but reserved space for

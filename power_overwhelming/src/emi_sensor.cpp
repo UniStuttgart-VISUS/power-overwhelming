@@ -24,7 +24,7 @@
  * visus::power_overwhelming::emi_sensor::for_all
  */
 std::size_t visus::power_overwhelming::emi_sensor::for_all(
-        _Out_writes_(cntSensors) emi_sensor *out_sensors,
+        _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
         _In_ const std::size_t cnt_sensors) {
 #if defined(_WIN32)
     typedef detail::emi_sensor_impl::string_type string_type;
@@ -42,7 +42,7 @@ std::size_t visus::power_overwhelming::emi_sensor::for_all(
  * visus::power_overwhelming::emi_sensor::for_channel
  */
 std::size_t visus::power_overwhelming::emi_sensor::for_channel(
-        _Out_writes_(cntSensors) emi_sensor *out_sensors,
+        _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
         _In_ const std::size_t cnt_sensors,
         _In_z_ const wchar_t *channel) {
     if (channel == nullptr) {
@@ -68,7 +68,7 @@ std::size_t visus::power_overwhelming::emi_sensor::for_channel(
  * visus::power_overwhelming::emi_sensor::for_device
  */
 std::size_t visus::power_overwhelming::emi_sensor::for_device(
-        _Out_writes_(cntSensors) emi_sensor *out_sensors,
+        _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
         _In_ const std::size_t cnt_sensors,
         _In_z_ const char_type *device) {
     if (device == nullptr) {
@@ -94,7 +94,7 @@ std::size_t visus::power_overwhelming::emi_sensor::for_device(
  * visus::power_overwhelming::emi_sensor::for_device_and_channel
  */
 std::size_t visus::power_overwhelming::emi_sensor::for_device_and_channel(
-        _Out_writes_(cntSensors) emi_sensor *out_sensors,
+        _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
         _In_ const std::size_t cnt_sensors,
         _In_z_ const char_type *device,
         _In_z_ const char_type *channel) {
@@ -127,7 +127,7 @@ std::size_t visus::power_overwhelming::emi_sensor::for_device_and_channel(
  * visus::power_overwhelming::emi_sensor::for_device_and_channel
  */
 std::size_t visus::power_overwhelming::emi_sensor::for_device_and_channel(
-        _Out_writes_(cntSensors) emi_sensor *out_sensors,
+        _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
         _In_ const std::size_t cnt_sensors,
         _In_z_ const char_type *device,
         _In_ const channel_type channel) {

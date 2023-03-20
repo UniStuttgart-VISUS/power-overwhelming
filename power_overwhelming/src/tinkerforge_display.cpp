@@ -17,7 +17,7 @@
  * visus::power_overwhelming::tinkerforge_display::for_all
  */
 std::size_t visus::power_overwhelming::tinkerforge_display::for_all(
-        _Out_writes_(cnt_displays) tinkerforge_display *out_displays,
+        _Out_writes_opt_(cnt_displays) tinkerforge_display *out_displays,
         _In_ const std::size_t cnt_displays,
         _In_opt_z_ const char *host,
         _In_ const std::uint16_t port,

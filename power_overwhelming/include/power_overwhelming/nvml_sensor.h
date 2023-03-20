@@ -38,7 +38,7 @@ namespace power_overwhelming {
         /// <paramref name="cntSensors" />, not all sensors have been returned.
         /// </returns>
         static std::size_t for_all(
-            _Out_writes_(cntSensors) nvml_sensor *outSensors,
+            _Out_writes_opt_(cntSensors) nvml_sensor *outSensors,
             _In_ const std::size_t cntSensors);
 
         /// <summary>

@@ -48,7 +48,7 @@ namespace power_overwhelming {
         /// <param name="timeout"></param>
         /// <returns></returns>
         static std::size_t for_all(
-            _Out_writes_(cnt_displays) tinkerforge_display *out_displays,
+            _Out_writes_opt_(cnt_displays) tinkerforge_display *out_displays,
             _In_ const std::size_t cnt_displays,
             _In_opt_z_ const char *host = default_host,
             _In_ const std::uint16_t port = default_port,

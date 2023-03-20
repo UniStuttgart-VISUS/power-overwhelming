@@ -71,7 +71,7 @@ namespace power_overwhelming {
         /// <exception cref="std::system_error">If enumerating or opening the
         /// devices failed.</exception>
         static std::size_t for_all(
-            _Out_writes_(cntSensors) emi_sensor *out_sensors,
+            _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
             _In_ const std::size_t cnt_sensors);
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace power_overwhelming {
         /// <exception cref="std::system_error">If enumerating or opening the
         /// devices failed.</exception>
         static std::size_t for_channel(
-            _Out_writes_(cntSensors) emi_sensor *out_sensors,
+            _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
             _In_ const std::size_t cnt_sensors,
             _In_z_ const wchar_t *channel);
 
@@ -116,7 +116,7 @@ namespace power_overwhelming {
         /// <exception cref="std::system_error">If enumerating or opening the
         /// devices failed.</exception>
         static std::size_t for_device(
-            _Out_writes_(cntSensors) emi_sensor *out_sensors,
+            _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
             _In_ const std::size_t cnt_sensors,
             _In_z_ const char_type *device);
 
@@ -142,7 +142,7 @@ namespace power_overwhelming {
         /// <exception cref="std::system_error">If enumerating or opening the
         /// devices failed.</exception>
         static std::size_t for_device_and_channel(
-            _Out_writes_(cntSensors) emi_sensor *out_sensors,
+            _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
             _In_ const std::size_t cnt_sensors,
             _In_z_ const char_type *device,
             _In_z_ const char_type *channel);
@@ -167,7 +167,7 @@ namespace power_overwhelming {
         /// <exception cref="std::system_error">If enumerating or opening the
         /// devices failed.</exception>
         static std::size_t for_device_and_channel(
-            _Out_writes_(cntSensors) emi_sensor *out_sensors,
+            _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
             _In_ const std::size_t cnt_sensors,
             _In_z_ const char_type *device,
             _In_ const channel_type channel);
