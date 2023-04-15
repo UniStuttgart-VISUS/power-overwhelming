@@ -5,14 +5,15 @@
 
 #include "io_util.h"
 
+#include <stdexcept>
+#include <system_error>
+
 #if defined(_WIN32)
 #include <Windows.h>
 #else /* defined(_WIN32) */
 #include <unistd.h>
 #include <sys/types.h>
 #endif /* defined(_WIN32) */
-
-#include <system_error>
 
 
 #if defined(_WIN32)
@@ -28,7 +29,11 @@
  * visus::power_overwhelming::detail::open
  */
 POWER_OVERWHELMING_API int visus::power_overwhelming::detail::open(
-        const char *path, const int flags, const int mode) {
+        _In_z_ const char *path, _In_ const int flags, _In_ const int mode) {
+    if (path == nullptr) {
+        throw std::invalid_argument("The path must be a valid string.");
+    }
+
     auto retval = ::open(path, flags, mode);
     if (retval == -1) {
         THROW_LAST_ERROR();

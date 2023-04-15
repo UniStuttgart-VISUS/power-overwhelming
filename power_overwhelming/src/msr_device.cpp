@@ -60,6 +60,15 @@ visus::power_overwhelming::detail::msr_device::read(
 
 
 /*
+ * visus::power_overwhelming::detail::msr_device::read
+ */
+std::vector<std::uint8_t> visus::power_overwhelming::detail::msr_device::read(
+        void) const {
+    return detail::read_all_bytes(this->_handle);
+}
+
+
+/*
  * visus::power_overwhelming::detail::msr_device::operator =
  */
 visus::power_overwhelming::detail::msr_device&

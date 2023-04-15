@@ -8,6 +8,7 @@
 #include <cinttypes>
 #include <ios>
 #include <string>
+#include <vector>
 
 
 namespace visus {
@@ -70,7 +71,7 @@ namespace detail {
         ~msr_device(void) noexcept;
 
         /// <summary>
-        /// Reads a sample from <see cref="handle" />.
+        /// Reads a sample from the file.
         /// </summary>
         /// <param name="where">The offset into the file where to read, which
         /// determines which data are returned.</param>
@@ -79,6 +80,14 @@ namespace detail {
         /// <exception cref="std::system_error">If reading the MSR file failed.
         /// </exception>
         sample_type read(_In_ const std::streamoff where) const;
+
+        /// <summary>
+        /// Reads the whole content of the file
+        /// </summary>
+        /// <returns>The whole content of the device file.</returns>
+        /// <exception cref="std::system_error">If reading the MSR file failed.
+        /// </exception>
+        std::vector<std::uint8_t> read(void) const;
 
         msr_device& operator =(const msr_device&) = delete;
 

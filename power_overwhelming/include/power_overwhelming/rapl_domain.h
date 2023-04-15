@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include <ios>
-
 #include "power_overwhelming/power_overwhelming_api.h"
 
 
@@ -14,27 +12,14 @@ namespace visus {
 namespace power_overwhelming {
 
     /// <summary>
-    /// 
+    /// Possible RAPL domains that can be queried using an
+    /// <see cref="emi_sensor" /> or an <see cref="msr_sensor" />.
     /// </summary>
-    enum class rapl_domain : std::streamoff {
-        amd_package_energy_status = 0xc001029b,
-        amd_pp0_energy_status = 0xc001029a,
-        dram_energy_status = 0x619,
-        dram_performance_status = 0x61b,
-        dram_power_info = 0x61c,
-        dram_power_limit = 0x618,
-        intel_package_energy_status = 0x611,
-        intel_pp0_energy_status = 0x639,
-        package_performance_status = 0x613,
-        package_power_info = 0x614,
-        package_power_limit = 0x610,
-        platform_energy_status = 0x64d,
-        pp0_performance_status = 0x63b,
-        pp0_power_limit = 0x638,
-        pp0_policy = 0x63A,
-        pp1_energy_status = 0x641,
-        pp1_policy = 0x642,
-        pp1_power_limit = 0x640
+    enum class rapl_domain {
+        package,
+        pp0,
+        pp1,
+        dram
     };
 
     /// <summary>
