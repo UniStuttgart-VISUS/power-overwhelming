@@ -7,6 +7,8 @@
 
 #include <ios>
 
+#include "power_overwhelming/power_overwhelming_api.h"
+
 
 namespace visus {
 namespace power_overwhelming {
@@ -51,8 +53,15 @@ namespace power_overwhelming {
         dram_power_info = 0x61C,
 
         platform_energy_status = 0x64d
-
     };
+
+    /// <summary>
+    /// Convert the given RAPL domain to a human-readable string representation.
+    /// </summary>
+    /// <param name="domain">The RAPL domain to be converter.</param>
+    /// <returns>The name of the domain.</returns>
+    extern POWER_OVERWHELMING_API _Ret_z_ const wchar_t *to_string(
+        _In_ const rapl_domain domain);
 
 } /* namespace power_overwhelming */
 } /* namespace visus */

@@ -20,6 +20,7 @@
 #include <power_overwhelming/measurement.h>
 #include <power_overwhelming/nvml_sensor.h>
 #include <power_overwhelming/oscilloscope_sensor_definition.h>
+#include <power_overwhelming/rapl_domain.h>
 #include <power_overwhelming/tinkerforge_sensor_definition.h>
 
 #include <adl_exception.h>
