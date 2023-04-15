@@ -7,7 +7,6 @@
 
 #include "power_overwhelming/msr_sensor.h"
 #include "power_overwhelming/measurement.h"
-#include "power_overwhelming/rapl_domain.h"
 
 #include "msr_device_factory.h"
 
@@ -61,11 +60,6 @@ namespace detail {
         static constexpr std::uint32_t time_unit_offset = 0x10;
 
         /// <summary>
-        /// The offset of the unit divisors in the MSR device file.
-        /// </summary>
-        static constexpr std::streamoff unit_offset = 0x606;
-
-        /// <summary>
         /// The MSR device the sensor is reading the data from.
         /// </summary>
         msr_device_factory::device_type device;
@@ -114,22 +108,3 @@ namespace detail {
 } /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
-
-        //amd_package_energy_status = 0xc001029b,
-        //amd_pp0_energy_status = 0xc001029a,
-        //dram_energy_status = 0x619,
-        //dram_performance_status = 0x61b,
-        //dram_power_info = 0x61c,
-        //dram_power_limit = 0x618,
-        //intel_package_energy_status = 0x611,
-        //intel_pp0_energy_status = 0x639,
-        //package_performance_status = 0x613,
-        //package_power_info = 0x614,
-        //package_power_limit = 0x610,
-        //platform_energy_status = 0x64d,
-        //pp0_performance_status = 0x63b,
-        //pp0_power_limit = 0x638,
-        //pp0_policy = 0x63A,
-        //pp1_energy_status = 0x641,
-        //pp1_policy = 0x642,
-        //pp1_power_limit = 0x640

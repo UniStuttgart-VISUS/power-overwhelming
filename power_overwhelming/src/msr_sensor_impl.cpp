@@ -44,7 +44,7 @@ void visus::power_overwhelming::detail::msr_sensor_impl::set(
     // If we have the device file, retrieve the unit conversion constants as the
     // very first step.
     {
-        const auto sample = this->device->read(unit_offset);
+        const auto sample = this->device->read(msr_offsets::unit_divisors);
         std::uint32_t value = 0;
 
         value = (sample & energy_unit_mask) >> energy_unit_offset;
