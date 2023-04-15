@@ -29,7 +29,7 @@ namespace test {
             test_stream.close();
 
             {
-                auto fd = ::open("io_test", O_WRONLY);
+                auto fd = detail::open("io_test", O_WRONLY);
                 Assert::IsFalse(fd < 0, L"File descriptor valid", LINE_INFO());
                 Assert::ExpectException<std::system_error>([fd](void) {
                     auto actual = detail::read_all_bytes(fd);
