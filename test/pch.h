@@ -24,6 +24,7 @@
 
 #include <adl_exception.h>
 #include <emi_device.h>
+#include <io_util.h>
 #include <on_exit.h>
 #include <timestamp.h>
 #include <nvml_exception.h>
