@@ -124,7 +124,13 @@ void visus::power_overwhelming::detail::msr_sensor_impl::set(
         _In_ const msr_device::core_type core,
         _In_ const rapl_domain domain) {
     // Before doing anything else, we need to find out the CPU vendor for being
-    // able to decide what the offsetf of the RAPL domain are.
+    // able to decide what the offsetf of the RAPL domain are. In order to make
+    // sure that we read the CPUID of the correct socket, we set the thread
+    // affinity to the core requested by the user. If this fails, the core does
+    // not exist, so we do not need to continue anyway.
+    thread_affinity_restore_point restore_point;
+    set_thread_affinity(core);
+
     const auto vendor = get_cpu_vendor();
     if (vendor == cpu_vendor::unknown) {
         throw std::runtime_error("The vendor of the CPU could not be "

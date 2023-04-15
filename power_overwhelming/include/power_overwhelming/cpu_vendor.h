@@ -42,6 +42,11 @@ namespace power_overwhelming {
         cyrix,
 
         /// <summary>
+        /// Identifies a Hygon CPU.
+        /// </summary>
+        hygon,
+
+        /// <summary>
         /// Identifies an Intel CPU.
         /// </summary>
         intel,
@@ -80,6 +85,14 @@ namespace power_overwhelming {
     /// <summary>
     /// Determines the vendor of the CPUs on the system.
     /// </summary>
+    /// <remarks>
+    /// This function works using the CPUID intrinsics. For the unlikely case
+    /// that the code is running on a machine with different kinds of CPUs, the
+    /// caller should set the thread affinity to the desired CPU in order to
+    /// make sure that the CPUID registers of the expected processors are read.
+    /// The <see cref="set_thread_affinity" /> function can be used for this
+    /// purpose.
+    /// </remarks>
     /// <returns>An enumeration value identifying the CPU vendor or
     /// <see cref="cpu_vendor::unknown" /> if the CPU vendor could not be
     /// determined.</returns>

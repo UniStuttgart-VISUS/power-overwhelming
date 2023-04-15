@@ -17,6 +17,11 @@ namespace test {
 
     public:
 
+        TEST_METHOD(test_cpu_affinity) {
+            thread_affinity_restore_point restore;
+            set_thread_affinity(0);
+        }
+
         TEST_METHOD(test_get_cpu_vendor) {
             const auto actual = get_cpu_vendor();
             Assert::AreNotEqual(int(cpu_vendor::unknown), int(actual), L"CPU vendor identified", LINE_INFO());

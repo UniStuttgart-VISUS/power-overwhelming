@@ -61,6 +61,7 @@ visus::power_overwhelming::cpu_vendor visus::power_overwhelming::get_cpu_vendor(
     // ... and the weird stuff.
     _RET_MATCH("CentaurHauls", centaur);
     _RET_MATCH("CyrixInstead", cyrix);
+    _RET_MATCH("HygonGenuine", hygon);
     _RET_MATCH("Geode by NSC", national_semiconductor);
     _RET_MATCH("NexGenDriven", nexgen);
     _RET_MATCH("RiseRiseRise", rise);
