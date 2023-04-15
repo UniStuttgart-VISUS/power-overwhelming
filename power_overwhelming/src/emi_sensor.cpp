@@ -16,6 +16,10 @@
 #include "setup_api.h"
 
 
+#define ERROR_MSG_NOT_SUPPORTED ("The EMI sensor is not supported on this " \
+    "platform.")
+
+
 /*
  * visus::power_overwhelming::emi_sensor::for_all
  */
@@ -24,7 +28,9 @@ std::size_t visus::power_overwhelming::emi_sensor::for_all(
 #if defined(_WIN32)
     typedef detail::emi_sensor_impl::string_type string_type;
     return detail::emi_sensor_impl::create(out_sensors, cnt_sensors,
-        [](const string_type&, const EMI_CHANNEL_V2 *) { return true; });
+            [](const string_type&, const EMI_CHANNEL_V2 *, const std::size_t) {
+        return true;
+    });
 #else /* defined(_WIN32) */
     return 0;
 #endif /* defined(_WIN32) */
@@ -39,14 +45,15 @@ std::size_t visus::power_overwhelming::emi_sensor::for_channel(
         const wchar_t *channel) {
     if (channel == nullptr) {
         throw std::invalid_argument("The regular expression selecting the "
-            "device must not be null.");
+            "channel must not be null.");
     }
 
 #if defined(_WIN32)
     typedef detail::emi_sensor_impl::string_type string_type;
     std::basic_regex<wchar_t> rx(channel);
     return detail::emi_sensor_impl::create(out_sensors, cnt_sensors,
-            [&rx](const string_type&, const EMI_CHANNEL_V2 *c) {
+            [&rx](const string_type&, const EMI_CHANNEL_V2 *c,
+            const std::size_t) {
         return std::regex_match(c->ChannelName, rx);
     });
 #else /* defined(_WIN32) */
@@ -70,8 +77,65 @@ std::size_t visus::power_overwhelming::emi_sensor::for_device(
     typedef detail::emi_sensor_impl::string_type string_type;
     std::basic_regex<char_type> rx(device);
     return detail::emi_sensor_impl::create(out_sensors, cnt_sensors,
-            [&rx](const string_type& n, const EMI_CHANNEL_V2 *) {
-        return std::regex_match(n, rx);
+            [&rx](const string_type& d, const EMI_CHANNEL_V2 *,
+            const std::size_t) {
+        return std::regex_match(d, rx);
+    });
+#else /* defined(_WIN32) */
+    return 0;
+#endif /* defined(_WIN32) */
+}
+
+
+/*
+ * visus::power_overwhelming::emi_sensor::for_device_and_channel
+ */
+std::size_t visus::power_overwhelming::emi_sensor::for_device_and_channel(
+        emi_sensor *out_sensors, const std::size_t cnt_sensors,
+        const char_type *device, const char_type *channel) {
+    if (device == nullptr) {
+        throw std::invalid_argument("The regular expression selecting the "
+            "device must not be null.");
+    }
+    if (channel == nullptr) {
+        throw std::invalid_argument("The regular expression selecting the "
+            "channel must not be null.");
+    }
+
+#if defined(_WIN32)
+    typedef detail::emi_sensor_impl::string_type string_type;
+    std::basic_regex<char_type> rxc(channel);
+    std::basic_regex<char_type> rxd(device);
+    return detail::emi_sensor_impl::create(out_sensors, cnt_sensors,
+            [&rxc, &rxd](const string_type& d, const EMI_CHANNEL_V2 *c,
+            const std::size_t) {
+        return (std::regex_match(d, rxd)
+            && std::regex_match(c->ChannelName, rxc));
+    });
+#else /* defined(_WIN32) */
+    return 0;
+#endif /* defined(_WIN32) */
+}
+
+
+/*
+ * visus::power_overwhelming::emi_sensor::for_device_and_channel
+ */
+std::size_t visus::power_overwhelming::emi_sensor::for_device_and_channel(
+        emi_sensor *out_sensors, const std::size_t cnt_sensors,
+        const char_type *device, const channel_type channel) {
+    if (device == nullptr) {
+        throw std::invalid_argument("The regular expression selecting the "
+            "device must not be null.");
+    }
+
+#if defined(_WIN32)
+    typedef detail::emi_sensor_impl::string_type string_type;
+    std::basic_regex<char_type> rx(device);
+    return detail::emi_sensor_impl::create(out_sensors, cnt_sensors,
+            [channel, &rx](const string_type &d, const EMI_CHANNEL_V2 *,
+            const std::size_t c) {
+        return ((channel == c) && std::regex_match(d, rx));
     });
 #else /* defined(_WIN32) */
     return 0;
@@ -83,7 +147,10 @@ std::size_t visus::power_overwhelming::emi_sensor::for_device(
  * visus::power_overwhelming::emi_sensor::emi_sensor
  */
 visus::power_overwhelming::emi_sensor::emi_sensor(void)
-    : _impl(new detail::emi_sensor_impl()) { }
+        : _impl(new detail::emi_sensor_impl()) {
+    // Note: EMI sensor must initialise here in order to allow for the sensor
+    // implementation create the instances in-place.
+}
 
 
 /*
@@ -181,7 +248,7 @@ visus::power_overwhelming::emi_sensor::sample(
                 "Meter Interface is not supported by the implementation.");
     }
 #else /* defined(_WIN32) */
-    throw std::logic_error("The EMI sensor is not supported on this platform.");
+    throw std::logic_error(ERROR_MSG_NOT_SUPPORTED);
 #endif /* defined(_WIN32) */
 }
 
@@ -193,6 +260,7 @@ void visus::power_overwhelming::emi_sensor::sample(
         const measurement_callback on_measurement,
         const microseconds_type sampling_period,
         void *context) {
+#if defined(_WIN32)
     typedef decltype(detail::emi_sensor_impl::sampler)::interval_type
         interval_type;
 
@@ -208,6 +276,9 @@ void visus::power_overwhelming::emi_sensor::sample(
     } else {
         detail::emi_sensor_impl::sampler.remove(this->_impl);
     }
+#else /* defined(_WIN32) */
+    throw std::logic_error(ERROR_MSG_NOT_SUPPORTED);
+#endif /* defined(_WIN32) */
 }
 
 
@@ -251,33 +322,6 @@ EMI_MEASUREMENT_DATA_V2 *visus::power_overwhelming::emi_sensor::sample(
     return measurement;
 }
 #endif /* defined(_WIN32) */
-
-
-#if 0
-/*
- * visus::power_overwhelming::emi_sensor::sample
- */
-void visus::power_overwhelming::emi_sensor::sample(
-        const measurement_callback on_measurement,
-        const microseconds_type sampling_period,
-        void *context) {
-    typedef decltype(detail::emi_sensor_impl::sampler)::interval_type
-        interval_type;
-
-    this->check_not_disposed();
-
-    if (on_measurement != nullptr) {
-        if (!detail::emi_sensor_impl::sampler.add(this->_impl, on_measurement,
-                context, interval_type(sampling_period))) {
-            throw std::logic_error("Asynchronous sampling cannot be started "
-                "while it is already running.");
-        }
-
-    } else {
-        detail::emi_sensor_impl::sampler.remove(this->_impl);
-    }
-}
-#endif
 
 
 /*

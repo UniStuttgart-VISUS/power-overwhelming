@@ -4,6 +4,8 @@
 // <author>Christoph Müller</author>
 
 
+#if defined(_WIN32)
+
 /*
  * visus::power_overwhelming::detail::emi_sensor_impl::create
  */
@@ -13,7 +15,6 @@ std::size_t visus::power_overwhelming::detail::emi_sensor_impl::create(
         TPredicate predicate) {
     std::size_t retval = 0;
 
-#if defined(_WIN32)
     if (out_sensors == nullptr) {
         cnt_sensors = 0;
     }
@@ -26,7 +27,7 @@ std::size_t visus::power_overwhelming::detail::emi_sensor_impl::create(
 
         switch (dev->version().EmiVersion) {
             case EMI_VERSION_V1:
-                if (predicate(path, nullptr)) {
+                if (predicate(path, nullptr, 0)) {
                     if (retval < cnt_sensors) {
                         out_sensors[retval]._impl->set(dev, path, 0);
                     }
@@ -40,7 +41,7 @@ std::size_t visus::power_overwhelming::detail::emi_sensor_impl::create(
                 auto c = md->Channels;
 
                 for (auto i = 0; i < cnt; ++i) {
-                    if (predicate(path, c)) {
+                    if (predicate(path, c, i)) {
                         if (retval < cnt_sensors) {
                             out_sensors[retval]._impl->set(dev, path, i);
                         }
@@ -54,7 +55,7 @@ std::size_t visus::power_overwhelming::detail::emi_sensor_impl::create(
 
         return true;
     });
-#endif /* defined(_WIN32) */
 
     return retval;
 }
+#endif /* defined(_WIN32) */

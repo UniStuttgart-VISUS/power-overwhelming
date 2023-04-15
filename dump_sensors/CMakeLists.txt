@@ -1,10 +1,8 @@
 # CMakeLists.txt
 # Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 
-cmake_minimum_required(VERSION 3.21.0)
 
-
-project(podump)
+project(dump_sensors)
 
 # Collect source files.
 file(GLOB_RECURSE HeaderFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.h" "*.inl")

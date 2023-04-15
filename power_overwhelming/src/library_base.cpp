@@ -50,7 +50,7 @@ visus::power_overwhelming::detail::library_base::operator =(
  * visus::power_overwhelming::detail::library_base::library_base
  */
 visus::power_overwhelming::detail::library_base::library_base(
-        HMODULE&& handle) : _handle(handle) {
+        handle_type&& handle) : _handle(handle) {
     if (this->_handle == invalid_handle) {
         throw new std::invalid_argument("A valid library handle must be "
             "provided.");

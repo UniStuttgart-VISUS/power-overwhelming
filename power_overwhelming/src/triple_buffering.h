@@ -21,20 +21,29 @@ namespace detail {
     /// <summary>
     /// Gets the index of the current read buffer of the given triple buffer.
     /// </summary>
+    /// <remarks>
+    /// According to https://en.cppreference.com/w/cpp/atomic/atomic, atomics
+    /// should have a <c>value_type</c> member regarless of whether they are
+    /// specialised or not, but on Linux, this seems to be missing, so we do a
+    /// wild <c>decltype</c> hack instead.
+    /// </remarks>
     /// <param name="state"></param>
     /// <returns></returns>
-    inline triple_buffer_state::value_type get_read_buffer_index(
-            triple_buffer_state& state) {
+    inline auto get_read_buffer_index(triple_buffer_state& state)
+            -> decltype(state.load()) {
         return (state.load() & 0x03);
     }
 
     /// <summary>
     /// Gets the index of the current write buffer of the given triple buffer.
     /// </summary>
+    /// <remarks>
+    /// See <see cref="get_read_buffer_index" />.
+    /// </remarks>
     /// <param name="state"></param>
     /// <returns></returns>
-    inline triple_buffer_state::value_type get_write_buffer_index(
-            triple_buffer_state& state) {
+    inline auto get_write_buffer_index(triple_buffer_state& state) 
+            -> decltype(state.load()) {
         return ((state.load() & 0x30) >> 4);
     }
 

@@ -31,7 +31,11 @@ visus::power_overwhelming::detail::visa_library::instance(void) {
  * visus::power_overwhelming::detail::visa_library::visa_library
  */
 visus::power_overwhelming::detail::visa_library::visa_library(void)
+#if defined(_WIN32)
         : library_base(TEXT("visa64.dll"), TEXT("visa32.dll")) {
+#else /* defined(_WIN32) */
+        : library_base("librsvisa.so") {
+#endif /* defined(_WIN32) */
     __POWER_OVERWHELMING_GET_VISA_FUNC(viClear);
     __POWER_OVERWHELMING_GET_VISA_FUNC(viClose);
     __POWER_OVERWHELMING_GET_VISA_FUNC(viDisableEvent);

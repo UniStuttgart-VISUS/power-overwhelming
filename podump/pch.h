@@ -1,7 +1,7 @@
-// <copyright file="pch.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="pch.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #pragma once
 
@@ -25,3 +25,9 @@
 #include "power_overwhelming/stable_power_state_scope.h"
 #include "power_overwhelming/tinkerforge_display.h"
 #include "power_overwhelming/tinkerforge_sensor.h"
+
+
+#if !defined(_WIN32)
+#define TCHAR char
+#define _tmain main
+#endif /* !defined(_WIN32) */

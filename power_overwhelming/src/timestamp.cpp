@@ -54,7 +54,8 @@ visus::power_overwhelming::create_timestamp(
     using namespace std::chrono;
 
     // The offset of the FILETIME epoch to the UNIX epoch.
-    const auto dz = duration<timestamp_type, filetime_period>(11644473600000LL);
+    const auto dz = duration<timestamp_type,
+        detail::filetime_period>(11644473600000LL);
 
     // Find out what the difference between the time point and the UNIX
     // epoch is. Because we cannot rely on the epoch of the STL clock being the

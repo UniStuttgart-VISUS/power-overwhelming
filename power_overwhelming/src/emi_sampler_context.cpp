@@ -55,6 +55,7 @@ bool visus::power_overwhelming::detail::emi_sampler_context::add(
  */
 bool visus::power_overwhelming::detail::emi_sampler_context::remove(
         sensor_type sensor) {
+#if defined(_WIN32)
     assert(sensor != nullptr);
     std::lock_guard<decltype(this->lock)> l(this->lock);
 
@@ -73,6 +74,9 @@ bool visus::power_overwhelming::detail::emi_sampler_context::remove(
     }
 
     return retval;
+#else /* defined(_WIN32) */
+    return false;
+#endif /* defined(_WIN32) */
 }
 
 
@@ -128,9 +132,13 @@ void visus::power_overwhelming::detail::emi_sampler_context::sample(void) {
  */
 bool visus::power_overwhelming::detail::emi_sampler_context::samples(
         const sensor_type sensor) {
+#if defined(_WIN32)
     assert(sensor != nullptr);
     std::lock_guard<decltype(this->lock)> l(this->lock);
     auto it = this->sensors.find(sensor->device);
     return (it != this->sensors.end())
         && (it->second.find(sensor) != it->second.end());
+#else /* defined(_WIN32) */
+    return false;
+#endif /* defined(_WIN32) */
 }

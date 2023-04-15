@@ -5,6 +5,7 @@
 
 #include "power_overwhelming/tinkerforge_sensor.h"
 
+#include <cassert>
 #include <chrono>
 #include <thread>
 #include <vector>
@@ -14,6 +15,38 @@
 #include "timestamp.h"
 #include "tinkerforge_exception.h"
 #include "tinkerforge_sensor_impl.h"
+#include "zero_memory.h"
+
+
+/*
+ * visus::power_overwhelming::tinkerforge_sensor::for_all
+ */
+std::size_t visus::power_overwhelming::tinkerforge_sensor::for_all(
+        tinkerforge_sensor *out_sensors, const std::size_t timeout,
+        const std::size_t cnt_sensors, const char *host,
+        const std::uint16_t port) {
+    if ((out_sensors == nullptr) || (cnt_sensors == 0)) {
+        return tinkerforge_sensor::get_definitions(nullptr, 0, timeout, host,
+            port);
+
+    } else {
+        std::vector<tinkerforge_sensor_definiton> descs(cnt_sensors);
+        auto retval = tinkerforge_sensor::get_definitions(descs.data(),
+            descs.size(), timeout, host, port);
+
+        // Handle potential attachment of sensors between measurment call and
+        // actual instantiation call.
+        if (retval < cnt_sensors) {
+            retval = cnt_sensors;
+        }
+
+        for (std::size_t i = 0; i < retval; ++i) {
+            out_sensors[i] = tinkerforge_sensor(descs[i]);
+        }
+
+        return retval;
+    }
+}
 
 
 /*
@@ -162,6 +195,41 @@ const wchar_t *visus::power_overwhelming::tinkerforge_sensor::description(
     } else {
         return nullptr;
     }
+}
+
+
+/*
+ * visus::power_overwhelming::tinkerforge_sensor::identify
+ */
+void visus::power_overwhelming::tinkerforge_sensor::identify(char uid[8],
+        char connected_to_uid[8], char& position,
+        std::uint8_t hardware_version[3], std::uint8_t firmware_version[3],
+        std::uint16_t& device_id) const {
+    if (!*this) {
+        throw std::runtime_error("A disposed instance of tinkerforge_sensor "
+            "cannot be identified.");
+    }
+
+    auto status = ::voltage_current_v2_get_identity(&this->_impl->bricklet, uid,
+        connected_to_uid, &position, hardware_version, firmware_version,
+        &device_id);
+    if (status < 0) {
+        throw tinkerforge_exception(status);
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::tinkerforge_sensor::identify
+ */
+void visus::power_overwhelming::tinkerforge_sensor::identify(
+        char uid[8]) const {
+    char dummy0[8];
+    char dummy1;
+    std::uint8_t dummy2[3];
+    std::uint8_t dummy3[3];
+    std::uint16_t dummy4;
+    this->identify(uid, dummy0, dummy1, dummy2, dummy3, dummy4);
 }
 
 

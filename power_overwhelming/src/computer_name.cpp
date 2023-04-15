@@ -91,7 +91,7 @@ std::size_t visus::power_overwhelming::computer_name(char *dst,
 #else /* defined(_WIN32) */
     struct utsname names; 
     if (uname(&names) != 0) {
-        throw std::system_error(::errno, std::system_category());
+        throw std::system_error(errno, std::system_category());
     }
 
     auto retval = std::strlen(names.nodename) + 1;
@@ -99,6 +99,8 @@ std::size_t visus::power_overwhelming::computer_name(char *dst,
         ::strncpy(dst, names.nodename, cnt);
         dst[cnt - 1] = 0;
     }
+
+    return retval;
 #endif /* defined(_WIN32) */
 }
 
@@ -113,7 +115,7 @@ std::size_t visus::power_overwhelming::computer_name(wchar_t *dst,
 
 #else /* defined(_WIN32) */
     if ((dst == nullptr) || (cnt == 0)) {
-        return computer_name(nullptr, 0);
+        return computer_name(static_cast<char *>(nullptr), 0);
 
     } else {
         // Performance off ...
