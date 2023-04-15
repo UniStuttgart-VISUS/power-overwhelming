@@ -5,7 +5,11 @@
 
 #pragma once
 
+#include <vector>
+
+#include "power_overwhelming/cpu_vendor.h"
 #include "power_overwhelming/msr_sensor.h"
+#include "power_overwhelming/rapl_domain.h"
 #include "power_overwhelming/measurement.h"
 
 #include "msr_device_factory.h"
@@ -18,61 +22,33 @@ namespace detail {
     /// <summary>
     /// Private data container for the <see cref="msr_sensor" />.
     /// </summary>
-    /// <remarks>
-    /// The magic numbers here are from https://lkml.org/lkml/2011/5/26/93.
-    /// </remarks>
     struct msr_sensor_impl final {
 
         /// <summary>
-        /// The mask for isolating the conversion factor for energy in the
-        /// sample returned from location <see cref="unit_offset" />.
+        /// Determines which RAPL domains are in principle supported for the
+        /// given CPU vendor.
         /// </summary>
-        static constexpr std::uint32_t energy_unit_mask = 0x1F00;
-
-        /// <summary>
-        /// The number of bits the energy unit conversion constant needs to be
-        /// shifted to be isolated.
-        /// </summary>
-        static constexpr std::uint32_t energy_unit_offset = 0x08;
-
-        /// <summary>
-        /// The mask for isolating the conversion factor for power in the
-        /// sample returned from location <see cref="unit_offset" />.
-        /// </summary>
-        static constexpr std::uint32_t power_unit_mask = 0x000F;
-
-        /// <summary>
-        /// The number of bits the power unit conversion constant needs to be
-        /// shifted to be isolated.
-        /// </summary>
-        static constexpr std::uint32_t power_unit_offset = 0x00;
-
-        /// <summary>
-        /// The mask for isolating the conversion factor for time in the
-        /// sample returned from location <see cref="unit_offset" />.
-        /// </summary>
-        static constexpr std::uint32_t time_unit_mask = 0xF000;
-
-        /// <summary>
-        /// The number of bits the time unit conversion constant needs to be
-        /// shifted to be isolated.
-        /// </summary>
-        static constexpr std::uint32_t time_unit_offset = 0x10;
+        /// <remarks>
+        /// The specific CPU model at hand might still not support all of the
+        /// domains returned by this method.
+        /// </remarks>
+        /// <param name="vendor">The CPU vendor to determine the available RAPL
+        /// domains for.</param>
+        /// <returns>A list of domains that might be supported on a CPU by the
+        /// given vendor.</returns>
+        std::vector<rapl_domain> supported_domains(
+            _In_ const cpu_vendor vendor);
 
         /// <summary>
         /// The MSR device the sensor is reading the data from.
         /// </summary>
         msr_device_factory::device_type device;
 
-        /// <summary>
-        /// The divisor that allows conversion of samples to Joules.
-        /// </summary>
-        std::uint32_t energy_unit_divisor;
 
         /// <summary>
-        /// The divisor that allows conversion of samples to Watts.
+        /// The offset of the data the sensor samples in the MSR device file.
         /// </summary>
-        std::uint32_t power_unit_divisor;
+        std::streamoff offset;
 
         /// <summary>
         /// A sampler for MSR sensors.
@@ -85,20 +61,18 @@ namespace detail {
         std::wstring sensor_name;
 
         /// <summary>
-        /// The divisor that allows conversion of samples to seconds.
+        /// The divisor that allows conversion of samples to Joules.
         /// </summary>
-        std::uint32_t time_unit_divisor;
+        /// <remarks>
+        /// As we are solely sampling the accumulated energy consumption in our
+        /// sensor, it is sufficient to have this single divisor.
+        /// </remarks>
+        std::uint32_t unit_divisor;
 
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        inline msr_sensor_impl(void) : energy_unit_divisor(1),
-            power_unit_divisor(1), time_unit_divisor(1) { }
-
-        /// <summary>
-        /// Finalises the instance.
-        /// </summary>
-        ~msr_sensor_impl(void);
+        inline msr_sensor_impl(void) : offset(0), unit_divisor(1) { }
 
         void set(_In_ const msr_device::core_type core,
             _In_ const rapl_domain domain);

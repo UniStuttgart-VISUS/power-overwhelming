@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include "power_overwhelming/msr_offsets.h"
 #include "power_overwhelming/rapl_domain.h"
 #include "power_overwhelming/sensor.h"
 

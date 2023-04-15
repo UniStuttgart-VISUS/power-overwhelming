@@ -8,8 +8,12 @@
 #include <ios>
 
 
+// Values from https://lkml.org/lkml/2011/5/26/93.
+
+
 namespace visus {
 namespace power_overwhelming {
+namespace detail {
 namespace msr_offsets {
 
     constexpr std::streamoff amd_package_energy_status = 0xC001029B;
@@ -30,13 +34,9 @@ namespace msr_offsets {
     constexpr std::streamoff pp1_energy_status = 0x641;
     constexpr std::streamoff pp1_policy = 0x642;
     constexpr std::streamoff pp1_power_limit = 0x640;
-
-    /// <summary>
-    /// The offset where the unit divisors are stored in the MSR file, which
-    /// cannot be used to sample data.
-    /// </summary>
     constexpr std::streamoff unit_divisors = 0x606;
 
 } /* namespace msr_offsets */
+} /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
