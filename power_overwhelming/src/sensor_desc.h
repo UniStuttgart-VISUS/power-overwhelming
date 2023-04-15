@@ -87,6 +87,13 @@ namespace detail {
     /// Provides compile-time metadata for a sensor of type
     /// <see cref="TSensor" />.
     /// </summary>
+    /// <remarks>
+    /// <para>Implementors of new kinds of sensors must provide a full template
+    /// specialisation of this type that describes the new sensor.</para>
+    /// <para>For convenience, implementors should inherit from
+    /// <see cref="detail::sensor_desc_base" /> to provide the type of the
+    /// sensor and the test for the type name automatically.</para>
+    /// </remarks>
     /// <typeparam name="TSensor">The type of the sensor described by the
     /// template instance.</typeparam>
     template<class TSensor> struct sensor_desc final { };

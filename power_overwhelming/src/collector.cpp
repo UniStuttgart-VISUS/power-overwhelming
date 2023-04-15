@@ -15,6 +15,7 @@
 #include "power_overwhelming/convert_string.h"
 
 #include "collector_impl.h"
+#include "sensor_desc.h"
 #include "sensor_utilities.h"
 #include "tinkerforge_sensor_impl.h"
 
