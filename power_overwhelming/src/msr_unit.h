@@ -11,7 +11,8 @@ namespace power_overwhelming {
 namespace detail {
 
     /// <summary>
-    /// Specifies the vendor-specific offset of the RAPL units in the MSR file.
+    /// Specifies the vendor-specific offset of the RAPL units in the MSR device
+    /// file.
     /// </summary>
     enum class msr_unit : std::streamoff {
         amd_power = 0xc0010299,
