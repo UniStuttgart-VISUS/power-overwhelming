@@ -9,8 +9,6 @@
 #include <ios>
 #include <string>
 
-#include "setup_api.h"
-
 
 namespace visus {
 namespace power_overwhelming {
