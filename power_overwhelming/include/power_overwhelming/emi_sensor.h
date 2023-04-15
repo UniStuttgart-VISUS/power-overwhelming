@@ -12,7 +12,7 @@
 #include <tchar.h>
 #endif /* defined(_WIN32) */
 
-#include "sensor.h"
+#include "power_overwhelming/sensor.h"
 
 
 namespace visus {
