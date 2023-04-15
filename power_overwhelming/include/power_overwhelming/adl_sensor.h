@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "power_overwhelming/adl_sensor.h"
+#include "power_overwhelming/adl_sensor_source.h"
 #include "power_overwhelming/sensor.h"
 
 
