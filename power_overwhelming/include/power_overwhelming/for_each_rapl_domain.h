@@ -17,6 +17,14 @@ namespace power_overwhelming {
 namespace detail {
 
     /// <summary>
+    /// Recursion stop for <see cref="for_each_rapl_domain" />.
+    /// </summary>
+    template<class TFunc> std::size_t for_each_rapl_domain(_In_ TFunc&& func,
+            _In_ rapl_domain_list_type<>) {
+        return 0;
+    }
+
+    /// <summary>
     /// Executes <paramref name="func" /> for <typeparamref name="Domain" />
     /// and recuses for <typeparamref name="Domains" />.
     /// </summary>
@@ -29,14 +37,6 @@ namespace detail {
         } else {
             return 1;
         }
-    }
-
-    /// <summary>
-    /// Recursion stop for <see cref="for_each_rapl_domain" />.
-    /// </summary>
-    template<class TFunc> std::size_t for_each_rapl_domain(_In_ TFunc&& func,
-            _In_ rapl_domain_list_type<>) {
-        return 0;
     }
 
 } /* namespace detail */
