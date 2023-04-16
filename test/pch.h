@@ -14,7 +14,7 @@
 #include <power_overwhelming/collector.h>
 #include <power_overwhelming/convert_string.h>
 #include <power_overwhelming/cpu_affinity.h>
-#include <power_overwhelming/cpu_vendor.h>
+#include <power_overwhelming/cpu_info.h>
 #include <power_overwhelming/emi_sensor.h>
 #include <power_overwhelming/event.h>
 #include <power_overwhelming/computer_name.h>

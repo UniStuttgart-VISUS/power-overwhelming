@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "power_overwhelming/cpu_affinity.h"
-#include "power_overwhelming/cpu_vendor.h"
+#include "power_overwhelming/cpu_info.h"
 #include "power_overwhelming/msr_sensor.h"
 #include "power_overwhelming/rapl_domain.h"
 #include "power_overwhelming/measurement.h"

@@ -22,6 +22,11 @@ namespace test {
             set_thread_affinity(0);
         }
 
+        TEST_METHOD(test_cpu_model) {
+            cpu_info vendor_and_model[2];
+            Assert::IsTrue(get_cpu_info(vendor_and_model, 2) >= 2, L"Vendor and model available", LINE_INFO());
+        }
+
         TEST_METHOD(test_get_cpu_vendor) {
             const auto actual = get_cpu_vendor();
             Assert::AreNotEqual(int(cpu_vendor::unknown), int(actual), L"CPU vendor identified", LINE_INFO());
