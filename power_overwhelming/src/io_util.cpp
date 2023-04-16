@@ -124,7 +124,7 @@ std::streamoff visus::power_overwhelming::detail::seek(_In_ const int fd,
 #if defined(_WIN32)
     auto retval = ::_lseeki64(fd, offset, static_cast<int>(origin));
 #else /* defined(_WIN32 ) */
-    auto retval = ::_lseek64(fd, offset, static_cast<int>(origin));
+    auto retval = ::lseek64(fd, offset, static_cast<int>(origin));
 #endif /* defined(_WIN32) */
 
     if (retval == -1) {
