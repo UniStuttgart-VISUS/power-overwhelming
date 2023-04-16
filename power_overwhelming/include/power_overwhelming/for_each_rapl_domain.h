@@ -50,7 +50,7 @@ namespace detail {
     /// <see cref="rapl_domain" /> as its single parameter and return a
     /// <c>bool</c> indicating whether the enumeration should continue.
     /// </typeparam>
-    /// <param name="func"></param>
+    /// <param name="func">The function to execute for each RAPL domain.</param>
     /// <returns>The number of invocation of <paramref name="func" />.</returns>
     template<class TFunc>
     inline std::size_t for_each_rapl_domain(_In_ TFunc&& func) {
