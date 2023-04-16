@@ -12,8 +12,11 @@
 #include <string>
 #include <vector>
 
-#include <fcntl.h> 
+#include <fcntl.h>
+
+#if defined(_WIN32)
 #include <io.h>
+#endif /* defined(_WIN32) */
 
 #include "power_overwhelming/power_overwhelming_api.h"
 
