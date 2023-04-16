@@ -70,7 +70,7 @@ visus::power_overwhelming::collector::move_to_heap(TSensorList&& sensors) {
     typedef typename std::decay<decltype(sensors.front())>::type sensor_type;
 
     decltype(move_to_heap(sensors)) retval;
-    retval.reserve(std::size(sensors));
+    retval.reserve(sensors.size());
 
     std::transform(sensors.begin(), sensors.end(), std::back_inserter(retval),
             [](sensor_type& s) {
