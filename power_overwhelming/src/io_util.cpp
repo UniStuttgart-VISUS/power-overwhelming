@@ -10,9 +10,6 @@
 
 #if defined(_WIN32)
 #include <Windows.h>
-#else /* defined(_WIN32) */
-#include <unistd.h>
-#include <sys/types.h>
 #endif /* defined(_WIN32) */
 
 

@@ -16,6 +16,9 @@
 
 #if defined(_WIN32)
 #include <io.h>
+#else /* defined(_WIN32) */
+#include <unistd.h>
+#include <sys/types.h>
 #endif /* defined(_WIN32) */
 
 #include "power_overwhelming/power_overwhelming_api.h"
