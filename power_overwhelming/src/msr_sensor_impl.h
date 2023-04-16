@@ -42,9 +42,19 @@ namespace detail {
             _In_ const cpu_vendor vendor);
 
         /// <summary>
+        /// The core the sensor is sampling.
+        /// </summary>
+        msr_device::core_type core;
+
+        /// <summary>
         /// The MSR device the sensor is reading the data from.
         /// </summary>
         msr_device_factory::device_type device;
+
+        /// <summary>
+        /// The RAPL domain the sensor is sampling.
+        /// </summary>
+        rapl_domain domain;
 
         /// <summary>
         /// The point in time when the sensor was last sampled.
@@ -83,8 +93,8 @@ namespace detail {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        inline msr_sensor_impl(void) : last_sample(0), offset(0),
-            unit_divisor(1) { }
+        inline msr_sensor_impl(void) : core(0), domain(rapl_domain::package),
+            last_sample(0), offset(0), unit_divisor(1) { }
 
         /// <summary>
         /// Read a new sample into <see cref="last_value" />.

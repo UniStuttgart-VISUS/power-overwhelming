@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "power_overwhelming/msr_sensor.h"
+
 
 namespace visus {
 namespace power_overwhelming {
@@ -30,7 +32,7 @@ namespace detail {
         /// <summary>
         /// The type used to identify a CPU core.
         /// </summary>
-        typedef std::uint32_t core_type;
+        typedef msr_sensor::core_type core_type;
 
         /// <summary>
         /// The type of data read from the MSR device file.

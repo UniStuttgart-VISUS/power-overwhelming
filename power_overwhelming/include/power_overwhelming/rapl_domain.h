@@ -15,6 +15,15 @@ namespace power_overwhelming {
     /// Possible RAPL domains that can be queried using an
     /// <see cref="emi_sensor" /> or an <see cref="msr_sensor" />.
     /// </summary>
+    /// <remarks>
+    /// <para>Implementation note: If new elements are added to this enumeration,
+    /// they must be added to the <see cref="rapl_domain_list" /> towards the
+    /// end of this file, too. This list enables automated enumeration of all
+    /// RAPL domains.</para>
+    /// <para>Implementation note: If new elements are added to this enumeration,
+    /// they must also be added in the implementation of <see cref="to_string" />
+    /// and <see cref="parse_rapl_domain" /> towards the end of this file.</para>
+    /// </remarks>
     enum class rapl_domain {
 
         /// <summary>
@@ -37,6 +46,36 @@ namespace power_overwhelming {
         /// </summary>
         dram
     };
+
+
+    /// <summary>
+    /// Type of a list to enumerate all RAPL domains at compile time, which is
+    /// declared at the end of this file.
+    /// </summary>
+    template<rapl_domain...> struct rapl_domain_list_type final { };
+
+
+    /// <summary>
+    /// A list of all supported RAPL domains, which can be used to generate code
+    /// per-domain at compile time.
+    /// </summary>
+    using rapl_domain_list = rapl_domain_list_type<
+        rapl_domain::package,
+        rapl_domain::pp0,
+        rapl_domain::pp1,
+        rapl_domain::dram>;
+
+    /// <summary>
+    /// Parses a string into a value of the <see cref="rapl_domain" />
+    /// enumeration.
+    /// </summary>
+    /// <param name="str">The string to be parsed.</param>
+    /// <returns>The value represented by the string.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="str" /> is
+    /// either <c>nullptr</c> or if it does not represent a valid RAPL domain.
+    /// </exception>
+    extern POWER_OVERWHELMING_API rapl_domain parse_rapl_domain(
+        _In_z_ const wchar_t *str);
 
     /// <summary>
     /// Convert the given RAPL domain to a human-readable string representation.

@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <ios>
+
 #include "power_overwhelming/rapl_domain.h"
 #include "power_overwhelming/sensor.h"
 
@@ -22,6 +24,11 @@ namespace power_overwhelming {
     class POWER_OVERWHELMING_API msr_sensor final : public sensor {
 
     public:
+
+        /// <summary>
+        /// The type used to index CPU cores.
+        /// </summary>
+        typedef std::uint32_t core_type;
 
         /// <summary>
         /// Creates a new sensor for the specified core and RAPL domain,
@@ -51,7 +58,7 @@ namespace power_overwhelming {
         /// configuration.</returns>
         /// <exception cref="std::system_error">If the MSR device file could not
         /// be opened.</exception>
-        static msr_sensor force_create(_In_ const std::uint32_t core,
+        static msr_sensor force_create(_In_ const core_type core,
             _In_ const rapl_domain domain, _In_ const std::streamoff offset);
 
         /// <summary>
@@ -84,7 +91,7 @@ namespace power_overwhelming {
         /// supported for the specified CPU core.</exception>
         /// <exception cref="std::system_error">If the MSR device file could not
         /// be opened.</exception>
-        static msr_sensor for_core(_In_ const std::uint32_t core,
+        static msr_sensor for_core(_In_ const core_type core,
             _In_ const rapl_domain domain);
 
         /// <summary>
@@ -105,9 +112,38 @@ namespace power_overwhelming {
         /// </summary>
         virtual ~msr_sensor(void);
 
+        /// <summary>
+        /// Answer the core the sensor is sampling.
+        /// </summary>
+        /// <returns>The index ofo the core the sensor is sampling.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on a
+        /// sensor that has been disposed.</exception>
+        core_type core(void) const;
+
+        /// <summary>
+        /// Answer the RAPL domain the sensor is sampling.
+        /// </summary>
+        /// <returns>The RAPL domain the sensor is sampling.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on a
+        /// sensor that has been disposed.</exception>
+        rapl_domain domain(void) const;
+
         /// <inheritdoc />
         virtual _Ret_maybenull_z_ const wchar_t *name(
             void) const noexcept override;
+
+        /// <summary>
+        /// Answer the location in the MSR device file the sensor is sampling.
+        /// </summary>
+        /// <remarks>
+        /// This information is of limited use for end users, but is mainly
+        /// required to implement serialisation.
+        /// </remarks>
+        /// <returns>The offset in bytes at which the sampled data are
+        /// searched.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on a
+        /// sensor that has been disposed.</exception>
+        std::streamoff offset(void) const;
 
         /// <inheritdoc />
         virtual measurement sample(

@@ -214,8 +214,10 @@ void visus::power_overwhelming::detail::msr_sensor_impl::set(
 
     // If we could open the file, it is safe to assume that we can use the
     // sensor, so it makes sense now to compile its name.
-    this->sensor_name = L"msr/" + std::to_wstring(core) + L"/"
-        + to_string(domain);
+    this->core = core;
+    this->domain = domain;
+    this->sensor_name = L"msr/" + std::to_wstring(this->core) + L"/"
+        + to_string(this->domain);
 
     // Next, retrieve the unit conversion constants for the values as in
     // https://lkml.org/lkml/2011/5/26/93.
