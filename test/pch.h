@@ -16,6 +16,7 @@
 #include <power_overwhelming/cpu_affinity.h>
 #include <power_overwhelming/cpu_info.h>
 #include <power_overwhelming/emi_sensor.h>
+#include <power_overwhelming/for_each_rapl_domain.h>
 #include <power_overwhelming/event.h>
 #include <power_overwhelming/computer_name.h>
 #include <power_overwhelming/csv_iomanip.h>

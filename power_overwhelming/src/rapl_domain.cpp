@@ -7,6 +7,25 @@
 
 #include <stdexcept>
 
+#include "power_overwhelming/for_each_rapl_domain.h"
+
+
+/*
+ * visus::power_overwhelming::for_each_rapl_domain
+ */
+std::size_t visus::power_overwhelming::for_each_rapl_domain(
+        _In_ bool (*func)(const rapl_domain, void *),
+        _In_opt_ void *context) {
+    if (func == nullptr) {
+        throw std::invalid_argument("A valid function pointer must be provided "
+            "to enumerate the rapl_domains.");
+    }
+
+    return for_each_rapl_domain([func, context](const rapl_domain d) {
+        return func(d, context);
+    });
+}
+
 
 /*
  * visus::power_overwhelming::parse_rapl_domain

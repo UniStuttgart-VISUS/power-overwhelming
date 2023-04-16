@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include "power_overwhelming/power_overwhelming_api.h"
 
 
@@ -64,6 +66,24 @@ namespace power_overwhelming {
         rapl_domain::pp0,
         rapl_domain::pp1,
         rapl_domain::dram>;
+
+
+    /// <summary>
+    /// Execute <paramref name="func" /> for each member of the
+    /// <see cref="rapl_domain_list" />.
+    /// </summary>
+    /// <param name="func">A function that receives the
+    /// <see cref="rapl_domain" /> and the user-provided <see cref="context" />
+    /// and returns whether the enumeration should be continued.</param>
+    /// <param name="context">A user-defined context passed to every call of
+    /// <paramref name="func" />.</param>
+    /// <returns>The number of invocations of <paramref name="func" />.
+    /// </returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="func" /> is
+    /// <c>nullptr</c>.</exception>
+    extern POWER_OVERWHELMING_API std::size_t for_each_rapl_domain(
+        _In_ bool (*func)(const rapl_domain, void *),
+        _In_opt_ void *context = nullptr);
 
     /// <summary>
     /// Parses a string into a value of the <see cref="rapl_domain" />

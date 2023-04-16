@@ -7,6 +7,8 @@
 
 #include <cassert>
 
+#include "power_overwhelming/for_each_rapl_domain.h"
+
 #include "msr_sensor_impl.h"
 
 
@@ -34,7 +36,6 @@ std::size_t visus::power_overwhelming::msr_sensor::for_all(
     return 0;
 
 #else /* defined(_WIN32) */
-#endif /* defined(_WIN32) */
     std::size_t retval = 0;
     bool succeeded = true;
 
@@ -49,27 +50,38 @@ std::size_t visus::power_overwhelming::msr_sensor::for_all(
 
             // Now that we know that the core exists, try creating sensors for
             // all RAPL domains.
-            try {
-                msr_sensor sensor;
-                assert(sensor);
-                sensor._impl->set(c, rapl_domain::package, -1);
+            for_each_rapl_domain([&](const rapl_domain domain) {
+                try {
+                    msr_sensor sensor;
+                    assert(sensor);
+                    sensor._impl->set(c, domain, -1);
 
+                    if (retval < cnt_sensors) {
+                        out_sensors[retval] = std::move(sensor);
+                    }
 
-                ++retval;
-            } catch (...) {
-                // Not being able to create a sensor for a specific RAPL domain
-                // does not constitute a fatall error. The RAPL domain just
-                // might not be supported for the CPU, so we continue
-                // enumerating in this case.
-            }
+                    ++retval;
+                } catch (...) {
+                    // Not being able to create a sensor for a specific RAPL
+                    // domain does not constitute a fatall error. The RAPL
+                    // domain just might not be supported for the CPU, so we
+                    // continue enumerating in this case.
+                }
+
+                return true;
+            });
+
         } catch (std::system_error) {
             // If creating a device for core 'c' causes an std::system_error, we
-            // have reached the last core and leave the loop.
+            // have reached the last core and leave the loop. Papa Schlumpf
+            // would not approve this use of exceptions for control flow, but it
+            // is the simplest way to implement this without duplicating code.
             succeeded = false;
         }
     }
 
     return retval;
+#endif /* defined(_WIN32) */
 }
 
 
