@@ -19,7 +19,7 @@ visus::power_overwhelming::collector::from_sensor_lists(
     const auto cnt = std::accumulate(instances.begin(),
         instances.end(), static_cast<std::size_t>(0),
             [](const std::size_t s, const sensor_type& v) {
-        return std::size(v) + s;
+        return v.size() + s;
     });
 
     auto retval = collector::prepare(settings, cnt);
