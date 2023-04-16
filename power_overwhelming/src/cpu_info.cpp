@@ -48,7 +48,7 @@ std::uint32_t visus::power_overwhelming::get_cpu_info(
 #else /* defined(_WIN32) */
         if (!::__get_cpuid(i, &infos[i].registers.eax, &infos[i].registers.ebx,
                 &infos[i].registers.ecx, &infos[i].registers.edx)) {
-            throw std::system_error(EFAIL, std::system_category());
+            throw std::system_error(EFAULT, std::system_category());
         }
 #endif /* defined(_WIN32) */
     }
