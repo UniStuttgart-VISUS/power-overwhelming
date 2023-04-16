@@ -109,7 +109,7 @@ void visus::power_overwhelming::detail::read_bytes(_In_ const int fd,
 #if defined(_WIN32)
         throw std::system_error(ERROR_NO_MORE_ITEMS, std::system_category());
 #else /* defined(_WIN32) */
-        throw std::system_error(E2BIG, std::system_error());
+        throw std::system_error(E2BIG, std::system_category());
 #endif /* defined(_WIN32) */
     }
 }
