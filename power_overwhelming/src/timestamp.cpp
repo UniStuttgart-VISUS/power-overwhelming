@@ -47,6 +47,6 @@ visus::power_overwhelming::detail::create_timestamp(
     return detail::convert(time, resolution);
 
 #else /* defined(_WIN32) */
-    return detail::convert(std::system_clock::now(), resolution);
+    return detail::convert(std::chrono::system_clock::now(), resolution);
 #endif /* defined(_WIN32) */
 }
