@@ -20,6 +20,7 @@
 #include "power_overwhelming/graphics_device.h"
 #include "power_overwhelming/hmc8015_sensor.h"
 #include "power_overwhelming/measurement.h"
+#include "power_overwhelming/msr_sensor.h"
 #include "power_overwhelming/nvml_sensor.h"
 #include "power_overwhelming/rtb_sensor.h"
 #include "power_overwhelming/stable_power_state_scope.h"
