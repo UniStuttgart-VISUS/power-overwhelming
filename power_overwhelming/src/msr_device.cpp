@@ -14,7 +14,7 @@
 visus::power_overwhelming::detail::msr_device::string_type
 visus::power_overwhelming::detail::msr_device::path(
         _In_ const core_type core) {
-    return string_type("/dev/cpu/") + std::to_string(core) + "/ msr";
+    return string_type("/dev/cpu/") + std::to_string(core) + "/msr";
 }
 
 
