@@ -53,7 +53,7 @@ std::size_t visus::power_overwhelming::msr_sensor::for_all(
             for_each_rapl_domain([&](const rapl_domain domain) {
                 try {
                     msr_sensor sensor;
-                    assert(sensor);
+                    assert(sensor._impl != nullptr);
                     sensor._impl->set(c, domain, -1);
 
                     if (retval < cnt_sensors) {
