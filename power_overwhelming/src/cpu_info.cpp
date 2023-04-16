@@ -8,6 +8,7 @@
 #include <array>
 #include <cstring>
 #include <stdexcept>
+#include <system_error>
 
 #if defined(_WIN32)
 #include <intrin.h>
