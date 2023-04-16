@@ -63,7 +63,7 @@ namespace detail {
 
         // If we have the sensors, create the output file and store the rest of the
         // properties.
-        dst->stream = std::wofstream(cfg[field_output].get<std::string>(),
+        dst->stream.open(cfg[field_output].get<std::string>(),
             std::ofstream::trunc);
         dst->sampling_interval = decltype(dst->sampling_interval)(
             cfg[field_sampling].get<sensor::microseconds_type>());

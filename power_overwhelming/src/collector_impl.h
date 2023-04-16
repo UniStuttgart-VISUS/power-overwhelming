@@ -48,11 +48,23 @@ namespace detail {
         typedef std::vector<marker_type> marker_list_type;
 
         /// <summary>
+        /// The type to specify the resolution of timestamps.
+        /// </summary>
+        typedef power_overwhelming::timestamp_resolution
+            timestamp_resolution_type;
+
+        /// <summary>
         /// Processes asynchronously created measurements.
         /// </summary>
         /// <param name="m"></param>
         /// <param name="context"></param>
         static void on_measurement(const measurement& m, void *context);
+
+        /// <summary>
+        /// The default resolution of timestamps.
+        /// </summary>
+        static constexpr timestamp_resolution_type default_timestamp_resolution
+            = timestamp_resolution_type::milliseconds;
 
         /// <summary>
         /// Buffers the measurements until a marker is reached.
@@ -118,7 +130,7 @@ namespace detail {
         /// <summary>
         /// The resolution of the timestamps being created.
         /// </summary>
-        power_overwhelming::timestamp_resolution timestamp_resolution;
+        timestamp_resolution_type timestamp_resolution;
 
         /// <summary>
         /// The I/O thread executing <see cref="write" />.

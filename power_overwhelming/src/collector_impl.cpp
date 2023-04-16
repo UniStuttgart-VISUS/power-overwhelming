@@ -38,7 +38,7 @@ visus::power_overwhelming::detail::collector_impl::collector_impl(void)
         : evt_write(create_event(false, false)),
         have_marker(false), running(false), sampling_interval(0),
         require_marker(false),
-        timestamp_resolution(timestamp_resolution::milliseconds) { }
+        timestamp_resolution(default_timestamp_resolution) { }
 
 
 /*
