@@ -16,9 +16,25 @@ namespace power_overwhelming {
     /// <see cref="emi_sensor" /> or an <see cref="msr_sensor" />.
     /// </summary>
     enum class rapl_domain {
+
+        /// <summary>
+        /// The whole CPU package.
+        /// </summary>
         package,
+
+        /// <summary>
+        /// PP0 typically comprises the CPU cores.
+        /// </summary>
         pp0,
+
+        /// <summary>
+        /// PP1 typically comrpises the on-board GPU.
+        /// </summary>
         pp1,
+
+        /// <summary>
+        /// The DRAM package.
+        /// </summary>
         dram
     };
 

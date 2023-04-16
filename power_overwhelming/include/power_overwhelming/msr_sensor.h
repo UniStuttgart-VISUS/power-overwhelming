@@ -24,6 +24,37 @@ namespace power_overwhelming {
     public:
 
         /// <summary>
+        /// Creates a new sensor for the specified core and RAPL domain,
+        /// forcing the specified <see cref="offset" /> for the location of the
+        /// energy sample in the MSR device file.
+        /// </summary>
+        /// <remarks>
+        /// <para>This factory method exists due to the fact that the whole RAPL
+        /// stuff is poorly documented and the implementation is copied from
+        /// all over the internet. Furthermore, there is no centralised
+        /// implementation for that stuff in Linux we can rely on to be up to
+        /// date. Therefore, this method provides the opportunity for callers
+        /// who know that a specific CPU supports a specific RAPL domain at a
+        /// specific offset in the MSR device file to force the creation of the
+        /// sensor, bypassing all built-in sanity checks based on the
+        /// aforementioned sketchy information.</para>
+        /// </remarks>
+        /// <param name="core">The index of the CPU core for which the MSR
+        /// sensor should be opened.</param>
+        /// <param name="domain">The RAPL domain that is being sampled by the
+        /// sensor. This information is only used for creating the sensor name,
+        /// but has no effect on the actual data that are being read by the
+        /// sensor.</param>
+        /// <param name="offset">The offset into the MSR device file where the
+        /// samlpes are read from.</param>
+        /// <returns>A new instance of the MSR sensor for the specified
+        /// configuration.</returns>
+        /// <exception cref="std::system_error">If the MSR device file could not
+        /// be opened.</exception>
+        static msr_sensor force_create(_In_ const std::uint32_t core,
+            _In_ const rapl_domain domain, _In_ const std::streamoff offset);
+
+        /// <summary>
         /// Create sensors for all MSR files.
         /// </summary>
         /// <param name="out_sensors">Receives the sensors, if not
@@ -39,6 +70,22 @@ namespace power_overwhelming {
         static std::size_t for_all(
             _Out_writes_opt_(cnt_sensors) msr_sensor *out_sensors,
             _In_ const std::size_t cnt_sensors);
+
+        /// <summary>
+        /// Create an MSR sensor for the specified core and RAPL domain.
+        /// </summary>
+        /// <param name="core">The index of the CPU core for which the MSR
+        /// sensor should be opened.</param>
+        /// <param name="domain">The RAPL domain that is being sampled.</param>
+        /// <returns></returns>
+        /// <exception cref="runtime_error">If the CPU vendor could not be
+        /// determined to find the RAPL offset.</exception>
+        /// <exception cref="std::invalid_argument">If the RAPL domain is not
+        /// supported for the specified CPU core.</exception>
+        /// <exception cref="std::system_error">If the MSR device file could not
+        /// be opened.</exception>
+        static msr_sensor for_core(_In_ const std::uint32_t core,
+            _In_ const rapl_domain domain);
 
         /// <summary>
         /// Initialises a new instance.
