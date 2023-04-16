@@ -15,6 +15,7 @@
 #include <Windows.h>
 #else /* defined(_WIN32) */
 #include <cpuid.h>
+#include <errno.h>
 #endif /* defined(_WIN32) */
 
 
