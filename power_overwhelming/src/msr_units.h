@@ -8,13 +8,16 @@
 #include <cinttypes>
 
 
-// Values from https://lkml.org/lkml/2011/5/26/93.
-
-
 namespace visus {
 namespace power_overwhelming {
 namespace detail {
 namespace msr_units {
+
+    /// <summary>
+    /// The number of bits the energy unit conversion constant needs to be
+    /// shifted to be isolated.
+    /// </summary>
+    static constexpr std::uint32_t intel_energy_offset = 0x08;
 
     /// <summary>
     /// The mask for isolating the conversion factor for energy in the

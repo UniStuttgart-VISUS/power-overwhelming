@@ -98,7 +98,7 @@ void visus::power_overwhelming::detail::read_bytes(_In_ const int fd,
         rem -= c;
     }
 
-    if (cnt == -1) {
+    if (c == -1) {
         THROW_LAST_ERROR();
     }
 

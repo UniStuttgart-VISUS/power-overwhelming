@@ -14,6 +14,10 @@
 #include "timestamp.h"
 
 
+#define ERROR_MSG_UNSUPPORTED_CPU "The MSR sensor is not supported for the "\
+    "CPU of this machine."
+
+
 namespace visus {
 namespace power_overwhelming {
 namespace detail {
@@ -169,32 +173,33 @@ void visus::power_overwhelming::detail::msr_sensor_impl::set(
         _In_ const msr_device::core_type core,
         _In_ const rapl_domain domain,
         _In_ const std::streamoff offset) {
+    // Before doing anything else, we need to find out the CPU vendor for being
+    // able to decide what the offset of the RAPL domain is (and where the
+    // divisor for the energy unit is located). In order to make sure that we
+    // read the CPUID of the correct socket, we set the thread affinity to the
+    // core requested by the user. If this fails, the core does not exist, so we
+    // do not need to continue anyway.
+    thread_affinity_restore_point restore_point;
+    set_thread_affinity(core);
+
+    const auto vendor = get_cpu_vendor();
+    if (vendor == cpu_vendor::unknown) {
+        throw std::runtime_error("The vendor of the CPU could not be "
+            "determined, which is vital for initialising the RAPL domain "
+            "information correctly.");
+    }
+
     if (offset >= 0) {
         // We have an override by the user, so just use it.
         this->offset = offset;
 
     } else {
-        // Before doing anything else, we need to find out the CPU vendor for
-        // being able to decide what the offsetf of the RAPL domain are. In
-        // order to make sure that we read the CPUID of the correct socket, we
-        // set the thread affinity to the core requested by the user. If this
-        // fails, the core does not exist, so we do not need to continue anyway.
-        thread_affinity_restore_point restore_point;
-        set_thread_affinity(core);
-
-        const auto vendor = get_cpu_vendor();
-        if (vendor == cpu_vendor::unknown) {
-            throw std::runtime_error("The vendor of the CPU could not be "
-                "determined, which is vital for initialising the RAPL domain "
-                "information correctly.");
-        }
-
-        // Next, find out whether the sensor is supported on the CPU.
+        // We have no forced offset, so we next check whether we can derive the
+        // offset from our hardcoded data.
         {
             auto vit = domain_configs.find(vendor);
             if (vit == domain_configs.end()) {
-                throw std::runtime_error("The MSR sensor is not supported for "
-                    "the CPU of this machine.");
+                throw std::runtime_error(ERROR_MSG_UNSUPPORTED_CPU);
             }
 
             auto dit = vit->second.find(domain);
@@ -222,7 +227,21 @@ void visus::power_overwhelming::detail::msr_sensor_impl::set(
     // Next, retrieve the unit conversion constants for the values as in
     // https://lkml.org/lkml/2011/5/26/93.
     {
-        auto sample = this->device->read(msr_offsets::unit_divisors);
+        std::uint64_t sample = 0;
+
+        switch (vendor) {
+            case cpu_vendor::amd:
+                sample = this->device->read(msr_offsets::amd_unit_divisors);
+                break;
+
+            case cpu_vendor::intel:
+                sample = this->device->read(msr_offsets::intel_unit_divisors);
+                break;
+
+            default:
+                throw std::runtime_error(ERROR_MSG_UNSUPPORTED_CPU);
+        }
+
         sample = (sample & msr_units::energy_mask) >> msr_units::energy_offset;
         this->unit_divisor = static_cast<measurement::value_type>(1 << sample);
     }

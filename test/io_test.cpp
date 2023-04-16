@@ -44,6 +44,23 @@ namespace test {
             }
         }
 
+        TEST_METHOD(test_read_bytes) {
+            std::array<char, 16> expected;
+            std::generate(expected.begin(), expected.end(), [](void) {
+                static char i = 0;
+                return i++;
+            });
+
+            std::ofstream test_stream("io_test", std::ios::trunc);
+            test_stream.write(expected.data(), expected.size());
+            test_stream.close();
+
+            auto fd = ::open("io_test", O_RDONLY);
+            char actual = 0xCD;
+            detail::read_bytes(fd, &actual, sizeof(actual));
+            Assert::AreEqual(char(0), actual, L"First byte read", LINE_INFO());
+        }
+
     };
 } /* namespace test */
 } /* namespace power_overwhelming */
