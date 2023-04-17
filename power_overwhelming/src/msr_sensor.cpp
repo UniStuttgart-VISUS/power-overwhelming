@@ -70,7 +70,7 @@ std::size_t visus::power_overwhelming::msr_sensor::for_all(
                 try {
                     msr_sensor sensor;
                     assert(sensor._impl != nullptr);
-                    sensor._impl->set(c, domain, -1);
+                    sensor._impl->set(c, domain, nullptr);
 
                     if (retval < cnt_sensors) {
                         out_sensors[retval] = std::move(sensor);
