@@ -9,8 +9,7 @@
 #include <map>
 #include <stdexcept>
 
-#include "msr_offsets.h"
-#include "msr_units.h"
+#include "msr_magic.h"
 #include "timestamp.h"
 
 

@@ -1,4 +1,4 @@
-﻿// <copyright file="msr_offsets.h" company="Visualisierungsinstitut der Universität Stuttgart">
+﻿// <copyright file="msr_magic.h" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -11,8 +11,11 @@
 namespace visus {
 namespace power_overwhelming {
 namespace detail {
-namespace msr_offsets {
 
+    // Offsets into the device files for various sensor readings and the unit
+    // divisors that allow for converting the raw numbers for Watts, Joules
+    // and seconds, respecitvely.
+namespace msr_offsets {
 namespace amd {
     // AMD offsets from https://github.com/amd/amd_energy/blob/master/amd_energy.c
     // and https://github.com/deater/uarch-configure/blob/master/rapl-read/rapl-read.c
@@ -41,8 +44,28 @@ namespace intel {
     constexpr std::streamoff pp1_power_limit = 0x640;
     constexpr std::streamoff unit_divisors = 0x606;
 } /* namespace intel */
-
 } /* namespace msr_offsets */
+
+    // The bitmasks and bitshift offsets for isolating different divisors in the
+    // 64-bit value we read for all units at once.
+namespace msr_units {
+namespace amd {
+    // Values from  https://github.com/amd/amd_energy/blob/master/amd_energy.c
+    constexpr std::uint32_t energy_offset = 0x08;
+    constexpr std::uint64_t energy_mask = 0x1F00;
+} /* namespace amd */
+
+namespace intel {
+    // Values from https://lkml.org/lkml/2011/5/26/93
+    constexpr std::uint64_t energy_mask = 0x1F00;
+    constexpr std::uint32_t energy_offset = 0x08;
+    constexpr std::uint64_t power_mask = 0x000F;
+    constexpr std::uint32_t power_offset = 0x00;
+    constexpr std::uint64_t time_mask = 0xF000;
+    constexpr std::uint32_t time_offset = 0x10;
+} /* namespace intel */
+} /* namespace msr_units */
+
 } /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
