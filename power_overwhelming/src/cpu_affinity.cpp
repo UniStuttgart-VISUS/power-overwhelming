@@ -16,52 +16,44 @@
 #include <sched.h>
 #endif /* defined(_WIN32) */
 
-using visus::power_overwhelming::thread_affinity_restore_point;
+
+#define ERROR_MSG_TOO_MANY_CORES "Setting the CPU affinity is limited on this "\
+    "operating system. The specified core is out of the range of what "\
+    "the operating system can handle."
 
 
 /*
- * ...::thread_affinity_restore_point::thread_affinity_restore_point
+ * visus::power_overwhelming::thread_affinity_scope::thread_affinity_scope
  */
-thread_affinity_restore_point::thread_affinity_restore_point(void) {
-#if (defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0601))
-    auto affinity = new GROUP_AFFINITY();
+visus::power_overwhelming::thread_affinity_scope::thread_affinity_scope(
+        _In_ const std::uint32_t logical_cpu) {
 
-    if (!::GetThreadGroupAffinity(::GetCurrentThread(), affinity)) {
-        auto error = ::GetLastError();
-        delete affinity;
-        throw std::system_error(error, std::system_category());
+
+#if (defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0601))
+    GROUP_AFFINITY affinity;
+    if (!::GetThreadGroupAffinity(::GetCurrentThread(), &affinity)) {
+        throw std::system_error(::GetLastError(), std::system_category());
     }
 
-    this->_affinity = affinity;
+    set_thread_affinity(logical_cpu);
+    this->_affinity = new decltype(affinity)(affinity);
 
 #elif defined(_WIN32)
-    // Cf. https://stackoverflow.com/questions/6601862/query-thread-not-process-processor-affinity#6601917
-    auto thread = ::GetCurrentThread();
-    DWORD_PTR mask = 1;
-
-    while (mask) {
-        auto affinity = ::SetThreadAffinityMask(thread, mask);
-        if (affinity == 0) {
-            // Operation failed, so either try again or fail depending on the
-            // last error.
-            auto error = ::GetLastError();
-            if (error != ERROR_INVALID_PARAMETER) {
-                throw std::system_error(error, std::system_category());
-            }
-
-            mask <<= 1;
-
-        } else {
-            // If this succeeded, we know the current mask. Restore the state
-            // and save the mask.
-            if (!::SetThreadAffinityMask(thread, affinity)) {
-                throw std::system_error(::GetLastError(),
-                    std::system_category());
-            }
-
-            this->_affinity = new decltype(affinity)(affinity);
-        }
+    if (logical_cpu > std::numeric_limits<DWORD_PTR>::digits) {
+        throw std::system_error(WINCODEC_ERR_VALUEOUTOFRANGE,
+            std::system_category(), ERROR_MSG_TOO_MANY_CORES);
     }
+
+    const auto mask = static_cast<DWORD_PTR>(1) << logical_cpu;
+
+    // Old Windows is special in that setting a new thread affinity and
+    // retieving the previous state are the same operation.
+    auto affinity = ::SetThreadAffinityMask(::GetCurrentThread(), mask);
+    if (affinity == 0) {
+        throw std::system_error(::GetLastError(), std::system_category());
+    }
+
+    this->_affinity = new decltype(affinity)(affinity);
 
 #else /* (defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0601)) */
     cpu_set_t affinity;
@@ -69,15 +61,16 @@ thread_affinity_restore_point::thread_affinity_restore_point(void) {
         throw std::system_error(errno, std::system_category());
     }
 
+    set_thread_affinity(logical_cpu);
     this->_affinity = new decltype(affinity)(affinity);
 #endif /* (defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0601)) */
 }
 
 
 /*
-* ...::thread_affinity_restore_point::~thread_affinity_restore_point
+* visus::power_overwhelming::thread_affinity_scope::~thread_affinity_scope
  */
-thread_affinity_restore_point::~thread_affinity_restore_point(void) {
+visus::power_overwhelming::thread_affinity_scope::~thread_affinity_scope(void) {
     // Note: If the restore here fails, we just need to accept it, because we
     // cannot throw in a destructor.
 #if (defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0601))
@@ -135,8 +128,8 @@ void visus::power_overwhelming::set_thread_affinity(
     // Clients before Windows 7 do not support more than 64 cores, because they
     // lack the thread group affinity API.
     if (logical_cpu > std::numeric_limits<DWORD_PTR>::digits) {
-        throw std::invalid_argument("Setting the CPU affinity is limited to 64 "
-            "cores on this operating system.");
+        throw std::system_error(WINCODEC_ERR_VALUEOUTOFRANGE,
+            std::system_category(), ERROR_MSG_TOO_MANY_CORES);
     }
 
     const auto mask = static_cast<DWORD_PTR>(1) << logical_cpu;

@@ -20,6 +20,27 @@
 
 
 /*
+ * visus::power_overwhelming::extract_cpu_model
+ */
+visus::power_overwhelming::cpu_model
+visus::power_overwhelming::extract_cpu_model(
+        _In_reads_(2) const cpu_info info[2]) noexcept {
+    // https://www.amd.com/system/files/TechDocs/25481.pdf
+    // https://en.wikichip.org/wiki/amd/cpuid
+    // https://www.intel.com/content/www/us/en/architecture-and-technology/64-ia-32-architectures-software-developer-vol-2a-manual.html
+    cpu_model retval;
+
+    retval.stepping = (info[1].registers.eax & 0x0000000F) >> 0;
+    retval.base_model = (info[1].registers.eax & 0x000000F0) >> 4;
+    retval.base_family = (info[1].registers.eax & 0x00000F00) >> 8;
+    retval.extended_model = (info[1].registers.eax & 0x0000F0000) >> 16;
+    retval.extended_family = (info[1].registers.eax & 0x00FF00000) >> 20;
+
+    return retval;
+}
+
+
+/*
  * visus::power_overwhelming::extract_cpu_vendor
  */
 visus::power_overwhelming::cpu_vendor

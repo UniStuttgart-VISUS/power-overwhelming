@@ -56,6 +56,17 @@ namespace power_overwhelming {
         "you need to add some kind of alignment annotation.s");
 
     /// <summary>
+    /// Represents the CPU model extracted from <see cref="cpu_info" />.
+    /// </summary>
+    struct cpu_model {
+        std::uint8_t base_family;
+        std::uint8_t extended_family;
+        std::uint8_t base_model;
+        std::uint8_t extended_model;
+        std::uint8_t stepping;
+    };
+
+    /// <summary>
     /// Specifies different vendors of CPUs.
     /// </summary>
     /// <remarks>
@@ -220,6 +231,15 @@ namespace power_overwhelming {
         /// </summary>
         zhaoxin
     };
+
+    /// <summary>
+    /// Extracts the CPU family and model from the second CPUID result.
+    /// </summary>
+    /// <param name="info">The first two <see cref="cpu_info" />s retrieved from
+    /// <see cref="get_cpu_info" />.</param>
+    /// <returns>A description of the CPU model.</returns>
+    extern POWER_OVERWHELMING_API cpu_model extract_cpu_model(
+        _In_reads_(2) const cpu_info info[2]) noexcept;
 
     /// <summary>
     /// Extracts the vendor from the first CPUID result.

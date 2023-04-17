@@ -144,8 +144,7 @@ void visus::power_overwhelming::detail::msr_sensor_impl::set(
     // read the CPUID of the correct socket, we set the thread affinity to the
     // core requested by the user. If this fails, the core does not exist, so we
     // do not need to continue anyway.
-    thread_affinity_restore_point restore_point;
-    set_thread_affinity(core);
+    thread_affinity_scope affinity_scope(core);
 
     const auto vendor = get_cpu_vendor();
     if (vendor == cpu_vendor::unknown) {

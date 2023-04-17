@@ -31,6 +31,7 @@
 #include <io_util.h>
 #include <on_exit.h>
 #include <timestamp.h>
+#include <msr_magic.h>
 #include <nvml_exception.h>
 #include <nvml_scope.h>
 #include <sensor_desc.h>

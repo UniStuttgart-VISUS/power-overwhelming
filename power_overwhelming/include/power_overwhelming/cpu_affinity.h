@@ -14,10 +14,11 @@ namespace visus {
 namespace power_overwhelming {
 
     /// <summary>
-    /// A RAII container that preserves the thread affinity at its time of
-    /// construction and restores it when it is deleted.
+    /// A RAII container that temporarily sets the CPU affinity of the calling
+    /// thread to the specified core and resets it to the previous state in its
+    /// destructor
     /// </summary>
-    class POWER_OVERWHELMING_API thread_affinity_restore_point final {
+    class POWER_OVERWHELMING_API thread_affinity_scope final {
 
     public:
 
@@ -25,20 +26,22 @@ namespace power_overwhelming {
         /// Initialises a new instance by preserving the thread affinity of the
         /// calling thread.
         /// </summary>
+        /// <param name="logical_cpu">The index of the logical CPU the thread
+        /// should be bound to.</param>
         /// <exception cref="std::system_error">If the current thread affinity
-        /// could not be determined.</exception>
-        thread_affinity_restore_point(void);
+        /// could not be determined or the new affinity could not be set.
+        /// </exception>
+        thread_affinity_scope(_In_ const std::uint32_t logical_cpu);
 
-        thread_affinity_restore_point(
-            const thread_affinity_restore_point&) = delete;
+        thread_affinity_scope(const thread_affinity_scope&) = delete;
 
         /// <summary>
         /// Finalises the instance by restoring the saved thread affinity.
         /// </summary>
-        ~thread_affinity_restore_point(void);
+        ~thread_affinity_scope(void);
 
-        thread_affinity_restore_point& operator =(
-            const thread_affinity_restore_point&) = delete;
+        thread_affinity_scope& operator =(
+            const thread_affinity_scope&) = delete;
 
     private:
 

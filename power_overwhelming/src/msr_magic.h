@@ -10,6 +10,7 @@
 
 #include "power_overwhelming/cpu_info.h"
 #include "power_overwhelming/msr_sensor.h"
+#include "power_overwhelming/power_overwhelming_api.h"
 #include "power_overwhelming/rapl_domain.h"
 #include "power_overwhelming/rapl_quantity.h"
 
@@ -123,6 +124,20 @@ namespace intel {
     /// <see cref="std::map" /> or <see cref="std::unordered_map" />.
     /// </summary>
     typedef std::pair<rapl_domain, msr_magic_config> msr_magic_config_entry;
+
+    /// <summary>
+    /// Performs the default test whether a specific RAPL domain is supported on
+    /// the specified CPU core.
+    /// </summary>
+    /// <remarks>
+    /// This function is not part of the public API, but only exported for
+    /// testing.
+    /// </remarks>
+    /// <param name="core"></param>
+    /// <param name="domain"></param>
+    /// <returns></returns>
+    extern POWER_OVERWHELMING_API bool is_rapl_energy_supported(
+        _In_ const msr_sensor::core_type core, _In_ const rapl_domain domain);
 
     /// <summary>
     /// Creates a <see cref="msr_magic_config" /> for an AMD CPU and the energy

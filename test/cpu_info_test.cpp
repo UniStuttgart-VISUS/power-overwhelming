@@ -13,18 +13,19 @@ namespace visus {
 namespace power_overwhelming {
 namespace test {
 
-    TEST_CLASS(cpu_vendor_test) {
+    TEST_CLASS(cpu_info_test) {
 
     public:
 
         TEST_METHOD(test_cpu_affinity) {
-            thread_affinity_restore_point restore;
-            set_thread_affinity(0);
+            thread_affinity_scope scope(0);
         }
 
         TEST_METHOD(test_cpu_model) {
             cpu_info vendor_and_model[2];
             Assert::IsTrue(get_cpu_info(vendor_and_model, 2) >= 2, L"Vendor and model available", LINE_INFO());
+            auto vendor = extract_cpu_vendor(vendor_and_model[1]);
+            auto model = extract_cpu_model(vendor_and_model);
         }
 
         TEST_METHOD(test_get_cpu_vendor) {
