@@ -15,6 +15,8 @@
 
 #define ERROR_MSG_UNSUPPORTED_CPU "The MSR sensor is not supported for the "\
     "CPU of this machine."
+#define ERROR_MSG_UNSUPPORTED_CORE "The specified RAPL domain is not "\
+    "supported for the specified CPU core."
 
 
 namespace visus {
@@ -37,9 +39,11 @@ namespace detail {
         {
             cpu_vendor::amd,
             {
-                make_amd_energy_magic_config(rapl_domain::package,
+                make_energy_magic_config(cpu_vendor::amd,
+                    rapl_domain::package,
                     msr_offsets::amd::package_energy_status),
-                make_amd_energy_magic_config(rapl_domain::pp0,
+                make_energy_magic_config(cpu_vendor::amd,
+                    rapl_domain::pp0,
                     msr_offsets::amd::pp0_energy_status)
             }
         },
@@ -47,13 +51,17 @@ namespace detail {
         {
             cpu_vendor::intel,
             {
-                make_intel_energy_magic_config(rapl_domain::dram,
+                make_energy_magic_config(cpu_vendor::intel,
+                    rapl_domain::dram,
                     msr_offsets::intel::dram_energy_status),
-                make_intel_energy_magic_config(rapl_domain::package,
+                make_energy_magic_config(cpu_vendor::intel,
+                    rapl_domain::package,
                     msr_offsets::intel::package_energy_status),
-                make_intel_energy_magic_config(rapl_domain::pp0,
+                make_energy_magic_config(cpu_vendor::intel,
+                    rapl_domain::pp0,
                     msr_offsets::intel::pp0_energy_status),
-                make_intel_energy_magic_config(rapl_domain::pp1,
+                make_energy_magic_config(cpu_vendor::intel,
+                    rapl_domain::pp1,
                     msr_offsets::intel::pp1_energy_status),
             }
         },
@@ -168,8 +176,11 @@ void visus::power_overwhelming::detail::msr_sensor_impl::set(
 
         auto dit = vit->second.find(domain);
         if (dit == vit->second.end()) {
-            throw std::invalid_argument("The specified RAPL domain is not "
-                "supported for the CPU of this machine.");
+            throw std::invalid_argument(ERROR_MSG_UNSUPPORTED_CORE);
+        }
+
+        if (dit->second.is_supported && !dit->second.is_supported(core)) {
+            throw std::invalid_argument(ERROR_MSG_UNSUPPORTED_CORE);
         }
 
         config = dit->second;

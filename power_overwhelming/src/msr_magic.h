@@ -130,54 +130,39 @@ namespace intel {
     /// the specified CPU core.
     /// </summary>
     /// <remarks>
-    /// This function is not part of the public API, but only exported for
-    /// testing.
+    /// <para>Note that this implementation only tests for energy registers, not
+    /// for other kinds that might or might not be available.</para>
+    /// <para>This function is not part of the public API, but only exported for
+    /// testing.</para>
     /// </remarks>
-    /// <param name="core"></param>
-    /// <param name="domain"></param>
-    /// <returns></returns>
+    /// <param name="core">The zero-based index of the CPU core to check.
+    /// </param>
+    /// <param name="domain">The RAPL domain to be tested.</param>
+    /// <returns><c>true</c> if the core has a RAPL MSRs for the specified
+    /// domain.</returns>
     extern POWER_OVERWHELMING_API bool is_rapl_energy_supported(
         _In_ const msr_sensor::core_type core, _In_ const rapl_domain domain);
 
     /// <summary>
-    /// Creates a <see cref="msr_magic_config" /> for an AMD CPU and the energy
-    /// unit.
+    /// Creates a <see cref="msr_magic_config" /> for a CPU from the specified
+    /// vendor and the energy unit and wraps it into a pair for the initialiser
+    /// of a lookup table.
     /// </summary>
-    extern msr_magic_config make_amd_energy_magic_config(
+    extern msr_magic_config_entry make_energy_magic_config(
+        _In_ const cpu_vendor vendor,
+        _In_ const rapl_domain domain,
         _In_ const std::streamoff data_location,
-        _In_ std::function<bool(const msr_sensor::core_type)> is_supported);
+        _In_ const std::function<bool(const msr_sensor::core_type)>& check);
 
     /// <summary>
-    /// Creates a <see cref="msr_magic_config" /> for an AMD CPU and the energy
-    /// unit and wraps it into a pair for the initialiser of a lookup table.
+    /// Creates a <see cref="msr_magic_config" /> with the built-in check for
+    /// whether RAPL MSRs are supported.
     /// </summary>
-    inline msr_magic_config_entry make_amd_energy_magic_config(
+    inline msr_magic_config_entry make_energy_magic_config(
+            _In_ const cpu_vendor vendor,
             _In_ const rapl_domain domain,
-            _In_ const std::streamoff data_location,
-            _In_ std::function<bool(const msr_sensor::core_type)> check = { }) {
-        return std::make_pair(domain, make_amd_energy_magic_config(
-            data_location, check));
-    }
-
-    /// <summary>
-    /// Creates a <see cref="msr_magic_config" /> for an Intel CPU and the
-    /// energy unit.
-    /// </summary>
-    extern msr_magic_config make_intel_energy_magic_config(
-        _In_ const std::streamoff data_location,
-        _In_ std::function<bool(const msr_sensor::core_type)> is_supported);
-
-    /// <summary>
-    /// Creates a <see cref="msr_magic_config" /> for an Intel CPU and the
-    /// energy unit and wraps it into a pair for the initialiser of a lookup
-    /// table.
-    /// </summary>
-    inline msr_magic_config_entry make_intel_energy_magic_config(
-            _In_ const rapl_domain domain,
-            _In_ const std::streamoff data_location,
-            _In_ std::function<bool(const msr_sensor::core_type)> check = { }) {
-        return std::make_pair(domain, make_intel_energy_magic_config(
-            data_location, check));
+            _In_ const std::streamoff data_location) {
+        return make_energy_magic_config(vendor, domain, data_location, nullptr);
     }
 
 } /* namespace detail */

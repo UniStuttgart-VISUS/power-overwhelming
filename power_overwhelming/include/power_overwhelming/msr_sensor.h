@@ -21,8 +21,8 @@ namespace power_overwhelming {
 
 
     /// <summary>
-    /// Implementation of a power sensor using the MSR files for reading RAPL
-    /// registers.
+    /// Implementation of a power sensor using the device files for the RAPL
+    /// machine-specific registers (MSRs).
     /// </summary>
     class POWER_OVERWHELMING_API msr_sensor final : public sensor {
 
