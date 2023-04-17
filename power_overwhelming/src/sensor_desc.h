@@ -19,6 +19,7 @@
 #include "power_overwhelming/tinkerforge_sensor.h"
 
 #include "described_sensor_type.h"
+#include "msr_sensor_impl.h"
 #include "tinkerforge_sensor_impl.h"
 
 
@@ -57,7 +58,7 @@ namespace detail {
     static constexpr const char *json_field_type = "type";
     static constexpr const char *json_field_udid = "udid";
     static constexpr const char *json_field_uid = "uid";
-
+    static constexpr const char *json_field_unit_divisor = "unitDivisor";
 
     /// <summary>
     /// Test whether a descriptor has the ability to serialise all sensors at
@@ -243,18 +244,25 @@ namespace detail {
 
         static inline value_type deserialise(_In_ const nlohmann::json& value) {
             auto core = value[json_field_core].get<msr_sensor::core_type>();
+            auto divisor = value[json_field_unit_divisor].get<float>();
             auto domain0 = value[json_field_domain].get<std::string>();
             auto domain1 = power_overwhelming::convert_string<wchar_t>(domain0);
             auto domain = parse_rapl_domain(domain1.c_str());
             auto offset = value[json_field_offset].get<std::streamoff>();
-            return value_type::force_create(core, domain, offset);
+            // Create using BS values for offset ...
+            auto retval = value_type::force_create(core, domain, offset, 0, 0,
+                0);
+            // ... and overwrite with result from previous offset computation.
+            retval._impl->unit_divisor = divisor;
+            return retval;
         }
 
         static inline nlohmann::json serialise(_In_ const value_type& value) {
             auto core = value.core();
+            auto divisor = value._impl->unit_divisor;
             auto domain0 = to_string(value.domain());
             auto domain = power_overwhelming::convert_string<char>(domain0);
-            auto offset = value.offset();
+            auto offset = value._impl->offset;
             auto name = power_overwhelming::convert_string<char>(value.name());
 
             return nlohmann::json::object({
@@ -262,7 +270,8 @@ namespace detail {
                 { json_field_name, name },
                 { json_field_core, core },
                 { json_field_domain, domain },
-                { json_field_offset, offset }
+                { json_field_offset, offset },
+                { json_field_unit_divisor, divisor }
             });
         }
     };

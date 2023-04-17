@@ -21,6 +21,10 @@ namespace visus {
 namespace power_overwhelming {
 namespace detail {
 
+    /* Forward declarations. */
+    struct msr_magic_config;
+
+
     /// <summary>
     /// Private data container for the <see cref="msr_sensor" />.
     /// </summary>
@@ -116,11 +120,11 @@ namespace detail {
         /// <param name="core">The core for which to open the MSR device
         /// file.</param>
         /// <param name="domain">The RAPL domain to sample, which is used to
-        /// determine the file offset if <paramref name="offset" /> is
-        /// negative.</param>
-        /// <param name="offset">A &quot;because-I-know&quot; override for the
-        /// file offset. If negative, the method will determine the offset
-        /// of the RAPL domain manually.</param>
+        /// determine the file offset if <paramref name="config_override" /> is
+        /// not provided.</param>
+        /// <param name="config_override">A &quot;because-I-know&quot; override
+        /// for the file offsets. If <c>nullptr</c>, the method will determine
+        /// the offset of the RAPL domain manually.</param>
         /// <exception cref="runtime_error">If the CPU vendor could not be
         /// determined to find the RAPL offset.</exception>
         /// <exception cref="std::invalid_argument">If the RAPL domain is not
@@ -129,7 +133,7 @@ namespace detail {
         /// not be opened.</exception>
         void set(_In_ const msr_device::core_type core,
             _In_ const rapl_domain domain,
-            _In_ const std::streamoff offset);
+            _In_opt_ const msr_magic_config *config_override);
 
     };
 

@@ -22,24 +22,11 @@ namespace power_overwhelming {
 namespace detail {
 
     /// <summary>
-    /// The configuration data we need to know for a RAPL domain.
-    /// </summary>
-    struct rapl_domain_config {
-        /// <summary>
-        /// The offset of the specific domain in the MSR device file.
-        /// </summary>
-        std::streamoff offset;
-
-        inline rapl_domain_config(_In_ const std::streamoff offset)
-            : offset(offset) { }
-    };
-
-    /// <summary>
     /// The type of a lookup table mapping RAPL domains to their location in
     /// the MSR device file, which can also be used to find out whether a
     /// RAPL domain is supported for a CPU vendor.
     /// </summary>
-    typedef std::map<cpu_vendor, std::map<rapl_domain, rapl_domain_config>>
+    typedef std::map<cpu_vendor, std::map<rapl_domain, msr_magic_config>>
         rapl_domain_configs_type;
 
     /// <summary>
@@ -50,36 +37,24 @@ namespace detail {
         {
             cpu_vendor::amd,
             {
-                {
-                    visus::power_overwhelming::rapl_domain::package,
-                    rapl_domain_config(msr_offsets::amd::package_energy_status)
-                },
-                {
-                    visus::power_overwhelming::rapl_domain::pp0,
-                    rapl_domain_config(msr_offsets::amd::pp0_energy_status)
-                }
+                make_amd_energy_magic_config(rapl_domain::package,
+                    msr_offsets::amd::package_energy_status),
+                make_amd_energy_magic_config(rapl_domain::pp0,
+                    msr_offsets::amd::pp0_energy_status)
             }
         },
 
         {
             cpu_vendor::intel,
             {
-                {
-                    visus::power_overwhelming::rapl_domain::dram,
-                    rapl_domain_config(msr_offsets::intel::dram_energy_status)
-                },
-                {
-                    visus::power_overwhelming::rapl_domain::package,
-                    rapl_domain_config(msr_offsets::intel::package_energy_status)
-                },
-                {
-                    visus::power_overwhelming::rapl_domain::pp0,
-                    rapl_domain_config(msr_offsets::intel::pp0_energy_status)
-                },
-                {
-                    visus::power_overwhelming::rapl_domain::pp1,
-                    rapl_domain_config(msr_offsets::intel::pp1_energy_status)
-                },
+                make_intel_energy_magic_config(rapl_domain::dram,
+                    msr_offsets::intel::dram_energy_status),
+                make_intel_energy_magic_config(rapl_domain::package,
+                    msr_offsets::intel::package_energy_status),
+                make_intel_energy_magic_config(rapl_domain::pp0,
+                    msr_offsets::intel::pp0_energy_status),
+                make_intel_energy_magic_config(rapl_domain::pp1,
+                    msr_offsets::intel::pp1_energy_status),
             }
         },
     };
@@ -95,7 +70,7 @@ namespace detail {
 std::vector<visus::power_overwhelming::rapl_domain>
 visus::power_overwhelming::detail::msr_sensor_impl::supported_domains(
         _In_ const cpu_vendor vendor) {
-    typedef std::pair<rapl_domain, rapl_domain_config> offset_pair;
+    typedef detail::msr_magic_config_entry offset_pair;
     std::vector<rapl_domain> retval;
 
     auto it = domain_configs.find(vendor);
@@ -162,7 +137,7 @@ visus::power_overwhelming::detail::msr_sensor_impl::sample(
 void visus::power_overwhelming::detail::msr_sensor_impl::set(
         _In_ const msr_device::core_type core,
         _In_ const rapl_domain domain,
-        _In_ const std::streamoff offset) {
+        _In_opt_ const msr_magic_config *config_override) {
     // Before doing anything else, we need to find out the CPU vendor for being
     // able to decide what the offset of the RAPL domain is (and where the
     // divisor for the energy unit is located). In order to make sure that we
@@ -179,28 +154,26 @@ void visus::power_overwhelming::detail::msr_sensor_impl::set(
             "information correctly.");
     }
 
-    if (offset >= 0) {
-        // We have an override by the user, so just use it.
-        this->offset = offset;
+    // This is the configuration we will use to determine the offsets. Assign it
+    // either from user input or from our hardcoded magic tables.
+    msr_magic_config config;
+
+    if (config_override != nullptr) {
+        config = *config_override;
 
     } else {
-        // We have no forced offset, so we next check whether we can derive the
-        // offset from our hardcoded data.
-        {
-            auto vit = domain_configs.find(vendor);
-            if (vit == domain_configs.end()) {
-                throw std::runtime_error(ERROR_MSG_UNSUPPORTED_CPU);
-            }
-
-            auto dit = vit->second.find(domain);
-            if (dit == vit->second.end()) {
-                throw std::invalid_argument("The specified RAPL domain is not "
-                    "supported for the CPU of this machine.");
-            }
-
-            // As we already have the entry from the map, preserve it for later.
-            this->offset = dit->second.offset;
+        auto vit = domain_configs.find(vendor);
+        if (vit == domain_configs.end()) {
+            throw std::runtime_error(ERROR_MSG_UNSUPPORTED_CPU);
         }
+
+        auto dit = vit->second.find(domain);
+        if (dit == vit->second.end()) {
+            throw std::invalid_argument("The specified RAPL domain is not "
+                "supported for the CPU of this machine.");
+        }
+
+        config = dit->second;
     }
 
     // Open the MSR device file or get access to an already open instance for
@@ -211,35 +184,15 @@ void visus::power_overwhelming::detail::msr_sensor_impl::set(
     // sensor, so it makes sense now to compile its name.
     this->core = core;
     this->domain = domain;
+    this->offset = config.data_location;
     this->sensor_name = L"msr/" + std::to_wstring(this->core) + L"/"
         + to_string(this->domain);
 
     // Next, retrieve the unit conversion constants for the values.
     {
-        std::uint64_t mask = 0;
-        std::streamoff offset = 0;
-        std::uint32_t shift= 0;
-
-        switch (vendor) {
-            case cpu_vendor::amd:
-                mask = msr_units::amd::energy_mask;
-                offset = msr_offsets::amd::unit_divisors;
-                shift = msr_units::amd::energy_offset;
-                break;
-
-            case cpu_vendor::intel:
-                mask = msr_units::intel::energy_mask;
-                offset = msr_offsets::intel::unit_divisors;
-                shift = msr_units::intel::energy_offset;
-                break;
-
-            default:
-                throw std::runtime_error(ERROR_MSG_UNSUPPORTED_CPU);
-        }
-
-        auto sample = this->device->read(offset);
-        sample = (sample & mask) >> shift;
-        this->unit_divisor = static_cast<measurement::value_type>(1 << sample);
+        auto divisor = this->device->read(config.unit_location);
+        divisor = (divisor & config.unit_mask) >> config.unit_offset;
+        this->unit_divisor = static_cast<measurement::value_type>(1 << divisor);
     }
 
     // Finally, retrieve a first sample, because we need a reference whenever

@@ -9,6 +9,7 @@
 
 #include "power_overwhelming/for_each_rapl_domain.h"
 
+#include "msr_magic.h"
 #include "msr_sensor_impl.h"
 
 
@@ -19,9 +20,23 @@ visus::power_overwhelming::msr_sensor
 visus::power_overwhelming::msr_sensor::force_create(
         _In_ const core_type core,
         _In_ const rapl_domain domain,
-        _In_ const std::streamoff offset) {
+        _In_ const std::streamoff data_location,
+        _In_ const std::streamoff unit_location,
+        _In_ const std::uint64_t unit_mask,
+        _In_ const std::uint32_t unit_offset) {
+    static const std::function<bool(const core_type)> because_i_know
+        = [](const core_type) { return true; };
+    detail::msr_magic_config config;
     msr_sensor retval;
-    retval._impl->set(core, domain, offset);
+
+    config.data_location = data_location;
+    config.is_supported = because_i_know;
+    config.unit_location = unit_location;
+    config.unit_mask = unit_mask;
+    config.unit_offset = unit_offset;
+
+    assert(retval._impl != nullptr);
+    retval._impl->set(core, domain, &config);
     return retval;
 }
 
@@ -92,8 +107,10 @@ std::size_t visus::power_overwhelming::msr_sensor::for_all(
 visus::power_overwhelming::msr_sensor
 visus::power_overwhelming::msr_sensor::for_core(_In_ const core_type core,
         _In_ const rapl_domain domain) {
-    // Specifying a negative offset will trigger an automatic lookup.
-    return force_create(core, domain, -1);
+    msr_sensor retval;
+    assert(retval._impl != nullptr);
+    retval._impl->set(core, domain, nullptr);
+    return retval;
 }
 
 
@@ -140,15 +157,6 @@ const wchar_t *visus::power_overwhelming::msr_sensor::name(
     return (this->_impl != nullptr)
         ? this->_impl->sensor_name.c_str()
         : nullptr;
-}
-
-
-/*
- * visus::power_overwhelming::msr_sensor::offset
- */
-std::streamoff visus::power_overwhelming::msr_sensor::offset(void) const {
-    this->check_not_disposed();
-    return this->_impl->offset;
 }
 
 

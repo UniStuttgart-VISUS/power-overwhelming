@@ -8,6 +8,7 @@
 #include <ios>
 
 #include "power_overwhelming/rapl_domain.h"
+#include "power_overwhelming/rapl_quantity.h"
 #include "power_overwhelming/sensor.h"
 
 
@@ -16,6 +17,8 @@ namespace power_overwhelming {
 
     /* Forward declarations */
     namespace detail { struct msr_sensor_impl; }
+    namespace detail { template<class T> struct sensor_desc; }
+
 
     /// <summary>
     /// Implementation of a power sensor using the MSR files for reading RAPL
@@ -52,14 +55,18 @@ namespace power_overwhelming {
         /// sensor. This information is only used for creating the sensor name,
         /// but has no effect on the actual data that are being read by the
         /// sensor.</param>
-        /// <param name="offset">The offset into the MSR device file where the
-        /// samlpes are read from.</param>
+        /// <param name="data_location">The offset into the MSR device file
+        /// where the samlpes are read from.</param>
         /// <returns>A new instance of the MSR sensor for the specified
         /// configuration.</returns>
         /// <exception cref="std::system_error">If the MSR device file could not
         /// be opened.</exception>
         static msr_sensor force_create(_In_ const core_type core,
-            _In_ const rapl_domain domain, _In_ const std::streamoff offset);
+            _In_ const rapl_domain domain,
+            _In_ const std::streamoff data_location,
+            _In_ const std::streamoff unit_location,
+            _In_ const std::uint64_t unit_mask,
+            _In_ const std::uint32_t unit_offset);
 
         /// <summary>
         /// Create sensors for all MSR files.
@@ -135,19 +142,6 @@ namespace power_overwhelming {
         virtual _Ret_maybenull_z_ const wchar_t *name(
             void) const noexcept override;
 
-        /// <summary>
-        /// Answer the location in the MSR device file the sensor is sampling.
-        /// </summary>
-        /// <remarks>
-        /// This information is of limited use for end users, but is mainly
-        /// required to implement serialisation.
-        /// </remarks>
-        /// <returns>The offset in bytes at which the sampled data are
-        /// searched.</returns>
-        /// <exception cref="std::runtime_error">If the method is called on a
-        /// sensor that has been disposed.</exception>
-        std::streamoff offset(void) const;
-
         /// <inheritdoc />
         virtual measurement sample(
             _In_ const timestamp_resolution resolution) const override;
@@ -167,6 +161,7 @@ namespace power_overwhelming {
         detail::msr_sensor_impl *_impl;
 
         friend struct detail::msr_sensor_impl;
+        template<class T> friend struct detail::sensor_desc;
     };
 
 } /* namespace power_overwhelming */

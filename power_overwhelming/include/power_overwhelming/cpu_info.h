@@ -222,6 +222,17 @@ namespace power_overwhelming {
     };
 
     /// <summary>
+    /// Extracts the vendor from the first CPUID result.
+    /// </summary>
+    /// <param name="info">The first <see cref="cpu_info" /> retrieved from
+    /// <see cref="get_cpu_info" />.</param>
+    /// <returns>An enumeration value identifying the CPU vendor or
+    /// <see cref="cpu_vendor::unknown" /> if the CPU vendor could not be
+    /// determined.</returns>
+    extern POWER_OVERWHELMING_API cpu_vendor extract_cpu_vendor(
+        _In_ const cpu_info& info) noexcept;
+
+    /// <summary>
     /// Retrieves up to <paramref name="max_id" /> values from the CPUID
     /// instruction.
     /// </summary>
