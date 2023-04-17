@@ -68,6 +68,8 @@ namespace power_overwhelming {
         /// <c>nullptr</c>.</param>
         /// <param name="cnt_sensors">The available space in
         /// <paramref name="out_sensors" />.</param>
+        /// <param name="reserved">Reserved for future use. Must be
+        /// <c>false</c>.</param>
         /// <returns>The number of sensors available on the system, regardless
         /// of the size of the output array. If this number is larger than
         /// <paramref name="cntSensors" />, not all sensors have been returned.
@@ -76,7 +78,8 @@ namespace power_overwhelming {
         /// devices failed.</exception>
         static std::size_t for_all(
             _Out_writes_opt_(cnt_sensors) msr_sensor *out_sensors,
-            _In_ const std::size_t cnt_sensors);
+            _In_ const std::size_t cnt_sensors,
+            _In_ const bool reserved = false);
 
         /// <summary>
         /// Create an MSR sensor for the specified core and RAPL domain.

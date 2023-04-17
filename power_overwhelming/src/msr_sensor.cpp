@@ -31,7 +31,8 @@ visus::power_overwhelming::msr_sensor::force_create(
  */
 std::size_t visus::power_overwhelming::msr_sensor::for_all(
         _Out_writes_opt_(cnt_sensors) msr_sensor *out_sensors,
-        _In_ const std::size_t cnt_sensors) {
+        _In_ const std::size_t cnt_sensors,
+        _In_ const bool consider_topology) {
 #if defined(_WIN32)
     return 0;
 

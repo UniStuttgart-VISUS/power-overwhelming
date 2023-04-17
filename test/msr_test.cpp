@@ -17,11 +17,10 @@ namespace test {
 
     public:
 
-        TEST_METHOD(test_rapl_domain_to_string) {
-            Assert::AreEqual(L"dram", to_string(rapl_domain::dram), L"dram", LINE_INFO());
-            Assert::AreEqual(L"package", to_string(rapl_domain::package), L"package", LINE_INFO());
-            Assert::AreEqual(L"pp0", to_string(rapl_domain::pp0), L"pp0", LINE_INFO());
-            Assert::AreEqual(L"pp1", to_string(rapl_domain::pp1), L"pp1", LINE_INFO());
+        TEST_METHOD(test_for_all) {
+            std::vector<msr_sensor> sensors(msr_sensor::for_all(nullptr, 0));
+            msr_sensor::for_all(sensors.data(), sensors.size());
+            Assert::AreEqual(std::size_t(0), sensors.size(), L"MSR is not supported on Windows", LINE_INFO());
         }
     };
 
