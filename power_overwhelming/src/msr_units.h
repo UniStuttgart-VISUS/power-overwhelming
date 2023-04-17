@@ -13,47 +13,21 @@ namespace power_overwhelming {
 namespace detail {
 namespace msr_units {
 
-    /// <summary>
-    /// The number of bits the energy unit conversion constant needs to be
-    /// shifted to be isolated.
-    /// </summary>
-    static constexpr std::uint32_t intel_energy_offset = 0x08;
+namespace amd {
+    // Values from  https://github.com/amd/amd_energy/blob/master/amd_energy.c
+    constexpr std::uint32_t energy_offset = 0x08;
+    constexpr std::uint64_t energy_mask = 0x1F00;
+} /* namespace amd */
 
-    /// <summary>
-    /// The mask for isolating the conversion factor for energy in the
-    /// sample returned from location <see cref="unit_offset" />.
-    /// </summary>
-    static constexpr std::uint64_t energy_mask = 0x1F00;
-
-    /// <summary>
-    /// The number of bits the energy unit conversion constant needs to be
-    /// shifted to be isolated.
-    /// </summary>
-    static constexpr std::uint32_t energy_offset = 0x08;
-
-    /// <summary>
-    /// The mask for isolating the conversion factor for power in the
-    /// sample returned from location <see cref="unit_offset" />.
-    /// </summary>
-    static constexpr std::uint64_t power_mask = 0x000F;
-
-    /// <summary>
-    /// The number of bits the power unit conversion constant needs to be
-    /// shifted to be isolated.
-    /// </summary>
-    static constexpr std::uint32_t power_offset = 0x00;
-
-    /// <summary>
-    /// The mask for isolating the conversion factor for time in the
-    /// sample returned from location <see cref="unit_offset" />.
-    /// </summary>
-    static constexpr std::uint64_t time_mask = 0xF000;
-
-    /// <summary>
-    /// The number of bits the time unit conversion constant needs to be
-    /// shifted to be isolated.
-    /// </summary>
-    static constexpr std::uint32_t time_offset = 0x10;
+namespace intel {
+    // Values from https://lkml.org/lkml/2011/5/26/93
+    constexpr std::uint64_t energy_mask = 0x1F00;
+    constexpr std::uint32_t energy_offset = 0x08;
+    constexpr std::uint64_t power_mask = 0x000F;
+    constexpr std::uint32_t power_offset = 0x00;
+    constexpr std::uint64_t time_mask = 0xF000;
+    constexpr std::uint32_t time_offset = 0x10;
+} /* namespace intel */
 
 } /* namespace msr_units */
 } /* namespace detail */

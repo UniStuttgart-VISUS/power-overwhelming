@@ -52,22 +52,13 @@ namespace detail {
             cpu_vendor::amd,
             {
                 {
-                    visus::power_overwhelming::rapl_domain::dram,
-                    rapl_domain_config(msr_offsets::dram_energy_status)
-                },
-                {
                     visus::power_overwhelming::rapl_domain::package,
-                    rapl_domain_config(msr_offsets::amd_package_energy_status)
+                    rapl_domain_config(msr_offsets::amd::package_energy_status)
                 },
                 {
                     visus::power_overwhelming::rapl_domain::pp0,
-                    rapl_domain_config(msr_offsets::amd_pp0_energy_status)
-                },
-                {
-                    // TODO: is that the same on AMD and Intel or just not supported on AMD?
-                    visus::power_overwhelming::rapl_domain::pp1,
-                    rapl_domain_config(msr_offsets::pp1_energy_status)
-                },
+                    rapl_domain_config(msr_offsets::amd::pp0_energy_status)
+                }
             }
         },
 
@@ -76,19 +67,19 @@ namespace detail {
             {
                 {
                     visus::power_overwhelming::rapl_domain::dram,
-                    rapl_domain_config(msr_offsets::dram_energy_status)
+                    rapl_domain_config(msr_offsets::intel::dram_energy_status)
                 },
                 {
                     visus::power_overwhelming::rapl_domain::package,
-                    rapl_domain_config(msr_offsets::intel_package_energy_status)
+                    rapl_domain_config(msr_offsets::intel::package_energy_status)
                 },
                 {
                     visus::power_overwhelming::rapl_domain::pp0,
-                    rapl_domain_config(msr_offsets::intel_pp0_energy_status)
+                    rapl_domain_config(msr_offsets::intel::pp0_energy_status)
                 },
                 {
                     visus::power_overwhelming::rapl_domain::pp1,
-                    rapl_domain_config(msr_offsets::pp1_energy_status)
+                    rapl_domain_config(msr_offsets::intel::pp1_energy_status)
                 },
             }
         },
@@ -224,25 +215,31 @@ void visus::power_overwhelming::detail::msr_sensor_impl::set(
     this->sensor_name = L"msr/" + std::to_wstring(this->core) + L"/"
         + to_string(this->domain);
 
-    // Next, retrieve the unit conversion constants for the values as in
-    // https://lkml.org/lkml/2011/5/26/93.
+    // Next, retrieve the unit conversion constants for the values.
     {
-        std::uint64_t sample = 0;
+        std::uint64_t mask = 0;
+        std::streamoff offset = 0;
+        std::uint32_t shift= 0;
 
         switch (vendor) {
             case cpu_vendor::amd:
-                sample = this->device->read(msr_offsets::amd_unit_divisors);
+                mask = msr_units::amd::energy_mask;
+                offset = msr_offsets::amd::unit_divisors;
+                shift = msr_units::amd::energy_offset;
                 break;
 
             case cpu_vendor::intel:
-                sample = this->device->read(msr_offsets::intel_unit_divisors);
+                mask = msr_units::intel::energy_mask;
+                offset = msr_offsets::intel::unit_divisors;
+                shift = msr_units::intel::energy_offset;
                 break;
 
             default:
                 throw std::runtime_error(ERROR_MSG_UNSUPPORTED_CPU);
         }
 
-        sample = (sample & msr_units::energy_mask) >> msr_units::energy_offset;
+        auto sample = this->device->read(offset);
+        sample = (sample & mask) >> shift;
         this->unit_divisor = static_cast<measurement::value_type>(1 << sample);
     }
 
