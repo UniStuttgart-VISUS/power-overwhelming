@@ -146,6 +146,8 @@ namespace power_overwhelming {
         virtual measurement sample(
             _In_ const timestamp_resolution resolution) const override;
 
+        using sensor::sample;
+
         /// <summary>
         /// Move assignment.
         /// </summary>
