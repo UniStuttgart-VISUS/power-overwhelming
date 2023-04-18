@@ -37,7 +37,7 @@ namespace detail {
         /// <summary>
         /// The type of data read from the MSR device file.
         /// </summary>
-        typedef std::uint64_t sample_type;
+        typedef msr_sensor::raw_sample_type sample_type;
 
         /// <summary>
         /// The type used to specify device names.

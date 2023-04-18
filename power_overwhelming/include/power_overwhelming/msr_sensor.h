@@ -29,6 +29,11 @@ namespace power_overwhelming {
     public:
 
         /// <summary>
+        /// The type of the raw samples read from the registers.
+        /// </summary>
+        typedef std::uint64_t raw_sample_type;
+
+        /// <summary>
         /// The type used to index CPU cores.
         /// </summary>
         typedef std::uint32_t core_type;
@@ -138,6 +143,14 @@ namespace power_overwhelming {
         /// sensor that has been disposed.</exception>
         rapl_domain domain(void) const;
 
+        /// <summary>
+        /// Reads the raw sensor data and applies the unit transformation such
+        /// that the return value is in Joules (accumulated since an undefined
+        /// start point).
+        /// </summary>
+        /// <returns>The current value of the counter in Joules.</returns>
+        raw_sample_type read(void) const;
+
         /// <inheritdoc />
         virtual _Ret_maybenull_z_ const wchar_t *name(
             void) const noexcept override;
@@ -145,6 +158,8 @@ namespace power_overwhelming {
         /// <inheritdoc />
         virtual measurement sample(
             _In_ const timestamp_resolution resolution) const override;
+
+        using sensor::sample;
 
         /// <summary>
         /// Move assignment.

@@ -148,6 +148,17 @@ visus::power_overwhelming::msr_sensor::domain(void) const {
     return this->_impl->domain;
 }
 
+
+/*
+ * visus::power_overwhelming::msr_sensor::read
+ */
+visus::power_overwhelming::msr_sensor::raw_sample_type
+visus::power_overwhelming::msr_sensor::read(void) const {
+    this->check_not_disposed();
+    return this->_impl->read(true);
+}
+
+
 /*
  * visus::power_overwhelming::msr_sensor::name
  */

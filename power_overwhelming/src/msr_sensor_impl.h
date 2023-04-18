@@ -61,14 +61,14 @@ namespace detail {
         rapl_domain domain;
 
         /// <summary>
-        /// The point in time when the sensor was last sampled.
-        /// </summary>
-        mutable std::chrono::system_clock::time_point last_time;
-
-        /// <summary>
         /// The value of the last sample.
         /// </summary>
         mutable msr_device::sample_type last_sample;
+
+        /// <summary>
+        /// The point in time when the sensor was last sampled.
+        /// </summary>
+        mutable std::chrono::system_clock::time_point last_time;
 
         /// <summary>
         /// The offset of the data the sensor samples in the MSR device file.
@@ -99,6 +99,19 @@ namespace detail {
         /// </summary>
         inline msr_sensor_impl(void) : core(0), domain(rapl_domain::package),
             last_sample(0), offset(0), unit_divisor(1) { }
+
+        /// <summary>
+        /// Reads the current value of the register and optionally performs the
+        /// unit conversion.
+        /// </summary>
+        /// <remarks>
+        /// This method performs a read, but does not record it to
+        /// <see cref="last_sample" /> and <see cref="last_time" />.
+        /// </remarks>
+        /// <param name="convert">If <c>true</c>, apply the
+        /// <see cref="unit_divisor" /> before returning the value.</param>
+        /// <returns>The current value of the MSR.</returns>
+        msr_device::sample_type read(_In_ const bool convert) const;
 
         /// <summary>
         /// Read a new sample into <see cref="last_value" />.

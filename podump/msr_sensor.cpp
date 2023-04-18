@@ -14,9 +14,9 @@ void sample_msr_sensor(void) {
     using namespace visus::power_overwhelming;
 
     try {
-        std::vector<adl_sensor> sensors;
-        sensors.resize(adl_sensor::for_all(nullptr, 0));
-        adl_sensor::for_all(sensors.data(), sensors.size());
+        std::vector<msr_sensor> sensors;
+        sensors.resize(msr_sensor::for_all(nullptr, 0));
+        msr_sensor::for_all(sensors.data(), sensors.size());
 
         for (auto &s : sensors) {
             std::wcout << s.name() << L":" << std::endl;
