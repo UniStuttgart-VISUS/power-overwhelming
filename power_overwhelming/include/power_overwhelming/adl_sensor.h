@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "adl_sensor_source.h"
-#include "sensor.h"
+#include "power_overwhelming/adl_sensor_source.h"
+#include "power_overwhelming/sensor.h"
 
 
 namespace visus {

@@ -58,18 +58,6 @@ set(RsHmc8015Include ${RsHmc8015Dir} PARENT_SCOPE)
 set(RsRtxDir ${CMAKE_CURRENT_SOURCE_DIR}/rsrtx-cvi-1.4.0)
 set(RsRtxInclude ${RsRtxDir} PARENT_SCOPE)
 
-# SAL annotations
-FetchContent_Declare(salieri
-    URL "https://github.com/nemequ/salieri/archive/refs/heads/master.zip"
-)
-FetchContent_MakeAvailable(salieri)
-add_library(salieri INTERFACE IMPORTED GLOBAL)
-set_target_properties(salieri PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${salieri_SOURCE_DIR}")
-
-mark_as_advanced(FORCE
-    FETCHCONTENT_SOURCE_DIR_SALIERI
-    FETCHCONTENT_UPDATES_DISCONNECTED_SALIERI)
-
 # Tinkerforge API
 set(TinkerforgeDir ${CMAKE_CURRENT_SOURCE_DIR}/tinkerforge_c_bindings_2_1_32/source)
 file(GLOB_RECURSE TinkerforgeHeaderFiles "${TinkerforgeDir}/*.h" "${TinkerforgeDir}/*.inl")
