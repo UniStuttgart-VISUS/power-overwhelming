@@ -96,6 +96,22 @@ visus::power_overwhelming::detail::msr_sensor_impl::supported_domains(
 
 
 /*
+ * visus::power_overwhelming::detail::msr_sensor_impl::read
+ */
+visus::power_overwhelming::detail::msr_device::sample_type
+visus::power_overwhelming::detail::msr_sensor_impl::read(
+        _In_ const bool convert) const {
+    auto retval = this->device->read(this->offset);
+
+    if (convert) {
+        retval /= static_cast<decltype(retval)>(this->unit_divisor);
+    }
+
+    return retval;
+}
+
+
+/*
  * visus::power_overwhelming::detail::msr_sensor_impl::sample
  */
 void visus::power_overwhelming::detail::msr_sensor_impl::sample(void) {
@@ -120,8 +136,9 @@ visus::power_overwhelming::detail::msr_sensor_impl::sample(
 
     // Compute the difference and convert it to Joules by applying the
     // divisor obtained during initialisation.
-    auto sample_value = static_cast<measurement::value_type>(this->last_sample
-        - value) / this->unit_divisor;
+    const auto dv = value - this->last_sample;
+    auto sample_value = static_cast<measurement::value_type>(dv)
+        / this->unit_divisor;
 
     // Compute the time elapsed since the last call to the method. We use that
     // to compute the point in time for the sample in between the two calls.
