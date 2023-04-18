@@ -66,6 +66,10 @@ add_library(tinkerforge STATIC ${TinkerforgeHeaderFiles} ${TinkerforgeSourceFile
 target_include_directories(tinkerforge PUBLIC
     PUBLIC $<BUILD_INTERFACE:${TinkerforgeDir}>)
 
+if (NOT WIN32)
+    set_property(TARGET tinkerforge PROPERTY POSITION_INDEPENDENT_CODE ON)
+endif ()
+
 # Windows Implementation Library
 FetchContent_Declare(wil
     URL "https://github.com/microsoft/wil/archive/v1.0.230202.1.tar.gz"
