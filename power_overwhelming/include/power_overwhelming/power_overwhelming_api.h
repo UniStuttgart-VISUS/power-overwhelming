@@ -24,9 +24,22 @@
 
 #else /* defined(_WIN32) */
 // Empty SAL annotations for rancid platforms.
-#include "salieri.h"
-
-// These are missing in the salieri header.
 #define _Analysis_assume_(expr)
+#define _In_
+#define _Inout_
+#define _Inout_opt_
+#define _In_opt_
+#define _In_opt_z_
+#define _In_reads_(cnt)
+#define _In_reads_or_z_(cnt)
+#define _In_z_
+#define _Out_
+#define _Out_writes_(cnt)
+#define _Out_writes_bytes_(cnt)
+#define _Out_writes_opt_(cnt)
+#define _Out_writes_opt_z_(cnt)
+#define _Ret_maybenull_
+#define _Ret_maybenull_z_
 #define _Ret_valid_
+#define _Ret_z_
 #endif /* defined(_WIN32) */
