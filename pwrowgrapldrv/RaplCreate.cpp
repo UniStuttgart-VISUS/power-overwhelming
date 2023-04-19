@@ -117,8 +117,6 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
     ASSERT(fileObject != nullptr);
     PAGED_CODE();
 
-    PRAPL_FILE_CONTEXT context = nullptr;
-    __int32 core = 0;
     RaplCpuInfo cpuInfo { 0 };
     GROUP_AFFINITY originalAffinity { 0 };
     WDF_REQUEST_PARAMETERS parameters { 0 };
@@ -128,6 +126,12 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
     // existing files for reading them.
     ::WdfRequestGetParameters(request, &parameters);
     //parameters.Parameters.Create.
+
+    // Retrieve our custom context structure. As we have registered it in the
+    // file object config of RaplDeviceAdd, the framework should have already
+    // allocated this for us.
+    const auto context = ::GetRaplFileContext(fileObject);
+    ASSERT(context != nullptr);
 
     // Parsed filename has "\" in the begining. The object manager strips all
     // "\" except one, after the device name.
@@ -146,13 +150,13 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
 
     if (NT_SUCCESS(status)) {
         ASSERT(fileName->Length >= 2);
-        ASSERT(core == 0);
+        context->Core = 0;
         const auto end = ::RaplStringEnd(fileName);
         // See above: path starts with exactly one "\".
         for (auto d = fileName->Buffer + 1; d < end; ++d) {
             if (::iswdigit(*d)) {
-                core *= 10;
-                core += *d - L'0';
+                context->Core *= 10;
+                context->Core += *d - L'0';
 
             } else {
                 KdPrint(("[PWROWG] Non-digit found in file name.\r\n"));
@@ -166,7 +170,7 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
     // requested. This way, we make sure that the CPUID instructions return data
     // on the CPU we are interested in.
     if (NT_SUCCESS(status)) {
-        status = ::RaplSetThreadAffinity(core, &originalAffinity);
+        status = ::RaplSetThreadAffinity(context->Core, &originalAffinity);
     }
     const auto restoreAffinity = NT_SUCCESS(status);
 
@@ -200,16 +204,7 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
         }
     }
 
-    // Allocate a context and store what we need to read the registers.
     if (NT_SUCCESS(status)) {
-        WDF_OBJECT_ATTRIBUTES attributes { 0 };
-        WDF_OBJECT_ATTRIBUTES_INIT_CONTEXT_TYPE(&attributes, RAPL_FILE_CONTEXT);
-        status = ::WdfObjectAllocateContext(fileObject, &attributes, 
-            reinterpret_cast<void **>(&context));
-    }
-
-    if (NT_SUCCESS(status)) {
-        context->Core = core;
         context->CountMsrs = 0;
         context->Msrs = nullptr;
     }

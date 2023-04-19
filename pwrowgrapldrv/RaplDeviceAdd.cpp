@@ -46,11 +46,15 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
     }
 
     if (NT_SUCCESS(status)) {
+        WDF_OBJECT_ATTRIBUTES fileAttributes { 0 };
         WDF_FILEOBJECT_CONFIG fileConfig { 0 };
+        ::WDF_OBJECT_ATTRIBUTES_INIT(&fileAttributes);
+        WDF_OBJECT_ATTRIBUTES_INIT_CONTEXT_TYPE(&fileAttributes,
+            RAPL_FILE_CONTEXT);
         ::WDF_FILEOBJECT_CONFIG_INIT(&fileConfig, ::RaplCreate, ::RaplClose,
             WDF_NO_EVENT_CALLBACK);
         ::WdfDeviceInitSetFileObjectConfig(deviceInit, &fileConfig,
-            WDF_NO_OBJECT_ATTRIBUTES);
+            &fileAttributes);
     }
 
     ////
