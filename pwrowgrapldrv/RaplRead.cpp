@@ -47,10 +47,10 @@ extern "C" void RaplRead(_In_ WDFQUEUE queue, _In_ WDFREQUEST request,
     // interpret as the register number,
     ::WdfRequestGetParameters(request, &parameters);
     const auto offset = parameters.Parameters.Read.DeviceOffset;
+    KdPrint(("[PWROWG] RAPL request offset 0x%lx\r\n", offset));
 
     // TODO: Check validity of register.
     const auto msrRegister = static_cast<unsigned long>(offset);
-    KdPrint(("[PWROWG] RAPL register 0x%x requested\r\n", offset));
 
     // Retrieve the output buffer where we should put the data.
     if (NT_SUCCESS(status)) {
