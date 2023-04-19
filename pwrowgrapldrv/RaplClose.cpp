@@ -20,7 +20,14 @@
 /// </remarks>
 /// <param name="fileObject"></param>
 extern "C" void RaplClose(IN WDFFILEOBJECT fileObject) noexcept {
+    ASSERT(fileObject != nullptr);
     PAGED_CODE();
 
-    // TODO
+    const auto context = ::GetRaplFileContext(fileObject);
+    if ((context != nullptr) && (context->Msrs != nullptr)) {
+        KdPrint(("[PWROWG] Free MSR list 0x%p\r\n", context->Msrs));
+        ::ExFreePool(context->Msrs);
+        context->CountMsrs = 0;
+        context->Msrs = nullptr;
+    }
 }
