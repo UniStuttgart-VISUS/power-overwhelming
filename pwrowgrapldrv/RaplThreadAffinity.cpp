@@ -3,25 +3,25 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "thread_affinity.h"
+#include "RaplThreadAffinity.h"
 
 
 /*
- * ::rapl_set_thread_affinity
+ * ::RaplSetThreadAffinity
  */
 _IRQL_requires_min_(PASSIVE_LEVEL)
 _IRQL_requires_max_(APC_LEVEL)
-NTSTATUS rapl_set_thread_affinity(_In_ const __int32 logical_cpu,
-        _Out_ PGROUP_AFFINITY previous_affinity) {
+NTSTATUS RaplSetThreadAffinity(_In_ const __int32 logicalCpu,
+        _Out_ PGROUP_AFFINITY previousAffinity) noexcept {
     const auto groups = ::KeQueryActiveGroupCount();
     GROUP_AFFINITY affinity { 0 };
     __int32 total = 0;
 
-    // Search the group in which 'logical_cpu' falls.
+    // Search the group in which 'logicalCpu' falls.
     for (; affinity.Group < groups; ++affinity.Group) {
         const auto current = ::KeQueryActiveProcessorCountEx(affinity.Group);
-        if (total + current > logical_cpu) {
-            affinity.Mask = static_cast<KAFFINITY>(logical_cpu) - total;
+        if (total + current > logicalCpu) {
+            affinity.Mask = static_cast<KAFFINITY>(logicalCpu) - total;
             break;
         } else {
             total += current;
@@ -35,6 +35,6 @@ NTSTATUS rapl_set_thread_affinity(_In_ const __int32 logical_cpu,
 
     affinity.Mask = 1ULL << affinity.Mask;
 
-    ::KeSetSystemGroupAffinityThread(&affinity, previous_affinity);
+    ::KeSetSystemGroupAffinityThread(&affinity, previousAffinity);
     return STATUS_SUCCESS;
 }

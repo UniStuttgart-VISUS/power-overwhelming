@@ -17,5 +17,6 @@ file(GLOB_RECURSE SourceFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${SourceDi
 # Define the target if we fulfil the requirements.
 if (WDK_FOUND)
     # Define the output.
-    wdk_add_driver(${PROJECT_NAME} ${HeaderFiles} ${SourceFiles})
+    wdk_add_driver(${PROJECT_NAME} KMDF 1.31 ${HeaderFiles} ${SourceFiles})
+    target_link_libraries(${PROJECT_NAME} WDK::WDMSEC)
 endif ()
