@@ -6,6 +6,11 @@
 #include "RaplDriver.h"
 
 
+// The name of our device and the user-visible name that can be opened.
+#define RaplDeviceName L"\\Device\\PowerOverwhelmingRaplMsrs"
+#define RaplVisibleDeviceName L"\\DosDevices\\PowerOverwhelmingRaplMsrs"
+
+
 /// <summary>
 /// This function is called by <see cref="DriverEntry" /> to create a control device.
 /// </summary>
@@ -17,8 +22,7 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
     UNREFERENCED_PARAMETER(driver);
     PAGED_CODE();
 
-    WDF_OBJECT_ATTRIBUTES attributes { 0 };
-    WDFDEVICE controlDevice = nullptr;
+    WDFDEVICE device = nullptr;
     WDFQUEUE queue = nullptr;
     NTSTATUS status = STATUS_SUCCESS;
 
@@ -67,27 +71,22 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
     //    NonPnpEvtDeviceIoInCallerContext);
 
     if (NT_SUCCESS(status)) {
+        WDF_OBJECT_ATTRIBUTES attributes{ 0 };
         ::WDF_OBJECT_ATTRIBUTES_INIT(&attributes);
+        WDF_OBJECT_ATTRIBUTES_INIT_CONTEXT_TYPE(&attributes,
+            RAPL_DEVICE_CONTEXT);
+
+        status = ::WdfDeviceCreate(&deviceInit, &attributes, &device);
     }
 
-    // We don't need a per-device context.
-    //if (NT_SUCCESS(status)) {
-    //    WDF_OBJECT_ATTRIBUTES_INIT_CONTEXT_TYPE(&attributes,
-    //        RAPL_CONTROL_DEVICE);
-    //}
-
-    if (NT_SUCCESS(status)) {
-        status = ::WdfDeviceCreate(&deviceInit, &attributes, &controlDevice);
-    }
-    
     if (NT_SUCCESS(status)) {
         // Create a symbolic link for the control object so that usermode can
         // open the device.
-        status =:: WdfDeviceCreateSymbolicLink(controlDevice,
-            &symbolicLinkName);
+        status =:: WdfDeviceCreateSymbolicLink(device, &symbolicLinkName);
     }
 
     if (NT_SUCCESS(status)) {
+        WDF_OBJECT_ATTRIBUTES attributes{ 0 };
         WDF_IO_QUEUE_CONFIG ioQueueConfig{ 0 };
         WDF_IO_QUEUE_CONFIG_INIT_DEFAULT_QUEUE(&ioQueueConfig,
             WdfIoQueueDispatchSequential);
@@ -114,19 +113,30 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
         // removing the device, which is the correct behaviour for this type of
         // driver.
         __analysis_assume(ioQueueConfig.EvtIoStop != 0);
-        status = ::WdfIoQueueCreate(controlDevice, &ioQueueConfig, &attributes,
+        status = ::WdfIoQueueCreate(device, &ioQueueConfig, &attributes,
             &queue);
         __analysis_assume(ioQueueConfig.EvtIoStop == 0);
     }
 
     if (NT_SUCCESS(status)) {
+        // Initialise the global state of the device, which we copy from the
+        // driver, because only the driver has the registry path to read the
+        // configuration.
+        auto dst_context = ::GetRaplDeviceContext(device);
+        ASSERT(dst_context != nullptr);
+        auto src_context = ::GetRaplDeviceContext(driver);
+        ASSERT(src_context != nullptr);
+        *dst_context = *src_context;
+    }
+
+    if (NT_SUCCESS(status)) {
         // Notify the framework that we are done.
-        ::WdfControlFinishInitializing(controlDevice);
+        ::WdfControlFinishInitializing(device);
     }
 
     if (deviceInit != nullptr) {
         // If the framework has not cleared the initialisation value, we must do
-        // so.
+        // so. The driver must not free this block if the device was created.
         ::WdfDeviceInitFree(deviceInit);
     }
 

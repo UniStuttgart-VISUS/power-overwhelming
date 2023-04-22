@@ -10,19 +10,26 @@
 #include <ntstrsafe.h>
 
 
-// The name of our device and the user-visible name that can be opened.
-#define RaplDeviceName L"\\Device\\PowerOverwhelmingRapl"
-#define RaplVisibleDeviceName L"\\DosDevices\\PowerOverwhelmingRapl"
+/// <summary>
+/// This block of custom data is attached to the root driver object.
+/// </summary>
+typedef struct _RAPL_DRIVER_CONTEXT {
+    /// <summary>
+    /// Indicates that MSR addresses should not be filtered by the driver, but
+    /// just passed through as is.
+    /// </summary>
+    bool AllowAllMsrs;
+} RAPL_DRIVER_CONTEXT, *PRAPL_DRIVER_CONTEXT;
+
+WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(RAPL_DRIVER_CONTEXT, GetRaplDriverContext)
 
 
-///// <summary>
-///// This is the control device extension we attach to the WDF device to store
-///// our custom data.
-///// </summary>
-//typedef struct _RAPL_CONTROL_DEVICE {
-//    HANDLE   FileHandle; // Store your control data here
-//} RAPL_CONTROL_DEVICE;
-//WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(RAPL_CONTROL_DEVICE, ControlGetData)
+/// <summary>
+/// This is the block of custom data we attach to the device itself.
+/// </summary>
+typedef RAPL_DRIVER_CONTEXT RAPL_DEVICE_CONTEXT, *PRAPL_DEVICE_CONTEXT;
+
+WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(RAPL_DEVICE_CONTEXT, GetRaplDeviceContext)
 
 
 /// <summary>

@@ -5,37 +5,10 @@
 
 #include <intrin.h>
 
+#include "RaplCpuInfo.h"
 #include "RaplDriver.h"
 #include "RaplString.h"
 #include "RaplThreadAffinity.h"
-
-
-/// <summary>
-/// Possible CPU vendors.
-/// </summary>
-/// <remarks>
-/// At this point, we are only interested whether the CPU is AMD, Intel or any
-/// other, because others do not support RAPL MSRs.
-/// </remarks>
-enum class RaplCpuVendor {
-    Amd,
-    Intel,
-    Other
-};
-
-
-/// <summary>
-/// A structure holding all necessary information about the CPU we are running
-/// on.
-/// </summary>
-struct RaplCpuInfo {
-    __int8 BaseFamily;
-    __int8 ExtendedFamily;
-    __int8 BaseModel;
-    __int8 ExtendedModel;
-    __int8 Stepping;
-    RaplCpuVendor Vendor;
-};
 
 
 /// <summary>
@@ -49,12 +22,9 @@ struct RaplCpuInfo {
 /// <c>nullptr</c>,
 /// <c>STATUS_UNSUCCESSFUL</c> if the CPU does not allow for retrieving the
 /// family and model.</returns>
-NTSTATUS RaplIdentifyCpu(_In_ RaplCpuInfo *dst) {
+NTSTATUS RaplIdentifyCpu(_In_ RaplCpuInfo& dst) {
     __int32 info[4];
-
-    NTSTATUS status = (dst != nullptr)
-        ? STATUS_SUCCESS
-        : STATUS_INVALID_PARAMETER;
+    NTSTATUS status = STATUS_SUCCESS;
 
     if (NT_SUCCESS(status)) {
         ::__cpuid(info, 0);
@@ -76,22 +46,22 @@ NTSTATUS RaplIdentifyCpu(_In_ RaplCpuInfo *dst) {
 
 #define _IS_VENDOR(v) (::strncmp(vendor, (v), sizeof(vendor)) == 0)
         if (_IS_VENDOR("AuthenticAMD") || _IS_VENDOR("AMDisbetter!")) {
-            dst->Vendor = RaplCpuVendor::Amd;
+            dst.Vendor = RaplCpuVendor::Amd;
         } else if (_IS_VENDOR("GenuineIntel")) {
-            dst->Vendor = RaplCpuVendor::Intel;
+            dst.Vendor = RaplCpuVendor::Intel;
         } else {
-            dst->Vendor = RaplCpuVendor::Other;
+            dst.Vendor = RaplCpuVendor::Other;
         }
 #undef _IS_VENDOR
     }
 
     if (NT_SUCCESS(status)) {
         ::__cpuid(info, 1);
-        dst->Stepping = (info[0] & 0x0000000F) >> 0;
-        dst->BaseModel = (info[0] & 0x000000F0) >> 4;
-        dst->BaseFamily = (info[0] & 0x00000F00) >> 8;
-        dst->ExtendedModel = (info[0] & 0x0000F0000) >> 16;
-        dst->ExtendedFamily = (info[0] & 0x00FF00000) >> 20;
+        dst.Stepping = (info[0] & 0x0000000F) >> 0;
+        dst.BaseModel = (info[0] & 0x000000F0) >> 4;
+        dst.BaseFamily = (info[0] & 0x00000F00) >> 8;
+        dst.ExtendedModel = (info[0] & 0x0000F0000) >> 16;
+        dst.ExtendedFamily = (info[0] & 0x00FF00000) >> 20;
     }
 
     return status;
@@ -178,7 +148,7 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
     // requested core supports RAPL MSRs. Afterwards, we restore the thread
     // affinity to its original state.
     if (NT_SUCCESS(status)) {
-        status = ::RaplIdentifyCpu(&cpuInfo);
+        status = ::RaplIdentifyCpu(cpuInfo);
     }
 
     if (restoreAffinity) {

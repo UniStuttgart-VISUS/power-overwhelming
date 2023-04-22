@@ -38,7 +38,6 @@ endif ()
 # RAPL MSR driver
 if (PWROWG_BuildDriver)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/pwrowgrapldrv)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/install_pwrowgrapldrv)
 endif ()
 
 # dump_sensors utility

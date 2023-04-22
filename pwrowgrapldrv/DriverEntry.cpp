@@ -10,14 +10,14 @@
 
 
 #if defined(ALLOC_PRAGMA)
-#pragma alloc_text( INIT, DriverEntry)
-#pragma alloc_text( PAGE, RaplCleanup)
-#pragma alloc_text( PAGE, RaplClose)
-#pragma alloc_text( PAGE, RaplCreate)
-#pragma alloc_text( PAGE, RaplDeviceAdd)
-#pragma alloc_text( PAGE, RaplDriverUnload)
-#pragma alloc_text( PAGE, RaplRead)
-#pragma alloc_text( PAGE, RaplShutdown)
+#pragma alloc_text(INIT, DriverEntry)
+#pragma alloc_text(PAGE, RaplCleanup)
+#pragma alloc_text(PAGE, RaplClose)
+#pragma alloc_text(PAGE, RaplCreate)
+#pragma alloc_text(PAGE, RaplDeviceAdd)
+#pragma alloc_text(PAGE, RaplDriverUnload)
+#pragma alloc_text(PAGE, RaplRead)
+#pragma alloc_text(PAGE, RaplShutdown)
 #endif /* defined(ALLOC_PRAGMA) */
 
 
@@ -33,7 +33,7 @@ extern "C" NTSTATUS DriverEntry(_In_ PDRIVER_OBJECT driverObject,
     WDF_OBJECT_ATTRIBUTES attributes { 0 };
     WDF_DRIVER_CONFIG config { 0 };
     PWDFDEVICE_INIT deviceInit = nullptr;
-    WDFDRIVER hDriver = NULL;
+    WDFDRIVER driver = nullptr;
     NTSTATUS status = STATUS_SUCCESS;
 
     KdPrint(("[PWROWG] DriverEntry enter\r\n"));
@@ -49,12 +49,23 @@ extern "C" NTSTATUS DriverEntry(_In_ PDRIVER_OBJECT driverObject,
     WDF_OBJECT_ATTRIBUTES_INIT(&attributes);
     attributes.EvtCleanupCallback = ::RaplCleanup;
 
+    // Furthermore, add a global state to the driver object that can hold
+    // configuration data we obtained from the registry and need to pass on
+    // to the devices.
+    WDF_OBJECT_ATTRIBUTES_INIT_CONTEXT_TYPE(&attributes, RAPL_DRIVER_CONTEXT);
 
     if (NT_SUCCESS(status)) {
         status = ::WdfDriverCreate(driverObject, registryPath, &attributes,
-            &config, &hDriver);
+            &config, &driver);
     }
     KdPrint(("[PWROWG] WdfDriverCreate result: 0x%x\r\n", status));
+
+    // Initialise the context.
+    if (NT_SUCCESS(status)) {
+        auto context = ::GetRaplDriverContext(driver);
+        ASSERT(context != nullptr);
+        context->AllowAllMsrs = false;
+    }
 
     // TODO: configure tracing
     //if (NT_SUCCESS(status)) {
@@ -65,7 +76,7 @@ extern "C" NTSTATUS DriverEntry(_In_ PDRIVER_OBJECT driverObject,
     //    "Driver Frameworks NONPNP Legacy Driver Example");
 
     if (NT_SUCCESS(status)) {
-        if ((deviceInit = ::WdfControlDeviceInitAllocate(hDriver,
+        if ((deviceInit = ::WdfControlDeviceInitAllocate(driver,
                 &SDDL_DEVOBJ_SYS_ALL_ADM_RWX_WORLD_RW_RES_R))
                 == nullptr) {
             status = STATUS_INSUFFICIENT_RESOURCES;
@@ -76,7 +87,7 @@ extern "C" NTSTATUS DriverEntry(_In_ PDRIVER_OBJECT driverObject,
     if (NT_SUCCESS(status)) {
         // Manually add our device, because the framework will not call us as
         // we have disabled PNP.
-        status = ::RaplDeviceAdd(hDriver, deviceInit);
+        status = ::RaplDeviceAdd(driver, deviceInit);
     }
 
     KdPrint(("[PWROWG] DriverEntry exit with 0x%x\r\n", status));

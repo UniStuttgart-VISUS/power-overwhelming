@@ -5,9 +5,86 @@
 
 [Version]
 Signature = "$WINDOWS NT$"
+Provider = %ManufacturerName%
+Class = System
+ClassGuid = {4d36e97d-e325-11ce-bfc1-08002be10318}
+DriverVer = 04/20/2023,0.0.0.0
+CatalogFile = pwrowgrapldrv.cat
+; This is driver is not for production use, so we do not want to lock it down
+; for exclusive access by the trusted installer. For production, consider
+; changing this setting to protect the deployed driver files.
+; Cf. https://www.osr.com/blog/2021/10/08/should-i-set-pnplockdown1/
+PnPLockdown = 0;
 
-[pwrowgrapldrv.NT.Wdf]
-KmdfService = pwrowgrapldrv, pwrowgrapldrv_kmdf_install
+[DestinationDirs]
+DefaultDestDir = 13
 
-[pwrowgrapldrv_kmdf_install]
-KmdfLibraryVersion = 1.31
+[SourceDisksNames]
+1 = %DiskId1%,,,""
+
+[SourceDisksFiles]
+pwrowgrapldrv.sys = 1,,
+
+; Main installation
+[Manufacturer]
+%ManufacturerName% = pwrowgrapldrv, NT$ARCH$
+
+[pwrowgrapldrv.NT$ARCH$]
+%DeviceDescription% = pwrowgrapldrv_install
+
+[pwrowgrapldrv_install]
+CopyFiles = pwrowgrapldrv_copy
+AddReg = pwrowgrapldrv_registry
+
+[pwrowgrapldrv_copy]
+pwrowgrapldrv.sys
+
+[pwrowgrapldrv_registry]
+HKR,, DeviceCharacteristics, ADDREG_TYPE_DWORD, 0x0100  ; Use same security checks on relative opens
+;HKR,,Security,,"D:P(A;;GA;;;BA)(A;;GA;;;SY)"      ; Allow generic-all access to Built-in administrators and Local system
+
+; WDF co-installer
+[pwrowgrapldrv.NT$ARCH$.CoInstallers]
+KmdfService = pwrowgrapldrv, pwrowgrapldrv_coinstaller
+
+[pwrowgrapldrv_coinstaller]
+CopyFiles = pwrowgrapldrv_coinstaller_copy
+AddReg = pwrowgrapldrv_coinstaller_registry
+
+[pwrowgrapldrv_coinstaller_copy]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[pwrowgrapldrv_coinstaller_registry]
+HKR,, CoInstallers32, ADDREG_TYPE_MULTI_SZ, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[pwrowgrapldrv.NT$ARCH$.Wdf]
+KmdfService = pwrowgrapldrv, pwrowgrapldrv_wdf
+
+[pwrowgrapldrv_wdf]
+KmdfLibraryVersion = $KMDFVERSION$
+
+; Service
+[pwrowgrapldrv_service]
+AddService = pwrowgrapldrv, %SPSVCINST_ASSOCSERVICE%, pwrowgrapldrv_service_install
+
+[pwrowgrapldrv_service_install]
+DisplayName = %ServiceDescription%
+ServiceType = %SERVICE_KERNEL_DRIVER%
+StartType = %SERVICE_DEMAND_START%
+ErrorControl = %SERVICE_ERROR_NORMAL%
+ServiceBinary  = %13%\pwrowgrapldrv.sys
+
+; String resources
+[Strings]
+ADDREG_TYPE_DWORD = 0x00010001
+ADDREG_TYPE_EXPAND_SZ = 0x00020000
+ADDREG_TYPE_MULTI_SZ = 0x00010000
+ADDREG_TYPE_SZ = 0x00000000
+SERVICE_KERNEL_DRIVER = 1
+SERVICE_DEMAND_START = 3
+SERVICE_ERROR_NORMAL = 1
+SPSVCINST_ASSOCSERVICE = 0x00000002
+ManufacturerName = "Visualisierungsinstitut der Universität Stuttgart"
+DiskId1 = "Power-Owerwhelming-Installationsmedium"
+DeviceDescription = "RAPL-MSR-Gerätedatei"
+ServiceDescription = "Power Owerwhelming RAPL-MSR-Treiber"
