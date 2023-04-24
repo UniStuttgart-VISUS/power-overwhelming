@@ -15,6 +15,8 @@
 #include "power_overwhelming/measurement.h"
 
 #include "msr_device_factory.h"
+#include "msr_sampler_context.h"
+#include "sampler.h"
 
 
 namespace visus {
@@ -42,8 +44,13 @@ namespace detail {
         /// domains for.</param>
         /// <returns>A list of domains that might be supported on a CPU by the
         /// given vendor.</returns>
-        std::vector<rapl_domain> supported_domains(
+        static std::vector<rapl_domain> supported_domains(
             _In_ const cpu_vendor vendor);
+
+        /// <summary>
+        /// A sampler for MSR sensors.
+        /// </summary>
+        static detail::sampler<msr_sampler_context> sampler;
 
         /// <summary>
         /// The core the sensor is sampling.
@@ -74,11 +81,6 @@ namespace detail {
         /// The offset of the data the sensor samples in the MSR device file.
         /// </summary>
         std::streamoff offset;
-
-        /// <summary>
-        /// A sampler for MSR sensors.
-        /// </summary>
-        //static detail::sampler<emi_sampler_context> sampler;
 
         /// <summary>
         /// The sensor name.

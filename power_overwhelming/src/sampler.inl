@@ -43,6 +43,7 @@ bool visus::power_overwhelming::detail::sampler<TContext>::add(
     }
 
     std::lock_guard<decltype(this->_lock)> l(this->_lock);
+    // Search a context with the same sampling interval as the requested one.
     auto it = this->_contexts.begin();
     for (; it != this->_contexts.end(); ++it) {
         assert(*it != nullptr);

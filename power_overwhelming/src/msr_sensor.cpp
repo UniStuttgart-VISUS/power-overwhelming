@@ -183,6 +183,34 @@ visus::power_overwhelming::msr_sensor::sample(
 
 
 /*
+ * visus::power_overwhelming::msr_sensor::sample
+ */
+void visus::power_overwhelming::msr_sensor::sample(
+        _In_opt_ const measurement_callback on_measurement,
+        _In_ const microseconds_type period,
+        _In_ const timestamp_resolution timestamp_resolution,
+        _In_opt_ void *context) {
+    typedef decltype(detail::msr_sensor_impl::sampler)::interval_type
+        interval_type;
+
+    this->check_not_disposed();
+
+    // TODO: set resolution
+
+    if (on_measurement != nullptr) {
+        if (!detail::msr_sensor_impl::sampler.add(this->_impl, on_measurement,
+                context, interval_type(period))) {
+            throw std::logic_error("Asynchronous sampling cannot be started "
+                "while it is already running.");
+        }
+
+    } else {
+        detail::msr_sensor_impl::sampler.remove(this->_impl);
+    }
+}
+
+
+/*
  * visus::power_overwhelming::msr_sensor::operator =
  */
 visus::power_overwhelming::msr_sensor&

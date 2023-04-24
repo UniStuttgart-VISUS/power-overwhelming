@@ -96,6 +96,14 @@ visus::power_overwhelming::detail::msr_sensor_impl::supported_domains(
 
 
 /*
+ * visus::power_overwhelming::detail::msr_sensor_impl::sampler
+ */
+visus::power_overwhelming::detail::sampler<
+    visus::power_overwhelming::detail::msr_sampler_context>
+    visus::power_overwhelming::detail::msr_sensor_impl::sampler;
+
+
+/*
  * visus::power_overwhelming::detail::msr_sensor_impl::read
  */
 visus::power_overwhelming::detail::msr_device::sample_type
