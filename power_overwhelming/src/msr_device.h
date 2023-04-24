@@ -10,6 +10,10 @@
 #include <string>
 #include <vector>
 
+#if defined(_WIN32)
+#include <Windows.h>
+#endif /* defined(_WIN32) */
+
 #include "power_overwhelming/msr_sensor.h"
 
 
@@ -35,6 +39,15 @@ namespace detail {
         typedef msr_sensor::core_type core_type;
 
         /// <summary>
+        /// The native type of the file handle.
+        /// </summary>
+#if defined(_WIN32)
+        typedef HANDLE handle_type;
+#else /* defined(_WIN32) */
+        typedef int handle_type;
+#endif /* defined(_WIN32) */
+
+        /// <summary>
         /// The type of data read from the MSR device file.
         /// </summary>
         typedef msr_sensor::raw_sample_type sample_type;
@@ -42,7 +55,11 @@ namespace detail {
         /// <summary>
         /// The type used to specify device names.
         /// </summary>
+#if defined(_WIN32)
+        typedef std::basic_string<wchar_t> string_type;
+#else /* defined(_WIN32) */
         typedef std::basic_string<char> string_type;
+#endif /* defined(_WIN32) */
 
         /// <summary>
         /// Determines the path of the MSR device file for the specified CPU
@@ -52,6 +69,16 @@ namespace detail {
         /// MSR device file for.</param>
         /// <returns>The path to the MSR device file.</returns>
         static string_type path(_In_ const core_type core);
+
+        /// <summary>
+        /// Representation of an invalid handle.
+        /// </summary>
+#if defined(_WIN32)
+        static constexpr const handle_type invalid_handle_value
+            = INVALID_HANDLE_VALUE;
+#else /* defined(_WIN32) */
+        static constexpr const handle_type invalid_handle_value = -1;
+#endif /* defined(_WIN32) */
 
         /// <summary>
         /// Initialises a new instance.
@@ -106,7 +133,7 @@ namespace detail {
         /// <returns><c>true</c> if the handle is valid, <c>false</c> otherwise.
         /// </returns>
         inline operator bool(void) const noexcept {
-            return (this->_handle != -1);
+            return (this->_handle != invalid_handle_value);
         }
 
         /// <summary>
@@ -116,13 +143,13 @@ namespace detail {
         /// Callers must not close this handle as the object remains its owner.
         /// </remarks>
         /// <returns>The handle for the device.</returns>
-        inline operator int(void) const noexcept {
+        inline operator handle_type(void) const noexcept {
             return this->_handle;
         }
 
     private:
 
-        int _handle;
+        handle_type _handle;
     };
 
 } /* namespace detail */
