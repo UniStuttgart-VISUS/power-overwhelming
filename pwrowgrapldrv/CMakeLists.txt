@@ -69,13 +69,9 @@ if (WDK_FOUND)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/${InfFile} $<TARGET_FILE_DIR:${PROJECT_NAME}>
             COMMAND ${PWROWG_StampInfPath} -f $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>\\${InfFile} -a ${InfArchitecture} -k ${PWROWG_KmdfVersion} -v * -d *
+            COMMAND ${CMAKE_COMMAND} -E copy ${WDK_ROOT}/redist/wdf/${WDK_PLATFORM}/WdfCoinstaller${WdfCoInstallerVersion}.dll $<TARGET_FILE_DIR:${PROJECT_NAME}>
             COMMAND ${PWROWG_Inf2CatPath} /driver:$<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>> /os:${PWROWG_DriverTargets}
             WORKING_DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}>
             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${InfFile})
     endforeach ()
-
-    # Copy the WDF coinstaller to the output directory.
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${WDK_ROOT}/redist/wdf/${WDK_PLATFORM}/WdfCoinstaller${WdfCoInstallerVersion}.dll $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND_EXPAND_LISTS)
 endif ()
