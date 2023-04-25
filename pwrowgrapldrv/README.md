@@ -13,6 +13,18 @@ There is [another open-source project providing a similar driver](https://github
 
 2. The `__readmsr` instruction reads the register of the core the calling thread is running on, i.e. the thread affinity of the code reading the register must be set to the logical CPU we are interested in. The aforementioned driver does not ensure that in kernel mode, i.e. the user-mode sensor thread must be bound to the correct core for this to work. This is error-prone and we again want to have a path-based solution like in the Linux kernel to have a similar implementation of the sensor on both platforms.
 
+## Building
+In order to build the driver, the [Windows Driver Kit (WDK)](https://learn.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk) must be installed on the machine. We have a [CMake find](https://github.com/SergiusTheBest/FindWDK) in place that should detect the installation automatically.
+
+> **Note**
+> The CMake build process will automatically choose the latest version of the driver kit, so make sure that this version can build drivers supported on your target machine.
+
+You must enable building the driver using the `PWROWG_BuildDriver` option, which is disabled by default. If enabled, the driver will be built and all files required to install it will be generated in or copied to the binary directory. These files include
+* the driver binary `pwrowgrapldrv.sys`
+* the INF file configuring the installation
+* the catalogue file for test-signing the driver
+* the binary of the KMDF co-installer.
+
 ## Installation
 ### Preparing the target machine
 The driver is not WHQL-signed (you just built it yourself) and for this being a research project, we have no plans for providing a signed driver. Therefore, the target machine needs to be configured to allow unsafe drivers. In an elevated command prompt, run
@@ -21,7 +33,19 @@ The driver is not WHQL-signed (you just built it yourself) and for this being a 
 bcdedit -set TESTSIGNING ON
 ```
 
-You should be able to install and run the driver if you [test sign the catalogue](https://learn.microsoft.com/en-us/windows-hardware/drivers/install/introduction-to-test-signing).
+You should be able to install and run the driver if you [test sign the catalogue](https://learn.microsoft.com/en-us/windows-hardware/drivers/install/introduction-to-test-signing). The main steps for test-signing are:
+
+1. Creating a certificate with [EKU 1.3.6.1.5.5.7.3.3](https://oidref.com/1.3.6.1.5.5.7.3.3), e.g.
+```cmd
+makecert -r -pe -ss PrivateCertStore -n CN="Power Overwhelming (Test)" -eku 1.3.6.1.5.5.7.3.3 pwrowgrapldrv.cer
+```
+2. Creating a catalogue file using [Inf2Cat](https://learn.microsoft.com/en-us/windows-hardware/drivers/devtest/inf2cat) (this happens automatically as post-build step when building the driver)
+3. Test-signing the catalogue with [signtool](https://learn.microsoft.com/en-us/windows-hardware/drivers/install/test-signing-a-driver-package-s-catalog-file) from the WDK, e.g.
+```cmd
+signtool sign /v /fd sha256 /s PrivateCertStore /n "Power Overwhelming (Test)" /t http://timestamp.digicert.com pwrowgrapldrv.cat
+```
+
+`makecert` and `signtool` are distributed with the WDK, at time of writing in the `<WDKROOT>\bin\x64` directory.
 
 ### Installation of the driver
 1. Copy all files (the driver binary, the WDF binary, the INF file and the catalogue file) to the target machine.
