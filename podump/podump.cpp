@@ -49,7 +49,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // EMI sensors
-#if false
+#if true
 #if true
     ::sample_emi_sensor();
 #endif

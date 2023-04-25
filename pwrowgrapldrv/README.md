@@ -14,6 +14,16 @@ There is [another open-source project providing a similar driver](https://github
 2. The `__readmsr` instruction reads the register of the core the calling thread is running on, i.e. the thread affinity of the code reading the register must be set to the logical CPU we are interested in. The aforementioned driver does not ensure that in kernel mode, i.e. the user-mode sensor thread must be bound to the correct core for this to work. This is error-prone and we again want to have a path-based solution like in the Linux kernel to have a similar implementation of the sensor on both platforms.
 
 ## Installation
+### Preparing the target machine
+The driver is not WHQL-signed (you just built it yourself) and for this being a research project, we have no plans for providing a signed driver. Therefore, the target machine needs to be configured to allow unsafe drivers. In an elevated command prompt, run
+
+```cmd
+bcdedit -set TESTSIGNING ON
+```
+
+You should be able to install and run the driver if you [test sign the catalogue](https://learn.microsoft.com/en-us/windows-hardware/drivers/install/introduction-to-test-signing).
+
+### Installation of the driver
 1. Copy all files (the driver binary, the WDF binary, the INF file and the catalogue file) to the target machine.
 2. Open Device Manager.
 3. Select the root node of the device tree (the one with the computer name).
