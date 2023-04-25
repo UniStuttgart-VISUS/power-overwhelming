@@ -28,7 +28,6 @@ You must enable building the driver using the `PWROWG_BuildDriver` option, which
 ## Installation
 ### Preparing the target machine
 The driver is not WHQL-signed (you just built it yourself) and for this being a research project, we have no plans for providing a signed driver. Therefore, the target machine needs to be configured to allow unsafe drivers. In an elevated command prompt, run
-
 ```cmd
 bcdedit -set TESTSIGNING ON
 ```
@@ -39,13 +38,22 @@ You should be able to install and run the driver if you [test sign the catalogue
 ```cmd
 makecert -r -pe -ss PrivateCertStore -n CN="Power Overwhelming (Test)" -eku 1.3.6.1.5.5.7.3.3 pwrowgrapldrv.cer
 ```
-2. Creating a catalogue file using [Inf2Cat](https://learn.microsoft.com/en-us/windows-hardware/drivers/devtest/inf2cat) (this happens automatically as post-build step when building the driver)
+2. Creating a catalogue file using [Inf2Cat](https://learn.microsoft.com/en-us/windows-hardware/drivers/devtest/inf2cat). This happens automatically as post-build step when building the driver using the provided build process.
 3. Test-signing the catalogue with [signtool](https://learn.microsoft.com/en-us/windows-hardware/drivers/install/test-signing-a-driver-package-s-catalog-file) from the WDK, e.g.
 ```cmd
 signtool sign /v /fd sha256 /s PrivateCertStore /n "Power Overwhelming (Test)" /t http://timestamp.digicert.com pwrowgrapldrv.cat
 ```
 
 `makecert` and `signtool` are distributed with the WDK, at time of writing in the `<WDKROOT>\bin\x64` directory.
+
+If you do not want to sign the driver, you must disable driver integrity checks completely. This can be achieved by issuing
+```cmd
+bcdedit.exe -set loadoptions DISABLE_INTEGRITY_CHECKS
+```
+in an elevated command prompt.
+
+> **Warning**
+> All of the above will make your machine susceptible to malicious software. Make sure to revert the changes if you need the driver anymore.
 
 ### Installation of the driver
 1. Copy all files (the driver binary, the WDF binary, the INF file and the catalogue file) to the target machine.
