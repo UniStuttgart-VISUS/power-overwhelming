@@ -27,7 +27,13 @@ WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(RAPL_DRIVER_CONTEXT, GetRaplDriverContext)
 /// <summary>
 /// This is the block of custom data we attach to the device itself.
 /// </summary>
-typedef RAPL_DRIVER_CONTEXT RAPL_DEVICE_CONTEXT, *PRAPL_DEVICE_CONTEXT;
+typedef struct _RAPL_DEVICE_CONTEXT {
+    /// <summary>
+    /// Points to the custom data of the driver, which allows us to access
+    /// driver-global information when working with a device.
+    /// </summary>
+    PRAPL_DRIVER_CONTEXT DriverContext;
+} RAPL_DEVICE_CONTEXT, *PRAPL_DEVICE_CONTEXT;
 
 WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(RAPL_DEVICE_CONTEXT, GetRaplDeviceContext)
 

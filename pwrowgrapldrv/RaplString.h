@@ -7,6 +7,21 @@
 
 
 /// <summary>
+/// Parse the given string as integer number, which can either be decimal or a
+/// hexadecimal string (if it starts with &quot;0x&quot).
+/// </summary>
+/// <param name="dst">Receives the number in case of success.</param>
+/// <param name="str">The string to be parsed.</param>
+/// <param name="offset">The offset into <paramref name="str" /> at which the
+/// number starts.</param>
+/// <returns><c>STATUS_SUCCESS</c> in case of success,
+/// <c>STATUS_INVALID_PARAMETER_2</c> if the string does not represent a valid
+/// number.</returns>
+NTSTATUS RaplParseInt32(_Out_ __int32& dst, _In_ UNICODE_STRING& str,
+    _In_ decltype(UNICODE_STRING::Length) offset = 0);
+
+
+/// <summary>
 /// Answers the length of the given string in number of characters.
 /// </summary>
 /// <param name="string"></param>

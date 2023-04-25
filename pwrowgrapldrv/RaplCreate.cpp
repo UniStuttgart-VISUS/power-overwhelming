@@ -36,15 +36,14 @@ NTSTATUS RaplIdentifyCpu(_In_ RaplCpuInfo& dst) {
     }
 
     if (NT_SUCCESS(status)) {
-        char vendor[3 * sizeof(int) + 1];
+        char vendor[3 * sizeof(__int32) + 1];
         ::RtlZeroMemory(vendor, sizeof(vendor));
 
         // Kansas city shuffle.
-        *reinterpret_cast<int *>(vendor + 0) = info[1];
-        *reinterpret_cast<int *>(vendor + 4) = info[3];
-        *reinterpret_cast<int *>(vendor + 8) = info[2];
+        *reinterpret_cast<__int32 *>(vendor + 0) = info[1];
+        *reinterpret_cast<__int32 *>(vendor + 4) = info[3];
+        *reinterpret_cast<__int32 *>(vendor + 8) = info[2];
         KdPrint(("[PWROWG] CPU vendor is %hZ\"\r\n", vendor));
-
 
 #define _IS_VENDOR(v) (::strncmp(vendor, (v), sizeof(vendor)) == 0)
         if (_IS_VENDOR("AuthenticAMD") || _IS_VENDOR("AMDisbetter!")) {
@@ -64,11 +63,11 @@ NTSTATUS RaplIdentifyCpu(_In_ RaplCpuInfo& dst) {
         dst.BaseFamily = (info[0] & 0x00000F00) >> 8;
         dst.ExtendedModel = (info[0] & 0x0000F0000) >> 16;
         dst.ExtendedFamily = (info[0] & 0x00FF00000) >> 20;
-        KdPrint(("[PWROWG] CPU family is %hhd, $hhd\"\r\n", dst.BaseFamily,
+        KdPrint(("[PWROWG] CPU family is 0x%hhx, 0x%hhx\"\r\n", dst.BaseFamily,
             dst.ExtendedFamily));
-        KdPrint(("[PWROWG] CPU model is %hhd, $hhd\"\r\n", dst.BaseModel,
+        KdPrint(("[PWROWG] CPU model is 0x%hhx, 0x%hhx\"\r\n", dst.BaseModel,
             dst.ExtendedModel));
-        KdPrint(("[PWROWG] CPU stepping is %hhd\"\r\n", dst.Stepping));
+        KdPrint(("[PWROWG] CPU stepping is 0x%hhx\"\r\n", dst.Stepping));
     }
 
     return status;
@@ -104,6 +103,10 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
     ::WdfRequestGetParameters(request, &parameters);
     //parameters.Parameters.Create.
 
+    // Get the device context, which we need for global settings.
+    const auto deviceContext = ::GetRaplDeviceContext(device);
+    ASSERT(deviceContext != nullptr);
+
     // Retrieve our custom fileContext structure. As we have registered it in the
     // file object config of RaplDeviceAdd, the framework should have already
     // allocated this for us.
@@ -127,19 +130,9 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
 
     if (NT_SUCCESS(status)) {
         ASSERT(fileName->Length >= 2);
-        fileContext->Core = 0;
-        const auto end = ::RaplStringEnd(fileName);
-        // See above: path starts with exactly one "\".
-        for (auto d = fileName->Buffer + 1; d < end; ++d) {
-            if (::iswdigit(*d)) {
-                fileContext->Core *= 10;
-                fileContext->Core += *d - L'0';
-
-            } else {
-                KdPrint(("[PWROWG] Non-digit found in file name.\r\n"));
-                d = end;
-                status = STATUS_NOT_FOUND;
-            }
+        if (!NT_SUCCESS(::RaplParseInt32(fileContext->Core, *fileName, 1))) {
+            KdPrint(("[PWROWG] Parsing the logical core number failed.\r\n"));
+            status = STATUS_NOT_FOUND;
         }
     }
 
@@ -162,22 +155,30 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
         ::KeSetSystemGroupAffinityThread(&originalAffinity, nullptr);
     }
 
-    // Next, make sure that the CPU is by AMD or Intel.
+    // Next, make sure that the CPU is by AMD or Intel and determine which
+    // MSRs can be accessed on the model.
     if (NT_SUCCESS(status)) {
-        switch (cpuInfo.Vendor) {
-            case RaplCpuVendor::Amd:
-                // TODO: retrieve the valid offsets for AMD
-                break;
+        if (deviceContext->DriverContext->AllowAllMsrs) {
+            // User override to allow all MSRs.
+            fileContext->CountMsrs = 0;
+            fileContext->Msrs = nullptr;
 
-            case RaplCpuVendor::Intel:
-                // TODO: retrieve the vaid fofsets for Intel.
-                break;
+        } else {
+            switch (cpuInfo.Vendor) {
+                case RaplCpuVendor::Amd:
+                    // TODO: retrieve the valid offsets for AMD
+                    break;
 
-            default:
-                // Other vendors do not have the RAPL MSRs, so we tell the
-                // caller that we could not find it.
-                status = STATUS_NOT_FOUND;
-                break;
+                case RaplCpuVendor::Intel:
+                    // TODO: retrieve the vaid fofsets for Intel.
+                    break;
+
+                default:
+                    // Other vendors do not have the RAPL MSRs, so we tell the
+                    // caller that we could not find it.
+                    status = STATUS_NOT_FOUND;
+                    break;
+            }
         }
     }
 

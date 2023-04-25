@@ -121,14 +121,16 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
     }
 
     if (NT_SUCCESS(status)) {
-        // Initialise the global state of the device, which we copy from the
-        // driver, because only the driver has the registry path to read the
-        // configuration.
+        // Initialise the global state of the device.
+        // As the driver object must exist at least as long as the device
+        // object, we can create shallow copies of the heap allocations in the
+        // device context. We do not free these as ownership of the memory
+        // remains at the device.
         auto dst_context = ::GetRaplDeviceContext(device);
         ASSERT(dst_context != nullptr);
         auto src_context = ::GetRaplDriverContext(driver);
         ASSERT(src_context != nullptr);
-        *dst_context = *src_context;
+        dst_context->DriverContext = src_context;
     }
 
     if (NT_SUCCESS(status)) {

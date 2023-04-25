@@ -43,16 +43,25 @@ extern "C" void RaplRead(_In_ WDFQUEUE queue, _In_ WDFREQUEST request,
     const auto context = ::GetRaplFileContext(file);
     ASSERT(context != nullptr);
 
+    // Get the current file pointer from the file object.
     auto file_object = ::WdfFileObjectWdmGetFileObject(file);
-    auto offset = file_object->CurrentByteOffset.QuadPart;
+    auto offset = file_object->CurrentByteOffset;
     //// Get the request parameters which hold the offset into the file, which we
     //// interpret as the register number,
     //::WdfRequestGetParameters(request, &parameters);
     //const auto offset = parameters.Parameters.Read.DeviceOffset;
-    KdPrint(("[PWROWG] RAPL request offset 0x%lx\r\n", offset));
+    KdPrint(("[PWROWG] RAPL request offset 0x%I64x\r\n", offset.QuadPart));
+
+    if (NT_SUCCESS(status) && (offset.HighPart != 0)) {
+        // The offset is larger thatn 32-bit, so it cannot be a valid register.
+        // We indicate invalid register addresses as end of file.
+        KdPrint(("[PWROWG] Register 0x%I64x does not fit into 32 bits\r\n",
+            offset.QuadPart));
+        status = STATUS_END_OF_FILE;
+    }
 
     // TODO: Check validity of register.
-    const auto msrRegister = static_cast<unsigned long>(offset);
+    const auto msrRegister = static_cast<unsigned long>(offset.QuadPart);
 
     // Retrieve the output buffer where we should put the data.
     if (NT_SUCCESS(status)) {
