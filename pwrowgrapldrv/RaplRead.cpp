@@ -43,10 +43,12 @@ extern "C" void RaplRead(_In_ WDFQUEUE queue, _In_ WDFREQUEST request,
     const auto context = ::GetRaplFileContext(file);
     ASSERT(context != nullptr);
 
-    // Get the request parameters which hold the offset into the file, which we
-    // interpret as the register number,
-    ::WdfRequestGetParameters(request, &parameters);
-    const auto offset = parameters.Parameters.Read.DeviceOffset;
+    auto file_object = ::WdfFileObjectWdmGetFileObject(file);
+    auto offset = file_object->CurrentByteOffset.QuadPart;
+    //// Get the request parameters which hold the offset into the file, which we
+    //// interpret as the register number,
+    //::WdfRequestGetParameters(request, &parameters);
+    //const auto offset = parameters.Parameters.Read.DeviceOffset;
     KdPrint(("[PWROWG] RAPL request offset 0x%lx\r\n", offset));
 
     // TODO: Check validity of register.

@@ -71,7 +71,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // NVML sensors
-#if true
+#if false
 #if true
     ::sample_nvml_sensor();
 #endif

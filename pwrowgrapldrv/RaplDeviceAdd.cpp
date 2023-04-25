@@ -8,7 +8,8 @@
 
 // The name of our device and the user-visible name that can be opened.
 #define RaplDeviceName L"\\Device\\PowerOverwhelmingRaplMsrs"
-#define RaplVisibleDeviceName L"\\DosDevices\\PowerOverwhelmingRaplMsrs"
+#define RaplLocalDeviceName L"\\DosDevices\\PowerOverwhelmingRaplMsrs"
+#define RaplGlobalDeviceName L"\\DosDevices\\Global\\PowerOverwhelmingRaplMsrs"
 
 
 /// <summary>
@@ -27,7 +28,8 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
     NTSTATUS status = STATUS_SUCCESS;
 
     DECLARE_CONST_UNICODE_STRING(ntDeviceName, RaplDeviceName);
-    DECLARE_CONST_UNICODE_STRING(symbolicLinkName, RaplVisibleDeviceName);
+    // Cf. https://learn.microsoft.com/en-us/windows-hardware/drivers/kernel/local-and-global-ms-dos-device-names
+    DECLARE_CONST_UNICODE_STRING(symbolicLinkName, RaplGlobalDeviceName);
 
     //TraceEvents(TRACE_LEVEL_VERBOSE, DBG_INIT,
     //    "NonPnpDeviceAdd DeviceInit %p\n", DeviceInit);
@@ -71,7 +73,7 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
     //    NonPnpEvtDeviceIoInCallerContext);
 
     if (NT_SUCCESS(status)) {
-        WDF_OBJECT_ATTRIBUTES attributes{ 0 };
+        WDF_OBJECT_ATTRIBUTES attributes { 0 };
         ::WDF_OBJECT_ATTRIBUTES_INIT(&attributes);
         WDF_OBJECT_ATTRIBUTES_INIT_CONTEXT_TYPE(&attributes,
             RAPL_DEVICE_CONTEXT);
@@ -124,7 +126,7 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
         // configuration.
         auto dst_context = ::GetRaplDeviceContext(device);
         ASSERT(dst_context != nullptr);
-        auto src_context = ::GetRaplDeviceContext(driver);
+        auto src_context = ::GetRaplDriverContext(driver);
         ASSERT(src_context != nullptr);
         *dst_context = *src_context;
     }

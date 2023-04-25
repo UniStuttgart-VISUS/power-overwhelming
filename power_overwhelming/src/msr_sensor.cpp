@@ -48,10 +48,6 @@ std::size_t visus::power_overwhelming::msr_sensor::for_all(
         _Out_writes_opt_(cnt_sensors) msr_sensor *out_sensors,
         _In_ const std::size_t cnt_sensors,
         _In_ const bool consider_topology) {
-#if defined(_WIN32)
-    return 0;
-
-#else /* defined(_WIN32) */
     std::size_t retval = 0;
     bool succeeded = true;
 
@@ -61,7 +57,7 @@ std::size_t visus::power_overwhelming::msr_sensor::for_all(
             auto dev = detail::msr_device_factory::create(c);
             if (dev == nullptr) {
                 throw std::logic_error("An invalid MSR device was created by "
-                    "the msr_device_factor, which should never happen.");
+                    "the msr_device_factory, which should never happen.");
             }
 
             // Now that we know that the core exists, try creating sensors for
@@ -97,7 +93,6 @@ std::size_t visus::power_overwhelming::msr_sensor::for_all(
     }
 
     return retval;
-#endif /* defined(_WIN32) */
 }
 
 

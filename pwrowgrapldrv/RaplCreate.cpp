@@ -36,13 +36,15 @@ NTSTATUS RaplIdentifyCpu(_In_ RaplCpuInfo& dst) {
     }
 
     if (NT_SUCCESS(status)) {
-        char vendor[0x20];
+        char vendor[3 * sizeof(int) + 1];
         ::RtlZeroMemory(vendor, sizeof(vendor));
 
         // Kansas city shuffle.
         *reinterpret_cast<int *>(vendor + 0) = info[1];
         *reinterpret_cast<int *>(vendor + 4) = info[3];
         *reinterpret_cast<int *>(vendor + 8) = info[2];
+        KdPrint(("[PWROWG] CPU vendor is %hZ\"\r\n", vendor));
+
 
 #define _IS_VENDOR(v) (::strncmp(vendor, (v), sizeof(vendor)) == 0)
         if (_IS_VENDOR("AuthenticAMD") || _IS_VENDOR("AMDisbetter!")) {
@@ -62,6 +64,11 @@ NTSTATUS RaplIdentifyCpu(_In_ RaplCpuInfo& dst) {
         dst.BaseFamily = (info[0] & 0x00000F00) >> 8;
         dst.ExtendedModel = (info[0] & 0x0000F0000) >> 16;
         dst.ExtendedFamily = (info[0] & 0x00FF00000) >> 20;
+        KdPrint(("[PWROWG] CPU family is %hhd, $hhd\"\r\n", dst.BaseFamily,
+            dst.ExtendedFamily));
+        KdPrint(("[PWROWG] CPU model is %hhd, $hhd\"\r\n", dst.BaseModel,
+            dst.ExtendedModel));
+        KdPrint(("[PWROWG] CPU stepping is %hhd\"\r\n", dst.Stepping));
     }
 
     return status;
@@ -77,7 +84,7 @@ NTSTATUS RaplIdentifyCpu(_In_ RaplCpuInfo& dst) {
 /// </para>
 /// <para>The system sends this request when a user application opens the device
 /// to perform an I/O operation, such as reading or writing a file. This
-/// callback is called synchronously, in the context of the thread that created
+/// callback is called synchronously, in the fileContext of the thread that created
 /// the <c>IRP_MJ_CREATE</c> request.</para>
 /// <param name="device"></param>
 /// <param name="request"></param>
@@ -97,11 +104,11 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
     ::WdfRequestGetParameters(request, &parameters);
     //parameters.Parameters.Create.
 
-    // Retrieve our custom context structure. As we have registered it in the
+    // Retrieve our custom fileContext structure. As we have registered it in the
     // file object config of RaplDeviceAdd, the framework should have already
     // allocated this for us.
-    const auto context = ::GetRaplFileContext(fileObject);
-    ASSERT(context != nullptr);
+    const auto fileContext = ::GetRaplFileContext(fileObject);
+    ASSERT(fileContext != nullptr);
 
     // Parsed filename has "\" in the begining. The object manager strips all
     // "\" except one, after the device name.
@@ -120,13 +127,13 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
 
     if (NT_SUCCESS(status)) {
         ASSERT(fileName->Length >= 2);
-        context->Core = 0;
+        fileContext->Core = 0;
         const auto end = ::RaplStringEnd(fileName);
         // See above: path starts with exactly one "\".
         for (auto d = fileName->Buffer + 1; d < end; ++d) {
             if (::iswdigit(*d)) {
-                context->Core *= 10;
-                context->Core += *d - L'0';
+                fileContext->Core *= 10;
+                fileContext->Core += *d - L'0';
 
             } else {
                 KdPrint(("[PWROWG] Non-digit found in file name.\r\n"));
@@ -140,7 +147,7 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
     // requested. This way, we make sure that the CPUID instructions return data
     // on the CPU we are interested in.
     if (NT_SUCCESS(status)) {
-        status = ::RaplSetThreadAffinity(context->Core, &originalAffinity);
+        status = ::RaplSetThreadAffinity(fileContext->Core, &originalAffinity);
     }
     const auto restoreAffinity = NT_SUCCESS(status);
 
@@ -175,8 +182,8 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
     }
 
     if (NT_SUCCESS(status)) {
-        context->CountMsrs = 0;
-        context->Msrs = nullptr;
+        fileContext->CountMsrs = 0;
+        fileContext->Msrs = nullptr;
     }
 
     KdPrint(("[PWROWG] Complete open with 0x%x\r\n", status));
