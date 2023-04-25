@@ -13,6 +13,9 @@ _IRQL_requires_min_(PASSIVE_LEVEL)
 _IRQL_requires_max_(APC_LEVEL)
 NTSTATUS RaplSetThreadAffinity(_In_ const __int32 logicalCpu,
         _Out_ PGROUP_AFFINITY previousAffinity) noexcept {
+    KdPrint(("[PWROWG] Set thread affinity to logical CPU %d.\r\n",
+        logicalCpu));
+
     const auto groups = ::KeQueryActiveGroupCount();
     GROUP_AFFINITY affinity { 0 };
     __int32 total = 0;

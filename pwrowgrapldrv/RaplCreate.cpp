@@ -7,6 +7,7 @@
 
 #include "RaplCpuInfo.h"
 #include "RaplDriver.h"
+#include "RaplMsr.h"
 #include "RaplString.h"
 #include "RaplThreadAffinity.h"
 
@@ -43,7 +44,7 @@ NTSTATUS RaplIdentifyCpu(_In_ RaplCpuInfo& dst) {
         *reinterpret_cast<__int32 *>(vendor + 0) = info[1];
         *reinterpret_cast<__int32 *>(vendor + 4) = info[3];
         *reinterpret_cast<__int32 *>(vendor + 8) = info[2];
-        KdPrint(("[PWROWG] CPU vendor is %hZ\"\r\n", vendor));
+        KdPrint(("[PWROWG] CPU vendor string is \"%hs\".\r\n", vendor));
 
 #define _IS_VENDOR(v) (::strncmp(vendor, (v), sizeof(vendor)) == 0)
         if (_IS_VENDOR("AuthenticAMD") || _IS_VENDOR("AMDisbetter!")) {
@@ -54,6 +55,7 @@ NTSTATUS RaplIdentifyCpu(_In_ RaplCpuInfo& dst) {
             dst.Vendor = RaplCpuVendor::Other;
         }
 #undef _IS_VENDOR
+        KdPrint(("[PWROWG] CPU vendor %d.\r\n", dst.Vendor));
     }
 
     if (NT_SUCCESS(status)) {
@@ -63,11 +65,11 @@ NTSTATUS RaplIdentifyCpu(_In_ RaplCpuInfo& dst) {
         dst.BaseFamily = (info[0] & 0x00000F00) >> 8;
         dst.ExtendedModel = (info[0] & 0x0000F0000) >> 16;
         dst.ExtendedFamily = (info[0] & 0x00FF00000) >> 20;
-        KdPrint(("[PWROWG] CPU family is 0x%hhx, 0x%hhx\"\r\n", dst.BaseFamily,
+        KdPrint(("[PWROWG] CPU family is 0x%hhx, 0x%hhx.\r\n", dst.BaseFamily,
             dst.ExtendedFamily));
-        KdPrint(("[PWROWG] CPU model is 0x%hhx, 0x%hhx\"\r\n", dst.BaseModel,
+        KdPrint(("[PWROWG] CPU model is 0x%hhx, 0x%hhx.\r\n", dst.BaseModel,
             dst.ExtendedModel));
-        KdPrint(("[PWROWG] CPU stepping is 0x%hhx\"\r\n", dst.Stepping));
+        KdPrint(("[PWROWG] CPU stepping is 0x%hhx.\r\n", dst.Stepping));
     }
 
     return status;
@@ -116,7 +118,7 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
     // Parsed filename has "\" in the begining. The object manager strips all
     // "\" except one, after the device name.
     const auto fileName = ::WdfFileObjectGetFileName(fileObject);
-    KdPrint(("[PWROWG] Open %wZ\"\r\n", fileName));
+    KdPrint(("[PWROWG] Open \"%wZ\"\r\n", fileName));
 
     // The file name must be the number of the core, i.e. an integral number in
     // the decimal system. If the path is empty or if it contains anything but a
@@ -159,32 +161,35 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
     // MSRs can be accessed on the model.
     if (NT_SUCCESS(status)) {
         if (deviceContext->DriverContext->AllowAllMsrs) {
-            // User override to allow all MSRs.
+            // User override to allow all MSRs. Setting 'Msrs' to nullptr will
+            // skip the test in RaplIsRegisterSupported.
+            KdPrint(("[PWROWG] Check of MSR addresses is disabled.\r\n"));
             fileContext->CountMsrs = 0;
             fileContext->Msrs = nullptr;
 
         } else {
-            switch (cpuInfo.Vendor) {
-                case RaplCpuVendor::Amd:
-                    // TODO: retrieve the valid offsets for AMD
-                    break;
+            fileContext->CountMsrs = ::RaplGetSupportedRegisters(cpuInfo,
+                nullptr, 0);
+            // Note: We allocate at least one byte, because 'Msrs' being
+            // nullptr indicates that the test should be skipped and if we
+            // have zero registers in this code path, we want to signal that
+            // none us supported.
+            fileContext->Msrs = reinterpret_cast<unsigned __int32 *>(
+                ::ExAllocatePoolWithTag(PagedPool,
+                max(1, fileContext->CountMsrs * sizeof(unsigned __int32)),
+                RAPL_POOL_TAG));
 
-                case RaplCpuVendor::Intel:
-                    // TODO: retrieve the vaid fofsets for Intel.
-                    break;
+            if (fileContext->Msrs != nullptr) {
+                fileContext->CountMsrs = ::RaplGetSupportedRegisters(cpuInfo,
+                    fileContext->Msrs, fileContext->CountMsrs);
+                KdPrint(("[PWROWG] MSR list 0x%p has %u element(s).\r\n",
+                    fileContext->Msrs, fileContext->CountMsrs));
 
-                default:
-                    // Other vendors do not have the RAPL MSRs, so we tell the
-                    // caller that we could not find it.
-                    status = STATUS_NOT_FOUND;
-                    break;
+            } else {
+                KdPrint(("[PWROWG] Insufficient memory for MSR list.\r\n"));
+                status = STATUS_NO_MEMORY;
             }
         }
-    }
-
-    if (NT_SUCCESS(status)) {
-        fileContext->CountMsrs = 0;
-        fileContext->Msrs = nullptr;
     }
 
     KdPrint(("[PWROWG] Complete open with 0x%x\r\n", status));

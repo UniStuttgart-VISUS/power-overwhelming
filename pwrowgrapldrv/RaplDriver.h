@@ -3,6 +3,8 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
+#pragma once
+
 #include <ntddk.h>
 #include <wdf.h>
 
@@ -61,10 +63,16 @@ typedef struct _RAPL_FILE_CONTEXT {
     /// <summary>
     /// The register indices of the MSRs we found valid for the specified core.
     /// </summary>
-    _Field_size_(CountMsrs) __int32 *Msrs;
+    _Field_size_(CountMsrs) unsigned __int32 *Msrs;
 } RAPL_FILE_CONTEXT, *PRAPL_FILE_CONTEXT;
 
 WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(RAPL_FILE_CONTEXT, GetRaplFileContext)
+
+
+/// <summary>
+/// The memory pool tag we use for our own allocations.
+/// </summary>
+#define RAPL_POOL_TAG ('lpaR')
 
 
 extern "C" DRIVER_INITIALIZE DriverEntry;

@@ -26,7 +26,7 @@ extern "C" void RaplClose(IN WDFFILEOBJECT fileObject) noexcept {
     const auto context = ::GetRaplFileContext(fileObject);
     if ((context != nullptr) && (context->Msrs != nullptr)) {
         KdPrint(("[PWROWG] Free MSR list 0x%p\r\n", context->Msrs));
-        ::ExFreePool(context->Msrs);
+        ::ExFreePoolWithTag(context->Msrs, RAPL_POOL_TAG);
         context->CountMsrs = 0;
         context->Msrs = nullptr;
     }

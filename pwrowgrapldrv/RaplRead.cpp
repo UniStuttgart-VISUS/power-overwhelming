@@ -8,8 +8,8 @@
 #include <wdf.h>
 
 #include "RaplDriver.h"
+#include "RaplMsr.h"
 #include "RaplThreadAffinity.h"
-
 
 
 /// <summary>
@@ -44,8 +44,8 @@ extern "C" void RaplRead(_In_ WDFQUEUE queue, _In_ WDFREQUEST request,
     ASSERT(context != nullptr);
 
     // Get the current file pointer from the file object.
-    auto file_object = ::WdfFileObjectWdmGetFileObject(file);
-    auto offset = file_object->CurrentByteOffset;
+    const auto fileObject = ::WdfFileObjectWdmGetFileObject(file);
+    auto offset = fileObject->CurrentByteOffset;
     //// Get the request parameters which hold the offset into the file, which we
     //// interpret as the register number,
     //::WdfRequestGetParameters(request, &parameters);
@@ -60,8 +60,15 @@ extern "C" void RaplRead(_In_ WDFQUEUE queue, _In_ WDFREQUEST request,
         status = STATUS_END_OF_FILE;
     }
 
-    // TODO: Check validity of register.
-    const auto msrRegister = static_cast<unsigned long>(offset.QuadPart);
+    if (NT_SUCCESS(status)) {
+        ASSERT(offset.HighPart == 0);
+        if (!::RaplIsRegisterSupported(offset.LowPart, context->Msrs,
+                context->CountMsrs)) {
+            KdPrint(("[PWROWG] Register 0x%x is not supported on this "
+                "CPU.\r\n", offset.LowPart));
+            status = STATUS_END_OF_FILE;
+        }
+    }
 
     // Retrieve the output buffer where we should put the data.
     if (NT_SUCCESS(status)) {
@@ -79,16 +86,19 @@ extern "C" void RaplRead(_In_ WDFQUEUE queue, _In_ WDFREQUEST request,
 
     // Read the register which is given by the offset in the file. This one line
     // is the only reason for this whole driver existing ...
-    auto data = __readmsr(msrRegister);
+    auto data = __readmsr(offset.LowPart);
+    KdPrint(("[PWROWG] Read 0x%I64x from register 0x%x\r\n", data,
+        offset.LowPart));
 
     // Restore previous thread affinity.
     if (restoreAffinity) {
+        KdPrint(("[PWROWG] Restoring original thread affinity.\r\n"));
         ::KeSetSystemGroupAffinityThread(&originalAffinity, nullptr);
     }
 
     // Make sure that we do not write too much if the caller requested a partial
-    // register (although this does not make sense) and return the data to the
-    // output buffer.
+    // register (although this does not make sense) and copy the data to the
+    // user-provided output buffer.
     if (bytesRead > bytesAvailable) {
         KdPrint(("[PWROWG] Read too small for MSR register\r\n"));
         bytesRead = bytesAvailable;

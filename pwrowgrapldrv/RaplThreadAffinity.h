@@ -3,6 +3,8 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
+#pragma once
+
 #include <ntddk.h>
 
 
