@@ -13,7 +13,9 @@ There is [another open-source project providing a similar driver](https://github
 
 2. The `__readmsr` instruction reads the register of the core the calling thread is running on, i.e. the thread affinity of the code reading the register must be set to the logical CPU we are interested in. The aforementioned driver does not ensure that in kernel mode, i.e. the user-mode sensor thread must be bound to the correct core for this to work. This is error-prone and we again want to have a path-based solution like in the Linux kernel to have a similar implementation of the sensor on both platforms.
 
-## Building
+This driver offers a behaviour that is very close to the behaviour of the `msr` device files on Linux, most notably (i) it allows for opening individual cores for which the driver handles thread affinity by itself, (ii) it uses `IRP_MJ_READ` for delivering the data and (iii) it uses the position of the file pointer as the address of the machine-specific register to return.
+
+## Build
 In order to build the driver, the [Windows Driver Kit (WDK)](https://learn.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk) must be installed on the machine. We have a [CMake find](https://github.com/SergiusTheBest/FindWDK) in place that should detect the installation automatically.
 
 > **Note**
@@ -48,7 +50,7 @@ signtool sign /v /fd sha256 /s PrivateCertStore /n "Power Overwhelming (Test)" /
 
 If you do not want to sign the driver, you must disable driver integrity checks completely. This can be achieved by issuing
 ```cmd
-bcdedit.exe -set loadoptions DISABLE_INTEGRITY_CHECKS
+bcdedit -set loadoptions DISABLE_INTEGRITY_CHECKS
 ```
 in an elevated command prompt.
 
