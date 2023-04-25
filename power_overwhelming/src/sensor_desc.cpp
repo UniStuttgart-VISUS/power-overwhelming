@@ -25,6 +25,12 @@ constexpr const char *visus::power_overwhelming::detail::sensor_desc<
     visus::power_overwhelming::hmc8015_sensor>::type_name;
 
 /*
+ * visus::power_overwhelming::msr_sensor>::type_name
+ */
+constexpr const char *visus::power_overwhelming::detail::sensor_desc<
+    visus::power_overwhelming::msr_sensor>::type_name;
+
+/*
  * visus::power_overwhelming::nvml_sensor>::type_name
  */
 constexpr const char *visus::power_overwhelming::detail::sensor_desc<

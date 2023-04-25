@@ -14,10 +14,10 @@ if (WIN32)
 
     set(VisaLib "visa32.lib")
 
-else (WIN32)
+else ()
     set(VisaDirs "/usr")
     set(VisaLib "librsvisa.so")
-endif (WIN32)
+endif ()
 
 message(STATUS "Searching VISA library ${VisaLib} in ${VisaDirs} ...")
 

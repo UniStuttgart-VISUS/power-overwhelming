@@ -5,7 +5,9 @@
 
 #pragma once
 
+#include <chrono>
 #include <cinttypes>
+#include <stdexcept>
 
 #if defined(_WIN32)
 #include <Windows.h>
@@ -13,6 +15,8 @@
 
 #include "power_overwhelming/power_overwhelming_api.h"
 #include "power_overwhelming/timestamp_resolution.h"
+
+#include "filetime_period.h"
 
 
 namespace visus {
@@ -89,7 +93,21 @@ namespace detail {
         return convert(convert(fileTime), resolution);
     }
 #endif /* defined(_WIN32) */
-} /* namespace detail */
+
+    /// <summary>
+    /// Convert an STL time point to a time stamp.
+    /// </summary>
+    /// <typeparam name="TDuration"></typeparam>
+    /// <param name="timestamp">The STL time point to convert.</param>
+    /// <param name="resolution">The resolution of the timestamp being returned.
+    /// </param>
+    /// <returns>The value of the current timestamp.</returns>
+    /// <exception cref="std::invalid_argument">If a timestamp fo the requested
+    /// <paramref name="resolution" /> cannot be created.</exception>
+    template<class TDuration> timestamp_type convert(
+        _In_ const std::chrono::time_point<std::chrono::system_clock,
+            TDuration>& timestamp,
+        _In_ const timestamp_resolution resolution);
 
     /// <summary>
     /// Create a new timestamp using the specified resolution per tick.
@@ -100,7 +118,10 @@ namespace detail {
     /// <exception cref="std::invalid_argument">If a timestamp fo the requested
     /// <paramref name="resolution" /> cannot be created.</exception>
     timestamp_type POWER_OVERWHELMING_API create_timestamp(
-        const timestamp_resolution resolution);
+        _In_ const timestamp_resolution resolution);
 
+} /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
+
+#include "timestamp.inl"

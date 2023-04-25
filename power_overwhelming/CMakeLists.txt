@@ -64,6 +64,7 @@ if (WIN32)
 else ()
     find_package(Threads REQUIRED)
     target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS} Threads::Threads)
+    set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 endif ()
 
 # Provide the internal API to the unit tests.

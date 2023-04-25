@@ -12,12 +12,14 @@
 #include "power_overwhelming/adl_sensor.h"
 #include "power_overwhelming/emi_sensor.h"
 #include "power_overwhelming/hmc8015_sensor.h"
+#include "power_overwhelming/msr_sensor.h"
 #include "power_overwhelming/nvml_sensor.h"
 #include "power_overwhelming/regex_escape.h"
 #include "power_overwhelming/rtb_sensor.h"
 #include "power_overwhelming/tinkerforge_sensor.h"
 
 #include "described_sensor_type.h"
+#include "msr_sensor_impl.h"
 #include "tinkerforge_sensor_impl.h"
 
 
@@ -42,10 +44,13 @@ namespace power_overwhelming {
 namespace detail {
 
     static constexpr const char *json_field_channel = "channel";
+    static constexpr const char *json_field_core = "core";
+    static constexpr const char *json_field_domain = "domain";
     static constexpr const char *json_field_description = "description";
     static constexpr const char *json_field_dev_guid = "deviceGuid";
     static constexpr const char *json_field_host = "host";
     static constexpr const char *json_field_name = "name";
+    static constexpr const char *json_field_offset = "offset";
     static constexpr const char *json_field_path = "path";
     static constexpr const char *json_field_port = "port";
     static constexpr const char *json_field_source = "source";
@@ -53,7 +58,7 @@ namespace detail {
     static constexpr const char *json_field_type = "type";
     static constexpr const char *json_field_udid = "udid";
     static constexpr const char *json_field_uid = "uid";
-
+    static constexpr const char *json_field_unit_divisor = "unitDivisor";
 
     /// <summary>
     /// Test whether a descriptor has the ability to serialise all sensors at
@@ -99,7 +104,7 @@ namespace detail {
 
 
     /// <summary>
-    /// Type type of a list to enumerate all known sensors at compile time,
+    /// Type of a list to enumerate all known sensors at compile time,
     /// which is declared at the end of this file.
     /// </summary>
     template<class...> struct sensor_list_type final { };
@@ -232,6 +237,48 @@ namespace detail {
                 { json_field_name, name },
                 { json_field_path, path },
                 { json_field_channel, 3000 }
+            });
+        }
+    };
+
+    /// <summary>
+    /// Specialisation for <see cref="msr_sensor" />.
+    /// </summary>
+    template<> struct sensor_desc<msr_sensor> final
+            : detail::sensor_desc_base<sensor_desc<msr_sensor>> {
+        POWER_OVERWHELMING_DECLARE_SENSOR_NAME(msr_sensor);
+        POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC(false);
+
+        static inline value_type deserialise(_In_ const nlohmann::json& value) {
+            auto core = value[json_field_core].get<msr_sensor::core_type>();
+            auto divisor = value[json_field_unit_divisor].get<float>();
+            auto domain0 = value[json_field_domain].get<std::string>();
+            auto domain1 = power_overwhelming::convert_string<wchar_t>(domain0);
+            auto domain = parse_rapl_domain(domain1.c_str());
+            auto offset = value[json_field_offset].get<std::streamoff>();
+            // Create using BS values for offset ...
+            auto retval = value_type::force_create(core, domain, offset, 0, 0,
+                0);
+            // ... and overwrite with result from previous offset computation.
+            retval._impl->unit_divisor = divisor;
+            return retval;
+        }
+
+        static inline nlohmann::json serialise(_In_ const value_type& value) {
+            auto core = value.core();
+            auto divisor = value._impl->unit_divisor;
+            auto domain0 = to_string(value.domain());
+            auto domain = power_overwhelming::convert_string<char>(domain0);
+            auto offset = value._impl->offset;
+            auto name = power_overwhelming::convert_string<char>(value.name());
+
+            return nlohmann::json::object({
+                { json_field_type, type_name },
+                { json_field_name, name },
+                { json_field_core, core },
+                { json_field_domain, domain },
+                { json_field_offset, offset },
+                { json_field_unit_divisor, divisor }
             });
         }
     };
@@ -392,6 +439,7 @@ namespace detail {
         adl_sensor,
         emi_sensor,
         hmc8015_sensor,
+        msr_sensor,
         nvml_sensor,
         rtb_sensor,
         tinkerforge_sensor>

@@ -4,6 +4,33 @@
 // <author>Christoph Müller</author>
 
 
+namespace visus {
+namespace power_overwhelming {
+namespace detail {
+
+    /// <summary>
+    /// Backport of C++ 17 <c>std::size</c>.
+    /// </summary>
+    template<class TContainer>
+    inline constexpr auto count_sensors(const TContainer& sensors)
+            -> decltype(sensors.size()) {
+        return sensors.size();
+    }
+
+    /// <summary>
+    /// Backport of C++ 17 <c>std::size</c>.
+    /// </summary>
+    template<class TValue, std::size_t Count>
+    inline constexpr std::size_t count_sensors(
+            const TValue(&sensors)[Count]) noexcept {
+        return Count;
+    }
+
+} /* namespace detail */
+} /* namespace power_overwhelming */
+} /* namespace visus */
+
+
 /*
  * visus::power_overwhelming::collector::from_sensor_lists
  */
@@ -19,7 +46,7 @@ visus::power_overwhelming::collector::from_sensor_lists(
     const auto cnt = std::accumulate(instances.begin(),
         instances.end(), static_cast<std::size_t>(0),
             [](const std::size_t s, const sensor_type& v) {
-        return std::size(v) + s;
+        return detail::count_sensors(v) + s;
     });
 
     auto retval = collector::prepare(settings, cnt);
@@ -70,7 +97,7 @@ visus::power_overwhelming::collector::move_to_heap(TSensorList&& sensors) {
     typedef typename std::decay<decltype(sensors.front())>::type sensor_type;
 
     decltype(move_to_heap(sensors)) retval;
-    retval.reserve(std::size(sensors));
+    retval.reserve(detail::count_sensors(sensors));
 
     std::transform(sensors.begin(), sensors.end(), std::back_inserter(retval),
             [](sensor_type& s) {

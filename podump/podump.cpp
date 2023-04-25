@@ -9,6 +9,7 @@
 #include "collector.h"
 #include "emi_sensor.h"
 #include "graphics_devices.h"
+#include "msr_sensor.h"
 #include "nvml_sensor.h"
 #include "rohde_und_schwarz.h"
 #include "tinkerforge.h"
@@ -48,7 +49,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // EMI sensors
-#if false
+#if true
 #if true
     ::sample_emi_sensor();
 #endif
@@ -58,8 +59,19 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 #endif
 
-    // NVML sensors
+    // MSR sensors
 #if true
+#if true
+    ::sample_msr_sensor();
+#endif
+
+#if true
+    ::sample_msr_sensor_async(5);
+#endif
+#endif
+
+    // NVML sensors
+#if false
 #if true
     ::sample_nvml_sensor();
 #endif

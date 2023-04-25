@@ -10,6 +10,7 @@ include(GNUInstallDirs)
 
 # User-configurable options.
 option(PWROWG_BuildDemo "Build demo programme" OFF)
+cmake_dependent_option(PWROWG_BuildDriver "Build RAPL MSR driver" OFF WIN32 OFF)
 option(PWROWG_BuildDumpSensors "Build dump_sensors utility" ON)
 cmake_dependent_option(PWROWG_BuildStablePower "Build setstablepowerstate tool" OFF WIN32 OFF)
 cmake_dependent_option(PWROWG_BuildTests "Build unit tests." ON WIN32 OFF)
@@ -32,6 +33,11 @@ endif ()
 # Demo programme
 if (PWROWG_BuildDemo)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/podump)
+endif ()
+
+# RAPL MSR driver
+if (PWROWG_BuildDriver)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/pwrowgrapldrv)
 endif ()
 
 # dump_sensors utility

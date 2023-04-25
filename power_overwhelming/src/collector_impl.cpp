@@ -38,7 +38,7 @@ visus::power_overwhelming::detail::collector_impl::collector_impl(void)
         : evt_write(create_event(false, false)),
         have_marker(false), running(false), sampling_interval(0),
         require_marker(false),
-        timestamp_resolution(timestamp_resolution::milliseconds) { }
+        timestamp_resolution(default_timestamp_resolution) { }
 
 
 /*
@@ -58,10 +58,10 @@ void visus::power_overwhelming::detail::collector_impl::apply(
     auto output_path = settings.output_path();
 
 #if defined(_WIN32)
-    this->stream = std::wofstream(output_path, std::ofstream::trunc);
+    this->stream.open(output_path, std::ofstream::trunc);
 #else /* defined(_WIN32) */
     auto p = power_overwhelming::convert_string<char>(output_path);
-    this->stream = std::wofstream(p, std::ofstream::trunc);
+    this->stream.open(p, std::ofstream::trunc);
 #endif /* defined(_WIN32) */
 
     this->sampling_interval = std::chrono::microseconds(
