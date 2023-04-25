@@ -69,6 +69,14 @@ in an elevated command prompt.
 9. Finish the installation and check that the RAPL registers show up under the system devices.
 10. Reboot the target machine.
 
+## Usage
+The `visus::power_overwhelming::msr_sensor` will detect the presence of the driver by itself and provide access to RAPL data.
+
+If you want to use it by yourself, to just need to
+1. Open `\\.\PowerOverwhelmingRaplMsrs\<core>` where `<core>` is the index of the logical CPU you want to query.
+2. Seek to the position of the register. This is dependent on the hardware. You can find the registers we know of in [RaplMsr.cpp](RaplMsr.cpp).
+3. Read a single `std::uint64_t` from this address.
+
 ## Debugging the driver
 1. [Setup the Kernel debugger](https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/debug-universal-drivers---step-by-step-lab--echo-kernel-mode-)
 2. Make the operating system break on startup: Select "Toggle Initial Break" in the Breakpoints menu.
