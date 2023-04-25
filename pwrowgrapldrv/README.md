@@ -73,11 +73,14 @@ in an elevated command prompt.
 The `visus::power_overwhelming::msr_sensor` will detect the presence of the driver by itself and provide access to RAPL data.
 
 If you want to use it by yourself, you just need to
-1. ppen a file handle for `\\.\PowerOverwhelmingRaplMsrs\<core>` where `<core>` is the zero-based index of the logical CPU you want to query;
+1. open a file handle for `\\.\PowerOverwhelmingRaplMsrs\<core>` where `<core>` is the zero-based index of the logical CPU you want to query;
 2. seek to the position of the register. This is dependent on the hardware. You can find the registers we know of in [RaplMsr.cpp](RaplMsr.cpp);
 3. read a single `std::uint64_t` from this address.
 
 Please be aware that the RAPL MSRs typically do not provide data that are directly usable, but they must be transformed into a commonly used quantity by applying a divisor that can be read using the driver, too.
+
+> **Warning**
+> Issuing a read on a machine-specific register that does not exist will cause a bug check (bluescreen)!
 
 ## Debugging the driver
 1. [Setup the Kernel debugger](https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/debug-universal-drivers---step-by-step-lab--echo-kernel-mode-)
