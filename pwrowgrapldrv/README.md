@@ -58,7 +58,7 @@ in an elevated command prompt.
 > All of the above will make your machine susceptible to malicious software. Make sure to revert the changes if you need the driver anymore.
 
 > **Warning**
-> Installing this driver might make your machine susceptible to side-channel attacks on sensitive data as described in [CVE-2020-8694 and CVE-2020-8695](https://www.intel.com/content/www/us/en/developer/articles/technical/software-security-guidance/advisory-guidance/running-average-power-limit-energy-reporting.html). See also the [paper by Zhang et al.](https://zhenkai-zhang.github.io/papers/rapl.pdf).
+> Installing this driver might make your machine susceptible to side-channel attacks on sensitive data as described in [CVE-2020-8694 and CVE-2020-8695](https://www.intel.com/content/www/us/en/developer/articles/technical/software-security-guidance/advisory-guidance/running-average-power-limit-energy-reporting.html). See also the [paper by Zhang et al.](https://zhenkai-zhang.github.io/papers/rapl.pdf)
 
 ### Installation of the driver
 1. Copy all files (the driver binary, the WDF binary, the INF file and the catalogue file) to the target machine.
