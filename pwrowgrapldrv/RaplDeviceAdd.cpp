@@ -11,6 +11,11 @@
 #define RaplLocalDeviceName L"\\DosDevices\\PowerOverwhelmingRaplMsrs"
 #define RaplGlobalDeviceName L"\\DosDevices\\Global\\PowerOverwhelmingRaplMsrs"
 
+// The GUID of our custom device interface class. This GUID is also part of the
+// hardware ID in the INF file
+static const GUID GUID_DEVINTERFACE_PWROWG = { 0x4ef5d714, 0xab50, 0x49e1,
+    { 0xb6, 0xa0, 0xa, 0xdc, 0x8e, 0xcd, 0x3f, 0x14 } };
+
 
 /// <summary>
 /// This function is called by <see cref="DriverEntry" /> to create a control device.
@@ -131,6 +136,13 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
         auto src_context = ::GetRaplDriverContext(driver);
         ASSERT(src_context != nullptr);
         dst_context->DriverContext = src_context;
+    }
+
+    if (NT_SUCCESS(status)) {
+        // Register the device interface. Cf.
+        // https://learn.microsoft.com/en-us/windows-hardware/drivers/wdf/using-device-interfaces
+        status = ::WdfDeviceCreateDeviceInterface(device,
+            &::GUID_DEVINTERFACE_PWROWG, nullptr);
     }
 
     if (NT_SUCCESS(status)) {
