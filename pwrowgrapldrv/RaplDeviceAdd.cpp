@@ -141,14 +141,17 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
         dst_context->DriverContext = src_context;
     }
 
-    if (NT_SUCCESS(status)) {
-        // Register the device interface. Cf.
-        // https://learn.microsoft.com/en-us/windows-hardware/drivers/wdf/using-device-interfaces
-        status = ::WdfDeviceCreateDeviceInterface(device,
-            &::GUID_DEVINTERFACE_PWROWG, nullptr);
-    }
-    KdPrint(("[PWROWG] WdfDeviceCreateDeviceInterface result: 0x%x\r\n",
-        status));
+    // TODO: Find out why this is not working. We can leave that out as we are
+    // using the DOS name in the user mode application, but it would still be
+    // nice to get rid of the unknown device stuff in the registry.
+    //if (NT_SUCCESS(status)) {
+    //    // Register the device interface. Cf.
+    //    // https://learn.microsoft.com/en-us/windows-hardware/drivers/wdf/using-device-interfaces
+    //    status = ::WdfDeviceCreateDeviceInterface(device,
+    //        &::GUID_DEVINTERFACE_PWROWG, nullptr);
+    //}
+    //KdPrint(("[PWROWG] WdfDeviceCreateDeviceInterface result: 0x%x\r\n",
+    //    status));
 
     if (NT_SUCCESS(status)) {
         // Notify the framework that we are done.
