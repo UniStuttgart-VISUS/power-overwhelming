@@ -50,6 +50,7 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
     if (NT_SUCCESS(status)) {
         status = ::WdfDeviceInitAssignName(deviceInit, &ntDeviceName);
     }
+    KdPrint(("[PWROWG] WdfDeviceInitAssignName result: 0x%x\r\n", status));
 
     if (NT_SUCCESS(status)) {
         ::WdfControlDeviceInitSetShutdownNotification(deviceInit,
@@ -85,12 +86,14 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
 
         status = ::WdfDeviceCreate(&deviceInit, &attributes, &device);
     }
+    KdPrint(("[PWROWG] WdfDeviceCreate result: 0x%x\r\n", status));
 
     if (NT_SUCCESS(status)) {
         // Create a symbolic link for the control object so that usermode can
         // open the device.
         status =:: WdfDeviceCreateSymbolicLink(device, &symbolicLinkName);
     }
+    KdPrint(("[PWROWG] WdfDeviceCreateSymbolicLink result: 0x%x\r\n", status));
 
     if (NT_SUCCESS(status)) {
         WDF_OBJECT_ATTRIBUTES attributes{ 0 };
@@ -144,6 +147,8 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
         status = ::WdfDeviceCreateDeviceInterface(device,
             &::GUID_DEVINTERFACE_PWROWG, nullptr);
     }
+    KdPrint(("[PWROWG] WdfDeviceCreateDeviceInterface result: 0x%x\r\n",
+        status));
 
     if (NT_SUCCESS(status)) {
         // Notify the framework that we are done.

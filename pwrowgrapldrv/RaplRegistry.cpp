@@ -29,8 +29,8 @@ NTSTATUS RaplQueryRegistryParameterUlong(_Out_ ULONG& dst,
 
     if (NT_SUCCESS(status)) {
         status = ::WdfRegistryQueryULong(key, &name, &dst);
-        KdPrint(("[PWROWG] Querying ULONG from registry resulted in 0x%x\r\n",
-            status));
+        KdPrint(("[PWROWG] Querying ULONG \"%wZ\" from registry resulted in "
+            "0x%x\r\n", name, status));
     }
 
     if (closeKey) {
