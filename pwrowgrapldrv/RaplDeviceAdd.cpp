@@ -11,6 +11,11 @@
 #define RaplLocalDeviceName L"\\DosDevices\\PowerOverwhelmingRaplMsrs"
 #define RaplGlobalDeviceName L"\\DosDevices\\Global\\PowerOverwhelmingRaplMsrs"
 
+// The GUID of our custom device interface class. This GUID is also part of the
+// hardware ID in the INF file
+static const GUID GUID_DEVINTERFACE_PWROWG = { 0x4ef5d714, 0xab50, 0x49e1,
+    { 0xb6, 0xa0, 0xa, 0xdc, 0x8e, 0xcd, 0x3f, 0x14 } };
+
 
 /// <summary>
 /// This function is called by <see cref="DriverEntry" /> to create a control device.
@@ -45,6 +50,7 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
     if (NT_SUCCESS(status)) {
         status = ::WdfDeviceInitAssignName(deviceInit, &ntDeviceName);
     }
+    KdPrint(("[PWROWG] WdfDeviceInitAssignName result: 0x%x\r\n", status));
 
     if (NT_SUCCESS(status)) {
         ::WdfControlDeviceInitSetShutdownNotification(deviceInit,
@@ -80,12 +86,14 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
 
         status = ::WdfDeviceCreate(&deviceInit, &attributes, &device);
     }
+    KdPrint(("[PWROWG] WdfDeviceCreate result: 0x%x\r\n", status));
 
     if (NT_SUCCESS(status)) {
         // Create a symbolic link for the control object so that usermode can
         // open the device.
         status =:: WdfDeviceCreateSymbolicLink(device, &symbolicLinkName);
     }
+    KdPrint(("[PWROWG] WdfDeviceCreateSymbolicLink result: 0x%x\r\n", status));
 
     if (NT_SUCCESS(status)) {
         WDF_OBJECT_ATTRIBUTES attributes{ 0 };
@@ -132,6 +140,18 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
         ASSERT(src_context != nullptr);
         dst_context->DriverContext = src_context;
     }
+
+    // TODO: Find out why this is not working. We can leave that out as we are
+    // using the DOS name in the user mode application, but it would still be
+    // nice to get rid of the unknown device stuff in the registry.
+    //if (NT_SUCCESS(status)) {
+    //    // Register the device interface. Cf.
+    //    // https://learn.microsoft.com/en-us/windows-hardware/drivers/wdf/using-device-interfaces
+    //    status = ::WdfDeviceCreateDeviceInterface(device,
+    //        &::GUID_DEVINTERFACE_PWROWG, nullptr);
+    //}
+    //KdPrint(("[PWROWG] WdfDeviceCreateDeviceInterface result: 0x%x\r\n",
+    //    status));
 
     if (NT_SUCCESS(status)) {
         // Notify the framework that we are done.

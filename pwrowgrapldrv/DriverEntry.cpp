@@ -7,6 +7,7 @@
 #include <wdmsec.h>
 
 #include "RaplDriver.h"
+#include "RaplRegistry.h"
 
 
 #if defined(ALLOC_PRAGMA)
@@ -64,7 +65,22 @@ extern "C" NTSTATUS DriverEntry(_In_ PDRIVER_OBJECT driverObject,
     if (NT_SUCCESS(status)) {
         auto context = ::GetRaplDriverContext(driver);
         ASSERT(context != nullptr);
-        context->AllowAllMsrs = false;
+
+        // Note: reading the AllowAllMsrs flag from the registry is a non-fatal
+        // error. If we cannot read it, we just disable it, because this is
+        // the reasonable default.
+        {
+            DECLARE_CONST_UNICODE_STRING(n, L"AllowAllMsrs");
+            ULONG v = 0;
+            if (NT_SUCCESS(::RaplQueryRegistryParameterUlong(v, driver, n))) {
+                KdPrint(("[PWROWG] AllowAllMsrs parameter is: %d\r\n", v));
+                context->AllowAllMsrs = (v != 0);
+
+            } else {
+                KdPrint(("[PWROWG] Defaulting to AllowAllMsrs = false\r\n"));
+                context->AllowAllMsrs = false;
+            }
+        }
     }
 
     // TODO: configure tracing

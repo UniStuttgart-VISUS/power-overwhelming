@@ -182,7 +182,7 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
             if (fileContext->Msrs != nullptr) {
                 fileContext->CountMsrs = ::RaplGetSupportedRegisters(cpuInfo,
                     fileContext->Msrs, fileContext->CountMsrs);
-                KdPrint(("[PWROWG] MSR list 0x%p has %u element(s).\r\n",
+                KdPrint(("[PWROWG] MSR list 0x%p has %I64u element(s).\r\n",
                     fileContext->Msrs, fileContext->CountMsrs));
 
             } else {
