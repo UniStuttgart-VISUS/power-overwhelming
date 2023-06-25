@@ -132,11 +132,11 @@ void visus::power_overwhelming::detail::msr_sensor_impl::sample(void) {
 /*
  * visus::power_overwhelming::detail::msr_sensor_impl::sample
  */
-visus::power_overwhelming::measurement
+visus::power_overwhelming::measurement_data
 visus::power_overwhelming::detail::msr_sensor_impl::sample(
         _In_ const timestamp_resolution resolution) const {
     assert(this->device != nullptr);
-    typedef std::chrono::duration<measurement::value_type> seconds_type;
+    typedef std::chrono::duration<measurement_data::value_type> seconds_type;
 
     // Obtain new readings.
     const auto value = this->device->read(this->offset);
@@ -145,7 +145,7 @@ visus::power_overwhelming::detail::msr_sensor_impl::sample(
     // Compute the difference and convert it to Joules by applying the
     // divisor obtained during initialisation.
     const auto dv = value - this->last_sample;
-    auto sample_value = static_cast<measurement::value_type>(dv)
+    auto sample_value = static_cast<measurement_data::value_type>(dv)
         / this->unit_divisor;
 
     // Compute the time elapsed since the last call to the method. We use that
@@ -160,7 +160,7 @@ visus::power_overwhelming::detail::msr_sensor_impl::sample(
     this->last_sample = value;
     this->last_time = now;
 
-    return measurement(this->sensor_name.c_str(), timestamp, sample_value);
+    return measurement_data(timestamp, sample_value);
 }
 
 

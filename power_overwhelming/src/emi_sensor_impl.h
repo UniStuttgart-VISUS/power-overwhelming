@@ -153,7 +153,7 @@ namespace detail {
         /// <param name="data"></param>
         /// <param name="resolution"></param>
         /// <returns></returns>
-        measurement evaluate(const EMI_CHANNEL_MEASUREMENT_DATA& data,
+        measurement_data evaluate(const EMI_CHANNEL_MEASUREMENT_DATA& data,
             const timestamp_resolution resolution);
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace detail {
         /// <param name="data"></param>
         /// <param name="resolution"></param>
         /// <returns></returns>
-        inline measurement evaluate(const EMI_MEASUREMENT_DATA_V2& data,
+        inline measurement_data evaluate(const EMI_MEASUREMENT_DATA_V2& data,
                 const timestamp_resolution resolution) {
             assert(this->channel < this->device->channels());
             return this->evaluate(data.ChannelData[this->channel],
@@ -182,7 +182,7 @@ namespace detail {
         /// <param name="version"></param>
         /// <param name="resolution"></param>
         /// <returns></returns>
-        measurement evaluate(const std::vector<std::uint8_t>& data,
+        measurement_data evaluate(const std::vector<std::uint8_t>& data,
             const emi_sensor::version_type version,
             const timestamp_resolution resolution);
 

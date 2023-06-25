@@ -235,7 +235,7 @@ namespace detail {
         /// <param name="resolution">The resolution of the timestamp being
         /// returned.</param>
         /// <returns>The current measurement from the sensor.</returns>
-        measurement sample(const timestamp_resolution resolution
+        measurement_data sample(const timestamp_resolution resolution
             = timestamp_resolution::milliseconds);
 
         /// <summary>

@@ -293,54 +293,6 @@ void visus::power_overwhelming::tinkerforge_sensor::reset(void) {
 /*
  * visus::power_overwhelming::tinkerforge_sensor::sample
  */
-visus::power_overwhelming::measurement
-visus::power_overwhelming::tinkerforge_sensor::sample(
-        _In_ const timestamp_resolution resolution) const {
-    if (!*this) {
-        throw std::runtime_error("A disposed instance of tinkerforge_sensor "
-            "cannot be sampled.");
-    }
-
-    static const auto thousand = static_cast<measurement::value_type>(1000);
-    std::int32_t current = 0;   // Current in mA.
-    std::int32_t power = 0;     // Power in mW.
-    std::int32_t voltage = 0;   // Voltage in mV.
-
-    {
-        auto status = ::voltage_current_v2_get_voltage(&this->_impl->bricklet,
-            &voltage);
-        if (status < 0) {
-            throw tinkerforge_exception(status);
-        }
-    }
-
-    {
-        auto status = ::voltage_current_v2_get_current(&this->_impl->bricklet,
-            &voltage);
-        if (status < 0) {
-            throw tinkerforge_exception(status);
-        }
-    }
-
-    {
-        auto status = ::voltage_current_v2_get_power(&this->_impl->bricklet,
-            &power);
-        if (status < 0) {
-            throw tinkerforge_exception(status);
-        }
-    }
-
-    return measurement(this->_impl->sensor_name.c_str(),
-        detail::create_timestamp(resolution),
-        static_cast<measurement::value_type>(voltage) / thousand,
-        static_cast<measurement::value_type>(current) / thousand,
-        static_cast<measurement::value_type>(power) / thousand);
-}
-
-
-/*
- * visus::power_overwhelming::tinkerforge_sensor::sample
- */
 void visus::power_overwhelming::tinkerforge_sensor::sample(
         _In_opt_ const measurement_callback on_measurement,
         _In_ const tinkerforge_sensor_source source,
@@ -427,4 +379,48 @@ visus::power_overwhelming::tinkerforge_sensor::operator =(
 visus::power_overwhelming::tinkerforge_sensor::operator bool(
         void) const noexcept {
     return (this->_impl != nullptr);
+}
+
+
+/*
+ * visus::power_overwhelming::tinkerforge_sensor::sample_sync
+ */
+visus::power_overwhelming::measurement_data
+visus::power_overwhelming::tinkerforge_sensor::sample_sync(
+        _In_ const timestamp_resolution resolution) const {
+    this->check_not_disposed();
+
+    static const auto thousand = static_cast<measurement::value_type>(1000);
+    std::int32_t current = 0;   // Current in mA.
+    std::int32_t power = 0;     // Power in mW.
+    std::int32_t voltage = 0;   // Voltage in mV.
+
+    {
+        auto status = ::voltage_current_v2_get_voltage(&this->_impl->bricklet,
+            &voltage);
+        if (status < 0) {
+            throw tinkerforge_exception(status);
+        }
+    }
+
+    {
+        auto status = ::voltage_current_v2_get_current(&this->_impl->bricklet,
+            &voltage);
+        if (status < 0) {
+            throw tinkerforge_exception(status);
+        }
+    }
+
+    {
+        auto status = ::voltage_current_v2_get_power(&this->_impl->bricklet,
+            &power);
+        if (status < 0) {
+            throw tinkerforge_exception(status);
+        }
+    }
+
+    return measurement_data(detail::create_timestamp(resolution),
+        static_cast<measurement::value_type>(voltage) / thousand,
+        static_cast<measurement::value_type>(current) / thousand,
+        static_cast<measurement::value_type>(power) / thousand);
 }

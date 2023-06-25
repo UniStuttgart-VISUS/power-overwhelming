@@ -33,7 +33,7 @@ visus::power_overwhelming::detail::emi_sensor_impl::~emi_sensor_impl(void) {
 /*
  * visus::power_overwhelming::detail::emi_sensor_impl::evaluate
  */
-visus::power_overwhelming::measurement
+visus::power_overwhelming::measurement_data
 visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
         const EMI_CHANNEL_MEASUREMENT_DATA& data,
         const timestamp_resolution resolution) {
@@ -54,7 +54,7 @@ visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
             auto time = data.AbsoluteTime - dt / 2 + this->time_offset;
             time = convert(time, resolution);
 
-            return measurement(this->sensor_name.c_str(), time, value);
+            return measurement_data(time, value);
             }
 
         default:
@@ -67,7 +67,7 @@ visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
 /*
  * visus::power_overwhelming::detail::emi_sensor_impl::evaluate
  */
-visus::power_overwhelming::measurement
+visus::power_overwhelming::measurement_data
 visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
         const std::vector<std::uint8_t>& data,
         const emi_sensor::version_type version,

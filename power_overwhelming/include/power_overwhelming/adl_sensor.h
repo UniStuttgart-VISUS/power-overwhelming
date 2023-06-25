@@ -135,20 +135,6 @@ namespace power_overwhelming {
             void) const noexcept override;
 
         /// <summary>
-        /// Sample the sensor.
-        /// </summary>
-        /// <param name="resolution">The temporal resolution of the timestamp
-        /// to be returned.</param>
-        /// <returns>A sensor sample with the information about power
-        /// consumption that is available via ADL.</returns>
-        /// <exception cref="std::runtime_error">If a sensor that has been moved
-        /// is sampled.</exception>
-        /// <exception cref="adl_exception">If the sensor could not be sampled.
-        /// </exception>
-        virtual measurement sample(
-            _In_ const timestamp_resolution resolution) const override;
-
-        /// <summary>
         /// Asynchronously sample the sensor every
         /// <paramref name="sampling_period "/> microseconds.
         /// </summary>
@@ -245,6 +231,12 @@ namespace power_overwhelming {
         /// <returns><c>true</c> if the sensor is valid, <c>false</c>
         /// otherwise.</returns>
         virtual operator bool(void) const noexcept override;
+
+    protected:
+
+        /// <inheritdoc />
+        measurement_data sample_sync(
+            _In_ const timestamp_resolution resolution) const override;
 
     private:
 

@@ -205,17 +205,6 @@ _Ret_maybenull_z_ const wchar_t *visus::power_overwhelming::nvml_sensor::name(
 /*
  * visus::power_overwhelming::nvml_sensor::sample
  */
-visus::power_overwhelming::measurement
-visus::power_overwhelming::nvml_sensor::sample(
-        _In_ const timestamp_resolution resolution) const {
-    this->check_not_disposed();
-    return this->_impl->sample(resolution);
-}
-
-
-/*
- * visus::power_overwhelming::nvml_sensor::sample
- */
 void visus::power_overwhelming::nvml_sensor::sample(
         _In_opt_ const measurement_callback on_measurement,
         _In_ const microseconds_type period,
@@ -258,4 +247,15 @@ visus::power_overwhelming::nvml_sensor::operator =(
  */
 visus::power_overwhelming::nvml_sensor::operator bool(void) const noexcept {
     return (this->_impl != nullptr);
+}
+
+
+/*
+ * visus::power_overwhelming::nvml_sensor::sample_sync
+ */
+visus::power_overwhelming::measurement_data
+visus::power_overwhelming::nvml_sensor::sample_sync(
+        _In_ const timestamp_resolution resolution) const {
+    this->check_not_disposed();
+    return this->_impl->sample(resolution);
 }

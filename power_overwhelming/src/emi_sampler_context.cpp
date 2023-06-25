@@ -109,8 +109,10 @@ void visus::power_overwhelming::detail::emi_sampler_context::sample(void) {
                         sample = sensor->sample();
                     }
 
-                    callback(sensor->evaluate(sample, version,
-                        timestamp_resolution::milliseconds), context);
+                    // TODO
+                    callback(measurement(s.first->sensor_name.c_str(),
+                        sensor->evaluate(sample, version,
+                        timestamp_resolution::milliseconds)), context);
                 }
 
                 sample.clear();

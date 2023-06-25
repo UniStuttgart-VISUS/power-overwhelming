@@ -127,7 +127,7 @@ namespace detail {
         /// <param name="resolution">The resolution of the timestamp being
         /// created.</param>
         /// <returns>The result of the measurement.</returns>
-        measurement sample(_In_ const timestamp_resolution resolution) const;
+        measurement_data sample(_In_ const timestamp_resolution resolution) const;
 
         /// <summary>
         /// Sets the initial parameters.

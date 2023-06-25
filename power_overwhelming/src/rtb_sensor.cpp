@@ -163,16 +163,6 @@ void visus::power_overwhelming::rtb_sensor::expression(
 
 
 /*
- * visus::power_overwhelming::rtb_sensor::sample
- */
-visus::power_overwhelming::measurement
-visus::power_overwhelming::rtb_sensor::sample(
-        _In_ const timestamp_resolution resolution) const {
-    throw "TODO";
-}
-
-
-/*
  * visus::power_overwhelming::rtb_sensor::unit
  */
 void visus::power_overwhelming::rtb_sensor::unit(
@@ -186,6 +176,16 @@ void visus::power_overwhelming::rtb_sensor::unit(
     this->throw_on_system_error();
 }
 
+
+/*
+ * visus::power_overwhelming::rtb_sensor::sample_sync
+ */
+visus::power_overwhelming::measurement_data
+visus::power_overwhelming::rtb_sensor::sample_sync(
+        _In_ const timestamp_resolution resolution) const {
+    throw "TODO";
+
+}
 
 
 // TIM:SCAL 5

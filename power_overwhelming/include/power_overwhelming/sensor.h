@@ -67,8 +67,7 @@ namespace power_overwhelming {
         /// could not be sampled.</exception>
         /// <exception cref="visa_exception">If a sensor based on a VISA
         /// instrument could not be sampled.</exception>
-        virtual measurement sample(
-            _In_ const timestamp_resolution resolution) const = 0;
+        measurement sample(_In_ const timestamp_resolution resolution) const;
 
         /// <summary>
         /// Sample the sensor using a timestamp with millisecond resolution.
@@ -117,6 +116,16 @@ namespace power_overwhelming {
         /// <exception cref="std::runtime_error">If a sensor that has been moved
         /// (and therefore disposed) is sampled.</exception>
         void check_not_disposed(void) const;
+
+        /// <summary>
+        /// Synchronously sample the sensor using a timestamp with the specified
+        /// resolution.
+        /// </summary>
+        /// <param name="resolution">The resolution of the timestamp to be
+        /// created.</param>
+        /// <returns>A single measurement made by the sensor.</returns>
+        virtual measurement_data sample_sync(
+            _In_ const timestamp_resolution resolution) const = 0;
     };
 
 } /* namespace power_overwhelming */
