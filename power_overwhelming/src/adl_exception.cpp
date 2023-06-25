@@ -1,4 +1,4 @@
-// <copyright file="nvml_exception.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+// <copyright file="adl_exception.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
