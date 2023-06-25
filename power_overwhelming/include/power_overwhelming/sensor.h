@@ -55,7 +55,8 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="resolution">The resolution of the timestamp to be
         /// created. This value basically determines the unit in which the
-        /// timestamp in the return value is measured.</param>
+        /// timestamp in the return value is measured. This parameter defaults
+        /// to <see cref="timestamp_resolution::milliseconds" />.</param>
         /// <returns>A single measurement made by the sensor.</returns>
         /// <exception cref="std::runtime_error">If a sensor that has been moved
         /// (and therefore disposed) is sampled.</exception>
@@ -69,7 +70,8 @@ namespace power_overwhelming {
         /// instrument could not be sampled.</exception>
         /// <exception cref="std::system_error">If a sensor could not be sampled
         /// due to a system call failing.</exception>
-        measurement sample(_In_ const timestamp_resolution resolution) const;
+        measurement sample(_In_ const timestamp_resolution resolution
+            = timestamp_resolution::milliseconds) const;
 
         /// <summary>
         /// Sample the sensor using a timestamp with the specified resolution,
@@ -85,10 +87,23 @@ namespace power_overwhelming {
         /// for applications using sensors that can only be sampled on the
         /// machine under observation, like GPU power sensors and the RAPL
         /// registers.</para>
+        /// <para>Please be aware that you might not be able to obtain all
+        /// information about the sensor that the data originate from when
+        /// using this method. This is the case if the underlying API can
+        /// produce samples from different sources. Such sensors must be
+        /// configured to make sure that they only return the data expected
+        /// when using this method for sampling.</para>
+        /// <para>Rationale: The naming of this method (and of
+        /// <see cref="measurement_data" />) is a bit weird, which is due to the
+        /// fact that samples without the originating sensor embedded have been
+        /// added later to the library. The previous type and method names have
+        /// not been changed at this point in order to not break existing code
+        /// relying on the library.</para>
         /// </remarks>
         /// <param name="resolution">The resolution of the timestamp to be
         /// created. This value basically determines the unit in which the
-        /// timestamp in the return value is measured.</param>
+        /// timestamp in the return value is measured. This parameter defaults
+        /// to <see cref="timestamp_resolution::milliseconds" />.</param>
         /// <returns>A single measurement made by the sensor.</returns>
         /// <exception cref="std::runtime_error">If a sensor that has been moved
         /// (and therefore disposed) is sampled.</exception>
@@ -103,26 +118,9 @@ namespace power_overwhelming {
         /// <exception cref="std::system_error">If a sensor could not be sampled
         /// due to a system call failing.</exception>
         inline measurement_data sample_data(
-                    _In_ const timestamp_resolution resolution) const {
+                _In_ const timestamp_resolution resolution
+                = timestamp_resolution::milliseconds) const {
             return this->sample_sync(resolution);
-        }
-
-        /// <summary>
-        /// Sample the sensor using a timestamp with millisecond resolution.
-        /// </summary>
-        /// <returns>A single measurement made by the sensor.</returns>
-        /// <exception cref="std::runtime_error">If a sensor that has been moved
-        /// (and therefore disposed) is sampled.</exception>
-        /// <exception cref="adl_exception">If an ADL sensor could not be
-        /// sampled.</exception>
-        /// <exception cref="nvml_exception">If an NVML sensor could not be
-        /// sampled.</exception>
-        /// <exception cref="tinkerforge_exception">If a Tinkerforge sensor
-        /// could not be sampled.</exception>
-        /// <exception cref="visa_exception">If a sensor based on a VISA
-        /// instrument could not be sampled.</exception>
-        inline measurement sample(void) const {
-            return this->sample(timestamp_resolution::milliseconds);
         }
 
         /// <summary>

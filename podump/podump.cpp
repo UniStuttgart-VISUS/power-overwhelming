@@ -33,9 +33,13 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // AMD sensors
-#if false
+#if true
 #if true
     ::sample_adl_sensor();
+#endif
+
+#if true
+    ::sample_adl_sensor_data();
 #endif
 
 #if true
@@ -52,6 +56,10 @@ int _tmain(const int argc, const TCHAR **argv) {
 #if true
 #if true
     ::sample_emi_sensor();
+#endif
+
+#if true
+    ::sample_emi_sensor_data();
 #endif
 
 #if true
@@ -77,6 +85,10 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
 #if true
+    ::sample_nvml_sensor_data();
+#endif
+
+#if true
     ::sample_nvml_sensor_async(5);
 #endif
 #endif
@@ -85,6 +97,10 @@ int _tmain(const int argc, const TCHAR **argv) {
 #if false
 #if true
     ::sample_tinkerforge_sensor();
+#endif
+
+#if true
+    ::sample_tinkerforge_sensor_data();
 #endif
 
 #if true
