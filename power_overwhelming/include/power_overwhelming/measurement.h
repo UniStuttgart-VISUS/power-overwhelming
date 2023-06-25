@@ -125,9 +125,19 @@ namespace power_overwhelming {
         /// Gets the electric current (in Amperes) measured at the given point
         /// in time.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The electric current if it was measured, or
+        /// <see cref="invalid_value" /> if the sample only contains the
+        /// power.</returns>
         inline value_type current(void) const noexcept {
             return this->_data.current();
+        }
+
+        /// <summary>
+        /// Gets the pure <see cref="measurement_data" /> of the sample.
+        /// </summary>
+        /// <returns>The data of the sample.</returns>
+        inline const measurement_data& data(void) const noexcept {
+            return this->_data;
         }
 
         /// <summary>
@@ -138,7 +148,7 @@ namespace power_overwhelming {
         /// If the specified power is negative, it is considered as not given
         /// and computed from current and voltage on the fly.
         /// </remarks>
-        /// <returns></returns>
+        /// <returns>The electric power.</returns>
         inline value_type power(void) const noexcept {
             return this->_data.power();
         }
@@ -146,15 +156,17 @@ namespace power_overwhelming {
         /// <summary>
         /// Gets the name of the sensor the measurement comes from.
         /// </summary>
-        /// <returns></returns>
-        inline _Ret_z_ const char_type *sensor(void) const noexcept {
+        /// <returns>The name of the sensor, which may be <c>nullptr</c> if the
+        /// sample has been moved.</returns>
+        inline _Ret_maybenull_z_ const char_type *sensor(void) const noexcept {
             return this->_sensor;
         }
 
         /// <summary>
         /// Gets the timestamp of the measurement.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The timestamp in the unit requested from the sensor.
+        /// </returns>
         inline timestamp_type timestamp(void) const noexcept {
             return this->_data.timestamp();
         }
@@ -163,7 +175,9 @@ namespace power_overwhelming {
         /// Gets the electric potential (in Volts) measured at the given point
         /// in time.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The electric potential if it was measured, or
+        /// <see cref="invalid_value" /> if the sample only contains the
+        /// power.</returns>
         inline value_type voltage(void) const noexcept {
             return this->_data.voltage();
         }
@@ -171,22 +185,22 @@ namespace power_overwhelming {
         /// <summary>
         /// Assignment.
         /// </summary>
-        /// <param name="rhs"></param>
+        /// <param name="rhs">The right-hand side operand.</param>
         /// <returns><c>*this</c></returns>
         measurement& operator =(const measurement& rhs);
 
         /// <summary>
         /// Move assignment.
         /// </summary>
-        /// <param name="rhs"></param>
+        /// <param name="rhs">The right-hand side operand.</param>
         /// <returns><c>*this</c></returns>
         measurement& operator =(measurement&& rhs) noexcept;
 
         /// <summary>
         /// Test whether the measurement is valid.
         /// </summary>
-        /// <param name=""></param>
-        /// <returns></returns>
+        /// <returns><c>true</c> if the measurement is valid, <c>false</c>
+        /// if it has been invalidated by moving it.</returns>
         operator bool(void) const noexcept;
 
     private:

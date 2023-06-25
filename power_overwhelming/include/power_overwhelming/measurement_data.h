@@ -104,7 +104,9 @@ namespace power_overwhelming {
         /// Gets the electric current (in Amperes) measured at the given point
         /// in time.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The electric current if it was measured, or
+        /// <see cref="invalid_value" /> if the sample only contains the
+        /// power.</returns>
         inline value_type current(void) const noexcept {
             return this->_current;
         }
@@ -117,7 +119,7 @@ namespace power_overwhelming {
         /// If the specified power is negative, it is considered as not given
         /// and computed from current and voltage on the fly.
         /// </remarks>
-        /// <returns></returns>
+        /// <returns>The electric power.</returns>
         inline value_type power(void) const noexcept {
             return (this->_power > static_cast<value_type>(0))
                 ? this->_power
@@ -127,7 +129,8 @@ namespace power_overwhelming {
         /// <summary>
         /// Gets the timestamp of the measurement.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The timestamp in the unit requested from the sensor.
+        /// </returns>
         inline timestamp_type timestamp(void) const noexcept {
             return this->_timestamp;
         }
@@ -136,7 +139,9 @@ namespace power_overwhelming {
         /// Gets the electric potential (in Volts) measured at the given point
         /// in time.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The electric potential if it was measured, or
+        /// <see cref="invalid_value" /> if the sample only contains the
+        /// power.</returns>
         inline value_type voltage(void) const noexcept {
             return this->_voltage;
         }
@@ -144,14 +149,14 @@ namespace power_overwhelming {
         /// <summary>
         /// Assignment.
         /// </summary>
-        /// <param name="rhs"></param>
+        /// <param name="rhs">The right-hand side operand.</param>
         /// <returns><c>*this</c></returns>
         measurement_data& operator =(const measurement_data& rhs) = default;
 
         /// <summary>
         /// Move assignment.
         /// </summary>
-        /// <param name="rhs"></param>
+        /// <param name="rhs">The right-hand side operand.</param>
         /// <returns><c>*this</c></returns>
         measurement_data& operator =(measurement_data&& rhs) noexcept;
 
