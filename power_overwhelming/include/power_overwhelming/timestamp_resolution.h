@@ -30,6 +30,12 @@ namespace power_overwhelming {
         microseconds,
 
         /// <summary>
+        /// Timestamp is specified in units of hundred nanoseconds (the native
+        /// quantity of many Windows APIs).
+        /// </summary>
+        hundred_nanoseconds,
+
+        /// <summary>
         /// Timestamp is specified in nanoseconds (Billionth of a second).
         /// </summary>
         nanoseconds

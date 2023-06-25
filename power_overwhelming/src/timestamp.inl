@@ -58,10 +58,11 @@ visus::power_overwhelming::detail::convert(
             TDuration>& timestamp,
         _In_ const timestamp_resolution resolution) {
     using namespace std::chrono;
+    typedef duration<timestamp_type, filetime_period> filetime_dur;
 
     // The offset of the FILETIME epoch to the UNIX epoch.
     const auto dz = duration<timestamp_type,
-        detail::filetime_period>(11644473600000LL);
+        detail::filetime_period>(116444736000000000LL);
 
     // Find out what the difference between the time point and the UNIX
     // epoch is. Because we cannot rely on the epoch of the STL clock being the
@@ -72,6 +73,9 @@ visus::power_overwhelming::detail::convert(
 
     // Transform the origin of the timestamp clock to the origin of FILETIME.
     switch (resolution) {
+        case timestamp_resolution::hundred_nanoseconds:
+            return duration_cast<filetime_dur>(dt + dz).count();
+
         case timestamp_resolution::microseconds:
             return duration_cast<microseconds>(dt + dz).count();
 

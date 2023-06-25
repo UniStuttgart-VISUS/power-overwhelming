@@ -11,10 +11,10 @@
  */
 visus::power_overwhelming::timestamp_type
 visus::power_overwhelming::detail::convert(
-        const timestamp_type fileTime,
+        const timestamp_type file_time,
         const timestamp_resolution resolution) {
     using namespace std::chrono;
-    duration<decltype(fileTime), filetime_period> ft(fileTime);
+    duration<decltype(file_time), filetime_period> ft(file_time);
 
     switch (resolution) {
         case timestamp_resolution::microseconds:
@@ -26,11 +26,14 @@ visus::power_overwhelming::detail::convert(
         case timestamp_resolution::nanoseconds:
             return duration_cast<nanoseconds>(ft).count();
 
+        case timestamp_resolution::hundred_nanoseconds:
+            return file_time;
+
         case timestamp_resolution::seconds:
             return duration_cast<seconds>(ft).count();
 
         default:
-            return fileTime;
+            return file_time;
     }
 }
 

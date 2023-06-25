@@ -38,36 +38,69 @@ namespace test {
             this->_system_zero = std::chrono::system_clock::from_time_t(0);
         }
 
+        TEST_METHOD(test_convert) {
+            auto a = detail::convert(std::chrono::system_clock::from_time_t(0), timestamp_resolution::hundred_nanoseconds);
+            Assert::AreEqual(this->_filetime_zero, a, L"Unix epoch as FILETIME", LINE_INFO());
+        }
+
         TEST_METHOD(test_microseconds) {
+            typedef std::chrono::microseconds unit;
+            static const auto resolution = timestamp_resolution::microseconds;
+            const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
+
             auto n = std::chrono::system_clock::now();
-            auto t = detail::create_timestamp(timestamp_resolution::microseconds);
-            auto s = std::chrono::duration_cast<std::chrono::microseconds>(n - this->_system_zero).count();
-            auto z = detail::convert(this->_filetime_zero, timestamp_resolution::microseconds);
-            Assert::IsTrue(s - z - t < 1000000, L"timestamp microsecond", LINE_INFO());
+            auto t = detail::create_timestamp(resolution);
+            auto s = std::chrono::duration_cast<unit>(n - this->_system_zero).count();
+            auto z = detail::convert(this->_filetime_zero, resolution);
+            Assert::IsTrue(s - z - t < max_dt, L"timestamp microsecond", LINE_INFO());
         }
 
         TEST_METHOD(test_milliseconds) {
+            typedef std::chrono::milliseconds unit;
+            static const auto resolution = timestamp_resolution::milliseconds;
+            const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
+
             auto n = std::chrono::system_clock::now();
             auto t = detail::create_timestamp(timestamp_resolution::milliseconds);
             auto s = std::chrono::duration_cast<std::chrono::milliseconds>(n - this->_system_zero).count();
             auto z = detail::convert(this->_filetime_zero, timestamp_resolution::milliseconds);
-            Assert::IsTrue(t - z - s < 1000, L"timestamp millisecond", LINE_INFO());
+            Assert::IsTrue(t - z - s < max_dt, L"timestamp millisecond", LINE_INFO());
+        }
+
+        TEST_METHOD(test_hundred_nanoseconds) {
+            typedef std::chrono::duration<std::chrono::system_clock::duration::rep, detail::filetime_period> unit;
+            static const auto resolution = timestamp_resolution::milliseconds;
+            const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
+
+            auto n = std::chrono::system_clock::now();
+            auto t = detail::create_timestamp(resolution);
+            auto s = std::chrono::duration_cast<unit>(n - this->_system_zero).count();
+            auto z = detail::convert(this->_filetime_zero, resolution);
+            Assert::IsTrue(t - z - s < max_dt, L"timestamp 100 nanoseconds", LINE_INFO());
         }
 
         TEST_METHOD(test_nanoseconds) {
+            typedef std::chrono::milliseconds unit;
+            static const auto resolution = timestamp_resolution::milliseconds;
+            const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
+
             auto n = std::chrono::system_clock::now();
-            auto t = detail::create_timestamp(timestamp_resolution::nanoseconds);
-            auto s = std::chrono::duration_cast<std::chrono::nanoseconds>(n - this->_system_zero).count();
-            auto z = detail::convert(this->_filetime_zero, timestamp_resolution::nanoseconds);
-            Assert::IsTrue(t - z - s < 1000000000, L"timestamp nanosecond", LINE_INFO());
+            auto t = detail::create_timestamp(resolution);
+            auto s = std::chrono::duration_cast<unit>(n - this->_system_zero).count();
+            auto z = detail::convert(this->_filetime_zero, resolution);
+            Assert::IsTrue(t - z - s < max_dt, L"timestamp nanosecond", LINE_INFO());
         }
 
         TEST_METHOD(test_seconds) {
+            typedef std::chrono::seconds unit;
+            static const auto resolution = timestamp_resolution::seconds;
+            const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
+
             auto n = std::chrono::system_clock::now();
-            auto t = detail::create_timestamp(timestamp_resolution::seconds);
-            auto s = std::chrono::duration_cast<std::chrono::seconds>(n - this->_system_zero).count();
-            auto z = detail::convert(this->_filetime_zero, timestamp_resolution::seconds);
-            Assert::IsTrue(s - z - t < 1, L"timestamp second", LINE_INFO());
+            auto t = detail::create_timestamp(resolution);
+            auto s = std::chrono::duration_cast<unit>(n - this->_system_zero).count();
+            auto z = detail::convert(this->_filetime_zero, resolution);
+            Assert::IsTrue(s - z - t < max_dt, L"timestamp second", LINE_INFO());
         }
 
     private:

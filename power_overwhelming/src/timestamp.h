@@ -41,11 +41,12 @@ namespace detail {
     /// This API is only exposed for unit tests and should not be accessed by
     /// any other clients.
     /// </remarks>
-    /// <param name="fileTime">The file time value in 100ns units.</param>
+    /// <param name="file_time">The file time value in 100ns units.</param>
     /// <param name="resolution">The desired resolution of the timestamp.
     /// </param>
     /// <returns>The timestamp in the requested resolution.</returns>
-    timestamp_type POWER_OVERWHELMING_API convert(const timestamp_type fileTime,
+    timestamp_type POWER_OVERWHELMING_API convert(
+        const timestamp_type file_time,
         const timestamp_resolution resolution);
 
 #if defined(_WIN32)
@@ -53,14 +54,14 @@ namespace detail {
     /// Convert the given raw <see cref="LARGE_INTEGER" /> to a timestamp of the
     /// specified resolution.
     /// </summary>
-    /// <param name="fileTime">The file time value in 100ns units.</param>
+    /// <param name="file_time">The file time value in 100ns units.</param>
     /// <param name="resolution">The desired resolution of the timestamp.
     /// </param>
     /// <returns>The timestamp in the requested resolution.</returns>
     inline POWER_OVERWHELMING_API decltype(LARGE_INTEGER::QuadPart) convert(
-            const LARGE_INTEGER& fileTime,
+            const LARGE_INTEGER& file_time,
             const timestamp_resolution resolution) {
-        return convert(fileTime.QuadPart, resolution);
+        return convert(file_time.QuadPart, resolution);
     }
 #endif /* defined(_WIN32) */
 
