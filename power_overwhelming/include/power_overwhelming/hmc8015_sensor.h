@@ -266,19 +266,6 @@ namespace power_overwhelming {
         /// processed successfully.</exception>
         virtual void reset(void) override;
 
-        /// <summary>
-        /// Samples the sensor one time.
-        /// </summary>
-        /// <param name="resolution">The resolution of the timestamp to be
-        /// generated for the measurement.</param>
-        /// <returns>The measurement received from the instrument.</returns>
-        /// <exception cref="std::runtime_error">If the method is called on an
-        /// object that has been disposed by moving it.</exception>
-        /// <exception cref="visa_exception">If the VISA command was not
-        /// processed successfully.</exception>
-        virtual measurement sample(
-            _In_ const timestamp_resolution resolution) const override;
-
         using sensor::sample;
 
         /// <summary>
@@ -317,6 +304,12 @@ namespace power_overwhelming {
             visa_sensor::operator =(std::move(rhs));
             return *this;
         }
+
+    protected:
+
+        /// <inheritdoc />
+        measurement_data sample_sync(
+            _In_ const timestamp_resolution resolution) const override;
 
     private:
 

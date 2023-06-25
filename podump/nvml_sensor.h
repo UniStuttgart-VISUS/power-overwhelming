@@ -12,6 +12,11 @@
 void sample_nvml_sensor(void);
 
 /// <summary>
+/// Print data for all supported NVIDIA cards using the pure sample method.
+/// </summary>
+void sample_nvml_sensor_data(void);
+
+/// <summary>
 /// Sample all supported NVML sensors for the specified number of seconds.
 /// </summary>
 void sample_nvml_sensor_async(const unsigned int dt);

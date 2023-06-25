@@ -318,7 +318,7 @@ void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
 /*
  * visus::power_overwhelming::detail::adl_sensor_impl::sample
  */
-visus::power_overwhelming::measurement
+visus::power_overwhelming::measurement_data
 visus::power_overwhelming::detail::adl_sensor_impl::sample(
         const timestamp_resolution resolution) {
     assert(this->state.load() == 1);
@@ -342,18 +342,18 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample(
         case 1:
             // If we have one reading, it must be a power reading due to the way
             // we enumerate the sensors in get_sensor_ids.
-            return measurement(this->sensor_name.c_str(), timestamp,
+            return measurement_data(timestamp,
                 static_cast<measurement::value_type>(power));
 
         case 2:
             // If we have two readings, it must be voltage and current.
-            return measurement(this->sensor_name.c_str(), timestamp,
+            return measurement_data(timestamp,
                 static_cast<measurement::value_type>(voltage) / thousand,
                 static_cast<measurement::value_type>(current));
 
         case 3:
             // This must be voltage, current and power.
-            return measurement(this->sensor_name.c_str(), timestamp,
+            return measurement_data(timestamp,
                 static_cast<measurement::value_type>(voltage) / thousand,
                 static_cast<measurement::value_type>(current),
                 static_cast<measurement::value_type>(power));

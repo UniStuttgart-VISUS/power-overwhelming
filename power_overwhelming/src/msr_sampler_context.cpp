@@ -97,7 +97,9 @@ void visus::power_overwhelming::detail::msr_sampler_context::sample(void) {
                 for (auto s : sensors) {
                     auto sensor = s.first;
 
-                    s.second.callback(sensor->sample(s.second.resolution),
+                    // TODO
+                    s.second.callback(measurement(s.first->sensor_name.c_str(),
+                        sensor->sample(s.second.resolution)),
                         s.second.context);
                 }
 

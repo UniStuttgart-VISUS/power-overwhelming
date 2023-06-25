@@ -46,7 +46,9 @@ void visus::power_overwhelming::detail::default_sampler_context<TSensorImpl>
         {
             std::lock_guard<decltype(this->lock)> l(this->lock);
             for (auto& s : this->sensors) {
-                s.second.first(s.first->sample(), s.second.second);
+                // TODO
+                s.second.first(measurement(s.first->sensor_name.c_str(),
+                    s.first->sample()), s.second.second);
             }
 
             have_sensors = !this->sensors.empty();

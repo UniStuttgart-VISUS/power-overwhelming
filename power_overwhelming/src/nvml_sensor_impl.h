@@ -79,7 +79,7 @@ namespace detail {
         /// <param name="resolution">The resolution of the timestamp to be
         /// generated, which defaults to milliseconds.</param>
         /// <returns>A measurement from the sensor.</returns>
-        measurement sample(const timestamp_resolution resolution
+        measurement_data sample(const timestamp_resolution resolution
             = timestamp_resolution::milliseconds) const;
     };
 

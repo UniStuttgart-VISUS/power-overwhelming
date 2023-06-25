@@ -31,6 +31,29 @@ void sample_msr_sensor(void) {
 
 
 /*
+ * ::sample_msr_sensor_data
+ */
+void sample_msr_sensor_data(void) {
+    using namespace visus::power_overwhelming;
+
+    try {
+        std::vector<msr_sensor> sensors;
+        sensors.resize(msr_sensor::for_all(nullptr, 0));
+        msr_sensor::for_all(sensors.data(), sensors.size());
+
+        for (auto &s : sensors) {
+            std::wcout << s.name() << L":" << std::endl;
+            auto m = s.sample_data();
+            std::wcout << m.timestamp() << L": "
+                << m.power() << L" W" << std::endl;
+        }
+    } catch (std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+}
+
+
+/*
  * ::sample_msr_sensor_async
  */
 void sample_msr_sensor_async(const unsigned int dt) {

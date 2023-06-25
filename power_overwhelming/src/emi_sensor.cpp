@@ -231,38 +231,6 @@ visus::power_overwhelming::emi_sensor::path(void) const noexcept {
 /*
  * visus::power_overwhelming::emi_sensor::sample
  */
-visus::power_overwhelming::measurement
-visus::power_overwhelming::emi_sensor::sample(
-        _In_ const timestamp_resolution resolution) const {
-#if defined(_WIN32)
-    this->check_not_disposed();
-
-    switch (this->version()) {
-        case EMI_VERSION_V1: {
-            EMI_MEASUREMENT_DATA_V1 s;
-            this->_impl->sample(&s, sizeof(s));
-            return this->_impl->evaluate(s, resolution);
-            }
-
-        case EMI_VERSION_V2: {
-            auto m = this->_impl->sample();
-            auto s = reinterpret_cast<EMI_MEASUREMENT_DATA_V2 *>(m.data());
-            return this->_impl->evaluate(*s, resolution);
-            }
-
-        default:
-            throw std::logic_error("The specified version of the Energy "
-                "Meter Interface is not supported by the implementation.");
-    }
-#else /* defined(_WIN32) */
-    throw std::logic_error(ERROR_MSG_NOT_SUPPORTED);
-#endif /* defined(_WIN32) */
-}
-
-
-/*
- * visus::power_overwhelming::emi_sensor::sample
- */
 void visus::power_overwhelming::emi_sensor::sample(
         _In_opt_ const measurement_callback on_measurement,
         _In_ const microseconds_type period,
@@ -368,5 +336,37 @@ visus::power_overwhelming::emi_sensor::operator bool(void) const noexcept {
     return ((this->_impl != nullptr) && (this->_impl->device != nullptr));
 #else /* defined(_WIN32) */
     return false;
+#endif /* defined(_WIN32) */
+}
+
+
+/*
+ * visus::power_overwhelming::emi_sensor::sample_sync
+ */
+visus::power_overwhelming::measurement_data
+visus::power_overwhelming::emi_sensor::sample_sync(
+        _In_ const timestamp_resolution resolution) const {
+#if defined(_WIN32)
+    this->check_not_disposed();
+
+    switch (this->version()) {
+        case EMI_VERSION_V1: {
+            EMI_MEASUREMENT_DATA_V1 s;
+            this->_impl->sample(&s, sizeof(s));
+            return this->_impl->evaluate(s, resolution);
+            }
+
+        case EMI_VERSION_V2: {
+            auto m = this->_impl->sample();
+            auto s = reinterpret_cast<EMI_MEASUREMENT_DATA_V2 *>(m.data());
+            return this->_impl->evaluate(*s, resolution);
+            }
+
+        default:
+            throw std::logic_error("The specified version of the Energy "
+                "Meter Interface is not supported by the implementation.");
+    }
+#else /* defined(_WIN32) */
+    throw std::logic_error(ERROR_MSG_NOT_SUPPORTED);
 #endif /* defined(_WIN32) */
 }
