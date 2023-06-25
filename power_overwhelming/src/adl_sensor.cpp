@@ -308,32 +308,6 @@ _Ret_maybenull_z_ const wchar_t *visus::power_overwhelming::adl_sensor::name(
 /*
  * visus::power_overwhelming::adl_sensor::sample
  */
-visus::power_overwhelming::measurement
-visus::power_overwhelming::adl_sensor::sample(
-        _In_ const timestamp_resolution resolution) const {
-    this->check_not_disposed();
-    const auto is_running = this->_impl->running();
-
-    if (!is_running) {
-        // If the sensor is not running asynchronously, start it for obtaining
-        // a single sample.
-        this->_impl->start(0);
-    }
-
-    auto retval = this->_impl->sample(resolution);
-
-    if (!is_running) {
-        // If we started the sensor here, stop it.
-        this->_impl->stop();
-    }
-
-    return retval;
-}
-
-
-/*
- * visus::power_overwhelming::adl_sensor::sample
- */
 void visus::power_overwhelming::adl_sensor::sample(
         _In_opt_ const measurement_callback on_measurement,
         _In_ const microseconds_type period,
@@ -440,4 +414,30 @@ visus::power_overwhelming::adl_sensor::operator =(
  */
 visus::power_overwhelming::adl_sensor::operator bool(void) const noexcept {
     return (this->_impl != nullptr);
+}
+
+
+/*
+ * visus::power_overwhelming::adl_sensor::sample_sync
+ */
+visus::power_overwhelming::measurement_data
+visus::power_overwhelming::adl_sensor::sample_sync(
+        _In_ const timestamp_resolution resolution) const {
+    this->check_not_disposed();
+    const auto is_running = this->_impl->running();
+
+    if (!is_running) {
+        // If the sensor is not running asynchronously, start it for obtaining
+        // a single sample.
+        this->_impl->start(0);
+    }
+
+    auto retval = this->_impl->sample(resolution);
+
+    if (!is_running) {
+        // If we started the sensor here, stop it.
+        this->_impl->stop();
+    }
+
+    return retval;
 }

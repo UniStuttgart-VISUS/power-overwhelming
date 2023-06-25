@@ -80,10 +80,10 @@ void visus::power_overwhelming::detail::nvml_sensor_impl::load_device_name(
 /*
  * visus::power_overwhelming::detail::nvml_sensor_impl::sample
  */
-visus::power_overwhelming::measurement
+visus::power_overwhelming::measurement_data
 visus::power_overwhelming::detail::nvml_sensor_impl::sample(
         const timestamp_resolution resolution) const {
-    static constexpr auto thousand = static_cast<measurement::value_type>(1000);
+    static constexpr auto thousand = static_cast<measurement_data::value_type>(1000);
     const auto timestamp = create_timestamp(resolution);
 
     // Get the power usage in milliwatts.
@@ -94,6 +94,6 @@ visus::power_overwhelming::detail::nvml_sensor_impl::sample(
         throw nvml_exception(status);
     }
 
-    return measurement(this->sensor_name.c_str(), timestamp,
-        static_cast<measurement::value_type>(mw) / thousand);
+    return measurement_data(timestamp,
+        static_cast<measurement_data::value_type>(mw) / thousand);
 }

@@ -151,10 +151,6 @@ namespace power_overwhelming {
         virtual _Ret_maybenull_z_ const wchar_t *name(
             void) const noexcept override;
 
-        /// <inheritdoc />
-        virtual measurement sample(
-            _In_ const timestamp_resolution resolution) const override;
-
         using sensor::sample;
 
         /// <summary>
@@ -189,6 +185,12 @@ namespace power_overwhelming {
 
         /// <inheritdoc />
         virtual operator bool(void) const noexcept override;
+
+    protected:
+
+        /// <inheritdoc />
+        measurement_data sample_sync(
+            _In_ const timestamp_resolution resolution) const override;
 
     private:
 

@@ -11,6 +11,11 @@
 /// </summary>
 void sample_tinkerforge_sensor(void);
 
+/// <summary>
+/// Print values of all Tinkerforge bricklets attached to the machine using the
+/// pure sampling API.
+/// </summary>
+void sample_tinkerforge_sensor_data(void);
 
 /// <summary>
 /// Samples all Tinkerforge bricklets attached to the machine for the specified

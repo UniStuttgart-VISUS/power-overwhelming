@@ -33,6 +33,31 @@ void sample_adl_sensor(void) {
 
 
 /*
+ * ::sample_adl_sensor_data
+ */
+void sample_adl_sensor_data(void) {
+    using namespace visus::power_overwhelming;
+
+    try {
+        std::vector<adl_sensor> sensors;
+        sensors.resize(adl_sensor::for_all(nullptr, 0));
+        adl_sensor::for_all(sensors.data(), sensors.size());
+
+        for (auto &s : sensors) {
+            std::wcout << s.name() << L":" << std::endl;
+            auto m = s.sample_data();
+            std::wcout << m.timestamp() << L": "
+                << m.voltage() << L" V, "
+                << m.current() << L" A, "
+                << m.power() << L" W" << std::endl;
+        }
+    } catch (std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+}
+
+
+/*
  * ::sample_adl_sensor_async
  */
 void sample_adl_sensor_async(const unsigned int dt) {

@@ -357,23 +357,6 @@ namespace power_overwhelming {
         /// </summary>
         void reset(void);
 
-        /// <summary>
-        /// Sample the sensor.
-        /// </summary>
-        /// <param name="resolution">The temporal resolution of the timestamp
-        /// to be returned.</param>
-        /// <returns>A sensor sample with the information about power
-        /// consumption that is available via Tinkerforge bricklets.</returns>
-        /// <exception cref="std::invalid_argument">If
-        /// <paramref name="resolution" /> does not designate a valid resolution
-        /// for timestamps.</exception>
-        /// <exception cref="std::runtime_error">If a sensor that has been moved
-        /// is sampled.</exception
-        /// <exception cref="tinkerforge_exception">If the sensor could not be
-        /// sampled. </exception>
-        virtual measurement sample(
-            _In_ const timestamp_resolution resolution) const override;
-
         using sensor::sample;
 
         /// <summary>
@@ -426,6 +409,12 @@ namespace power_overwhelming {
         /// <returns><c>true</c> if the sensor is valid, <c>false</c>
         /// otherwise.</returns>
         virtual operator bool(void) const noexcept override;
+
+    protected:
+
+        /// <inheritdoc />
+        measurement_data sample_sync(
+            _In_ const timestamp_resolution resolution) const override;
 
     private:
 

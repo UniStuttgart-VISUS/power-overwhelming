@@ -138,10 +138,6 @@ namespace power_overwhelming {
         //void log_file(const char *path, const bool overwrite = false,
         //    const bool use_usb = false);
 
-        /// <inheritdoc />
-        virtual measurement sample(
-            _In_ const timestamp_resolution resolution) const override;
-
         /// <summary>
         /// Sets the unit of the specified channel.
         /// </summary>
@@ -162,6 +158,12 @@ namespace power_overwhelming {
             visa_sensor::operator =(std::move(rhs));
             return *this;
         }
+
+    protected:
+
+        /// <inheritdoc />
+        measurement_data sample_sync(
+            _In_ const timestamp_resolution resolution) const override;
 
     };
 

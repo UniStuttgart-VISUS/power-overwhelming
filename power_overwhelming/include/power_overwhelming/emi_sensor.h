@@ -223,10 +223,6 @@ namespace power_overwhelming {
         /// is invalid.</returns>
         _Ret_maybenull_z_ const char_type *path(void) const noexcept;
 
-        /// <inheritdoc />
-        virtual measurement sample(
-            _In_ const timestamp_resolution resolution) const override;
-
         /// <summary>
         /// Asynchronously sample the sensor every
         /// <paramref name="sampling_period "/> microseconds.
@@ -321,6 +317,12 @@ namespace power_overwhelming {
 
         /// <inheritdoc />
         virtual operator bool(void) const noexcept override;
+
+    protected:
+
+        /// <inheritdoc />
+        measurement_data sample_sync(
+            _In_ const timestamp_resolution resolution) const override;
 
     private:
 

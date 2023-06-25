@@ -351,10 +351,10 @@ void visus::power_overwhelming::hmc8015_sensor::reset(void) {
 
 
 /*
- * visus::power_overwhelming::hmc8015_sensor::sample
+ * visus::power_overwhelming::hmc8015_sensor::sample_sync
  */
-visus::power_overwhelming::measurement
-visus::power_overwhelming::hmc8015_sensor::sample(
+visus::power_overwhelming::measurement_data
+visus::power_overwhelming::hmc8015_sensor::sample_sync(
         _In_ const timestamp_resolution resolution) const {
     auto impl = static_cast<detail::visa_sensor_impl&>(*this);
     auto response = impl.query("CHAN1:MEAS:DATA?\n");
@@ -366,10 +366,8 @@ visus::power_overwhelming::hmc8015_sensor::sample(
     auto c = static_cast<measurement::value_type>(::atof(tokens[1].c_str()));
     auto p = static_cast<measurement::value_type>(::atof(tokens[2].c_str()));
 
-    _Analysis_assume_(this->name() != nullptr);
-    return measurement(this->name(), timestamp, v, c, p);
+    return measurement_data(timestamp, v, c, p);
 }
-
 
 
 /*
