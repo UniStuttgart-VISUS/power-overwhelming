@@ -5,12 +5,11 @@
 
 #pragma once
 
-#include <cinttypes>
-#include <iostream>
 #include <utility>
 
 #include "power_overwhelming/convert_string.h"
 #include "power_overwhelming/csv_iomanip.h"
+#include "power_overwhelming/measurement_data.h"
 #include "power_overwhelming/quote.h"
 
 
@@ -20,7 +19,7 @@ namespace power_overwhelming {
     /// <summary>
     /// Represents a single measurement sample for current, voltage and power.
     /// </summary>
-    class POWER_OVERWHELMING_API measurement {
+    class POWER_OVERWHELMING_API measurement final {
 
     public:
 
@@ -32,12 +31,12 @@ namespace power_overwhelming {
         /// <summary>
         /// The type of a timestamp associated with a measurement.
         /// </summary>
-        typedef std::int64_t timestamp_type;
+        typedef measurement_data::timestamp_type timestamp_type;
 
         /// <summary>
         /// The type of current and voltage measurements.
         /// </summary>
-        typedef float value_type;
+        typedef measurement_data::value_type value_type;
 
         /// <summary>
         /// The value used to represent invalid measurements.
@@ -89,11 +88,22 @@ namespace power_overwhelming {
             _In_ const value_type power);
 
         /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="sensor">The name of the sensor from which the
+        /// measurement originates.</param>
+        /// <param name="data">The actual measurement data of the sample.
+        /// </param>
+        measurement(_In_z_ const char_type *sensor,
+            _In_ const measurement_data& data);
+
+        /// <summary>
         /// Clone <paramref name="rhs" />.
         /// </summary>
         /// <param name="rhs">The object to be cloned.</param>
-        inline measurement(const measurement& rhs) : _sensor(nullptr) {
-            *this = rhs;
+        inline measurement(_In_ const measurement& rhs)
+                : _data(rhs._data),  _sensor(nullptr) {
+            this->set_sensor(rhs._sensor);
         }
 
         /// <summary>
@@ -101,8 +111,9 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs"></param>
         /// <returns></returns>
-        inline measurement(measurement&& rhs) noexcept : _sensor(nullptr) {
-            *this = std::move(rhs);
+        inline measurement(measurement&& rhs) noexcept
+                : _data(std::move(rhs._data)), _sensor(rhs._sensor) {
+            rhs._sensor = nullptr;
         }
 
         /// <summary>
@@ -116,7 +127,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns></returns>
         inline value_type current(void) const noexcept {
-            return this->_current;
+            return this->_data.current();
         }
 
         /// <summary>
@@ -129,9 +140,7 @@ namespace power_overwhelming {
         /// </remarks>
         /// <returns></returns>
         inline value_type power(void) const noexcept {
-            return (this->_power > static_cast<value_type>(0))
-                ? this->_power
-                : this->_current * this->_voltage;
+            return this->_data.power();
         }
 
         /// <summary>
@@ -147,7 +156,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns></returns>
         inline timestamp_type timestamp(void) const noexcept {
-            return this->_timestamp;
+            return this->_data.timestamp();
         }
 
         /// <summary>
@@ -156,7 +165,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns></returns>
         inline value_type voltage(void) const noexcept {
-            return this->_voltage;
+            return this->_data.voltage();
         }
 
         /// <summary>
@@ -182,11 +191,10 @@ namespace power_overwhelming {
 
     private:
 
-        value_type _current;
-        value_type _power;
+        void set_sensor(_In_z_ const char_type *sensor);
+
+        measurement_data _data;
         char_type *_sensor;
-        timestamp_type _timestamp;
-        value_type _voltage;
     };
 
 
