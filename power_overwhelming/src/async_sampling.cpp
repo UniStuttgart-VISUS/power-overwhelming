@@ -10,24 +10,24 @@
  * visus::power_overwhelming::async_sampling::async_sampling
  */
 visus::power_overwhelming::async_sampling::async_sampling(void)
-        : _context(nullptr), _on_measurement(nullptr),
+        : _context(nullptr),
+        _interval(1000),
+        _on_measurement(nullptr),
         _on_measurement_data(nullptr),
-        _timestamp_resolution(timestamp_resolution::milliseconds) { }
+        _timestamp_resolution(timestamp_resolution::milliseconds),
+        _tinkerforge_sensor_source(
+            power_overwhelming::tinkerforge_sensor_source::all) { }
 
 
 /*
- * visus::power_overwhelming::async_sampling::async_sampling
+ * visus::power_overwhelming::async_sampling::from_source
  */
-visus::power_overwhelming::async_sampling::async_sampling(
-        _Inout_ async_sampling&& rhs) noexcept
-    : _context(rhs._context),
-        _on_measurement(rhs._on_measurement),
-        _on_measurement_data(rhs._on_measurement_data),
-        _timestamp_resolution(rhs._timestamp_resolution) {
-    rhs._context = nullptr;
-    rhs._on_measurement = nullptr;
-    rhs._on_measurement_data = nullptr;
-    rhs._timestamp_resolution = timestamp_resolution::milliseconds;
+visus::power_overwhelming::async_sampling&
+visus::power_overwhelming::async_sampling::from_source(
+        _In_ const power_overwhelming::tinkerforge_sensor_source source)
+        noexcept {
+    this->_tinkerforge_sensor_source = source;
+    return *this;
 }
 
 
@@ -74,10 +74,10 @@ visus::power_overwhelming::async_sampling::is_disabled(void) noexcept {
 
 
 /*
- * visus::power_overwhelming::async_sampling::passes_context
+ * visus::power_overwhelming::async_sampling::passing_context
  */
 visus::power_overwhelming::async_sampling&
-visus::power_overwhelming::async_sampling::passes_context(
+visus::power_overwhelming::async_sampling::passing_context(
         _In_opt_ void *context) noexcept {
     this->_context = context;
     return *this;
@@ -109,10 +109,21 @@ visus::power_overwhelming::async_sampling::produces_measurement_data(
 
 
 /*
- * visus::power_overwhelming::async_sampling::uses_resolution
+ * visus::power_overwhelming::async_sampling::sample_every
  */
 visus::power_overwhelming::async_sampling&
-visus::power_overwhelming::async_sampling::uses_resolution(
+visus::power_overwhelming::async_sampling::sample_every(
+        _In_ const microseconds_type interval) noexcept {
+    this->_interval = interval;
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::async_sampling::using_resolution
+ */
+visus::power_overwhelming::async_sampling&
+visus::power_overwhelming::async_sampling::using_resolution(
         _In_ const timestamp_resolution resolution) noexcept {
     this->_timestamp_resolution = resolution;
     return *this;
@@ -128,12 +139,17 @@ visus::power_overwhelming::async_sampling::operator =(
     if (this != std::addressof(rhs)) {
         this->_context = rhs._context;
         rhs._context = nullptr;
+        this->_interval = rhs._interval;
+        rhs._interval = 1000;
         this->_on_measurement = rhs._on_measurement;
         rhs._on_measurement = nullptr;
         this->_on_measurement_data = rhs._on_measurement_data;
         rhs._on_measurement_data = nullptr;
         this->_timestamp_resolution = rhs._timestamp_resolution;
         rhs._timestamp_resolution = timestamp_resolution::milliseconds;
+        this->_tinkerforge_sensor_source = rhs._tinkerforge_sensor_source;
+        rhs._tinkerforge_sensor_source
+            = power_overwhelming::tinkerforge_sensor_source::all;
     }
 
     return *this;

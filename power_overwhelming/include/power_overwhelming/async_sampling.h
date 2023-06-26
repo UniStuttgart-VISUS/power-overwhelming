@@ -7,6 +7,7 @@
 
 #include "power_overwhelming/measurement.h"
 #include "power_overwhelming/timestamp_resolution.h"
+#include "power_overwhelming/tinkerforge_sensor_source.h"
 
 
 namespace visus {
@@ -36,10 +37,15 @@ namespace power_overwhelming {
         typedef measurement_callback on_measurement_callback;
 
         /// <summary>
+        /// The type to represent sampling intervals measured in microseconds.
+        /// </summary>
+        typedef std::uint64_t microseconds_type;
+
+        /// <summary>
         /// The type of callback to be invoked if a sensor created one of the
         /// new &quot;pure&quot; <see cref="measurement_data" /> samples.
         /// </summary>
-        typedef  void (*on_measurement_data_callback)(_In_ const sensor&,
+        typedef void (*on_measurement_data_callback)(_In_ const sensor&,
             _In_ const measurement_data&, _In_opt_ void *);
 
         /// <summary>
@@ -56,7 +62,9 @@ namespace power_overwhelming {
         /// Move <paramref name="rhs" /> invalidating it.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        async_sampling(_Inout_ async_sampling&& rhs) noexcept;
+        inline async_sampling(_Inout_ async_sampling&& rhs) noexcept {
+            *this = std::move(rhs);
+        }
 
         /// <summary>
         /// Gets the user-defined context, if any, to be passed to the callback.
@@ -72,6 +80,29 @@ namespace power_overwhelming {
         /// <returns>The user-defined context pointer.</returns>
         inline _Ret_maybenull_ void *context(void) noexcept {
             return this->_context;
+        }
+
+        /// <summary>
+        /// If the sensor this sampling configuration is passed to is a
+        /// Tinkerforge sensor, instructs the sensor to obtain data only from
+        /// the specified sources.
+        /// </summary>
+        /// <remarks>
+        /// If the sensor is not a Tinkerforge sensor, this setting has no
+        /// effect.
+        /// </remarks>
+        /// <param name="source">A bitmask of the sources that should be
+        /// returned.</param>
+        /// <returns><c>*this</c>.</returns>
+        async_sampling& from_source(
+            _In_ const tinkerforge_sensor_source source) noexcept;
+
+        /// <summary>
+        /// Answer the requested sampling interval in microseconds.
+        /// </summary>
+        /// <returns>The sampling interval in microseconds.</returns>
+        inline microseconds_type interval(void) const noexcept {
+            return this->_interval;
         }
 
         /// <summary>
@@ -119,7 +150,7 @@ namespace power_overwhelming {
         /// that this pointer remains valid as long as the sensor is producing
         /// samples.</param>
         /// <returns><c>*this</c>.</returns>
-        async_sampling& passes_context(_In_opt_ void *context) noexcept;
+        async_sampling& passing_context(_In_opt_ void *context) noexcept;
 
         /// <summary>
         /// Answer whether the <see cref="sensor" /> should produce samples of
@@ -166,12 +197,31 @@ namespace power_overwhelming {
         }
 
         /// <summary>
+        /// Sets the desired sampling interval.
+        /// </summary>
+        /// <param name="interval">The desired sampling interval in
+        /// microseconds.</param>
+        /// <returns><c>*this</c>.</returns>
+        async_sampling& sample_every(
+            _In_ const microseconds_type interval) noexcept;
+
+        /// <summary>
+        /// Answer the Tinkerforge sensor data to obtain in case the sensor
+        /// is a Tinkerforge sensor.
+        /// </summary>
+        /// <returns>A bitmask holding the sensors to retrieve.</returns>
+        inline power_overwhelming::tinkerforge_sensor_source
+        tinkerforge_sensor_source(void) const noexcept {
+            return this->_tinkerforge_sensor_source;
+        }
+
+        /// <summary>
         /// Configures the <see cref="sensor" /> to produce timestamps of the
         /// specified resolution.
         /// </summary>
         /// <param name="resolution"></param>
         /// <returns><c>*this</c>.</returns>
-        async_sampling& uses_resolution(
+        async_sampling& using_resolution(
             _In_ const timestamp_resolution resolution) noexcept;
 
         /// <summary>
@@ -194,9 +244,12 @@ namespace power_overwhelming {
     private:
 
         void *_context;
+        microseconds_type _interval;
         on_measurement_callback _on_measurement;
         on_measurement_data_callback _on_measurement_data;
         timestamp_resolution _timestamp_resolution;
+        power_overwhelming::tinkerforge_sensor_source
+            _tinkerforge_sensor_source;
     };
 
 } /* namespace power_overwhelming */
