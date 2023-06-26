@@ -43,7 +43,7 @@ visus::power_overwhelming::detail::convert(
  */
 visus::power_overwhelming::timestamp_type
 visus::power_overwhelming::detail::create_timestamp(
-        const timestamp_resolution resolution) {
+        _In_ const timestamp_resolution resolution) {
 #if defined(_WIN32)
     FILETIME time;
     ::GetSystemTimePreciseAsFileTime(&time);

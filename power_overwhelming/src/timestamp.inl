@@ -4,48 +4,19 @@
 // <author>Christoph Müller</author>
 
 
-#if 0
-/*
- * visus::power_overwhelming::detail::timestamp<Resolution>::create
- */
-template<visus::power_overwhelming::timestamp_resolution Resolution>
-template<class TTimePoint>
-typename visus::power_overwhelming::detail::timestamp<Resolution>::value_type
-visus::power_overwhelming::detail::timestamp<Resolution>::create(
-        const TTimePoint& timePoint) {
-    typedef typename TTimePoint::clock clock_type;
+namespace visus {
+namespace power_overwhelming {
+namespace detail {
 
-#if false
-    FILETIME fileTime;
-    SYSTEMTIME systemTime;
+    /// <summary>
+    /// The offset between the FILETIME epoch and the Unix time epoch.
+    /// </summary>
+    const auto unix_time_offset = std::chrono::duration<
+        timestamp_type, filetime_period>(116444736000000000LL);
 
-    // Find out what the UNIX epoch is as FILETIME, because this is the only way
-    // we can relate an STL time_point safely to a real date.
-    ::ZeroMemory(&systemTime, sizeof(systemTime));
-    systemTime.wYear = 1970;
-    systemTime.wMonth = 1;
-    systemTime.wDay = 1;
-
-    if (!::SystemTimeToFileTime(&systemTime, &fileTime)) {
-        throw std::system_error(::GetLastError(), std::system_category());
-    }
-
-    const auto dz = detail::convert(fileTime, Resolution);
-#else
-    // All of the above will always yield the following magic number:
-    const auto dz = 11644473600000LL;
-#endif
-
-    // Find out what the difference between the given time_point and the UNIX
-    // epoch is. Because we cannot rely on the epoch of the STL clock being the
-    // UNIX epoch, use time_t, which is guaranteed to represent the UNIX epoch.
-    auto dt = std::chrono::duration_cast<duration_traits<Resolution>::type>(
-        timePoint - clock_type::from_time_t(0)).count();
-
-    // Transform the origin of the timestamp clock to the origin of FILETIME.
-    return (dt + dz);
-}
-#endif
+} /* namespace detail */
+} /* namespace power_overwhelming */
+} /* namespace visus */
 
 
 /*
@@ -60,10 +31,6 @@ visus::power_overwhelming::detail::convert(
     using namespace std::chrono;
     typedef duration<timestamp_type, filetime_period> filetime_dur;
 
-    // The offset of the FILETIME epoch to the UNIX epoch.
-    const auto dz = duration<timestamp_type,
-        detail::filetime_period>(116444736000000000LL);
-
     // Find out what the difference between the time point and the UNIX
     // epoch is. Because we cannot rely on the epoch of the STL clock being the
     // UNIX epoch (until C++ 20), use time_t, which is guaranteed to represent
@@ -74,23 +41,69 @@ visus::power_overwhelming::detail::convert(
     // Transform the origin of the timestamp clock to the origin of FILETIME.
     switch (resolution) {
         case timestamp_resolution::hundred_nanoseconds:
-            return duration_cast<filetime_dur>(dt + dz).count();
+            return duration_cast<filetime_dur>(dt + unix_time_offset).count();
 
         case timestamp_resolution::microseconds:
-            return duration_cast<microseconds>(dt + dz).count();
+            return duration_cast<microseconds>(dt + unix_time_offset).count();
 
         case timestamp_resolution::milliseconds:
-            return duration_cast<milliseconds>(dt + dz).count();
+            return duration_cast<milliseconds>(dt + unix_time_offset).count();
 
-        // TODO: This overflows, so we do not support it.
-        //case timestamp_resolution::nanoseconds:
-        //    return duration_cast<nanoseconds>(dt + dz).count();
+        case timestamp_resolution::nanoseconds:
+            return duration_cast<nanoseconds>(dt + unix_time_offset).count();
 
         case timestamp_resolution::seconds:
-            return duration_cast<seconds>(dt + dz).count();
+            return duration_cast<seconds>(dt + unix_time_offset).count();
 
         default:
             throw std::invalid_argument("The specified timestamp_resolution "
                 "is unsupported.");
     }
+}
+
+
+/*
+ * visus::power_overwhelming::to_time_point
+ */
+template<class TDuration>
+std::chrono::time_point<std::chrono::system_clock, TDuration>
+visus::power_overwhelming::to_time_point(
+        _In_ const timestamp_type timestamp,
+        _In_ const timestamp_resolution resolution) {
+    using namespace std::chrono;
+    typedef duration<timestamp_type, detail::filetime_period> filetime_dur;
+
+    // Convert the input to FILETIME ticks for applying the Unix offset.
+    filetime_dur ticks;
+    switch (resolution) {
+        case timestamp_resolution::hundred_nanoseconds:
+            ticks = filetime_dur(timestamp);
+            break;
+
+        case timestamp_resolution::microseconds:
+            ticks = duration_cast<filetime_dur>(microseconds(timestamp));
+            break;
+
+        case timestamp_resolution::milliseconds:
+            ticks = duration_cast<filetime_dur>(milliseconds(timestamp));
+            break;
+
+        case timestamp_resolution::nanoseconds:
+            ticks = duration_cast<filetime_dur>(nanoseconds(timestamp));
+            break;
+
+        case timestamp_resolution::seconds:
+            ticks = duration_cast<filetime_dur>(seconds(timestamp));
+            break;
+
+        default:
+            throw std::invalid_argument("The specified timestamp_resolution "
+                "is unsupported.");
+    }
+
+    ticks -= detail::unix_time_offset;
+    // At this point, we have FILETIME ticks sinse the Unix epoch.
+
+    const time_point<system_clock, filetime_dur> retval(ticks);
+    return time_point_cast<TDuration>(retval);
 }
