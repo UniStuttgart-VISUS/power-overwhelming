@@ -1,9 +1,9 @@
-﻿// <copyright file="rtb_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+﻿// <copyright file="rtx_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/rtb_sensor.h"
+#include "power_overwhelming/rtx_sensor.h"
 
 #include <algorithm>
 #include <cassert>
@@ -20,10 +20,10 @@
 
 
 /*
- * visus::power_overwhelming::rtb_sensor::for_all
+ * visus::power_overwhelming::rtx_sensor::for_all
  */
-std::size_t visus::power_overwhelming::rtb_sensor::for_all(
-        _Out_writes_opt_(cnt_sensors) rtb_sensor *out_sensors,
+std::size_t visus::power_overwhelming::rtx_sensor::for_all(
+        _Out_writes_opt_(cnt_sensors) rtx_sensor *out_sensors,
         _In_ std::size_t cnt_sensors,
         _In_ const std::int32_t timeout) {
     // Build the query for all R&S RTB2004 instruments.
@@ -44,7 +44,7 @@ std::size_t visus::power_overwhelming::rtb_sensor::for_all(
 
     // Create a sensor for each instrument we found.
     for (std::size_t i = 0; (i < cnt_sensors) && (i < devices.size()); ++i) {
-        out_sensors[i] = rtb_sensor(devices[i].c_str(), timeout);
+        out_sensors[i] = rtx_sensor(devices[i].c_str(), timeout);
     }
 
     return devices.size();
@@ -53,9 +53,9 @@ std::size_t visus::power_overwhelming::rtb_sensor::for_all(
 
 
 /*
- * visus::power_overwhelming::rtb_sensor::rtb_sensor
+ * visus::power_overwhelming::rtx_sensor::rtx_sensor
  */
-visus::power_overwhelming::rtb_sensor::rtb_sensor(
+visus::power_overwhelming::rtx_sensor::rtx_sensor(
         _In_z_ const char *path, _In_ const std::int32_t timeout)
         : detail::visa_sensor(path, timeout) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
@@ -64,9 +64,9 @@ visus::power_overwhelming::rtb_sensor::rtb_sensor(
 
 
 /*
- * visus::power_overwhelming::rtb_sensor::rtb_sensor
+ * visus::power_overwhelming::rtx_sensor::rtx_sensor
  */
-visus::power_overwhelming::rtb_sensor::rtb_sensor(
+visus::power_overwhelming::rtx_sensor::rtx_sensor(
         _In_z_ const wchar_t *path, _In_ const std::int32_t timeout)
         : detail::visa_sensor(path, timeout) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
@@ -75,15 +75,15 @@ visus::power_overwhelming::rtb_sensor::rtb_sensor(
 
 
 /*
- * visus::power_overwhelming::rtb_sensor::~rtb_sensor
+ * visus::power_overwhelming::rtx_sensor::~rtx_sensor
  */
-visus::power_overwhelming::rtb_sensor::~rtb_sensor(void) { }
+visus::power_overwhelming::rtx_sensor::~rtx_sensor(void) { }
 
 
 /*
- * visus::power_overwhelming::rtb_sensor::configure
+ * visus::power_overwhelming::rtx_sensor::configure
  */
-void visus::power_overwhelming::rtb_sensor::configure(
+void visus::power_overwhelming::rtx_sensor::configure(
         _In_reads_(cnt) const oscilloscope_sensor_definition *sensors,
         _In_ const std::size_t cnt) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
@@ -136,9 +136,9 @@ void visus::power_overwhelming::rtb_sensor::configure(
 
 
 /*
- * visus::power_overwhelming::rtb_sensor::expression
+ * visus::power_overwhelming::rtx_sensor::expression
  */
-void visus::power_overwhelming::rtb_sensor::expression(
+void visus::power_overwhelming::rtx_sensor::expression(
         _In_ const std::uint32_t channel,
         _In_opt_z_  const char *expression,
         _In_opt_z_ const char *unit) {
@@ -163,25 +163,154 @@ void visus::power_overwhelming::rtb_sensor::expression(
 
 
 /*
- * visus::power_overwhelming::rtb_sensor::unit
+ * visus::power_overwhelming::rtx_sensor::reference_position
  */
-void visus::power_overwhelming::rtb_sensor::unit(
+void visus::power_overwhelming::rtx_sensor::reference_position(
+        _In_ const oscilloscope_reference_point position) {
+    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
+    impl.printf("TIM:REF %f\n", static_cast<float>(position) / 100.0f);
+    this->throw_on_system_error();
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::unit
+ */
+void visus::power_overwhelming::rtx_sensor::unit(
         _In_ const std::uint32_t channel, _In_z_ const char *unit) {
     if (unit == nullptr) {
         throw std::invalid_argument("The unit for a probe cannot be null.");
     }
 
-    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
+    auto impl = static_cast<detail::visa_sensor_impl&>(*this);
     impl.printf("PROB%u:SET:ATT:UNIT %s\n", channel, unit);
     this->throw_on_system_error();
 }
 
 
 /*
- * visus::power_overwhelming::rtb_sensor::sample_sync
+ * visus::power_overwhelming::rtx_sensor::time_scale
+ */
+void visus::power_overwhelming::rtx_sensor::time_scale(
+        _In_ const float scale, _In_z_ const char *unit) {
+    auto impl = static_cast<detail::visa_sensor_impl&>(*this);
+    impl.printf("TIM:SCAL %f %s\n", scale, (unit != nullptr) ? unit : "");
+    this->throw_on_system_error();
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::trigger
+ */
+void visus::power_overwhelming::rtx_sensor::trigger(
+        const oscilloscope_trigger& trigger) {
+    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
+
+    // Apply configuration that is valid for all triggers.
+    switch (trigger.mode()) {
+        case oscilloscope_trigger_mode::automatic:
+            impl.printf("TRIG:A:MODE AUTO\n");
+            break;
+
+        default:
+            impl.printf("TRIG:A:MODE NORM\n");
+            break;
+    }
+    this->throw_on_system_error();
+
+    impl.printf("TRIG:A:SOUR %s\n", trigger.source());
+    this->throw_on_system_error();
+
+    impl.printf("TRIG:A:TYPE %s\n", trigger.type());
+    this->throw_on_system_error();
+
+    if (trigger.hold_off() == nullptr) {
+        impl.printf("TRIG:A:HOLD:MODE OFF\n");
+        this->throw_on_system_error();
+
+    } else {
+        impl.printf("TRIG:A:HOLD:MODE TIME\n");
+        this->throw_on_system_error();
+
+        impl.printf("TRIG:A:HOLD:TIME %s\n", trigger.hold_off());
+        this->throw_on_system_error();
+    }
+
+    // Apply special configuration if the trigger is an edge trigger.
+    auto et = dynamic_cast<const oscilloscope_edge_trigger *>(&trigger);
+    if (et != nullptr) {
+        switch (et->slope()) {
+            case oscilloscope_trigger_slope::both:
+                impl.printf("TRIG:A:EDGE:SLOP EITH\n");
+                break;
+
+            case oscilloscope_trigger_slope::rising:
+                impl.printf("TRIG:A:EDGE:SLOP POS\n");
+                break;
+
+            case oscilloscope_trigger_slope::falling:
+                impl.printf("TRIG:A:EDGE:SLOP NEG\n");
+                break;
+        }
+        this->throw_on_system_error();
+
+        impl.printf("TRIG:A:LEV%d:VAL %f %s\n", et->input(),
+            et->level_value(), et->level_unit());
+        this->throw_on_system_error();
+
+        switch (et->coupling()) {
+            case oscilloscope_trigger_coupling::alternating_current:
+                impl.printf("TRIG:A:EDGE:COUP AC\n");
+                break;
+
+            case oscilloscope_trigger_coupling::direct_current:
+                impl.printf("TRIG:A:EDGE:COUP DC\n");
+                break;
+
+            case oscilloscope_trigger_coupling::lf_reject:
+                impl.printf("TRIG:A:EDGE:COUP LFR\n");
+                break;
+        }
+        this->throw_on_system_error();
+
+        switch (et->hysteresis()) {
+            case oscilloscope_trigger_hysteresis::automatic:
+                impl.printf("TRIG:A:HYST AUTO\n");
+                break;
+
+            case oscilloscope_trigger_hysteresis::high:
+                impl.printf("TRIG:A:HYST LARGE\n");
+                break;
+
+            case oscilloscope_trigger_hysteresis::low:
+                impl.printf("TRIG:A:HYST SMAL\n");
+                break;
+
+            case oscilloscope_trigger_hysteresis::medium:
+                impl.printf("TRIG:A:HYST MED\n");
+                break;
+        }
+        this->throw_on_system_error();
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::trigger_position
+ */
+void visus::power_overwhelming::rtx_sensor::trigger_position(
+        _In_ const float offset, _In_z_ const char *unit) {
+    auto impl = static_cast<detail::visa_sensor_impl&>(*this);
+    impl.printf("TIM:POS %f%s\n", offset, (unit != nullptr) ? unit : "");
+    this->throw_on_system_error();
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::sample_sync
  */
 visus::power_overwhelming::measurement_data
-visus::power_overwhelming::rtb_sensor::sample_sync(
+visus::power_overwhelming::rtx_sensor::sample_sync(
         _In_ const timestamp_resolution resolution) const {
     throw "TODO";
 

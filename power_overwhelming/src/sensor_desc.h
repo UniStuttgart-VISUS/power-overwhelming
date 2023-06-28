@@ -15,7 +15,7 @@
 #include "power_overwhelming/msr_sensor.h"
 #include "power_overwhelming/nvml_sensor.h"
 #include "power_overwhelming/regex_escape.h"
-#include "power_overwhelming/rtb_sensor.h"
+#include "power_overwhelming/rtx_sensor.h"
 #include "power_overwhelming/tinkerforge_sensor.h"
 
 #include "described_sensor_type.h"
@@ -309,11 +309,11 @@ namespace detail {
     };
 
     /// <summary>
-    /// Specialisation for <see cref="rtb_sensor" />.
+    /// Specialisation for <see cref="rtx_sensor" />.
     /// </summary>
-    template<> struct sensor_desc<rtb_sensor> final
-            : detail::sensor_desc_base<sensor_desc<rtb_sensor>> {
-        POWER_OVERWHELMING_DECLARE_SENSOR_NAME(rtb_sensor);
+    template<> struct sensor_desc<rtx_sensor> final
+            : detail::sensor_desc_base<sensor_desc<rtx_sensor>> {
+        POWER_OVERWHELMING_DECLARE_SENSOR_NAME(rtx_sensor);
         POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC(false);
 
         static inline value_type deserialise(const nlohmann::json& value) {
@@ -330,7 +330,7 @@ namespace detail {
                 { json_field_type, type_name },
                 { json_field_name, name },
                 { json_field_path, path },
-                { json_field_channel, 3000 }
+                { json_field_timeout, 3000 }
             });
         }
     };
@@ -441,7 +441,7 @@ namespace detail {
         hmc8015_sensor,
         msr_sensor,
         nvml_sensor,
-        rtb_sensor,
+        rtx_sensor,
         tinkerforge_sensor>
         sensor_list;
 

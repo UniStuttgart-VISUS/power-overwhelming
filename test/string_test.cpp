@@ -112,6 +112,88 @@ namespace test {
             }
         }
 
+        TEST_METHOD(test_safe_duplicate_wchar_t) {
+            typedef wchar_t char_type;
+
+            {
+                const char_type *expected = L"input";
+                auto actual = detail::safe_duplicate(expected);
+                Assert::AreEqual(expected, actual, L"Duplicate matches", LINE_INFO());
+                Assert::AreNotEqual((void *) expected, (void *) actual, L"Duplicate is different pointer", LINE_INFO());
+                ::free(actual);
+            }
+
+            {
+                const char_type *expected = nullptr;
+                auto actual = detail::safe_duplicate(expected);
+                Assert::IsNull(actual, L"Copy is nullptr", LINE_INFO());
+                Assert::AreEqual(expected, actual, L"Duplicate matches", LINE_INFO());
+            }
+        }
+
+        TEST_METHOD(test_safe_duplicate_char) {
+            typedef char char_type;
+
+            {
+                const char_type *expected = "input";
+                auto actual = detail::safe_duplicate(expected);
+                Assert::AreEqual(expected, actual, L"Duplicate matches", LINE_INFO());
+                Assert::AreNotEqual((void *) expected, (void *) actual, L"Duplicate is different pointer", LINE_INFO());
+                ::free(actual);
+            }
+
+            {
+                const char_type *expected = nullptr;
+                auto actual = detail::safe_duplicate(expected);
+                Assert::IsNull(actual, L"Copy is nullptr", LINE_INFO());
+                Assert::AreEqual(expected, actual, L"Duplicate matches", LINE_INFO());
+            }
+        }
+
+        TEST_METHOD(test_safe_assign) {
+            {
+                const auto expected = L"input";
+                wchar_t *actual = nullptr;
+                detail::safe_assign(actual, expected);
+                Assert::AreEqual(expected, actual, L"Duplicate matches", LINE_INFO());
+                Assert::AreNotEqual((void *) expected, (void *) actual, L"Duplicate is different pointer", LINE_INFO());
+                ::free(actual);
+            }
+
+            {
+                const wchar_t *expected = ::wcsdup(L"input");
+                wchar_t *actual = nullptr;
+                detail::safe_assign(actual, expected);
+                Assert::AreEqual(expected, actual, L"Duplicate matches", LINE_INFO());
+                Assert::AreNotEqual((void *)expected, (void *)actual, L"Duplicate is different pointer", LINE_INFO());
+                ::free(actual);
+                ::free((void *) expected);
+            }
+
+            {
+                const wchar_t *expected = ::wcsdup(L"input");
+                wchar_t *actual = ::wcsdup(L"actual");
+                detail::safe_assign(actual, expected);
+                Assert::AreEqual(expected, actual, L"Duplicate matches", LINE_INFO());
+                Assert::AreNotEqual((void *)expected, (void *)actual, L"Duplicate is different pointer", LINE_INFO());
+                ::free(actual);
+                ::free((void *) expected);
+            }
+
+            {
+                const wchar_t *expected = L"input";
+                wchar_t *input = ::wcsdup(expected);
+                wchar_t *actual = ::wcsdup(L"actual");
+                detail::safe_assign(actual, std::move(input));
+                Assert::AreEqual(expected, actual, L"Duplicate matches", LINE_INFO());
+                Assert::AreNotEqual((void *) expected, (void *) actual, L"Duplicate is different pointer", LINE_INFO());
+                Assert::IsNull(input, L"Input has been moved", LINE_INFO());
+                ::free(actual);
+                ::free(input);
+            }
+
+        }
+
     };
 } /* namespace test */
 } /* namespace power_overwhelming */

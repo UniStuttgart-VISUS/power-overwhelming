@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "power_overwhelming/convert_string.h"
+
 #include "visa_library.h"
 #include "visa_scope.h"
 
@@ -45,12 +47,14 @@ namespace detail {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        visa_sensor_impl(const char *path, const std::int32_t timeout);
+        visa_sensor_impl(_In_z_ const char *path,
+            _In_ const std::int32_t timeout);
 
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        visa_sensor_impl(const wchar_t *path, const std::int32_t timeout);
+        visa_sensor_impl(_In_z_ const wchar_t *path,
+            _In_ const std::int32_t timeout);
 
         /// <summary>
         /// Call <see cref="viClear" /> on the instrument, which will flush all
@@ -100,7 +104,7 @@ namespace detail {
         /// <see cref="throw_on_system_error" /> to check the internal state of
         /// the instrument after the call.</exception>
         template<class... TArgs>
-        void printf(const char *format, TArgs&&... args);
+        void printf(_In_z_ const char *format, TArgs&&... args);
 
         /// <summary>
         /// Write the given data to the instrument and read a response of
@@ -117,8 +121,10 @@ namespace detail {
         /// can be in a failed state even if the call succeeded. Use
         /// <see cref="throw_on_system_error" /> to check the internal state of
         /// the instrument after the call.</exception>
-        std::vector<std::uint8_t> query(const std::uint8_t *query,
-            const std::size_t cnt, const std::size_t buffer_size = 1024);
+        std::vector<std::uint8_t> query(
+            _In_reads_bytes_(cnt) const std::uint8_t *query,
+            _In_ const std::size_t cnt,
+            _In_ const std::size_t buffer_size = 1024);
 
         /// <summary>
         /// Write the given data to the instrument and read a response of
@@ -127,8 +133,18 @@ namespace detail {
         /// <param name="query"></param>
         /// <param name="buffer_size"></param>
         /// <returns></returns>
-        std::vector<std::uint8_t> query(const std::string& query,
-            const std::size_t buffer_size = 1024);
+        std::vector<std::uint8_t> query(_In_ const std::string& query,
+            _In_ const std::size_t buffer_size = 1024);
+
+        /// <summary>
+        /// Write the given query string to the instrument and read a response
+        /// of at most <paramref name="buffer_size" /> bytes.
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="buffer_size"></param>
+        /// <returns></returns>
+        std::vector<std::uint8_t> query(_In_ const std::wstring &query,
+            _In_ const std::size_t buffer_size = 1024);
 
         /// <summary>
         /// Read from the instrument into the given buffer.
@@ -147,7 +163,8 @@ namespace detail {
         /// can be in a failed state even if the call succeeded. Use
         /// <see cref="throw_on_system_error" /> to check the internal state of
         /// the instrument after the call.</exception>
-        std::size_t read(std::uint8_t *buffer, const std::size_t cnt);
+        std::size_t read(_Out_writes_bytes_(cnt) std::uint8_t *buffer,
+            _In_ const std::size_t cnt);
 
         /// <summary>
         /// Read a full response.
@@ -168,7 +185,8 @@ namespace detail {
         /// can be in a failed state even if the call succeeded. Use
         /// <see cref="throw_on_system_error" /> to check the internal state of
         /// the instrument after the call.</exception>
-        std::vector<std::uint8_t> read(const std::size_t buffer_size = 1024);
+        std::vector<std::uint8_t> read(
+            _In_ const std::size_t buffer_size = 1024);
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>
@@ -178,7 +196,7 @@ namespace detail {
         /// <param name="name"></param>
         /// <param name="value"></param>
         /// <exception cref="visa_exception"></exception>
-        void set_attribute(ViAttr name, ViAttrState value);
+        void set_attribute(_In_ ViAttr name, _In_ ViAttrState value);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
         /// <summary>
@@ -192,7 +210,8 @@ namespace detail {
         /// can be in a failed state even if the call succeeded. Use
         /// <see cref="throw_on_system_error" /> to check the internal state of
         /// the instrument after the call.</exception>
-        void set_buffer(const std::uint16_t mask, const std::uint32_t size);
+        void set_buffer(_In_ const std::uint16_t mask,
+            _In_ const std::uint32_t size);
 
         /// <summary>
         /// Query the oldest error in the queue and returns the message
@@ -208,7 +227,7 @@ namespace detail {
         /// previous error.</returns>
         /// <exception cref="visa_exception">If the current system state could
         /// not be retrieved.</exception>
-        int system_error(std::string& message);
+        int system_error(_Out_ std::string& message);
 
         /// <summary>
         /// Query the oldes error in the queue.
@@ -240,7 +259,44 @@ namespace detail {
         /// can be in a failed state even if the call succeeded. Use
         /// <see cref="throw_on_system_error" /> to check the internal state of
         /// the instrument after the call.</exception>
-        std::size_t write(const std::uint8_t *buffer, const std::size_t cnt);
+        std::size_t write(_In_reads_bytes_(cnt) const std::uint8_t *buffer,
+            _In_ const std::size_t cnt);
+
+        /// <summary>
+        /// Write the given data to the instrument.
+        /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library was compiled without support
+        /// for VISA.
+        /// </remarks>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="buffer" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        std::size_t write(_In_ const std::string& buffer);
+
+        /// <summary>
+        /// Write the given data to the instrument.
+        /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library was compiled without support
+        /// for VISA.
+        /// </remarks>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="buffer" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        std::size_t write(_In_ const std::wstring& buffer);
 
     };
 

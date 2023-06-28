@@ -7,14 +7,12 @@
 
 #include <algorithm>
 
-#include "power_overwhelming/convert_string.h"
-
 
 /*
  * visus::power_overwhelming::detail::visa_sensor_impl::visa_sensor_impl
  */
 visus::power_overwhelming::detail::visa_sensor_impl::visa_sensor_impl(
-        const char *path, const std::int32_t timeout)
+        _In_z_ const char *path, _In_ const std::int32_t timeout)
         : scope(path, timeout), path(path) {
     this->clear();
 }
@@ -24,7 +22,7 @@ visus::power_overwhelming::detail::visa_sensor_impl::visa_sensor_impl(
  * visus::power_overwhelming::detail::visa_sensor_impl::visa_sensor_impl
  */
 visus::power_overwhelming::detail::visa_sensor_impl::visa_sensor_impl(
-        const wchar_t *path, const std::int32_t timeout) 
+        _In_z_ const wchar_t *path, _In_ const std::int32_t timeout)
     : scope(power_overwhelming::convert_string<char>(path).c_str(), timeout),
         path(power_overwhelming::convert_string<char>(path)) {
     this->clear();
@@ -71,8 +69,9 @@ std::string visus::power_overwhelming::detail::visa_sensor_impl::identify(
  */
 std::vector<std::uint8_t>
 visus::power_overwhelming::detail::visa_sensor_impl::query(
-        const std::uint8_t *query, const std::size_t cnt,
-        const std::size_t buffer_size) {
+        _In_reads_bytes_(cnt) const std::uint8_t *query,
+        _In_ const std::size_t cnt,
+        _In_ const std::size_t buffer_size) {
     if (query == nullptr) {
         throw std::invalid_argument("The query sent ot the instrument must "
             "not be null.");
@@ -92,9 +91,25 @@ visus::power_overwhelming::detail::visa_sensor_impl::query(
  */
 std::vector<std::uint8_t>
 visus::power_overwhelming::detail::visa_sensor_impl::query(
-        const std::string& query, const std::size_t buffer_size) {
+        _In_ const std::string& query, _In_ const std::size_t buffer_size) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     this->printf(query.c_str());
+    return this->read(buffer_size);
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return std::vector<std::uint8_t>();
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_sensor_impl::query
+ */
+std::vector<std::uint8_t>
+visus::power_overwhelming::detail::visa_sensor_impl::query(
+        _In_ const std::wstring& query, _In_ const std::size_t buffer_size) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto q = power_overwhelming::convert_string<char>(query);
+    this->printf(q.c_str());
     return this->read(buffer_size);
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return std::vector<std::uint8_t>();
@@ -106,7 +121,8 @@ visus::power_overwhelming::detail::visa_sensor_impl::query(
  * visus::power_overwhelming::detail::visa_sensor_impl::read
  */
 std::size_t visus::power_overwhelming::detail::visa_sensor_impl::read(
-        std::uint8_t *buffer, const std::size_t cnt) {
+        _Out_writes_bytes_(cnt) std::uint8_t *buffer,
+        _In_ const std::size_t cnt) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     ViUInt32 retval = 0;
     visa_exception::throw_on_error(detail::visa_library::instance()
@@ -123,7 +139,7 @@ std::size_t visus::power_overwhelming::detail::visa_sensor_impl::read(
  */
 std::vector<std::uint8_t>
 visus::power_overwhelming::detail::visa_sensor_impl::read(
-        const std::size_t buffer_size) {
+        _In_ const std::size_t buffer_size) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     static const std::size_t min_size = 1;
     std::vector<std::uint8_t> retval((std::max)(buffer_size, min_size));
@@ -164,7 +180,7 @@ visus::power_overwhelming::detail::visa_sensor_impl::read(
  * visus::power_overwhelming::detail::visa_sensor_impl::set_attribute
  */
 void visus::power_overwhelming::detail::visa_sensor_impl::set_attribute(
-        ViAttr name, ViAttrState value) {
+        _In_ ViAttr name, _In_ ViAttrState value) {
     visa_exception::throw_on_error(detail::visa_library::instance()
         .viSetAttribute(this->scope, name, value));
 }
@@ -176,7 +192,7 @@ void visus::power_overwhelming::detail::visa_sensor_impl::set_attribute(
  * visus::power_overwhelming::detail::visa_sensor_impl::set_buffer
  */
 void visus::power_overwhelming::detail::visa_sensor_impl::set_buffer(
-        const std::uint16_t mask, const std::uint32_t size) {
+        _In_ const std::uint16_t mask, _In_ const std::uint32_t size) {
     visa_exception::throw_on_error(detail::visa_library::instance()
         .viSetBuf(this->scope, mask, size));
 }
@@ -187,7 +203,7 @@ void visus::power_overwhelming::detail::visa_sensor_impl::set_buffer(
  * visus::power_overwhelming::detail::visa_sensor_impl::system_error
  */
 int visus::power_overwhelming::detail::visa_sensor_impl::system_error(
-        std::string& message) {
+        _Out_ std::string& message) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto status = this->query(":SYST:ERR?\n");
     auto delimiter = std::find_if(status.begin(), status.end(),
@@ -245,7 +261,8 @@ int visus::power_overwhelming::detail::visa_sensor_impl::system_error(void) {
  * visus::power_overwhelming::detail::visa_sensor_impl::write
  */
 std::size_t visus::power_overwhelming::detail::visa_sensor_impl::write(
-        const std::uint8_t *buffer, const std::size_t cnt) {
+        _In_reads_bytes_(cnt) const std::uint8_t *buffer,
+        _In_ const std::size_t cnt) {
     if (buffer == nullptr) {
         throw std::invalid_argument("The buffer being written to the "
             "instrument must not be null.");
@@ -259,4 +276,25 @@ std::size_t visus::power_overwhelming::detail::visa_sensor_impl::write(
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_sensor_impl::write
+ */
+std::size_t visus::power_overwhelming::detail::visa_sensor_impl::write(
+        _In_ const std::string& buffer) {
+    return this->write(reinterpret_cast<const std::uint8_t *>(buffer.data()),
+        buffer.size());
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_sensor_impl::write
+ */
+std::size_t visus::power_overwhelming::detail::visa_sensor_impl::write(
+        _In_ const std::wstring& buffer) {
+    auto b = power_overwhelming::convert_string<char>(buffer);
+    auto bb = reinterpret_cast<const std::uint8_t *>(b.data());
+    return this->write(bb, b.size());
 }

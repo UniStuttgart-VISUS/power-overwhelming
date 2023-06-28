@@ -33,7 +33,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // AMD sensors
-#if true
+#if false
 #if true
     ::sample_adl_sensor();
 #endif
@@ -53,7 +53,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // EMI sensors
-#if true
+#if false
 #if true
     ::sample_emi_sensor();
 #endif
@@ -68,7 +68,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // MSR sensors
-#if true
+#if false
 #if true
     ::sample_msr_sensor();
 #endif
@@ -79,7 +79,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // NVML sensors
-#if true
+#if false
 #if true
     ::sample_nvml_sensor();
 #endif
@@ -113,13 +113,13 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // Rohde & Schwarz sensors
-#if false
 #if true
+#if false
     ::query_hmc8015();
 #endif
 
 #if true
-    ::query_rtb2004();
+    ::query_rtx();
 #endif
 #endif
 

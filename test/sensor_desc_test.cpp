@@ -43,9 +43,9 @@ namespace test {
         }
 
         TEST_METHOD(test_rtb_sensor) {
-            typedef detail::sensor_desc<rtb_sensor> desc_type;
-            Assert::AreEqual("rtb_sensor", desc_type::type_name, L"rtb_sensor type name", LINE_INFO());
-            Assert::IsFalse(desc_type::intrinsic_async, L"rtb_sensor not intrinsically asynchronous", LINE_INFO());
+            typedef detail::sensor_desc<rtx_sensor> desc_type;
+            Assert::AreEqual("rtx_sensor", desc_type::type_name, L"rtx_sensor type name", LINE_INFO());
+            Assert::IsFalse(desc_type::intrinsic_async, L"rtx_sensor not intrinsically asynchronous", LINE_INFO());
         }
 
         TEST_METHOD(test_tinkerforge_sensor) {
