@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <cinttypes>
 
+#include "power_overwhelming/blob.h"
 #include "power_overwhelming/oscilloscope_channel.h"
 #include "power_overwhelming/oscilloscope_edge_trigger.h"
 #include "power_overwhelming/oscilloscope_quantity.h"
@@ -115,6 +116,8 @@ namespace power_overwhelming {
         void configure(_In_ const oscilloscope_channel& channel);
 
         void configure(_In_ const oscilloscope_single_acquisition& acquisition);
+
+        blob data(_In_ const std::uint32_t channel);
 
         /// <summary>
         /// Enable an configure one of the mathematical expressions.

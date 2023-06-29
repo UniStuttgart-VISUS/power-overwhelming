@@ -11,6 +11,7 @@
 #include <thread>
 
 #include <power_overwhelming/adl_sensor.h>
+#include <power_overwhelming/blob.h>
 #include <power_overwhelming/collector.h>
 #include <power_overwhelming/convert_string.h>
 #include <power_overwhelming/cpu_affinity.h>

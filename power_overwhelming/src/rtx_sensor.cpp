@@ -262,6 +262,31 @@ void visus::power_overwhelming::rtx_sensor::configure(
 
 
 /*
+ * visus::power_overwhelming::rtx_sensor::data
+ */
+visus::power_overwhelming::blob visus::power_overwhelming::rtx_sensor::data(
+        _In_ const std::uint32_t channel) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
+
+    impl.write("FORM REAL,32\n");
+    this->throw_on_system_error();
+
+    auto query = std::string("CHAN") + std::to_string(channel) + ":DATA?\n";
+    auto data = impl.query(query);
+
+    blob retval(data.size());
+    std::copy(data.begin(), data.end(), retval.as<std::uint8_t>());
+    return retval;
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error("This function is unavailable unless compiled with "
+        "support for VISA.");
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
  * visus::power_overwhelming::rtx_sensor::expression
  */
 void visus::power_overwhelming::rtx_sensor::expression(
