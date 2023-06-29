@@ -71,7 +71,9 @@ visus::power_overwhelming::oscilloscope_edge_trigger::oscilloscope_edge_trigger(
  * ...::oscilloscope_edge_trigger::~oscilloscope_edge_trigger
  */
 visus::power_overwhelming::oscilloscope_edge_trigger::~oscilloscope_edge_trigger(
-    void) { }
+        void) {
+    detail::safe_assign(this->_level_unit, nullptr);
+}
 
 
 /*

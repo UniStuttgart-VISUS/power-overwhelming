@@ -25,7 +25,7 @@
 int _tmain(const int argc, const TCHAR **argv) {
 #if (defined(DEBUG) || defined(_DEBUG))
     ::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    //::_CrtSetBreakAlloc(1);
+    //::_CrtSetBreakAlloc(327);
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
 
 #if false
