@@ -112,6 +112,50 @@ namespace test {
             }
         }
 
+        TEST_METHOD(test_format_string) {
+            typedef char char_type;
+
+            {
+                const char_type *expected = "input";
+                auto actual = detail::format_string(expected);
+                Assert::AreEqual(expected, actual.c_str(), L"Format string without parameters", LINE_INFO());
+            }
+
+            {
+                const char_type *expected = "input";
+                auto actual = detail::format_string("%s", expected);
+                Assert::AreEqual(expected, actual.c_str(), L"Format whole string", LINE_INFO());
+            }
+
+            {
+                const char_type *expected = "12";
+                auto actual = detail::format_string("%d%d", 1, 2);
+                Assert::AreEqual(expected, actual.c_str(), L"Format two ints", LINE_INFO());
+            }
+        }
+
+        TEST_METHOD(test_format_wstring) {
+            typedef wchar_t char_type;
+
+            {
+                const char_type *expected = L"input";
+                auto actual = detail::format_string(expected);
+                Assert::AreEqual(expected, actual.c_str(), L"Format string without parameters", LINE_INFO());
+            }
+
+            {
+                const char_type *expected = L"input";
+                auto actual = detail::format_string(L"%s", expected);
+                Assert::AreEqual(expected, actual.c_str(), L"Format whole string", LINE_INFO());
+            }
+
+            {
+                const char_type *expected = L"12";
+                auto actual = detail::format_string(L"%d%d", 1, 2);
+                Assert::AreEqual(expected, actual.c_str(), L"Format two ints", LINE_INFO());
+            }
+        }
+
         TEST_METHOD(test_safe_duplicate_wchar_t) {
             typedef wchar_t char_type;
 

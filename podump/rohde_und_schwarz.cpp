@@ -101,6 +101,7 @@ void query_rtx(void) {
                 .slope(oscilloscope_trigger_slope::both)
                 .mode(oscilloscope_trigger_mode::normal));
 
+            std::this_thread::sleep_for(std::chrono::seconds(10));
             auto data = s.data(1);
 
             //s.expression(1, "CH1*CH2", "W");

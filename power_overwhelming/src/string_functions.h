@@ -6,11 +6,17 @@
 #pragma once
 
 #include <cassert>
+#include <cerrno>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <cwchar>
 #include <memory>
+#include <stdexcept>
 #include <string>
+#include <system_error>
+#include <type_traits>
+#include <vector>
 
 #include "power_overwhelming/power_overwhelming_api.h"
 
@@ -18,6 +24,32 @@
 namespace visus {
 namespace power_overwhelming {
 namespace detail {
+
+    /// <summary>
+    /// Format the given string into a new string.
+    /// </summary>
+    /// <typeparam name="TArgs">The list of arguments used to replace the
+    /// placeholders in <paramref name="fmt" />.</typeparam>
+    /// <param name="format">The <see cref="printf" />-style format string.
+    /// </param>
+    /// <param name="args">The arguments used to replace the placeholders in
+    /// <paramref name="format" />.</param>
+    /// <returns>The formatted string.</returns>
+    template<class... TArgs>
+    std::wstring format_string(_In_z_ const wchar_t *format, TArgs&&... args);
+
+    /// <summary>
+    /// Format the given string into a new string.
+    /// </summary>
+    /// <typeparam name="TArgs">The list of arguments used to replace the
+    /// placeholders in <paramref name="fmt" />.</typeparam>
+    /// <param name="format">The <see cref="printf" />-style format string.
+    /// </param>
+    /// <param name="args">The arguments used to replace the placeholders in
+    /// <paramref name="format" />.</param>
+    /// <returns>The formatted string.</returns>
+    template<class... TArgs>
+    std::string format_string(_In_z_ const char *format, TArgs&&... args);
 
     /// <summary>
     /// Frees <paramref name="dst" />, if not <c>nullptr</c>, and assigns a copy
