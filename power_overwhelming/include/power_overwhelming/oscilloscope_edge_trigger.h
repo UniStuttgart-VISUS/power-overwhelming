@@ -36,24 +36,6 @@ namespace power_overwhelming {
         explicit oscilloscope_edge_trigger(_In_ const char *source);
 
         /// <summary>
-        /// Clone <paramref name="rhs" />.
-        /// </summary>
-        /// <param name="rhs">The object to be cloned.</param>
-        oscilloscope_edge_trigger(_In_ const oscilloscope_edge_trigger& rhs);
-
-        /// <summary>
-        /// Move <paramref name="rhs" />.
-        /// </summary>
-        /// <param name="rhs">The object to be moved.</param>
-        oscilloscope_edge_trigger(
-            _Inout_ oscilloscope_edge_trigger&& rhs) noexcept;
-
-        /// <summary>
-        /// Finalises the instance.
-        /// </summary>
-        ~oscilloscope_edge_trigger(void);
-
-        /// <summary>
         /// Gets the coupling for the trigger source.
         /// </summary>
         /// <returns>The coupling for the trigger source.</returns>
@@ -100,53 +82,32 @@ namespace power_overwhelming {
         }
 
         /// <summary>
-        /// Configuret the trigger level.
-        /// </summary>
-        /// <param name="input">Selects the trigger input within [1, 5]. Valid
-        /// values depend on the hardware. Channel 5 is the external trigger
-        /// input.</param>
-        /// <param name="value">The trigger value.</param>
-        /// <param name="unit">The unit of the trigger value, which defaults to
-        /// Volts.</param>
-        /// <returns><c>*this</c>.</returns>
-        /// <exception cref="std::invalid_argument">If <paramref name="unit" />
-        /// is <c>nullptr</c>.</exception>
-        oscilloscope_edge_trigger& level(_In_ const input_type input,
-            _In_ const float value, _In_z_ const wchar_t *unit);
-
-        /// <summary>
-        /// Configuret the trigger level.
-        /// </summary>
-        /// <param name="input">Selects the trigger input within [1, 5]. Valid
-        /// values depend on the hardware. Channel 5 is the external trigger
-        /// input.</param>
-        /// <param name="value">The trigger value.</param>
-        /// <param name="unit">The unit of the trigger value, which defaults to
-        /// Volts.</param>
-        /// <returns><c>*this</c>.</returns>
-        /// <exception cref="std::invalid_argument">If <paramref name="unit" />
-        /// is <c>nullptr</c>.</exception>
-        oscilloscope_edge_trigger& level(_In_ const input_type input,
-            _In_ const float value, _In_z_ const char *unit = "V");
-
-        /// <summary>
-        /// Gets the unit for the trigger level.
+        /// Gets the trigger level.
         /// </summary>
         /// <remarks>
         /// If the unit is <c>nullptr</c> or empty, the default unit of the
         /// instrument should be used.
         /// </remarks>
         /// <returns>The unit.</returns>
-        inline _Ret_z_ const char *level_unit(void) const noexcept {
-            return (this->_level_unit != nullptr) ? this->_level_unit : "";
+        inline const oscilloscope_quantity &level(void) const noexcept {
+            return this->_level;
         }
 
         /// <summary>
-        /// Gets the trigger level.
+        /// Configuret the trigger level.
         /// </summary>
-        /// <returns>The trigger level.</returns>
-        inline float level_value(void) const noexcept {
-            return this->_level_value;
+        /// <param name="input">Selects the trigger input within [1, 5]. Valid
+        /// values depend on the hardware. Channel 5 is the external trigger
+        /// input.</param>
+        /// <param name="level">The trigger level.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="unit" />
+        /// is <c>nullptr</c>.</exception>
+        inline oscilloscope_edge_trigger& level(_In_ const input_type input,
+                _In_ const oscilloscope_quantity& level) {
+            this->_input = input;
+            this->_level = level;
+            return *this;
         }
 
         /// <summary>
@@ -171,29 +132,12 @@ namespace power_overwhelming {
         /// <inheritdoc />
         _Ret_z_ const char *type(void) const noexcept override;
 
-        /// <summary>
-        /// Assignment.
-        /// </summary>
-        /// <param name="rhs">The right hand side operand.</param>
-        /// <returns><c>*this</c>.</returns>
-        oscilloscope_edge_trigger& operator =(
-            _In_ const oscilloscope_edge_trigger& rhs);
-
-        /// <summary>
-        /// Move assignment.
-        /// </summary>
-        /// <param name="rhs">The right hand side operand.</param>
-        /// <returns><c>*this</c>.</returns>
-        oscilloscope_edge_trigger& operator =(
-            _Inout_ oscilloscope_edge_trigger&& rhs) noexcept;
-
     private:
 
         oscilloscope_trigger_coupling _coupling;
         oscilloscope_trigger_hysteresis _hysteresis;
         input_type _input;
-        char *_level_unit;
-        float _level_value;
+        oscilloscope_quantity _level;
         oscilloscope_trigger_slope _slope;
     };
 

@@ -406,6 +406,7 @@ namespace detail {
 
             for (auto& d : descs) {
                 assert(d.uid() != nullptr);
+                _Analysis_assume_(d.uid() != nullptr);
                 auto name = tinkerforge_sensor_impl::get_sensor_name(
                     host, port, d.uid());
 

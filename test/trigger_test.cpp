@@ -24,14 +24,14 @@ namespace test {
                 Assert::IsNull(t.hold_off(), L"Default hold_off", LINE_INFO());
                 Assert::AreEqual(int(oscilloscope_trigger_hysteresis::automatic), int(t.hysteresis()), L"Default hysteresis", LINE_INFO());
                 Assert::AreEqual(0, int(t.input()), L"Default input", LINE_INFO());
-                Assert::AreEqual("", t.level_unit(), L"Default level_unit", LINE_INFO());
-                Assert::AreEqual(0.0f, t.level_value(), L"Default level_value", LINE_INFO());
+                Assert::AreEqual("", t.level().unit(), L"Default level_unit", LINE_INFO());
+                Assert::AreEqual(0.0f, t.level().value(), L"Default level_value", LINE_INFO());
                 Assert::AreEqual(int(oscilloscope_trigger_mode::normal), int(t.mode()), L"Default mode", LINE_INFO());
                 Assert::AreEqual(int(oscilloscope_trigger_slope::rising), int(t.slope()), L"Default coupling", LINE_INFO());
                 Assert::AreEqual("CH1", t.source(), L"Default source", LINE_INFO());
 
-                t.coupling(oscilloscope_trigger_coupling::lf_reject);
-                Assert::AreEqual(int(oscilloscope_trigger_coupling::lf_reject), int(t.coupling()), L"Set coupling", LINE_INFO());
+                t.coupling(oscilloscope_trigger_coupling::low_frequency_reject);
+                Assert::AreEqual(int(oscilloscope_trigger_coupling::low_frequency_reject), int(t.coupling()), L"Set coupling", LINE_INFO());
 
                 t.hold_off("10s");
                 Assert::AreEqual("10s", t.hold_off(), L"Set hold_off", LINE_INFO());
@@ -39,10 +39,10 @@ namespace test {
                 t.hysteresis(oscilloscope_trigger_hysteresis::high);
                 Assert::AreEqual(int(oscilloscope_trigger_hysteresis::high), int(t.hysteresis()), L"Default hysteresis", LINE_INFO());
 
-                t.level(3, 42, "ms");
+                t.level(3, oscilloscope_quantity(42, "ms"));
                 Assert::AreEqual(3, int(t.input()), L"Set level", LINE_INFO());
-                Assert::AreEqual("ms", t.level_unit(), L"Set level", LINE_INFO());
-                Assert::AreEqual(42.0f, t.level_value(), L"Set level", LINE_INFO());
+                Assert::AreEqual("ms", t.level().unit(), L"Set level", LINE_INFO());
+                Assert::AreEqual(42.0f, t.level().value(), L"Set level", LINE_INFO());
 
                 t.mode(oscilloscope_trigger_mode::automatic);
                 Assert::AreEqual(int(oscilloscope_trigger_mode::automatic), int(t.mode()), L"Set mode", LINE_INFO());

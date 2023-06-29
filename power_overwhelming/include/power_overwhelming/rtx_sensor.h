@@ -10,9 +10,11 @@
 #include <cstdint>
 #include <cinttypes>
 
+#include "power_overwhelming/oscilloscope_channel.h"
 #include "power_overwhelming/oscilloscope_edge_trigger.h"
 #include "power_overwhelming/oscilloscope_reference_point.h"
 #include "power_overwhelming/oscilloscope_sensor_definition.h"
+#include "power_overwhelming/oscilloscope_single_acquisition.h"
 #include "power_overwhelming/visa_sensor.h"
 
 
@@ -108,6 +110,10 @@ namespace power_overwhelming {
         void configure(
             _In_reads_(cnt) const oscilloscope_sensor_definition *sensors,
             _In_ const std::size_t cnt);
+
+        void configure(_In_ const oscilloscope_channel& channel);
+
+        void configure(_In_ const oscilloscope_single_acquisition& acquisition);
 
         /// <summary>
         /// Enable an configure one of the mathematical expressions.

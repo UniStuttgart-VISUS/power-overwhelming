@@ -136,6 +136,132 @@ void visus::power_overwhelming::rtx_sensor::configure(
 
 
 /*
+ * visus::power_overwhelming::rtx_sensor::configure
+ */
+void visus::power_overwhelming::rtx_sensor::configure(
+        _In_ const oscilloscope_channel& channel) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
+
+    // Note: Attenuation should be set first, because changing the attenuation
+    // will also scale other values like the range.
+    impl.printf("PROB%d:SET:ATT:UNIT %s\n", channel.channel(),
+        channel.gain().unit());
+    this->throw_on_system_error();
+    impl.printf("PROB%d:SET:ATT:MAN %f\n", channel.channel(),
+        channel.gain().value());
+    this->throw_on_system_error();
+
+    switch (channel.bandwidth()) {
+        case oscilloscope_channel_bandwidth::limit_to_20_mhz:
+            impl.printf("CHAN%d:BAND B20\n", channel.channel());
+            break;
+
+        default:
+            impl.printf("CHAN%d:BAND FULL\n", channel.channel());
+            break;
+    }
+    this->throw_on_system_error();
+
+    switch (channel.coupling()) {
+        case oscilloscope_channel_coupling::alternating_current_limit:
+            impl.printf("CHAN%d:COUP ACL\n", channel.channel());
+            break;
+
+        case oscilloscope_channel_coupling::ground:
+            impl.printf("CHAN%d:COUP GND\n", channel.channel());
+            break;
+
+        default:
+            impl.printf("CHAN%d:COUP DCL\n", channel.channel());
+            break;
+    }
+    this->throw_on_system_error();
+
+    switch (channel.decimation_mode()) {
+        case oscilloscope_decimation_mode::high_resolution:
+            impl.printf("CHAN%d:TYPE HRES\n", channel.channel());
+            break;
+
+        case oscilloscope_decimation_mode::peak_detect:
+            impl.printf("CHAN%d:TYPE PDET\n", channel.channel());
+            break;
+
+        default:
+            impl.printf("CHAN%d:TYPE SAMP\n", channel.channel());
+            break;
+    }
+    this->throw_on_system_error();
+
+    impl.printf("CHAN%d:LAB \"%s\"\n", channel.channel(),
+        channel.label().text());
+    this->throw_on_system_error();
+    impl.printf("CHAN%d:LAB:STAT %s\n", channel.channel(),
+        channel.label().visible() ? "ON" : "OFF");
+    this->throw_on_system_error();
+
+    impl.printf("CHAN%d:OFFS %f%s\n", channel.channel(),
+        channel.offset().value(), channel.offset().unit());
+    this->throw_on_system_error();
+
+    switch (channel.polarity()) {
+        case oscilloscope_channel_polarity::inverted:
+            impl.printf("CHAN%d:POL INV\n", channel.channel());
+            break;
+
+        default:
+            impl.printf("CHAN%d:POL NORM\n", channel.channel());
+            break;
+    }
+    this->throw_on_system_error();
+
+    impl.printf("CHAN%d:RANG %f%s\n", channel.channel(),
+        channel.range().value(), channel.range().unit());
+    this->throw_on_system_error();
+
+    impl.printf("CHAN%d:SKEW %f%s\n", channel.channel(),
+        channel.skew().value(), channel.skew().unit());
+    this->throw_on_system_error();
+
+    impl.printf("CHAN%d:STAT %s\n", channel.channel(),
+        channel.state() ? "ON" : "OFF");
+    this->throw_on_system_error();
+
+    impl.printf("CHAN%d:ZOFF %f%s\n", channel.channel(),
+        channel.zero_offset().value(), channel.zero_offset().unit());
+    this->throw_on_system_error();
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::configure
+ */
+void visus::power_overwhelming::rtx_sensor::configure(
+        _In_ const oscilloscope_single_acquisition& acquisition) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
+
+    if (acquisition.automatic_points()) {
+        impl.printf("ACQ:POIN:AUT ON\n", acquisition.points());
+    } else {
+        impl.printf("ACQ:POIN %u\n", acquisition.points());
+    }
+    this->throw_on_system_error();
+
+    impl.printf("ACQ:NSIN:COUN %u\n", acquisition.count());
+    this->throw_on_system_error();
+
+    impl.printf("SING\n");
+    this->throw_on_system_error();
+
+    impl.printf("ACQ:STAT RUN\n");
+    this->throw_on_system_error();
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
  * visus::power_overwhelming::rtx_sensor::expression
  */
 void visus::power_overwhelming::rtx_sensor::expression(
@@ -255,7 +381,7 @@ void visus::power_overwhelming::rtx_sensor::trigger(
         this->throw_on_system_error();
 
         impl.printf("TRIG:A:LEV%d:VAL %f %s\n", et->input(),
-            et->level_value(), et->level_unit());
+            et->level().value(), et->level().unit());
         this->throw_on_system_error();
 
         switch (et->coupling()) {
@@ -267,7 +393,7 @@ void visus::power_overwhelming::rtx_sensor::trigger(
                 impl.printf("TRIG:A:EDGE:COUP DC\n");
                 break;
 
-            case oscilloscope_trigger_coupling::lf_reject:
+            case oscilloscope_trigger_coupling::low_frequency_reject:
                 impl.printf("TRIG:A:EDGE:COUP LFR\n");
                 break;
         }

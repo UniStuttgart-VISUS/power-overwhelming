@@ -5,8 +5,8 @@
 
 #pragma once
 
+#include "power_overwhelming/oscilloscope_quantity.h"
 #include "power_overwhelming/oscilloscope_trigger_mode.h"
-#include "power_overwhelming/power_overwhelming_api.h"
 
 
 namespace visus {

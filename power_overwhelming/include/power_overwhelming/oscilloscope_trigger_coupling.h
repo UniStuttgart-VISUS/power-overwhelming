@@ -26,10 +26,10 @@ namespace power_overwhelming {
         alternating_current,
 
         /// <summary>
-        /// High-frequency couling, which enables a 15 kHz high-pass filter
+        /// High-frequency coupling, which enables a 15 kHz high-pass filter
         /// to remove lower frequencies from the trigger signal.
         /// </summary>
-        lf_reject
+        low_frequency_reject
     };
 
 } /* namespace power_overwhelming */

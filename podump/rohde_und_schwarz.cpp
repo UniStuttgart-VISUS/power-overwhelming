@@ -84,11 +84,22 @@ void query_rtx(void) {
             s.time_scale(1);
             s.trigger_position(42.42f, "ms");
             s.trigger(oscilloscope_edge_trigger("CH1")
-                .level(1, 2000.0f, "mV")
+                .level(1, oscilloscope_quantity(2000.0f, "mV"))
                 .slope(oscilloscope_trigger_slope::both)
                 .mode(oscilloscope_trigger_mode::normal));
 
             s.configure(definitions.data(), definitions.size());
+
+            s.configure(oscilloscope_channel(1)
+                .label(oscilloscope_label("PwrOwg"))
+                .state(true)
+                .gain(oscilloscope_quantity(10, "V"))
+                .range(oscilloscope_quantity(7, L"V")));
+
+            s.configure(oscilloscope_single_acquisition()
+                .points(50000)
+                .count(8));
+
             //s.expression(1, "CH1*CH2", "W");
             std::wcout << s.name() << L":" << std::endl;
         }
