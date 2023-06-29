@@ -12,6 +12,7 @@
 
 #include "power_overwhelming/oscilloscope_channel.h"
 #include "power_overwhelming/oscilloscope_edge_trigger.h"
+#include "power_overwhelming/oscilloscope_quantity.h"
 #include "power_overwhelming/oscilloscope_reference_point.h"
 #include "power_overwhelming/oscilloscope_sensor_definition.h"
 #include "power_overwhelming/oscilloscope_single_acquisition.h"
@@ -168,12 +169,18 @@ namespace power_overwhelming {
         void unit(_In_ const std::uint32_t channel, _In_z_ const char *unit);
 
         /// <summary>
-        /// Sets the horizontal scale for all channels in time units per
+        /// Sets the time range of a single acquisition covering all grid
+        ///  divisions.
+        /// </summary>
+        /// <param name="scale">Time scale within [250e-12, 500].</param>
+        void time_range(_In_ const oscilloscope_quantity &scale);
+
+        /// <summary>
+        /// Sets the horizontal scale for all channels in time units per grid
         /// division.
         /// </summary>
         /// <param name="scale">Time scale within [1e-9, 50].</param>
-        /// <param name="unit">The time unit, which defaults to seconds.</param>
-        void time_scale(_In_ const float scale, _In_z_ const char *unit = "s");
+        void time_scale(_In_ const oscilloscope_quantity& scale);
 
         /// <summary>
         /// Configures the trigger.

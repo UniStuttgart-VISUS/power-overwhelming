@@ -315,12 +315,23 @@ void visus::power_overwhelming::rtx_sensor::unit(
 
 
 /*
+ * visus::power_overwhelming::rtx_sensor::time_range
+ */
+void visus::power_overwhelming::rtx_sensor::time_range(
+        _In_ const oscilloscope_quantity& scale) {
+    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
+    impl.printf("TIM:RANG %f %s\n", scale.value(), scale.unit());
+    this->throw_on_system_error();
+}
+
+
+/*
  * visus::power_overwhelming::rtx_sensor::time_scale
  */
 void visus::power_overwhelming::rtx_sensor::time_scale(
-        _In_ const float scale, _In_z_ const char *unit) {
+        _In_ const oscilloscope_quantity &scale) {
     auto impl = static_cast<detail::visa_sensor_impl&>(*this);
-    impl.printf("TIM:SCAL %f %s\n", scale, (unit != nullptr) ? unit : "");
+    impl.printf("TIM:SCAL %f %s\n", scale.value(), scale.unit());
     this->throw_on_system_error();
 }
 
@@ -399,6 +410,8 @@ void visus::power_overwhelming::rtx_sensor::trigger(
         }
         this->throw_on_system_error();
 
+#if 0
+        // TODO: Only RTA
         switch (et->hysteresis()) {
             case oscilloscope_trigger_hysteresis::automatic:
                 impl.printf("TRIG:A:HYST AUTO\n");
@@ -417,6 +430,7 @@ void visus::power_overwhelming::rtx_sensor::trigger(
                 break;
         }
         this->throw_on_system_error();
+#endif
     }
 }
 
