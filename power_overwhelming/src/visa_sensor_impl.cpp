@@ -13,7 +13,7 @@
  */
 visus::power_overwhelming::detail::visa_sensor_impl::visa_sensor_impl(
         _In_z_ const char *path, _In_ const std::int32_t timeout)
-        : scope(path, timeout), path(path) {
+        : instrument(path, timeout) {
     this->clear();
 }
 
@@ -23,8 +23,7 @@ visus::power_overwhelming::detail::visa_sensor_impl::visa_sensor_impl(
  */
 visus::power_overwhelming::detail::visa_sensor_impl::visa_sensor_impl(
         _In_z_ const wchar_t *path, _In_ const std::int32_t timeout)
-    : scope(power_overwhelming::convert_string<char>(path).c_str(), timeout),
-        path(power_overwhelming::convert_string<char>(path)) {
+        : instrument(path, timeout) {
     this->clear();
 }
 

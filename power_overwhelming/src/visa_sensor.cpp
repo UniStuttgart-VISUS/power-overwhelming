@@ -68,7 +68,7 @@ visus::power_overwhelming::detail::visa_sensor::name(void) const noexcept {
 _Ret_maybenull_z_ const char *
 visus::power_overwhelming::detail::visa_sensor::path(void) const noexcept {
     return (this->_impl != nullptr)
-        ? this->_impl->path.c_str()
+        ? this->_impl->instrument.path()
         : nullptr;
 }
 

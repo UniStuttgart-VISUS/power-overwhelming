@@ -23,7 +23,7 @@ visus::power_overwhelming::sensor::sample(
  */
 void visus::power_overwhelming::sensor::check_not_disposed(void) const {
     if (!*this) {
-        throw std::runtime_error("A disposed sensor which has been disposed by "
-            "a move operation cannot be sampled.");
+        throw std::runtime_error("A sensor which has been disposed by "
+            "a move operation cannot be used anymore.");
     }
 }

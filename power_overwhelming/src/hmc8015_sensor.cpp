@@ -13,6 +13,7 @@
 
 #include "power_overwhelming/convert_string.h"
 
+#include "string_functions.h"
 #include "timestamp.h"
 #include "tokenise.h"
 #include "visa_library.h"
@@ -91,8 +92,7 @@ visus::power_overwhelming::hmc8015_sensor::~hmc8015_sensor(void) {
         // Reset the system state to local operations, but make sure that we
         // do not throw in the destructor. Therefore, we use the library
         // directly instead of the wrappers checking the state of the calls.
-        detail::visa_library::instance().viPrintf(impl->scope,
-            "SYST:LOC\n");
+        impl->instrument.write("SYST:LOC\n");
     }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
@@ -106,9 +106,10 @@ void visus::power_overwhelming::hmc8015_sensor::display(
     auto impl = static_cast<detail::visa_sensor_impl &>(*this);
 
     if (text != nullptr) {
-        impl.printf("DISP:TEXT:DATA \"%s\"\n", text);
+        auto cmd = detail::format_string("DISP:TEXT:DATA \"%s\"\n", text);
+        impl.printf(cmd.c_str());
     } else {
-        impl.printf("DISP:TEXT:CLE\n");
+        impl.write("DISP:TEXT:CLE\n");
     }
 
     this->throw_on_system_error();
@@ -120,11 +121,14 @@ void visus::power_overwhelming::hmc8015_sensor::display(
  */
 void visus::power_overwhelming::hmc8015_sensor::display(
         _In_opt_z_ const wchar_t *text) {
-    if (text == nullptr) {
-        this->display(static_cast<char *>(nullptr));
+    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
+
+    if (text != nullptr) {
+        auto cmd = convert_string<char>(detail::format_string(
+            L"DISP:TEXT:DATA \"%s\"\n", text));
+        impl.printf(cmd.c_str());
     } else {
-        auto t = convert_string<char>(text);
-        this->display(t.c_str());
+        impl.write("DISP:TEXT:CLE\n");
     }
 }
 

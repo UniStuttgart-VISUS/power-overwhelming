@@ -1,0 +1,489 @@
+﻿// <copyright file="visa_instrument.h" company="Visualisierungsinstitut der Universität Stuttgart">
+// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// </copyright>
+// <author>Christoph Müller</author>
+
+#pragma once
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+#include <visa.h>
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+#include "power_overwhelming/blob.h"
+
+
+namespace visus {
+namespace power_overwhelming {
+
+    /* Forward declarations. */
+    namespace detail { struct visa_instrument_impl; }
+
+    /// <summary>
+    /// Implementation of a VISA instrument, which can be used to implement a
+    /// sensor or control an instrument like an oscilloscope manually.
+    /// </summary>
+    /// <remarks>
+    /// <para>The <see cref="visa_instrument" /> manages a
+    /// <see cref="ViSession" /> on a single device, which might be used by
+    /// multiple <see cref="sensor" />s.
+    /// </remarks>
+    class POWER_OVERWHELMING_API visa_instrument final {
+
+    public:
+
+        /// <summary>
+        /// The type representing a single byte.
+        /// </summary>
+        typedef blob::byte_type byte_type;
+
+        /// <summary>
+        /// The type used to express device timeouts in milliseconds.
+        /// </summary>
+        typedef std::uint32_t timeout_type;
+
+        /// <summary>
+        /// The vendor ID of Rohde &amp; Schwarz.
+        /// </summary>
+        static constexpr const char *rohde_und_schwarz = "0x0AAD";
+
+        /// <summary>
+        /// Initialises a new, but invalid instance.
+        /// </summary>
+        visa_instrument(void);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <remarks>
+        /// This constructor will set the name of the sensor to the identity
+        /// string of the instrument, reset the instrument and clear any error
+        /// state in the instrument.
+        /// </remarks>
+        /// <param name="path"></param>
+        /// <param name="timeout"></param>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the sensor state
+        /// could not be allocated.</exception>
+        /// <exception cref="std::system_error">If the VISA library could not be
+        /// loaded.</exception>
+        /// <exception cref="visa_exception">If the sensor could not be
+        /// initialised.</exception>
+        visa_instrument(_In_z_ const wchar_t *path,
+            _In_ const timeout_type timeout);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <remarks>
+        /// This constructor will set the name of the sensor to the identity
+        /// string of the instrument, reset the instrument and clear any error
+        /// state in the instrument.
+        /// </remarks>
+        /// <param name="path"></param>
+        /// <param name="timeout"></param>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the sensor state
+        /// could not be allocated.</exception>
+        /// <exception cref="std::system_error">If the VISA library could not be
+        /// loaded.</exception>
+        /// <exception cref="visa_exception">If the sensor could not be
+        /// initialised.</exception>
+        visa_instrument(_In_z_ const char *path,
+            _In_ const timeout_type timeout);
+
+        visa_instrument(const visa_instrument&) = delete;
+
+        /// <summary>
+        /// Move <paramref name="rhs" /> into a new instance.
+        /// </summary>
+        /// <param name="rhs">The object to be moved.</param>
+        inline visa_instrument(_Inout_ visa_instrument&& rhs) noexcept
+                : _impl(rhs._impl) {
+            rhs._impl = nullptr;
+        }
+
+        /// <summary>
+        /// Finalise the instance.
+        /// </summary>
+        ~visa_instrument(void);
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+        /// <summary>
+        /// Read an attribute value from the instrument.
+        /// </summary>
+        /// <param name="name">The name of the attribute to be retrieve.</param>
+        /// <returns>The current value of teh attribute.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        ViAttrState attribute(_In_ ViAttr name) const;
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+        /// <summary>
+        /// Set an attribute of the instrument.
+        /// </summary>
+        /// <param name="name">The name of the attribute to be set.</param>
+        /// <param name="value">The new value of teh attribute.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        visa_instrument& attribute(_In_ ViAttr name,
+            _In_ ViAttrState value);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+        /// <summary>
+        /// Call <see cref="viClear" /> on the instrument, which will flush all
+        /// buffers.
+        /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library was compiled without support
+        /// for VISA.
+        /// </remarks>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        visa_instrument& clear(void);
+
+        /// <summary>
+        /// Clear the error queue of the instrument.
+        /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library was compiled without support
+        /// for VISA.
+        /// </remarks>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        visa_instrument& clear_status(void);
+
+        /// <summary>
+        /// Gets the VISA path of the device.
+        /// </summary>
+        /// <returns>The VISA path used to open the device.</returns>
+        _Ret_maybenull_z_ const char *path(void) const noexcept;
+
+        /// <summary>
+        /// Write the given data to the instrument and directly read the
+        /// response using a buffer size of <paramref name="buffer_size" />
+        /// bytes.
+        /// </summary>
+        /// <param name="query">The query to send to the instrument.</param>
+        /// <param name="cnt">The size of <paramref name="query" /> in bytes.
+        /// </param>
+        /// <param name="buffer_size">The buffer size used to read the response.
+        /// This parameter defaults to 1024.</param>
+        /// <returns>The data received from the instrument.</returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="query" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        blob query(_In_reads_bytes_(cnt) const byte_type *query,
+            _In_ const std::size_t cnt,
+            _In_ const std::size_t buffer_size = 1024) const;
+
+        /// <summary>
+        /// Write the given null-terminated query to the instrument and directly
+        /// read the response using a buffer size of
+        /// <paramref name="buffer_size" /> bytes.
+        /// </summary>
+        /// <param name="query">The query to be sent to the instrument.</param>
+        /// <param name="buffer_size">The buffer size used to read the response.
+        /// This parameter defaults to 1024.</param>
+        /// <returns>The data received from the instrument.</returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="query" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        blob query(_In_z_ const char *query,
+            _In_ const std::size_t buffer_size = 1024) const;
+
+        /// <summary>
+        /// Write the given null-terminated query to the instrument and directly
+        /// read the response using a buffer size of
+        /// <paramref name="buffer_size" /> bytes.
+        /// </summary>
+        /// <param name="query">The query to be sent to the instrument.</param>
+        /// <param name="buffer_size">The buffer size used to read the response.
+        /// This parameter defaults to 1024.</param>
+        /// <returns>The data received from the instrument.</returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="query" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        blob query(_In_z_ const wchar_t *query,
+            _In_ const std::size_t buffer_size = 1024) const;
+
+        /// <summary>
+        /// Read from the instrument into the given buffer.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method has no effect if the library has been compiled
+        /// without support for VISA.</para>
+        /// </remarks>
+        /// <param name="buffer">The buffer to write the data to.</param>
+        /// <param name="cnt">The size of the buffer in bytes.</param>
+        /// <returns>The number of bytes actually read. If this is equal to
+        /// <see cref="cnt" />, the response has most likely not been read in
+        /// total and you should call the method again.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="buffer" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        std::size_t read(_Out_writes_bytes_(cnt) byte_type *buffer,
+            _In_ const std::size_t cnt) const;
+
+        /// <summary>
+        /// Read a full response.
+        /// </summary>
+        /// <remarks>
+        /// This method has no effect if the library has been compiled without
+        /// support for VISA.
+        /// </remarks>
+        /// <param name="buffer_size">The size of the read buffer being used. If
+        /// this is less than the response size, the buffer will be resized
+        /// until everything was read.
+        /// </param>
+        /// <returns>The full output from the device. The buffer will have
+        /// exactly the size of the response, all padding will be removed before
+        /// the buffer is returned.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        blob read_all(_In_ const std::size_t buffer_size = 1024) const;
+
+        /// <summary>
+        /// Resets the instrument to its default state by issuing the *RST
+        /// command.
+        /// </summary>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        visa_instrument& reset(void);
+
+        ///// <summary>
+        ///// Shortcut to <see cref="viSetBuf" /> on the device session
+        ///// represented by <see cref="scope" />.
+        ///// </summary>
+        ///// <param name="mask"></param>
+        ///// <param name="size"></param>
+        ///// <returns><c>*this</c>.</returns>
+        ///// <exception cref="std::runtime_error">If the method is called on an
+        ///// object that has been disposed by moving it.</exception>
+        ///// <exception cref="visa_exception">If the operation failed. Note that
+        ///// a failure here only refers to the use of the API, ie the instrument
+        ///// can be in a failed state even if the call succeeded. Use
+        ///// <see cref="throw_on_system_error" /> to check the internal state of
+        ///// the instrument after the call.</exception>
+        //visa_instrument& set_buffer(_In_ const std::uint16_t mask,
+        //    _In_ const std::uint32_t size);
+
+        /// <summary>
+        /// Synchonises the date and time on the instrument with the system
+        /// clock of the computer calling this API.
+        /// </summary>
+        /// <param name="utc">If <c>true</c>, UTC will be used, the local time
+        /// otherwise. This parameter defaults to <c>false</c>.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        visa_instrument& synchronise_clock(_In_ const bool utc = false);
+
+        /// <summary>
+        /// Query the oldest error in the queue.
+        /// </summary>
+        /// <remarks>
+        /// This method always returns zero if the library was compiled without
+        /// support for VISA.
+        /// </remarks>
+        /// <returns>The current system error, or zero if the system has no
+        /// previous error.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the current system state could
+        /// not be retrieved.</exception>
+        int system_error(void) const;
+
+        //UINT32 xx;
+//detail::visa_library::instance().viGetAttribute(this->scope, VI_ATTR_TMO_VALUE, &xx);
+//detail::visa_library::instance().viSetAttribute(this->scope, VI_ATTR_TMO_VALUE, 10000); // TODO
+
+        /// <summary>
+        /// Write at most <paramref name="cnt" /> bytes of the given data to the
+        /// instrument.
+        /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library was compiled without support
+        /// for VISA.
+        /// </remarks>
+        /// <param name="buffer">The buffer holding the data to write.</param>
+        /// <param name="cnt">The size of <paramref name="buffer" /> in bytes.
+        /// </param>
+        /// <returns>The number of bytes actually written.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="buffer" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        std::size_t write(_In_reads_bytes_(cnt) const byte_type *buffer,
+            _In_ const std::size_t cnt) const;
+
+        /// <summary>
+        /// Write the given data to the instrument.
+        /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library was compiled without support
+        /// for VISA.
+        /// </remarks>
+        /// <param name="buffer">The buffer holding the data to write.</param>
+        /// <param name="cnt">The size of <paramref name="buffer" /> in bytes.
+        /// </param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="buffer" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        visa_instrument& write_all(
+            _In_reads_bytes_(cnt) const byte_type *buffer,
+            _In_ const std::size_t cnt);
+
+        /// <summary>
+        /// Writes the given null-terminated data to the instrument.
+        /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library was compiled without support
+        /// for VISA.
+        /// </remarks>
+        /// <param name="str">A null-terminated string to write to the device.
+        /// </param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="str" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        visa_instrument& write(_In_z_ const char *str) const;
+
+        /// <summary>
+        /// Writes the given null-terminated data to the instrument.
+        /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library was compiled without support
+        /// for VISA.
+        /// </remarks>
+        /// <param name="str">A null-terminated string to write to the device.
+        /// </param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="str" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        visa_instrument& write(_In_z_ const wchar_t *str) const;
+
+        visa_instrument& operator =(const visa_instrument&) = delete;
+
+        /// <summary>
+        /// Move assignment.
+        /// </summary>
+        /// <param name="rhs">The right-hand side operand</param>
+        /// <returns><c>*this</c>.</returns>
+        visa_instrument& operator =(_Inout_ visa_instrument&& rhs) noexcept;
+
+        /// <summary>
+        /// Determines whether the object is valid.
+        /// </summary>
+        /// <remarks>
+        /// An instrument is considered valid until it has been disposed by a
+        /// move operation.
+        /// </remarks>
+        /// <returns><c>true</c> if the instrument is valid, <c>false</c>
+        /// otherwise.</returns>
+        operator bool(void) const noexcept;
+
+    private:
+
+        /// <summary>
+        /// Checks whether the instance is valid and throws an
+        /// <see cref="std::runtime_error" /> if this is not the case.
+        /// </summary>
+        /// <returns>The implementation object for the instrument.</returns>
+        /// <exception cref="std::runtime_error">If the implementation has been
+        /// released.</exception>
+        detail::visa_instrument_impl *check_not_disposed(void) const;
+
+        /// <summary>
+        /// Initialises the instance by retreving the name and resetting the
+        /// device.
+        /// </summary>
+        void initialise(void);
+
+        /// <summary>
+        /// Checks <see cref="system_error" /> and throws a
+        /// <see cref="std::runtime_error" /> if it does not return zero.
+        /// </summary>
+        /// <exception cref="visa_exception">If the current system state could
+        /// not be retrieved.</exception>
+        /// <exception cref="std::runtime_error">If the current system state was
+        /// retrieved and is not zero.</exception>
+        void throw_on_system_error(void);
+
+        detail::visa_instrument_impl *_impl;
+    };
+
+} /* namespace power_overwhelming */
+} /* namespace visus */

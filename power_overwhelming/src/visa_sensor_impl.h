@@ -10,9 +10,10 @@
 #include <vector>
 
 #include "power_overwhelming/convert_string.h"
+#include "power_overwhelming/visa_instrument.h"
 
+#include "visa_exception.h"
 #include "visa_library.h"
-#include "visa_scope.h"
 
 
 namespace visus {
@@ -30,19 +31,14 @@ namespace detail {
         typedef visa_exception::value_type status_type;
 
         /// <summary>
-        /// The VISA path of the device.
+        /// The VISA instrument.
         /// </summary>
-        std::string path;
+        visa_instrument instrument;
 
         /// <summary>
         /// The user-facing name of the sensor.
         /// </summary>
         std::wstring sensor_name;
-
-        /// <summary>
-        /// The VISA scope representing the connection to the device.
-        /// </summary>
-        visa_scope scope;
 
         /// <summary>
         /// Initialises a new instance.
@@ -230,7 +226,7 @@ namespace detail {
         int system_error(_Out_ std::string& message);
 
         /// <summary>
-        /// Query the oldes error in the queue.
+        /// Query the oldest error in the queue.
         /// </summary>
         /// <remarks>
         /// This method always returns zero if the library was compiled without
@@ -304,4 +300,3 @@ namespace detail {
 } /* namespace power_overwhelming */
 } /* namespace visus */
 
-#include "visa_sensor_impl.inl"

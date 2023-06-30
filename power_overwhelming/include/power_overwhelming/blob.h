@@ -178,6 +178,22 @@ namespace power_overwhelming {
             _In_ const std::size_t offset) const noexcept;
 
         /// <summary>
+        /// Answer the pointer to the begin of the blob.
+        /// </summary>
+        /// <returns>A pointer ot he begin of the blob.</returns>
+        inline _Ret_maybenull_ byte_type *begin(void) noexcept {
+            return this->as<byte_type>();
+        }
+
+        /// <summary>
+        /// Answer the pointer to the begin of the blob.
+        /// </summary>
+        /// <returns>A pointer ot he begin of the blob.</returns>
+        inline _Ret_maybenull_ const byte_type *begin(void) const noexcept {
+            return this->as<byte_type>();
+        }
+
+        /// <summary>
         /// Deallocate all data.
         /// </summary>
         void clear(void);
@@ -208,6 +224,24 @@ namespace power_overwhelming {
         /// <returns>A pointer to the data.</returns>
         inline _Ret_maybenull_ const void *data(void) const noexcept {
             return this->_data;
+        }
+
+        /// <summary>
+        /// Answer the pointer to the position <i>after</c> the last byte in the
+        /// blob.
+        /// </summary>
+        /// <returns>A pointer ot he begin of the blob.</returns>
+        inline _Ret_maybenull_ byte_type *end(void) noexcept {
+            return this->as<byte_type>(this->_size);
+        }
+
+        /// <summary>
+        /// Answer the pointer to the position <i>after</c> the last byte in the
+        /// blob.
+        /// </summary>
+        /// <returns>A pointer ot he begin of the blob.</returns>
+        inline _Ret_maybenull_ const byte_type *end(void) const noexcept {
+            return this->as<byte_type>(this->_size);
         }
 
         /// <summary>
