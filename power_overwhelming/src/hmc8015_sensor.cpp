@@ -62,21 +62,21 @@ visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
     auto impl = static_cast<detail::visa_sensor_impl&>(*this);
 
     // Configure the device as in the R&S instrument driver.
-    impl.set_attribute(VI_ATTR_TMO_VALUE, 5000);
+    impl.instrument.attribute(VI_ATTR_TMO_VALUE, 5000);
     impl.set_buffer((VI_READ_BUF | VI_WRITE_BUF), 4096);
-    impl.set_attribute(VI_ATTR_WR_BUF_OPER_MODE, VI_FLUSH_ON_ACCESS);
-    impl.set_attribute(VI_ATTR_RD_BUF_OPER_MODE, VI_FLUSH_ON_ACCESS);
+    impl.instrument.attribute(VI_ATTR_WR_BUF_OPER_MODE, VI_FLUSH_ON_ACCESS);
+    impl.instrument.attribute(VI_ATTR_RD_BUF_OPER_MODE, VI_FLUSH_ON_ACCESS);
 
     // Lock the system to indicate that it is controlled by the software. As
     // locking the system is not critical, do not check for system errors here.
-    impl.printf("SYST:REM\n");
+    impl.instrument.write("SYST:REM\n");
 
     // Reset the device to default state.
-    impl.printf("*RST\n");
+    impl.instrument.reset();
 
     // Clear any error that might have been caused by our setup. We do not want
     // to abort just because the display does not look as expected.
-    impl.clear_status();
+    impl.instrument.clear_status();
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -107,9 +107,9 @@ void visus::power_overwhelming::hmc8015_sensor::display(
 
     if (text != nullptr) {
         auto cmd = detail::format_string("DISP:TEXT:DATA \"%s\"\n", text);
-        impl.printf(cmd.c_str());
+        impl.instrument.write(cmd.c_str());
     } else {
-        impl.write("DISP:TEXT:CLE\n");
+        impl.instrument.write("DISP:TEXT:CLE\n");
     }
 
     this->throw_on_system_error();
@@ -126,9 +126,9 @@ void visus::power_overwhelming::hmc8015_sensor::display(
     if (text != nullptr) {
         auto cmd = convert_string<char>(detail::format_string(
             L"DISP:TEXT:DATA \"%s\"\n", text));
-        impl.printf(cmd.c_str());
+        impl.instrument.write(cmd.c_str());
     } else {
-        impl.write("DISP:TEXT:CLE\n");
+        impl.instrument.write("DISP:TEXT:CLE\n");
     }
 }
 

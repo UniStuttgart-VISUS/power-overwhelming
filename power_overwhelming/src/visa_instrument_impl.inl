@@ -12,6 +12,6 @@ void visus::power_overwhelming::detail::visa_instrument_impl::write(
         _In_z_ const char *format, TArgs&&... args) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     visa_exception::throw_on_error(detail::visa_library::instance()
-        .viPrintf(this->scope, format, std::forward<TArgs>(args)...));
+        .viPrintf(this->session, format, std::forward<TArgs>(args)...));
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
