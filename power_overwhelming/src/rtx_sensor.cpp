@@ -257,6 +257,9 @@ void visus::power_overwhelming::rtx_sensor::configure(
 
     impl.printf("ACQ:STAT RUN\n");
     this->throw_on_system_error();
+
+    impl.write("*TRG\n");
+    this->throw_on_system_error();
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -271,9 +274,16 @@ visus::power_overwhelming::blob visus::power_overwhelming::rtx_sensor::data(
 
     impl.write("FORM REAL,32\n");
     this->throw_on_system_error();
+    impl.query("*OPC?\n");
+    this->throw_on_system_error();
 
     auto query = std::string("CHAN") + std::to_string(channel) + ":DATA?\n";
-    auto data = impl.query(query);
+    impl.write(query);
+    std::vector<std::uint8_t> hack(2);
+    impl.read(hack.data(), hack.size());
+    hack.resize(std::atoi((char *) hack.data() + 1));
+    impl.read(hack.data(), hack.size());
+    auto data = impl.read(std::atoi((char *)hack.data()));
 
     blob retval(data.size());
     std::copy(data.begin(), data.end(), retval.as<std::uint8_t>());

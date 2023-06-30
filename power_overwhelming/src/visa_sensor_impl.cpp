@@ -147,6 +147,10 @@ visus::power_overwhelming::detail::visa_sensor_impl::read(
     ViUInt32 read = 0;
     ViStatus status = VI_SUCCESS_MAX_CNT;
 
+    UINT32 xx;
+    detail::visa_library::instance().viGetAttribute(this->scope, VI_ATTR_TMO_VALUE, &xx);
+    detail::visa_library::instance().viSetAttribute(this->scope, VI_ATTR_TMO_VALUE, 10000); // TODO
+
     while (status == VI_SUCCESS_MAX_CNT) {
         status = detail::visa_library::instance().viRead(this->scope,
             retval.data() + offset,

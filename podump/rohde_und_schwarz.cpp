@@ -93,21 +93,20 @@ void query_rtx(void) {
 
             s.configure(oscilloscope_single_acquisition()
                 .points(50000)
-                .count(2));
-
+                .count(1));
+ 
             s.trigger_position(42.42f, "ms");
             s.trigger(oscilloscope_edge_trigger("CH1")
                 .level(1, oscilloscope_quantity(2000.0f, "mV"))
                 .slope(oscilloscope_trigger_slope::both)
                 .mode(oscilloscope_trigger_mode::normal));
 
-            std::this_thread::sleep_for(std::chrono::seconds(10));
             auto data = s.data(1);
 
             //s.expression(1, "CH1*CH2", "W");
             std::wcout << s.name() << L":" << std::endl;
         }
-
+           
     } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
