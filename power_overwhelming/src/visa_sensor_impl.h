@@ -5,15 +5,9 @@
 
 #pragma once
 
-#include <cinttypes>
-#include <string>
-#include <vector>
-
-#include "power_overwhelming/convert_string.h"
 #include "power_overwhelming/visa_instrument.h"
 
 #include "visa_exception.h"
-#include "visa_library.h"
 
 
 namespace visus {

@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <string>
+
 #if defined(POWER_OVERWHELMING_WITH_VISA)
 #include <visa.h>
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -138,6 +140,23 @@ namespace power_overwhelming {
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
         /// <summary>
+        /// Shortcut to <see cref="viSetBuf" /> on the device session
+        /// represented by <see cref="scope" />.
+        /// </summary>
+        /// <param name="mask"></param>
+        /// <param name="size"></param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        visa_instrument& buffer(_In_ const std::uint16_t mask,
+            _In_ const std::uint32_t size);
+
+        /// <summary>
         /// Call <see cref="viClear" /> on the instrument, which will flush all
         /// buffers.
         /// </summary>
@@ -165,6 +184,46 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the operation failed.
         /// </exception>
         visa_instrument& clear_status(void);
+
+        /// <summary>
+        /// Send the &quot;identify&quot; SCPI command to the instrument and
+        /// return its response.
+        /// </summary>
+        /// <param name="dst">If not <c>nullptr</c>, receives at most
+        /// <paramref name="cnt" /> characters of the identification string. It
+        /// is safe to pass <c>nulltpr</c> in which case the string will only
+        /// be measured, but not returned. It is guaranteed that this string is
+        /// null-terminated even if it was truncated.</param>
+        /// <param name="cnt">The size of <paramref name="dst" /> in characters.
+        /// </param>
+        /// <returns>The number of characters, including the terminating null,
+        /// required to store the identity of the instrument.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        std::size_t identify(_Out_writes_z_(cnt) wchar_t *dst,
+            _In_ const std::size_t cnt) const;
+
+        /// <summary>
+        /// Send the &quot;identify&quot; SCPI command to the instrument and
+        /// return its response.
+        /// </summary>
+        /// <param name="dst">If not <c>nullptr</c>, receives at most
+        /// <paramref name="cnt" /> characters of the identification string. It
+        /// is safe to pass <c>nulltpr</c> in which case the string will only
+        /// be measured, but not returned. It is guaranteed that this string is
+        /// null-terminated even if it was truncated.</param>
+        /// <param name="cnt">The size of <paramref name="dst" /> in characters.
+        /// </param>
+        /// <returns>The number of characters, including the terminating null,
+        /// required to store the identity of the instrument.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        std::size_t identify(_Out_writes_z_(cnt) char *dst,
+            _In_ const std::size_t cnt) const;
 
         /// <summary>
         /// Gets the VISA path of the device.
@@ -296,23 +355,6 @@ namespace power_overwhelming {
         /// processed successfully.</exception>
         visa_instrument& reset(void);
 
-        ///// <summary>
-        ///// Shortcut to <see cref="viSetBuf" /> on the device session
-        ///// represented by <see cref="scope" />.
-        ///// </summary>
-        ///// <param name="mask"></param>
-        ///// <param name="size"></param>
-        ///// <returns><c>*this</c>.</returns>
-        ///// <exception cref="std::runtime_error">If the method is called on an
-        ///// object that has been disposed by moving it.</exception>
-        ///// <exception cref="visa_exception">If the operation failed. Note that
-        ///// a failure here only refers to the use of the API, ie the instrument
-        ///// can be in a failed state even if the call succeeded. Use
-        ///// <see cref="throw_on_system_error" /> to check the internal state of
-        ///// the instrument after the call.</exception>
-        //visa_instrument& set_buffer(_In_ const std::uint16_t mask,
-        //    _In_ const std::uint32_t size);
-
         /// <summary>
         /// Synchonises the date and time on the instrument with the system
         /// clock of the computer calling this API.
@@ -341,9 +383,19 @@ namespace power_overwhelming {
         /// not be retrieved.</exception>
         int system_error(void) const;
 
-        //UINT32 xx;
-//detail::visa_library::instance().viGetAttribute(this->scope, VI_ATTR_TMO_VALUE, &xx);
-//detail::visa_library::instance().viSetAttribute(this->scope, VI_ATTR_TMO_VALUE, 10000); // TODO
+        /// <summary>
+        /// Checks the return value of <see cref="system_error" /> and throws a
+        /// <see cref="std::runtime_error" /> if it does not return zero.
+        /// </summary>
+        /// <remarks>
+        /// It is safe to call this method on a disposed instrument, in which
+        /// case nothing will happen.
+        /// </remarks>
+        /// <exception cref="visa_exception">If the current system state could
+        /// not be retrieved.</exception>
+        /// <exception cref="std::runtime_error">If the current system state was
+        /// retrieved and is not zero.</exception>
+        void throw_on_system_error(void);
 
         /// <summary>
         /// Write at most <paramref name="cnt" /> bytes of the given data to the
@@ -435,6 +487,27 @@ namespace power_overwhelming {
         /// the instrument after the call.</exception>
         visa_instrument& write(_In_z_ const wchar_t *str) const;
 
+        /// <summary>
+        /// Writes the given string to the instrument.
+        /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library was compiled without support
+        /// for VISA.
+        /// </remarks>
+        /// <typeparam name="TChar">The character type in a string. Only
+        /// <c>wchar_t</c> and <c>char</c> are supported here.</typeparam>
+        /// <param name="str">A string to write to the device.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        template<class TChar>
+        visa_instrument& write(_In_ const std::basic_string<TChar>& str) const;
+
         visa_instrument& operator =(const visa_instrument&) = delete;
 
         /// <summary>
@@ -471,16 +544,6 @@ namespace power_overwhelming {
         /// device.
         /// </summary>
         void initialise(void);
-
-        /// <summary>
-        /// Checks <see cref="system_error" /> and throws a
-        /// <see cref="std::runtime_error" /> if it does not return zero.
-        /// </summary>
-        /// <exception cref="visa_exception">If the current system state could
-        /// not be retrieved.</exception>
-        /// <exception cref="std::runtime_error">If the current system state was
-        /// retrieved and is not zero.</exception>
-        void throw_on_system_error(void);
 
         detail::visa_instrument_impl *_impl;
     };

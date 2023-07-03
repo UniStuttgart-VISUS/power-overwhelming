@@ -14,6 +14,8 @@
 #include <sys/time.h>
 #endif /* !defined(_WIN32) */
 
+#include "power_overwhelming/convert_string.h"
+
 #include "visa_exception.h"
 #include "visa_instrument_impl.h"
 #include "visa_library.h"
@@ -57,7 +59,9 @@ visus::power_overwhelming::visa_instrument::visa_instrument(
  * visus::power_overwhelming::visa_instrument::~visa_instrument
  */
 visus::power_overwhelming::visa_instrument::~visa_instrument(void) {
-    detail::visa_instrument_impl::release(this->_impl);
+    if (this->_impl != nullptr) {
+        this->_impl->release();
+    }
 }
 
 
@@ -90,6 +94,20 @@ visus::power_overwhelming::visa_instrument::attribute(_In_ ViAttr name,
 
 
 /*
+ * visus::power_overwhelming::visa_instrument::buffer
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::buffer(
+        _In_ const std::uint16_t mask, _In_ const std::uint32_t size) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    visa_exception::throw_on_error(detail::visa_library::instance()
+        .viSetBuf(this->check_not_disposed()->session, mask, size));
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
  * visus::power_overwhelming::visa_instrument::clear
  */
 visus::power_overwhelming::visa_instrument&
@@ -115,12 +133,44 @@ visus::power_overwhelming::visa_instrument::clear_status(void) {
 
 
 /*
+ * visus::power_overwhelming::visa_instrument::identify
+ */
+std::size_t visus::power_overwhelming::visa_instrument::identify(
+        _Out_writes_z_(cnt) wchar_t *dst, _In_ const std::size_t cnt) const {
+    auto retval = this->check_not_disposed()->identify();
+
+    if (dst != nullptr) {
+        auto retval0 = convert_string<wchar_t>(retval);
+        ::wcsncpy(dst, retval0.c_str(), cnt);
+        dst[cnt - 1] = 0;
+    }
+
+    return (retval.size() + 1);
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::identify
+ */
+std::size_t visus::power_overwhelming::visa_instrument::identify(
+        _Out_writes_z_(cnt) char *dst, _In_ const std::size_t cnt) const {
+    auto retval = this->check_not_disposed()->identify();
+
+    if (dst != nullptr) {
+        ::strncpy(dst, retval.c_str(), cnt);
+        dst[cnt - 1] = 0;
+    }
+
+    return (retval.size() + 1);
+}
+
+
+/*
  * visus::power_overwhelming::visa_instrument::path
  */
-_Ret_maybenull_z_
-const char *visus::power_overwhelming::visa_instrument::path(
-        void) const noexcept {
-    return (*this) ? this->_impl->path.c_str() : nullptr;
+_Ret_maybenull_z_ const char *
+visus::power_overwhelming::visa_instrument::path(void) const noexcept {
+    return (*this) ? this->_impl->path().c_str() : nullptr;
 }
 
 
@@ -186,24 +236,10 @@ visus::power_overwhelming::visa_instrument::read_all(
  */
 visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::reset(void) {
-    this->check_not_disposed()->write("*RST\n");
+    this->check_not_disposed()->format("*RST\n");
     this->throw_on_system_error();
     return *this;
 }
-
-
-///*
-// * visus::power_overwhelming::visa_instrument::set_buffer
-// */
-//visus::power_overwhelming::visa_instrument&
-//visus::power_overwhelming::visa_instrument::set_buffer(
-//        _In_ const std::uint16_t mask, _In_ const std::uint32_t size) {
-//#if defined(POWER_OVERWHELMING_WITH_VISA)
-//    visa_exception::throw_on_error(detail::visa_library::instance()
-//        .viSetBuf(this->check_not_disposed()->session, mask, size));
-//#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
-//    return *this;
-//}
 
 
 /*
@@ -272,6 +308,25 @@ int visus::power_overwhelming::visa_instrument::system_error(void) const {
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::throw_on_system_error
+ */
+void visus::power_overwhelming::visa_instrument::throw_on_system_error(void) {
+    if (this->_impl != nullptr) {
+        std::string message;
+        auto error = this->_impl->system_error(message);
+
+        if (error != 0) {
+            if (message.empty()) {
+                message = std::to_string(error);
+            }
+
+            throw std::runtime_error(message);
+        }
+    }
 }
 
 

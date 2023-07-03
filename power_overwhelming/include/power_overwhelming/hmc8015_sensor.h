@@ -10,22 +10,20 @@
 #include <cstdint>
 #include <cinttypes>
 
+#include "power_overwhelming/sensor.h"
+#include "power_overwhelming/visa_instrument.h"
+
 #include "instrument_range.h"
 #include "log_mode.h"
-#include "visa_sensor.h"
 
 
 namespace visus {
 namespace power_overwhelming {
 
-    /* Forward declarations */
-    namespace detail { struct visa_sensor_impl; }
-
     /// <summary>
     /// Allows for controlling a Rohde &amp; Schwarz HMC8015 power analyser.
     /// </summary>
-    class POWER_OVERWHELMING_API hmc8015_sensor final
-            : public detail::visa_sensor {
+    class POWER_OVERWHELMING_API hmc8015_sensor final : public sensor {
 
     public:
 
@@ -60,13 +58,31 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        inline hmc8015_sensor(void) { }
+        inline hmc8015_sensor(void) : _name(nullptr) { }
 
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="timeout"></param>
+        /// <param name="path">The path to the sensor</param>
+        /// <param name="timeout">The timeout in milliseconds for connecting to
+        /// the sensor.</param>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the sensor state
+        /// could not be allocated.</exception>
+        /// <exception cref="std::system_error">If the VISA library could not be
+        /// loaded.</exception>
+        /// <exception cref="visa_exception">If the sensor could not be
+        /// initialised.</exception>
+        hmc8015_sensor(_In_z_ const wchar_t *path,
+            _In_ const visa_instrument::timeout_type timeout);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="path">The path to the sensor</param>
+        /// <param name="timeout">The timeout in milliseconds for connecting to
+        /// the sensor.</param>
         /// <exception cref="std::invalid_argument">If <paramref name="path" />
         /// is <c>nullptr</c>.</exception>
         /// <exception cref="std::bad_alloc">If the memory for the sensor state
@@ -76,14 +92,13 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
         hmc8015_sensor(_In_z_ const char *path,
-            _In_ const std::int32_t timeout);
+            _In_ const visa_instrument::timeout_type timeout);
 
         /// <summary>
         /// Move <paramref name="rhs" /> into a new instance.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        inline hmc8015_sensor(_In_ hmc8015_sensor&& rhs) noexcept
-            : detail::visa_sensor(std::move(rhs)) { }
+        hmc8015_sensor(_Inout_ hmc8015_sensor&& rhs) noexcept;
 
         /// <summary>
         /// Finalise the instance.
@@ -107,14 +122,16 @@ namespace power_overwhelming {
         /// is only used if <paramref name="range" /> is set to
         /// <see cref="instrument_range::explicitly" />. Valid values are
         /// 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10 an 20.</param>
+        /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        inline void current_range(_In_ const instrument_range range,
+        inline hmc8015_sensor& current_range(_In_ const instrument_range range,
                 _In_ const float value = 0.0f) {
             // Note: HMC8015 supports only one channel, so this is hard coded.
             this->set_range(1, "CURR", range, value);
+            return *this;
         }
 
         /// <summary>
@@ -122,22 +139,24 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="text">The text to be displayed or <c>nullptr</c> to
         /// clear the display.</param>
+        /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        void display(_In_opt_z_ const char *text);
+        hmc8015_sensor& display(_In_opt_z_ const char *text);
 
         /// <summary>
         /// Displays the given text or clears the display.
         /// </summary>
         /// <param name="text">The text to be displayed or <c>nullptr</c> to
         /// clear the display.</param>
+        /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        void display(_In_opt_z_ const wchar_t *text);
+        hmc8015_sensor& display(_In_opt_z_ const wchar_t *text);
 
         /// <summary>
         /// Gets whether logging is enabled or not.
@@ -155,11 +174,12 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="enable">Start logging if <c>true</c>, otherwise, stop
         /// it.</param>
+        /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        void log(_In_ const bool enable);
+        hmc8015_sensor& log(_In_ const bool enable);
 
         /// <summary>
         /// Configures how logging started by <see cref="log" /> behaves.
@@ -186,11 +206,12 @@ namespace power_overwhelming {
         /// <see cref="log_mode::time_span" /> is selected.</param>
         /// <param name="second">The second of the start time if
         /// <see cref="log_mode::time_span" /> is selected.</param>
+        /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        void log_behaviour(_In_ const float interval,
+        hmc8015_sensor& log_behaviour(_In_ const float interval,
             _In_ const log_mode mode,
             _In_ const int value = INT_MAX,
             _In_ const std::int32_t year = 0,
@@ -230,11 +251,12 @@ namespace power_overwhelming {
         /// <param name="use_usb">If <c>true</c>, the file will be written to
         /// the attached USB stick instead of internal memory. This parameter
         /// defaults to <c>false</c>.</param>
+        /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        void log_file(_In_z_ const char *path,
+        hmc8015_sensor& log_file(_In_z_ const char *path,
             _In_ const bool overwrite = false,
             _In_ const bool use_usb = false);
 
@@ -249,24 +271,62 @@ namespace power_overwhelming {
         /// <param name="use_usb">If <c>true</c>, the file will be written to
         /// the attached USB stick instead of internal memory. This parameter
         /// defaults to <c>false</c>.</param>
+        /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        void log_file(_In_z_ const wchar_t *path,
+        hmc8015_sensor& log_file(_In_z_ const wchar_t *path,
             _In_ const bool overwrite = false,
             _In_ const bool use_usb = false);
 
         /// <summary>
+        /// Gets the name of the sensor.
+        /// </summary>
+        /// <remarks>
+        /// It is safe to call this method on a disposed object, in which case
+        /// the name will be <c>nullptr</c>.
+        /// </remarks>
+        /// <returns>The implementation-defined, human-readable name of the
+        /// sensor.</returns>
+        _Ret_maybenull_z_ virtual const wchar_t *name(
+            void) const noexcept override;
+
+        /// <summary>
+        /// Gets the VISA path of the instrument.
+        /// </summary>
+        /// <returns>The path of the instrument.</returns>
+        inline _Ret_maybenull_z_ const char *path(void) const noexcept {
+            return this->_instrument.path();
+        }
+
+        /// <summary>
         /// Resets the instrument to its default state.
         /// </summary>
+        /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        virtual void reset(void) override;
+        hmc8015_sensor& reset(void);
 
         using sensor::sample;
+
+        /// <summary>
+        /// Synchonises the date and time on the instrument with the system
+        /// clock of the computer calling this API.
+        /// </summary>
+        /// <param name="utc">If <c>true</c>, UTC will be used, the local time
+        /// otherwise. This parameter defaults to <c>false</c>.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        inline hmc8015_sensor& synchronise_clock(_In_ const bool utc = false) {
+            this->_instrument.synchronise_clock(utc);
+            return *this;
+        }
 
         /// <summary>
         /// Sets the voltage range.
@@ -285,14 +345,16 @@ namespace power_overwhelming {
         /// is only used if <paramref name="range" /> is set to
         /// <see cref="instrument_range::explicitly" />. Valid values are
         /// 5, 15, 30, 60, 150, 300 and 600.</param>
+        /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        inline void voltage_range(_In_ const instrument_range range,
+        inline hmc8015_sensor& voltage_range(_In_ const instrument_range range,
                 _In_ const std::int32_t value = 0) {
             // Note: HMC8015 supports only one channel, so this is hard coded.
             this->set_range(1, "VOLT", range, static_cast<float>(value));
+            return *this;
         }
 
         /// <summary>
@@ -300,10 +362,18 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        inline hmc8015_sensor& operator =(_In_ hmc8015_sensor&& rhs) noexcept {
-            visa_sensor::operator =(std::move(rhs));
-            return *this;
-        }
+        hmc8015_sensor& operator =(_Inout_ hmc8015_sensor&& rhs) noexcept;
+
+        /// <summary>
+        /// Determines whether the sensor is valid.
+        /// </summary>
+        /// <remarks>
+        /// A sensor is considered valid until it has been disposed by a move
+        /// operation.
+        /// </remarks>
+        /// <returns><c>true</c> if the sensor is valid, <c>false</c>
+        /// otherwise.</returns>
+        virtual operator bool(void) const noexcept override;
 
     protected:
 
@@ -315,10 +385,15 @@ namespace power_overwhelming {
 
         void configure(void);
 
+        void initialise(void);
+
         void set_range(_In_ const std::int32_t channel,
             _In_z_ const char *quantity,
             _In_ const instrument_range range,
             _In_ const float value);
+
+        visa_instrument _instrument;
+        wchar_t *_name;
     };
 
 } /* namespace power_overwhelming */

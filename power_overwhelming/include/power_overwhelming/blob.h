@@ -227,7 +227,16 @@ namespace power_overwhelming {
         }
 
         /// <summary>
-        /// Answer the pointer to the position <i>after</c> the last byte in the
+        /// Answer whether the blob is empty.
+        /// </summary>
+        /// <returns><c>true</c> if the blob contains no data, <c>false</c>
+        /// otherwise.</returns>
+        inline bool empty(void) const noexcept {
+            return ((this->_data == nullptr) || (this->_size < 1));
+        }
+
+        /// <summary>
+        /// Answer the pointer to the position <i>after</i> the last byte in the
         /// blob.
         /// </summary>
         /// <returns>A pointer ot he begin of the blob.</returns>

@@ -50,7 +50,7 @@ visus::power_overwhelming::detail::visa_instrument_impl::create(
             }
         }
 
-        retval->path = path;
+        retval->_path = path;
 
         _instruments[path] = retval;
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -91,23 +91,6 @@ visus::power_overwhelming::detail::visa_instrument_impl::create(
     }
 
     return create(std::string(path), timeout);
-}
-
-
-/*
- * visus::power_overwhelming::detail::visa_instrument_impl::release
- */
-void visus::power_overwhelming::detail::visa_instrument_impl::release(
-        _In_ visa_instrument_impl *& instrument) {
-    if (instrument != nullptr) {
-        std::lock_guard<decltype(_lock_instruments)> l(_lock_instruments);
-        if (--instrument->_counter == 0) {
-            _instruments.erase(instrument->path);
-            delete instrument;
-        }
-    }
-
-    instrument = nullptr;
 }
 
 
@@ -208,6 +191,27 @@ visus::power_overwhelming::detail::visa_instrument_impl::read_all(
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return blob();
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_instrument_impl::release
+ */
+std::size_t visus::power_overwhelming::detail::visa_instrument_impl::release(
+        void) {
+    auto expected = this->_counter.load();
+
+    while (!this->_counter.compare_exchange_weak(expected, expected - 1));
+
+    if (expected == 1) {
+        std::lock_guard<decltype(_lock_instruments)> l(_lock_instruments);
+        _instruments.erase(this->_path);
+        delete this;
+    }
+
+    // Note: Do not use counter at this point! Only local variables are still
+    // alive after deleting the object!
+    return (expected - 1);
 }
 
 

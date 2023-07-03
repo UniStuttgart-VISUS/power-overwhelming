@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <cinttypes>
 #include <cstdlib>
 #include <map>
@@ -77,22 +78,7 @@ namespace detail {
         static visa_instrument_impl *create(_In_z_ const char *path,
             _In_ const std::uint32_t timeout);
 
-        /// <summary>
-        /// Returns the instrument and decrements the reference counter. If this
-        /// was the last reference, the device connection will be closed.
-        /// </summary>
-        /// <remarks>
-        /// Releasing cached instruments is thread-safe.
-        /// </remarks>
-        /// <param name="instrument">The instrument to be freed.</param>
-        static void release(_In_ visa_instrument_impl *& instrument);
-
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-        /// <summary>
-        /// The path of the instrument.
-        /// </summary>
-        std::string path;
-
         /// <summary>
         /// The default resource manager.
         /// </summary>
@@ -110,6 +96,23 @@ namespace detail {
         ~visa_instrument_impl(void);
 
         /// <summary>
+        /// Invoke <see cref="viPrintf" /> on the instrument.
+        /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library was compiled without support
+        /// for VISA.
+        /// </remarks>
+        /// <typeparam name="TArgs">The types of the arguments to be formatted.
+        /// </typeparam>
+        /// <param name="format">The <see cref="printf" />-style format string.
+        /// </param>
+        /// <param name="args">The list of arguments to format.</param>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        template<class... TArgs>
+        void format(_In_z_ const char *format, TArgs&&... args) const;
+
+        /// <summary>
         /// Send the &quot;identify&quot; SCPI command to the instrument and
         /// return its response.
         /// </summary>
@@ -117,6 +120,14 @@ namespace detail {
         /// <exception cref="visa_exception">If the operation failed.
         /// </exception>
         std::string identify(void) const;
+
+        /// <summary>
+        /// Gets the path to the instrument.
+        /// </summary>
+        /// <returns>The path to the instrument.</returns>
+        const std::string& path(void) const noexcept {
+            return this->_path;
+        }
 
         /// <summary>
         /// Read from the instrument into the given buffer.
@@ -140,6 +151,14 @@ namespace detail {
         /// <returns>The full output from the device.</returns>
         /// <exception cref="visa_exception">If the operation failed.</exception>
         blob read_all(_In_ const std::size_t buffer_size = 1024) const;
+
+        /// <summary>
+        /// Release the reference on the object and free it if this was the last
+        /// reference.
+        /// </summary>
+        /// <returns>The new value of the reference counter. If this is zero,
+        /// the object has been freed.</returns>
+        std::size_t release(void);
 
         /// <summary>
         /// Query the oldest error in the queue and returns the message
@@ -177,37 +196,21 @@ namespace detail {
         void write_all(_In_reads_bytes_(cnt) const byte_type *buffer,
             _In_ const std::size_t cnt) const;
 
-        /// <summary>
-        /// Invoke <see cref="viPrintf" /> on the instrument.
-        /// </summary>
-        /// <remarks>
-        /// This method does nothing if the library was compiled without support
-        /// for VISA.
-        /// </remarks>
-        /// <typeparam name="TArgs">The types of the arguments to be formatted.
-        /// </typeparam>
-        /// <param name="format">The <see cref="printf" />-style format string.
-        /// </param>
-        /// <param name="args">The list of arguments to format.</param>
-        /// <exception cref="visa_exception">If the operation failed.
-        /// </exception>
-        template<class... TArgs>
-        void write(_In_z_ const char *format, TArgs&&... args) const;
-
     private:
 
         static std::map<std::string, visa_instrument_impl *> _instruments;
         static std::mutex _lock_instruments;
-        std::size_t _counter;
+        std::atomic<std::size_t> _counter;
+        std::string _path;
 
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        inline visa_instrument_impl(void) : _counter(0)
+        inline visa_instrument_impl(void) :
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-            , resource_manager(0), session(0)
+            resource_manager(0), session(0),
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
-            { }
+            _counter(0) { }
     };
 
 } /* namespace detail */

@@ -5,10 +5,10 @@
 
 
 /*
- * visus::power_overwhelming::detail::visa_instrument_impl::write
+ * visus::power_overwhelming::detail::visa_instrument_impl::format
  */
 template<class ...TArgs>
-void visus::power_overwhelming::detail::visa_instrument_impl::write(
+void visus::power_overwhelming::detail::visa_instrument_impl::format(
         _In_z_ const char *format, TArgs&&... args) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     visa_exception::throw_on_error(detail::visa_library::instance()
