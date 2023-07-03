@@ -126,7 +126,8 @@ visus::power_overwhelming::visa_instrument::clear(void) {
 visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::clear_status(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    this->check_not_disposed()->write("*CLS\n");
+    this->check_not_disposed();
+    this->write("*CLS\n");
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
@@ -256,10 +257,10 @@ visus::power_overwhelming::visa_instrument::synchronise_clock(
         ::GetLocalTime(&time);
     }
 
-    this->check_not_disposed()->write("SYST:TIME %d, %d, %d\n",
+    this->check_not_disposed()->format("SYST:TIME %d, %d, %d\n",
         time.wHour, time.wMinute, time.wSecond);
     this->throw_on_system_error();
-    this->check_not_disposed()->write("SYST:DATE %d, %d, %d\n",
+    this->check_not_disposed()->format("SYST:DATE %d, %d, %d\n",
         time.wYear, time.wMonth, time.wDay);
     this->throw_on_system_error();
 
@@ -277,10 +278,10 @@ visus::power_overwhelming::visa_instrument::synchronise_clock(
 
     auto time = localtime(&tv.tv_sec);
 
-    this->check_not_disposed()->write("SYST:TIME %d, %d, %d\n",
+    this->check_not_disposed()->format("SYST:TIME %d, %d, %d\n",
         time->tm_hour, time->tm_min, time->tm_sec);
     this->throw_on_system_error();
-    this->check_not_disposed()->write("SYST:DATE %d, %d, %d\n",
+    this->check_not_disposed()->format("SYST:DATE %d, %d, %d\n",
         time->tm_year + 1900, time->tm_mon + 1, time->tm_mday);
     this->throw_on_system_error();
 
@@ -348,10 +349,10 @@ std::size_t visus::power_overwhelming::visa_instrument::write(
 /*
  * visus::power_overwhelming::visa_instrument::write_all
  */
-visus::power_overwhelming::visa_instrument&
+const visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::write_all(
         _In_reads_bytes_(cnt) const byte_type *buffer,
-        _In_ const std::size_t cnt) {
+        _In_ const std::size_t cnt) const {
     if (buffer == nullptr) {
         throw std::invalid_argument("The buffer being written to the "
             "instrument must not be null.");
@@ -365,7 +366,7 @@ visus::power_overwhelming::visa_instrument::write_all(
 /*
  * visus::power_overwhelming::visa_instrument::write
  */
-visus::power_overwhelming::visa_instrument&
+const visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::write(
         _In_z_ const char *str) const {
     if (str == nullptr) {
@@ -373,15 +374,16 @@ visus::power_overwhelming::visa_instrument::write(
             "not be null.");
     }
 
-    return this->write_all(reinterpret_cast<const byte_type *>(str),
-        ::strlen(str));
+    this->check_not_disposed();
+    this->_impl->write(str);
+    return *this;
 }
 
 
 /*
  * visus::power_overwhelming::visa_instrument::write
  */
-visus::power_overwhelming::visa_instrument&
+const visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::write(
         _In_z_ const wchar_t *str) const {
     if (str == nullptr) {
@@ -389,9 +391,11 @@ visus::power_overwhelming::visa_instrument::write(
             "not be null.");
     }
 
+    this->check_not_disposed();
     auto s = convert_string<char>(str);
-    return this->write_all(reinterpret_cast<const byte_type *>(s.data()),
+    this->_impl->write_all(reinterpret_cast<const byte_type *>(s.data()),
         s.size());
+    return *this;
 }
 
 

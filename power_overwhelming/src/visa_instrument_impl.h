@@ -185,6 +185,14 @@ namespace detail {
             _In_ const std::size_t cnt) const;
 
         /// <summary>
+        /// Writes the given null-terminated data to the instrument.
+        /// </summary>
+        /// <param name="str">A null-terminated string to write to the device.
+        /// </param>
+        /// <exception cref="visa_exception">If the operation failed.</exception>
+        void write(_In_z_ const char *str) const;
+
+        /// <summary>
         /// Write the given data to the instrument.
         /// </summary>
         /// <param name="buffer">The buffer holding the data to write.</param>

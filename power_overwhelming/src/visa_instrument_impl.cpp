@@ -112,15 +112,16 @@ visus::power_overwhelming::detail::visa_instrument_impl::~visa_instrument_impl(
 std::string visus::power_overwhelming::detail::visa_instrument_impl::identify(
         void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    this->write("*IDN?\n");
+    const auto cmd = "*IDN?\n";
+    this->write_all(reinterpret_cast<const byte_type *>(cmd) , ::strlen(cmd));
     auto retval = this->read_all();
 
     auto it = std::find_if(retval.begin(), retval.end(),
         [](const byte_type b) { return ((b == '\r') || (b == '\n')); });
     if (it != retval.end()) {
+        // TODO: potential hazard when writing this
         *it = '\0';
     }
-    // TODO: potential hazard
 
     return retval.as<char>();
 
@@ -273,6 +274,17 @@ std::size_t visus::power_overwhelming::detail::visa_instrument_impl::write(
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_instrument_impl::write
+ */
+void visus::power_overwhelming::detail::visa_instrument_impl::write(
+        _In_z_ const char *str) const {
+    assert(str != nullptr);
+    return this->write_all(reinterpret_cast<const byte_type *>(str),
+        ::strlen(str));
 }
 
 

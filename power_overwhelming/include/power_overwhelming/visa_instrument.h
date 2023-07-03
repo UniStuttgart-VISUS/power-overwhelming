@@ -441,9 +441,9 @@ namespace power_overwhelming {
         /// can be in a failed state even if the call succeeded. Use
         /// <see cref="throw_on_system_error" /> to check the internal state of
         /// the instrument after the call.</exception>
-        visa_instrument& write_all(
+        const visa_instrument& write_all(
             _In_reads_bytes_(cnt) const byte_type *buffer,
-            _In_ const std::size_t cnt);
+            _In_ const std::size_t cnt) const;
 
         /// <summary>
         /// Writes the given null-terminated data to the instrument.
@@ -464,7 +464,7 @@ namespace power_overwhelming {
         /// can be in a failed state even if the call succeeded. Use
         /// <see cref="throw_on_system_error" /> to check the internal state of
         /// the instrument after the call.</exception>
-        visa_instrument& write(_In_z_ const char *str) const;
+        const visa_instrument& write(_In_z_ const char *str) const;
 
         /// <summary>
         /// Writes the given null-terminated data to the instrument.
@@ -485,7 +485,7 @@ namespace power_overwhelming {
         /// can be in a failed state even if the call succeeded. Use
         /// <see cref="throw_on_system_error" /> to check the internal state of
         /// the instrument after the call.</exception>
-        visa_instrument& write(_In_z_ const wchar_t *str) const;
+        const visa_instrument& write(_In_z_ const wchar_t *str) const;
 
         /// <summary>
         /// Writes the given string to the instrument.
