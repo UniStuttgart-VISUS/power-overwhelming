@@ -137,12 +137,13 @@ visus::power_overwhelming::visa_instrument::clear_status(void) {
  * visus::power_overwhelming::visa_instrument::identify
  */
 std::size_t visus::power_overwhelming::visa_instrument::identify(
-        _Out_writes_z_(cnt) wchar_t *dst, _In_ const std::size_t cnt) const {
+        _Out_writes_opt_z_(cnt) wchar_t *dst,
+        _In_ const std::size_t cnt) const {
     auto retval = this->check_not_disposed()->identify();
 
     if (dst != nullptr) {
-        auto retval0 = convert_string<wchar_t>(retval);
-        ::wcsncpy(dst, retval0.c_str(), cnt);
+        auto converted = convert_string<wchar_t>(retval);
+        ::wcsncpy(dst, converted.c_str(), cnt);
         dst[cnt - 1] = 0;
     }
 
@@ -154,7 +155,8 @@ std::size_t visus::power_overwhelming::visa_instrument::identify(
  * visus::power_overwhelming::visa_instrument::identify
  */
 std::size_t visus::power_overwhelming::visa_instrument::identify(
-        _Out_writes_z_(cnt) char *dst, _In_ const std::size_t cnt) const {
+        _Out_writes_opt_z_(cnt) char *dst,
+        _In_ const std::size_t cnt) const {
     auto retval = this->check_not_disposed()->identify();
 
     if (dst != nullptr) {

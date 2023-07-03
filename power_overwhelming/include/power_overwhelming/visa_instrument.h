@@ -202,7 +202,7 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the operation failed.
         /// </exception>
-        std::size_t identify(_Out_writes_z_(cnt) wchar_t *dst,
+        std::size_t identify(_Out_writes_opt_z_(cnt) wchar_t *dst,
             _In_ const std::size_t cnt) const;
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the operation failed.
         /// </exception>
-        std::size_t identify(_Out_writes_z_(cnt) char *dst,
+        std::size_t identify(_Out_writes_opt_z_(cnt) char *dst,
             _In_ const std::size_t cnt) const;
 
         /// <summary>
