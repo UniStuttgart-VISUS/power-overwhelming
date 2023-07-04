@@ -62,6 +62,9 @@ visus::power_overwhelming::rtx_instrument::acquisition(
     impl.format("ACQ:NSIN:COUN %u\n", acquisition.count());
     this->throw_on_system_error();
 
+    impl.format("ACQ:SEGM:STAT %s\n", acquisition.segmented() ? "ON" : "OFF");
+    this->throw_on_system_error();
+
     impl.format("SING\n");
     this->throw_on_system_error();
 

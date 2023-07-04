@@ -10,4 +10,4 @@
  * ...::oscilloscope_single_acquisition::oscilloscope_single_acquisition
  */
 visus::power_overwhelming::oscilloscope_single_acquisition::oscilloscope_single_acquisition(void)
-        : _count(1), _points(0) { }
+        : _count(1), _points(0), _segmented(false) { }

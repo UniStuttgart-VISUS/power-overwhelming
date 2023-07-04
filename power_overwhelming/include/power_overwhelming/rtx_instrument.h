@@ -155,6 +155,12 @@ namespace power_overwhelming {
         /// initialised.</exception>
         rtx_instrument& channel(_In_ const oscilloscope_channel& channel);
 
+        /// <summary>
+        /// Retrieves the waveform data for the specified channel.
+        /// </summary>
+        /// <param name="channel">The one-based index of the channel to retrieve
+        /// the waveform for.</param>
+        /// <returns>The waveform for the specified channel.</returns>
         oscilloscope_waveform data(_In_ const std::uint32_t channel);
 
         /// <summary>

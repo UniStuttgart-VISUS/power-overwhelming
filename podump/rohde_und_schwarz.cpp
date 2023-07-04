@@ -144,7 +144,8 @@ void query_rtx_instrument(void) {
 
             i.acquisition(oscilloscope_single_acquisition()
                 .points(50000)
-                .count(1));
+                .count(1)
+                .segmented(true));
 
             i.trigger_position(oscilloscope_quantity(42.42f, "ms"));
             i.trigger(oscilloscope_edge_trigger("CH1")

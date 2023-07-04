@@ -89,11 +89,38 @@ namespace power_overwhelming {
             return *this;
         }
 
+        /// <summary>
+        /// Answer whether fast segmentation is enabled during the acquisition.
+        /// </summary>
+        /// <returns><c>true</c> if fast segmentation is enabled, <c>false</c>
+        /// otherwise.</returns>
+        inline bool segmented(void) const noexcept {
+            return this->_segmented;
+        }
+
+        /// <summary>
+        /// Enables or disables fast segmentation.
+        /// </summary>
+        /// <remarks>
+        /// If fast segmentation is enabled, the acquisitions are performed as
+        /// fast as possible without processing and displaying the waveforms.
+        /// Once the acquisition has been stopped, the data is processed and the
+        /// latest waveform is displayed. Older waveforms are stored in segments.
+        /// </remarks>
+        /// <param name="segmented"><c>true</c> to enable fast segmentation,
+        /// <c>false</c> to disable it.</param>
+        /// <returns><c>*this</c>.</returns>
+        inline oscilloscope_single_acquisition& segmented(
+                _In_ const bool segmented) noexcept {
+            this->_segmented = segmented;
+            return *this;
+        }
 
     private:
 
         unsigned int _count;
         unsigned int _points;
+        bool _segmented;
     };
 
 } /* namespace power_overwhelming */
