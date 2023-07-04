@@ -7,6 +7,7 @@
 
 #include "power_overwhelming/oscilloscope_acquisition_state.h"
 #include "power_overwhelming/oscilloscope_channel.h"
+#include "power_overwhelming/oscilloscope_channel_data.h"
 #include "power_overwhelming/oscilloscope_edge_trigger.h"
 #include "power_overwhelming/oscilloscope_quantity.h"
 #include "power_overwhelming/oscilloscope_reference_point.h"
@@ -123,12 +124,14 @@ namespace power_overwhelming {
         rtx_instrument& acquisition_state(
             _In_ const oscilloscope_acquisition_state state);
 
+#if false
         /// <summary>
         /// 
         /// </summary>
         /// <param name="channel"></param>
         /// <returns></returns>
         blob ascii_data(_In_ const std::uint32_t channel);
+#endif
 
         /// <summary>
         /// 
@@ -151,6 +154,8 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
         rtx_instrument& channel(_In_ const oscilloscope_channel& channel);
+
+        oscilloscope_channel_data data(_In_ const std::uint32_t channel);
 
         /// <summary>
         /// Enable and configure one of the mathematical expressions.

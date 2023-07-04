@@ -100,6 +100,8 @@ visus::power_overwhelming::rtx_instrument::acquisition_state(
 }
 
 
+#if false
+// TODO: disabled, because long queries reproducibly cause an I/O error.
 /*
  * visus::power_overwhelming::rtx_instrument::ascii_data
  */
@@ -119,6 +121,7 @@ visus::power_overwhelming::rtx_instrument::ascii_data(
     throw std::logic_error(no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
+#endif
 
 
 /*
@@ -261,6 +264,24 @@ visus::power_overwhelming::rtx_instrument::channel(
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::data
+ */
+visus::power_overwhelming::oscilloscope_channel_data
+visus::power_overwhelming::rtx_instrument::data(
+        _In_ const std::uint32_t channel) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    const auto query = detail::format_string("CHAN%u:DATA:HEAD?\n", channel);
+    const auto header = this->query(query.c_str());
+    return oscilloscope_channel_data(header.as<char>(),
+        this->binary_data(channel));
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

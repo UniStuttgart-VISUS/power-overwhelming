@@ -140,7 +140,7 @@ void query_rtx_instrument(void) {
                 .attenuation(oscilloscope_quantity(10, "V"))
                 .range(oscilloscope_quantity(7)));
 
-            i.expression(1, "CH1 * 2");
+            //i.expression(1, "CH1 * 2");
 
             i.acquisition(oscilloscope_single_acquisition()
                 .points(50000)
@@ -150,14 +150,14 @@ void query_rtx_instrument(void) {
             i.trigger(oscilloscope_edge_trigger("CH1")
                 .level(1, oscilloscope_quantity(2000.0f, "mV"))
                 .slope(oscilloscope_trigger_slope::both)
-                .mode(oscilloscope_trigger_mode::normal));
+                .mode(oscilloscope_trigger_mode::automatic));
 
             i.acquisition_state(oscilloscope_acquisition_state::run);
 
-            i.write("*TRG\n");
-            i.query("*OPC?\n");
-            auto ascii_data = i.ascii_data(1);
-            auto binary_data = i.binary_data(1);
+            i.query("*TRG; *OPC?\n");
+            //auto ascii_data = i.ascii_data(1);
+            //auto binary_data = i.binary_data(1);
+            auto data = i.data(1);
         }
 
     } catch (std::exception& ex) {

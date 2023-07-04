@@ -250,7 +250,7 @@ int visus::power_overwhelming::detail::visa_instrument_impl::system_error(
 
         return std::atoi(reinterpret_cast<char *>(status.data()));
     } else {
-        throw std::runtime_error("The instrumet responded unexpectedly.");
+        throw std::runtime_error("The instrument responded unexpectedly.");
     }
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     message = "";
