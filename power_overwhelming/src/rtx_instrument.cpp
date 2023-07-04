@@ -136,6 +136,9 @@ visus::power_overwhelming::rtx_instrument::binary_data(
     impl.write("FORM REAL,32\n");
     this->throw_on_system_error();
 
+    impl.write("FORM:BORD LSBF\n");
+    this->throw_on_system_error();
+
     auto query = detail::format_string("CHAN%u:DATA?\n", channel);
     this->write(query);
 
@@ -270,14 +273,13 @@ visus::power_overwhelming::rtx_instrument::channel(
 /*
  * visus::power_overwhelming::rtx_instrument::data
  */
-visus::power_overwhelming::oscilloscope_channel_data
+visus::power_overwhelming::oscilloscope_waveform
 visus::power_overwhelming::rtx_instrument::data(
         _In_ const std::uint32_t channel) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     const auto query = detail::format_string("CHAN%u:DATA:HEAD?\n", channel);
     const auto header = this->query(query.c_str());
-    return oscilloscope_channel_data(header.as<char>(),
-        this->binary_data(channel));
+    return oscilloscope_waveform(header.as<char>(), this->binary_data(channel));
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(no_visa_error_msg);

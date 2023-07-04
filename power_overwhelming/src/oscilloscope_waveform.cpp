@@ -1,18 +1,18 @@
-﻿// <copyright file="oscilloscope_channel_data.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+﻿// <copyright file="oscilloscope_waveform.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/oscilloscope_channel_data.h"
+#include "power_overwhelming/oscilloscope_waveform.h"
 
 #include "string_functions.h"
 #include "tokenise.h"
 
 
 /*
- * visus::power_overwhelming::oscilloscope_channel_data::oscilloscope_channel_data
+ * visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform
  */
-visus::power_overwhelming::oscilloscope_channel_data::oscilloscope_channel_data(
+visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform(
         _In_z_ const char *header, _Inout_ blob&& samples)
         : _record_length(0),  _time_begin(0), _time_end(0) {
     if (header == nullptr) {

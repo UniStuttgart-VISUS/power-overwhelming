@@ -1,4 +1,4 @@
-﻿// <copyright file="oscilloscope_channel_data.h" company="Visualisierungsinstitut der Universität Stuttgart">
+﻿// <copyright file="oscilloscope_waveform.h" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -14,7 +14,7 @@ namespace power_overwhelming {
     /// <summary>
     /// Defines a container for data obtained from an oscilloscope channel.
     /// </summary>
-    class POWER_OVERWHELMING_API oscilloscope_channel_data final {
+    class POWER_OVERWHELMING_API oscilloscope_waveform final {
 
     public:
 
@@ -23,8 +23,24 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="header"></param>
         /// <param name="samples"></param>
-        oscilloscope_channel_data(_In_z_ const char *header,
+        oscilloscope_waveform(_In_z_ const char *header,
             _Inout_ blob&& samples);
+
+        /// <summary>
+        /// A pointer to the first sample of the waveform.
+        /// </summary>
+        /// <returns></returns>
+        inline const float *begin(void) const noexcept {
+            return this->samples();
+        }
+
+        /// <summary>
+        /// A pointer past the last sample of the waveform.
+        /// </summary>
+        /// <returns></returns>
+        inline const float *end(void) const noexcept {
+            return this->samples() + this->_record_length;
+        }
 
         /// <summary>
         /// The length of the waveform in number of samples.
@@ -55,7 +71,6 @@ namespace power_overwhelming {
         /// <summary>
         /// A pointer to the first sample of the waveform.
         /// </summary>
-        /// <param name=""></param>
         /// <returns></returns>
         inline const float *samples(void) const noexcept {
             return this->_samples.as<float>();

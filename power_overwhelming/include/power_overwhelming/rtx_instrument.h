@@ -7,12 +7,12 @@
 
 #include "power_overwhelming/oscilloscope_acquisition_state.h"
 #include "power_overwhelming/oscilloscope_channel.h"
-#include "power_overwhelming/oscilloscope_channel_data.h"
 #include "power_overwhelming/oscilloscope_edge_trigger.h"
 #include "power_overwhelming/oscilloscope_quantity.h"
 #include "power_overwhelming/oscilloscope_reference_point.h"
 #include "power_overwhelming/oscilloscope_single_acquisition.h"
 #include "power_overwhelming/oscilloscope_trigger.h"
+#include "power_overwhelming/oscilloscope_waveform.h"
 #include "power_overwhelming/visa_instrument.h"
 
 
@@ -155,7 +155,7 @@ namespace power_overwhelming {
         /// initialised.</exception>
         rtx_instrument& channel(_In_ const oscilloscope_channel& channel);
 
-        oscilloscope_channel_data data(_In_ const std::uint32_t channel);
+        oscilloscope_waveform data(_In_ const std::uint32_t channel);
 
         /// <summary>
         /// Enable and configure one of the mathematical expressions.
