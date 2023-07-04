@@ -239,19 +239,15 @@ namespace power_overwhelming {
         /// Answer the pointer to the position <i>after</i> the last byte in the
         /// blob.
         /// </summary>
-        /// <returns>A pointer ot he begin of the blob.</returns>
-        inline _Ret_maybenull_ byte_type *end(void) noexcept {
-            return this->as<byte_type>(this->_size - 1) + 1;
-        }
+        /// <returns>A pointer to the end of the blob.</returns>
+        _Ret_maybenull_ byte_type *end(void) noexcept;
 
         /// <summary>
         /// Answer the pointer to the position <i>after</i> the last byte in the
         /// blob.
         /// </summary>
-        /// <returns>A pointer ot he begin of the blob.</returns>
-        inline _Ret_maybenull_ const byte_type *end(void) const noexcept {
-            return this->as<byte_type>(this->_size - 1) + 1;
-        }
+        /// <returns>A pointer to the end of the blob.</returns>
+        _Ret_maybenull_ const byte_type *end(void) const noexcept;
 
         /// <summary>
         /// Make sure that the blob can hold at least <paramref name="size" />
@@ -269,6 +265,34 @@ namespace power_overwhelming {
         /// <exception cref="std::bad_alloc">If the required memory could not
         /// be allocated.</exception>
         bool grow(_In_ const std::size_t size);
+
+        /// <summary>
+        /// Answer the pointer to last valid position in the blob.
+        /// </summary>
+        /// <returns>A pointer to the last position in the blob.</returns>
+        _Ret_maybenull_ byte_type *rbegin(void) noexcept;
+
+        /// <summary>
+        /// Answer the pointer to last valid position in the blob.
+        /// </summary>
+        /// <returns>A pointer to the last position in the blob.</returns>
+        _Ret_maybenull_ const byte_type *rbegin(void) const noexcept;
+
+        /// <summary>
+        /// Answer the pointer to the position <i>before</i> the first byte in
+        /// the blob.
+        /// </summary>
+        /// <returns>A pointer to the position before the start of the blob.
+        /// This pointer must not be dereferenced.</returns>
+        _Ret_maybenull_ byte_type *rend(void) noexcept;
+
+        /// <summary>
+        /// Answer the pointer to the position <i>before</i> the first byte in
+        /// the blob.
+        /// </summary>
+        /// <returns>A pointer to the position before the start of the blob.
+        /// This pointer must not be dereferenced.</returns>
+        _Ret_maybenull_ const byte_type *rend(void) const noexcept;
 
         /// <summary>
         /// Make sure that the blob can hold at least <paramref name="size" />

@@ -228,7 +228,7 @@ int visus::power_overwhelming::detail::visa_instrument_impl::system_error(
     auto delimiter = std::find_if(status.begin(), status.end(),
         [](const byte_type b) { return b == ','; });
 
-    if (delimiter != status.end()) {
+    if ((delimiter != nullptr) && (delimiter != status.end())) {
         *delimiter = '\0';
 
         // Skip the delimiter itself.
@@ -236,18 +236,21 @@ int visus::power_overwhelming::detail::visa_instrument_impl::system_error(
 
         // Trim any leading spaces and quotes.
         for (; (delimiter != status.end()) && (std::isspace(*delimiter)
-                || (*delimiter == '"')); ++delimiter);
+            || (*delimiter == '"')); ++delimiter);
 
         // Trim any trailing spaces and quotes.
-        auto end = status.end() - 1;
-        for (; (end != status.begin()) && (std::isspace(*end)
+        auto end = status.rbegin();
+        for (; (end != status.rend()) && (std::isspace(*end)
             || (*end == '"')); --end);
+
+        // Skip the delimiter itself.
+        ++end;
 
         message = std::string(delimiter, end);
 
         return std::atoi(reinterpret_cast<char *>(status.data()));
     } else {
-        throw std::runtime_error("The instrumed did responded unexpectedly.");
+        throw std::runtime_error("The instrumet responded unexpectedly.");
     }
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     message = "";

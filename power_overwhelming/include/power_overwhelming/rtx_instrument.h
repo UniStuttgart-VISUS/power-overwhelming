@@ -124,6 +124,20 @@ namespace power_overwhelming {
             _In_ const oscilloscope_acquisition_state state);
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <returns></returns>
+        blob ascii_data(_In_ const std::uint32_t channel);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <returns></returns>
+        blob binary_data(_In_ const std::uint32_t channel);
+
+        /// <summary>
         /// Apply the specified channel configuration.
         /// </summary>
         /// <remarks>

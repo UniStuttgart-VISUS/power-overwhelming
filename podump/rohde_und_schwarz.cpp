@@ -129,6 +129,7 @@ void query_rtx_instrument(void) {
 
             i.reset();
             i.synchronise_clock();
+            i.timeout(5000);
 
             i.reference_position(oscilloscope_reference_point::middle);
             i.time_range(oscilloscope_quantity(500, "ms"));
@@ -139,9 +140,11 @@ void query_rtx_instrument(void) {
                 .attenuation(oscilloscope_quantity(10, "V"))
                 .range(oscilloscope_quantity(7)));
 
+            i.expression(1, "CH1 * 2");
+
             i.acquisition(oscilloscope_single_acquisition()
                 .points(50000)
-                .count(2));
+                .count(1));
 
             i.trigger_position(oscilloscope_quantity(42.42f, "ms"));
             i.trigger(oscilloscope_edge_trigger("CH1")
@@ -151,7 +154,10 @@ void query_rtx_instrument(void) {
 
             i.acquisition_state(oscilloscope_acquisition_state::run);
 
-            //        auto data = s.data(1);
+            i.write("*TRG\n");
+            i.query("*OPC?\n");
+            auto ascii_data = i.ascii_data(1);
+            auto binary_data = i.binary_data(1);
         }
 
     } catch (std::exception& ex) {

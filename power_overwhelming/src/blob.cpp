@@ -51,7 +51,7 @@ _Ret_maybenull_ void *visus::power_overwhelming::blob::at(
         _In_ const std::size_t offset) noexcept {
     assert((this->_data != nullptr) || (this->_size == 0));
     return (offset < this->_size)
-        ? (static_cast<byte_type *>(this->_data) + offset)
+        ? static_cast<byte_type *>(this->_data) + offset
         : nullptr;
 }
 
@@ -63,7 +63,7 @@ _Ret_maybenull_ const void *visus::power_overwhelming::blob::at(
         _In_ const std::size_t offset) const noexcept {
     assert((this->_data != nullptr) || (this->_size == 0));
     return (offset < this->_size)
-        ? (static_cast<const byte_type *>(this->_data) + offset)
+        ? static_cast<const byte_type *>(this->_data) + offset
         : nullptr;
 }
 
@@ -75,6 +75,28 @@ void visus::power_overwhelming::blob::clear(void) {
     delete[] this->_data;
     this->_data = nullptr;
     this->_size = 0;
+}
+
+
+/*
+ * visus::power_overwhelming::blob::end
+ */
+_Ret_maybenull_ visus::power_overwhelming::blob::byte_type *
+visus::power_overwhelming::blob::end(void) noexcept {
+    return (this->_data != nullptr)
+        ? reinterpret_cast<byte_type *>(this->_data) + this->_size
+        : nullptr;
+}
+
+
+/*
+ * visus::power_overwhelming::blob::end
+ */
+_Ret_maybenull_ const visus::power_overwhelming::blob::byte_type *
+visus::power_overwhelming::blob::end(void) const noexcept {
+    return (this->_data != nullptr)
+        ? reinterpret_cast<const byte_type *>(this->_data) + this->_size
+        : nullptr;
 }
 
 
@@ -96,6 +118,50 @@ bool visus::power_overwhelming::blob::grow(_In_ const std::size_t size) {
     }
 
     return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::blob::rbegin
+ */
+_Ret_maybenull_ visus::power_overwhelming::blob::byte_type *
+visus::power_overwhelming::blob::rbegin(void) noexcept {
+    return ((this->_data != nullptr) && (this->_size > 0))
+        ? reinterpret_cast<byte_type *>(this->_data) + this->_size - 1
+        : nullptr;
+}
+
+
+/*
+ * visus::power_overwhelming::blob::rbegin
+ */
+_Ret_maybenull_ const visus::power_overwhelming::blob::byte_type *
+visus::power_overwhelming::blob::rbegin(void) const noexcept {
+    return ((this->_data != nullptr) && (this->_size > 0))
+        ? reinterpret_cast<const byte_type *>(this->_data) + this->_size - 1
+        : nullptr;
+}
+
+
+/*
+ * visus::power_overwhelming::blob::rend
+ */
+_Ret_maybenull_ visus::power_overwhelming::blob::byte_type *
+visus::power_overwhelming::blob::rend(void) noexcept {
+    return (this->_data != nullptr)
+        ? static_cast<byte_type *>(this->_data) - 1
+        : nullptr;
+}
+
+
+/*
+ * visus::power_overwhelming::blob::rend
+ */
+_Ret_maybenull_ const visus::power_overwhelming::blob::byte_type *
+visus::power_overwhelming::blob::rend(void) const noexcept {
+    return (this->_data != nullptr)
+        ? static_cast<const byte_type *>(this->_data) - 1
+        : nullptr;
 }
 
 

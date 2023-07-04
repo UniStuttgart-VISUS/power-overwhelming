@@ -421,15 +421,22 @@ visus::power_overwhelming::visa_instrument::synchronise_clock(
 int visus::power_overwhelming::visa_instrument::system_error(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto status = this->query(":SYST:ERR?\n");
-    auto delimiter = std::find_if(status.begin(), status.end(),
-        [](const byte_type b) { return b == ','; });
 
-    if (delimiter != status.end()) {
-        *delimiter = '\0';
-        return std::atoi(reinterpret_cast<char *>(status.data()));
-    } else {
-        throw std::runtime_error("The instrument responded unexpectedly.");
+    if (!status.empty()) {
+        _Analysis_assume_(status.begin() != nullptr);
+        _Analysis_assume_(status.end() != nullptr);
+        auto delimiter = std::find_if(status.begin(),
+            status.end(),
+            [](const byte_type b) { return b == ','; });
+
+        if (delimiter != status.end()) {
+            *delimiter = '\0';
+            return std::atoi(reinterpret_cast<char *>(status.begin()));
+        }
     }
+
+    throw std::runtime_error("The instrument responded unexpectedly when "
+        "retrieving its error status.");
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -452,6 +459,20 @@ void visus::power_overwhelming::visa_instrument::throw_on_system_error(void) {
             throw std::runtime_error(message);
         }
     }
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::timeout
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::timeout(
+        _In_ const timeout_type timeout) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    return this->attribute(VI_ATTR_TMO_VALUE, timeout);
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

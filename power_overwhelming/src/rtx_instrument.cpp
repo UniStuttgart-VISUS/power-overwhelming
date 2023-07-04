@@ -8,6 +8,10 @@
 #include "visa_instrument_impl.h"
 
 
+static constexpr const char *no_visa_error_msg = "This function is unavailable "
+    "unless compiled with support for VISA.";
+
+
 /*
  * visus::power_overwhelming::rtx_instrument::rtx_id
  */
@@ -93,6 +97,68 @@ visus::power_overwhelming::rtx_instrument::acquisition_state(
 
     this->throw_on_system_error();
     return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::ascii_data
+ */
+visus::power_overwhelming::blob
+visus::power_overwhelming::rtx_instrument::ascii_data(
+        _In_ const std::uint32_t channel) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+
+    impl.write("FORM ASC\n");
+    this->throw_on_system_error();
+
+    auto query = detail::format_string("CHAN%u:DATA?\n", channel);
+    return this->query(query.c_str());
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::binary_data
+ */
+visus::power_overwhelming::blob
+visus::power_overwhelming::rtx_instrument::binary_data(
+        _In_ const std::uint32_t channel) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+
+    impl.write("FORM REAL,32\n");
+    this->throw_on_system_error();
+
+    auto query = detail::format_string("CHAN%u:DATA?\n", channel);
+    this->write(query);
+
+    blob retval(16);
+    impl.read(retval.begin(), 2);
+    if (*retval.as<char>(0) != '#') {
+        throw std::runtime_error("The instrument did not send the expected "
+            "type of binary response.");
+    }
+
+    *retval.as<char>(2) = 0;
+    const auto digits = std::atoi(retval.as<char>(1));
+    retval.reserve(digits + 1);
+    impl.read(retval.begin(), digits);
+
+    *retval.as<char>(digits) = 0;
+    const auto size = std::atoi(retval.as<char>());
+    retval.reserve(size);
+
+    impl.read(retval.begin(), retval.size());
+
+    return retval;
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

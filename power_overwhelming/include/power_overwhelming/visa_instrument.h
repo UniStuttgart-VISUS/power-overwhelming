@@ -490,6 +490,21 @@ namespace power_overwhelming {
         void throw_on_system_error(void);
 
         /// <summary>
+        /// Sets the timeout of the underlying VISA session.
+        /// </summary>
+        /// <remarks>
+        /// This method has no effect if the library was compiled without
+        /// support for VISA.
+        /// </remarks>
+        /// <param name="timeout">The timeout in milliseconds.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the current system state could
+        /// not be retrieved.</exception>
+        visa_instrument& timeout(_In_ const timeout_type timeout);
+
+        /// <summary>
         /// Write at most <paramref name="cnt" /> bytes of the given data to the
         /// instrument.
         /// </summary>
