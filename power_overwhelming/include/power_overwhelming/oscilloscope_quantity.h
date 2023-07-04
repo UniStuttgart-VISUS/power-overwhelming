@@ -33,11 +33,16 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
+        /// <remarks>
+        /// This constructor allows for implicit conversion of <c>float</c> to
+        /// a quantity of the default unit of the variable the instance is used
+        /// for.
+        /// </remarks>
         /// <param name="value">The value of the quantity.</param>
         /// <param name="unit">The unit of the quantity. It is safe to pass
         /// <c>nullptr</c>, in which case the instrument should assume its
         /// default unit for the parameter in question.</param>
-        explicit oscilloscope_quantity(_In_ const float value = 0.0f,
+        oscilloscope_quantity(_In_ const float value = 0.0f,
             _In_opt_z_ const char *unit = nullptr);
 
         /// <summary>

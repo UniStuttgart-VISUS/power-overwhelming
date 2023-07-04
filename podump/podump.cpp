@@ -119,6 +119,10 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
 #if true
+    ::query_rtx_instrument();
+#endif
+
+#if true
     ::query_rtx();
 #endif
 #endif

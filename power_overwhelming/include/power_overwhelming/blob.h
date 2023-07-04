@@ -241,16 +241,16 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>A pointer ot he begin of the blob.</returns>
         inline _Ret_maybenull_ byte_type *end(void) noexcept {
-            return this->as<byte_type>(this->_size);
+            return this->as<byte_type>(this->_size - 1) + 1;
         }
 
         /// <summary>
-        /// Answer the pointer to the position <i>after</c> the last byte in the
+        /// Answer the pointer to the position <i>after</i> the last byte in the
         /// blob.
         /// </summary>
         /// <returns>A pointer ot he begin of the blob.</returns>
         inline _Ret_maybenull_ const byte_type *end(void) const noexcept {
-            return this->as<byte_type>(this->_size);
+            return this->as<byte_type>(this->_size - 1) + 1;
         }
 
         /// <summary>

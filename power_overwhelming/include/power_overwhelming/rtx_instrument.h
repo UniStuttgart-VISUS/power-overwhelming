@@ -72,7 +72,7 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
         rtx_instrument(_In_z_ const wchar_t *path,
-            _In_ const timeout_type timeout);
+            _In_ const timeout_type timeout = 2000);
 
         /// <summary>
         /// Initialises a new instance.
@@ -93,7 +93,7 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
         rtx_instrument(_In_z_ const char *path,
-            _In_ const timeout_type timeout);
+            _In_ const timeout_type timeout = 2000);
 
         /// <summary>
         /// Apply the specified channel configuration.

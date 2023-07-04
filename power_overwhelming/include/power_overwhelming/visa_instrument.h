@@ -44,6 +44,98 @@ namespace power_overwhelming {
         typedef std::uint32_t timeout_type;
 
         /// <summary>
+        /// Find all resources matching the given VISA resource query.
+        /// </summary>
+        /// <param name="query">The query to issue on the resource manager.
+        /// </param>
+        /// <remarks>
+        /// <para>The return value is a multi-sz string which can be procesed
+        /// as follows:</para>
+        /// <code>
+        /// for (auto d = devices.as&lt;wchar_t&gt;();
+        ///         (d != nullptr) && (*d != 0);
+        ///         d += ::wcslen(d) + 1) {
+        ///     visa_instrument instrument(d, 5000);
+        ///     // Do something with the instrument.
+        /// }
+        /// </code>
+        /// </remarks>
+        /// <returns>A <c>wchar_t</c> <see cref="blob" /> holding a a multi-sz
+        /// string (registry type) of all device paths matching the query.
+        /// </returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="query" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If the query failed.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the output could
+        /// not be allocated.</exception>
+        static blob find_resources(_In_z_ const wchar_t *query);
+
+        /// <summary>
+        /// Find all resources matching the given VISA resource query.
+        /// </summary>
+        /// <param name="query">The query to issue on the resource manager.
+        /// </param>
+        /// <remarks>
+        /// <para>The return value is a multi-sz string which can be procesed
+        /// as follows:</para>
+        /// <code>
+        /// for (auto d = devices.as&lt;cjar&gt;();
+        ///         (d != nullptr) && (*d != 0);
+        ///         d += ::strlen(d) + 1) {
+        ///     visa_instrument instrument(d, 5000);
+        ///     // Do something with the instrument.
+        /// }
+        /// </code>
+        /// </remarks>
+        /// <returns>A <c>char</c> <see cref="blob" /> holding a a multi-sz
+        /// string (registry type) of all device paths matching the query.
+        /// </returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="query" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If the query failed.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the output could
+        /// not be allocated.</exception>
+        static blob find_resources(_In_z_ const char *query);
+
+        /// <summary>
+        /// Find all instruments of the specified type connected to the machine
+        /// the code is running on.
+        /// </summary>
+        /// <param name="vendor_id">The ID of the vendor to search for.</param>
+        /// <param name="instrument_id">The ID of the instrument to search for.
+        /// </param>
+        /// <returns>A <c>char</c> <see cref="blob" /> holding a a multi-sz
+        /// string (registry type) of all device paths matching the query.
+        /// </returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="vendor_id" /> is <c>nullptr</c> or if
+        ///  <paramref name="instrument_id" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If the query failed.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the output could
+        /// not be allocated.</exception>
+        static blob find_resources(_In_z_ const wchar_t *vendor_id,
+            _In_z_ const wchar_t *instrument_id);
+
+        /// <summary>
+        /// Find all instruments of the specified type connected to the machine
+        /// the code is running on.
+        /// </summary>
+        /// <param name="vendor_id">The ID of the vendor to search for.</param>
+        /// <param name="instrument_id">The ID of the instrument to search for.
+        /// </param>
+        /// <returns>A <c>char</c> <see cref="blob" /> holding a a multi-sz
+        /// string (registry type) of all device paths matching the query.
+        /// </returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="vendor_id" /> is <c>nullptr</c> or if
+        ///  <paramref name="instrument_id" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If the query failed.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the output could
+        /// not be allocated.</exception>
+        static blob find_resources(_In_z_ const char *vendor_id,
+            _In_z_ const char *instrument_id);
+
+        /// <summary>
         /// The vendor ID of Rohde &amp; Schwarz.
         /// </summary>
         static constexpr const char *rohde_und_schwarz = "0x0AAD";
@@ -72,7 +164,7 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
         visa_instrument(_In_z_ const wchar_t *path,
-            _In_ const timeout_type timeout);
+            _In_ const timeout_type timeout = 2000);
 
         /// <summary>
         /// Initialises a new instance.
@@ -93,7 +185,7 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
         visa_instrument(_In_z_ const char *path,
-            _In_ const timeout_type timeout);
+            _In_ const timeout_type timeout = 2000);
 
         visa_instrument(const visa_instrument&) = delete;
 

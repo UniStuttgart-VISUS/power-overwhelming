@@ -120,7 +120,39 @@ void query_rtx_instrument(void) {
     using namespace visus::power_overwhelming;
 
     try {
-    } catch (std::exception &ex) {
+        auto devices = visa_instrument::find_resources(L"0x0AAD", L"0x01D6");
+
+        for (auto d = devices.as<wchar_t>();
+                (d != nullptr) && (*d != 0);
+                d += ::wcslen(d) + 1) {
+            rtx_instrument i(d);
+
+            i.reset();
+            i.synchronise_clock();
+
+            i.reference_position(oscilloscope_reference_point::middle);
+            i.time_range(oscilloscope_quantity(500, "ms"));
+
+            i.channel(oscilloscope_channel(1)
+                .label(oscilloscope_label("podump#1"))
+                .state(true)
+                .attenuation(oscilloscope_quantity(10))
+                .range(oscilloscope_quantity(7)));
+
+            //i.configure(oscilloscope_single_acquisition()
+            //            .points(50000)
+            //            .count(1));
+
+            i.trigger_position(oscilloscope_quantity(42.42f, "ms"));
+            i.trigger(oscilloscope_edge_trigger("CH1")
+                .level(1, oscilloscope_quantity(2000.0f, "mV"))
+                .slope(oscilloscope_trigger_slope::both)
+                .mode(oscilloscope_trigger_mode::normal));
+
+            //        auto data = s.data(1);
+        }
+
+    } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
 }

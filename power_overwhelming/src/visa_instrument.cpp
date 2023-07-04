@@ -5,8 +5,10 @@
 
 #include "power_overwhelming/visa_instrument.h"
 
+#include <algorithm>
 #include <cassert>
 #include <memory>
+#include <numeric>
 #include <stdexcept>
 #include <system_error>
 
@@ -26,6 +28,126 @@
  */
 constexpr const char *
 visus::power_overwhelming::visa_instrument::rohde_und_schwarz;
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::find_resources
+ */
+visus::power_overwhelming::blob
+visus::power_overwhelming::visa_instrument::find_resources(
+        _In_z_ const wchar_t *query) {
+    typedef wchar_t char_type;
+    if (query == nullptr) {
+        throw std::invalid_argument("The instrument query cannot be null.");
+    }
+
+    auto q = convert_string<char>(query);
+    auto devices = detail::visa_library::instance().find_resource(q.c_str());
+
+    const auto len = std::accumulate(devices.begin(), devices.end(),
+        static_cast<std::size_t>(0), [](std::size_t s, const std::string &d) {
+            return s + d.size() + 1;
+        }) + 1;
+
+    blob retval(len * sizeof(char_type));
+    auto cur = retval.as<char_type>();
+    const auto end = reinterpret_cast<char_type *>(retval.end());
+    assert(cur != nullptr);
+    _Analysis_assume_(cur != nullptr);
+    assert(end != nullptr);
+    _Analysis_assume_(end != nullptr);
+
+    for (auto& d : devices) {
+        detail::convert_string(cur, end - cur, d.c_str(), d.size());
+        cur += d.size();
+        *cur++ = 0;
+    }
+
+    *cur = 0;
+
+    return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::find_resources
+ */
+visus::power_overwhelming::blob
+visus::power_overwhelming::visa_instrument::find_resources(
+        _In_z_ const char *query) {
+    typedef char char_type;
+    if (query == nullptr) {
+        throw std::invalid_argument("The instrument query cannot be null.");
+    }
+
+    auto devices = detail::visa_library::instance().find_resource(query);
+
+    const auto len = std::accumulate(devices.begin(), devices.end(),
+        static_cast<std::size_t>(0), [](std::size_t s, const std::string& d) {
+            return s + d.size() + 1;
+        }) + 1;
+
+    blob retval(len * sizeof(char_type));
+    auto cur = retval.as<char_type>();
+    assert(cur != nullptr);
+    _Analysis_assume_(cur != nullptr);
+
+    for (auto& d : devices) {
+        std::copy(d.begin(), d.end(), cur);
+        cur += d.size();
+        *cur++ = 0;
+    }
+
+    *cur = 0;
+
+    return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::find_resources
+ */
+visus::power_overwhelming::blob
+visus::power_overwhelming::visa_instrument::find_resources(
+        _In_z_ const wchar_t *vendor_id, _In_z_ const wchar_t *instrument_id) {
+    if (vendor_id == nullptr) {
+        throw std::invalid_argument("The instrument vendor cannot be null.");
+    }
+    if (instrument_id == nullptr) {
+        throw std::invalid_argument("The instrument ID cannot be null.");
+    }
+
+    std::wstring query(L"?*::");    // Any protocol
+    query += vendor_id;             // Only specified vendor
+    query += L"::";
+    query += instrument_id;         // Only specified instrument
+    query += L"::?*::INSTR";        // All serial numbers
+
+    return find_resources(query.c_str());
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::find_resources
+ */
+visus::power_overwhelming::blob
+visus::power_overwhelming::visa_instrument::find_resources(
+        _In_z_ const char *vendor_id, _In_z_ const char *instrument_id) {
+    if (vendor_id == nullptr) {
+        throw std::invalid_argument("The instrument vendor cannot be null.");
+    }
+    if (instrument_id == nullptr) {
+        throw std::invalid_argument("The instrument ID cannot be null.");
+    }
+
+    std::string query("?*::");  // Any protocol
+    query += vendor_id;         // Only specified vendor
+    query += "::";
+    query += instrument_id;     // Only specified instrument
+    query += "::?*::INSTR";     // All serial numbers
+
+    return find_resources(query.c_str());
+}
 
 
 /*

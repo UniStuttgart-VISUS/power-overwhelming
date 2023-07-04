@@ -290,7 +290,9 @@ visus::power_overwhelming::hmc8015_sensor::log_behaviour(
 
     // Use the first page configured in the constructor.
     this->_instrument.write("LOG:PAGE 1\n");
+
     this->_instrument.throw_on_system_error();
+    return *this;
 }
 
 
@@ -304,6 +306,7 @@ std::size_t visus::power_overwhelming::hmc8015_sensor::log_file(
     // Copy as much as the output buffer can hold.
     if (path != nullptr) {
         for (std::size_t i = 0; (i < cnt) && (i < value.size()); ++i) {
+            _Analysis_assume_(value.as<char>(i) != nullptr);
             path[i] = *value.as<char>(i);
         }
 
