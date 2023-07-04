@@ -17,6 +17,7 @@
 
 #include "string_functions.h"
 #include "visa_exception.h"
+#include "visa_library.h"
 
 
 namespace visus {

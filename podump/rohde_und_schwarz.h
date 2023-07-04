@@ -15,3 +15,8 @@ void query_hmc8015(void);
 /// Query RTA4004 or RTB2004 oscilloscopes.
 /// </summary>
 void query_rtx(void);
+
+/// <summary>
+/// Query RTA4004 or RTB2004 oscilloscopes.
+/// </summary>
+void query_rtx_instrument(void);

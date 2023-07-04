@@ -16,7 +16,6 @@
 #include "timestamp.h"
 #include "tokenise.h"
 #include "visa_library.h"
-#include "visa_sensor_impl.h"
 
 
 /*
@@ -27,11 +26,11 @@ std::size_t visus::power_overwhelming::rtx_sensor::for_all(
         _In_ std::size_t cnt_sensors,
         _In_ const std::int32_t timeout) {
     // Build the query for all R&S RTB2004 instruments.
-    std::string query("?*::");      // Any protocol
-    query += rohde_und_schwarz;     // Only R&S
+    std::string query("?*::");          // Any protocol
+    query += visa_instrument::rohde_und_schwarz;    // Only R&S
     query += "::";
-    query += rtb2004_id;            // Only RTB2004
-    query += "::?*::INSTR";         // All serial numbers.
+    query += rtx_instrument::rtx_id;    // Only RTA/RTB
+    query += "::?*::INSTR";             // All serial numbers.
 
     // Search the instruments using VISA.
     auto devices = detail::visa_library::instance().find_resource(
@@ -51,15 +50,14 @@ std::size_t visus::power_overwhelming::rtx_sensor::for_all(
 }
 
 
-
 /*
  * visus::power_overwhelming::rtx_sensor::rtx_sensor
  */
 visus::power_overwhelming::rtx_sensor::rtx_sensor(
-        _In_z_ const char *path, _In_ const std::int32_t timeout)
-        : detail::visa_sensor(path, timeout) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+        _In_z_ const char *path,
+        _In_ const visa_instrument::timeout_type timeout)
+        : _instrument(path, timeout), _name(nullptr) {
+    this->initialise();
 }
 
 
@@ -67,417 +65,62 @@ visus::power_overwhelming::rtx_sensor::rtx_sensor(
  * visus::power_overwhelming::rtx_sensor::rtx_sensor
  */
 visus::power_overwhelming::rtx_sensor::rtx_sensor(
-        _In_z_ const wchar_t *path, _In_ const std::int32_t timeout)
-        : detail::visa_sensor(path, timeout) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+        _In_z_ const wchar_t *path,
+        _In_ const visa_instrument::timeout_type timeout)
+        : _instrument(path, timeout), _name(nullptr) {
+    this->initialise();
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::rtx_sensor
+ */
+visus::power_overwhelming::rtx_sensor::rtx_sensor(
+        _Inout_ rtx_sensor&& rhs) noexcept
+        : _instrument(std::move(rhs._instrument)), _name(rhs._name) {
+    rhs._name = nullptr;
 }
 
 
 /*
  * visus::power_overwhelming::rtx_sensor::~rtx_sensor
  */
-visus::power_overwhelming::rtx_sensor::~rtx_sensor(void) { }
-
-
-/*
- * visus::power_overwhelming::rtx_sensor::configure
- */
-void visus::power_overwhelming::rtx_sensor::configure(
-        _In_reads_(cnt) const oscilloscope_sensor_definition *sensors,
-        _In_ const std::size_t cnt) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    if ((cnt > 0) && (sensors == nullptr)) {
-        throw std::invalid_argument("The sensor definitions must be valid.");
-    }
-
-    auto impl = static_cast<detail::visa_sensor_impl&>(*this);
-
-    for (std::uint32_t i = 1; impl.system_error() == VI_SUCCESS; ++i) {
-        impl.printf("CHAN%u:STAT OFF\n", i);
-    }
-
-    for (std::size_t i = 0; i < cnt; ++i) {
-        {
-            auto c = sensors[i].channel_current();
-            impl.printf("PROB%u:SET:ATT:UNIT %s\n", c, "A");
-            this->throw_on_system_error();
-
-            if (!sensors[i].auto_attenuation_current()) {
-                impl.printf("PROB%u:SET:ATT:MAN %f\n",
-                    c, sensors[i].attenuation_current());
-                this->throw_on_system_error();
-            }
-
-            impl.printf("CHAN%u:STAT ON\n", c);
-            this->throw_on_system_error();
-        }
-
-        {
-            auto c = sensors[i].channel_voltage();
-            impl.printf("PROB%u:SET:ATT:UNIT %s\n", c, "V");
-            this->throw_on_system_error();
-
-            if (!sensors[i].auto_attenuation_voltage()) {
-                impl.printf("PROB%u:SET:ATT:MAN %f\n",
-                    c, sensors[i].attenuation_voltage());
-                this->throw_on_system_error();
-            }
-
-            impl.printf("CHAN%u:STAT ON\n", c);
-            this->throw_on_system_error();
-        }
-    }
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error("This function is unavailable unless compiled with "
-        "support for VISA.");
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+visus::power_overwhelming::rtx_sensor::~rtx_sensor(void) {
+    delete[] this->_name;
 }
 
 
 /*
- * visus::power_overwhelming::rtx_sensor::configure
+ * *visus::power_overwhelming::rtx_sensor::name
  */
-void visus::power_overwhelming::rtx_sensor::configure(
-        _In_ const oscilloscope_channel& channel) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
-
-    // Note: Attenuation should be set first, because changing the attenuation
-    // will also scale other values like the range.
-    impl.printf("PROB%d:SET:ATT:UNIT %s\n", channel.channel(),
-        channel.gain().unit());
-    this->throw_on_system_error();
-    impl.printf("PROB%d:SET:ATT:MAN %f\n", channel.channel(),
-        channel.gain().value());
-    this->throw_on_system_error();
-
-    switch (channel.bandwidth()) {
-        case oscilloscope_channel_bandwidth::limit_to_20_mhz:
-            impl.printf("CHAN%d:BAND B20\n", channel.channel());
-            break;
-
-        default:
-            impl.printf("CHAN%d:BAND FULL\n", channel.channel());
-            break;
-    }
-    this->throw_on_system_error();
-
-    switch (channel.coupling()) {
-        case oscilloscope_channel_coupling::alternating_current_limit:
-            impl.printf("CHAN%d:COUP ACL\n", channel.channel());
-            break;
-
-        case oscilloscope_channel_coupling::ground:
-            impl.printf("CHAN%d:COUP GND\n", channel.channel());
-            break;
-
-        default:
-            impl.printf("CHAN%d:COUP DCL\n", channel.channel());
-            break;
-    }
-    this->throw_on_system_error();
-
-    switch (channel.decimation_mode()) {
-        case oscilloscope_decimation_mode::high_resolution:
-            impl.printf("CHAN%d:TYPE HRES\n", channel.channel());
-            break;
-
-        case oscilloscope_decimation_mode::peak_detect:
-            impl.printf("CHAN%d:TYPE PDET\n", channel.channel());
-            break;
-
-        default:
-            impl.printf("CHAN%d:TYPE SAMP\n", channel.channel());
-            break;
-    }
-    this->throw_on_system_error();
-
-    impl.printf("CHAN%d:LAB \"%s\"\n", channel.channel(),
-        channel.label().text());
-    this->throw_on_system_error();
-    impl.printf("CHAN%d:LAB:STAT %s\n", channel.channel(),
-        channel.label().visible() ? "ON" : "OFF");
-    this->throw_on_system_error();
-
-    impl.printf("CHAN%d:OFFS %f%s\n", channel.channel(),
-        channel.offset().value(), channel.offset().unit());
-    this->throw_on_system_error();
-
-    switch (channel.polarity()) {
-        case oscilloscope_channel_polarity::inverted:
-            impl.printf("CHAN%d:POL INV\n", channel.channel());
-            break;
-
-        default:
-            impl.printf("CHAN%d:POL NORM\n", channel.channel());
-            break;
-    }
-    this->throw_on_system_error();
-
-    impl.printf("CHAN%d:RANG %f%s\n", channel.channel(),
-        channel.range().value(), channel.range().unit());
-    this->throw_on_system_error();
-
-    impl.printf("CHAN%d:SKEW %f%s\n", channel.channel(),
-        channel.skew().value(), channel.skew().unit());
-    this->throw_on_system_error();
-
-    impl.printf("CHAN%d:STAT %s\n", channel.channel(),
-        channel.state() ? "ON" : "OFF");
-    this->throw_on_system_error();
-
-    impl.printf("CHAN%d:ZOFF %f%s\n", channel.channel(),
-        channel.zero_offset().value(), channel.zero_offset().unit());
-    this->throw_on_system_error();
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+_Ret_maybenull_z_ const wchar_t *visus::power_overwhelming::rtx_sensor::name(
+        void) const noexcept {
+    return this->_name;
 }
 
 
 /*
- * visus::power_overwhelming::rtx_sensor::configure
+ * visus::power_overwhelming::rtx_sensor::operator =
  */
-void visus::power_overwhelming::rtx_sensor::configure(
-        _In_ const oscilloscope_single_acquisition& acquisition) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
-
-    if (acquisition.automatic_points()) {
-        impl.printf("ACQ:POIN:AUT ON\n", acquisition.points());
-    } else {
-        impl.printf("ACQ:POIN %u\n", acquisition.points());
-    }
-    this->throw_on_system_error();
-
-    impl.printf("ACQ:NSIN:COUN %u\n", acquisition.count());
-    this->throw_on_system_error();
-
-    impl.printf("SING\n");
-    this->throw_on_system_error();
-
-    impl.printf("ACQ:STAT RUN\n");
-    this->throw_on_system_error();
-
-    impl.write("*TRG\n");
-    this->throw_on_system_error();
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
-}
-
-
-/*
- * visus::power_overwhelming::rtx_sensor::data
- */
-visus::power_overwhelming::blob visus::power_overwhelming::rtx_sensor::data(
-        _In_ const std::uint32_t channel) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
-
-    impl.write("FORM REAL,32\n");
-    this->throw_on_system_error();
-    impl.query("*OPC?\n");
-    this->throw_on_system_error();
-
-    auto query = std::string("CHAN") + std::to_string(channel) + ":DATA?\n";
-    impl.write(query);
-    std::vector<std::uint8_t> hack(2);
-    impl.read(hack.data(), hack.size());
-    hack.resize(std::atoi((char *) hack.data() + 1));
-    impl.read(hack.data(), hack.size());
-    auto data = impl.read(std::atoi((char *)hack.data()));
-
-    blob retval(data.size());
-    std::copy(data.begin(), data.end(), retval.as<std::uint8_t>());
-    return retval;
-
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error("This function is unavailable unless compiled with "
-        "support for VISA.");
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
-}
-
-
-/*
- * visus::power_overwhelming::rtx_sensor::expression
- */
-void visus::power_overwhelming::rtx_sensor::expression(
-        _In_ const std::uint32_t channel,
-        _In_opt_z_  const char *expression,
-        _In_opt_z_ const char *unit) {
-    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
-
-    if (expression != nullptr) {
-        if (unit != nullptr) {
-            impl.printf("CALC:MATH%u:EXPR:DEF \"%s in %s\"\n", channel,
-                expression, unit);
-        } else {
-            impl.printf("CALC:MATH%u:EXPR:DEF \"%s\"\n", channel, expression);
-        }
-
-        impl.printf("CALC:MATH%u:STAT ON\n", channel);
-
-    } else {
-        impl.printf("CALC:MATH%u:STAT OFF\n", channel);
+visus::power_overwhelming::rtx_sensor&
+visus::power_overwhelming::rtx_sensor::operator =(
+        _Inout_ rtx_sensor&& rhs) noexcept {
+    if (this != std::addressof(rhs)) {
+        this->_instrument = std::move(rhs._instrument);
+        assert(rhs._instrument == false);
+        this->_name = rhs._name;
+        rhs._name = nullptr;
     }
 
-    this->throw_on_system_error();
+    return *this;
 }
 
 
 /*
- * visus::power_overwhelming::rtx_sensor::reference_position
+ * visus::power_overwhelming::rtx_sensor::operator bool
  */
-void visus::power_overwhelming::rtx_sensor::reference_position(
-        _In_ const oscilloscope_reference_point position) {
-    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
-    impl.printf("TIM:REF %f\n", static_cast<float>(position) / 100.0f);
-    this->throw_on_system_error();
-}
-
-
-/*
- * visus::power_overwhelming::rtx_sensor::unit
- */
-void visus::power_overwhelming::rtx_sensor::unit(
-        _In_ const std::uint32_t channel, _In_z_ const char *unit) {
-    if (unit == nullptr) {
-        throw std::invalid_argument("The unit for a probe cannot be null.");
-    }
-
-    auto impl = static_cast<detail::visa_sensor_impl&>(*this);
-    impl.printf("PROB%u:SET:ATT:UNIT %s\n", channel, unit);
-    this->throw_on_system_error();
-}
-
-
-/*
- * visus::power_overwhelming::rtx_sensor::time_range
- */
-void visus::power_overwhelming::rtx_sensor::time_range(
-        _In_ const oscilloscope_quantity& scale) {
-    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
-    impl.printf("TIM:RANG %f %s\n", scale.value(), scale.unit());
-    this->throw_on_system_error();
-}
-
-
-/*
- * visus::power_overwhelming::rtx_sensor::time_scale
- */
-void visus::power_overwhelming::rtx_sensor::time_scale(
-        _In_ const oscilloscope_quantity &scale) {
-    auto impl = static_cast<detail::visa_sensor_impl&>(*this);
-    impl.printf("TIM:SCAL %f %s\n", scale.value(), scale.unit());
-    this->throw_on_system_error();
-}
-
-
-/*
- * visus::power_overwhelming::rtx_sensor::trigger
- */
-void visus::power_overwhelming::rtx_sensor::trigger(
-        const oscilloscope_trigger& trigger) {
-    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
-
-    // Apply configuration that is valid for all triggers.
-    switch (trigger.mode()) {
-        case oscilloscope_trigger_mode::automatic:
-            impl.printf("TRIG:A:MODE AUTO\n");
-            break;
-
-        default:
-            impl.printf("TRIG:A:MODE NORM\n");
-            break;
-    }
-    this->throw_on_system_error();
-
-    impl.printf("TRIG:A:SOUR %s\n", trigger.source());
-    this->throw_on_system_error();
-
-    impl.printf("TRIG:A:TYPE %s\n", trigger.type());
-    this->throw_on_system_error();
-
-    if (trigger.hold_off() == nullptr) {
-        impl.printf("TRIG:A:HOLD:MODE OFF\n");
-        this->throw_on_system_error();
-
-    } else {
-        impl.printf("TRIG:A:HOLD:MODE TIME\n");
-        this->throw_on_system_error();
-
-        impl.printf("TRIG:A:HOLD:TIME %s\n", trigger.hold_off());
-        this->throw_on_system_error();
-    }
-
-    // Apply special configuration if the trigger is an edge trigger.
-    auto et = dynamic_cast<const oscilloscope_edge_trigger *>(&trigger);
-    if (et != nullptr) {
-        switch (et->slope()) {
-            case oscilloscope_trigger_slope::both:
-                impl.printf("TRIG:A:EDGE:SLOP EITH\n");
-                break;
-
-            case oscilloscope_trigger_slope::rising:
-                impl.printf("TRIG:A:EDGE:SLOP POS\n");
-                break;
-
-            case oscilloscope_trigger_slope::falling:
-                impl.printf("TRIG:A:EDGE:SLOP NEG\n");
-                break;
-        }
-        this->throw_on_system_error();
-
-        impl.printf("TRIG:A:LEV%d:VAL %f %s\n", et->input(),
-            et->level().value(), et->level().unit());
-        this->throw_on_system_error();
-
-        switch (et->coupling()) {
-            case oscilloscope_trigger_coupling::alternating_current:
-                impl.printf("TRIG:A:EDGE:COUP AC\n");
-                break;
-
-            case oscilloscope_trigger_coupling::direct_current:
-                impl.printf("TRIG:A:EDGE:COUP DC\n");
-                break;
-
-            case oscilloscope_trigger_coupling::low_frequency_reject:
-                impl.printf("TRIG:A:EDGE:COUP LFR\n");
-                break;
-        }
-        this->throw_on_system_error();
-
-#if 0
-        // TODO: Only RTA
-        switch (et->hysteresis()) {
-            case oscilloscope_trigger_hysteresis::automatic:
-                impl.printf("TRIG:A:HYST AUTO\n");
-                break;
-
-            case oscilloscope_trigger_hysteresis::high:
-                impl.printf("TRIG:A:HYST LARGE\n");
-                break;
-
-            case oscilloscope_trigger_hysteresis::low:
-                impl.printf("TRIG:A:HYST SMAL\n");
-                break;
-
-            case oscilloscope_trigger_hysteresis::medium:
-                impl.printf("TRIG:A:HYST MED\n");
-                break;
-        }
-        this->throw_on_system_error();
-#endif
-    }
-}
-
-
-/*
- * visus::power_overwhelming::rtx_sensor::trigger_position
- */
-void visus::power_overwhelming::rtx_sensor::trigger_position(
-        _In_ const float offset, _In_z_ const char *unit) {
-    auto impl = static_cast<detail::visa_sensor_impl&>(*this);
-    impl.printf("TIM:POS %f%s\n", offset, (unit != nullptr) ? unit : "");
-    this->throw_on_system_error();
+visus::power_overwhelming::rtx_sensor::operator bool(void) const noexcept {
+    return static_cast<bool>(this->_instrument);
 }
 
 
@@ -492,12 +135,14 @@ visus::power_overwhelming::rtx_sensor::sample_sync(
 }
 
 
-// TIM:SCAL 5
-//CHAN2:STAT OFF
-// CHAN1:BAND?
-// PROB1:SET:ATT:MAN 10
-// TRIG:A:SOUR?
-// TRIG:A:SOUR "CH1"
+/*
+ * visus::power_overwhelming::rtx_sensor::initialise
+ */
+void visus::power_overwhelming::rtx_sensor::initialise(void) {
+    // TODO: compose name
+}
+
+
 
 /*
 *LRN

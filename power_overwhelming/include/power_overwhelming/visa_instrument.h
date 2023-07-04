@@ -29,7 +29,7 @@ namespace power_overwhelming {
     /// <see cref="ViSession" /> on a single device, which might be used by
     /// multiple <see cref="sensor" />s.
     /// </remarks>
-    class POWER_OVERWHELMING_API visa_instrument final {
+    class POWER_OVERWHELMING_API visa_instrument {
 
     public:
 
@@ -109,7 +109,7 @@ namespace power_overwhelming {
         /// <summary>
         /// Finalise the instance.
         /// </summary>
-        ~visa_instrument(void);
+        virtual ~visa_instrument(void);
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>
@@ -529,7 +529,7 @@ namespace power_overwhelming {
         /// otherwise.</returns>
         operator bool(void) const noexcept;
 
-    private:
+    protected:
 
         /// <summary>
         /// Checks whether the instance is valid and throws an
@@ -538,10 +538,23 @@ namespace power_overwhelming {
         /// <returns>The implementation object for the instrument.</returns>
         /// <exception cref="std::runtime_error">If the implementation has been
         /// released.</exception>
-        detail::visa_instrument_impl *check_not_disposed(void) const;
+        detail::visa_instrument_impl& check_not_disposed(void);
+
+        /// <summary>
+        /// Checks whether the instance is valid and throws an
+        /// <see cref="std::runtime_error" /> if this is not the case.
+        /// </summary>
+        /// <returns>The implementation object for the instrument.</returns>
+        /// <exception cref="std::runtime_error">If the implementation has been
+        /// released.</exception>
+        const detail::visa_instrument_impl& check_not_disposed(void) const;
+
+    private:
 
         detail::visa_instrument_impl *_impl;
     };
 
 } /* namespace power_overwhelming */
 } /* namespace visus */
+
+#include "power_overwhelming/visa_instrument.inl"

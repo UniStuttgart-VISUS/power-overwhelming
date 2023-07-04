@@ -21,10 +21,10 @@ namespace test {
             oscilloscope_channel channel(2);
 
             Assert::AreEqual(int(oscilloscope_channel_bandwidth::full), int(channel.bandwidth()), L"Default bandwith", LINE_INFO());
+            Assert::AreEqual("V", channel.attenuation().unit(), L"Default attenuation unit", LINE_INFO());
+            Assert::AreEqual(10.0f, channel.attenuation().value(), L"Default attenuation value", LINE_INFO());
             Assert::AreEqual(2, int(channel.channel()), L"channel", LINE_INFO());
             Assert::AreEqual(int(oscilloscope_channel_coupling::direct_current_limit), int(channel.coupling()), L"Default coupling", LINE_INFO());
-            Assert::AreEqual("V", channel.gain().unit(), L"Default gain unit", LINE_INFO());
-            Assert::AreEqual(10.0f, channel.gain().value(), L"Default gain value", LINE_INFO());
             Assert::AreEqual("", channel.label().text(), L"Default label text", LINE_INFO());
             Assert::IsFalse(channel.label().visible(), L"Default label state", LINE_INFO());
             Assert::AreEqual("", channel.offset().unit(), L"Default offset unit", LINE_INFO());
@@ -41,9 +41,9 @@ namespace test {
 
         TEST_METHOD(test_fuild_api) {
             oscilloscope_channel channel(4);
-            channel.bandwidth(oscilloscope_channel_bandwidth::limit_to_20_mhz)
+            channel.attenuation(oscilloscope_quantity(1.0f, "A"))
+                .bandwidth(oscilloscope_channel_bandwidth::limit_to_20_mhz)
                 .coupling(oscilloscope_channel_coupling::alternating_current_limit)
-                .gain(oscilloscope_quantity(1.0f, "A"))
                 .label(oscilloscope_label("bla", true))
                 .offset(oscilloscope_quantity(42, "of"))
                 .polarity(oscilloscope_channel_polarity::inverted)
@@ -52,11 +52,11 @@ namespace test {
                 .state(true)
                 .zero_offset(oscilloscope_quantity(42.3f, "zu"));
 
+            Assert::AreEqual("A", channel.attenuation().unit(), L"attenuation unit", LINE_INFO());
+            Assert::AreEqual(1.0f, channel.attenuation().value(), L"attenuation value", LINE_INFO());
             Assert::AreEqual(int(oscilloscope_channel_bandwidth::limit_to_20_mhz), int(channel.bandwidth()), L"bandwith", LINE_INFO());
             Assert::AreEqual(4, int(channel.channel()), L"channel", LINE_INFO());
             Assert::AreEqual(int(oscilloscope_channel_coupling::alternating_current_limit), int(channel.coupling()), L"coupling", LINE_INFO());
-            Assert::AreEqual("A", channel.gain().unit(), L"gain unit", LINE_INFO());
-            Assert::AreEqual(1.0f, channel.gain().value(), L"gain value", LINE_INFO());
             Assert::AreEqual("bla", channel.label().text(), L"label text", LINE_INFO());
             Assert::IsTrue(channel.label().visible(), L"label state", LINE_INFO());
             Assert::AreEqual("of", channel.offset().unit(), L"offset unit", LINE_INFO());

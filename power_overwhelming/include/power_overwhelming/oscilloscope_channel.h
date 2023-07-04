@@ -39,6 +39,26 @@ namespace power_overwhelming {
         ~oscilloscope_channel(void) = default;
 
         /// <summary>
+        /// Gets the attenuation of the probe.
+        /// </summary>
+        /// <returns>The attenuation and unit of the probe.</returns>
+        inline oscilloscope_quantity attenuation(void) const noexcept {
+            return this->_attenuation;
+        }
+
+        /// <summary>
+        /// Sets the attenuation of the probe.
+        /// </summary>
+        /// <param name="attenuation">The attenuation and unit of the probe.
+        /// </param>
+        /// <returns><c>*this</c>.</returns>
+        inline oscilloscope_channel& attenuation(
+            _In_ const oscilloscope_quantity& attenuation) noexcept {
+            this->_attenuation = attenuation;
+            return *this;
+        }
+
+        /// <summary>
         /// Gets the bandwidth limit for the channel.
         /// </summary>
         /// <returns>The bandwidth limit of the channel.</returns>
@@ -103,25 +123,6 @@ namespace power_overwhelming {
                 _In_ const oscilloscope_decimation_mode decimation_mode)
                 noexcept {
             this->_decimation_mode = decimation_mode;
-            return *this;
-        }
-
-        /// <summary>
-        /// Gets the attenuation of the probe.
-        /// </summary>
-        /// <returns>The attenuation and unit of the probe.</returns>
-        inline oscilloscope_quantity gain(void) const noexcept {
-            return this->_gain;
-        }
-
-        /// <summary>
-        /// Sets the attenuation of the probe.
-        /// </summary>
-        /// <param name="unit">The attenuation and unit of the probe.</param>
-        /// <returns><c>*this</c>.</returns>
-        inline oscilloscope_channel& gain(
-            _In_ const oscilloscope_quantity& gain) noexcept {
-            this->_gain = gain;
             return *this;
         }
 
@@ -288,11 +289,11 @@ namespace power_overwhelming {
 
     private:
 
+        oscilloscope_quantity _attenuation;
         oscilloscope_channel_bandwidth _bandwidth;
         std::uint32_t _channel;
         oscilloscope_channel_coupling _coupling;
         oscilloscope_decimation_mode _decimation_mode;
-        oscilloscope_quantity _gain;
         oscilloscope_label _label;
         oscilloscope_quantity _offset;
         oscilloscope_channel_polarity _polarity;

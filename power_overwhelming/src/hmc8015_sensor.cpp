@@ -17,7 +17,6 @@
 #include "timestamp.h"
 #include "tokenise.h"
 #include "visa_library.h"
-#include "visa_sensor_impl.h"
 
 
 /*
@@ -380,11 +379,13 @@ visus::power_overwhelming::hmc8015_sensor::name(void) const noexcept {
  */
 visus::power_overwhelming::hmc8015_sensor&
 visus::power_overwhelming::hmc8015_sensor::reset(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     this->_instrument.reset();
     this->configure();
     this->_instrument.throw_on_system_error();
     this->_instrument.clear_status();
     this->_instrument.throw_on_system_error();
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 

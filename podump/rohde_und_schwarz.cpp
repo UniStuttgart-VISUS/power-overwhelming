@@ -64,50 +64,63 @@ void query_hmc8015(void) {
  * ::query_rtx
  */
 void query_rtx(void) {
+    //using namespace visus::power_overwhelming;
+
+    //try {
+    //    std::vector<oscilloscope_sensor_definition> definitions;
+    //    std::vector<rtx_sensor> sensors;
+    //    sensors.resize(rtx_sensor::for_all(nullptr, 0));
+    //    rtx_sensor::for_all(sensors.data(), sensors.size());
+
+    //    definitions.push_back(oscilloscope_sensor_definition(L"Test1",
+    //        1, 10.0f, 2, 10.0f));
+
+    //    // TODO: this is incomplete.
+
+    //    for (auto& s : sensors) {
+    //        s.reset();
+    //        s.synchronise_clock();
+    //        s.reference_position(oscilloscope_reference_point::middle);
+    //        s.time_range(oscilloscope_quantity(500, "ms"));
+
+    //        s.configure(definitions.data(), definitions.size());
+
+    //        s.configure(oscilloscope_channel(1)
+    //            .label(oscilloscope_label("PwrOwg"))
+    //            .state(true)
+    //            .gain(oscilloscope_quantity(10, "V"))
+    //            .range(oscilloscope_quantity(7, L"V")));
+
+    //        s.configure(oscilloscope_single_acquisition()
+    //            .points(50000)
+    //            .count(1));
+ 
+    //        s.trigger_position(42.42f, "ms");
+    //        s.trigger(oscilloscope_edge_trigger("CH1")
+    //            .level(1, oscilloscope_quantity(2000.0f, "mV"))
+    //            .slope(oscilloscope_trigger_slope::both)
+    //            .mode(oscilloscope_trigger_mode::normal));
+
+    //        auto data = s.data(1);
+
+    //        //s.expression(1, "CH1*CH2", "W");
+    //        std::wcout << s.name() << L":" << std::endl;
+    //    }
+    //       
+    //} catch (std::exception& ex) {
+    //    std::cerr << ex.what() << std::endl;
+    //}
+}
+
+
+/*
+ * ::query_rtx_instrument
+ */
+void query_rtx_instrument(void) {
     using namespace visus::power_overwhelming;
 
     try {
-        std::vector<oscilloscope_sensor_definition> definitions;
-        std::vector<rtx_sensor> sensors;
-        sensors.resize(rtx_sensor::for_all(nullptr, 0));
-        rtx_sensor::for_all(sensors.data(), sensors.size());
-
-        definitions.push_back(oscilloscope_sensor_definition(L"Test1",
-            1, 10.0f, 2, 10.0f));
-
-        // TODO: this is incomplete.
-
-        for (auto& s : sensors) {
-            s.reset();
-            s.synchronise_clock();
-            s.reference_position(oscilloscope_reference_point::middle);
-            s.time_range(oscilloscope_quantity(500, "ms"));
-
-            s.configure(definitions.data(), definitions.size());
-
-            s.configure(oscilloscope_channel(1)
-                .label(oscilloscope_label("PwrOwg"))
-                .state(true)
-                .gain(oscilloscope_quantity(10, "V"))
-                .range(oscilloscope_quantity(7, L"V")));
-
-            s.configure(oscilloscope_single_acquisition()
-                .points(50000)
-                .count(1));
- 
-            s.trigger_position(42.42f, "ms");
-            s.trigger(oscilloscope_edge_trigger("CH1")
-                .level(1, oscilloscope_quantity(2000.0f, "mV"))
-                .slope(oscilloscope_trigger_slope::both)
-                .mode(oscilloscope_trigger_mode::normal));
-
-            auto data = s.data(1);
-
-            //s.expression(1, "CH1*CH2", "W");
-            std::wcout << s.name() << L":" << std::endl;
-        }
-           
-    } catch (std::exception& ex) {
+    } catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;
     }
 }

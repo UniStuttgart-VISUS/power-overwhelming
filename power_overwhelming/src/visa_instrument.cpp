@@ -73,7 +73,7 @@ ViAttrState visus::power_overwhelming::visa_instrument::attribute(
         _In_ ViAttr name) const {
     ViAttrState retval;
     visa_exception::throw_on_error(detail::visa_library::instance()
-        .viGetAttribute(this->check_not_disposed()->session, name, &retval));
+        .viGetAttribute(this->check_not_disposed().session, name, &retval));
     return retval;
 }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -87,7 +87,7 @@ visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::attribute(_In_ ViAttr name,
         _In_ ViAttrState value) {
     visa_exception::throw_on_error(detail::visa_library::instance()
-        .viSetAttribute(this->check_not_disposed()->session, name, value));
+        .viSetAttribute(this->check_not_disposed().session, name, value));
     return *this;
 }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -101,7 +101,7 @@ visus::power_overwhelming::visa_instrument::buffer(
         _In_ const std::uint16_t mask, _In_ const std::uint32_t size) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     visa_exception::throw_on_error(detail::visa_library::instance()
-        .viSetBuf(this->check_not_disposed()->session, mask, size));
+        .viSetBuf(this->check_not_disposed().session, mask, size));
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
@@ -114,7 +114,7 @@ visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::clear(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     visa_exception::throw_on_error(detail::visa_library::instance()
-        .viClear(this->check_not_disposed()->session));
+        .viClear(this->check_not_disposed().session));
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
@@ -139,7 +139,7 @@ visus::power_overwhelming::visa_instrument::clear_status(void) {
 std::size_t visus::power_overwhelming::visa_instrument::identify(
         _Out_writes_opt_z_(cnt) wchar_t *dst,
         _In_ const std::size_t cnt) const {
-    auto retval = this->check_not_disposed()->identify();
+    auto retval = this->check_not_disposed().identify();
 
     if (dst != nullptr) {
         auto converted = convert_string<wchar_t>(retval);
@@ -157,7 +157,7 @@ std::size_t visus::power_overwhelming::visa_instrument::identify(
 std::size_t visus::power_overwhelming::visa_instrument::identify(
         _Out_writes_opt_z_(cnt) char *dst,
         _In_ const std::size_t cnt) const {
-    auto retval = this->check_not_disposed()->identify();
+    auto retval = this->check_not_disposed().identify();
 
     if (dst != nullptr) {
         ::strncpy(dst, retval.c_str(), cnt);
@@ -220,7 +220,7 @@ std::size_t visus::power_overwhelming::visa_instrument::read(
             "instrument must not be null.");
     }
 
-    return this->check_not_disposed()->read(buffer, cnt);
+    return this->check_not_disposed().read(buffer, cnt);
 }
 
 
@@ -230,7 +230,7 @@ std::size_t visus::power_overwhelming::visa_instrument::read(
 visus::power_overwhelming::blob
 visus::power_overwhelming::visa_instrument::read_all(
         _In_ const std::size_t buffer_size) const {
-    return this->check_not_disposed()->read_all(buffer_size);
+    return this->check_not_disposed().read_all(buffer_size);
 }
 
 
@@ -239,7 +239,7 @@ visus::power_overwhelming::visa_instrument::read_all(
  */
 visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::reset(void) {
-    this->check_not_disposed()->format("*RST\n");
+    this->check_not_disposed().format("*RST\n");
     this->throw_on_system_error();
     return *this;
 }
@@ -259,10 +259,10 @@ visus::power_overwhelming::visa_instrument::synchronise_clock(
         ::GetLocalTime(&time);
     }
 
-    this->check_not_disposed()->format("SYST:TIME %d, %d, %d\n",
+    this->check_not_disposed().format("SYST:TIME %d, %d, %d\n",
         time.wHour, time.wMinute, time.wSecond);
     this->throw_on_system_error();
-    this->check_not_disposed()->format("SYST:DATE %d, %d, %d\n",
+    this->check_not_disposed().format("SYST:DATE %d, %d, %d\n",
         time.wYear, time.wMonth, time.wDay);
     this->throw_on_system_error();
 
@@ -280,10 +280,10 @@ visus::power_overwhelming::visa_instrument::synchronise_clock(
 
     auto time = localtime(&tv.tv_sec);
 
-    this->check_not_disposed()->format("SYST:TIME %d, %d, %d\n",
+    this->check_not_disposed().format("SYST:TIME %d, %d, %d\n",
         time->tm_hour, time->tm_min, time->tm_sec);
     this->throw_on_system_error();
-    this->check_not_disposed()->format("SYST:DATE %d, %d, %d\n",
+    this->check_not_disposed().format("SYST:DATE %d, %d, %d\n",
         time->tm_year + 1900, time->tm_mon + 1, time->tm_mday);
     this->throw_on_system_error();
 
@@ -344,7 +344,7 @@ std::size_t visus::power_overwhelming::visa_instrument::write(
             "instrument must not be null.");
     }
 
-    return this->check_not_disposed()->write(buffer, cnt);
+    return this->check_not_disposed().write(buffer, cnt);
 }
 
 
@@ -360,7 +360,7 @@ visus::power_overwhelming::visa_instrument::write_all(
             "instrument must not be null.");
     }
 
-    this->check_not_disposed()->write_all(buffer, cnt);
+    this->check_not_disposed().write_all(buffer, cnt);
     return *this;
 }
 
@@ -427,11 +427,26 @@ visus::power_overwhelming::visa_instrument::operator bool(
 /*
  * visus::power_overwhelming::visa_instrument::check_not_disposed
  */
-visus::power_overwhelming::detail::visa_instrument_impl *
+visus::power_overwhelming::detail::visa_instrument_impl&
+visus::power_overwhelming::visa_instrument::check_not_disposed(void) {
+    if (*this) {
+        assert(this->_impl != nullptr);
+        return *this->_impl;
+    } else {
+        throw std::runtime_error("An instrument which has been disposed by "
+            "a move operation cannot be used anymore.");
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::check_not_disposed
+ */
+const visus::power_overwhelming::detail::visa_instrument_impl&
 visus::power_overwhelming::visa_instrument::check_not_disposed(void) const {
     if (*this) {
         assert(this->_impl != nullptr);
-        return this->_impl;
+        return *this->_impl;
     } else {
         throw std::runtime_error("An instrument which has been disposed by "
             "a move operation cannot be used anymore.");

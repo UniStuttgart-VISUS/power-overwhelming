@@ -5,31 +5,17 @@
 
 #pragma once
 
-#include <climits>
-#include <cstddef>
-#include <cstdint>
-#include <cinttypes>
-
-#include "power_overwhelming/blob.h"
-#include "power_overwhelming/oscilloscope_channel.h"
-#include "power_overwhelming/oscilloscope_edge_trigger.h"
-#include "power_overwhelming/oscilloscope_quantity.h"
-#include "power_overwhelming/oscilloscope_reference_point.h"
-#include "power_overwhelming/oscilloscope_sensor_definition.h"
-#include "power_overwhelming/oscilloscope_single_acquisition.h"
-#include "power_overwhelming/visa_sensor.h"
+#include "power_overwhelming/sensor.h"
+#include "power_overwhelming/rtx_instrument.h"
 
 
 namespace visus {
 namespace power_overwhelming {
 
-    /* Forward declarations */
-    namespace detail { struct visa_sensor_impl; }
-
     /// <summary>
     /// A sensor using a Rohde &amp; Schwarz RTA and RTB series oscilloscope.
     /// </summary>
-    class POWER_OVERWHELMING_API rtx_sensor final : public detail::visa_sensor {
+    class POWER_OVERWHELMING_API rtx_sensor final : public sensor {
 
     public:
 
@@ -52,20 +38,9 @@ namespace power_overwhelming {
             _In_ const std::int32_t timeout = 3000);
 
         /// <summary>
-        /// The product ID of the RTA and RTB series oscilloscopes.
-        /// </summary>
-        /// <remarks>
-        /// This is the ID reported by the RTB2004 and RTA4004 devices we use at
-        /// VISUS. If this does not work, use the RsVisaTester tool and discover
-        /// the device via the &quot;Find Resource&quot; functionality. Do not
-        /// forget to put the device in USB mode if discovering via USB.
-        /// </remarks>
-        static constexpr const char *rtb2004_id = "0x01D6";
-
-        /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        inline rtx_sensor(void) { }
+        inline rtx_sensor(void) : _name(nullptr) { }
 
         /// <summary>
         /// Initialises a new instance.
@@ -80,7 +55,8 @@ namespace power_overwhelming {
         /// loaded.</exception>
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
-        rtx_sensor(_In_z_ const char *path, _In_ const std::int32_t timeout);
+        rtx_sensor(_In_z_ const char *path,
+            _In_ const visa_instrument::timeout_type timeout);
 
         /// <summary>
         /// Initialises a new instance.
@@ -95,127 +71,75 @@ namespace power_overwhelming {
         /// loaded.</exception>
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
-        rtx_sensor(_In_z_ const wchar_t *path, _In_ const std::int32_t timeout);
+        rtx_sensor(_In_z_ const wchar_t *path,
+            _In_ const visa_instrument::timeout_type timeout);
 
         /// <summary>
         /// Move <paramref name="rhs" /> into a new instance.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        inline rtx_sensor(_In_ rtx_sensor&& rhs) noexcept
-            : detail::visa_sensor(std::move(rhs)) { }
+        rtx_sensor(_Inout_ rtx_sensor&& rhs) noexcept;
 
         /// <summary>
         /// Finalise the instance.
         /// </summary>
-        ~rtx_sensor(void);
-
-        void configure(
-            _In_reads_(cnt) const oscilloscope_sensor_definition *sensors,
-            _In_ const std::size_t cnt);
-
-        void configure(_In_ const oscilloscope_channel& channel);
-
-        void configure(_In_ const oscilloscope_single_acquisition& acquisition);
-
-        blob data(_In_ const std::uint32_t channel);
+        virtual ~rtx_sensor(void);
 
         /// <summary>
-        /// Enable an configure one of the mathematical expressions.
-        /// </summary>
-        /// <param name="channel">The maths channel to be configured. For an
-        /// RTB2004, this must be within [1, 4].</param>
-        /// <param name="expression">The arithmetic expression to be computed,
-        /// ie &quot;CH1*CH2&quot;.</param>
-        /// <param name="unit">The unit of the resulting values. If
-        /// <c>nullptr</c>, the currently set unit will be unchanged. This
-        /// parameter defaults to <c>nullptr</c>.</param>
-        void expression(_In_ const std::uint32_t channel,
-            _In_opt_z_ const char *expression,
-            _In_opt_z_ const char *unit = nullptr);
-
-        ///// <summary>
-        ///// Sets the path to the log file.
-        ///// </summary>
-        ///// <param name="path">The path to the log file, usually just the
-        ///// file name.</param>
-        ///// <param name="overwrite">If <c>true</c>, the file will be cleared
-        ///// if it already exists. This parameter defaults to <c>false</c>.
-        ///// </param>
-        ///// <param name="use_usb">If <c>true</c>, the file will be written to
-        ///// the attached USB stick instead of internal memory. This parameter
-        ///// defaults to <c>false</c>.</param>
-        ///// <exception cref="std::runtime_error">If the method is called on an
-        ///// object that has been disposed by moving it.</exception>
-        ///// <exception cref="visa_exception">If the VISA command was not
-        ///// processed successfully.</exception>
-        //void log_file(const char *path, const bool overwrite = false,
-        //    const bool use_usb = false);
-
-        /// <summary>
-        /// Sets the reference point in the diagram.
-        /// </summary>
-        /// <param name="position">The location of the reference point on the
-        /// horizontal axis, which can be the left side, the middle or the
-        /// right side.</param>
-        void reference_position(
-            _In_ const oscilloscope_reference_point position);
-
-        /// <summary>
-        /// Sets the unit of the specified channel.
-        /// </summary>
-        /// <param name="channel">The number (starting at 1) of the channel to
-        /// be configured.</param>
-        /// <param name="unit">The unit being measured (either &quot;A&quot;
-        /// or &quot;V&quot;).</param>
-        /// <exception cref="std::invalid_argument">If <paramref name="unit" />
-        /// is <c>nullptr</c>.</exception>
-        void unit(_In_ const std::uint32_t channel, _In_z_ const char *unit);
-
-        /// <summary>
-        /// Sets the time range of a single acquisition covering all grid
-        ///  divisions.
-        /// </summary>
-        /// <param name="scale">Time scale within [250e-12, 500].</param>
-        void time_range(_In_ const oscilloscope_quantity &scale);
-
-        /// <summary>
-        /// Sets the horizontal scale for all channels in time units per grid
-        /// division.
-        /// </summary>
-        /// <param name="scale">Time scale within [1e-9, 50].</param>
-        void time_scale(_In_ const oscilloscope_quantity& scale);
-
-        /// <summary>
-        /// Configures the trigger.
-        /// </summary>
-        /// <param name="trigger">The trigger configuration.</param>
-        void trigger(const oscilloscope_trigger& trigger);
-
-        /// <summary>
-        /// Sets the trigger position, which is the time distance from the
-        /// trigger point to the reference point.
+        /// Gets the name of the sensor.
         /// </summary>
         /// <remarks>
-        /// <para>The trigger point is the horizontal origin of the diagram.
-        /// Changing the horizontal position you can move the trigger, even
-        /// outside the screen.</para>
+        /// It is safe to call this method on a disposed object, in which case
+        /// the name will be <c>nullptr</c>.
         /// </remarks>
-        /// <param name="offset">The offset of the trigger points in
-        /// <paramref name="unit" />s.</param>
-        /// <param name="unit">The unit of the time offset, which defaults to
-        /// seconds.</param>
-        void trigger_position(_In_ const float offset,
-            _In_z_ const char *unit = "s");
+        /// <returns>The implementation-defined, human-readable name of the
+        /// sensor.</returns>
+        _Ret_maybenull_z_ virtual const wchar_t *name(
+            void) const noexcept override;
+
+        /// <summary>
+        /// Gets the VISA path of the instrument.
+        /// </summary>
+        /// <returns>The path of the instrument.</returns>
+        inline _Ret_maybenull_z_ const char *path(void) const noexcept {
+            return this->_instrument.path();
+        }
+
+        using sensor::sample;
+
+        /// <summary>
+        /// Synchonises the date and time on the instrument with the system
+        /// clock of the computer calling this API.
+        /// </summary>
+        /// <param name="utc">If <c>true</c>, UTC will be used, the local time
+        /// otherwise. This parameter defaults to <c>false</c>.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        inline rtx_sensor& synchronise_clock(_In_ const bool utc = false) {
+            this->_instrument.synchronise_clock(utc);
+            return *this;
+        }
 
         /// <summary>
         /// Move assignment.
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        inline rtx_sensor& operator =(rtx_sensor&& rhs) noexcept {
-            visa_sensor::operator =(std::move(rhs));
-            return *this;
-        }
+        rtx_sensor& operator =(_Inout_ rtx_sensor&& rhs) noexcept;
+
+        /// <summary>
+        /// Determines whether the sensor is valid.
+        /// </summary>
+        /// <remarks>
+        /// A sensor is considered valid until it has been disposed by a move
+        /// operation.
+        /// </remarks>
+        /// <returns><c>true</c> if the sensor is valid, <c>false</c>
+        /// otherwise.</returns>
+        virtual operator bool(void) const noexcept override;
 
     protected:
 
@@ -223,6 +147,12 @@ namespace power_overwhelming {
         measurement_data sample_sync(
             _In_ const timestamp_resolution resolution) const override;
 
+    private:
+
+        void initialise(void);
+
+        rtx_instrument _instrument;
+        wchar_t *_name;
     };
 
 } /* namespace power_overwhelming */
