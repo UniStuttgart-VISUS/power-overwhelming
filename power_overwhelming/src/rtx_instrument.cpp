@@ -39,6 +39,64 @@ visus::power_overwhelming::rtx_instrument::rtx_instrument(
 
 
 /*
+ * visus::power_overwhelming::rtx_sensor::acquisition
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::acquisition(
+        _In_ const oscilloscope_single_acquisition& acquisition,
+        _In_ const bool run) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+
+    if (acquisition.automatic_points()) {
+        impl.format("ACQ:POIN:AUT ON\n", acquisition.points());
+    } else {
+        impl.format("ACQ:POIN %u\n", acquisition.points());
+    }
+    this->throw_on_system_error();
+
+    impl.format("ACQ:NSIN:COUN %u\n", acquisition.count());
+    this->throw_on_system_error();
+
+    impl.format("SING\n");
+    this->throw_on_system_error();
+
+    if (run) {
+        impl.format("ACQ:STAT RUN\n");
+        this->throw_on_system_error();
+    }
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::acquisition_state
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::acquisition_state(
+        _In_ const oscilloscope_acquisition_state state) {
+    switch (state) {
+        case oscilloscope_acquisition_state::run:
+            this->check_not_disposed().format("ACQ:STAT RUN\n");
+            break;
+
+        case oscilloscope_acquisition_state::stop:
+            this->check_not_disposed().format("ACQ:STAT STOP\n");
+            break;
+
+        default:
+            this->check_not_disposed().format("ACQ:STAT BREAK\n");
+            break;
+    }
+
+    this->throw_on_system_error();
+    return *this;
+}
+
+
+/*
  * visus::power_overwhelming::rtx_instrument::channel
  */
 visus::power_overwhelming::rtx_instrument&

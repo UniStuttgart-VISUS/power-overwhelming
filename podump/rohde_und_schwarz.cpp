@@ -136,18 +136,20 @@ void query_rtx_instrument(void) {
             i.channel(oscilloscope_channel(1)
                 .label(oscilloscope_label("podump#1"))
                 .state(true)
-                .attenuation(oscilloscope_quantity(10))
+                .attenuation(oscilloscope_quantity(10, "V"))
                 .range(oscilloscope_quantity(7)));
 
-            //i.configure(oscilloscope_single_acquisition()
-            //            .points(50000)
-            //            .count(1));
+            i.acquisition(oscilloscope_single_acquisition()
+                .points(50000)
+                .count(2));
 
             i.trigger_position(oscilloscope_quantity(42.42f, "ms"));
             i.trigger(oscilloscope_edge_trigger("CH1")
                 .level(1, oscilloscope_quantity(2000.0f, "mV"))
                 .slope(oscilloscope_trigger_slope::both)
                 .mode(oscilloscope_trigger_mode::normal));
+
+            i.acquisition_state(oscilloscope_acquisition_state::run);
 
             //        auto data = s.data(1);
         }

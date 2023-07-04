@@ -50,7 +50,8 @@ namespace power_overwhelming {
         /// Sets the attenuation of the probe.
         /// </summary>
         /// <param name="attenuation">The attenuation and unit of the probe.
-        /// </param>
+        /// Note that this parameter must have set a unit and does not work
+        /// with the default unit.</param>
         /// <returns><c>*this</c>.</returns>
         inline oscilloscope_channel& attenuation(
             _In_ const oscilloscope_quantity& attenuation) noexcept {

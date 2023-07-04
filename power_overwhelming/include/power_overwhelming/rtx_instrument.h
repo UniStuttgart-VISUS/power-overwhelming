@@ -5,10 +5,12 @@
 
 #pragma once
 
+#include "power_overwhelming/oscilloscope_acquisition_state.h"
 #include "power_overwhelming/oscilloscope_channel.h"
 #include "power_overwhelming/oscilloscope_edge_trigger.h"
 #include "power_overwhelming/oscilloscope_quantity.h"
 #include "power_overwhelming/oscilloscope_reference_point.h"
+#include "power_overwhelming/oscilloscope_single_acquisition.h"
 #include "power_overwhelming/oscilloscope_trigger.h"
 #include "power_overwhelming/visa_instrument.h"
 
@@ -96,6 +98,32 @@ namespace power_overwhelming {
             _In_ const timeout_type timeout = 2000);
 
         /// <summary>
+        /// Configures signle acquisition mode on the device.
+        /// </summary>
+        /// <param name="acquisition">The configuration of single acquisition
+        /// mode.</param>
+        /// <param name="run">If <c>true</c>, start the acquisiton. This
+        /// parameter defaults to <c>false</c>.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the instument has been
+        /// disposed by a move.</exception>
+        /// <exception cref="visa_exception">If a VISA call failed.</exception>
+        rtx_instrument& acquisition(
+            _In_ const oscilloscope_single_acquisition& acquisition,
+            _In_ const bool run = false);
+
+        /// <summary>
+        /// Changes the acquisition state of the instrument.
+        /// </summary>
+        /// <param name="state">The new state of the instrument.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the instument has been
+        /// disposed by a move.</exception>
+        /// <exception cref="visa_exception">If a VISA call failed.</exception>
+        rtx_instrument& acquisition_state(
+            _In_ const oscilloscope_acquisition_state state);
+
+        /// <summary>
         /// Apply the specified channel configuration.
         /// </summary>
         /// <remarks>
@@ -104,6 +132,10 @@ namespace power_overwhelming {
         /// </remarks>
         /// <param name="channel">The channel configuration to apply.</param>
         /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::system_error">If the VISA library could not be
+        /// loaded.</exception>
+        /// <exception cref="visa_exception">If the sensor could not be
+        /// initialised.</exception>
         rtx_instrument& channel(_In_ const oscilloscope_channel& channel);
 
         /// <summary>
