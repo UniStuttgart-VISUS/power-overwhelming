@@ -121,7 +121,7 @@ namespace power_overwhelming {
         /// <exception cref="std::runtime_error">If the instument has been
         /// disposed by a move.</exception>
         /// <exception cref="visa_exception">If a VISA call failed.</exception>
-        rtx_instrument& acquisition_state(
+        rtx_instrument& acquisition(
             _In_ const oscilloscope_acquisition_state state);
 
 #if false
@@ -233,6 +233,12 @@ namespace power_overwhelming {
         /// <param name="trigger">The trigger configuration.</param>
         /// <returns><c>*this</c>.</returns>
         rtx_instrument& trigger(_In_ const oscilloscope_trigger& trigger);
+
+        /// <summary>
+        /// Forces a manual trigger.
+        /// </summary>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument& trigger(void);
 
         /// <summary>
         /// Sets the trigger position, which is the time distance from the

@@ -139,7 +139,6 @@ void query_rtx_instrument(void) {
                 .state(true)
                 .attenuation(oscilloscope_quantity(10, "V"))
                 .range(oscilloscope_quantity(7)));
-
             //i.expression(1, "CH1 * 2");
 
             i.acquisition(oscilloscope_single_acquisition()
@@ -153,7 +152,7 @@ void query_rtx_instrument(void) {
                 .slope(oscilloscope_trigger_slope::both)
                 .mode(oscilloscope_trigger_mode::automatic));
 
-            i.acquisition_state(oscilloscope_acquisition_state::run);
+            i.acquisition(oscilloscope_acquisition_state::run);
 
             i.query("*TRG; *OPC?\n");
             //auto ascii_data = i.ascii_data(1);

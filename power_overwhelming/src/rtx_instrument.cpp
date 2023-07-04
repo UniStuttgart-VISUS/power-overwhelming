@@ -79,10 +79,10 @@ visus::power_overwhelming::rtx_instrument::acquisition(
 
 
 /*
- * visus::power_overwhelming::rtx_instrument::acquisition_state
+ * visus::power_overwhelming::rtx_instrument::acquisition
  */
 visus::power_overwhelming::rtx_instrument&
-visus::power_overwhelming::rtx_instrument::acquisition_state(
+visus::power_overwhelming::rtx_instrument::acquisition(
         _In_ const oscilloscope_acquisition_state state) {
     switch (state) {
         case oscilloscope_acquisition_state::run:
@@ -373,6 +373,16 @@ visus::power_overwhelming::rtx_instrument::time_scale(
     impl.format("TIM:SCAL %f %s\n", scale.value(), scale.unit());
 
     this->throw_on_system_error();
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::trigger
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::trigger(void) {
+    this->check_not_disposed().write("*TRG\n");
     return *this;
 }
 
