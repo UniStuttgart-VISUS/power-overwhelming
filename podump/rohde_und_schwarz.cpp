@@ -127,6 +127,7 @@ void query_rtx_instrument(void) {
                 d += ::wcslen(d) + 1) {
             rtx_instrument i(d);
 
+            i.clear();
             i.reset();
             i.synchronise_clock();
             i.timeout(5000);
@@ -143,7 +144,7 @@ void query_rtx_instrument(void) {
 
             i.acquisition(oscilloscope_single_acquisition()
                 .points(50000)
-                .count(1)
+                .count(2)
                 .segmented(true));
 
             i.trigger_position(oscilloscope_quantity(42.42f, "ms"));
@@ -152,9 +153,19 @@ void query_rtx_instrument(void) {
                 .slope(oscilloscope_trigger_slope::both)
                 .mode(oscilloscope_trigger_mode::automatic));
 
+            std::cout << "RTX interface type: "
+                << i.interface_type()
+                << std::endl
+                << "RTX status before acquire: "
+                << i.status()
+                << std::endl;
+
             i.acquisition(oscilloscope_acquisition_state::run);
 
-            i.query("*TRG; *OPC?\n");
+            i.trigger();
+            i.trigger();
+            i.wait();
+            //i.query("*TRG; *OPC?\n");
             //auto ascii_data = i.ascii_data(1);
             //auto binary_data = i.binary_data(1);
             auto data = i.data(1);

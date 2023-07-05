@@ -8,8 +8,9 @@
 #include "visa_instrument_impl.h"
 
 
-static constexpr const char *no_visa_error_msg = "This function is unavailable "
-    "unless compiled with support for VISA.";
+static constexpr const char *no_visa_error_msg = "The Power Overwhelming "
+    "library was compiled without support for the Virtual Instrument Software "
+    "Architecture.";
 
 
 /*
@@ -144,26 +145,7 @@ visus::power_overwhelming::rtx_instrument::binary_data(
 
     auto query = detail::format_string("CHAN%u:DATA?\n", channel);
     this->write(query);
-
-    blob retval(16);
-    impl.read(retval.begin(), 2);
-    if (*retval.as<char>(0) != '#') {
-        throw std::runtime_error("The instrument did not send the expected "
-            "type of binary response.");
-    }
-
-    *retval.as<char>(2) = 0;
-    const auto digits = std::atoi(retval.as<char>(1));
-    retval.reserve(digits + 1);
-    impl.read(retval.begin(), digits);
-
-    *retval.as<char>(digits) = 0;
-    const auto size = std::atoi(retval.as<char>());
-    retval.reserve(size);
-
-    impl.read(retval.begin(), retval.size());
-
-    return retval;
+    return impl.read_binary();
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(no_visa_error_msg);

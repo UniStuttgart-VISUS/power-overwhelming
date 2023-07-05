@@ -39,7 +39,7 @@ namespace test {
             Assert::AreEqual(0.0f, channel.zero_offset().value(), L"Default zero value", LINE_INFO());
         }
 
-        TEST_METHOD(test_fuild_api) {
+        TEST_METHOD(test_fluid_api) {
             oscilloscope_channel channel(4);
             channel.attenuation(oscilloscope_quantity(1.0f, "A"))
                 .bandwidth(oscilloscope_channel_bandwidth::limit_to_20_mhz)

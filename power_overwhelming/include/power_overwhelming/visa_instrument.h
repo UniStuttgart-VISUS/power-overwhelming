@@ -207,13 +207,16 @@ namespace power_overwhelming {
         /// <summary>
         /// Read an attribute value from the instrument.
         /// </summary>
+        /// <param name="dst">Receives the current value of the attribute. The
+        /// size of this buffer must match the type of the attribute.</param>
         /// <param name="name">The name of the attribute to be retrieve.</param>
-        /// <returns>The current value of teh attribute.</returns>
+        /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        ViAttrState attribute(_In_ ViAttr name) const;
+        const visa_instrument& attribute(_Out_ void *dst,
+            _In_ ViAttr name) const;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
@@ -316,6 +319,19 @@ namespace power_overwhelming {
         /// </exception>
         std::size_t identify(_Out_writes_opt_z_(cnt) char *dst,
             _In_ const std::size_t cnt) const;
+
+        /// <summary>
+        /// Gets the interface type of the underlying session in the form of one
+        /// of the enumerated values <c>VI_INTF_GPIB</c>, <c>VI_INTF_VXI</c>,
+        /// <c>VI_INTF_GPIB_VXI</c>, <c>VI_INTF_ASRL</c>, <c>VI_INTF_PXI</c>,
+        /// <c>VI_INTF_TCPIP</c> or <c>VI_INTF_USB</c>.
+        /// </summary>
+        /// <returns>The interface type.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::logic_error">If the library was compiled
+        /// without support for VISA.</exception>
+        std::uint16_t interface_type(void) const;
 
         /// <summary>
         /// Gets the VISA path of the device.
@@ -461,6 +477,18 @@ namespace power_overwhelming {
         visa_instrument& synchronise_clock(_In_ const bool utc = false);
 
         /// <summary>
+        /// Reads the status bytes.
+        /// </summary>
+        /// <returns>The status bytes.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::logic_error">If the library was compiled
+        /// without support for VISA.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        std::int32_t status(void);
+
+        /// <summary>
         /// Query the oldest error in the queue.
         /// </summary>
         /// <remarks>
@@ -503,6 +531,20 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the current system state could
         /// not be retrieved.</exception>
         visa_instrument& timeout(_In_ const timeout_type timeout);
+
+        /// <summary>
+        /// Issue and wait for an OPC query.
+        /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library was compiled without support
+        /// for VISA.
+        /// </remarks>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        visa_instrument& wait(void);
 
         /// <summary>
         /// Write at most <paramref name="cnt" /> bytes of the given data to the

@@ -89,6 +89,11 @@ namespace detail {
         /// The session representing the device connection.
         /// </summary>
         ViSession session;
+
+        /// <summary>
+        /// Remembers whether the device is VXI-capable.
+        /// </summary>
+        bool vxi;
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
         /// <summary>
@@ -123,6 +128,16 @@ namespace detail {
         std::string identify(void) const;
 
         /// <summary>
+        /// Gets the interface type of the underlying session.
+        /// </summary>
+        /// <returns>The interface type.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::logic_error">If the library was compiled
+        /// without support for VISA.</exception>
+        std::uint16_t interface_type(void) const;
+
+        /// <summary>
         /// Gets the path to the instrument.
         /// </summary>
         /// <returns>The path to the instrument.</returns>
@@ -154,12 +169,28 @@ namespace detail {
         blob read_all(_In_ const std::size_t buffer_size = 1024) const;
 
         /// <summary>
+        /// Reads a binary response starting with the # marker for the number of
+        /// bytes to follow.
+        /// </summary>
+        /// <returns>The binary data excluding the length marker.</returns>
+        /// <exception cref="visa_exception">If the operation failed.</exception>
+        /// <exception cref="std::runtime_error">If the data being read are not
+        /// binary.</exception>
+        blob read_binary(void) const;
+
+        /// <summary>
         /// Release the reference on the object and free it if this was the last
         /// reference.
         /// </summary>
         /// <returns>The new value of the reference counter. If this is zero,
         /// the object has been freed.</returns>
         std::size_t release(void);
+
+        /// <summary>
+        /// Gets the <c>VI_ATTR_RSRC_CLASS</c> attribute.
+        /// </summary>
+        /// <returns>The resource class.</returns>
+        std::string resource_class(void) const;
 
         /// <summary>
         /// Query the oldest error in the queue and returns the message
@@ -219,7 +250,7 @@ namespace detail {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
             resource_manager(0), session(0),
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
-            _counter(0) { }
+            vxi(false), _counter(0) { }
     };
 
 } /* namespace detail */

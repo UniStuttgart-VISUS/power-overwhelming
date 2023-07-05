@@ -8,6 +8,12 @@
 #include <stdexcept>
 
 #include "visa_library.h"
+#include "zero_memory.h"
+
+
+static constexpr const char *no_visa_error = "The Power Overwhelming library "
+    "was compiled without support for the Virtual Instrument Software "
+    "Architecture.";
 
 
 /*
@@ -50,12 +56,34 @@ visus::power_overwhelming::detail::visa_instrument_impl::create(
             }
         }
 
+        // Check for VXI support as in rscore from R&S. This is mostly
+        // interesting for how we can retrieve the status bytes from the
+        // instrument.
+        // Note to future self: This is copied from R&S and I have no idea
+        // why certain interfaces support VXI and otherd do not, in particular
+        // the "SOCKET" stuff. Therefore, this should not necessarily to be
+        // considered correct.
+        switch (retval->interface_type()) {
+            case VI_INTF_GPIB:
+            case VI_INTF_GPIB_VXI:
+            case VI_INTF_USB:
+                retval->vxi = true;
+                break;
+
+            case VI_INTF_TCPIP:
+                retval->vxi = (retval->resource_class() != "SOCKET");
+                break;
+
+            default:
+                retval->vxi = false;
+                break;
+        }
+
         retval->_path = path;
 
         _instruments[path] = retval;
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-        throw std::logic_error("The library was compiled without support "
-            "for the Virtual Instrument Software Architecture.");
+        throw std::logic_error(::no_visa_error);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     } /* if (it != _instruments.end()) */
 
@@ -116,6 +144,8 @@ std::string visus::power_overwhelming::detail::visa_instrument_impl::identify(
     this->write_all(reinterpret_cast<const byte_type *>(cmd) , ::strlen(cmd));
     auto retval = this->read_all();
 
+    _Analysis_assume_(retval.begin() != nullptr);
+    _Analysis_assume_(retval.end() != nullptr);
     auto it = std::find_if(retval.begin(), retval.end(),
         [](const byte_type b) { return ((b == '\r') || (b == '\n')); });
     if (it != retval.end()) {
@@ -127,6 +157,23 @@ std::string visus::power_overwhelming::detail::visa_instrument_impl::identify(
 
 #else/*defined(POWER_OVERWHELMING_WITH_VISA) */
     return "";
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_instrument_impl::interface_type
+ */
+std::uint16_t
+visus::power_overwhelming::detail::visa_instrument_impl::interface_type(
+        void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    std::uint16_t retval = 0;
+    visa_exception::throw_on_error(detail::visa_library::instance()
+        .viGetAttribute(this->session, VI_ATTR_INTF_TYPE, &retval));
+    return retval;
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(::no_visa_error);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -196,6 +243,69 @@ visus::power_overwhelming::detail::visa_instrument_impl::read_all(
 
 
 /*
+ * visus::power_overwhelming::detail::visa_instrument_impl::read_binary
+ */
+visus::power_overwhelming::blob
+visus::power_overwhelming::detail::visa_instrument_impl::read_binary(
+        void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    blob retval(16);
+    std::size_t size = 0;
+
+    this->read(retval.begin(), 2);
+    if (*retval.as<char>(0) != '#') {
+        throw std::runtime_error("The instrument did not send the expected "
+            "type of binary response.");
+    }
+
+    if (*retval.as<char>(1) == '(') {
+        // This is the "variable length" mode where the data starts with
+        // #(<number of bytes>). We need to read the input character by
+        // character until we read the closing parenthesis.
+        byte_type byte = 0;
+        bool need_more = true;
+
+        assert(size == 0);
+        while (need_more) {
+            this->read(&byte, 1);
+
+            if ((byte >= '0') && (byte <= '9')) {
+                size *= 10;
+                size += byte - '0';
+
+            } else if (byte == ')') {
+                need_more = false;
+
+            } else {
+                throw std::runtime_error("The variable-length header contains "
+                    "non-numeric characters.");
+            }
+        }
+
+    } else {
+        // This is the "normal length" more where the data starts with
+        // #<digits><number of bytes>. In this mode, the second character
+        // is the number of digits to follow (at most 9).
+        *retval.as<char>(2) = 0;
+        const auto digits = std::atoi(retval.as<char>(1));
+        retval.reserve(digits + 1);
+        this->read(retval.begin(), digits);
+
+        *retval.as<char>(digits) = 0;
+        size = std::atoi(retval.as<char>());
+    }
+
+    retval.reserve(size);
+    this->read(retval.begin(), retval.size());
+
+    return retval;
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return blob();
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
  * visus::power_overwhelming::detail::visa_instrument_impl::release
  */
 std::size_t visus::power_overwhelming::detail::visa_instrument_impl::release(
@@ -213,6 +323,24 @@ std::size_t visus::power_overwhelming::detail::visa_instrument_impl::release(
     // Note: Do not use counter at this point! Only local variables are still
     // alive after deleting the object!
     return (expected - 1);
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_instrument_impl::resource_class
+ */
+std::string
+visus::power_overwhelming::detail::visa_instrument_impl::resource_class(
+        void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    ViChar retval[256];
+    visa_exception::throw_on_error(detail::visa_library::instance()
+        .viGetAttribute(this->session, VI_ATTR_RSRC_CLASS, retval));
+    retval[sizeof(retval) - 1] = 0;
+    return retval;
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(::no_visa_error);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

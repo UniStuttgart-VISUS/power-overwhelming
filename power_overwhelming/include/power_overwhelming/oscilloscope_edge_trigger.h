@@ -74,8 +74,11 @@ namespace power_overwhelming {
         }
 
         /// <summary>
-        /// Gets the one-based intex of the trigger input.
+        /// Gets the one-based index of the trigger input.
         /// </summary>
+        /// <remarks>
+        /// Use <see cref="level" /> to set this property.
+        /// </remarks>
         /// <returns>The index of the trigger input.</returns>
         inline input_type input(void) const noexcept {
             return this->_input;
@@ -89,7 +92,7 @@ namespace power_overwhelming {
         /// instrument should be used.
         /// </remarks>
         /// <returns>The unit.</returns>
-        inline const oscilloscope_quantity &level(void) const noexcept {
+        inline const oscilloscope_quantity& level(void) const noexcept {
             return this->_level;
         }
 

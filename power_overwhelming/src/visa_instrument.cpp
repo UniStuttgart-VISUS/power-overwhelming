@@ -191,12 +191,12 @@ visus::power_overwhelming::visa_instrument::~visa_instrument(void) {
 /*
  * visus::power_overwhelming::visa_instrument::attribute
  */
-ViAttrState visus::power_overwhelming::visa_instrument::attribute(
-        _In_ ViAttr name) const {
-    ViAttrState retval;
+const visus::power_overwhelming::visa_instrument &
+visus::power_overwhelming::visa_instrument::attribute(
+        _Out_ void *dst, _In_ ViAttr name) const {
     visa_exception::throw_on_error(detail::visa_library::instance()
-        .viGetAttribute(this->check_not_disposed().session, name, &retval));
-    return retval;
+        .viGetAttribute(this->check_not_disposed().session, name, &dst));
+    return *this;
 }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
@@ -247,10 +247,7 @@ visus::power_overwhelming::visa_instrument::clear(void) {
  */
 visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::clear_status(void) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    this->check_not_disposed();
-    this->write("*CLS\n");
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    this->check_not_disposed().write("*CLS\n");
     return *this;
 }
 
@@ -288,6 +285,32 @@ std::size_t visus::power_overwhelming::visa_instrument::identify(
 
     return (retval.size() + 1);
 }
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::interface_type
+ */
+std::uint16_t visus::power_overwhelming::visa_instrument::interface_type(
+        void) const {
+    return this->check_not_disposed().interface_type();
+}
+
+/*
+
+        else if (rsSession->sessionType == RS_INTF_GPIB)
+        {
+            rsSession->vxiCapable = (addFlags & 2) > 0 ? VI_FALSE : VI_TRUE;
+        }
+        else if (rsSession->sessionType == RS_INTF_TCPIP)
+        {
+            rsSession->vxiCapable = (addFlags & 4) > 0 ? VI_FALSE : VI_TRUE;
+        }
+        else if (rsSession->sessionType == RS_INTF_USB)
+        {
+            rsSession->vxiCapable = (addFlags & 1) > 0 ? VI_FALSE : VI_TRUE;
+        }
+
+*/
 
 
 /*
@@ -416,6 +439,38 @@ visus::power_overwhelming::visa_instrument::synchronise_clock(
 
 
 /*
+ * visus::power_overwhelming::visa_instrument::status
+ */
+std::int32_t visus::power_overwhelming::visa_instrument::status(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    ViUInt16 retval;
+    visa_exception::throw_on_error(detail::visa_library::instance()
+        .viReadSTB(this->check_not_disposed().session, &retval));
+    return static_cast<std::int32_t>(retval);
+
+    // Note: R&S does the following, but NI's documentation suggests that
+    // viReadSTB will issue *STB? by itself as a fallback, so we try the easier
+    // one ...
+
+    //if (this->check_not_disposed().vxi) {
+    //    ViUInt16 retval;
+    //    visa_exception::throw_on_error(detail::visa_library::instance()
+    //        .viReadSTB(this->check_not_disposed().session, &retval));
+    //    return static_cast<std::int32_t>(retval);
+
+    //} else {
+    //    this->write("*STB?\n");
+    //    auto response = this->read_all();
+    //    *response.rend() = 0;
+    //    return std::atoi(response.as<char>());
+    //}
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(::no_visa_error);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
  * visus::power_overwhelming::visa_instrument::system_error
  */
 int visus::power_overwhelming::visa_instrument::system_error(void) const {
@@ -473,6 +528,18 @@ visus::power_overwhelming::visa_instrument::timeout(
 #else /* defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::wait
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::wait(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    this->query("*OPC?");
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
 }
 
 
