@@ -31,6 +31,7 @@
 #define _In_opt_
 #define _In_opt_z_
 #define _In_reads_(cnt)
+#define _In_reads_bytes_(cnt)
 #define _In_reads_or_z_(cnt)
 #define _In_z_
 #define _Out_
