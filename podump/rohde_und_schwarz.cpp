@@ -168,6 +168,8 @@ void query_rtx_instrument(void) {
             //i.query("*TRG; *OPC?\n");
             //auto ascii_data = i.ascii_data(1);
             //auto binary_data = i.binary_data(1);
+            auto segments = i.history_segments();
+            //i.history_segment(1, -1);
             auto data = i.data(1);
         }
 
