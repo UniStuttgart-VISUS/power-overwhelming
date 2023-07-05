@@ -320,16 +320,27 @@ visus::power_overwhelming::rtx_instrument::expression(
 /*
  * visus::power_overwhelming::rtx_instrument::history_segment
  */
-int visus::power_overwhelming::rtx_instrument::history_segment(
-        _In_ const std::uint32_t channel, _In_ const int segment) {
+int visus::power_overwhelming::rtx_instrument::history_segment(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    this->check_not_disposed().format("CHAN:HIST:CURR %i\n", segment);
-    auto retval = this->read_all();
+    auto retval = this->query("CHAN:HIST:CURR?\n");
     return std::atoi(retval.as<char>());
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::history_segment
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::history_segment(
+        _In_ const int segment) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    this->check_not_disposed().format("CHAN:HIST:CURR %i\n", segment);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
 }
 
 

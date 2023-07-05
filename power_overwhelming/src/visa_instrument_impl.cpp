@@ -298,6 +298,10 @@ visus::power_overwhelming::detail::visa_instrument_impl::read_binary(
     retval.reserve(size);
     this->read(retval.begin(), retval.size());
 
+    // Read and discard all that is still in the buffer (the "\n"). If we do not
+    // do this, the next query would be interrupted.
+    this->read_all();
+
     return retval;
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return blob();

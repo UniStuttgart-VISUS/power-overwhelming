@@ -202,6 +202,18 @@ namespace power_overwhelming {
             _In_opt_z_ const char *unit = nullptr);
 
         /// <summary>
+        /// Queries the currently displayed history segment index.
+        /// </summary>
+        /// <returns>The history segment index currently displayed.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
+        int history_segment(void) const;
+
+        /// <summary>
         /// Accesses a specific history segment in the memory.
         /// </summary>
         /// <param name="channel">The one-based channel index.</param>
@@ -211,15 +223,12 @@ namespace power_overwhelming {
         /// oldest segment has index 1 and the newest has index <c>n</c> where
         /// is the number of segments returned by
         /// <see cref="history_segments" />.</param>
-        /// <returns>The index of the segment that is shown.</returns>
+        /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If any of the API calls to the
         /// instrument failed.</exception>
-        /// <exception cref="std::logic_error">If the method is called while
-        /// the library was compiled without support for VISA..</exception>
-        int history_segment(_In_ const std::uint32_t channel,
-            _In_ const int segment);
+        rtx_instrument& history_segment(_In_ const int segment);
 
         /// <summary>
         /// Gets the number of history segments currently available in memory.
@@ -230,7 +239,7 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If any of the API calls to the
         /// instrument failed.</exception>
         /// <exception cref="std::logic_error">If the method is called while
-        /// the library was compiled without support for VISA..</exception>
+        /// the library was compiled without support for VISA.</exception>
         std::size_t history_segments(void) const;
 
         /// <summary>

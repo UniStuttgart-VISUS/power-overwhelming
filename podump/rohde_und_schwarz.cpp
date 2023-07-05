@@ -128,6 +128,7 @@ void query_rtx_instrument(void) {
             rtx_instrument i(d);
 
             i.clear();
+            i.clear_status();
             i.reset();
             i.synchronise_clock();
             i.timeout(5000);
@@ -150,7 +151,7 @@ void query_rtx_instrument(void) {
             i.trigger_position(oscilloscope_quantity(42.42f, "ms"));
             i.trigger(oscilloscope_edge_trigger("CH1")
                 .level(1, oscilloscope_quantity(2000.0f, "mV"))
-                .slope(oscilloscope_trigger_slope::both)
+                .slope(oscilloscope_trigger_slope::rising)
                 .mode(oscilloscope_trigger_mode::automatic));
 
             std::cout << "RTX interface type: "
@@ -168,9 +169,16 @@ void query_rtx_instrument(void) {
             //i.query("*TRG; *OPC?\n");
             //auto ascii_data = i.ascii_data(1);
             //auto binary_data = i.binary_data(1);
-            auto segments = i.history_segments();
-            //i.history_segment(1, -1);
-            auto data = i.data(1);
+
+            auto segment0 = i.data(1);
+
+            i.history_segment(-1);
+            std::cout << "Segment "
+                << i.history_segment()
+                << " of "
+                << i.history_segments()
+                << std::endl;
+            auto segment1 = i.data(1);
         }
 
     } catch (std::exception& ex) {
