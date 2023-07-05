@@ -96,7 +96,7 @@ namespace detail {
         _In_ const DWORD share_mode,
         _In_ const DWORD create_disposition,
         _In_ const DWORD flags = FILE_ATTRIBUTE_NORMAL);
-#endif defined(_WIN32)
+#endif /* defined(_WIN32) */
 
     /// <summary>
     /// Opens a file using POSIX API.

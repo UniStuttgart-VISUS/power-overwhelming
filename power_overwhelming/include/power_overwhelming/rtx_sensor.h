@@ -1,4 +1,4 @@
-﻿// <copyright file="visa_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
+﻿// <copyright file="rtx_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -6,40 +6,45 @@
 #pragma once
 
 #include "power_overwhelming/sensor.h"
+#include "power_overwhelming/rtx_instrument.h"
 
 
 namespace visus {
 namespace power_overwhelming {
-namespace detail {
-
-    /* Forward declarations. */
-    struct visa_sensor_impl;
 
     /// <summary>
-    /// Base class for sensors using VISA instruments.
+    /// A sensor using a Rohde &amp; Schwarz RTA and RTB series oscilloscope.
     /// </summary>
-    class POWER_OVERWHELMING_API visa_sensor : public sensor {
+    class POWER_OVERWHELMING_API rtx_sensor final : public sensor {
 
     public:
 
         /// <summary>
-        /// The vendor ID of Rohde &amp; Schwarz.
+        /// Create sensor objects for all Rohde &amp; Schwarz RTA/RTB
+        /// instruments that can be enumerated via VISA.
         /// </summary>
-        static constexpr const char *rohde_und_schwarz = "0x0AAD";
+        /// <param name="out_sensors">An array receiving the sensors. If this is
+        /// <c>nullptr</c>, nothing is returned.</param>
+        /// <param name="cnt_sensors">The number of sensors that can be stored in
+        /// <paramref name="out_sensors" />.</param>
+        /// <param name="timeout">The timeout in milliseconds for establishing a
+        /// connection to each instrument that was found. This parameter defaults
+        /// to 3000.</param>
+        /// <returns>The number of RTA/RTB instruments found, regardless of how
+        /// many have been returned to <paramref name="out_sensors" />.</returns>
+        static std::size_t for_all(
+            _Out_writes_opt_(cnt_sensors) rtx_sensor *out_sensors,
+            _In_ std::size_t cnt_sensors,
+            _In_ const std::int32_t timeout = 3000);
 
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        visa_sensor(void);
+        inline rtx_sensor(void) : _name(nullptr) { }
 
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <remarks>
-        /// This constructor will set the name of the sensor to the identity
-        /// string of the instrument, reset the instrument and clear any error
-        /// state in the instrument.
-        /// </remarks>
         /// <param name="path"></param>
         /// <param name="timeout"></param>
         /// <exception cref="std::invalid_argument">If <paramref name="path" />
@@ -50,16 +55,12 @@ namespace detail {
         /// loaded.</exception>
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
-        visa_sensor(_In_z_ const char *path, _In_ const std::int32_t timeout);
+        rtx_sensor(_In_z_ const char *path,
+            _In_ const visa_instrument::timeout_type timeout);
 
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <remarks>
-        /// This constructor will set the name of the sensor to the identity
-        /// string of the instrument, reset the instrument and clear any error
-        /// state in the instrument.
-        /// </remarks>
         /// <param name="path"></param>
         /// <param name="timeout"></param>
         /// <exception cref="std::invalid_argument">If <paramref name="path" />
@@ -70,20 +71,19 @@ namespace detail {
         /// loaded.</exception>
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
-        visa_sensor(_In_z_ const wchar_t *path, _In_ const std::int32_t timeout);
+        rtx_sensor(_In_z_ const wchar_t *path,
+            _In_ const visa_instrument::timeout_type timeout);
 
         /// <summary>
         /// Move <paramref name="rhs" /> into a new instance.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        inline visa_sensor(_In_ visa_sensor&& rhs) noexcept : _impl(rhs._impl) {
-            rhs._impl = nullptr;
-        }
+        rtx_sensor(_Inout_ rtx_sensor&& rhs) noexcept;
 
         /// <summary>
         /// Finalise the instance.
         /// </summary>
-        virtual ~visa_sensor(void);
+        virtual ~rtx_sensor(void);
 
         /// <summary>
         /// Gets the name of the sensor.
@@ -98,19 +98,14 @@ namespace detail {
             void) const noexcept override;
 
         /// <summary>
-        /// Gets the VISA path of the device.
+        /// Gets the VISA path of the instrument.
         /// </summary>
-        /// <returns>The VISA path used to open the device.</returns>
-        _Ret_maybenull_z_ const char *path(void) const noexcept;
+        /// <returns>The path of the instrument.</returns>
+        inline _Ret_maybenull_z_ const char *path(void) const noexcept {
+            return this->_instrument.path();
+        }
 
-        /// <summary>
-        /// Resets the instrument to its default state.
-        /// </summary>
-        /// <exception cref="std::runtime_error">If the method is called on an
-        /// object that has been disposed by moving it.</exception>
-        /// <exception cref="visa_exception">If the VISA command was not
-        /// processed successfully.</exception>
-        virtual void reset(void);
+        using sensor::sample;
 
         /// <summary>
         /// Synchonises the date and time on the instrument with the system
@@ -118,18 +113,22 @@ namespace detail {
         /// </summary>
         /// <param name="utc">If <c>true</c>, UTC will be used, the local time
         /// otherwise. This parameter defaults to <c>false</c>.</param>
+        /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        void synchronise_clock(_In_ const bool utc = false);
+        inline rtx_sensor& synchronise_clock(_In_ const bool utc = false) {
+            this->_instrument.synchronise_clock(utc);
+            return *this;
+        }
 
         /// <summary>
         /// Move assignment.
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        visa_sensor& operator =(_In_ visa_sensor&& rhs) noexcept;
+        rtx_sensor& operator =(_Inout_ rtx_sensor&& rhs) noexcept;
 
         /// <summary>
         /// Determines whether the sensor is valid.
@@ -144,49 +143,17 @@ namespace detail {
 
     protected:
 
-        /// <summary>
-        /// Clear all queued error codes.
-        /// </summary>
-        void clear_status(void);
-
-        /// <summary>
-        /// Initialises the instance by retreving the name and resetting the
-        /// device.
-        /// </summary>
-        void initialise(void);
-
-        /// <summary>
-        /// Checks <see cref="system_error" /> and throws a
-        /// <see cref="std::runtime_error" /> if it does not return zero.
-        /// </summary>
-        /// <exception cref="visa_exception">If the current system state could
-        /// not be retrieved.</exception>
-        /// <exception cref="std::runtime_error">If the current system state was
-        /// retrieved and is not zero.</exception>
-        void throw_on_system_error(void);
-
-        /// <summary>
-        /// Exposes the sensor implementation.
-        /// </summary>
-        /// <exception cref="std::runtime_error">If the method is called on an
-        /// object that has been disposed by moving it.</exception>
-        operator visa_sensor_impl&(void) const;
-
-        /// <summary>
-        /// Exposes the sensor implementation.
-        /// </summary>
-        /// <param name=""></param>
-        /// <returns></returns>
-        _Ret_maybenull_ inline operator visa_sensor_impl *(
-                void) const noexcept {
-            return this->_impl;
-        }
+        /// <inheritdoc />
+        measurement_data sample_sync(
+            _In_ const timestamp_resolution resolution) const override;
 
     private:
 
-        detail::visa_sensor_impl *_impl;
+        void initialise(void);
+
+        rtx_instrument _instrument;
+        wchar_t *_name;
     };
 
-} /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */

@@ -5,10 +5,9 @@
 
 #include "power_overwhelming/collector_settings.h"
 
-#include <cstdlib>
-#include <cwchar>
-#include <memory>
 #include <stdexcept>
+
+#include "string_functions.h"
 
 
 /*
@@ -56,15 +55,7 @@ visus::power_overwhelming::collector_settings::output_path(
         throw std::invalid_argument("The output path must be a valid string.");
     }
 
-    if (this->_output_path != nullptr) {
-        ::free(this->_output_path);
-    }
-
-    this->_output_path = ::wcsdup(path);
-
-    if (this->_output_path == nullptr) {
-        throw std::bad_alloc();
-    }
+    detail::safe_assign(this->_output_path, path);
 
     return *this;
 }

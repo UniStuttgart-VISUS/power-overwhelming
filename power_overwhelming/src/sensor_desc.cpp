@@ -37,10 +37,10 @@ constexpr const char *visus::power_overwhelming::detail::sensor_desc<
     visus::power_overwhelming::nvml_sensor>::type_name;
 
 /*
- * visus::power_overwhelming::rtb_sensor>::type_name
+ * visus::power_overwhelming::rtx_sensor>::type_name
  */
 constexpr const char *visus::power_overwhelming::detail::sensor_desc<
-    visus::power_overwhelming::rtb_sensor>::type_name;
+    visus::power_overwhelming::rtx_sensor>::type_name;
 
 /*
  * visus::power_overwhelming::tinkerforge_sensor>::type_name

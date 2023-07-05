@@ -5,9 +5,9 @@
 
 #include "power_overwhelming/tinkerforge_sensor_definition.h"
 
-#include <cstring>
-#include <memory>
 #include <stdexcept>
+
+#include "string_functions.h"
 
 
 /*
@@ -20,10 +20,8 @@ visus::power_overwhelming::tinkerforge_sensor_definition::tinkerforge_sensor_def
             "be null.");
     }
 
-    this->_uid = ::strdup(uid);
-    if (this->_uid == nullptr) {
-        throw std::bad_alloc();
-    }
+    // Note: This may throw, so it must be the only allocation here.
+    detail::safe_assign(this->_uid, uid);
 }
 
 
@@ -33,7 +31,12 @@ visus::power_overwhelming::tinkerforge_sensor_definition::tinkerforge_sensor_def
 visus::power_overwhelming::tinkerforge_sensor_definition::tinkerforge_sensor_definition(
         _In_ const tinkerforge_sensor_definition& rhs)
         : _description(nullptr), _uid(nullptr) {
-    *this = rhs;
+    try {
+        *this = rhs;
+    } catch (...) {
+        this->~tinkerforge_sensor_definition();
+        throw;
+    }
 }
 
 
@@ -42,12 +45,8 @@ visus::power_overwhelming::tinkerforge_sensor_definition::tinkerforge_sensor_def
  */
 visus::power_overwhelming::tinkerforge_sensor_definition::~tinkerforge_sensor_definition(
         void) {
-    if (this->_description != nullptr) {
-        ::free(this->_description);
-    }
-    if (this->_uid != nullptr) {
-        ::free(this->_uid);
-    }
+    detail::safe_assign(this->_description, nullptr);
+    detail::safe_assign(this->_uid, nullptr);
 }
 
 
@@ -56,19 +55,7 @@ visus::power_overwhelming::tinkerforge_sensor_definition::~tinkerforge_sensor_de
  */
 void visus::power_overwhelming::tinkerforge_sensor_definition::description(
         _In_opt_z_ const wchar_t *description) {
-    if (this->_description != nullptr) {
-        ::free(this->_description);
-    }
-
-    if (description != nullptr) {
-        this->_description = ::wcsdup(description);
-        if (this->_description == nullptr) {
-            throw std::bad_alloc();
-        }
-
-    } else {
-        this->_description = nullptr;
-    }
+    detail::safe_assign(this->_description, description);
 }
 
 
@@ -79,21 +66,8 @@ visus::power_overwhelming::tinkerforge_sensor_definition&
 visus::power_overwhelming::tinkerforge_sensor_definition::operator =(
         _In_ const tinkerforge_sensor_definition& rhs) {
     if (this != std::addressof(rhs)) {
-        this->description(rhs._description);
-
-        if (this->_uid != nullptr) {
-            ::free(this->_uid);
-        }
-
-        if (rhs._uid != nullptr) {
-            this->_uid = ::strdup(rhs._uid);
-            if (this->_uid == nullptr) {
-                throw std::bad_alloc();
-            }
-
-        } else {
-            this->_uid = nullptr;
-        }
+        detail::safe_assign(this->_description, rhs._description);
+        detail::safe_assign(this->_uid, rhs._uid);
     }
 
     return *this;
@@ -107,19 +81,10 @@ visus::power_overwhelming::tinkerforge_sensor_definition&
 visus::power_overwhelming::tinkerforge_sensor_definition::operator =(
         _In_ tinkerforge_sensor_definition&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
-        if (this->_description != nullptr) {
-            ::free(this->_description);
-        }
-
-        this->_description = rhs._description;
-        rhs._description = nullptr;
-
-        if (this->_uid != nullptr) {
-            ::free(this->_uid);
-        }
-
-        this->_uid = rhs._uid;
-        rhs._uid = nullptr;
+        detail::safe_assign(this->_description, std::move(rhs._description));
+        assert(rhs._description == nullptr);
+        detail::safe_assign(this->_uid, std::move(rhs._uid));
+        assert(rhs._uid == nullptr);
     }
 
     return *this;

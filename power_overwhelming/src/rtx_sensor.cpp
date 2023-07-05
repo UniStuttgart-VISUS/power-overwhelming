@@ -1,9 +1,9 @@
-﻿// <copyright file="rtb_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+﻿// <copyright file="rtx_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/rtb_sensor.h"
+#include "power_overwhelming/rtx_sensor.h"
 
 #include <algorithm>
 #include <cassert>
@@ -16,22 +16,21 @@
 #include "timestamp.h"
 #include "tokenise.h"
 #include "visa_library.h"
-#include "visa_sensor_impl.h"
 
 
 /*
- * visus::power_overwhelming::rtb_sensor::for_all
+ * visus::power_overwhelming::rtx_sensor::for_all
  */
-std::size_t visus::power_overwhelming::rtb_sensor::for_all(
-        _Out_writes_opt_(cnt_sensors) rtb_sensor *out_sensors,
+std::size_t visus::power_overwhelming::rtx_sensor::for_all(
+        _Out_writes_opt_(cnt_sensors) rtx_sensor *out_sensors,
         _In_ std::size_t cnt_sensors,
         _In_ const std::int32_t timeout) {
     // Build the query for all R&S RTB2004 instruments.
-    std::string query("?*::");      // Any protocol
-    query += rohde_und_schwarz;     // Only R&S
+    std::string query("?*::");          // Any protocol
+    query += visa_instrument::rohde_und_schwarz;    // Only R&S
     query += "::";
-    query += rtb2004_id;            // Only RTB2004
-    query += "::?*::INSTR";         // All serial numbers.
+    query += rtx_instrument::rtx_id;    // Only RTA/RTB
+    query += "::?*::INSTR";             // All serial numbers.
 
     // Search the instruments using VISA.
     auto devices = detail::visa_library::instance().find_resource(
@@ -44,156 +43,106 @@ std::size_t visus::power_overwhelming::rtb_sensor::for_all(
 
     // Create a sensor for each instrument we found.
     for (std::size_t i = 0; (i < cnt_sensors) && (i < devices.size()); ++i) {
-        out_sensors[i] = rtb_sensor(devices[i].c_str(), timeout);
+        out_sensors[i] = rtx_sensor(devices[i].c_str(), timeout);
     }
 
     return devices.size();
 }
 
 
-
 /*
- * visus::power_overwhelming::rtb_sensor::rtb_sensor
+ * visus::power_overwhelming::rtx_sensor::rtx_sensor
  */
-visus::power_overwhelming::rtb_sensor::rtb_sensor(
-        _In_z_ const char *path, _In_ const std::int32_t timeout)
-        : detail::visa_sensor(path, timeout) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+visus::power_overwhelming::rtx_sensor::rtx_sensor(
+        _In_z_ const char *path,
+        _In_ const visa_instrument::timeout_type timeout)
+        : _instrument(path, timeout), _name(nullptr) {
+    this->initialise();
 }
 
 
 /*
- * visus::power_overwhelming::rtb_sensor::rtb_sensor
+ * visus::power_overwhelming::rtx_sensor::rtx_sensor
  */
-visus::power_overwhelming::rtb_sensor::rtb_sensor(
-        _In_z_ const wchar_t *path, _In_ const std::int32_t timeout)
-        : detail::visa_sensor(path, timeout) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+visus::power_overwhelming::rtx_sensor::rtx_sensor(
+        _In_z_ const wchar_t *path,
+        _In_ const visa_instrument::timeout_type timeout)
+        : _instrument(path, timeout), _name(nullptr) {
+    this->initialise();
 }
 
 
 /*
- * visus::power_overwhelming::rtb_sensor::~rtb_sensor
+ * visus::power_overwhelming::rtx_sensor::rtx_sensor
  */
-visus::power_overwhelming::rtb_sensor::~rtb_sensor(void) { }
-
-
-/*
- * visus::power_overwhelming::rtb_sensor::configure
- */
-void visus::power_overwhelming::rtb_sensor::configure(
-        _In_reads_(cnt) const oscilloscope_sensor_definition *sensors,
-        _In_ const std::size_t cnt) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    if ((cnt > 0) && (sensors == nullptr)) {
-        throw std::invalid_argument("The sensor definitions must be valid.");
-    }
-
-    auto impl = static_cast<detail::visa_sensor_impl&>(*this);
-
-    for (std::uint32_t i = 1; impl.system_error() == VI_SUCCESS; ++i) {
-        impl.printf("CHAN%u:STAT OFF\n", i);
-    }
-
-    for (std::size_t i = 0; i < cnt; ++i) {
-        {
-            auto c = sensors[i].channel_current();
-            impl.printf("PROB%u:SET:ATT:UNIT %s\n", c, "A");
-            this->throw_on_system_error();
-
-            if (!sensors[i].auto_attenuation_current()) {
-                impl.printf("PROB%u:SET:ATT:MAN %f\n",
-                    c, sensors[i].attenuation_current());
-                this->throw_on_system_error();
-            }
-
-            impl.printf("CHAN%u:STAT ON\n", c);
-            this->throw_on_system_error();
-        }
-
-        {
-            auto c = sensors[i].channel_voltage();
-            impl.printf("PROB%u:SET:ATT:UNIT %s\n", c, "V");
-            this->throw_on_system_error();
-
-            if (!sensors[i].auto_attenuation_voltage()) {
-                impl.printf("PROB%u:SET:ATT:MAN %f\n",
-                    c, sensors[i].attenuation_voltage());
-                this->throw_on_system_error();
-            }
-
-            impl.printf("CHAN%u:STAT ON\n", c);
-            this->throw_on_system_error();
-        }
-    }
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error("This function is unavailable unless compiled with "
-        "support for VISA.");
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+visus::power_overwhelming::rtx_sensor::rtx_sensor(
+        _Inout_ rtx_sensor&& rhs) noexcept
+        : _instrument(std::move(rhs._instrument)), _name(rhs._name) {
+    rhs._name = nullptr;
 }
 
 
 /*
- * visus::power_overwhelming::rtb_sensor::expression
+ * visus::power_overwhelming::rtx_sensor::~rtx_sensor
  */
-void visus::power_overwhelming::rtb_sensor::expression(
-        _In_ const std::uint32_t channel,
-        _In_opt_z_  const char *expression,
-        _In_opt_z_ const char *unit) {
-    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
-
-    if (expression != nullptr) {
-        if (unit != nullptr) {
-            impl.printf("CALC:MATH%u:EXPR:DEF \"%s in %s\"\n", channel,
-                expression, unit);
-        } else {
-            impl.printf("CALC:MATH%u:EXPR:DEF \"%s\"\n", channel, expression);
-        }
-
-        impl.printf("CALC:MATH%u:STAT ON\n", channel);
-
-    } else {
-        impl.printf("CALC:MATH%u:STAT OFF\n", channel);
-    }
-
-    this->throw_on_system_error();
+visus::power_overwhelming::rtx_sensor::~rtx_sensor(void) {
+    delete[] this->_name;
 }
 
 
 /*
- * visus::power_overwhelming::rtb_sensor::unit
+ * *visus::power_overwhelming::rtx_sensor::name
  */
-void visus::power_overwhelming::rtb_sensor::unit(
-        _In_ const std::uint32_t channel, _In_z_ const char *unit) {
-    if (unit == nullptr) {
-        throw std::invalid_argument("The unit for a probe cannot be null.");
-    }
-
-    auto impl = static_cast<detail::visa_sensor_impl &>(*this);
-    impl.printf("PROB%u:SET:ATT:UNIT %s\n", channel, unit);
-    this->throw_on_system_error();
+_Ret_maybenull_z_ const wchar_t *visus::power_overwhelming::rtx_sensor::name(
+        void) const noexcept {
+    return this->_name;
 }
 
 
 /*
- * visus::power_overwhelming::rtb_sensor::sample_sync
+ * visus::power_overwhelming::rtx_sensor::operator =
+ */
+visus::power_overwhelming::rtx_sensor&
+visus::power_overwhelming::rtx_sensor::operator =(
+        _Inout_ rtx_sensor&& rhs) noexcept {
+    if (this != std::addressof(rhs)) {
+        this->_instrument = std::move(rhs._instrument);
+        assert(rhs._instrument == false);
+        this->_name = rhs._name;
+        rhs._name = nullptr;
+    }
+
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::operator bool
+ */
+visus::power_overwhelming::rtx_sensor::operator bool(void) const noexcept {
+    return static_cast<bool>(this->_instrument);
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::sample_sync
  */
 visus::power_overwhelming::measurement_data
-visus::power_overwhelming::rtb_sensor::sample_sync(
+visus::power_overwhelming::rtx_sensor::sample_sync(
         _In_ const timestamp_resolution resolution) const {
     throw "TODO";
 
 }
 
 
-// TIM:SCAL 5
-//CHAN2:STAT OFF
-// CHAN1:BAND?
-// PROB1:SET:ATT:MAN 10
-// TRIG:A:SOUR?
-// TRIG:A:SOUR "CH1"
+/*
+ * visus::power_overwhelming::rtx_sensor::initialise
+ */
+void visus::power_overwhelming::rtx_sensor::initialise(void) {
+    // TODO: compose name
+}
+
+
 
 /*
 *LRN

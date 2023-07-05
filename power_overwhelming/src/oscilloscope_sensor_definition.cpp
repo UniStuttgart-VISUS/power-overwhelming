@@ -5,9 +5,9 @@
 
 #include "power_overwhelming/oscilloscope_sensor_definition.h"
 
-#include <cassert>
-#include <memory>
 #include <stdexcept>
+
+#include "string_functions.h"
 
 
 /*
@@ -31,10 +31,7 @@ visus::power_overwhelming::oscilloscope_sensor_definition::oscilloscope_sensor_d
             "the same as the one measuring current.");
     }
 
-    this->_description = ::wcsdup(description);
-    if (this->_description == nullptr) {
-        throw std::bad_alloc();
-    }
+    detail::safe_assign(this->_description, description);
 }
 
 
@@ -61,10 +58,7 @@ visus::power_overwhelming::oscilloscope_sensor_definition::oscilloscope_sensor_d
             "the same as the one measuring current.");
     }
 
-    this->_description = ::wcsdup(description);
-    if (this->_description == nullptr) {
-        throw std::bad_alloc();
-    }
+    detail::safe_assign(this->_description, description);
 }
 
 
@@ -73,7 +67,12 @@ visus::power_overwhelming::oscilloscope_sensor_definition::oscilloscope_sensor_d
  */
 visus::power_overwhelming::oscilloscope_sensor_definition::oscilloscope_sensor_definition(
         _In_ const oscilloscope_sensor_definition& rhs) : _description(nullptr) {
-    *this = rhs;
+    try {
+        *this = rhs;
+    } catch (...) {
+        this->~oscilloscope_sensor_definition();
+        throw;
+    }
 }
 
 
@@ -83,7 +82,7 @@ visus::power_overwhelming::oscilloscope_sensor_definition::oscilloscope_sensor_d
 visus::power_overwhelming::oscilloscope_sensor_definition::~oscilloscope_sensor_definition(
         void) {
     assert(this->_description != nullptr);
-    ::free(this->_description);
+    detail::safe_assign(this->_description, nullptr);
 }
 
 
@@ -98,11 +97,7 @@ visus::power_overwhelming::oscilloscope_sensor_definition::operator =(
         this->_attenuation_voltage = rhs._attenuation_voltage;
         this->_channel_current = rhs._channel_current;
         this->_channel_voltage = rhs._channel_voltage;
-
-        this->_description = ::wcsdup(rhs._description);
-        if (this->_description == nullptr) {
-            throw std::bad_alloc();
-        }
+        detail::safe_assign(this->_description, rhs._description);
     }
 
     return *this;

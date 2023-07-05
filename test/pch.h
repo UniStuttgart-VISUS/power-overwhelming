@@ -11,6 +11,7 @@
 #include <thread>
 
 #include <power_overwhelming/adl_sensor.h>
+#include <power_overwhelming/blob.h>
 #include <power_overwhelming/collector.h>
 #include <power_overwhelming/convert_string.h>
 #include <power_overwhelming/cpu_affinity.h>
@@ -23,6 +24,7 @@
 #include <power_overwhelming/measurement.h>
 #include <power_overwhelming/measurement_data.h>
 #include <power_overwhelming/nvml_sensor.h>
+#include <power_overwhelming/oscilloscope_channel.h>
 #include <power_overwhelming/oscilloscope_sensor_definition.h>
 #include <power_overwhelming/rapl_domain.h>
 #include <power_overwhelming/tinkerforge_sensor_definition.h>
@@ -37,3 +39,4 @@
 #include <nvml_scope.h>
 #include <sensor_desc.h>
 #include <setup_api.h>
+#include <string_functions.h>
