@@ -5,12 +5,8 @@
 
 #include "power_overwhelming/rtx_instrument.h"
 
+#include "no_visa_error_msg.h"
 #include "visa_instrument_impl.h"
-
-
-static constexpr const char *no_visa_error_msg = "The Power Overwhelming "
-    "library was compiled without support for the Virtual Instrument Software "
-    "Architecture.";
 
 
 /*
@@ -122,7 +118,7 @@ visus::power_overwhelming::rtx_instrument::ascii_data(
     return this->query(query.c_str());
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error(no_visa_error_msg);
+    throw std::logic_error(detail::no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 #endif
@@ -148,7 +144,7 @@ visus::power_overwhelming::rtx_instrument::binary_data(
     return impl.read_binary();
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error(no_visa_error_msg);
+    throw std::logic_error(detail::no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -267,7 +263,7 @@ visus::power_overwhelming::rtx_instrument::data(
     return oscilloscope_waveform(header.as<char>(), this->binary_data(channel));
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error(no_visa_error_msg);
+    throw std::logic_error(detail::no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -326,7 +322,7 @@ int visus::power_overwhelming::rtx_instrument::history_segment(void) const {
     return std::atoi(retval.as<char>());
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error(no_visa_error_msg);
+    throw std::logic_error(detail::no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -354,7 +350,7 @@ std::size_t visus::power_overwhelming::rtx_instrument::history_segments(
     return std::atoi(retval.as<char>());
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error(no_visa_error_msg);
+    throw std::logic_error(detail::no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 

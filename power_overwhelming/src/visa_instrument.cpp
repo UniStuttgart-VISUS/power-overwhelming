@@ -18,6 +18,7 @@
 
 #include "power_overwhelming/convert_string.h"
 
+#include "no_visa_error_msg.h"
 #include "visa_exception.h"
 #include "visa_instrument_impl.h"
 #include "visa_library.h"
@@ -465,7 +466,7 @@ std::int32_t visus::power_overwhelming::visa_instrument::status(void) {
     //    return std::atoi(response.as<char>());
     //}
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error(::no_visa_error);
+    throw std::logic_error(detail::no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 

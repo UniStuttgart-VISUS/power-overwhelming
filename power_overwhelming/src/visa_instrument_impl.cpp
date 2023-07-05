@@ -7,13 +7,9 @@
 
 #include <stdexcept>
 
+#include "no_visa_error_msg.h"
 #include "visa_library.h"
 #include "zero_memory.h"
-
-
-static constexpr const char *no_visa_error = "The Power Overwhelming library "
-    "was compiled without support for the Virtual Instrument Software "
-    "Architecture.";
 
 
 /*
@@ -83,7 +79,7 @@ visus::power_overwhelming::detail::visa_instrument_impl::create(
 
         _instruments[path] = retval;
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-        throw std::logic_error(::no_visa_error);
+        throw std::logic_error(no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     } /* if (it != _instruments.end()) */
 
@@ -173,7 +169,7 @@ visus::power_overwhelming::detail::visa_instrument_impl::interface_type(
         .viGetAttribute(this->session, VI_ATTR_INTF_TYPE, &retval));
     return retval;
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error(::no_visa_error);
+    throw std::logic_error(no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -343,7 +339,7 @@ visus::power_overwhelming::detail::visa_instrument_impl::resource_class(
     retval[sizeof(retval) - 1] = 0;
     return retval;
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error(::no_visa_error);
+    throw std::logic_error(no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
