@@ -72,7 +72,7 @@ _Ret_maybenull_ const void *visus::power_overwhelming::blob::at(
  * visus::power_overwhelming::blob::clear
  */
 void visus::power_overwhelming::blob::clear(void) {
-    delete[] this->_data;
+    delete[] static_cast<byte_type *>(this->_data);
     this->_data = nullptr;
     this->_size = 0;
 }
@@ -107,7 +107,7 @@ bool visus::power_overwhelming::blob::grow(_In_ const std::size_t size) {
     const auto retval = (size > this->_size);
 
     if (retval) {
-        const auto existing = this->_data;
+        const auto existing = static_cast<byte_type *>(this->_data);
         this->_data = new byte_type[size];
 
         if (existing != nullptr) {
@@ -172,7 +172,7 @@ bool visus::power_overwhelming::blob::reserve(_In_ const std::size_t size) {
     const auto retval = (size > this->_size);
 
     if (retval) {
-        delete[] this->_data;
+        static_cast<byte_type *>(this->_data);
         this->_size = size;
         this->_data = new byte_type[this->_size];
     }
@@ -186,7 +186,7 @@ bool visus::power_overwhelming::blob::reserve(_In_ const std::size_t size) {
  */
 void visus::power_overwhelming::blob::resize(_In_ const std::size_t size) {
     if (this->_size != size) {
-        delete[] this->_data;
+        static_cast<byte_type *>(this->_data);
         this->_size = size;
 
         if (this->_size > 0) {
@@ -203,7 +203,7 @@ void visus::power_overwhelming::blob::resize(_In_ const std::size_t size) {
  */
 void visus::power_overwhelming::blob::truncate(_In_ const std::size_t size) {
     if (this->_size != size) {
-        const auto existing = this->_data;
+        const auto existing = static_cast<byte_type *>(this->_data);
 
         if (size > 0) {
             this->_data = new byte_type[size];
@@ -228,7 +228,7 @@ visus::power_overwhelming::blob& visus::power_overwhelming::blob::operator =(
         _In_ const blob& rhs) {
     if (this != std::addressof(rhs)) {
         if ((this->_data != nullptr) && (this->_size != rhs._size)) {
-            delete[] this->_data;
+            static_cast<byte_type *>(this->_data);
             this->_data = nullptr;
         }
 

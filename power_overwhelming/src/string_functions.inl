@@ -69,16 +69,16 @@ std::wstring visus::power_overwhelming::detail::format_string(
     // On other platforms, we need to test-format the output and repeat in case
     // the buffer was too small.
     typedef std::decay<decltype(*format)>::type char_type;
-    auto len = std::char_traits<char_type>::length(format);
-    len += (len / 2) + 1;
-    std::vector<char_type> retval(len);
-    len = ::snwprintf(retval.data(), retval.size(), format,
-        std::forward<TArgs>(args)...) + 1;
-    retval.resize(len);
+    std::vector<char_type> retval(std::char_traits<char_type>::length(format));
+    auto status = -1;
 
-    len = ::snwprintf(retval.data(), retval.size(), format,
-        std::forward<TArgs>(args)...);
-    if (len < 0) {
+    for (int i = 0; (status < 0) && (i < 16); ++i) {
+        retval.resize(retval.size() + retval.size() / 2);
+        status = ::swprintf(retval.data(), retval.size(), format,
+            std::forward<TArgs>(args)...) + 1;
+    }
+
+    if (status < 0) {
         throw std::system_error(errno, std::system_category());
     }
 
