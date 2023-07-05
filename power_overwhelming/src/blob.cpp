@@ -40,7 +40,7 @@ visus::power_overwhelming::blob::blob(_Inout_ blob&& rhs) noexcept
  * visus::power_overwhelming::blob::~blob
  */
 visus::power_overwhelming::blob::~blob(void) {
-    delete[] this->_data;
+    delete[] static_cast<byte_type *>(this->_data);
 }
 
 
