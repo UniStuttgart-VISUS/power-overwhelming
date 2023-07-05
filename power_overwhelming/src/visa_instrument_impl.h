@@ -248,9 +248,9 @@ namespace detail {
         /// </summary>
         inline visa_instrument_impl(void) :
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-            resource_manager(0), session(0),
+            resource_manager(0), session(0), vxi(false),
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
-            vxi(false), _counter(0) { }
+            _counter(0) { }
     };
 
 } /* namespace detail */
