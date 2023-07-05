@@ -28,6 +28,7 @@
 #define _In_
 #define _Inout_
 #define _Inout_opt_
+#define _Inout_opt_z_
 #define _In_opt_
 #define _In_opt_z_
 #define _In_reads_(cnt)

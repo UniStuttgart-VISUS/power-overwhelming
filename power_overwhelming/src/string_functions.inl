@@ -72,11 +72,11 @@ std::wstring visus::power_overwhelming::detail::format_string(
     auto len = std::char_traits<char_type>::length(format);
     len += (len / 2) + 1;
     std::vector<char_type> retval(len);
-    len = ::_snwprintf_s(retval.data(), retval.size(), format,
+    len = ::snwprintf(retval.data(), retval.size(), format,
         std::forward<TArgs>(args)...) + 1;
     retval.resize(len);
 
-    len = ::_snwprintf_s(retval.data(), retval.size(), format,
+    len = ::snwprintf(retval.data(), retval.size(), format,
         std::forward<TArgs>(args)...);
     if (len < 0) {
         throw std::system_error(errno, std::system_category());
