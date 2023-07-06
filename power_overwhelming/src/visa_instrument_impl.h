@@ -8,6 +8,7 @@
 #include <atomic>
 #include <cinttypes>
 #include <cstdlib>
+#include <functional>
 #include <map>
 #include <mutex>
 #include <string>
@@ -47,9 +48,17 @@ namespace detail {
         /// <param name="path">The path to the device to open.</param>
         /// <param name="timeout">The timeout for establishing the connection
         /// in milliseconds.</param>
-        /// <returns></returns>
+        /// <param name="on_new">If not <c>nullptr</c>, this callback is invoked
+        /// if the implementation object was freshly allocated and not reused.
+        /// Callers have the opportunity to perform one-time configurations on
+        /// the instrument using this callback. This parameter defaults to
+        /// <c>nullptr</c>.</param>
+        /// <returns>An implementation object for the VISA device matching the
+        /// given path. This can either be an existing one or a new one.
+        /// </returns>
         static visa_instrument_impl *create(_In_ const std::string& path,
-            _In_ const std::uint32_t timeout);
+            _In_ const std::uint32_t timeout,
+            _In_opt_ const std::function<void(visa_instrument_impl *)>& on_new);
 
         /// <summary>
         /// Create or open the instrument at the specified path.
@@ -61,9 +70,17 @@ namespace detail {
         /// <param name="path">The path to the device to open.</param>
         /// <param name="timeout">The timeout for establishing the connection
         /// in milliseconds.</param>
-        /// <returns></returns>
+        /// <param name="on_new">If not <c>nullptr</c>, this callback is invoked
+        /// if the implementation object was freshly allocated and not reused.
+        /// Callers have the opportunity to perform one-time configurations on
+        /// the instrument using this callback. This parameter defaults to
+        /// <c>nullptr</c>.</param>
+        /// <returns>An implementation object for the VISA device matching the
+        /// given path. This can either be an existing one or a new one.
+        /// </returns>
         static visa_instrument_impl *create(_In_z_ const wchar_t *path,
-            _In_ const std::uint32_t timeout);
+            _In_ const std::uint32_t timeout,
+            _In_opt_ const std::function<void(visa_instrument_impl *)>& on_new);
 
         /// <summary>
         /// Create or open the instrument at the specified path.
@@ -75,9 +92,31 @@ namespace detail {
         /// <param name="path">The path to the device to open.</param>
         /// <param name="timeout">The timeout for establishing the connection
         /// in milliseconds.</param>
-        /// <returns></returns>
+        /// <param name="on_new">If not <c>nullptr</c>, this callback is invoked
+        /// if the implementation object was freshly allocated and not reused.
+        /// Callers have the opportunity to perform one-time configurations on
+        /// the instrument using this callback. This parameter defaults to
+        /// <c>nullptr</c>.</param>
+        /// <returns>An implementation object for the VISA device matching the
+        /// given path. This can either be an existing one or a new one.
+        /// </returns>
         static visa_instrument_impl *create(_In_z_ const char *path,
-            _In_ const std::uint32_t timeout);
+            _In_ const std::uint32_t timeout,
+            _In_opt_ const std::function<void(visa_instrument_impl *)>& on_new);
+
+        /// <summary>
+        /// Enumerates all currently active instances of VISA instruments.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method is protected against concurrent creation and
+        /// removal of instances.</para>
+        /// <para>The callback passed to the method should not throw.</para>
+        /// </remarks>
+        /// <param name="callback">The callback to be invoked.</param>
+        /// <returns>The number of times the callback has been invoked.
+        /// </returns>
+        static std::size_t foreach(
+            _In_ const std::function<bool(visa_instrument_impl *)>& callback);
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>

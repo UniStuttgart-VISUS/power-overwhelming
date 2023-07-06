@@ -127,6 +127,15 @@ void query_rtx_instrument(void) {
                 d += ::wcslen(d) + 1) {
             rtx_instrument i(d);
 
+            visa_instrument::foreach_instance([](visa_instrument& i) {
+                blob name(i.identify(nullptr, 0) * sizeof(wchar_t));
+                i.identify(name.as<wchar_t>(), name.size() / sizeof(wchar_t));
+                std::wcout << L"\"" << name.as<wchar_t>() << L"\""
+                    << L" is an active VISA instrument."
+                    << std::endl;
+                return true;
+            });
+
             i.clear();
             i.clear_status();
             i.reset();
@@ -141,7 +150,12 @@ void query_rtx_instrument(void) {
                 .state(true)
                 .attenuation(oscilloscope_quantity(10, "V"))
                 .range(oscilloscope_quantity(7)));
-            //i.expression(1, "CH1 * 2");
+
+            i.channel(oscilloscope_channel(2)
+                .label(oscilloscope_label("podump#2"))
+                .state(true)
+                .attenuation(oscilloscope_quantity(1, "V"))
+                .range(oscilloscope_quantity(5)));
 
             i.acquisition(oscilloscope_single_acquisition()
                 .points(50000)

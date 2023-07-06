@@ -17,7 +17,9 @@
  */
 visus::power_overwhelming::detail::visa_instrument_impl *
 visus::power_overwhelming::detail::visa_instrument_impl::create(
-        _In_ const std::string& path, _In_ const std::uint32_t timeout) {
+        _In_ const std::string& path,
+        _In_ const std::uint32_t timeout,
+        _In_opt_ const std::function<void(visa_instrument_impl *)>& on_new) {
     std::lock_guard<decltype(_lock_instruments)> l(_lock_instruments);
     visa_instrument_impl *retval = nullptr;
 
@@ -78,6 +80,11 @@ visus::power_overwhelming::detail::visa_instrument_impl::create(
         retval->_path = path;
 
         _instruments[path] = retval;
+
+        if (on_new) {
+            on_new(retval);
+        }
+
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
         throw std::logic_error(no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -93,13 +100,16 @@ visus::power_overwhelming::detail::visa_instrument_impl::create(
  */
 visus::power_overwhelming::detail::visa_instrument_impl *
 visus::power_overwhelming::detail::visa_instrument_impl::create(
-        _In_z_ const wchar_t *path, _In_ const std::uint32_t timeout) {
+        _In_z_ const wchar_t *path,
+        _In_ const std::uint32_t timeout,
+        _In_opt_ const std::function<void(visa_instrument_impl *)>& on_new) {
     if (path == nullptr) {
         throw std::invalid_argument("The path to a VISA instrument must not "
             "be null.");
     }
 
-    return create(power_overwhelming::convert_string<char>(path), timeout);
+    return create(power_overwhelming::convert_string<char>(path), timeout,
+        on_new);
 }
 
 
@@ -108,13 +118,39 @@ visus::power_overwhelming::detail::visa_instrument_impl::create(
  */
 visus::power_overwhelming::detail::visa_instrument_impl *
 visus::power_overwhelming::detail::visa_instrument_impl::create(
-        _In_z_ const char *path, _In_ const std::uint32_t timeout) {
+        _In_z_ const char *path,
+        _In_ const std::uint32_t timeout,
+        _In_opt_ const std::function<void(visa_instrument_impl *)>& on_new) {
     if (path == nullptr) {
         throw std::invalid_argument("The path to a VISA instrument must not "
             "be null.");
     }
 
-    return create(std::string(path), timeout);
+    return create(std::string(path), timeout, on_new);
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_instrument_impl::foreach
+ */
+std::size_t visus::power_overwhelming::detail::visa_instrument_impl::foreach(
+        _In_ const std::function<bool(visa_instrument_impl *)>& callback) {
+    if (!callback) {
+        throw std::invalid_argument("The enumeration callback for VISA "
+            "instruments must not be nullptr.");
+    }
+
+    std::size_t retval = 0;
+
+    std::lock_guard<decltype(_lock_instruments)> l(_lock_instruments);
+    for (auto& i : _instruments) {
+        ++retval;
+        if (!callback(i.second)) {
+            break;
+        }
+    }
+
+    return retval;
 }
 
 

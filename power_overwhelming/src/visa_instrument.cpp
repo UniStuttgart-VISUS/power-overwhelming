@@ -152,6 +152,34 @@ visus::power_overwhelming::visa_instrument::find_resources(
 
 
 /*
+ * visus::power_overwhelming::visa_instrument::foreach_instance
+ */
+std::size_t visus::power_overwhelming::visa_instrument::foreach_instance(
+        _In_ bool (*callback)(visa_instrument&)){
+    if (callback == nullptr) {
+        throw std::invalid_argument("The enumeration callback for VISA "
+            "instruments must not be nullptr.");
+    }
+
+    return detail::visa_instrument_impl::foreach(
+            [callback](detail::visa_instrument_impl *i) {
+        visa_instrument instrument;
+        auto retval = true;
+
+        instrument._impl = i;
+        try {
+            retval = callback(instrument);
+        } catch (...) {
+            retval = false;
+        }
+        instrument._impl = nullptr;
+
+        return retval;
+    });
+}
+
+
+/*
  * visus::power_overwhelming::visa_instrument::visa_instrument
  */
 visus::power_overwhelming::visa_instrument::visa_instrument(void)
@@ -164,7 +192,7 @@ visus::power_overwhelming::visa_instrument::visa_instrument(void)
 visus::power_overwhelming::visa_instrument::visa_instrument(
         _In_z_ const wchar_t *path, _In_ const timeout_type timeout)
         : _impl(nullptr) {
-    this->_impl = detail::visa_instrument_impl::create(path, timeout);
+    this->_impl = detail::visa_instrument_impl::create(path, timeout, nullptr);
 }
 
 
@@ -174,7 +202,7 @@ visus::power_overwhelming::visa_instrument::visa_instrument(
 visus::power_overwhelming::visa_instrument::visa_instrument(
         _In_z_ const char *path, _In_ const timeout_type timeout)
         : _impl(nullptr) {
-    this->_impl = detail::visa_instrument_impl::create(path, timeout);
+    this->_impl = detail::visa_instrument_impl::create(path, timeout, nullptr);
 }
 
 
@@ -285,6 +313,17 @@ std::size_t visus::power_overwhelming::visa_instrument::identify(
     }
 
     return (retval.size() + 1);
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::identify
+ */
+std::size_t visus::power_overwhelming::visa_instrument::identify(
+        _In_opt_ std::nullptr_t dst,
+        _In_ const std::size_t cnt) {
+    auto id = this->check_not_disposed().identify();
+    return (id.size() + 1);
 }
 
 

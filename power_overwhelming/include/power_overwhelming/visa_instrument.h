@@ -136,6 +136,23 @@ namespace power_overwhelming {
             _In_z_ const char *instrument_id);
 
         /// <summary>
+        /// Invokes <paramref name="callback" /> for each active instance of a
+        /// <see cref="visa_instrument" />.
+        /// </summary>
+        /// <param name="callback">The callback to be invoked for each
+        /// instrument. If the callback returns <c>false</c>, the enumeration
+        /// will be stopped after the current call. If the callback throws
+        /// an exception, this will be caught and treated as if the callback
+        /// had returned <c>false</c>.</param>
+        /// <returns>The number of times the callback has been sucessfully
+        /// invoked. If the callback always returns <c>true</c>, this is the
+        /// number of active VISA instruments at the time of the call.</returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="callback" /> is <c>nullptr</c>.</exception>
+        static std::size_t foreach_instance(
+            _In_ bool (*callback)(visa_instrument&));
+
+        /// <summary>
         /// The vendor ID of Rohde &amp; Schwarz.
         /// </summary>
         static constexpr const char *rohde_und_schwarz = "0x0AAD";
@@ -319,6 +336,21 @@ namespace power_overwhelming {
         /// </exception>
         std::size_t identify(_Out_writes_opt_z_(cnt) char *dst,
             _In_ const std::size_t cnt) const;
+
+        /// <summary>
+        /// Counts the number of characters (including the terminating null)
+        /// required to hold the name of the device.
+        /// </summary>
+        /// <param name="dst">A <c>nullptr</c>.</param>
+        /// <param name="cnt">This parameter is ignored.</param>
+        /// <returns>The number of characters, including the terminating null,
+        /// required to store the identity of the instrument.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        std::size_t identify(_In_opt_ std::nullptr_t dst,
+            _In_ const std::size_t cnt);
 
         /// <summary>
         /// Gets the interface type of the underlying session in the form of one
