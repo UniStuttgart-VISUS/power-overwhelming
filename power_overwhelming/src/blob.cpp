@@ -40,7 +40,7 @@ visus::power_overwhelming::blob::blob(_Inout_ blob&& rhs) noexcept
  * visus::power_overwhelming::blob::~blob
  */
 visus::power_overwhelming::blob::~blob(void) {
-    delete[] static_cast<byte_type *>(this->_data);
+    delete[] this->_data;
 }
 
 
@@ -51,7 +51,7 @@ _Ret_maybenull_ void *visus::power_overwhelming::blob::at(
         _In_ const std::size_t offset) noexcept {
     assert((this->_data != nullptr) || (this->_size == 0));
     return (offset < this->_size)
-        ? static_cast<byte_type *>(this->_data) + offset
+        ? this->_data + offset
         : nullptr;
 }
 
@@ -63,7 +63,7 @@ _Ret_maybenull_ const void *visus::power_overwhelming::blob::at(
         _In_ const std::size_t offset) const noexcept {
     assert((this->_data != nullptr) || (this->_size == 0));
     return (offset < this->_size)
-        ? static_cast<const byte_type *>(this->_data) + offset
+        ? this->_data + offset
         : nullptr;
 }
 
@@ -72,7 +72,7 @@ _Ret_maybenull_ const void *visus::power_overwhelming::blob::at(
  * visus::power_overwhelming::blob::clear
  */
 void visus::power_overwhelming::blob::clear(void) {
-    delete[] static_cast<byte_type *>(this->_data);
+    delete[] this->_data;
     this->_data = nullptr;
     this->_size = 0;
 }
@@ -107,7 +107,7 @@ bool visus::power_overwhelming::blob::grow(_In_ const std::size_t size) {
     const auto retval = (size > this->_size);
 
     if (retval) {
-        const auto existing = static_cast<byte_type *>(this->_data);
+        const auto existing = this->_data;
         this->_data = new byte_type[size];
 
         if (existing != nullptr) {
@@ -149,7 +149,7 @@ visus::power_overwhelming::blob::rbegin(void) const noexcept {
 _Ret_maybenull_ visus::power_overwhelming::blob::byte_type *
 visus::power_overwhelming::blob::rend(void) noexcept {
     return (this->_data != nullptr)
-        ? static_cast<byte_type *>(this->_data) - 1
+        ? this->_data - 1
         : nullptr;
 }
 
@@ -160,7 +160,7 @@ visus::power_overwhelming::blob::rend(void) noexcept {
 _Ret_maybenull_ const visus::power_overwhelming::blob::byte_type *
 visus::power_overwhelming::blob::rend(void) const noexcept {
     return (this->_data != nullptr)
-        ? static_cast<const byte_type *>(this->_data) - 1
+        ? this->_data - 1
         : nullptr;
 }
 
@@ -172,7 +172,7 @@ bool visus::power_overwhelming::blob::reserve(_In_ const std::size_t size) {
     const auto retval = (size > this->_size);
 
     if (retval) {
-        static_cast<byte_type *>(this->_data);
+        delete[] this->_data;
         this->_size = size;
         this->_data = new byte_type[this->_size];
     }
@@ -186,7 +186,7 @@ bool visus::power_overwhelming::blob::reserve(_In_ const std::size_t size) {
  */
 void visus::power_overwhelming::blob::resize(_In_ const std::size_t size) {
     if (this->_size != size) {
-        static_cast<byte_type *>(this->_data);
+        delete[] this->_data;
         this->_size = size;
 
         if (this->_size > 0) {
@@ -203,7 +203,7 @@ void visus::power_overwhelming::blob::resize(_In_ const std::size_t size) {
  */
 void visus::power_overwhelming::blob::truncate(_In_ const std::size_t size) {
     if (this->_size != size) {
-        const auto existing = static_cast<byte_type *>(this->_data);
+        const auto existing = this->_data;
 
         if (size > 0) {
             this->_data = new byte_type[size];
@@ -228,7 +228,7 @@ visus::power_overwhelming::blob& visus::power_overwhelming::blob::operator =(
         _In_ const blob& rhs) {
     if (this != std::addressof(rhs)) {
         if ((this->_data != nullptr) && (this->_size != rhs._size)) {
-            static_cast<byte_type *>(this->_data);
+            delete[] this->_data;
             this->_data = nullptr;
         }
 
