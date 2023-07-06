@@ -19,7 +19,7 @@ visus::power_overwhelming::detail::visa_instrument_impl *
 visus::power_overwhelming::detail::visa_instrument_impl::create(
         _In_ const std::string& path,
         _In_ const std::uint32_t timeout,
-        _In_opt_ const std::function<void(visa_instrument_impl *)>& on_new) {
+        _Out_opt_ bool *is_new) {
     std::lock_guard<decltype(_lock_instruments)> l(_lock_instruments);
     visa_instrument_impl *retval = nullptr;
 
@@ -28,12 +28,16 @@ visus::power_overwhelming::detail::visa_instrument_impl::create(
         // Reuse existing instrument for same connection.
         retval = it->second;
 
+        if (is_new != nullptr) {
+            *is_new = false;
+        }
+
     } else {
         // If no existing scope was found or if the previous scope has been
         // deleted, create a new one.
+#if defined(POWER_OVERWHELMING_WITH_VISA)
         retval = new visa_instrument_impl();
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
         {
             auto status = visa_library::instance().viOpenDefaultRM(
                 &retval->resource_manager);
@@ -81,8 +85,8 @@ visus::power_overwhelming::detail::visa_instrument_impl::create(
 
         _instruments[path] = retval;
 
-        if (on_new) {
-            on_new(retval);
+        if (is_new != nullptr) {
+            *is_new = true;
         }
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -102,14 +106,14 @@ visus::power_overwhelming::detail::visa_instrument_impl *
 visus::power_overwhelming::detail::visa_instrument_impl::create(
         _In_z_ const wchar_t *path,
         _In_ const std::uint32_t timeout,
-        _In_opt_ const std::function<void(visa_instrument_impl *)>& on_new) {
+        _Out_opt_ bool *is_new) {
     if (path == nullptr) {
         throw std::invalid_argument("The path to a VISA instrument must not "
             "be null.");
     }
 
     return create(power_overwhelming::convert_string<char>(path), timeout,
-        on_new);
+        is_new);
 }
 
 
@@ -120,13 +124,13 @@ visus::power_overwhelming::detail::visa_instrument_impl *
 visus::power_overwhelming::detail::visa_instrument_impl::create(
         _In_z_ const char *path,
         _In_ const std::uint32_t timeout,
-        _In_opt_ const std::function<void(visa_instrument_impl *)>& on_new) {
+        _Out_opt_ bool *is_new) {
     if (path == nullptr) {
         throw std::invalid_argument("The path to a VISA instrument must not "
             "be null.");
     }
 
-    return create(std::string(path), timeout, on_new);
+    return create(std::string(path), timeout, is_new);
 }
 
 

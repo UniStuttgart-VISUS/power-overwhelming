@@ -48,17 +48,15 @@ namespace detail {
         /// <param name="path">The path to the device to open.</param>
         /// <param name="timeout">The timeout for establishing the connection
         /// in milliseconds.</param>
-        /// <param name="on_new">If not <c>nullptr</c>, this callback is invoked
-        /// if the implementation object was freshly allocated and not reused.
-        /// Callers have the opportunity to perform one-time configurations on
-        /// the instrument using this callback. This parameter defaults to
-        /// <c>nullptr</c>.</param>
+        /// <param name="is_new ">If not <c>nullptr</c>, this variable is set to
+        /// <c>true</c> if the instance was newly created, or <c>false</c> if
+        /// an existing connection was reused.</param>
         /// <returns>An implementation object for the VISA device matching the
         /// given path. This can either be an existing one or a new one.
         /// </returns>
         static visa_instrument_impl *create(_In_ const std::string& path,
             _In_ const std::uint32_t timeout,
-            _In_opt_ const std::function<void(visa_instrument_impl *)>& on_new);
+            _Out_opt_ bool *is_new = nullptr);
 
         /// <summary>
         /// Create or open the instrument at the specified path.
@@ -70,17 +68,15 @@ namespace detail {
         /// <param name="path">The path to the device to open.</param>
         /// <param name="timeout">The timeout for establishing the connection
         /// in milliseconds.</param>
-        /// <param name="on_new">If not <c>nullptr</c>, this callback is invoked
-        /// if the implementation object was freshly allocated and not reused.
-        /// Callers have the opportunity to perform one-time configurations on
-        /// the instrument using this callback. This parameter defaults to
-        /// <c>nullptr</c>.</param>
+        /// <param name="is_new ">If not <c>nullptr</c>, this variable is set to
+        /// <c>true</c> if the instance was newly created, or <c>false</c> if
+        /// an existing connection was reused.</param>
         /// <returns>An implementation object for the VISA device matching the
         /// given path. This can either be an existing one or a new one.
         /// </returns>
         static visa_instrument_impl *create(_In_z_ const wchar_t *path,
             _In_ const std::uint32_t timeout,
-            _In_opt_ const std::function<void(visa_instrument_impl *)>& on_new);
+            _Out_opt_ bool *is_new = nullptr);
 
         /// <summary>
         /// Create or open the instrument at the specified path.
@@ -92,17 +88,15 @@ namespace detail {
         /// <param name="path">The path to the device to open.</param>
         /// <param name="timeout">The timeout for establishing the connection
         /// in milliseconds.</param>
-        /// <param name="on_new">If not <c>nullptr</c>, this callback is invoked
-        /// if the implementation object was freshly allocated and not reused.
-        /// Callers have the opportunity to perform one-time configurations on
-        /// the instrument using this callback. This parameter defaults to
-        /// <c>nullptr</c>.</param>
+        /// <param name="is_new ">If not <c>nullptr</c>, this variable is set to
+        /// <c>true</c> if the instance was newly created, or <c>false</c> if
+        /// an existing connection was reused.</param>
         /// <returns>An implementation object for the VISA device matching the
         /// given path. This can either be an existing one or a new one.
         /// </returns>
         static visa_instrument_impl *create(_In_z_ const char *path,
             _In_ const std::uint32_t timeout,
-            _In_opt_ const std::function<void(visa_instrument_impl *)>& on_new);
+            _Out_opt_ bool *is_new = nullptr);
 
         /// <summary>
         /// Enumerates all currently active instances of VISA instruments.

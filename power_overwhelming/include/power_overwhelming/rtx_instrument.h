@@ -64,8 +64,10 @@ namespace power_overwhelming {
         /// string of the instrument, reset the instrument and clear any error
         /// state in the instrument.
         /// </remarks>
-        /// <param name="path"></param>
-        /// <param name="timeout"></param>
+        /// <param name="path">The VISA resource path of the instrument.</param>
+        /// <param name="timeout">The timeout for the connection attempt in
+        /// milliseconds. This parameter defaults to
+        /// <see cref="default_timeout" />.</param>
         /// <exception cref="std::invalid_argument">If <paramref name="path" />
         /// is <c>nullptr</c>.</exception>
         /// <exception cref="std::bad_alloc">If the memory for the sensor state
@@ -75,7 +77,7 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
         rtx_instrument(_In_z_ const wchar_t *path,
-            _In_ const timeout_type timeout = 2000);
+            _In_ const timeout_type timeout = default_timeout);
 
         /// <summary>
         /// Initialises a new instance.
@@ -85,8 +87,10 @@ namespace power_overwhelming {
         /// string of the instrument, reset the instrument and clear any error
         /// state in the instrument.
         /// </remarks>
-        /// <param name="path"></param>
-        /// <param name="timeout"></param>
+        /// <param name="path">The VISA resource path of the instrument.</param>
+        /// <param name="timeout">The timeout for the connection attempt in
+        /// milliseconds. This parameter defaults to
+        /// <see cref="default_timeout" />.</param>
         /// <exception cref="std::invalid_argument">If <paramref name="path" />
         /// is <c>nullptr</c>.</exception>
         /// <exception cref="std::bad_alloc">If the memory for the sensor state
@@ -96,7 +100,55 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
         rtx_instrument(_In_z_ const char *path,
-            _In_ const timeout_type timeout = 2000);
+            _In_ const timeout_type timeout = default_timeout);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="is_new_connection">Indicates whether a new connection
+        /// to an instrument was established or an existing one was reused. If
+        /// this parameter returns <c>false</c>, callers should be aware that
+        /// multiple code paths might manipulate the instrument independently.
+        /// </param>
+        /// <param name="path">The VISA resource path of the instrument.</param>
+        /// <param name="timeout">The timeout for the connection attempt in
+        /// milliseconds. This parameter defaults to
+        /// <see cref="default_timeout" />.</param>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the sensor state
+        /// could not be allocated.</exception>
+        /// <exception cref="std::system_error">If the VISA library could not be
+        /// loaded.</exception>
+        /// <exception cref="visa_exception">If the sensor could not be
+        /// initialised.</exception>
+        rtx_instrument(_Out_ bool& is_new_connection,
+            _In_z_ const wchar_t *path,
+            _In_ const timeout_type timeout = default_timeout);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="is_new_connection">Indicates whether a new connection
+        /// to an instrument was established or an existing one was reused. If
+        /// this parameter returns <c>false</c>, callers should be aware that
+        /// multiple code paths might manipulate the instrument independently.
+        /// </param>
+        /// <param name="path">The VISA resource path of the instrument.</param>
+        /// <param name="timeout">The timeout for the connection attempt in
+        /// milliseconds. This parameter defaults to
+        /// <see cref="default_timeout" />.</param>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the sensor state
+        /// could not be allocated.</exception>
+        /// <exception cref="std::system_error">If the VISA library could not be
+        /// loaded.</exception>
+        /// <exception cref="visa_exception">If the sensor could not be
+        /// initialised.</exception>
+        rtx_instrument(_Out_ bool& is_new_connection,
+            _In_z_ const char *path,
+            _In_ const timeout_type timeout = default_timeout);
 
         /// <summary>
         /// Configures signle acquisition mode on the device.

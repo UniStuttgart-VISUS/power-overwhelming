@@ -25,13 +25,6 @@
 
 
 /*
- * visus::power_overwhelming::visa_instrument::rohde_und_schwarz
- */
-constexpr const char *
-visus::power_overwhelming::visa_instrument::rohde_und_schwarz;
-
-
-/*
  * visus::power_overwhelming::visa_instrument::find_resources
  */
 visus::power_overwhelming::blob
@@ -181,6 +174,20 @@ std::size_t visus::power_overwhelming::visa_instrument::foreach_instance(
 
 
 /*
+ * visus::power_overwhelming::visa_instrument::rohde_und_schwarz
+ */
+constexpr const char *
+visus::power_overwhelming::visa_instrument::rohde_und_schwarz;
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::rohde_und_schwarz
+ */
+constexpr const visus::power_overwhelming::visa_instrument::timeout_type
+visus::power_overwhelming::visa_instrument::default_timeout;
+
+
+/*
  * visus::power_overwhelming::visa_instrument::visa_instrument
  */
 visus::power_overwhelming::visa_instrument::visa_instrument(void)
@@ -204,6 +211,32 @@ visus::power_overwhelming::visa_instrument::visa_instrument(
         _In_z_ const char *path, _In_ const timeout_type timeout)
         : _impl(nullptr) {
     this->_impl = detail::visa_instrument_impl::create(path, timeout, nullptr);
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::visa_instrument
+ */
+visus::power_overwhelming::visa_instrument::visa_instrument(
+        _Out_ bool &is_new_connection,
+        _In_z_ const wchar_t *path,
+        _In_ const timeout_type timeout)
+        : _impl(nullptr) {
+    this->_impl = detail::visa_instrument_impl::create(path, timeout,
+        &is_new_connection);
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::visa_instrument
+ */
+visus::power_overwhelming::visa_instrument::visa_instrument(
+        _Out_ bool &is_new_connection,
+        _In_z_ const char *path,
+        _In_ const timeout_type timeout)
+        : _impl(nullptr) {
+    this->_impl = detail::visa_instrument_impl::create(path, timeout,
+        &is_new_connection);
 }
 
 

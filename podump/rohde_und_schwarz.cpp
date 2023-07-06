@@ -125,7 +125,14 @@ void query_rtx_instrument(void) {
         for (auto d = devices.as<wchar_t>();
                 (d != nullptr) && (*d != 0);
                 d += ::wcslen(d) + 1) {
-            rtx_instrument i(d);
+            auto is_new = false;
+            rtx_instrument i(is_new, d);
+
+            if (is_new) {
+                std::wcout << L"Connected to new instrument." << std::endl;
+            } else {
+                std::wcout << L"Reused existing connection." << std::endl;
+            }
 
             visa_instrument::foreach_instance([](visa_instrument& i, void *) {
                 blob name(i.identify(nullptr, 0) * sizeof(wchar_t));

@@ -40,6 +40,23 @@ visus::power_overwhelming::rtx_instrument::rtx_instrument(
 
 
 /*
+ * visus::power_overwhelming::rtx_instrument::rtx_instrument
+ */
+visus::power_overwhelming::rtx_instrument::rtx_instrument(
+    _Out_ bool& is_new_connection, _In_z_ const wchar_t *path,
+    _In_ const timeout_type timeout)
+    : visa_instrument(is_new_connection, path, timeout) { }
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::rtx_instrument
+ */
+visus::power_overwhelming::rtx_instrument::rtx_instrument(
+    _Out_ bool& is_new_connection, _In_z_ const char *path,
+    _In_ const timeout_type timeout)
+    : visa_instrument(is_new_connection, path, timeout) { }
+
+/*
  * visus::power_overwhelming::rtx_sensor::acquisition
  */
 visus::power_overwhelming::rtx_instrument&
