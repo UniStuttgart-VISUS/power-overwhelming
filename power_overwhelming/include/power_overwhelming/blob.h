@@ -84,7 +84,7 @@ namespace power_overwhelming {
         /// <returns>A pointer to the data.</returns>
         template<class TPointer>
         inline _Ret_maybenull_ TPointer *as(void) noexcept {
-            return static_cast<TPointer *>(this->_data);
+            return static_cast<TPointer *>(this->data());
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace power_overwhelming {
         /// <returns>A pointer to the data.</returns>
         template<class TPointer>
         inline _Ret_maybenull_ const TPointer *as(void) const noexcept {
-            return static_cast<const TPointer *>(this->_data);
+            return static_cast<const TPointer *>(this->data());
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>A pointer ot he begin of the blob.</returns>
         inline _Ret_maybenull_ byte_type *begin(void) noexcept {
-            return this->as<byte_type>();
+            return this->_data;
         }
 
         /// <summary>
@@ -209,7 +209,7 @@ namespace power_overwhelming {
         /// </remarks>
         /// <returns>A pointer to the data.</returns>
         inline _Ret_maybenull_ void *data(void) noexcept {
-            return this->_data;
+            return static_cast<void *>(this->_data);
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace power_overwhelming {
         /// </remarks>
         /// <returns>A pointer to the data.</returns>
         inline _Ret_maybenull_ const void *data(void) const noexcept {
-            return this->_data;
+            return static_cast<const void *>(this->_data);
         }
 
         /// <summary>
@@ -384,7 +384,7 @@ namespace power_overwhelming {
         /// </remarks>
         /// <returns>A pointer to the data.</returns>
         inline _Ret_maybenull_ operator void *(void) noexcept {
-            return this->_data;
+            return static_cast<void *>(this->_data);
         }
 
         /// <summary>
@@ -398,7 +398,7 @@ namespace power_overwhelming {
         /// </remarks>
         /// <returns>A pointer to the data.</returns>
         inline _Ret_maybenull_ operator const void *(void) const noexcept {
-            return this->_data;
+            return static_cast<const void *>(this->_data);
         }
 
         /// <summary>
@@ -412,7 +412,7 @@ namespace power_overwhelming {
 
     private:
 
-        void *_data;
+        byte_type *_data;
         std::size_t _size;
 
     };
