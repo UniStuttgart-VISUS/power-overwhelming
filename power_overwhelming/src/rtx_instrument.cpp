@@ -56,6 +56,7 @@ visus::power_overwhelming::rtx_instrument::rtx_instrument(
     _In_ const timeout_type timeout)
     : visa_instrument(is_new_connection, path, timeout) { }
 
+
 /*
  * visus::power_overwhelming::rtx_sensor::acquisition
  */

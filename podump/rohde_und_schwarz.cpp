@@ -191,6 +191,11 @@ void query_rtx_instrument(void) {
             //auto ascii_data = i.ascii_data(1);
             //auto binary_data = i.binary_data(1);
 
+            std::cout << "Segment "
+                << i.history_segment()
+                << " of "
+                << i.history_segments()
+                << std::endl;
             auto segment0 = i.data(1);
 
             i.history_segment(-1);

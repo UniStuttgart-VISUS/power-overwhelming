@@ -577,6 +577,7 @@ int visus::power_overwhelming::visa_instrument::system_error(void) const {
  */
 void visus::power_overwhelming::visa_instrument::throw_on_system_error(void) {
     if (this->_impl != nullptr) {
+#if TODO
         std::string message;
         auto error = this->_impl->system_error(message);
 
@@ -587,6 +588,7 @@ void visus::power_overwhelming::visa_instrument::throw_on_system_error(void) {
 
             throw std::runtime_error(message);
         }
+#endif
     }
 }
 
@@ -611,7 +613,7 @@ visus::power_overwhelming::visa_instrument::timeout(
 visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::wait(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    this->query("*OPC?");
+    this->query("*OPC?\n");
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
