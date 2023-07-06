@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <cinttypes>
 
+#include "power_overwhelming/blob.h"
 #include "power_overwhelming/sensor.h"
 #include "power_overwhelming/visa_instrument.h"
 
@@ -58,7 +59,7 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        inline hmc8015_sensor(void) : _name(nullptr) { }
+        inline hmc8015_sensor(void) = default;
 
         /// <summary>
         /// Initialises a new instance.
@@ -393,7 +394,7 @@ namespace power_overwhelming {
             _In_ const float value);
 
         visa_instrument _instrument;
-        wchar_t *_name;
+        blob _name;
     };
 
 } /* namespace power_overwhelming */

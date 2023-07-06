@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "power_overwhelming/blob.h"
 #include "power_overwhelming/sensor.h"
 #include "power_overwhelming/rtx_instrument.h"
 
@@ -40,7 +41,7 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        inline rtx_sensor(void) : _name(nullptr) { }
+        inline rtx_sensor(void) = default;
 
         /// <summary>
         /// Initialises a new instance.
@@ -152,7 +153,7 @@ namespace power_overwhelming {
         void initialise(void);
 
         rtx_instrument _instrument;
-        wchar_t *_name;
+        blob _name;
     };
 
 } /* namespace power_overwhelming */

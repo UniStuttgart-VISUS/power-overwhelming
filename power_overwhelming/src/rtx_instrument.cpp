@@ -10,10 +10,10 @@
 
 
 /*
- * visus::power_overwhelming::rtx_instrument::rtx_id
+ * visus::power_overwhelming::rtx_instrument::product_id
  */
 constexpr const char *
-visus::power_overwhelming::rtx_instrument::rtx_id;
+visus::power_overwhelming::rtx_instrument::product_id;
 
 
 /*

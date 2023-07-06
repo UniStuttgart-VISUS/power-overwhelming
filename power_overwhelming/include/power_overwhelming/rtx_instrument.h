@@ -49,7 +49,7 @@ namespace power_overwhelming {
         /// the device via the &quot;Find Resource&quot; functionality. Do not
         /// forget to put the device in USB mode if discovering via USB.
         /// </remarks>
-        static constexpr const char *rtx_id = "0x01D6";
+        static constexpr const char *product_id = "0x01D6";
 
         /// <summary>
         /// Initialises a new, but invalid instance.

@@ -29,7 +29,7 @@ std::size_t visus::power_overwhelming::rtx_sensor::for_all(
     std::string query("?*::");          // Any protocol
     query += visa_instrument::rohde_und_schwarz;    // Only R&S
     query += "::";
-    query += rtx_instrument::rtx_id;    // Only RTA/RTB
+    query += rtx_instrument::product_id;    // Only RTA/RTB
     query += "::?*::INSTR";             // All serial numbers.
 
     // Search the instruments using VISA.
@@ -56,7 +56,7 @@ std::size_t visus::power_overwhelming::rtx_sensor::for_all(
 visus::power_overwhelming::rtx_sensor::rtx_sensor(
         _In_z_ const char *path,
         _In_ const visa_instrument::timeout_type timeout)
-        : _instrument(path, timeout), _name(nullptr) {
+        : _instrument(path, timeout) {
     this->initialise();
 }
 
@@ -67,7 +67,7 @@ visus::power_overwhelming::rtx_sensor::rtx_sensor(
 visus::power_overwhelming::rtx_sensor::rtx_sensor(
         _In_z_ const wchar_t *path,
         _In_ const visa_instrument::timeout_type timeout)
-        : _instrument(path, timeout), _name(nullptr) {
+        : _instrument(path, timeout) {
     this->initialise();
 }
 
@@ -77,17 +77,17 @@ visus::power_overwhelming::rtx_sensor::rtx_sensor(
  */
 visus::power_overwhelming::rtx_sensor::rtx_sensor(
         _Inout_ rtx_sensor&& rhs) noexcept
-        : _instrument(std::move(rhs._instrument)), _name(rhs._name) {
-    rhs._name = nullptr;
+    : _instrument(std::move(rhs._instrument)),
+        _name(std::move(rhs._name)) {
+    assert(rhs._instrument == false);
+    assert(!static_cast<bool>(rhs._name));
 }
 
 
 /*
  * visus::power_overwhelming::rtx_sensor::~rtx_sensor
  */
-visus::power_overwhelming::rtx_sensor::~rtx_sensor(void) {
-    delete[] this->_name;
-}
+visus::power_overwhelming::rtx_sensor::~rtx_sensor(void) { }
 
 
 /*
@@ -95,7 +95,7 @@ visus::power_overwhelming::rtx_sensor::~rtx_sensor(void) {
  */
 _Ret_maybenull_z_ const wchar_t *visus::power_overwhelming::rtx_sensor::name(
         void) const noexcept {
-    return this->_name;
+    return this->_name.as<wchar_t>();
 }
 
 
@@ -108,8 +108,8 @@ visus::power_overwhelming::rtx_sensor::operator =(
     if (this != std::addressof(rhs)) {
         this->_instrument = std::move(rhs._instrument);
         assert(rhs._instrument == false);
-        this->_name = rhs._name;
-        rhs._name = nullptr;
+        this->_name = std::move(rhs._name);
+        assert(!static_cast<bool>(rhs._name));
     }
 
     return *this;
