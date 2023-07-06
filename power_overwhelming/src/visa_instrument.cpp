@@ -155,20 +155,21 @@ visus::power_overwhelming::visa_instrument::find_resources(
  * visus::power_overwhelming::visa_instrument::foreach_instance
  */
 std::size_t visus::power_overwhelming::visa_instrument::foreach_instance(
-        _In_ bool (*callback)(visa_instrument&)){
+        _In_ bool (*callback)(visa_instrument&, void *),
+        _In_opt_ void *context){
     if (callback == nullptr) {
         throw std::invalid_argument("The enumeration callback for VISA "
             "instruments must not be nullptr.");
     }
 
     return detail::visa_instrument_impl::foreach(
-            [callback](detail::visa_instrument_impl *i) {
+            [callback, context](detail::visa_instrument_impl *i) {
         visa_instrument instrument;
         auto retval = true;
 
         instrument._impl = i;
         try {
-            retval = callback(instrument);
+            retval = callback(instrument, context);
         } catch (...) {
             retval = false;
         }

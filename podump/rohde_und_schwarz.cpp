@@ -127,7 +127,7 @@ void query_rtx_instrument(void) {
                 d += ::wcslen(d) + 1) {
             rtx_instrument i(d);
 
-            visa_instrument::foreach_instance([](visa_instrument& i) {
+            visa_instrument::foreach_instance([](visa_instrument& i, void *) {
                 blob name(i.identify(nullptr, 0) * sizeof(wchar_t));
                 i.identify(name.as<wchar_t>(), name.size() / sizeof(wchar_t));
                 std::wcout << L"\"" << name.as<wchar_t>() << L"\""

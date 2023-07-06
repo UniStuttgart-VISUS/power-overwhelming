@@ -144,13 +144,16 @@ namespace power_overwhelming {
         /// will be stopped after the current call. If the callback throws
         /// an exception, this will be caught and treated as if the callback
         /// had returned <c>false</c>.</param>
+        /// <param name="context">A user-defined context passed to the callback
+        /// function.</param>
         /// <returns>The number of times the callback has been sucessfully
         /// invoked. If the callback always returns <c>true</c>, this is the
         /// number of active VISA instruments at the time of the call.</returns>
         /// <exception cref="std::invalid_argument">If
         /// <paramref name="callback" /> is <c>nullptr</c>.</exception>
         static std::size_t foreach_instance(
-            _In_ bool (*callback)(visa_instrument&));
+            _In_ bool (*callback)(visa_instrument&, void *),
+            _In_opt_ void *context = nullptr);
 
         /// <summary>
         /// The vendor ID of Rohde &amp; Schwarz.
