@@ -172,11 +172,14 @@ void query_rtx_instrument(void) {
                 << i.interface_type()
                 << std::endl
                 << "RTX status before acquire: "
-                << i.status()
+                << static_cast<int>(i.status())
+                << std::endl
+                << "RTX event status before acquire: "
+                << static_cast<int>(i.event_status())
                 << std::endl;
 
             i.acquisition(oscilloscope_single_acquisition()
-                .points(200000000)
+                .points(100000)
                 .count(1)
                 .segmented(false)
                 .segmented(false));
@@ -213,7 +216,7 @@ void query_rtx_instrument(void) {
             //    << i.history_segments()
             //    << std::endl;
             //auto segment1 = i.data(1);
-            int x = 5;
+            int x = 1;
         }
 
     } catch (std::exception& ex) {

@@ -12,6 +12,8 @@
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 #include "power_overwhelming/blob.h"
+#include "power_overwhelming/visa_event_status_register.h"
+#include "power_overwhelming/visa_status_byte.h"
 
 
 namespace visus {
@@ -348,6 +350,18 @@ namespace power_overwhelming {
         visa_instrument& clear_status(void);
 
         /// <summary>
+        /// Reads the event status register using a <c>*ESR?</c> command.
+        /// </summary>
+        /// <returns>The current value of the event status register.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        /// <exception cref="std::logic_error">If the library was compiled
+        /// without support for VISA.</exception>
+        visa_event_status_register event_status(void) const;
+
+        /// <summary>
         /// Send the &quot;identify&quot; SCPI command to the instrument and
         /// return its response.
         /// </summary>
@@ -604,7 +618,9 @@ namespace power_overwhelming {
         /// without support for VISA.</exception>
         /// <exception cref="visa_exception">If the operation failed.
         /// </exception>
-        std::int32_t status(void);
+        /// <exception cref="std::logic_error">If the library was compiled
+        /// without support for VISA.</exception>
+        visa_status_byte status(void);
 
         /// <summary>
         /// Query the oldest error in the queue.

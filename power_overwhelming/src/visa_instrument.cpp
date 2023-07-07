@@ -316,6 +316,21 @@ visus::power_overwhelming::visa_instrument::clear_status(void) {
 
 
 /*
+ * visus::power_overwhelming::visa_instrument::event_status
+ */
+visus::power_overwhelming::visa_event_status_register
+visus::power_overwhelming::visa_instrument::event_status(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("*ESR?\n");
+    auto status = std::atoi(response.as<char>());
+    return static_cast<visa_event_status_register>(status);
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
  * visus::power_overwhelming::visa_instrument::identify
  */
 std::size_t visus::power_overwhelming::visa_instrument::identify(
@@ -523,12 +538,13 @@ visus::power_overwhelming::visa_instrument::synchronise_clock(
 /*
  * visus::power_overwhelming::visa_instrument::status
  */
-std::int32_t visus::power_overwhelming::visa_instrument::status(void) {
+visus::power_overwhelming::visa_status_byte
+visus::power_overwhelming::visa_instrument::status(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     ViUInt16 retval;
     visa_exception::throw_on_error(detail::visa_library::instance()
         .viReadSTB(this->check_not_disposed().session, &retval));
-    return static_cast<std::int32_t>(retval);
+    return static_cast<visa_status_byte>(retval);
 
     // Note: R&S does the following, but NI's documentation suggests that
     // viReadSTB will issue *STB? by itself as a fallback, so we try the easier
