@@ -332,7 +332,11 @@ visus::power_overwhelming::detail::visa_instrument_impl::read_binary(
     }
 
     retval.reserve(size);
-    this->read(retval.begin(), retval.size());
+
+    auto rem = retval.size();
+    while (rem > 0) {
+        rem -= this->read(retval.end() - rem, rem);
+    }
 
     // Read and discard all that is still in the buffer (the "\n"). If we do not
     // do this, the next query would be interrupted.

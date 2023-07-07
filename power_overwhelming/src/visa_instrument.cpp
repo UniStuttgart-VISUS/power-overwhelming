@@ -369,28 +369,26 @@ std::uint16_t visus::power_overwhelming::visa_instrument::interface_type(
     return this->check_not_disposed().interface_type();
 }
 
+
 /*
+ * visus::power_overwhelming::visa_instrument::operation_complete
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::operation_complete(void) {
+    // Cf. https://www.rohde-schwarz.com/at/driver-pages/fernsteuerung/measurements-synchronization_231248.html
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    this->query("*OPC?\n");
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
 
-        else if (rsSession->sessionType == RS_INTF_GPIB)
-        {
-            rsSession->vxiCapable = (addFlags & 2) > 0 ? VI_FALSE : VI_TRUE;
-        }
-        else if (rsSession->sessionType == RS_INTF_TCPIP)
-        {
-            rsSession->vxiCapable = (addFlags & 4) > 0 ? VI_FALSE : VI_TRUE;
-        }
-        else if (rsSession->sessionType == RS_INTF_USB)
-        {
-            rsSession->vxiCapable = (addFlags & 1) > 0 ? VI_FALSE : VI_TRUE;
-        }
-
-*/
 
 
 /*
  * visus::power_overwhelming::visa_instrument::path
  */
-_Ret_maybenull_z_ const char *
+_Ret_maybenull_z_
+const char *
 visus::power_overwhelming::visa_instrument::path(void) const noexcept {
     return (*this) ? this->_impl->path().c_str() : nullptr;
 }
@@ -457,8 +455,18 @@ visus::power_overwhelming::visa_instrument::read_all(
  * visus::power_overwhelming::visa_instrument::reset
  */
 visus::power_overwhelming::visa_instrument&
-visus::power_overwhelming::visa_instrument::reset(void) {
-    this->check_not_disposed().format("*RST\n");
+visus::power_overwhelming::visa_instrument::reset(
+        _In_ const bool flush_buffers,
+        _In_ const bool clear_status) {
+    if (flush_buffers) {
+        this->clear();
+    }
+
+    if (clear_status) {
+        this->write("*CLS\n");
+    }
+
+    this->query("*RST;*OPC?\n");
     this->throw_on_system_error();
     return *this;
 }
@@ -613,7 +621,7 @@ visus::power_overwhelming::visa_instrument::timeout(
 visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::wait(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    this->query("*OPC?\n");
+    this->query("*WAI\n");
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }

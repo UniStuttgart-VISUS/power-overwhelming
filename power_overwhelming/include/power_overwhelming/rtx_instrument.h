@@ -13,6 +13,7 @@
 #include "power_overwhelming/oscilloscope_single_acquisition.h"
 #include "power_overwhelming/oscilloscope_trigger.h"
 #include "power_overwhelming/oscilloscope_waveform.h"
+#include "power_overwhelming/oscilloscope_waveform_points.h"
 #include "power_overwhelming/visa_instrument.h"
 
 
@@ -212,8 +213,11 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="channel">The one-based index of the channel to retrieve
         /// the waveform for.</param>
+        /// <param name="points">Specifies which sample points should be
+        /// transferred.</param>
         /// <returns>The waveform for the specified channel.</returns>
-        oscilloscope_waveform data(_In_ const std::uint32_t channel);
+        oscilloscope_waveform data(_In_ const std::uint32_t channel,
+            _In_ const oscilloscope_waveform_points points);
 
         /// <summary>
         /// Enable and configure one of the mathematical expressions.

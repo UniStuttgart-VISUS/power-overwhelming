@@ -143,14 +143,12 @@ void query_rtx_instrument(void) {
                 return true;
             });
 
-            i.clear();
-            i.clear_status();
-            i.reset();
             i.synchronise_clock();
-            i.timeout(5000);
+            i.reset(true, true);
+            i.timeout(20000);
 
-            i.reference_position(oscilloscope_reference_point::middle);
-            i.time_range(oscilloscope_quantity(500, "ms"));
+            i.reference_position(oscilloscope_reference_point::left);
+            i.time_scale(oscilloscope_quantity(1, "s"));
 
             i.channel(oscilloscope_channel(1)
                 .label(oscilloscope_label("podump#1"))
@@ -158,18 +156,13 @@ void query_rtx_instrument(void) {
                 .attenuation(oscilloscope_quantity(10, "V"))
                 .range(oscilloscope_quantity(7)));
 
-            i.channel(oscilloscope_channel(2)
-                .label(oscilloscope_label("podump#2"))
-                .state(true)
-                .attenuation(oscilloscope_quantity(1, "V"))
-                .range(oscilloscope_quantity(5)));
+            //i.channel(oscilloscope_channel(2)
+            //    .label(oscilloscope_label("podump#2"))
+            //    .state(true)
+            //    .attenuation(oscilloscope_quantity(1, "V"))
+            //    .range(oscilloscope_quantity(5)));
 
-            i.acquisition(oscilloscope_single_acquisition()
-                .points(50000)
-                .count(2)
-                .segmented(true));
-
-            i.trigger_position(oscilloscope_quantity(42.42f, "ms"));
+            i.trigger_position(oscilloscope_quantity(0.0f, "ms"));
             i.trigger(oscilloscope_edge_trigger("CH1")
                 .level(1, oscilloscope_quantity(2000.0f, "mV"))
                 .slope(oscilloscope_trigger_slope::rising)
@@ -182,29 +175,45 @@ void query_rtx_instrument(void) {
                 << i.status()
                 << std::endl;
 
-            i.acquisition(oscilloscope_acquisition_state::run);
+            i.acquisition(oscilloscope_single_acquisition()
+                .points(200000000)
+                .count(1)
+                .segmented(false)
+                .segmented(false));
+
+            i.operation_complete();
+            i.acquisition(oscilloscope_acquisition_state::single);
+
+            //i.query("*TRG;*OPC?\n");
 
             i.trigger();
-            i.trigger();
-            i.wait();
-            //i.query("*TRG; *OPC?\n");
-            //auto ascii_data = i.ascii_data(1);
-            //auto binary_data = i.binary_data(1);
+            i.operation_complete();
+            //i.trigger();
 
+            auto b = std::chrono::high_resolution_clock::now();
             std::cout << "Segment "
                 << i.history_segment()
                 << " of "
                 << i.history_segments()
                 << std::endl;
-            auto segment0 = i.data(1);
+            auto segment0 = i.data(1, oscilloscope_waveform_points::maximum);
+            auto e = std::chrono::high_resolution_clock::now();
+            std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(e - b).count() << std::endl;
 
-            i.history_segment(-1);
-            std::cout << "Segment "
-                << i.history_segment()
-                << " of "
-                << i.history_segments()
-                << std::endl;
-            auto segment1 = i.data(1);
+            std::cout << "Record length: "
+                << segment0.record_length() << std::endl
+                << "Buffer size: "
+                << segment0.end() - segment0.begin() << std::endl;
+
+
+            //i.history_segment(-1);
+            //std::cout << "Segment "
+            //    << i.history_segment()
+            //    << " of "
+            //    << i.history_segments()
+            //    << std::endl;
+            //auto segment1 = i.data(1);
+            int x = 5;
         }
 
     } catch (std::exception& ex) {

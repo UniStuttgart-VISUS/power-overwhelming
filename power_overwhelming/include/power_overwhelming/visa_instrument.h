@@ -416,10 +416,33 @@ namespace power_overwhelming {
         std::uint16_t interface_type(void) const;
 
         /// <summary>
+        /// Issue and wait for an OPC query.
+        /// </summary>
+        /// <remarks>
+        /// This method does nothing if the library was compiled without support
+        /// for VISA.
+        /// </remarks>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        visa_instrument& operation_complete(void);
+
+        /// <summary>
         /// Gets the VISA path of the device.
         /// </summary>
         /// <returns>The VISA path used to open the device.</returns>
         _Ret_maybenull_z_ const char *path(void) const noexcept;
+
+        ///// <summary>
+        ///// Sets the ESE filter to the OPC bit, sets the OPC bit and afterwards
+        ///// polls the status byte for the operation setting this bit being
+        ///// executed.
+        ///// </summary>
+        ///// <param name=""></param>
+        ///// <returns></returns>
+        //visa_instrument& poll_status_byte(void);
 
         /// <summary>
         /// Write the given data to the instrument and directly read the
@@ -535,15 +558,28 @@ namespace power_overwhelming {
         blob read_all(_In_ const std::size_t buffer_size = 1024) const;
 
         /// <summary>
-        /// Resets the instrument to its default state by issuing the *RST
-        /// command.
+        /// Resets the instrument to its default state by issuing the
+        /// <c>*RST</c> command.
         /// </summary>
+        /// <remarks>
+        /// <para>This method will issue an <c>*OPC?</c> query immediately after
+        /// the reset request in order to make sure that the calling code is
+        /// blocked until the instrument finished resetting. If the I/O buffers
+        /// are flushed and/or the status bits are cleared, these operations
+        /// are also guaranteed to have completed before the method returns.
+        /// </para>
+        /// </remarks>
+        /// <param name="flush_buffers">Also clear all I/O buffers before the
+        /// reset using <c>viClear</c>.</param>
+        /// <param name="clear_status">Also clear the status bits before
+        /// resetting the device.</param>
         /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        visa_instrument& reset(void);
+        visa_instrument& reset(_In_ const bool flush_buffers = false,
+            _In_ const bool clear_status = false);
 
         /// <summary>
         /// Synchonises the date and time on the instrument with the system
@@ -615,11 +651,13 @@ namespace power_overwhelming {
         visa_instrument& timeout(_In_ const timeout_type timeout);
 
         /// <summary>
-        /// Issue and wait for an OPC query.
+        /// Waits for all previous commands to complete before continuing with
+        /// commands issued afterwards.
         /// </summary>
         /// <remarks>
-        /// This method does nothing if the library was compiled without support
-        /// for VISA.
+        /// <para>This method issues a <c>*WAI</c> command.</param>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
         /// </remarks>
         /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an

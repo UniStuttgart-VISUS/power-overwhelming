@@ -70,7 +70,7 @@ visus::power_overwhelming::rtx_instrument::acquisition(
     if (acquisition.automatic_points()) {
         impl.format("ACQ:POIN:AUT ON\n", acquisition.points());
     } else {
-        impl.format("ACQ:POIN %u\n", acquisition.points());
+        impl.format("ACQ:POIN:VAL %u\n", acquisition.points());
     }
     this->throw_on_system_error();
 
@@ -80,11 +80,8 @@ visus::power_overwhelming::rtx_instrument::acquisition(
     impl.format("ACQ:SEGM:STAT %s\n", acquisition.segmented() ? "ON" : "OFF");
     this->throw_on_system_error();
 
-    impl.format("SING\n");
-    this->throw_on_system_error();
-
     if (run) {
-        impl.format("ACQ:STAT RUN\n");
+        impl.format("SING\n");
         this->throw_on_system_error();
     }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -106,6 +103,10 @@ visus::power_overwhelming::rtx_instrument::acquisition(
 
         case oscilloscope_acquisition_state::stop:
             this->check_not_disposed().format("ACQ:STAT STOP\n");
+            break;
+
+        case oscilloscope_acquisition_state::single:
+            this->check_not_disposed().format("SING\n");
             break;
 
         default:
@@ -274,8 +275,27 @@ visus::power_overwhelming::rtx_instrument::channel(
  */
 visus::power_overwhelming::oscilloscope_waveform
 visus::power_overwhelming::rtx_instrument::data(
-        _In_ const std::uint32_t channel) {
+        _In_ const std::uint32_t channel,
+        _In_ const oscilloscope_waveform_points points) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+
+    switch (points) {
+        case oscilloscope_waveform_points::maximum:
+            impl.format("CHAN%u:DATA:POIN MAX\n", channel);
+            break;
+
+        case oscilloscope_waveform_points::maximum_visible:
+            impl.format("CHAN%u:DATA:POIN DMAX\n", channel);
+            break;
+
+        case oscilloscope_waveform_points::visible:
+        default:
+            impl.format("CHAN%u:DATA:POIN DEF\n", channel);
+            break;
+    }
+    this->throw_on_system_error();
+
     const auto query = detail::format_string("CHAN%u:DATA:HEAD?\n", channel);
     const auto header = this->query(query.c_str());
     return oscilloscope_waveform(header.as<char>(), this->binary_data(channel));
