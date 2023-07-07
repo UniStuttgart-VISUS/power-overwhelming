@@ -12,7 +12,7 @@
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 #include "power_overwhelming/blob.h"
-#include "power_overwhelming/visa_event_status_register.h"
+#include "power_overwhelming/visa_event_status.h"
 #include "power_overwhelming/visa_status_byte.h"
 
 
@@ -359,7 +359,24 @@ namespace power_overwhelming {
         /// </exception>
         /// <exception cref="std::logic_error">If the library was compiled
         /// without support for VISA.</exception>
-        visa_event_status_register event_status(void) const;
+        visa_event_status event_status(void) const;
+
+        /// <summary>
+        /// Changes the event status enable state to the given bitmask.
+        /// </summary>
+        /// <remarks>
+        /// This method will add an <c>*OPC?</c> query after the set operation,
+        /// which makes sure that it does not return until the command was
+        /// executed on the instrument.
+        /// </remarks>
+        /// <param name="status">The status of the individual event bits.
+        /// </param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        visa_instrument& event_status(_In_ const visa_event_status status);
 
         /// <summary>
         /// Send the &quot;identify&quot; SCPI command to the instrument and
@@ -594,6 +611,38 @@ namespace power_overwhelming {
         /// processed successfully.</exception>
         visa_instrument& reset(_In_ const bool flush_buffers = false,
             _In_ const bool clear_status = false);
+
+        /// <summary>
+        /// Changes the bits enabled in the service request enable (SRE)
+        /// register.
+        /// </summary>
+        /// <remarks>
+        /// This method will add an <c>*OPC?</c> query after the set operation,
+        /// which makes sure that it does not return until the command was
+        /// executed on the instrument.
+        /// </remarks>
+        /// <param name="status">The status of the individual SRE bits.
+        /// </param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        visa_instrument& service_request_status(
+            _In_ const visa_status_byte status);
+
+        /// <summary>
+        /// Reads the currently enabled bits in the service request enable (SRE)
+        /// register.
+        /// </summary>
+        /// <returns>The current value of the SRE register.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        /// <exception cref="std::logic_error">If the library was compiled
+        /// without support for VISA.</exception>
+        visa_status_byte service_request_status(void) const;
 
         /// <summary>
         /// Synchonises the date and time on the instrument with the system

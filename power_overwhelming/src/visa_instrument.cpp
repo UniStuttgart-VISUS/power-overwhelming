@@ -318,15 +318,31 @@ visus::power_overwhelming::visa_instrument::clear_status(void) {
 /*
  * visus::power_overwhelming::visa_instrument::event_status
  */
-visus::power_overwhelming::visa_event_status_register
+visus::power_overwhelming::visa_event_status
 visus::power_overwhelming::visa_instrument::event_status(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto response = this->query("*ESR?\n");
     auto status = std::atoi(response.as<char>());
-    return static_cast<visa_event_status_register>(status);
+    return static_cast<visa_event_status>(status);
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(detail::no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::event_status
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::event_status(
+        _In_ const visa_event_status status) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto s = static_cast<int>(status);
+    this->check_not_disposed().format("*ESE %u; *OPC?\n", s);
+    this->read_all();
+    this->throw_on_system_error();
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
 }
 
 
@@ -484,6 +500,37 @@ visus::power_overwhelming::visa_instrument::reset(
     this->query("*RST;*OPC?\n");
     this->throw_on_system_error();
     return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::service_request_status
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::service_request_status(
+        _In_ const visa_status_byte status) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto s = static_cast<int>(status);
+    this->check_not_disposed().format("*SRE %u; *OPC?\n", s);
+    this->read_all();
+    this->throw_on_system_error();
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::service_request_status
+ */
+visus::power_overwhelming::visa_status_byte
+visus::power_overwhelming::visa_instrument::service_request_status(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("*SRE?\n");
+    auto status = std::atoi(response.as<char>());
+    return static_cast<visa_status_byte>(status);
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

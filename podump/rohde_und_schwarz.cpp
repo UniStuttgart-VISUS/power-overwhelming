@@ -145,6 +145,7 @@ void query_rtx_instrument(void) {
 
             i.synchronise_clock();
             i.reset(true, true);
+            i.event_status(visa_event_status::none);
             i.timeout(20000);
 
             i.reference_position(oscilloscope_reference_point::left);
@@ -173,6 +174,9 @@ void query_rtx_instrument(void) {
                 << std::endl
                 << "RTX status before acquire: "
                 << static_cast<int>(i.status())
+                << std::endl
+                << "RTX SRE status before acquire: "
+                << static_cast<int>(i.service_request_status())
                 << std::endl
                 << "RTX event status before acquire: "
                 << static_cast<int>(i.event_status())
@@ -216,7 +220,7 @@ void query_rtx_instrument(void) {
             //    << i.history_segments()
             //    << std::endl;
             //auto segment1 = i.data(1);
-            int x = 1;
+            int x = 12;
         }
 
     } catch (std::exception& ex) {

@@ -20,6 +20,11 @@ namespace power_overwhelming {
     enum class visa_status_byte : std::uint16_t {
 
         /// <summary>
+        /// Indicates that no status bit is set.
+        /// </summary>
+        none = 0x00,
+
+        /// <summary>
         /// This bit is set if at least one entry is in the error queue.
         /// </summary>
         error_queue_not_empty = 0x04,

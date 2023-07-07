@@ -1,4 +1,4 @@
-﻿// <copyright file="visa_event_status_register.h" company="Visualisierungsinstitut der Universität Stuttgart">
+﻿// <copyright file="visa_event_status.h" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -18,7 +18,13 @@ namespace power_overwhelming {
     /// Defines the semantics of the bits in the event status register (ESR)
     /// of a VISA instrument.
     /// </summary>
-    enum class visa_event_status_register : std::uint8_t {
+    enum class visa_event_status : std::uint8_t {
+
+        /// <summary>
+        /// Indicates that no event is active or that all events should be
+        /// masked.
+        /// </summary>
+        none = 0x00,
 
         /// <summary>
         /// This bit is set after the instrument encounters an <c>*OPC</c>
@@ -63,14 +69,14 @@ namespace power_overwhelming {
 
     /// <summary>
     /// Performs a bitwise combination of the given
-    /// <see cref="visa_event_status_register" />s.
+    /// <see cref="visa_event_status" />s.
     /// </summary>
     /// <param name="lhs">The left-hand side operand.</param>
     /// <param name="rhs">The right-hand side operand.</param>
     /// <returns>The combined event status bits.</returns>
-    inline visa_event_status_register operator |(
-            _In_ const visa_event_status_register lhs,
-            _In_ const visa_event_status_register rhs) {
+    inline visa_event_status operator |(
+            _In_ const visa_event_status lhs,
+            _In_ const visa_event_status rhs) {
         typedef std::decay<decltype(lhs)>::type enum_type;
         auto l = static_cast<std::underlying_type<enum_type>::type>(lhs);
         auto r = static_cast<std::underlying_type<enum_type>::type>(rhs);
@@ -80,14 +86,14 @@ namespace power_overwhelming {
 
     /// <summary>
     /// Performs a bitwise intersection of the given
-    /// <see cref="visa_event_status_register" />s.
+    /// <see cref="visa_event_status" />s.
     /// </summary>
     /// <param name="lhs">The left-hand side operand.</param>
     /// <param name="rhs">The right-hand side operand.</param>
     /// <returns>The intersected event status bits.</returns>
-    inline visa_event_status_register operator &(
-            _In_ const visa_event_status_register lhs,
-            _In_ const visa_event_status_register rhs) {
+    inline visa_event_status operator &(
+            _In_ const visa_event_status lhs,
+            _In_ const visa_event_status rhs) {
         typedef std::decay<decltype(lhs)>::type enum_type;
         auto l = static_cast<std::underlying_type<enum_type>::type>(lhs);
         auto r = static_cast<std::underlying_type<enum_type>::type>(rhs);
