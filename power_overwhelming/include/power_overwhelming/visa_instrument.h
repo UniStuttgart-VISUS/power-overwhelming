@@ -362,7 +362,8 @@ namespace power_overwhelming {
         visa_event_status event_status(void) const;
 
         /// <summary>
-        /// Changes the event status enable state to the given bitmask.
+        /// Changes the event status enable state to the given bitmask using
+        /// the <c>*ESE</c> command.
         /// </summary>
         /// <remarks>
         /// This method will add an <c>*OPC?</c> query after the set operation,
