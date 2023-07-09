@@ -136,6 +136,19 @@ std::string visus::power_overwhelming::detail::format_string(
 
 
 /*
+ * visus::power_overwhelming::detail::remove_spaces
+ */
+template<class TChar>
+std::basic_string<TChar> visus::power_overwhelming::detail::remove_spaces(
+        _In_ const std::basic_string<TChar>& str) {
+    std::vector<TChar> retval(str.begin(), str.end());
+    auto end = std::remove_if(retval.begin(), retval.end(),
+        [](const TChar c) { return std::isspace(c); });
+    return std::basic_string<TChar>(retval.begin(), end);
+}
+
+
+/*
  * visus::power_overwhelming::detail::safe_assign
  */
 template<class TChar>
@@ -163,6 +176,30 @@ void visus::power_overwhelming::detail::safe_assign(
         dst = src;
         src = nullptr;
     }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::safe_assign
+ */
+template<class TChar>
+visus::power_overwhelming::blob&
+visus::power_overwhelming::detail::safe_assign(
+        _Inout_ blob& dst, _In_opt_z_ const TChar *src) {
+    if (dst.as<TChar>() != src) {
+        if (src != nullptr) {
+            auto len = std::char_traits<TChar>::length(src) + 1;
+            len *= sizeof(TChar);
+            dst.reserve(len);
+            ::memcpy(dst.data(), src, len);
+
+        } else {
+            dst.reserve(1);
+            *dst.as<wchar_t>() = static_cast<TChar>(0);
+        }
+    }
+
+    return dst;
 }
 
 

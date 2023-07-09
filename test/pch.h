@@ -24,8 +24,8 @@
 #include <power_overwhelming/measurement.h>
 #include <power_overwhelming/measurement_data.h>
 #include <power_overwhelming/nvml_sensor.h>
-#include <power_overwhelming/oscilloscope_channel.h>
-#include <power_overwhelming/oscilloscope_sensor_definition.h>
+#include <power_overwhelming/rtx_instrument_configuration.h>
+#include <power_overwhelming/rtx_sensor_definition.h>
 #include <power_overwhelming/rapl_domain.h>
 #include <power_overwhelming/tinkerforge_sensor_definition.h>
 

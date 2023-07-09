@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cassert>
 #include <cerrno>
 #include <cstdio>
@@ -18,7 +19,7 @@
 #include <type_traits>
 #include <vector>
 
-#include "power_overwhelming/power_overwhelming_api.h"
+#include "power_overwhelming/blob.h"
 
 
 namespace visus {
@@ -50,6 +51,19 @@ namespace detail {
     /// <returns>The formatted string.</returns>
     template<class... TArgs>
     std::string format_string(_In_z_ const char *format, TArgs&&... args);
+
+    /// <summary>
+    /// Remove all white-space characters from <paramref name="str" />.
+    /// </summary>
+    /// <typeparam name="TChar">The type of a character in the string.
+    /// </typeparam>
+    /// <param name="str">The string to remove all white-space characters from.
+    /// </param>
+    /// <returns>A copy of <paramref name="str" /> without white-space
+    /// characters.</returns>
+    template<class TChar>
+    std::basic_string<TChar> remove_spaces(
+        _In_ const std::basic_string<TChar>& str);
 
     /// <summary>
     /// Frees <paramref name="dst" />, if not <c>nullptr</c>, and assigns a copy
@@ -114,6 +128,20 @@ namespace detail {
             _In_ const std::basic_string<TChar>& src) {
         safe_assign(dst, src.c_str());
     }
+
+    /// <summary>
+    /// Copy a string into a <see cref="blob" />.
+    /// </summary>
+    /// <typeparam name="TChar">The type of the characters.</typeparam>
+    /// <param name="dst">The blob variable to receive the copy of
+    /// <paramref name="src" />. The blob will be resized to be able to hold
+    /// the whole <paramref name="src" />.</param>
+    /// <param name="src">The string to be copied.</param>
+    /// <exception cref="std::bad_alloc">If the memory for
+    /// <paramref name="dst" /> could not be allocated.</exception>
+    /// <returns><paramref name="dst" />.</returns>
+    template<class TChar>
+    blob& safe_assign(_Inout_ blob& dst, _In_opt_z_ const TChar *src);
 
     /// <summary>
     /// Frees <paramref name="dst" />.

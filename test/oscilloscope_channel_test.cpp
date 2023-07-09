@@ -21,8 +21,8 @@ namespace test {
             oscilloscope_channel channel(2);
 
             Assert::AreEqual(int(oscilloscope_channel_bandwidth::full), int(channel.bandwidth()), L"Default bandwith", LINE_INFO());
-            Assert::AreEqual("V", channel.attenuation().unit(), L"Default attenuation unit", LINE_INFO());
-            Assert::AreEqual(10.0f, channel.attenuation().value(), L"Default attenuation value", LINE_INFO());
+            Assert::AreEqual("", channel.attenuation().unit(), L"Default attenuation unit", LINE_INFO());
+            Assert::AreEqual(0.0f, channel.attenuation().value(), L"Default attenuation value", LINE_INFO());
             Assert::AreEqual(2, int(channel.channel()), L"channel", LINE_INFO());
             Assert::AreEqual(int(oscilloscope_channel_coupling::direct_current_limit), int(channel.coupling()), L"Default coupling", LINE_INFO());
             Assert::AreEqual("", channel.label().text(), L"Default label text", LINE_INFO());
@@ -69,6 +69,18 @@ namespace test {
             Assert::IsTrue(channel.state(), L"state", LINE_INFO());
             Assert::AreEqual("zu", channel.zero_offset().unit(), L"zero unit", LINE_INFO());
             Assert::AreEqual(42.3f, channel.zero_offset().value(), L"zero value", LINE_INFO());
+        }
+
+        TEST_METHOD(test_illegal_attenuation) {
+            oscilloscope_channel channel(42);
+
+            Assert::ExpectException<std::invalid_argument>([&channel](void) {
+                channel.attenuation(12.0f);
+            });
+
+            Assert::ExpectException<std::invalid_argument>([&channel](void) {
+                channel.attenuation(oscilloscope_quantity(12.0f));
+            });
         }
     };
 

@@ -15,10 +15,26 @@
  */
 visus::power_overwhelming::oscilloscope_channel::oscilloscope_channel(
         _In_ const std::uint32_t channel)
-        : _attenuation(oscilloscope_quantity(10.0f, "V")),
+        : _attenuation(oscilloscope_quantity(0.0f)),
         _bandwidth(oscilloscope_channel_bandwidth::full),
         _channel(channel),
         _coupling(oscilloscope_channel_coupling::direct_current_limit),
         _decimation_mode(oscilloscope_decimation_mode::sample),
         _polarity(oscilloscope_channel_polarity::normal),
         _state(false) { }
+
+
+/*
+ * visus::power_overwhelming::oscilloscope_channel::attenuation
+ */
+visus::power_overwhelming::oscilloscope_channel&
+visus::power_overwhelming::oscilloscope_channel::attenuation(
+        _In_ const oscilloscope_quantity& attenuation) {
+    if ((attenuation.value() != 0.0f) && (::strlen(attenuation.unit()) == 0)) {
+        throw std::invalid_argument("The unit of the attenuation can only be "
+            "empty if the value is zero.");
+    }
+
+    this->_attenuation = attenuation;
+    return *this;
+}

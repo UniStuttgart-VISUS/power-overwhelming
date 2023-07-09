@@ -42,7 +42,7 @@ namespace power_overwhelming {
         /// Gets the attenuation of the probe.
         /// </summary>
         /// <returns>The attenuation and unit of the probe.</returns>
-        inline oscilloscope_quantity attenuation(void) const noexcept {
+        inline const oscilloscope_quantity& attenuation(void) const noexcept {
             return this->_attenuation;
         }
 
@@ -51,13 +51,15 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="attenuation">The attenuation and unit of the probe.
         /// Note that this parameter must have set a unit and does not work
-        /// with the default unit.</param>
+        /// with the default unit unless the value is zero, in which case the
+        /// instrument will ignore this setting and leave whatever the device
+        /// has currently set (or what a probe that supports automatic
+        /// configuration reports to the instrument).</param>
         /// <returns><c>*this</c>.</returns>
-        inline oscilloscope_channel& attenuation(
-            _In_ const oscilloscope_quantity& attenuation) noexcept {
-            this->_attenuation = attenuation;
-            return *this;
-        }
+        /// <exception cref="std::invalid_argument">If the unit of the quantity
+        /// is not set while the value is not zero.</exception>
+        oscilloscope_channel& attenuation(
+            _In_ const oscilloscope_quantity& attenuation);
 
         /// <summary>
         /// Gets the bandwidth limit for the channel.

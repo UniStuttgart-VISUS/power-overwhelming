@@ -179,12 +179,14 @@ visus::power_overwhelming::rtx_instrument::channel(
 
     // Note: Attenuation should be set first, because changing the attenuation
     // will also scale other values like the range.
-    impl.format("PROB%d:SET:ATT:UNIT %s\n", channel.channel(),
-        channel.attenuation().unit());
-    this->throw_on_system_error();
-    impl.format("PROB%d:SET:ATT:MAN %f\n", channel.channel(),
-        channel.attenuation().value());
-    this->throw_on_system_error();
+    if (channel.attenuation().value() > 0.0f) {
+        impl.format("PROB%d:SET:ATT:UNIT %s\n", channel.channel(),
+            channel.attenuation().unit());
+        this->throw_on_system_error();
+        impl.format("PROB%d:SET:ATT:MAN %f\n", channel.channel(),
+            channel.attenuation().value());
+        this->throw_on_system_error();
+    }
 
     switch (channel.bandwidth()) {
         case oscilloscope_channel_bandwidth::limit_to_20_mhz:
