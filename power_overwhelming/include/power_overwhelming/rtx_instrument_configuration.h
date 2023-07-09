@@ -38,6 +38,32 @@ namespace power_overwhelming {
 
     public:
 
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="time_range">The time range the oscilloscope should
+        /// acquire after it has been triggers.</param>
+        /// <param name="timeout">The timeout of the instrument. If this value
+        /// is zero, which is the default, the timeout will not be modified.
+        /// </param>
+        rtx_instrument_configuration(
+            _In_ const oscilloscope_quantity time_range,
+            _In_ visa_instrument::timeout_type timeout = 0);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="time_range">The time range the oscilloscope should
+        /// acquire after it has been triggers.</param>
+        /// <param name="acquisition">The acquisition configuration to be
+        /// applied to the instrument.</param>
+        /// <param name="timeout">The timeout of the instrument. If this value
+        /// is zero, which is the default, the timeout will not be modified.
+        /// </param>
+        rtx_instrument_configuration(
+            _In_ const oscilloscope_quantity time_range,
+            _In_ const oscilloscope_single_acquisition& acquisition,
+            _In_ visa_instrument::timeout_type timeout = 0);
 
         /// <summary>
         /// Answers the way the instrument will acquire one or more samples.
@@ -62,7 +88,8 @@ namespace power_overwhelming {
         /// <summary>
         /// Answers the timeout of the instrument in milliseconds.
         /// </summary>
-        /// <returns>The timeout of the instrument.</returns>
+        /// <returns>The timeout of the instrument, or zero if the timeout
+        /// should not be modified.</returns>
         inline visa_instrument::timeout_type timeout(void) const noexcept {
             return this->_timeout;
         }
@@ -72,7 +99,7 @@ namespace power_overwhelming {
         /// is being requested.
         /// </summary>
         /// <returns>The time range the instrument will acquire.</returns>
-        inline const oscilloscope_quantity& time_tange(void) const noexcept {
+        inline const oscilloscope_quantity& time_range(void) const noexcept {
             return this->_time_range;
         }
 
