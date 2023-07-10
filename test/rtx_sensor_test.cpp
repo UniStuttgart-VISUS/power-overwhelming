@@ -1,4 +1,4 @@
-// <copyright file="rtx_sensor_definition_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+// <copyright file="rtx_sensor_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -13,11 +13,11 @@ namespace visus {
 namespace power_overwhelming {
 namespace test {
 
-    TEST_CLASS(rtx_sensor_definition_test) {
+    TEST_CLASS(rtx_sensor_test) {
 
     public:
 
-        TEST_METHOD(test_ctor) {
+        TEST_METHOD(test_sensor_definition_ctor) {
             Assert::ExpectException<std::invalid_argument>([](void) {
                 rtx_sensor_definition d(nullptr, oscilloscope_channel(0), oscilloscope_channel(1));
             }, L"Invalid description", LINE_INFO());
@@ -58,7 +58,7 @@ namespace test {
             }
         }
 
-        TEST_METHOD(test_assignment) {
+        TEST_METHOD(test_sensor_definition_copy) {
             {
                 rtx_sensor_definition d(L"Horst",
                     oscilloscope_channel(1).attenuation(oscilloscope_quantity(0.1f, "V")),
@@ -111,6 +111,49 @@ namespace test {
                 Assert::AreEqual(d.attenuation_current().value(), dd.attenuation_current().value(), L"Attenuation of current copied", LINE_INFO());
                 Assert::AreEqual(int(d.waveform_points()), int(dd.waveform_points()), L"Waveform points", LINE_INFO());
             }
+        }
+
+        TEST_METHOD(test_instrument_configuration) {
+            const auto trigger = oscilloscope_edge_trigger("CH1").level(1, 2.0f);
+            const oscilloscope_quantity time_range(10, "s");
+            const auto acquisition = oscilloscope_single_acquisition().count(16).points(10000);
+
+            {
+                const rtx_instrument_configuration c(time_range);
+                Assert::IsTrue(c.acquisition().automatic_points(), L"Default acquisition.automatic_poits", LINE_INFO());
+                Assert::AreEqual(int(1), int(c.acquisition().count()), L"Default acquisition.count", LINE_INFO());
+                Assert::IsTrue(c.acquisition().segmented(), L"Default acquisition.segmented", LINE_INFO());
+                Assert::IsFalse(c.slave(), L"Default slave", LINE_INFO());
+                Assert::AreEqual(int(0), int(c.timeout()), L"Default timeout", LINE_INFO());
+                Assert::AreEqual(time_range.value(), c.time_range().value(), L"Default time_range.value", LINE_INFO());
+                Assert::AreEqual(time_range.unit(), c.time_range().unit(), L"Default time_range.unit", LINE_INFO());
+                Assert::AreEqual(int(5), int(c.trigger().input()), L"Default trigger.input", LINE_INFO());
+            }
+
+            {
+                const rtx_instrument_configuration c(time_range, acquisition, trigger, 2000);
+                Assert::IsFalse(c.acquisition().automatic_points(), L"Explicit acquisition.automatic_poits", LINE_INFO());
+                Assert::AreEqual(int(16), int(c.acquisition().count()), L"Explicit acquisition.count", LINE_INFO());
+                Assert::IsFalse(c.acquisition().segmented(), L"Explicit acquisition.segmented", LINE_INFO());
+                Assert::IsFalse(c.slave(), L"Explicit slave", LINE_INFO());
+                Assert::AreEqual(int(2000), int(c.timeout()), L"Explicit timeout", LINE_INFO());
+                Assert::AreEqual(time_range.value(), c.time_range().value(), L"Explicit time_range.value", LINE_INFO());
+                Assert::AreEqual(time_range.unit(), c.time_range().unit(), L"Explicit time_range.unit", LINE_INFO());
+                Assert::AreEqual(int(1), int(c.trigger().input()), L"Explicit trigger.input", LINE_INFO());
+            }
+
+            {
+                const auto c = rtx_instrument_configuration(time_range, acquisition, trigger, 2000).as_slave();
+                Assert::IsFalse(c.acquisition().automatic_points(), L"as_slave acquisition.automatic_poits", LINE_INFO());
+                Assert::AreEqual(int(16), int(c.acquisition().count()), L"as_slave acquisition.count", LINE_INFO());
+                Assert::IsFalse(c.acquisition().segmented(), L"as_slave acquisition.segmented", LINE_INFO());
+                Assert::IsTrue(c.slave(), L"as_slave slave", LINE_INFO());
+                Assert::AreEqual(int(2000), int(c.timeout()), L"as_slave timeout", LINE_INFO());
+                Assert::AreEqual(time_range.value(), c.time_range().value(), L"as_slave time_range.value", LINE_INFO());
+                Assert::AreEqual(time_range.unit(), c.time_range().unit(), L"as_slave time_range.unit", LINE_INFO());
+                Assert::AreEqual(int(5), int(c.trigger().input()), L"as_slave trigger.input", LINE_INFO());
+            }
+
         }
 
     };

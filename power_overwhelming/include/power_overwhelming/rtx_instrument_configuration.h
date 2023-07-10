@@ -7,6 +7,7 @@
 
 #include "power_overwhelming/oscilloscope_quantity.h"
 #include "power_overwhelming/oscilloscope_single_acquisition.h"
+#include "power_overwhelming/oscilloscope_edge_trigger.h"
 #include "power_overwhelming/rtx_instrument.h"
 
 
@@ -46,7 +47,7 @@ namespace power_overwhelming {
         /// <param name="timeout">The timeout of the instrument. If this value
         /// is zero, which is the default, the timeout will not be modified.
         /// </param>
-        rtx_instrument_configuration(
+        explicit rtx_instrument_configuration(
             _In_ const oscilloscope_quantity time_range,
             _In_ visa_instrument::timeout_type timeout = 0);
 
@@ -57,12 +58,15 @@ namespace power_overwhelming {
         /// acquire after it has been triggers.</param>
         /// <param name="acquisition">The acquisition configuration to be
         /// applied to the instrument.</param>
+        /// <param name="trigger">Configures how the instrument will be
+        /// triggered.</param>
         /// <param name="timeout">The timeout of the instrument. If this value
         /// is zero, which is the default, the timeout will not be modified.
         /// </param>
         rtx_instrument_configuration(
             _In_ const oscilloscope_quantity time_range,
             _In_ const oscilloscope_single_acquisition& acquisition,
+            _In_ const oscilloscope_edge_trigger& trigger,
             _In_ visa_instrument::timeout_type timeout = 0);
 
         /// <summary>
@@ -73,6 +77,14 @@ namespace power_overwhelming {
                 void) const noexcept {
             return this->_acquisition;
         }
+
+        /// <summary>
+        /// Creates a copy of the configuration, but configured such that the
+        /// instrument is triggered by the external trigger.
+        /// </summary>
+        /// <returns>A new configuration for instruments that are chained after
+        /// the first one that is triggered as configured by the user.</returns>
+        rtx_instrument_configuration as_slave(void) const;
 
         /// <summary>
         /// Applies the configuration on the given instrument.
@@ -86,6 +98,17 @@ namespace power_overwhelming {
         void apply(_Inout_ rtx_instrument& instrument) const;
 
         /// <summary>
+        /// Indicates whether this configuration is for a slave instrument that
+        /// is being triggered by another instrument via the external trigger
+        /// input.
+        /// </summary>
+        /// <returns><c>true</c> if the instrument is running as slave,
+        /// <c>false</c> if it needs to be triggered by the user.</returns>
+        inline const bool slave(void) const noexcept {
+            return this->_slave;
+        }
+
+        /// <summary>
         /// Answers the timeout of the instrument in milliseconds.
         /// </summary>
         /// <returns>The timeout of the instrument, or zero if the timeout
@@ -95,7 +118,7 @@ namespace power_overwhelming {
         }
 
         /// <summary>
-        /// Answers the time range the instrument will cover when a new sampl
+        /// Answers the time range the instrument will cover when a new sample
         /// is being requested.
         /// </summary>
         /// <returns>The time range the instrument will acquire.</returns>
@@ -103,12 +126,23 @@ namespace power_overwhelming {
             return this->_time_range;
         }
 
+        /// <summary>
+        /// Answer the trigger configured on the instrument.
+        /// </summary>
+        /// <returns>The trigger to be configured on the instrument.</returns>
+        inline const oscilloscope_edge_trigger& trigger(void) const noexcept {
+            return this->_trigger;
+        }
+
     private:
+
+        static oscilloscope_edge_trigger external_trigger(void);
 
         oscilloscope_single_acquisition _acquisition;
         bool _slave;
         visa_instrument::timeout_type _timeout;
         oscilloscope_quantity _time_range;
+        oscilloscope_edge_trigger _trigger;
 
     };
 
