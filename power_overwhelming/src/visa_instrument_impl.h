@@ -114,6 +114,11 @@ namespace detail {
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>
+        /// Enables internal checks of the instrument's status.
+        /// </summary>
+        bool enable_system_checks;
+
+        /// <summary>
         /// The default resource manager.
         /// </summary>
         ViSession resource_manager;
@@ -281,7 +286,8 @@ namespace detail {
         /// </summary>
         inline visa_instrument_impl(void) :
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-            resource_manager(0), session(0), vxi(false),
+            enable_system_checks(false), resource_manager(0), session(0),
+            vxi(false),
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
             _counter(0) { }
     };

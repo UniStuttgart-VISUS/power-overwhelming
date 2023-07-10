@@ -350,6 +350,26 @@ namespace power_overwhelming {
         visa_instrument& clear_status(void);
 
         /// <summary>
+        /// Enables internal checks of the instrument's system state after
+        /// changes to its configuration were made.
+        /// </summary>
+        /// <remarks>
+        /// Within the methods of the instrument, there are checks of the system
+        /// state of the instrument after important changes. If you enable these
+        /// system checks, the code will fail early in case you make any change
+        /// that puts the system into an invalid state. By default, the checks
+        /// are disabled, because they cause significant overhead. It is
+        /// suggested to enable this only for debugging purposes during
+        /// development.
+        /// </remarks>
+        /// <param name="enable">Indicates whether the checks are enabled or
+        /// disabled. This parameter defaults to <c>true</c>.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        visa_instrument& enable_system_checks(_In_ const bool enable = true);
+
+        /// <summary>
         /// Reads the event status register using a <c>*ESR?</c> command.
         /// </summary>
         /// <returns>The current value of the event status register.</returns>
@@ -668,9 +688,7 @@ namespace power_overwhelming {
         /// without support for VISA.</exception>
         /// <exception cref="visa_exception">If the operation failed.
         /// </exception>
-        /// <exception cref="std::logic_error">If the library was compiled
-        /// without support for VISA.</exception>
-        visa_status_byte status(void);
+        visa_status_byte status(void) const;
 
         /// <summary>
         /// Query the oldest error in the queue.
@@ -699,7 +717,7 @@ namespace power_overwhelming {
         /// not be retrieved.</exception>
         /// <exception cref="std::runtime_error">If the current system state was
         /// retrieved and is not zero.</exception>
-        void throw_on_system_error(void);
+        void throw_on_system_error(void) const;
 
         /// <summary>
         /// Sets the timeout of the underlying VISA session.
@@ -883,6 +901,12 @@ namespace power_overwhelming {
         /// <exception cref="std::runtime_error">If the implementation has been
         /// released.</exception>
         const detail::visa_instrument_impl& check_not_disposed(void) const;
+
+        /// <summary>
+        /// Checks for a system error if checks are enabled and throws an
+        /// exception if there is one.
+        /// </summary>
+        void check_system_error(void) const;
 
     private:
 

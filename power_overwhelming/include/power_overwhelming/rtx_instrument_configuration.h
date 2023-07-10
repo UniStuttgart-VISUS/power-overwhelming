@@ -106,6 +106,7 @@ namespace power_overwhelming {
     private:
 
         oscilloscope_single_acquisition _acquisition;
+        bool _slave;
         visa_instrument::timeout_type _timeout;
         oscilloscope_quantity _time_range;
 

@@ -12,7 +12,7 @@
 visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configuration(
         _In_ const oscilloscope_quantity time_range,
         _In_ visa_instrument::timeout_type timeout)
-        : _timeout(0), _time_range(time_range) {
+        : _slave(false), _timeout(0), _time_range(time_range) {
     this->_acquisition.enable_automatic_points().segmented(true);
 }
 
@@ -25,6 +25,7 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _In_ const oscilloscope_single_acquisition& acquisition,
         _In_ visa_instrument::timeout_type timeout) 
     : _acquisition(acquisition),
+        _slave(false),
         _timeout(timeout),
         _time_range(time_range) { }
 

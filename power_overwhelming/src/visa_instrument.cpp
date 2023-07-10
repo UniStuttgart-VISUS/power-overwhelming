@@ -316,6 +316,17 @@ visus::power_overwhelming::visa_instrument::clear_status(void) {
 
 
 /*
+ * visus::power_overwhelming::visa_instrument::enable_system_checks
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::enable_system_checks(
+        _In_ const bool enable) {
+    this->check_not_disposed().enable_system_checks = enable;
+    return *this;
+}
+
+
+/*
  * visus::power_overwhelming::visa_instrument::event_status
  */
 visus::power_overwhelming::visa_event_status
@@ -340,7 +351,7 @@ visus::power_overwhelming::visa_instrument::event_status(
     auto s = static_cast<int>(status);
     this->check_not_disposed().format("*ESE %u; *OPC?\n", s);
     this->read_all();
-    this->throw_on_system_error();
+    this->check_system_error();
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
@@ -498,7 +509,7 @@ visus::power_overwhelming::visa_instrument::reset(
     }
 
     this->query("*RST;*OPC?\n");
-    this->throw_on_system_error();
+    this->check_system_error();
     return *this;
 }
 
@@ -513,7 +524,7 @@ visus::power_overwhelming::visa_instrument::service_request_status(
     auto s = static_cast<int>(status);
     this->check_not_disposed().format("*SRE %u; *OPC?\n", s);
     this->read_all();
-    this->throw_on_system_error();
+    this->check_system_error();
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
@@ -550,10 +561,10 @@ visus::power_overwhelming::visa_instrument::synchronise_clock(
 
     this->check_not_disposed().format("SYST:TIME %d, %d, %d\n",
         time.wHour, time.wMinute, time.wSecond);
-    this->throw_on_system_error();
+    this->check_system_error();
     this->check_not_disposed().format("SYST:DATE %d, %d, %d\n",
         time.wYear, time.wMonth, time.wDay);
-    this->throw_on_system_error();
+    this->check_system_error();
 
 #else /* defined(_WIN32) */
     struct timeval tv;
@@ -571,10 +582,10 @@ visus::power_overwhelming::visa_instrument::synchronise_clock(
 
     this->check_not_disposed().format("SYST:TIME %d, %d, %d\n",
         time->tm_hour, time->tm_min, time->tm_sec);
-    this->throw_on_system_error();
+    this->check_system_error();
     this->check_not_disposed().format("SYST:DATE %d, %d, %d\n",
         time->tm_year + 1900, time->tm_mon + 1, time->tm_mday);
-    this->throw_on_system_error();
+    this->check_system_error();
 
 #endif /* defined(_WIN32) */
 
@@ -586,7 +597,7 @@ visus::power_overwhelming::visa_instrument::synchronise_clock(
  * visus::power_overwhelming::visa_instrument::status
  */
 visus::power_overwhelming::visa_status_byte
-visus::power_overwhelming::visa_instrument::status(void) {
+visus::power_overwhelming::visa_instrument::status(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     ViUInt16 retval;
     visa_exception::throw_on_error(detail::visa_library::instance()
@@ -646,21 +657,34 @@ int visus::power_overwhelming::visa_instrument::system_error(void) const {
 /*
  * visus::power_overwhelming::visa_instrument::throw_on_system_error
  */
-void visus::power_overwhelming::visa_instrument::throw_on_system_error(void) {
-    if (this->_impl != nullptr) {
-#if TODO
-        std::string message;
-        auto error = this->_impl->system_error(message);
-
-        if (error != 0) {
-            if (message.empty()) {
-                message = std::to_string(error);
-            }
-
-            throw std::runtime_error(message);
-        }
-#endif
+void visus::power_overwhelming::visa_instrument::throw_on_system_error(
+        void) const {
+    if (this->_impl == nullptr) {
+        // This method is lenient, so if the instrument is invalid, do not
+        // check anything.
+        return;
     }
+
+    auto status = (this->status() & visa_status_byte::error_queue_not_empty);
+    if (status == visa_status_byte::none) {
+        // If the error queue is empty, do not retrieve the status.
+        return;
+    }
+
+    std::string message;
+    auto error = this->_impl->system_error(message);
+    assert(error != 0);
+    if (error == 0) {
+        // If there is no error, which should never happen, bail out, too.
+        return;
+    }
+
+    if (message.empty()) {
+        // If we have no custom message, display the error code.
+        message = std::to_string(error);
+    }
+
+    throw std::runtime_error(message);
 }
 
 
@@ -807,5 +831,16 @@ visus::power_overwhelming::visa_instrument::check_not_disposed(void) const {
     } else {
         throw std::runtime_error("An instrument which has been disposed by "
             "a move operation cannot be used anymore.");
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::check_system_error
+ */
+void visus::power_overwhelming::visa_instrument::check_system_error(
+        void) const {
+    if (*this && this->_impl->enable_system_checks) {
+        this->throw_on_system_error();
     }
 }

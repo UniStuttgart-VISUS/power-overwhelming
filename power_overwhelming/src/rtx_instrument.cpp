@@ -72,17 +72,17 @@ visus::power_overwhelming::rtx_instrument::acquisition(
     } else {
         impl.format("ACQ:POIN:VAL %u\n", acquisition.points());
     }
-    this->throw_on_system_error();
+    this->check_system_error();
 
     impl.format("ACQ:NSIN:COUN %u\n", acquisition.count());
-    this->throw_on_system_error();
+    this->check_system_error();
 
     impl.format("ACQ:SEGM:STAT %s\n", acquisition.segmented() ? "ON" : "OFF");
-    this->throw_on_system_error();
+    this->check_system_error();
 
     if (run) {
         impl.format("SING\n");
-        this->throw_on_system_error();
+        this->check_system_error();
     }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
@@ -114,7 +114,7 @@ visus::power_overwhelming::rtx_instrument::acquisition(
             break;
     }
 
-    this->throw_on_system_error();
+    this->check_system_error();
     return *this;
 }
 
@@ -131,7 +131,7 @@ visus::power_overwhelming::rtx_instrument::ascii_data(
     auto& impl = this->check_not_disposed();
 
     impl.write("FORM ASC\n");
-    this->throw_on_system_error();
+    this->check_system_error();
 
     auto query = detail::format_string("CHAN%u:DATA?\n", channel);
     return this->query(query.c_str());
@@ -153,10 +153,10 @@ visus::power_overwhelming::rtx_instrument::binary_data(
     auto& impl = this->check_not_disposed();
 
     impl.write("FORM REAL,32\n");
-    this->throw_on_system_error();
+    this->check_system_error();
 
     impl.write("FORM:BORD LSBF\n");
-    this->throw_on_system_error();
+    this->check_system_error();
 
     auto query = detail::format_string("CHAN%u:DATA?\n", channel);
     this->write(query);
@@ -182,10 +182,10 @@ visus::power_overwhelming::rtx_instrument::channel(
     if (channel.attenuation().value() > 0.0f) {
         impl.format("PROB%d:SET:ATT:UNIT %s\n", channel.channel(),
             channel.attenuation().unit());
-        this->throw_on_system_error();
+        this->check_system_error();
         impl.format("PROB%d:SET:ATT:MAN %f\n", channel.channel(),
             channel.attenuation().value());
-        this->throw_on_system_error();
+        this->check_system_error();
     }
 
     switch (channel.bandwidth()) {
@@ -197,7 +197,7 @@ visus::power_overwhelming::rtx_instrument::channel(
             impl.format("CHAN%d:BAND FULL\n", channel.channel());
             break;
     }
-    this->throw_on_system_error();
+    this->check_system_error();
 
     switch (channel.coupling()) {
         case oscilloscope_channel_coupling::alternating_current_limit:
@@ -212,7 +212,7 @@ visus::power_overwhelming::rtx_instrument::channel(
             impl.format("CHAN%d:COUP DCL\n", channel.channel());
             break;
     }
-    this->throw_on_system_error();
+    this->check_system_error();
 
     switch (channel.decimation_mode()) {
         case oscilloscope_decimation_mode::high_resolution:
@@ -227,18 +227,18 @@ visus::power_overwhelming::rtx_instrument::channel(
             impl.format("CHAN%d:TYPE SAMP\n", channel.channel());
             break;
     }
-    this->throw_on_system_error();
+    this->check_system_error();
 
     impl.format("CHAN%d:LAB \"%s\"\n", channel.channel(),
         channel.label().text());
-    this->throw_on_system_error();
+    this->check_system_error();
     impl.format("CHAN%d:LAB:STAT %s\n", channel.channel(),
         channel.label().visible() ? "ON" : "OFF");
-    this->throw_on_system_error();
+    this->check_system_error();
 
     impl.format("CHAN%d:OFFS %f%s\n", channel.channel(),
         channel.offset().value(), channel.offset().unit());
-    this->throw_on_system_error();
+    this->check_system_error();
 
     switch (channel.polarity()) {
         case oscilloscope_channel_polarity::inverted:
@@ -249,23 +249,23 @@ visus::power_overwhelming::rtx_instrument::channel(
             impl.format("CHAN%d:POL NORM\n", channel.channel());
             break;
     }
-    this->throw_on_system_error();
+    this->check_system_error();
 
     impl.format("CHAN%d:RANG %f%s\n", channel.channel(),
         channel.range().value(), channel.range().unit());
-    this->throw_on_system_error();
+    this->check_system_error();
 
     impl.format("CHAN%d:SKEW %f%s\n", channel.channel(),
         channel.skew().value(), channel.skew().unit());
-    this->throw_on_system_error();
+    this->check_system_error();
 
     impl.format("CHAN%d:STAT %s\n", channel.channel(),
         channel.state() ? "ON" : "OFF");
-    this->throw_on_system_error();
+    this->check_system_error();
 
     impl.format("CHAN%d:ZOFF %f%s\n", channel.channel(),
         channel.zero_offset().value(), channel.zero_offset().unit());
-    this->throw_on_system_error();
+    this->check_system_error();
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     return *this;
@@ -296,7 +296,7 @@ visus::power_overwhelming::rtx_instrument::data(
             impl.format("CHAN%u:DATA:POIN DEF\n", channel);
             break;
     }
-    this->throw_on_system_error();
+    this->check_system_error();
 
     const auto query = detail::format_string("CHAN%u:DATA:HEAD?\n", channel);
     const auto header = this->query(query.c_str());
@@ -348,7 +348,7 @@ visus::power_overwhelming::rtx_instrument::expression(
         impl.format("CALC:MATH%u:STAT OFF\n", channel);
     }
 
-    this->throw_on_system_error();
+    this->check_system_error();
     return *this;
 }
 
@@ -404,7 +404,7 @@ visus::power_overwhelming::rtx_instrument::reference_position(
     auto& impl = this->check_not_disposed();
     impl.format("TIM:REF %f\n", static_cast<float>(position) / 100.0f);
 
-    this->throw_on_system_error();
+    this->check_system_error();
     return *this;
 }
 
@@ -418,7 +418,7 @@ visus::power_overwhelming::rtx_instrument::time_range(
     auto &impl = this->check_not_disposed();
     impl.format("TIM:RANG %f %s\n", scale.value(), scale.unit());
 
-    this->throw_on_system_error();
+    this->check_system_error();
     return *this;
 }
 
@@ -432,7 +432,7 @@ visus::power_overwhelming::rtx_instrument::time_scale(
     auto& impl = this->check_not_disposed();
     impl.format("TIM:SCAL %f %s\n", scale.value(), scale.unit());
 
-    this->throw_on_system_error();
+    this->check_system_error();
     return *this;
 }
 
@@ -465,24 +465,24 @@ visus::power_overwhelming::rtx_instrument::trigger(
             impl.format("TRIG:A:MODE NORM\n");
             break;
     }
-    this->throw_on_system_error();
+    this->check_system_error();
 
     impl.format("TRIG:A:SOUR %s\n", trigger.source());
-    this->throw_on_system_error();
+    this->check_system_error();
 
     impl.format("TRIG:A:TYPE %s\n", trigger.type());
-    this->throw_on_system_error();
+    this->check_system_error();
 
     if (trigger.hold_off() == nullptr) {
         impl.format("TRIG:A:HOLD:MODE OFF\n");
-        this->throw_on_system_error();
+        this->check_system_error();
 
     } else {
         impl.format("TRIG:A:HOLD:MODE TIME\n");
-        this->throw_on_system_error();
+        this->check_system_error();
 
         impl.format("TRIG:A:HOLD:TIME %s\n", trigger.hold_off());
-        this->throw_on_system_error();
+        this->check_system_error();
     }
 
     // Apply special configuration if the trigger is an edge trigger.
@@ -501,11 +501,11 @@ visus::power_overwhelming::rtx_instrument::trigger(
                 impl.format("TRIG:A:EDGE:SLOP NEG\n");
                 break;
         }
-        this->throw_on_system_error();
+        this->check_system_error();
 
         impl.format("TRIG:A:LEV%d:VAL %f %s\n", et->input(),
             et->level().value(), et->level().unit());
-        this->throw_on_system_error();
+        this->check_system_error();
 
         switch (et->coupling()) {
             case oscilloscope_trigger_coupling::alternating_current:
@@ -520,7 +520,7 @@ visus::power_overwhelming::rtx_instrument::trigger(
                 impl.format("TRIG:A:EDGE:COUP LFR\n");
                 break;
         }
-        this->throw_on_system_error();
+        this->check_system_error();
 
 #if 0
         // TODO: Only RTA
@@ -541,10 +541,40 @@ visus::power_overwhelming::rtx_instrument::trigger(
                 impl.printf("TRIG:A:HYST MED\n");
                 break;
         }
-        this->throw_on_system_error();
+        this->check_system_error();
 #endif
     }
 
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::trigger_output
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::trigger_output(
+        _In_ const oscilloscope_trigger_output output) {
+    switch (output) {
+        case oscilloscope_trigger_output::mask:
+            this->check_not_disposed().write("TRIG:OUT:MODE MASK\n");
+            break;
+
+        case oscilloscope_trigger_output::pulse:
+            this->check_not_disposed().write("TRIG:OUT:MODE TRIG\n");
+            break;
+
+        case oscilloscope_trigger_output::reference:
+            this->check_not_disposed().write("TRIG:OUT:MODE REF\n");
+            break;
+
+        case oscilloscope_trigger_output::off:
+        default:
+            this->check_not_disposed().write("TRIG:OUT:MODE OFF\n");
+            break;
+    }
+
+    this->check_system_error();
     return *this;
 }
 
@@ -558,7 +588,7 @@ visus::power_overwhelming::rtx_instrument::trigger_position(
     auto& impl = this->check_not_disposed();
     impl.format("TIM:POS %f%s\n", offset.value(), offset.unit());
 
-    this->throw_on_system_error();
+    this->check_system_error();
     return *this;
 }
 
@@ -578,7 +608,7 @@ visus::power_overwhelming::rtx_instrument::unit(
     auto u = convert_string<char>(unit);
     impl.format("PROB%u:SET:ATT:UNIT %s\n", channel, u.c_str());
 
-    this->throw_on_system_error();
+    this->check_system_error();
     return *this;
 }
 
@@ -597,6 +627,6 @@ visus::power_overwhelming::rtx_instrument::unit(
     auto& impl = this->check_not_disposed();
     impl.format("PROB%u:SET:ATT:UNIT %s\n", channel, unit);
 
-    this->throw_on_system_error();
+    this->check_system_error();
     return *this;
 }

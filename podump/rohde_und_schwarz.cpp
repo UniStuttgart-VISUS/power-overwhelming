@@ -143,10 +143,11 @@ void query_rtx_instrument(void) {
                 return true;
             });
 
-            i.synchronise_clock();
-            i.reset(true, true);
-            i.service_request_status(visa_status_byte::master_status);
-            i.timeout(20000);
+            i.enable_system_checks();
+            i.synchronise_clock()
+                .reset(true, true)
+                .service_request_status(visa_status_byte::master_status)
+                .timeout(20000);
 
             i.reference_position(oscilloscope_reference_point::left);
             i.time_scale(oscilloscope_quantity(1, "s"));

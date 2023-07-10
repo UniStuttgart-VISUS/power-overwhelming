@@ -12,6 +12,7 @@
 #include "power_overwhelming/oscilloscope_reference_point.h"
 #include "power_overwhelming/oscilloscope_single_acquisition.h"
 #include "power_overwhelming/oscilloscope_trigger.h"
+#include "power_overwhelming/oscilloscope_trigger_output.h"
 #include "power_overwhelming/oscilloscope_waveform.h"
 #include "power_overwhelming/oscilloscope_waveform_points.h"
 #include "power_overwhelming/visa_instrument.h"
@@ -336,6 +337,15 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns><c>*this</c>.</returns>
         rtx_instrument& trigger(void);
+
+        /// <summary>
+        /// Convfigures which signal is generated on the auxilliary trigger
+        /// output.
+        /// </summary>
+        /// <param name="output">The behaviour of the trigger output.</param>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument& trigger_output(
+            _In_ const oscilloscope_trigger_output output);
 
         /// <summary>
         /// Sets the trigger position, which is the time distance from the
