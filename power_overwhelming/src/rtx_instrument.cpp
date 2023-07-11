@@ -98,19 +98,19 @@ visus::power_overwhelming::rtx_instrument::acquisition(
         _In_ const oscilloscope_acquisition_state state) {
     switch (state) {
         case oscilloscope_acquisition_state::run:
-            this->check_not_disposed().format("ACQ:STAT RUN\n");
+            this->write("ACQ:STAT RUN\n");
             break;
 
         case oscilloscope_acquisition_state::stop:
-            this->check_not_disposed().format("ACQ:STAT STOP\n");
+            this->write("ACQ:STAT STOP\n");
             break;
 
         case oscilloscope_acquisition_state::single:
-            this->check_not_disposed().format("SING\n");
+            this->write("SING\n");
             break;
 
         default:
-            this->check_not_disposed().format("ACQ:STAT BREAK\n");
+            this->write("ACQ:STAT BREAK\n");
             break;
     }
 

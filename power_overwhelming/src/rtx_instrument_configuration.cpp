@@ -75,5 +75,6 @@ visus::power_overwhelming::rtx_instrument_configuration::external_trigger(
     // The external trigger usually uses 5V if passed on via the AUX output, so
     // 2.5 V is a safe bet.
     return oscilloscope_edge_trigger("EXT")
-        .level(5, oscilloscope_quantity(2.5, "V"));
+        .level(5, oscilloscope_quantity(2.5, "V"))
+        .slope(oscilloscope_trigger_slope::rising);
 }

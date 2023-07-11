@@ -79,7 +79,7 @@ namespace power_overwhelming {
         /// Move <paramref name="rhs" /> into a new instance.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        rtx_sensor(_Inout_ rtx_sensor&& rhs) noexcept;
+        rtx_sensor(_Inout_ rtx_sensor&& rhs) noexcept = default;
 
         /// <summary>
         /// Finalise the instance.
@@ -129,7 +129,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        rtx_sensor& operator =(_Inout_ rtx_sensor&& rhs) noexcept;
+        rtx_sensor& operator =(_Inout_ rtx_sensor&& rhs) noexcept = default;
 
         /// <summary>
         /// Determines whether the sensor is valid.

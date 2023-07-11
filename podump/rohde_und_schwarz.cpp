@@ -165,10 +165,10 @@ void query_rtx_instrument(void) {
             //    .range(oscilloscope_quantity(5)));
 
             i.trigger_position(oscilloscope_quantity(0.0f, "ms"));
-            i.trigger(oscilloscope_edge_trigger("CH1")
-                .level(1, oscilloscope_quantity(2000.0f, "mV"))
+            i.trigger(oscilloscope_edge_trigger("EXT")
+                .level(5, oscilloscope_quantity(2000.0f, "mV"))
                 .slope(oscilloscope_trigger_slope::rising)
-                .mode(oscilloscope_trigger_mode::automatic));
+                .mode(oscilloscope_trigger_mode::normal));
 
             std::cout << "RTX interface type: "
                 << i.interface_type()
@@ -186,17 +186,14 @@ void query_rtx_instrument(void) {
             i.acquisition(oscilloscope_single_acquisition()
                 .points(100000)
                 .count(1)
-                .segmented(false)
                 .segmented(false));
 
             i.operation_complete();
             i.acquisition(oscilloscope_acquisition_state::single);
 
-            //i.query("*TRG;*OPC?\n");
-
+            std::this_thread::sleep_for(std::chrono::seconds(1));
             i.trigger();
             i.operation_complete();
-            //i.trigger();
 
             auto b = std::chrono::high_resolution_clock::now();
             std::cout << "Segment "
@@ -221,7 +218,7 @@ void query_rtx_instrument(void) {
             //    << i.history_segments()
             //    << std::endl;
             //auto segment1 = i.data(1);
-            int x = 12;
+            int x = 12345;
         }
 
     } catch (std::exception& ex) {
