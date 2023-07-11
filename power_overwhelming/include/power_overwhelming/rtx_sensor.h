@@ -5,9 +5,10 @@
 
 #pragma once
 
-#include "power_overwhelming/blob.h"
 #include "power_overwhelming/sensor.h"
 #include "power_overwhelming/rtx_instrument.h"
+#include "power_overwhelming/rtx_instrument_configuration.h"
+#include "power_overwhelming/rtx_sensor_definition.h"
 
 
 namespace visus {
@@ -19,6 +20,25 @@ namespace power_overwhelming {
     class POWER_OVERWHELMING_API rtx_sensor final : public sensor {
 
     public:
+
+        /// <summary>
+        /// Applies the given configuration to the instruments used by the
+        /// given sensors.
+        /// </summary>
+        /// <param name="sensors">An array of sensors for which a consistent
+        /// configuration should be applied on the underlying instrument.
+        /// </param>
+        /// <param name="cnt">The number of <paramref name="sensors" />.</param>
+        /// <param name="configuration">The configuration to be applied to the
+        /// instruments used by the sensors.</param>
+        /// <returns>A reference to the instrument that was designated as the
+        /// master instrument and needs to be triggered in order to initiate
+        /// the measurement. All other instrumens are configured as slaves and
+        /// receive the trigger signal via the external trigger input.</returns>
+        rtx_instrument& configure_instrument(
+            _In_reads_(cnt) const rtx_sensor *sensors,
+            _In_ const std::size_t cnt,
+            _In_ const rtx_instrument_configuration& configuration);
 
         /// <summary>
         /// Create sensor objects for all Rohde &amp; Schwarz RTA/RTB
@@ -57,7 +77,8 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
         rtx_sensor(_In_z_ const char *path,
-            _In_ const visa_instrument::timeout_type timeout);
+            _In_ const visa_instrument::timeout_type timeout
+            = visa_instrument::default_timeout);
 
         /// <summary>
         /// Initialises a new instance.

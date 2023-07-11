@@ -272,6 +272,19 @@ namespace power_overwhelming {
         /// </summary>
         virtual ~visa_instrument(void);
 
+        /// <summary>
+        /// Indicates whether the instrument is aliased, ie whether there are
+        /// other instances of <see cref="visa_instrument" /> using the same
+        /// hardware.
+        /// </summary>
+        /// <remarks>
+        /// It is safe to call this method on a disposed instance, in which case
+        /// the result will be <c>false</c>.
+        /// </remarks>
+        /// <returns><c>true</c> if multiple instances use the hardware,
+        /// <c>false</c> otherwise.</returns>
+        bool aliased(void) const noexcept;
+
 #if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>
         /// Read an attribute value from the instrument.
