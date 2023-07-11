@@ -210,6 +210,16 @@ namespace power_overwhelming {
         rtx_instrument& channel(_In_ const oscilloscope_channel& channel);
 
         /// <summary>
+        /// Counts the number of channels the instrument has.
+        /// </summary>
+        /// <remarks>
+        /// It is safe to call this method on an instrument that has been
+        /// disposed.
+        /// </remarks>
+        /// <returns>The number of channels the instrument has.</returns>
+        std::size_t channels(void) const;
+
+        /// <summary>
         /// Retrieves the waveform data for the specified channel.
         /// </summary>
         /// <param name="channel">The one-based index of the channel to retrieve
@@ -335,8 +345,12 @@ namespace power_overwhelming {
         /// <summary>
         /// Forces a manual trigger.
         /// </summary>
+        /// <param name="wait">If <c>true</c>, the trigger is combined with an
+        /// <c>*OPC?</c> query that blocks the calling code until the instrument
+        /// has actually triggered. This parameter defaults to <c>false</c>.
+        /// </param>
         /// <returns><c>*this</c>.</returns>
-        rtx_instrument& trigger(void);
+        rtx_instrument& trigger(_In_ const bool wait = false);
 
         /// <summary>
         /// Convfigures which signal is generated on the auxilliary trigger

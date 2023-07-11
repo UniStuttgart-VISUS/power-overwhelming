@@ -258,6 +258,15 @@ bool visus::power_overwhelming::visa_instrument::aliased(void) const noexcept {
 }
 
 
+/*
+ * visus::power_overwhelming::visa_instrument::alias_of
+ */
+bool visus::power_overwhelming::visa_instrument::alias_of(
+        _In_ const visa_instrument& instrument) const noexcept {
+    return ((this->_impl != nullptr) && (this->_impl == instrument._impl));
+}
+
+
 #if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * visus::power_overwhelming::visa_instrument::attribute
@@ -699,6 +708,21 @@ void visus::power_overwhelming::visa_instrument::throw_on_system_error(
 /*
  * visus::power_overwhelming::visa_instrument::timeout
  */
+visus::power_overwhelming::visa_instrument::timeout_type
+visus::power_overwhelming::visa_instrument::timeout(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    timeout_type retval;
+    this->attribute(&retval, VI_ATTR_TMO_VALUE);
+    return retval;
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::timeout
+ */
 visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::timeout(
         _In_ const timeout_type timeout) {
@@ -765,8 +789,7 @@ visus::power_overwhelming::visa_instrument::write(
             "not be null.");
     }
 
-    this->check_not_disposed();
-    this->_impl->write(str);
+    this->check_not_disposed().write(str);
     return *this;
 }
 

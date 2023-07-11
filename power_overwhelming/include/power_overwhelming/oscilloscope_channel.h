@@ -30,8 +30,19 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
+        /// <param name="channel">The one-based index of the channel. This
+        /// parameter defaults to zero, which will create an unusable instance.
+        /// </param>
+        explicit oscilloscope_channel(_In_ const std::uint32_t channel = 0);
+
+        /// <summary>
+        /// Initialises a new intance.
+        /// </summary>
         /// <param name="channel">The one-based index of the channel.</param>
-        explicit oscilloscope_channel(_In_ const std::uint32_t channel);
+        /// <param name="channel_template">An existing channel configuration
+        /// that is being copied to <paramref name="channel" />.</param>
+        oscilloscope_channel(_In_ const std::uint32_t channel,
+            _In_ const oscilloscope_channel& channel_template);
 
         /// <summary>
         /// Finalises the instance.

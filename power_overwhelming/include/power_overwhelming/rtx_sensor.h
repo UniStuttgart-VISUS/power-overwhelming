@@ -59,31 +59,60 @@ namespace power_overwhelming {
             _In_ const std::int32_t timeout = 3000);
 
         /// <summary>
-        /// Initialises a new instance.
+        /// Determines all possible <see cref="rtx_sensor" />s from instruments
+        /// connected to the local machine.
         /// </summary>
-        inline rtx_sensor(void) = default;
+        /// <param name="dst">A buffer to receive at most
+        /// <paramref name="cnt" /> definitions for oscilloscope sensors. It
+        /// is safe to pass <c>nullptr</c>, in which case nothing will be
+        /// written.</param>
+        /// <param name="cnt">The number of elements that can be written to
+        /// <paramref name="dst" />.</param>
+        /// <param name="voltage_channel">A configuration template for the
+        /// voltage channels. The method will copy this template except for
+        /// the channel indices, which will be created on the fly.</param>
+        /// <param name="current_channel">A configuration template for the
+        /// current channels. The method will copy this template except for
+        /// the channel indices, which will be created on the fly.</param>
+        /// <param name="timeout">A timeout in milliseconds which is used when
+        /// connecting to the instrument.</param>
+        /// <returns>The number of sensor definitions available, regardless of
+        /// whether all of them were written or not.</returns>
+        static std::size_t get_definitions(
+            _When_(cnt > 0, _Out_writes_opt_(cnt)) rtx_sensor_definition *dst,
+            _In_ std::size_t cnt,
+            _In_ const oscilloscope_channel& voltage_channel,
+            _In_ const oscilloscope_channel& current_channel,
+            _In_ const visa_instrument::timeout_type timeout
+            = visa_instrument::default_timeout);
 
         /// <summary>
-        /// Initialises a new instance.
+        /// Determines all possible <see cref="rtx_sensor" />s from instruments
+        /// connected to the local machine.
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="out_definitions"></param>
+        /// <param name="cnt"></param>
+        /// <param name="voltage_attenuation"></param>
+        /// <param name="current_attenuation"></param>
         /// <param name="timeout"></param>
-        /// <exception cref="std::invalid_argument">If <paramref name="path" />
-        /// is <c>nullptr</c>.</exception>
-        /// <exception cref="std::bad_alloc">If the memory for the sensor state
-        /// could not be allocated.</exception>
-        /// <exception cref="std::system_error">If the VISA library could not be
-        /// loaded.</exception>
-        /// <exception cref="visa_exception">If the sensor could not be
-        /// initialised.</exception>
-        rtx_sensor(_In_z_ const char *path,
+        /// <returns></returns>
+        static std::size_t get_definitions(
+            _When_(cnt > 0, _Out_writes_opt_(cnt)) rtx_sensor_definition *dst,
+            _In_ std::size_t cnt,
+            _In_ const float voltage_attenuation = 10.0f,
+            _In_ const float current_attenuation = 10.0f,
             _In_ const visa_instrument::timeout_type timeout
             = visa_instrument::default_timeout);
 
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <param name="path"></param>
+        rtx_sensor(void) = default;
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="definition"></param>
         /// <param name="timeout"></param>
         /// <exception cref="std::invalid_argument">If <paramref name="path" />
         /// is <c>nullptr</c>.</exception>
@@ -93,19 +122,20 @@ namespace power_overwhelming {
         /// loaded.</exception>
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
-        rtx_sensor(_In_z_ const wchar_t *path,
-            _In_ const visa_instrument::timeout_type timeout);
+        explicit rtx_sensor(_In_ const rtx_sensor_definition& definition,
+            _In_ const visa_instrument::timeout_type timeout
+            = visa_instrument::default_timeout);
 
         /// <summary>
         /// Move <paramref name="rhs" /> into a new instance.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        rtx_sensor(_Inout_ rtx_sensor&& rhs) noexcept = default;
+        rtx_sensor(rtx_sensor&& rhs) noexcept = default;
 
         /// <summary>
         /// Finalise the instance.
         /// </summary>
-        virtual ~rtx_sensor(void);
+        virtual ~rtx_sensor(void) = default;
 
         /// <summary>
         /// Gets the name of the sensor.
@@ -150,7 +180,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        rtx_sensor& operator =(_Inout_ rtx_sensor&& rhs) noexcept = default;
+        rtx_sensor& operator =(rtx_sensor&& rhs) noexcept = default;
 
         /// <summary>
         /// Determines whether the sensor is valid.
@@ -171,8 +201,11 @@ namespace power_overwhelming {
 
     private:
 
-        void initialise(void);
+        void initialise(_In_ const rtx_sensor_definition& definition,
+            _In_ const visa_instrument::timeout_type timeout);
 
+        std::uint32_t _channel_current;
+        std::uint32_t _channel_voltage;
         rtx_instrument _instrument;
         blob _name;
     };

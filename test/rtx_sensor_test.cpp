@@ -19,26 +19,36 @@ namespace test {
 
         TEST_METHOD(test_sensor_definition_ctor) {
             Assert::ExpectException<std::invalid_argument>([](void) {
-                rtx_sensor_definition d(nullptr, oscilloscope_channel(0), oscilloscope_channel(1));
-            }, L"Invalid description", LINE_INFO());
+                rtx_sensor_definition d((wchar_t *) nullptr, oscilloscope_channel(0), oscilloscope_channel(1));
+            }, L"Invalid path", LINE_INFO());
 
             Assert::ExpectException<std::invalid_argument>([](void) {
-                rtx_sensor_definition d(nullptr, 0, 0.1f, 1, 0.2f);
-            }, L"Invalid description", LINE_INFO());
+                rtx_sensor_definition d((wchar_t *) nullptr, 0, 0.1f, 1, 0.2f);
+            }, L"Invalid path", LINE_INFO());
 
             Assert::ExpectException<std::invalid_argument>([](void) {
-                rtx_sensor_definition d(L"test", oscilloscope_channel(0), oscilloscope_channel(0));
+                rtx_sensor_definition d((char *) nullptr, oscilloscope_channel(0), oscilloscope_channel(1));
+            }, L"Invalid path", LINE_INFO());
+
+            Assert::ExpectException<std::invalid_argument>([](void) {
+                rtx_sensor_definition d((char *) nullptr, 0, 0.1f, 1, 0.2f);
+            }, L"Invalid path", LINE_INFO());
+
+            Assert::ExpectException<std::invalid_argument>([](void) {
+                rtx_sensor_definition d(L"bla", oscilloscope_channel(0), oscilloscope_channel(0));
             }, L"Invalid channels", LINE_INFO());
 
             Assert::ExpectException<std::invalid_argument>([](void) {
-                rtx_sensor_definition d(L"test", 0, 0.1f, 0, 0.2f);
+                rtx_sensor_definition d(L"bla", 0, 0.1f, 0, 0.2f);
             }, L"Invalid channels", LINE_INFO());
 
             {
-                rtx_sensor_definition d(L"Horst",
+                rtx_sensor_definition d(L"bla",
                     oscilloscope_channel(1).attenuation(oscilloscope_quantity(0.1f, "V")),
                     oscilloscope_channel(2).attenuation(oscilloscope_quantity(0.2f, "A")),
+                    L"Horst",
                     oscilloscope_waveform_points::visible);
+                Assert::AreEqual("bla", d.path(), L"Path is \"bla\"", LINE_INFO());
                 Assert::AreEqual(L"Horst", d.description(), L"Description is \"Horst\"", LINE_INFO());
                 Assert::AreEqual(std::uint32_t(1), d.channel_voltage(), L"Channel for voltage", LINE_INFO());
                 Assert::AreEqual(std::uint32_t(2), d.channel_current(), L"Channel for current", LINE_INFO());
@@ -48,7 +58,34 @@ namespace test {
             }
 
             {
-                rtx_sensor_definition d(L"Horst", 1, 0.1f, 2, 0.2f, oscilloscope_waveform_points::visible);
+                rtx_sensor_definition d("bla",
+                    oscilloscope_channel(1).attenuation(oscilloscope_quantity(0.1f, "V")),
+                    oscilloscope_channel(2).attenuation(oscilloscope_quantity(0.2f, "A")),
+                    L"Horst",
+                    oscilloscope_waveform_points::visible);
+                Assert::AreEqual("bla", d.path(), L"Path is \"bla\"", LINE_INFO());
+                Assert::AreEqual(L"Horst", d.description(), L"Description is \"Horst\"", LINE_INFO());
+                Assert::AreEqual(std::uint32_t(1), d.channel_voltage(), L"Channel for voltage", LINE_INFO());
+                Assert::AreEqual(std::uint32_t(2), d.channel_current(), L"Channel for current", LINE_INFO());
+                Assert::AreEqual(0.1f, d.attenuation_voltage().value(), L"Attenuation of voltage", LINE_INFO());
+                Assert::AreEqual(0.2f, d.attenuation_current().value(), L"Attenuation of current", LINE_INFO());
+                Assert::AreEqual(int(oscilloscope_waveform_points::visible), int(d.waveform_points()), L"Waveform points", LINE_INFO());
+            }
+
+            {
+                rtx_sensor_definition d(L"bla", 1, 0.1f, 2, 0.2f, L"Horst", oscilloscope_waveform_points::visible);
+                Assert::AreEqual("bla", d.path(), L"Path is \"bla\"", LINE_INFO());
+                Assert::AreEqual(L"Horst", d.description(), L"Description is \"Horst\"", LINE_INFO());
+                Assert::AreEqual(std::uint32_t(1), d.channel_voltage(), L"Channel for voltage", LINE_INFO());
+                Assert::AreEqual(std::uint32_t(2), d.channel_current(), L"Channel for current", LINE_INFO());
+                Assert::AreEqual(0.1f, d.attenuation_voltage().value(), L"Attenuation of voltage", LINE_INFO());
+                Assert::AreEqual(0.2f, d.attenuation_current().value(), L"Attenuation of current", LINE_INFO());
+                Assert::AreEqual(int(oscilloscope_waveform_points::visible), int(d.waveform_points()), L"Waveform points", LINE_INFO());
+            }
+
+            {
+                rtx_sensor_definition d("bla", 1, 0.1f, 2, 0.2f, L"Horst", oscilloscope_waveform_points::visible);
+                Assert::AreEqual("bla", d.path(), L"Path is \"bla\"", LINE_INFO());
                 Assert::AreEqual(L"Horst", d.description(), L"Description is \"Horst\"", LINE_INFO());
                 Assert::AreEqual(std::uint32_t(1), d.channel_voltage(), L"Channel for voltage", LINE_INFO());
                 Assert::AreEqual(std::uint32_t(2), d.channel_current(), L"Channel for current", LINE_INFO());
@@ -60,9 +97,11 @@ namespace test {
 
         TEST_METHOD(test_sensor_definition_copy) {
             {
-                rtx_sensor_definition d(L"Horst",
+                rtx_sensor_definition d(L"bla",
                     oscilloscope_channel(1).attenuation(oscilloscope_quantity(0.1f, "V")),
-                    oscilloscope_channel(2).attenuation(oscilloscope_quantity(0.2f, "A")));
+                    oscilloscope_channel(2).attenuation(oscilloscope_quantity(0.2f, "A")),
+                    L"Horst");
+                Assert::AreEqual("bla", d.path(), L"Path is \"bla\"", LINE_INFO());
                 Assert::AreEqual(L"Horst", d.description(), L"Description is \"Horst\"", LINE_INFO());
                 Assert::AreEqual(std::uint32_t(1), d.channel_voltage(), L"Channel for voltage", LINE_INFO());
                 Assert::AreEqual(std::uint32_t(2), d.channel_current(), L"Channel for current", LINE_INFO());
@@ -70,10 +109,12 @@ namespace test {
                 Assert::AreEqual(0.2f, d.attenuation_current().value(), L"Attenuation of current", LINE_INFO());
                 Assert::AreEqual(int(oscilloscope_waveform_points::maximum), int(d.waveform_points()), L"Waveform points", LINE_INFO());
 
-                rtx_sensor_definition dd(L"Hugo",
+                rtx_sensor_definition dd(L"foo",
                     oscilloscope_channel(3),
                     oscilloscope_channel(4),
+                    L"Hugo",
                     oscilloscope_waveform_points::visible);
+                Assert::AreEqual("foo", dd.path(), L"Path is \"foo\"", LINE_INFO());
                 Assert::AreEqual(L"Hugo", dd.description(), L"Description is \"Hugo\"", LINE_INFO());
                 Assert::AreEqual(std::uint32_t(3), dd.channel_voltage(), L"Channel for voltage", LINE_INFO());
                 Assert::AreEqual(std::uint32_t(4), dd.channel_current(), L"Channel for current", LINE_INFO());
@@ -82,6 +123,7 @@ namespace test {
                 Assert::AreEqual(int(oscilloscope_waveform_points::visible), int(dd.waveform_points()), L"Waveform points", LINE_INFO());
 
                 dd = d;
+                Assert::AreEqual(d.path(), dd.path(), L"Path copied", LINE_INFO());
                 Assert::AreEqual(d.description(), dd.description(), L"Description copied", LINE_INFO());
                 Assert::AreEqual(d.channel_voltage(), dd.channel_voltage(), L"Channel for voltage copied", LINE_INFO());
                 Assert::AreEqual(d.channel_current(), dd.channel_current(), L"Channel for current copied", LINE_INFO());
@@ -91,10 +133,12 @@ namespace test {
             }
 
             {
-                rtx_sensor_definition d(L"Horst",
+                rtx_sensor_definition d(L"bla",
                     oscilloscope_channel(1).attenuation(oscilloscope_quantity(0.1f, "V")),
                     oscilloscope_channel(2).attenuation(oscilloscope_quantity(0.2f, "A")),
+                    L"Horst",
                     oscilloscope_waveform_points::maximum_visible);
+                Assert::AreEqual("bla", d.path(), L"Path is \"bla\"", LINE_INFO());
                 Assert::AreEqual(L"Horst", d.description(), L"Description is \"Horst\"", LINE_INFO());
                 Assert::AreEqual(std::uint32_t(1), d.channel_voltage(), L"Channel for voltage", LINE_INFO());
                 Assert::AreEqual(std::uint32_t(2), d.channel_current(), L"Channel for current", LINE_INFO());
@@ -104,6 +148,7 @@ namespace test {
 
 
                 rtx_sensor_definition dd(d);
+                Assert::AreEqual(d.path(), dd.path(), L"Path copied", LINE_INFO());
                 Assert::AreEqual(d.description(), dd.description(), L"Description copied", LINE_INFO());
                 Assert::AreEqual(d.channel_voltage(), dd.channel_voltage(), L"Channel for voltage copied", LINE_INFO());
                 Assert::AreEqual(d.channel_current(), dd.channel_current(), L"Channel for current copied", LINE_INFO());

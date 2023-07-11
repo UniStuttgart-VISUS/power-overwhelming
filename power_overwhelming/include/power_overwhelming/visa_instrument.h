@@ -285,6 +285,17 @@ namespace power_overwhelming {
         /// <c>false</c> otherwise.</returns>
         bool aliased(void) const noexcept;
 
+        /// <summary>
+        /// Answer whether this instance uses the same hardware as
+        /// <paramref name="instance" />.
+        /// </summary>
+        /// <param name="instrument">The instrument to be compared. It is safe
+        /// to pass a disposed instrument.</param>
+        /// <returns><c>true</c> if this instrument and
+        /// <paramref name="instrument" /> share the same implementation object,
+        /// <c>false</c> otherwise.</returns>
+        bool alias_of(_In_ const visa_instrument& instrument) const noexcept;
+
 #if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>
         /// Read an attribute value from the instrument.
@@ -731,6 +742,19 @@ namespace power_overwhelming {
         /// <exception cref="std::runtime_error">If the current system state was
         /// retrieved and is not zero.</exception>
         void throw_on_system_error(void) const;
+
+        /// <summary>
+        /// Query the current timeout from the instrument.
+        /// </summary>
+        /// <returns>The current timeout of the instrument in milliseconds.
+        /// </returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the current system state could
+        /// not be retrieved.</exception>
+        /// <exception cref="std::logic_error">If the library was compiled
+        /// without support for VISA.</exception>
+        timeout_type timeout(void) const;
 
         /// <summary>
         /// Sets the timeout of the underlying VISA session.

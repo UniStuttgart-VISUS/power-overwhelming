@@ -44,4 +44,5 @@
 #define _Ret_maybenull_z_
 #define _Ret_valid_
 #define _Ret_z_
+#define _When_(expr, annotes)
 #endif /* defined(_WIN32) */

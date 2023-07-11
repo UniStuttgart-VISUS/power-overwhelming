@@ -138,9 +138,9 @@ std::string visus::power_overwhelming::detail::format_string(
 /*
  * visus::power_overwhelming::detail::remove_spaces
  */
-template<class TChar>
+template<class TChar, class TTraits, class TAlloc>
 std::basic_string<TChar> visus::power_overwhelming::detail::remove_spaces(
-        _In_ const std::basic_string<TChar>& str) {
+        _In_ const std::basic_string<TChar, TTraits, TAlloc>& str) {
     std::vector<TChar> retval(str.begin(), str.end());
     auto end = std::remove_if(retval.begin(), retval.end(),
         [](const TChar c) { return std::isspace(c); });
@@ -195,7 +195,7 @@ visus::power_overwhelming::detail::safe_assign(
 
         } else {
             dst.reserve(1);
-            *dst.as<wchar_t>() = static_cast<TChar>(0);
+            *dst.as<TChar>() = static_cast<TChar>(0);
         }
     }
 

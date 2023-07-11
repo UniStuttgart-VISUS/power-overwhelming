@@ -57,13 +57,15 @@ namespace detail {
     /// </summary>
     /// <typeparam name="TChar">The type of a character in the string.
     /// </typeparam>
+    /// <typeparam name="TTraits">The type of a character traits.</typeparam>
+    /// <typeparam name="TAlloc">The allocator of the string.</typeparam>
     /// <param name="str">The string to remove all white-space characters from.
     /// </param>
     /// <returns>A copy of <paramref name="str" /> without white-space
     /// characters.</returns>
-    template<class TChar>
+    template<class TChar, class TTraits, class TAlloc>
     std::basic_string<TChar> remove_spaces(
-        _In_ const std::basic_string<TChar>& str);
+        _In_ const std::basic_string<TChar, TTraits, TAlloc>& str);
 
     /// <summary>
     /// Frees <paramref name="dst" />, if not <c>nullptr</c>, and assigns a copy
@@ -142,6 +144,25 @@ namespace detail {
     /// <returns><paramref name="dst" />.</returns>
     template<class TChar>
     blob& safe_assign(_Inout_ blob& dst, _In_opt_z_ const TChar *src);
+
+    /// <summary>
+    /// Copy a string into a <see cref="blob" />.
+    /// </summary>
+    /// <typeparam name="TChar">The type of the characters.</typeparam>
+    /// <typeparam name="TTraits">The type of a character traits.</typeparam>
+    /// <typeparam name="TAlloc">The allocator of the string.</typeparam>
+    /// <param name="dst">The blob variable to receive the copy of
+    /// <paramref name="src" />. The blob will be resized to be able to hold
+    /// the whole <paramref name="src" />.</param>
+    /// <param name="src">The string to be copied.</param>
+    /// <exception cref="std::bad_alloc">If the memory for
+    /// <paramref name="dst" /> could not be allocated.</exception>
+    /// <returns><paramref name="dst" />.</returns>
+    template<class TChar, class TTraits, class TAlloc>
+    inline blob& safe_assign(_Inout_ blob& dst,
+            _In_opt_z_ const std::basic_string<TChar, TTraits, TAlloc>& src) {
+        return safe_assign(dst, src.c_str());
+    }
 
     /// <summary>
     /// Frees <paramref name="dst" />.

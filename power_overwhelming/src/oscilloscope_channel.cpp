@@ -15,13 +15,28 @@
  */
 visus::power_overwhelming::oscilloscope_channel::oscilloscope_channel(
         _In_ const std::uint32_t channel)
-        : _attenuation(oscilloscope_quantity(0.0f)),
+    : _attenuation(oscilloscope_quantity(0.0f)),
         _bandwidth(oscilloscope_channel_bandwidth::full),
         _channel(channel),
         _coupling(oscilloscope_channel_coupling::direct_current_limit),
         _decimation_mode(oscilloscope_decimation_mode::sample),
         _polarity(oscilloscope_channel_polarity::normal),
         _state(false) { }
+
+
+/*
+ * visus::power_overwhelming::oscilloscope_channel::oscilloscope_channel
+ */
+visus::power_overwhelming::oscilloscope_channel::oscilloscope_channel(
+        _In_ const std::uint32_t channel,
+        _In_ const oscilloscope_channel& channel_template) 
+    : _attenuation(channel_template._attenuation),
+        _bandwidth(channel_template._bandwidth),
+        _channel(channel),
+        _coupling(channel_template._coupling),
+        _decimation_mode(channel_template._decimation_mode),
+        _polarity(channel_template._polarity),
+        _state(channel_template._state) { }
 
 
 /*

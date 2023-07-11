@@ -27,6 +27,17 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
+        /// <remarks>
+        /// Please note that instances initialises with the default constructor
+        /// are not usable to create sensors.
+        /// </remarks>
+        rtx_sensor_definition(void) = default;
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="path">The path to the VISA instrument to be used for
+        /// the sensor, which must not be <c>nullptr</c>.</param>
         /// <param name="description">The description of the sensor, which must
         /// not be <c>nullptr</c>.</param>
         /// <param name="voltage_channel">The configuration of the channel to
@@ -37,9 +48,8 @@ namespace power_overwhelming {
         /// are downloaded from the instrument to the sensor. This parameter
         /// defaults to the maximum resolution available in the memory of the
         /// instrument.</param>
-        /// <exception cref="std::invalid_argument">If
-        /// <paramref name="description" /> is <c>nullptr</c> or an empty
-        /// string.</exception>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c> or an empty string.</exception>
         /// <exception cref="std::invalid_argument">If
         /// <paramref name="channel_voltage" /> and 
         /// <paramref name="channel_current" /> are the same or if the quantity
@@ -47,17 +57,48 @@ namespace power_overwhelming {
         /// </exception>
         /// <exception cref="std::bad_alloc">If the memory for storing the
         /// description could not be allocated.</exception>
-        rtx_sensor_definition(_In_z_ const wchar_t *description,
+        rtx_sensor_definition(_In_z_ const wchar_t *path,
             _In_ const oscilloscope_channel& voltage_channel,
             _In_ const oscilloscope_channel& current_channel,
+            _In_opt_z_ const wchar_t *description = nullptr,
             _In_ const oscilloscope_waveform_points waveform_points
             = oscilloscope_waveform_points::maximum);
 
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <param name="description">The description of the sensor, which must
-        /// not be <c>nullptr</c>.</param>
+        /// <param name="path">The path to the VISA instrument to be used for
+        /// the sensor, which must not be <c>nullptr</c>.</param>
+        /// <param name="voltage_channel">The configuration of the channel to
+        /// which the voltage probe is attached.</param>
+        /// <param name="current_channel">The configuration of the channel to
+        /// which the current probe is attached.</param>
+        /// <param name="description">The description of the sensor.</param>
+        /// <param name="waveform_points">Specifies which points of the waveform
+        /// are downloaded from the instrument to the sensor. This parameter
+        /// defaults to the maximum resolution available in the memory of the
+        /// instrument.</param>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c> or an empty string.</exception>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="channel_voltage" /> and 
+        /// <paramref name="channel_current" /> are the same or if the quantity
+        /// measured by any of the channels is not what their intended use is.
+        /// </exception>
+        /// <exception cref="std::bad_alloc">If the memory for storing the
+        /// description could not be allocated.</exception>
+        rtx_sensor_definition(_In_z_ const char *path,
+            _In_ const oscilloscope_channel& voltage_channel,
+            _In_ const oscilloscope_channel& current_channel,
+            _In_opt_z_ const wchar_t *description = nullptr,
+            _In_ const oscilloscope_waveform_points waveform_points
+            = oscilloscope_waveform_points::maximum);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="path">The path to the VISA instrument to be used for
+        /// the sensor, which must not be <c>nullptr</c>.</param>
         /// <param name="channel_voltage">The channel which to the voltage probe
         /// is attached.</param>
         /// <param name="attenuation_voltage">The attenuation of the voltage
@@ -68,23 +109,60 @@ namespace power_overwhelming {
         /// <param name="attenuation_current">The attenuation of the current
         /// probe in [A]. Consult the manual of the instrument on which values
         /// are valid for this parameter.</param>
+        /// <param name="description">The description of the sensor.</param>
         /// <param name="waveform_points">Specifies which points of the waveform
         /// are downloaded from the instrument to the sensor. This parameter
         /// defaults to the maximum resolution available in the memory of the
         /// instrument.</param>
-        /// <exception cref="std::invalid_argument">If
-        /// <paramref name="description" /> is <c>nullptr</c> or an empty
-        /// string.</exception>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c> or an empty string.</exception>
         /// <exception cref="std::invalid_argument">If
         /// <paramref name="channel_voltage" /> and 
         /// <paramref name="channel_current" /> are the same.</exception>
         /// <exception cref="std::bad_alloc">If the memory for storing the
         /// description could not be allocated.</exception>
-        rtx_sensor_definition(_In_z_ const wchar_t *description,
+        rtx_sensor_definition(_In_z_ const wchar_t *path,
             _In_ const std::uint32_t channel_voltage,
             _In_ const float attenuation_voltage,
             _In_ const std::uint32_t channel_current,
             _In_ const float attenuation_current,
+            _In_z_ const wchar_t *description = nullptr,
+            _In_ const oscilloscope_waveform_points waveform_points
+            = oscilloscope_waveform_points::maximum);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="path">The path to the VISA instrument to be used for
+        /// the sensor, which must not be <c>nullptr</c>.</param>
+        /// <param name="channel_voltage">The channel which to the voltage probe
+        /// is attached.</param>
+        /// <param name="attenuation_voltage">The attenuation of the voltage
+        /// probe in [V]. Consult the manual of the instrument on which values
+        /// are valid for this parameter.</param>
+        /// <param name="channel_current">The channel which to the current probe
+        /// is attached.</param>
+        /// <param name="attenuation_current">The attenuation of the current
+        /// probe in [A]. Consult the manual of the instrument on which values
+        /// are valid for this parameter.</param>
+        /// <param name="description">The description of the sensor.</param>
+        /// <param name="waveform_points">Specifies which points of the waveform
+        /// are downloaded from the instrument to the sensor. This parameter
+        /// defaults to the maximum resolution available in the memory of the
+        /// instrument.</param>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// <c>nullptr</c> or an empty string.</exception>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="channel_voltage" /> and 
+        /// <paramref name="channel_current" /> are the same.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for storing the
+        /// description could not be allocated.</exception>
+        rtx_sensor_definition(_In_z_ const char *path,
+            _In_ const std::uint32_t channel_voltage,
+            _In_ const float attenuation_voltage,
+            _In_ const std::uint32_t channel_current,
+            _In_ const float attenuation_current,
+            _In_opt_z_ const wchar_t *description = nullptr,
             _In_ const oscilloscope_waveform_points waveform_points
             = oscilloscope_waveform_points::maximum);
 
@@ -147,20 +225,31 @@ namespace power_overwhelming {
         }
 
         /// <summary>
-        /// Gets the label displayed for the current waveform.
-        /// </summary>
-        /// <returns>The label of the current channel.</returns>
-        inline const oscilloscope_label& current_label(void) const noexcept {
-            return this->_current_channel.label();
-        }
-
-        /// <summary>
         /// Gets the description of the sensor.
         /// </summary>
         /// <returns>The description of the sensor. The object remains owner of
         /// the string returned.</returns>
         inline _Ret_z_ const wchar_t *description(void) const noexcept {
             auto retval = this->_description.as<wchar_t>();
+            _Analysis_assume_(retval != nullptr);
+            return retval;
+        }
+
+        /// <summary>
+        /// Sets a user-defined description of the sensor.
+        /// </summary>
+        /// <param name="description">The new description of the sensor.</param>
+        /// <returns><c>*this</c>.</returns>
+        rtx_sensor_definition& description(
+            _In_opt_z_ const wchar_t *description);
+
+        /// <summary>
+        /// Gets the VISA device path of the underlying instrument.
+        /// </summary>
+        /// <returns>The VISA device path of the underlying instrumen. The
+        /// object remains owner of the string returned.</returns>
+        inline _Ret_z_ const char *path(void) const noexcept {
+            auto retval = this->_path.as<char>();
             _Analysis_assume_(retval != nullptr);
             return retval;
         }
@@ -175,14 +264,6 @@ namespace power_overwhelming {
         }
 
         /// <summary>
-        /// Gets the label displayed for the voltage waveform.
-        /// </summary>
-        /// <returns>The label of the voltage channel.</returns>
-        inline const oscilloscope_label& voltage_label(void) const noexcept {
-            return this->_voltage_channel.label();
-        }
-
-        /// <summary>
         /// Answer the waveform points that should be downloaded if the data for
         /// the channels of the are transferred to the computer.
         /// </summary>
@@ -192,10 +273,20 @@ namespace power_overwhelming {
             return this->_waveform_points;
         }
 
+        /// <summary>
+        /// Answer whether the sensor definition is valid for creating a sensor.
+        /// </summary>
+        /// <returns><c>true</c> if the configuration is valid, <c>false</c> if
+        /// this instance was created using the default constructor.</returns>
+        operator bool(void) const noexcept;
+
     private:
+
+        void make_labels(void);
 
         oscilloscope_channel _current_channel;
         blob _description;
+        blob _path;
         oscilloscope_channel _voltage_channel;
         oscilloscope_waveform_points _waveform_points;
     };

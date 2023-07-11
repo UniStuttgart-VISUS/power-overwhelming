@@ -9,6 +9,50 @@
 #include "visa_instrument_impl.h"
 
 
+namespace visus {
+namespace power_overwhelming {
+namespace detail {
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    /// <summary>
+    /// RAAI override of the instrument timeout.
+    /// </summary>
+    class rtx_timeout_override final {
+
+    public:
+
+        inline rtx_timeout_override(_In_ ViSession session,
+                _In_ const visa_instrument::timeout_type timeout) 
+                : _session(session), _timeout(0) {
+            visa_exception::throw_on_error(visa_library::instance()
+                .viGetAttribute(this->_session, VI_ATTR_TMO_VALUE,
+                    &this->_timeout));
+            visa_exception::throw_on_error(visa_library::instance()
+                .viSetAttribute(this->_session, VI_ATTR_TMO_VALUE,
+                    timeout));
+        }
+
+        rtx_timeout_override(const rtx_timeout_override&) = delete;
+
+        inline ~rtx_timeout_override(void) {
+            visa_library::instance().viSetAttribute(this->_session,
+                VI_ATTR_TMO_VALUE, this->_timeout);
+        }
+
+        rtx_timeout_override& operator =(const rtx_timeout_override&) = delete;
+
+    private:
+
+        ViSession _session;
+        visa_instrument::timeout_type _timeout;
+    };
+#endif /* */defined(POWER_OVERWHELMING_WITH_VISA) */
+
+} /* namespace detail */
+} /* namespace power_overwhelming */
+} /* namespace visus */
+
+
 /*
  * visus::power_overwhelming::rtx_instrument::product_id
  */
@@ -273,6 +317,44 @@ visus::power_overwhelming::rtx_instrument::channel(
 
 
 /*
+ * visus::power_overwhelming::rtx_instrument::channels
+ */
+std::size_t visus::power_overwhelming::rtx_instrument::channels(void) const {
+    try {
+        auto& impl = this->check_not_disposed();
+        std::size_t retval = 1;
+        const detail::rtx_timeout_override timeout(impl.session, 100);
+
+        // Clear the status as we rely on the device to enter an error state for
+        // the detection below.
+        impl.write("*CLS; *OPC?\n");
+        impl.read_all();
+
+
+        while (true) {
+            try {
+                // We count by trying to retrieve the state of the channels one
+                // after another. There seems to be no way to query this except
+                // for trying when the operation fails ...
+                impl.format("CHAN%u:STAT?\n", retval);
+                impl.read_all();
+                this->throw_on_system_error();
+                ++retval;
+            } catch (...) {
+                impl.write("*CLS; *OPC?\n");
+                impl.read_all();
+                return (retval - 1);
+            }
+        }
+
+    } catch (...) {
+        // If disposed, we have no channel.
+        return 0;
+    }
+}
+
+
+/*
  * visus::power_overwhelming::rtx_instrument::data
  */
 visus::power_overwhelming::oscilloscope_waveform
@@ -441,8 +523,13 @@ visus::power_overwhelming::rtx_instrument::time_scale(
  * visus::power_overwhelming::rtx_instrument::trigger
  */
 visus::power_overwhelming::rtx_instrument&
-visus::power_overwhelming::rtx_instrument::trigger(void) {
-    this->check_not_disposed().write("*TRG\n");
+visus::power_overwhelming::rtx_instrument::trigger(_In_ const bool wait) {
+    if (wait) {
+        this->query("*TRG; *OPC?\n");
+    } else {
+        this->check_not_disposed().write("*TRG\n");
+    }
+
     return *this;
 }
 

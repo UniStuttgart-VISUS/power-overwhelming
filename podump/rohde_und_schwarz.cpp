@@ -64,13 +64,33 @@ void query_hmc8015(void) {
  * ::query_rtx
  */
 void query_rtx(void) {
-    //using namespace visus::power_overwhelming;
+    using namespace visus::power_overwhelming;
 
-    //try {
-    //    std::vector<oscilloscope_sensor_definition> definitions;
-    //    std::vector<rtx_sensor> sensors;
-    //    sensors.resize(rtx_sensor::for_all(nullptr, 0));
-    //    rtx_sensor::for_all(sensors.data(), sensors.size());
+    try {
+        std::vector<rtx_sensor_definition> definitions;
+        definitions.resize(rtx_sensor::get_definitions(nullptr, 0));
+        definitions.resize(rtx_sensor::get_definitions(definitions.data(), definitions.size()));
+
+        std::cout << "Sensor definitions found:" << std::endl;
+        for (auto& d : definitions) {
+            std::wcout << d.description() << std::endl;
+        }
+
+        std::vector<rtx_sensor> sensors(definitions.size());
+        for (std::size_t i = 0; i < definitions.size(); ++i) {
+            sensors[i] = rtx_sensor(definitions[i]);
+            std::wcout << L"Created " << sensors[i].name() << std::endl;
+        }
+
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+
+    try {
+        //std::vector<oscilloscope_sensor_definition> definitions;
+        std::vector<rtx_sensor> sensors;
+        sensors.resize(rtx_sensor::for_all(nullptr, 0));
+        rtx_sensor::for_all(sensors.data(), sensors.size());
 
     //    definitions.push_back(oscilloscope_sensor_definition(L"Test1",
     //        1, 10.0f, 2, 10.0f));
@@ -107,9 +127,9 @@ void query_rtx(void) {
     //        std::wcout << s.name() << L":" << std::endl;
     //    }
     //       
-    //} catch (std::exception& ex) {
-    //    std::cerr << ex.what() << std::endl;
-    //}
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
 }
 
 
@@ -149,8 +169,11 @@ void query_rtx_instrument(void) {
                 .service_request_status(visa_status_byte::master_status)
                 .timeout(20000);
 
+            std::wcout << L"The device has " << i.channels() << L" channels."
+                << std::endl;
+
             i.reference_position(oscilloscope_reference_point::left);
-            i.time_scale(oscilloscope_quantity(1, "s"));
+            i.time_scale(oscilloscope_quantity(10, "ms"));
 
             i.channel(oscilloscope_channel(1)
                 .label(oscilloscope_label("podump#1"))
@@ -186,12 +209,13 @@ void query_rtx_instrument(void) {
             i.acquisition(oscilloscope_single_acquisition()
                 .points(100000)
                 .count(1)
-                .segmented(false));
+                .segmented(false))
+                .operation_complete();
 
-            i.operation_complete();
-            i.acquisition(oscilloscope_acquisition_state::single);
+            i.acquisition(oscilloscope_acquisition_state::single)
+                .operation_complete();
+            //i.operation_complete();
 
-            std::this_thread::sleep_for(std::chrono::seconds(1));
             i.trigger();
             i.operation_complete();
 
@@ -203,7 +227,9 @@ void query_rtx_instrument(void) {
                 << std::endl;
             auto segment0 = i.data(1, oscilloscope_waveform_points::maximum);
             auto e = std::chrono::high_resolution_clock::now();
-            std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(e - b).count() << std::endl;
+            std::cout << "Download took "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(e - b).count()
+                << " ms" << std::endl;
 
             std::cout << "Record length: "
                 << segment0.record_length() << std::endl
@@ -218,7 +244,7 @@ void query_rtx_instrument(void) {
             //    << i.history_segments()
             //    << std::endl;
             //auto segment1 = i.data(1);
-            int x = 12345;
+            int x = 1234567890;
         }
 
     } catch (std::exception& ex) {
