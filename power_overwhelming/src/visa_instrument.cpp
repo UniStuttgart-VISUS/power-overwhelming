@@ -250,6 +250,14 @@ visus::power_overwhelming::visa_instrument::~visa_instrument(void) {
 }
 
 
+/*
+ * visus::power_overwhelming::visa_instrument::aliased
+ */
+bool visus::power_overwhelming::visa_instrument::aliased(void) const noexcept {
+    return ((this->_impl != nullptr) && (this->_impl->counter() > 0));
+}
+
+
 #if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * visus::power_overwhelming::visa_instrument::attribute

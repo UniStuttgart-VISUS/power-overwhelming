@@ -19,6 +19,23 @@
 
 
 /*
+ * visus::power_overwhelming::rtx_sensor::configure_instrument
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_sensor::configure_instrument(
+        _In_reads_(cnt) const rtx_sensor *sensors,
+        _In_ const std::size_t cnt,
+        _In_ const rtx_instrument_configuration& configuration) {
+    if ((sensors == nullptr) || (cnt < 1)) {
+        throw std::invalid_argument("The list of sensors to configure the "
+            "instrument for must not be empty.");
+    }
+
+    throw "TODO";
+}
+
+
+/*
  * visus::power_overwhelming::rtx_sensor::for_all
  */
 std::size_t visus::power_overwhelming::rtx_sensor::for_all(

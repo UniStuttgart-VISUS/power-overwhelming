@@ -140,6 +140,14 @@ namespace detail {
         ~visa_instrument_impl(void);
 
         /// <summary>
+        /// Answer the current value of the reference counter.
+        /// </summary>
+        /// <returns></returns>
+        inline std::size_t counter(void) const noexcept {
+            return this->_counter.load();
+        }
+
+        /// <summary>
         /// Invoke <see cref="viPrintf" /> on the instrument.
         /// </summary>
         /// <remarks>
