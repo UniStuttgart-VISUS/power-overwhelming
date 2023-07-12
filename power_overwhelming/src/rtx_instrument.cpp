@@ -54,6 +54,40 @@ namespace detail {
 
 
 /*
+ * visus::power_overwhelming::rtx_instrument::create_and_reset_new
+ */
+visus::power_overwhelming::rtx_instrument
+visus::power_overwhelming::rtx_instrument::create_and_reset_new(
+        _In_z_ const wchar_t *path, _In_ const timeout_type timeout) {
+    auto is_new = false;
+    rtx_instrument retval(is_new, path, timeout);
+
+    if (is_new) {
+        retval.reset(true, true);
+    }
+
+    return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::create_and_reset_new
+ */
+visus::power_overwhelming::rtx_instrument
+visus::power_overwhelming::rtx_instrument::create_and_reset_new(
+        _In_z_ const char *path, _In_ const timeout_type timeout) {
+    auto is_new = false;
+    rtx_instrument retval(is_new, path, timeout);
+
+    if (is_new) {
+        retval.reset(true, true);
+    }
+
+    return retval;
+}
+
+
+/*
  * visus::power_overwhelming::rtx_instrument::product_id
  */
 constexpr const char *
@@ -319,11 +353,12 @@ visus::power_overwhelming::rtx_instrument::channel(
 /*
  * visus::power_overwhelming::rtx_instrument::channels
  */
-std::size_t visus::power_overwhelming::rtx_instrument::channels(void) const {
+std::size_t visus::power_overwhelming::rtx_instrument::channels(
+        _In_ const timeout_type timeout) const {
     try {
         auto& impl = this->check_not_disposed();
         std::size_t retval = 1;
-        const detail::rtx_timeout_override timeout(impl.session, 100);
+        const detail::rtx_timeout_override timeout(impl.session, timeout);
 
         // Clear the status as we rely on the device to enter an error state for
         // the detection below.

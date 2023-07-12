@@ -44,7 +44,7 @@ namespace power_overwhelming {
         /// Create sensor objects for all Rohde &amp; Schwarz RTA/RTB
         /// instruments that can be enumerated via VISA.
         /// </summary>
-        /// <param name="out_sensors">An array receiving the sensors. If this is
+        /// <param name="dst ">An array receiving the sensors. If this is
         /// <c>nullptr</c>, nothing is returned.</param>
         /// <param name="cnt_sensors">The number of sensors that can be stored in
         /// <paramref name="out_sensors" />.</param>
@@ -54,9 +54,10 @@ namespace power_overwhelming {
         /// <returns>The number of RTA/RTB instruments found, regardless of how
         /// many have been returned to <paramref name="out_sensors" />.</returns>
         static std::size_t for_all(
-            _Out_writes_opt_(cnt_sensors) rtx_sensor *out_sensors,
-            _In_ std::size_t cnt_sensors,
-            _In_ const std::int32_t timeout = 3000);
+            _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_sensor *dst,
+            _In_ std::size_t cnt,
+            _In_ const visa_instrument::timeout_type timeout
+            = visa_instrument::default_timeout);
 
         /// <summary>
         /// Determines all possible <see cref="rtx_sensor" />s from instruments
@@ -74,15 +75,22 @@ namespace power_overwhelming {
         /// <param name="current_channel">A configuration template for the
         /// current channels. The method will copy this template except for
         /// the channel indices, which will be created on the fly.</param>
+        /// <param name="force_cannels">If not zero, make the method assume that
+        /// all devices support the specified number of channels instead of
+        /// probing the devices. As the probing code relies on queries failing
+        /// and timeouts, this can be a massive speed and reliability boost in
+        /// case all instruments are known to have the same number of channels.
+        /// </param>
         /// <param name="timeout">A timeout in milliseconds which is used when
         /// connecting to the instrument.</param>
         /// <returns>The number of sensor definitions available, regardless of
         /// whether all of them were written or not.</returns>
         static std::size_t get_definitions(
-            _When_(cnt > 0, _Out_writes_opt_(cnt)) rtx_sensor_definition *dst,
-            _In_ std::size_t cnt,
+            _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_sensor_definition *dst,
+            _In_ const std::size_t cnt,
             _In_ const oscilloscope_channel& voltage_channel,
             _In_ const oscilloscope_channel& current_channel,
+            _In_ const std::size_t force_channels = 0,
             _In_ const visa_instrument::timeout_type timeout
             = visa_instrument::default_timeout);
 
@@ -97,10 +105,11 @@ namespace power_overwhelming {
         /// <param name="timeout"></param>
         /// <returns></returns>
         static std::size_t get_definitions(
-            _When_(cnt > 0, _Out_writes_opt_(cnt)) rtx_sensor_definition *dst,
-            _In_ std::size_t cnt,
+            _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_sensor_definition *dst,
+            _In_ const std::size_t cnt,
             _In_ const float voltage_attenuation = 10.0f,
             _In_ const float current_attenuation = 10.0f,
+            _In_ const std::size_t force_channels = 0,
             _In_ const visa_instrument::timeout_type timeout
             = visa_instrument::default_timeout);
 
@@ -112,8 +121,14 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <param name="definition"></param>
-        /// <param name="timeout"></param>
+        /// <param name="definition">The definition of the sensor, which must
+        /// contain the path of the instrument and the configuration of the
+        /// voltage and the current channel.</param>
+        /// <param name="timeout">The timeout for connecting to the instrument,
+        /// in milliseconds, which is also set as the initial VISA timeout. Make
+        /// sure to choose a sufficiently large number to wait for the channels
+        /// being configured. This parameter defaults to
+        /// <see cref="visa_instrument::default_timeout" />.</param>
         /// <exception cref="std::invalid_argument">If <paramref name="path" />
         /// is <c>nullptr</c>.</exception>
         /// <exception cref="std::bad_alloc">If the memory for the sensor state

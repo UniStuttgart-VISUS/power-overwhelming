@@ -39,7 +39,7 @@ visus::power_overwhelming::visa_instrument::find_resources(
     auto devices = detail::visa_library::instance().find_resource(q.c_str());
 
     const auto len = std::accumulate(devices.begin(), devices.end(),
-        static_cast<std::size_t>(0), [](std::size_t s, const std::string &d) {
+        static_cast<std::size_t>(0), [](std::size_t s, const std::string& d) {
             return s + d.size() + 1;
         }) + 1;
 

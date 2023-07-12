@@ -40,42 +40,19 @@ visus::power_overwhelming::rtx_sensor::configure_instrument(
  * visus::power_overwhelming::rtx_sensor::for_all
  */
 std::size_t visus::power_overwhelming::rtx_sensor::for_all(
-        _Out_writes_opt_(cnt_sensors) rtx_sensor *out_sensors,
-        _In_ std::size_t cnt_sensors,
-        _In_ const std::int32_t timeout) {
-    std::string query("?*::");                      // Any protocol
-    query += visa_instrument::rohde_und_schwarz;    // Only R&S
-    query += "::";
-    query += rtx_instrument::product_id;            // Only RTA/RTB
-    query += "::?*::INSTR";                         // All serial numbers
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_sensor *dst,
+        _In_ std::size_t cnt,
+        _In_ const visa_instrument::timeout_type timeout) {
+    std::vector<rtx_sensor_definition> definitions;
+    auto retval = rtx_sensor::get_definitions(nullptr, 0);
 
-    // Search the instruments using VISA.
-    auto devices = detail::visa_library::instance().find_resource(
-        query.c_str());
+    if (dst != nullptr) {
+        definitions.resize(retval);
+        rtx_sensor::get_definitions(definitions.data(), definitions.size());
 
-    // Guard against misuse.
-    if (out_sensors == nullptr) {
-        cnt_sensors = 0;
-    }
-
-    // Count the total number of sensors we can form from the instruments.
-    auto retval = 0;
-    std::vector<std::size_t> sensors;
-    sensors.reserve(devices.size());
-
-    for (auto& d : devices) {
-        auto i = rtx_instrument(d.c_str(), timeout);
-        sensors.push_back(i.channels() / 2);
-        retval += sensors.back();
-    }
-
-    // Create a sensor for each instrument we found.
-    for (std::size_t i = 0; (i < cnt_sensors) && (i < devices.size()); ++i) {
-
-
-
-        //throw "TODO";
-        //out_sensors[i] = rtx_sensor(devices[i].c_str(), timeout);
+        for (std::size_t i = 0; (i < retval) && (i < cnt); ++i) {
+            dst[i] = rtx_sensor(definitions[i], timeout);
+        }
     }
 
     return retval;
@@ -86,10 +63,11 @@ std::size_t visus::power_overwhelming::rtx_sensor::for_all(
  * visus::power_overwhelming::rtx_sensor::get_definitions
  */
 std::size_t visus::power_overwhelming::rtx_sensor::get_definitions(
-        _When_(cnt > 0, _Out_writes_opt_(cnt)) rtx_sensor_definition *dst,
-        _In_ std::size_t cnt,
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_sensor_definition *dst,
+        _In_ const std::size_t cnt,
         _In_ const oscilloscope_channel& voltage_channel,
         _In_ const oscilloscope_channel& current_channel,
+        _In_ const std::size_t force_channels,
         _In_ const visa_instrument::timeout_type timeout) {
     // Search the instruments using VISA.
     std::string query("?*::");                      // Any protocol
@@ -101,11 +79,6 @@ std::size_t visus::power_overwhelming::rtx_sensor::get_definitions(
     const auto devices = detail::visa_library::instance().find_resource(
         query.c_str());
 
-    // Guard against misuse of the API.
-    if (dst == nullptr) {
-        cnt = 0;
-    }
-
     // Count the total number of sensors we can form from the instruments.
     // Furthermore, remember the number of sensors we can create on each of
     // instruments such that we do not have to count again later, as this
@@ -114,32 +87,38 @@ std::size_t visus::power_overwhelming::rtx_sensor::get_definitions(
     std::vector<std::size_t> sensors;
     sensors.reserve(devices.size());
 
-    for (auto& d : devices) {
-        auto n = false;
-        auto i = rtx_instrument(n, d.c_str(), timeout);
-
-        // Perform a full reset if we do not yet know the instrument.
-        if (n) {
-            i.reset(true, true);
+    if (force_channels == 0) {
+        // Probe the channels on each instrument to determine the overall
+        // number of sensors we can create.
+        for (auto& d : devices) {
+            auto i = rtx_instrument::create_and_reset_new(d.c_str(), timeout);
+            sensors.push_back(i.channels() / 2);
+            retval += sensors.back();
         }
 
-        sensors.push_back(i.channels() / 2);
-        retval += sensors.back();
+    } else {
+        // We just assume that the user is right, so every instrument has the
+        // same number of channels.
+        std::fill_n(std::back_inserter(sensors), devices.size(),
+            force_channels / 2);
+        retval = devices.size() * force_channels / 2;
     }
 
-    // Create the sensor definitions
-    for (std::size_t i = 0, d = 0; d < devices.size(); ++d) {
-        const auto path = convert_string<wchar_t>(devices[d]);
+    // Create the sensor definitions.
+    if (dst != nullptr) {
+        for (std::size_t i = 0, d = 0; d < devices.size(); ++d) {
+            const auto path = convert_string<wchar_t>(devices[d]);
 
-        for (std::size_t s = 0; (i < cnt) && (s < sensors[d]); ++s, ++i) {
-            const auto cv = 2 * s + 1;
-            const auto cc = cv + 1;
-            const auto desc = path + L" (" + std::to_wstring(cv)
-                + L"+" + std::to_wstring(cc) + L")";
-            dst[i] = rtx_sensor_definition(path.c_str(),
-                oscilloscope_channel(cv, voltage_channel),
-                oscilloscope_channel(cc, current_channel),
-                desc.c_str());
+            for (std::size_t s = 0; (i < cnt) && (s < sensors[d]); ++s, ++i) {
+                const auto cv = 2 * s + 1;
+                const auto cc = cv + 1;
+                const auto desc = path + L" (" + std::to_wstring(cv)
+                    + L"+" + std::to_wstring(cc) + L")";
+                dst[i] = rtx_sensor_definition(path.c_str(),
+                    oscilloscope_channel(cv, voltage_channel),
+                    oscilloscope_channel(cc, current_channel),
+                    desc.c_str());
+            }
         }
     }
 
@@ -151,16 +130,18 @@ std::size_t visus::power_overwhelming::rtx_sensor::get_definitions(
  * visus::power_overwhelming::rtx_sensor::get_definitions
  */
 std::size_t visus::power_overwhelming::rtx_sensor::get_definitions(
-        _When_(cnt > 0, _Out_writes_opt_(cnt)) rtx_sensor_definition *dst,
-        _In_ std::size_t cnt,
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_sensor_definition *dst,
+        _In_ const std::size_t cnt,
         _In_ const float voltage_attenuation,
         _In_ const float current_attenuation,
+        _In_ const std::size_t force_channels,
         _In_ const visa_instrument::timeout_type timeout) {
     const oscilloscope_quantity ca(current_attenuation, "A");
     const oscilloscope_quantity va(voltage_attenuation, "V");
     return get_definitions(dst, cnt,
         oscilloscope_channel().attenuation(va).state(true),
         oscilloscope_channel().attenuation(ca).state(true),
+        force_channels,
         timeout);
 }
 
@@ -171,7 +152,8 @@ std::size_t visus::power_overwhelming::rtx_sensor::get_definitions(
 visus::power_overwhelming::rtx_sensor::rtx_sensor(
         _In_ const rtx_sensor_definition& definition,
         _In_ const visa_instrument::timeout_type timeout)
-    : _channel_current(0), _channel_voltage(0) {
+    : _channel_current(0), _channel_voltage(0), _instrument(
+        rtx_instrument::create_and_reset_new(definition.path(), timeout)) {
     this->initialise(definition, timeout);
 }
 
@@ -221,16 +203,10 @@ void visus::power_overwhelming::rtx_sensor::initialise(
             "use the same channel for voltage and current.");
     }
 
-    // Open the instrument.
-    auto is_new = false;
-    this->_instrument = rtx_instrument(is_new, definition.path(), timeout);
+    // Set the connection timeout as VISA timeout as well.
+    this->_instrument.timeout(timeout);
 
-    // Perform a full reset if we do not yet know the instrument.
-    if (is_new) {
-        this->_instrument.reset(true, true);
-    }
-
-    // Compse the name of the sensor.
+    // Compose the name of the sensor.
     std::vector<char> id(this->_instrument.identify(nullptr, 0));
     this->_instrument.identify(id.data(), id.size());
 

@@ -43,6 +43,46 @@ namespace power_overwhelming {
     public:
 
         /// <summary>
+        /// Creates a new istrument and perform a full reset of the device and
+        /// the status and the error queue provided there is no other instrument
+        /// instance running on the same hardware yet.
+        /// </summary>
+        /// <param name="path">The VISA resource path of the instrument.</param>
+        /// <param name="timeout">The timeout for the connection attempt in
+        /// milliseconds. This parameter defaults to
+        /// <see cref="default_timeout" />.</param>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the sensor state
+        /// could not be allocated.</exception>
+        /// <exception cref="std::system_error">If the VISA library could not be
+        /// loaded.</exception>
+        /// <exception cref="visa_exception">If the sensor could not be
+        /// initialised.</exception>
+        static rtx_instrument create_and_reset_new(_In_z_ const wchar_t *path,
+            _In_ const timeout_type timeout = default_timeout);
+
+        /// <summary>
+        /// Creates a new istrument and perform a full reset of the device and
+        /// the status and the error queue provided there is no other instrument
+        /// instance running on the same hardware yet.
+        /// </summary>
+        /// <param name="path">The VISA resource path of the instrument.</param>
+        /// <param name="timeout">The timeout for the connection attempt in
+        /// milliseconds. This parameter defaults to
+        /// <see cref="default_timeout" />.</param>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the sensor state
+        /// could not be allocated.</exception>
+        /// <exception cref="std::system_error">If the VISA library could not be
+        /// loaded.</exception>
+        /// <exception cref="visa_exception">If the sensor could not be
+        /// initialised.</exception>
+        static rtx_instrument create_and_reset_new(_In_z_ const char *path,
+            _In_ const timeout_type timeout = default_timeout);
+
+        /// <summary>
         /// The product ID of the RTA and RTB series oscilloscopes.
         /// </summary>
         /// <remarks>
@@ -61,11 +101,6 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <remarks>
-        /// This constructor will set the name of the sensor to the identity
-        /// string of the instrument, reset the instrument and clear any error
-        /// state in the instrument.
-        /// </remarks>
         /// <param name="path">The VISA resource path of the instrument.</param>
         /// <param name="timeout">The timeout for the connection attempt in
         /// milliseconds. This parameter defaults to
@@ -84,11 +119,6 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <remarks>
-        /// This constructor will set the name of the sensor to the identity
-        /// string of the instrument, reset the instrument and clear any error
-        /// state in the instrument.
-        /// </remarks>
         /// <param name="path">The VISA resource path of the instrument.</param>
         /// <param name="timeout">The timeout for the connection attempt in
         /// milliseconds. This parameter defaults to
@@ -216,8 +246,11 @@ namespace power_overwhelming {
         /// It is safe to call this method on an instrument that has been
         /// disposed.
         /// </remarks>
+        /// <remarks>An override timeout that the implementation uses for
+        /// probing the channels. The previous timeout will be restored before
+        /// the method returns.</remarks>
         /// <returns>The number of channels the instrument has.</returns>
-        std::size_t channels(void) const;
+        std::size_t channels(_In_ const timeout_type timeout = 500) const;
 
         /// <summary>
         /// Retrieves the waveform data for the specified channel.

@@ -87,10 +87,13 @@ void query_rtx(void) {
     }
 
     try {
-        //std::vector<oscilloscope_sensor_definition> definitions;
         std::vector<rtx_sensor> sensors;
         sensors.resize(rtx_sensor::for_all(nullptr, 0));
         rtx_sensor::for_all(sensors.data(), sensors.size());
+
+        for (auto& s : sensors) {
+            std::wcout << L"Enumerated " << s.name() << std::endl;
+        }
 
     //    definitions.push_back(oscilloscope_sensor_definition(L"Test1",
     //        1, 10.0f, 2, 10.0f));
@@ -244,7 +247,7 @@ void query_rtx_instrument(void) {
             //    << i.history_segments()
             //    << std::endl;
             //auto segment1 = i.data(1);
-            int x = 1234567890;
+            int x = 12345678901230;
         }
 
     } catch (std::exception& ex) {

@@ -29,7 +29,7 @@ namespace power_overwhelming {
     /// <remarks>
     /// <para>The <see cref="visa_instrument" /> manages a
     /// <see cref="ViSession" /> on a single device, which might be used by
-    /// multiple <see cref="sensor" />s.
+    /// multiple <see cref="sensor" />s.</para>
     /// </remarks>
     class POWER_OVERWHELMING_API visa_instrument {
 
