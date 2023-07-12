@@ -215,9 +215,15 @@ void visus::power_overwhelming::rtx_sensor::initialise(
     name += L"+CH" + std::to_wstring(definition.channel_current());
     detail::safe_assign(this->_name, name);
 
-    // Configure the channels.
+    // Make sure that time on instrument is in sync.
+    this->_instrument.synchronise_clock()
+        .operation_complete();
+
+    // Configure the channels. We wait separately to reduce the probability
+    // of a timeout.
     this->_instrument.channel(definition.current_channel())
-        .channel(definition.voltage_channel())
+        .operation_complete();
+    this->_instrument.channel(definition.voltage_channel())
         .operation_complete();
 
     // Remember the channel indices such that we can download the data.

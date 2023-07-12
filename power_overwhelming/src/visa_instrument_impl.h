@@ -15,6 +15,7 @@
 
 #include "power_overwhelming/blob.h"
 #include "power_overwhelming/convert_string.h"
+#include "power_overwhelming/visa_instrument.h"
 
 #include "string_functions.h"
 #include "visa_exception.h"
@@ -119,6 +120,16 @@ namespace detail {
         bool enable_system_checks;
 
         /// <summary>
+        /// A callback for asynchronous OPC queries.
+        /// </summary>
+        void (*opc_callback)(visa_instrument&, void *);
+
+        /// <summary>
+        /// The context passed to <see cref="opc_callback" />.
+        /// </summary>
+        void *opc_context;
+
+        /// <summary>
         /// The default resource manager.
         /// </summary>
         ViSession resource_manager;
@@ -167,6 +178,17 @@ namespace detail {
             return this->_counter.load();
         }
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+        void disable_event(_In_ const ViEventType event_type,
+            _In_ const ViUInt16 mechanism = VI_HNDLR);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+        void enable_event(_In_  const ViEventType event_type,
+            _In_ const ViUInt16 mechanism = VI_HNDLR,
+            _In_ const ViEventFilter context = VI_NULL);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
         /// <summary>
         /// Invoke <see cref="viPrintf" /> on the instrument.
         /// </summary>
@@ -192,6 +214,19 @@ namespace detail {
         /// <exception cref="visa_exception">If the operation failed.
         /// </exception>
         std::string identify(void) const;
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+        /// <summary>
+        /// Installs the given callback for the given type of event.
+        /// </summary>
+        /// <param name="event_type"></param>
+        /// <param name="handler"></param>
+        /// <param name="context"></param>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        void install_handler(_In_ const ViEventType event_type,
+            _In_ const ViHndlr handler, _In_ ViAddr context);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
         /// <summary>
         /// Gets the interface type of the underlying session.
@@ -270,6 +305,20 @@ namespace detail {
         /// not be retrieved.</exception>
         int system_error(_Out_ std::string& message) const;
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+        /// <summary>
+        /// Uninstalls the specified callback.
+        /// </summary>
+        /// <param name="event_type"></param>
+        /// <param name="handler"></param>
+        /// <param name="context"></param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        void uninstall_handler(_In_ const ViEventType event_type,
+            _In_ const ViHndlr handler, _In_ ViAddr context);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
         /// <summary>
         /// Write at most <paramref name="cnt" /> bytes of the given data to the
         /// instrument.
@@ -320,7 +369,8 @@ namespace detail {
         /// </summary>
         inline visa_instrument_impl(void) :
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-            enable_system_checks(false), resource_manager(0), session(0),
+            enable_system_checks(false), opc_callback(nullptr),
+            opc_context(nullptr), resource_manager(0), session(0),
             terminal_character('\n'), vxi(false),
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
             _counter(0) { }

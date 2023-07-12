@@ -166,11 +166,12 @@ void query_rtx_instrument(void) {
                 return true;
             });
 
-            i.enable_system_checks();
-            i.synchronise_clock()
-                .reset(true, true)
-                .service_request_status(visa_status_byte::master_status)
+            i.reset(true, true)
+                .enable_system_checks()
                 .timeout(20000);
+            i.synchronise_clock()
+                .service_request_status(visa_status_byte::master_status)
+                .operation_complete();
 
             std::wcout << L"The device has " << i.channels() << L" channels."
                 << std::endl;
@@ -189,6 +190,12 @@ void query_rtx_instrument(void) {
             //    .state(true)
             //    .attenuation(oscilloscope_quantity(1, "V"))
             //    .range(oscilloscope_quantity(5)));
+
+            std::cout << "Main " << std::this_thread::get_id() << std::endl;
+            i.on_operation_complete([](visa_instrument &i, void *c) {
+                std::cout << "bla " << std::this_thread::get_id() << std::endl;
+            });
+            i.operation_complete_async();
 
             i.trigger_position(oscilloscope_quantity(0.0f, "ms"));
             i.trigger(oscilloscope_edge_trigger("EXT")
@@ -247,7 +254,7 @@ void query_rtx_instrument(void) {
             //    << i.history_segments()
             //    << std::endl;
             //auto segment1 = i.data(1);
-            int x = 12345678901230;
+            int x = 1;
         }
 
     } catch (std::exception& ex) {

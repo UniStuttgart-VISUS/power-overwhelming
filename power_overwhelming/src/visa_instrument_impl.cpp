@@ -170,6 +170,32 @@ visus::power_overwhelming::detail::visa_instrument_impl::~visa_instrument_impl(
 }
 
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+/*
+ * visus::power_overwhelming::detail::visa_instrument_impl::disable_event
+ */
+void visus::power_overwhelming::detail::visa_instrument_impl::disable_event(
+        _In_ const ViEventType event_type, _In_ const ViUInt16 mechanism) {
+    visa_exception::throw_on_error(visa_library::instance().viDisableEvent(
+        this->session, event_type, mechanism));
+}
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+/*
+ * visus::power_overwhelming::detail::visa_instrument_impl::enable_event
+ */
+void visus::power_overwhelming::detail::visa_instrument_impl::enable_event(
+        _In_  const ViEventType event_type,
+        _In_ const ViUInt16 mechanism,
+        _In_ const ViEventFilter context) {
+    // Cf. https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vienableevent.html
+    visa_exception::throw_on_error(visa_library::instance().viEnableEvent(
+        this->session, event_type, mechanism, context));
+}
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+
 /*
  * visus::power_overwhelming::detail::visa_instrument_impl::identify
  */
@@ -195,6 +221,20 @@ std::string visus::power_overwhelming::detail::visa_instrument_impl::identify(
     return "";
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
+
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+/*
+ * visus::power_overwhelming::detail::visa_instrument_impl::install_handler
+ */
+void visus::power_overwhelming::detail::visa_instrument_impl::install_handler(
+        _In_ const ViEventType event_type,
+        _In_ const ViHndlr handler,
+        _In_ ViAddr context) {
+    visa_exception::throw_on_error(visa_library::instance().viInstallHandler(
+        this->session, event_type, handler, context));
+}
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
 /*
@@ -429,6 +469,20 @@ int visus::power_overwhelming::detail::visa_instrument_impl::system_error(
     return 0;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
+
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+/*
+ * visus::power_overwhelming::detail::visa_instrument_impl::uninstall_handler
+ */
+void visus::power_overwhelming::detail::visa_instrument_impl::uninstall_handler(
+        _In_ const ViEventType event_type,
+        _In_ const ViHndlr handler,
+        _In_ ViAddr context) {
+    visa_exception::throw_on_error(visa_library::instance().viUninstallHandler(
+        this->session, event_type, handler, context));
+}
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
 /*

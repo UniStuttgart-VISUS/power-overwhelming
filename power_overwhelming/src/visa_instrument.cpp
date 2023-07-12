@@ -430,6 +430,45 @@ std::uint16_t visus::power_overwhelming::visa_instrument::interface_type(
 
 
 /*
+ * visus::power_overwhelming::visa_instrument::on_operation_complete
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::on_operation_complete(
+        _In_opt_ void(*callback)(visa_instrument &, void *),
+        _In_opt_ void *context) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+
+    if (callback != nullptr) {
+        if (impl.opc_callback != callback) {
+            this->on_operation_complete(nullptr, nullptr);
+            assert(impl.opc_callback == nullptr);
+            impl.opc_callback = callback;
+            impl.opc_context = context;
+
+            // TODO: OR
+            this->event_status(visa_event_status::operation_complete);
+            this->service_request_status(visa_status_byte::master_status);
+            impl.install_handler(VI_EVENT_SERVICE_REQ, &on_event, this);
+            impl.enable_event(VI_EVENT_SERVICE_REQ);
+        }
+
+    } else {
+        if (impl.opc_callback != nullptr) {
+            impl.disable_event(VI_EVENT_SERVICE_REQ);
+            impl.uninstall_handler(VI_EVENT_SERVICE_REQ, &on_event, this);
+            // TODO: disable ESE
+
+            impl.opc_callback = nullptr;
+            impl.opc_context = nullptr;
+        }
+    }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
  * visus::power_overwhelming::visa_instrument::operation_complete
  */
 visus::power_overwhelming::visa_instrument&
@@ -441,6 +480,18 @@ visus::power_overwhelming::visa_instrument::operation_complete(void) {
     return *this;
 }
 
+
+/*
+ * visus::power_overwhelming::visa_instrument::operation_complete_async
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::operation_complete_async(void) {
+    // Cf. https://www.rohde-schwarz.com/at/driver-pages/fernsteuerung/measurements-synchronization_231248.html
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    this->write("*OPC\n");
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
 
 
 /*
@@ -879,3 +930,29 @@ void visus::power_overwhelming::visa_instrument::check_system_error(
         this->throw_on_system_error();
     }
 }
+
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+/*
+ * visus::power_overwhelming::visa_instrument::on_event
+ */
+ViStatus _VI_FUNCH visus::power_overwhelming::visa_instrument::on_event(
+        ViSession session, ViEventType event_type, ViEvent event,
+        ViAddr context) {
+    auto that = static_cast<visa_instrument *>(context);
+
+    if ((that != nullptr)
+            && (that->_impl != nullptr)
+            && (that->_impl->opc_callback != nullptr)) {
+        try {
+            that->_impl->opc_callback(*that, that->_impl->opc_context);
+        } catch (...) {
+            // Cf. https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vieventhandler.html
+            detail::visa_library::instance().viClose(event);
+            throw;
+        }
+    }
+
+    return VI_SUCCESS;
+}
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */

@@ -161,7 +161,7 @@ namespace power_overwhelming {
         /// The default timeout for connecting to a VISA instruments, in
         /// milliseconds.
         /// </summary>
-        static constexpr const timeout_type default_timeout = 3000;
+        static constexpr const timeout_type default_timeout = 5000;
 
         /// <summary>
         /// The vendor ID of Rohde &amp; Schwarz.
@@ -491,6 +491,10 @@ namespace power_overwhelming {
         /// without support for VISA.</exception>
         std::uint16_t interface_type(void) const;
 
+        visa_instrument& on_operation_complete(
+            _In_opt_ void (*callback)(visa_instrument &, void *),
+            _In_opt_ void *context = nullptr);
+
         /// <summary>
         /// Issue and wait for an OPC query.
         /// </summary>
@@ -504,6 +508,8 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the operation failed.
         /// </exception>
         visa_instrument& operation_complete(void);
+
+        visa_instrument& operation_complete_async(void);
 
         /// <summary>
         /// Gets the VISA path of the device.
@@ -950,6 +956,11 @@ namespace power_overwhelming {
         void check_system_error(void) const;
 
     private:
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+        static ViStatus _VI_FUNCH on_event(ViSession session,
+            ViEventType event_type, ViEvent event, ViAddr context);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
         detail::visa_instrument_impl *_impl;
     };

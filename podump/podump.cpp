@@ -118,7 +118,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     ::query_hmc8015();
 #endif
 
-#if false
+#if true
     ::query_rtx_instrument();
 #endif
 
