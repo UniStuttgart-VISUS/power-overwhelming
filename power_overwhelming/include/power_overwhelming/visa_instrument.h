@@ -843,7 +843,8 @@ namespace power_overwhelming {
         /// for VISA.
         /// </remarks>
         /// <param name="str">A null-terminated string to write to the device.
-        /// </param>
+        /// If this string does not end with the terminal character for
+        /// commands, it is appended by the method before writing.</param>
         /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
@@ -864,7 +865,8 @@ namespace power_overwhelming {
         /// for VISA.
         /// </remarks>
         /// <param name="str">A null-terminated string to write to the device.
-        /// </param>
+        /// If this string does not end with the terminal character for
+        /// commands, it is appended by the method before writing.</param>
         /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
@@ -875,6 +877,8 @@ namespace power_overwhelming {
         /// can be in a failed state even if the call succeeded. Use
         /// <see cref="throw_on_system_error" /> to check the internal state of
         /// the instrument after the call.</exception>
+        /// <exception cref="std::logic_error">If the library was compiled
+        /// without support for VISA.</exception>
         const visa_instrument& write(_In_z_ const wchar_t *str) const;
 
         /// <summary>

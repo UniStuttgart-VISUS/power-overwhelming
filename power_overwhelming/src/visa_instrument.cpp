@@ -805,10 +805,14 @@ visus::power_overwhelming::visa_instrument::write(
             "not be null.");
     }
 
-    this->check_not_disposed();
+    auto& impl = this->check_not_disposed();
     auto s = convert_string<char>(str);
-    this->_impl->write_all(reinterpret_cast<const byte_type *>(s.data()),
-        s.size());
+
+    if (impl.auto_terminate() && (s.back() != impl.terminal_character)) {
+        s += impl.terminal_character;
+    }
+
+    impl.write_all(reinterpret_cast<const byte_type *>(s.data()), s.size());
     return *this;
 }
 

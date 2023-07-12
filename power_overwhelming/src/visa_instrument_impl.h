@@ -129,6 +129,17 @@ namespace detail {
         ViSession session;
 
         /// <summary>
+        /// The terminal character to be appended to a command when using the
+        /// string-parameterised <see cref="write" /> method.
+        /// </summary>
+        /// <remarks>
+        /// The terminal character is only automatically appended if it is
+        /// non-zero. Setting this field zero will disable the auto-termination
+        /// functionality.
+        /// </remarks>
+        char terminal_character;
+
+        /// <summary>
         /// Remembers whether the device is VXI-capable.
         /// </summary>
         bool vxi;
@@ -138,6 +149,15 @@ namespace detail {
         /// Finalises the instance.
         /// </summary>
         ~visa_instrument_impl(void);
+
+        /// <summary>
+        /// Answer whether auto-termination of string commands is enabled.
+        /// </summary>
+        /// <returns><c>true</c> if a non-zero <see cref="terminal_character" />
+        /// is set, <c>false</c> otherwise.</returns>
+        inline bool auto_terminate(void) const noexcept {
+            return (this->terminal_character != 0);
+        }
 
         /// <summary>
         /// Answer the current value of the reference counter.
@@ -259,12 +279,18 @@ namespace detail {
         /// </param>
         /// <returns>The number of bytes actually written.</returns>
         /// <exception cref="visa_exception">If the operation failed.</exception>
+        /// <
         std::size_t write(_In_reads_bytes_(cnt) const byte_type *buffer,
             _In_ const std::size_t cnt) const;
 
         /// <summary>
         /// Writes the given null-terminated data to the instrument.
         /// </summary>
+        /// <remarks>
+        /// If the command is not terminated with
+        /// <see cref="terminal_character" />, the terminal character will be
+        /// appended to <see cref="str" /> before writing.
+        /// </remarks>
         /// <param name="str">A null-terminated string to write to the device.
         /// </param>
         /// <exception cref="visa_exception">If the operation failed.</exception>
@@ -295,7 +321,7 @@ namespace detail {
         inline visa_instrument_impl(void) :
 #if defined(POWER_OVERWHELMING_WITH_VISA)
             enable_system_checks(false), resource_manager(0), session(0),
-            vxi(false),
+            terminal_character('\n'), vxi(false),
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
             _counter(0) { }
     };

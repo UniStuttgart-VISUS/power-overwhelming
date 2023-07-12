@@ -458,8 +458,17 @@ std::size_t visus::power_overwhelming::detail::visa_instrument_impl::write(
 void visus::power_overwhelming::detail::visa_instrument_impl::write(
         _In_z_ const char *str) const {
     assert(str != nullptr);
-    return this->write_all(reinterpret_cast<const byte_type *>(str),
-        ::strlen(str));
+    auto len = ::strlen(str);
+
+    if (this->auto_terminate() && (str[len - 1] != this->terminal_character)) {
+        std::vector<byte_type> term(len + 1);
+        ::memcpy(term.data(), str, len * sizeof(char));
+        term[len++] = this->terminal_character;
+        return this->write_all(term.data(), len);
+
+    } else {
+        return this->write_all(reinterpret_cast<const byte_type *>(str), len);
+    }
 }
 
 
