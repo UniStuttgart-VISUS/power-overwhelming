@@ -52,7 +52,6 @@ namespace power_overwhelming {
         operation_status = 0x40
     };
 
-
     /// <summary>
     /// Performs a bitwise combination of the given
     /// <see cref="visa_status_byte" />s.
@@ -68,7 +67,6 @@ namespace power_overwhelming {
         return static_cast<enum_type>(l | r);
     }
 
-
     /// <summary>
     /// Performs a bitwise intersection of the given
     /// <see cref="visa_status_byte" />s.
@@ -82,6 +80,17 @@ namespace power_overwhelming {
         auto l = static_cast<std::underlying_type<enum_type>::type>(lhs);
         auto r = static_cast<std::underlying_type<enum_type>::type>(rhs);
         return static_cast<enum_type>(l & r);
+    }
+
+    /// <summary>
+    /// Invers the given <see cref="visa_status_byte" /> flags.
+    /// </summary>
+    /// <param name="status">The flags to invert.</param>
+    /// <returns>The inverse of <paramref name="status" />.</returns>
+    inline visa_status_byte operator ~(_In_ const visa_status_byte status) {
+        typedef std::decay<decltype(status)>::type enum_type;
+        auto s = static_cast<std::underlying_type<enum_type>::type>(status);
+        return static_cast<enum_type>(~s);
     }
 
 } /* namespace power_overwhelming */

@@ -446,9 +446,11 @@ visus::power_overwhelming::visa_instrument::on_operation_complete(
             impl.opc_callback = callback;
             impl.opc_context = context;
 
-            // TODO: OR
-            this->event_status(visa_event_status::operation_complete);
-            this->service_request_status(visa_status_byte::master_status);
+            auto es = this->event_status();
+            this->event_status(es | visa_event_status::operation_complete);
+            auto ss = this->service_request_status();
+            this->service_request_status(ss | visa_status_byte::master_status);
+
             impl.install_handler(VI_EVENT_SERVICE_REQ, &on_event, this);
             impl.enable_event(VI_EVENT_SERVICE_REQ);
         }
@@ -457,7 +459,13 @@ visus::power_overwhelming::visa_instrument::on_operation_complete(
         if (impl.opc_callback != nullptr) {
             impl.disable_event(VI_EVENT_SERVICE_REQ);
             impl.uninstall_handler(VI_EVENT_SERVICE_REQ, &on_event, this);
-            // TODO: disable ESE
+
+            auto es = this->event_status();
+            this->event_status(es | ~visa_event_status::operation_complete);
+            // Note: While we disable the OPC event flag, we do not disable
+            // the events on master status, because this could be used for
+            // something else. The caller must do that on his own if this is
+            // desired.
 
             impl.opc_callback = nullptr;
             impl.opc_context = nullptr;
