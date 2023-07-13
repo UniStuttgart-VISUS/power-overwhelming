@@ -36,7 +36,7 @@ namespace power_overwhelming {
         /// the measurement. All other instrumens are configured as slaves and
         /// receive the trigger signal via the external trigger input.</returns>
         rtx_instrument& configure_instrument(
-            _In_reads_(cnt) const rtx_sensor *sensors,
+            _In_reads_(cnt) rtx_sensor *sensors,
             _In_ const std::size_t cnt,
             _In_ const rtx_instrument_configuration& configuration);
 

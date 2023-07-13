@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <cassert>
 #include <limits>
+#include <memory>
+#include <set>
 #include <stdexcept>
 #include <utility>
 
@@ -24,7 +26,7 @@
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_sensor::configure_instrument(
-        _In_reads_(cnt) const rtx_sensor *sensors,
+        _In_reads_(cnt) rtx_sensor *sensors,
         _In_ const std::size_t cnt,
         _In_ const rtx_instrument_configuration& configuration) {
     if ((sensors == nullptr) || (cnt < 1)) {
@@ -32,7 +34,24 @@ visus::power_overwhelming::rtx_sensor::configure_instrument(
             "instrument for must not be empty.");
     }
 
-    throw "TODO";
+    std::set<rtx_instrument *> instruments;
+    for (std::size_t i = 0; i < cnt; ++i) {
+        instruments.insert(std::addressof(sensors[i]._instrument));
+    }
+
+    auto first = true;
+    auto slave_config = configuration.as_slave();
+
+    for (auto i : instruments) {
+        if (first) {
+            first = false;
+            configuration.apply(*i);
+        } else {
+            slave_config.apply(*i);
+        }
+    }
+
+    return **(instruments.begin());
 }
 
 
