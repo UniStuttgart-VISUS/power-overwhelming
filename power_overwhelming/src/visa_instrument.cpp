@@ -941,15 +941,25 @@ ViStatus _VI_FUNCH visus::power_overwhelming::visa_instrument::on_event(
         ViAddr context) {
     auto that = static_cast<visa_instrument *>(context);
 
-    if ((that != nullptr)
+    if ((event_type == VI_EVENT_SERVICE_REQ)
+            && (that != nullptr)
             && (that->_impl != nullptr)
             && (that->_impl->opc_callback != nullptr)) {
         try {
-            // https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vi_event_service_req.html
+            // According to
+            // https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vi_event_service_req.html,
+            // we must read the status byte here for the callback to work. We
+            // have to do that anyway, because this seems to be the only way
+            // to distinguish between OPC events and other status changes.
             auto status = that->status();
-            that->_impl->opc_callback(*that, that->_impl->opc_context);
+            if ((status & visa_status_byte::operation_status)
+                    != visa_status_byte::none) {
+                that->_impl->opc_callback(*that, that->_impl->opc_context);
+            }
         } catch (...) {
-            // Cf. https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vieventhandler.html
+            // If the event handler does not return, which is the case when we
+            // throw an exception, we must free the event object manually. Cf.
+            // https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vieventhandler.html
             detail::visa_library::instance().viClose(event);
             throw;
         }

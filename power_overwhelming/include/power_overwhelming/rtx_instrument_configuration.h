@@ -44,9 +44,12 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="time_range">The time range the oscilloscope should
         /// acquire after it has been triggers.</param>
-        /// <param name="timeout">The timeout of the instrument. If this value
-        /// is zero, which is the default, the timeout will not be modified.
-        /// </param>
+        /// <param name="timeout">The timeout of the instrument (for connections
+        /// and for I/O operations including <c>*OPC?</c> queries. If this value
+        /// is zero, which is the default, the timeout will not be modified. Be
+        /// aware that you must be able to wait for acqusitions to complete, so
+        /// the timeout should be larger than the time range you intend to
+        /// acquire.</param>
         explicit rtx_instrument_configuration(
             _In_ const oscilloscope_quantity time_range,
             _In_ visa_instrument::timeout_type timeout = 0);
@@ -60,9 +63,12 @@ namespace power_overwhelming {
         /// applied to the instrument.</param>
         /// <param name="trigger">Configures how the instrument will be
         /// triggered.</param>
-        /// <param name="timeout">The timeout of the instrument. If this value
-        /// is zero, which is the default, the timeout will not be modified.
-        /// </param>
+        /// <param name="timeout">The timeout of the instrument (for connections
+        /// and for I/O operations including <c>*OPC?</c> queries. If this value
+        /// is zero, which is the default, the timeout will not be modified. Be
+        /// aware that you must be able to wait for acqusitions to complete, so
+        /// the timeout should be larger than the time range you intend to
+        /// acquire.</param>
         rtx_instrument_configuration(
             _In_ const oscilloscope_quantity time_range,
             _In_ const oscilloscope_single_acquisition& acquisition,

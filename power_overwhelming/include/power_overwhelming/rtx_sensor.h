@@ -50,14 +50,15 @@ namespace power_overwhelming {
         /// instruments that can be enumerated via VISA.
         /// </summary>
         /// <param name="dst ">An array receiving the sensors. If this is
-        /// <c>nullptr</c>, nothing is returned.</param>
-        /// <param name="cnt_sensors">The number of sensors that can be stored in
-        /// <paramref name="out_sensors" />.</param>
+        /// <c>nullptr</c>, nothing is returned. This buffer must be able to
+        /// hold at least <paramref name="cnt" /> elements.</param>
+        /// <param name="cnt">The number of sensors that can be stored in
+        /// <paramref name="dst" />.</param>
         /// <param name="timeout">The timeout in milliseconds for establishing a
         /// connection to each instrument that was found. This parameter defaults
-        /// to 3000.</param>
+        /// to <see cref="visa_instrument::default_timeout" />.</param>
         /// <returns>The number of RTA/RTB instruments found, regardless of how
-        /// many have been returned to <paramref name="out_sensors" />.</returns>
+        /// many have been returned to <paramref name="dst" />.</returns>
         static std::size_t for_all(
             _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_sensor *dst,
             _In_ std::size_t cnt,
@@ -87,7 +88,8 @@ namespace power_overwhelming {
         /// case all instruments are known to have the same number of channels.
         /// </param>
         /// <param name="timeout">A timeout in milliseconds which is used when
-        /// connecting to the instrument.</param>
+        /// connecting to the instrument. This parameter defaults to
+        /// <see cref="visa_instrument::default_timeout" />.</param>
         /// <returns>The number of sensor definitions available, regardless of
         /// whether all of them were written or not.</returns>
         static std::size_t get_definitions(
@@ -103,12 +105,21 @@ namespace power_overwhelming {
         /// Determines all possible <see cref="rtx_sensor" />s from instruments
         /// connected to the local machine.
         /// </summary>
-        /// <param name="out_definitions"></param>
-        /// <param name="cnt"></param>
-        /// <param name="voltage_attenuation"></param>
-        /// <param name="current_attenuation"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
+        /// <param name="dst">A buffer to receive at most
+        /// <paramref name="cnt" /> definitions for oscilloscope sensors. It
+        /// is safe to pass <c>nullptr</c>, in which case nothing will be
+        /// written.</param>
+        /// <param name="cnt">The number of elements that can be written to
+        /// <paramref name="dst" />.</param>
+        /// <param name="voltage_attenuation">The attenuation that will be
+        /// configured for probes measuring voltage.</param>
+        /// <param name="current_attenuation">The attenuation that will be
+        /// configurated for probes measuring current.</param>
+        /// <param name="timeout">A timeout in milliseconds which is used when
+        /// connecting to the instrument. This parameter defaults to
+        /// <see cref="visa_instrument::default_timeout" />.</param>
+        /// <returns>The number of sensor definitions available, regardless of
+        /// whether all of them were written or not.</returns>
         static std::size_t get_definitions(
             _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_sensor_definition *dst,
             _In_ const std::size_t cnt,
