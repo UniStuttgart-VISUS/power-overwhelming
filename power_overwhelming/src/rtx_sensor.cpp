@@ -33,18 +33,22 @@ visus::power_overwhelming::rtx_sensor::configure_instrument(
         throw std::invalid_argument("The list of sensors to configure the "
             "instrument for must not be empty.");
     }
+    if (configuration.slave()) {
+        throw std::invalid_argument("The configuration provided must not "
+            "be a configuration for a slave instrument.");
+    }
 
     std::set<rtx_instrument *> instruments;
     for (std::size_t i = 0; i < cnt; ++i) {
         instruments.insert(std::addressof(sensors[i]._instrument));
     }
 
-    auto first = true;
+    auto master = true;
     auto slave_config = configuration.as_slave();
 
     for (auto i : instruments) {
-        if (first) {
-            first = false;
+        if (master) {
+            master = false;
             configuration.apply(*i);
         } else {
             slave_config.apply(*i);

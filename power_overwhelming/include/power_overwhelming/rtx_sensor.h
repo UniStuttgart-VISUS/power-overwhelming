@@ -35,6 +35,11 @@ namespace power_overwhelming {
         /// master instrument and needs to be triggered in order to initiate
         /// the measurement. All other instrumens are configured as slaves and
         /// receive the trigger signal via the external trigger input.</returns>
+        /// <exception cref="invalid_argument">If the
+        /// <paramref name="sensors" /> array is <c>nullptr</c>, or if
+        /// <paramref name="cnt" /> is zero, or if
+        /// <paramref name="configuration" /> is a configuration for a slave
+        /// instrument.</exception>
         rtx_instrument& configure_instrument(
             _In_reads_(cnt) rtx_sensor *sensors,
             _In_ const std::size_t cnt,
