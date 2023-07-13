@@ -54,19 +54,65 @@ namespace detail {
 
 
 /*
+ * visus::power_overwhelming::rtx_instrument::create
+ */
+visus::power_overwhelming::rtx_instrument
+visus::power_overwhelming::rtx_instrument::create(_In_z_ const wchar_t *path,
+        _In_ void (*on_new)(rtx_instrument &, void *),
+        _In_opt_ void *context,
+        _In_ const timeout_type timeout) {
+    if (on_new == nullptr) {
+        throw std::invalid_argument("The callback for new instruments must not "
+            "be null.");
+    }
+
+    auto is_new = false;
+    rtx_instrument retval(is_new, path, timeout);
+
+    if (is_new) {
+        on_new(retval, context);
+    }
+
+    return retval;
+}
+
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::create
+ */
+visus::power_overwhelming::rtx_instrument
+visus::power_overwhelming::rtx_instrument::create(_In_z_ const char *path,
+        _In_ void (*on_new)(rtx_instrument &, void *),
+        _In_opt_ void *context,
+        _In_ const timeout_type timeout) {
+    if (on_new == nullptr) {
+        throw std::invalid_argument("The callback for new instruments must not "
+            "be null.");
+    }
+
+    auto is_new = false;
+    rtx_instrument retval(is_new, path, timeout);
+
+    if (is_new) {
+        on_new(retval, context);
+    }
+
+    return retval;
+}
+
+
+
+/*
  * visus::power_overwhelming::rtx_instrument::create_and_reset_new
  */
 visus::power_overwhelming::rtx_instrument
 visus::power_overwhelming::rtx_instrument::create_and_reset_new(
         _In_z_ const wchar_t *path, _In_ const timeout_type timeout) {
-    auto is_new = false;
-    rtx_instrument retval(is_new, path, timeout);
-
-    if (is_new) {
-        retval.reset(true, true);
-    }
-
-    return retval;
+    return rtx_instrument::create(path,
+        [](rtx_instrument& i, void *) { i.reset(true, true); },
+        nullptr,
+        timeout);
 }
 
 
@@ -76,14 +122,10 @@ visus::power_overwhelming::rtx_instrument::create_and_reset_new(
 visus::power_overwhelming::rtx_instrument
 visus::power_overwhelming::rtx_instrument::create_and_reset_new(
         _In_z_ const char *path, _In_ const timeout_type timeout) {
-    auto is_new = false;
-    rtx_instrument retval(is_new, path, timeout);
-
-    if (is_new) {
-        retval.reset(true, true);
-    }
-
-    return retval;
+    return rtx_instrument::create(path,
+        [](rtx_instrument &i, void *) { i.reset(true, true); },
+        nullptr,
+        timeout);
 }
 
 

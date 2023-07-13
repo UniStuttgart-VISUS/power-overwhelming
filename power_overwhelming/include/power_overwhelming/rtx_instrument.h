@@ -43,6 +43,60 @@ namespace power_overwhelming {
     public:
 
         /// <summary>
+        /// Creates a new istrument and invokes the given callback if the
+        /// instrument was newly opened in contrast to be reused from other
+        /// instances.
+        /// </summary>
+        /// <param name="path">The VISA resource path of the instrument.</param>
+        /// <param name="on_new">The callback to be invoked if the instrument
+        /// is new.</param>
+        /// <param name="context">A user-defined context pointer to be passed
+        /// to the <see cref="on_new" /> callback.</param>
+        /// <param name="timeout">The timeout for the connection attempt in
+        /// milliseconds. This parameter defaults to
+        /// <see cref="default_timeout" />.</param>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c> or if <paramref name="on_new" /> is
+        /// <c>nullptr</c>.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the sensor state
+        /// could not be allocated.</exception>
+        /// <exception cref="std::system_error">If the VISA library could not be
+        /// loaded.</exception>
+        /// <exception cref="visa_exception">If the sensor could not be
+        /// initialised.</exception>
+        static rtx_instrument create(_In_z_ const wchar_t *path,
+            _In_ void (*on_new)(rtx_instrument&, void *),
+            _In_opt_ void *context = nullptr,
+            _In_ const timeout_type timeout = default_timeout);
+
+        /// <summary>
+        /// Creates a new istrument and invokes the given callback if the
+        /// instrument was newly opened in contrast to be reused from other
+        /// instances.
+        /// </summary>
+        /// <param name="path">The VISA resource path of the instrument.</param>
+        /// <param name="on_new">The callback to be invoked if the instrument
+        /// is new.</param>
+        /// <param name="context">A user-defined context pointer to be passed
+        /// to the <see cref="on_new" /> callback.</param>
+        /// <param name="timeout">The timeout for the connection attempt in
+        /// milliseconds. This parameter defaults to
+        /// <see cref="default_timeout" />.</param>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c> or if <paramref name="on_new" /> is
+        /// <c>nullptr</c>.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the sensor state
+        /// could not be allocated.</exception>
+        /// <exception cref="std::system_error">If the VISA library could not be
+        /// loaded.</exception>
+        /// <exception cref="visa_exception">If the sensor could not be
+        /// initialised.</exception>
+        static rtx_instrument create(_In_z_ const char *path,
+            _In_ void (*on_new)(rtx_instrument&, void *),
+            _In_opt_ void *context = nullptr,
+            _In_ const timeout_type timeout = default_timeout);
+
+        /// <summary>
         /// Creates a new istrument and perform a full reset of the device and
         /// the status and the error queue provided there is no other instrument
         /// instance running on the same hardware yet.
