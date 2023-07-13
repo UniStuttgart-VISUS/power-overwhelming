@@ -254,7 +254,7 @@ void query_rtx_instrument(void) {
             //    << i.history_segments()
             //    << std::endl;
             //auto segment1 = i.data(1);
-            int x = 1;
+            int x = 123;
         }
 
     } catch (std::exception& ex) {

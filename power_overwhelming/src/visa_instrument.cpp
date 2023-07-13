@@ -945,6 +945,8 @@ ViStatus _VI_FUNCH visus::power_overwhelming::visa_instrument::on_event(
             && (that->_impl != nullptr)
             && (that->_impl->opc_callback != nullptr)) {
         try {
+            // https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vi_event_service_req.html
+            auto status = that->status();
             that->_impl->opc_callback(*that, that->_impl->opc_context);
         } catch (...) {
             // Cf. https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vieventhandler.html

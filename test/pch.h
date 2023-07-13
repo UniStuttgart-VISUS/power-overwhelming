@@ -23,6 +23,7 @@
 #include <power_overwhelming/csv_iomanip.h>
 #include <power_overwhelming/measurement.h>
 #include <power_overwhelming/measurement_data.h>
+#include <power_overwhelming/measurement_data_series.h>
 #include <power_overwhelming/nvml_sensor.h>
 #include <power_overwhelming/rtx_instrument_configuration.h>
 #include <power_overwhelming/rtx_sensor_definition.h>
