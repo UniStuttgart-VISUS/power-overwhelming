@@ -195,11 +195,18 @@ namespace detail {
             _In_ const ViUInt16 mechanism = VI_HNDLR);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
-//#if defined(POWER_OVERWHELMING_WITH_VISA)
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+        /// <summary>
+        /// Enable delivery of events of the specified type using the specified
+        /// mechanism.
+        /// </summary>
+        /// <param name="event_type"></param>
+        /// <param name="mechanism"></param>
+        /// <param name="context"></param>
         void enable_event(_In_  const ViEventType event_type,
             _In_ const ViUInt16 mechanism = VI_HNDLR,
             _In_ const ViEventFilter context = VI_NULL);
-//#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
         /// <summary>
         /// Invoke <see cref="viPrintf" /> on the instrument.
