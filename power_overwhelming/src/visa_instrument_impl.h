@@ -305,6 +305,13 @@ namespace detail {
         /// not be retrieved.</exception>
         int system_error(_Out_ std::string& message) const;
 
+        /// <summary>
+        /// Checks the instrument's state and throws a
+        /// <see cref="std::runtime_exception" /> if the device is in an error
+        /// state.
+        /// </summary>
+        void throw_on_system_error(void) const;
+
 #if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>
         /// Uninstalls the specified callback.

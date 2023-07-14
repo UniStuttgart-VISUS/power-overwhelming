@@ -735,32 +735,11 @@ int visus::power_overwhelming::visa_instrument::system_error(void) const {
  */
 void visus::power_overwhelming::visa_instrument::throw_on_system_error(
         void) const {
-    if (this->_impl == nullptr) {
-        // This method is lenient, so if the instrument is invalid, do not
-        // check anything.
-        return;
+    // This method is lenient, so if the instrument is invalid, do not check
+    // anything and do not raise an exception either.
+    if (this->_impl != nullptr) {
+        this->_impl->throw_on_system_error();
     }
-
-    auto status = (this->status() & visa_status_byte::error_queue_not_empty);
-    if (status == visa_status_byte::none) {
-        // If the error queue is empty, do not retrieve the status.
-        return;
-    }
-
-    std::string message;
-    auto error = this->_impl->system_error(message);
-    assert(error != 0);
-    if (error == 0) {
-        // If there is no error, which should never happen, bail out, too.
-        return;
-    }
-
-    if (message.empty()) {
-        // If we have no custom message, display the error code.
-        message = std::to_string(error);
-    }
-
-    throw std::runtime_error(message);
 }
 
 

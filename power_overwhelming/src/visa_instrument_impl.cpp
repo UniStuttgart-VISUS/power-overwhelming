@@ -471,6 +471,49 @@ int visus::power_overwhelming::detail::visa_instrument_impl::system_error(
 }
 
 
+/*
+ * ...::detail::visa_instrument_impl::throw_on_system_error
+ */
+void visus::power_overwhelming::detail::visa_instrument_impl::throw_on_system_error(
+        void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    static const auto have_error = static_cast<ViUInt16>(
+        visa_status_byte::error_queue_not_empty);
+
+    // First of all, determine the instrument status to check whether there i
+    // something in the queue to retrieve.
+    ViUInt16 status;
+    visa_exception::throw_on_error(detail::visa_library::instance()
+        .viReadSTB(this->session, &status));
+
+    if ((status & have_error) == 0) {
+        // If the error queue is empty, do not retrieve the status.
+        return;
+    }
+
+    std::string message;
+    auto error = this->system_error(message);
+    assert(error != 0);
+    if (error == 0) {
+        // If there is no error, which should never happen, bail out, too. We
+        // check this condition although this code path should be unreachable in
+        // order to prevent the infamous "The operation completed successfully"
+        // exceptions. If the above assertion is violated, callers might want to
+        // check whether they are concurrently clearing the error queue, which
+        // would be a bug.
+        return;
+    }
+
+    if (message.empty()) {
+        // If we have no custom message, display the error code.
+        message = std::to_string(error);
+    }
+
+    throw std::runtime_error(message);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
 #if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * visus::power_overwhelming::detail::visa_instrument_impl::uninstall_handler
