@@ -35,6 +35,7 @@ visus::power_overwhelming::visa_instrument::find_resources(
         throw std::invalid_argument("The instrument query cannot be null.");
     }
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto q = convert_string<char>(query);
     auto devices = detail::visa_library::instance().find_resource(q.c_str());
 
@@ -59,6 +60,10 @@ visus::power_overwhelming::visa_instrument::find_resources(
 
     *cur = 0;
 
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    blob retval;
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+
     return retval;
 }
 
@@ -74,6 +79,7 @@ visus::power_overwhelming::visa_instrument::find_resources(
         throw std::invalid_argument("The instrument query cannot be null.");
     }
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto devices = detail::visa_library::instance().find_resource(query);
 
     const auto len = std::accumulate(devices.begin(), devices.end(),
@@ -93,6 +99,10 @@ visus::power_overwhelming::visa_instrument::find_resources(
     }
 
     *cur = 0;
+
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    blob retval;
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
     return retval;
 }
@@ -577,6 +587,7 @@ visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::reset(
         _In_ const bool flush_buffers,
         _In_ const bool clear_status) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     if (flush_buffers) {
         this->clear();
     }
@@ -586,6 +597,7 @@ visus::power_overwhelming::visa_instrument::reset(
     }
 
     this->query("*RST;*OPC?\n");
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 
@@ -626,6 +638,7 @@ visus::power_overwhelming::visa_instrument::service_request_status(void) const {
 visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::synchronise_clock(
         _In_ const bool utc) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 #if defined(_WIN32)
     SYSTEMTIME time;
     if (utc) {
@@ -658,6 +671,7 @@ visus::power_overwhelming::visa_instrument::synchronise_clock(
     this->check_not_disposed().format("SYST:DATE %d, %d, %d\n",
         time->tm_year + 1900, time->tm_mon + 1, time->tm_mday);
 #endif /* defined(_WIN32) */
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     return *this;
 }
@@ -792,24 +806,6 @@ std::size_t visus::power_overwhelming::visa_instrument::write(
     return this->check_not_disposed().write(buffer, cnt);
 }
 
-
-/*
- * visus::power_overwhelming::visa_instrument::write_all
- */
-const visus::power_overwhelming::visa_instrument&
-visus::power_overwhelming::visa_instrument::write_all(
-        _In_reads_bytes_(cnt) const byte_type *buffer,
-        _In_ const std::size_t cnt) const {
-    if (buffer == nullptr) {
-        throw std::invalid_argument("The buffer being written to the "
-            "instrument must not be null.");
-    }
-
-    this->check_not_disposed().write_all(buffer, cnt);
-    return *this;
-}
-
-
 /*
  * visus::power_overwhelming::visa_instrument::write
  */
@@ -852,6 +848,23 @@ visus::power_overwhelming::visa_instrument::write(
 
 
 /*
+ * visus::power_overwhelming::visa_instrument::write_all
+ */
+const visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::write_all(
+        _In_reads_bytes_(cnt) const byte_type *buffer,
+        _In_ const std::size_t cnt) const {
+    if (buffer == nullptr) {
+        throw std::invalid_argument("The buffer being written to the "
+            "instrument must not be null.");
+    }
+
+    this->check_not_disposed().write_all(buffer, cnt);
+    return *this;
+}
+
+
+/*
  * visus::power_overwhelming::visa_instrument::operator =
  */
 visus::power_overwhelming::visa_instrument&
@@ -864,6 +877,7 @@ visus::power_overwhelming::visa_instrument::operator =(
 
     return *this;
 }
+
 
 /*
  * visus::power_overwhelming::visa_instrument::operator bool

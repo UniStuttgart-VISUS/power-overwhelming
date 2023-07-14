@@ -146,6 +146,7 @@ std::size_t visus::power_overwhelming::detail::visa_instrument_impl::foreach(
 
     std::size_t retval = 0;
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     std::lock_guard<decltype(_lock_instruments)> l(_lock_instruments);
     for (auto& i : _instruments) {
         ++retval;
@@ -153,6 +154,7 @@ std::size_t visus::power_overwhelming::detail::visa_instrument_impl::foreach(
             break;
         }
     }
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     return retval;
 }
