@@ -531,7 +531,11 @@ visus::power_overwhelming::visa_instrument::query(
         _In_reads_bytes_(cnt) const byte_type *query,
         _In_ const std::size_t cnt,
         _In_ const std::size_t buffer_size) const {
-    return this->write_all(query, cnt).read_all(buffer_size);
+    auto& impl = this->check_not_disposed();
+    impl.write(query, cnt);
+    // Note: we cannot check the system state in case of a query as this is a
+    // query in itself that cannot overlap.
+    return this->read_all(buffer_size);
 }
 
 
@@ -541,7 +545,11 @@ visus::power_overwhelming::visa_instrument::query(
 visus::power_overwhelming::blob
 visus::power_overwhelming::visa_instrument::query(_In_z_ const char *query,
         _In_ const std::size_t buffer_size) const {
-    return this->write(query).read_all(buffer_size);
+    auto& impl = this->check_not_disposed();
+    impl.write(query);
+    // Note: we cannot check the system state in case of a query as this is a
+    // query in itself that cannot overlap.
+    return this->read_all(buffer_size);
 }
 
 
@@ -551,7 +559,12 @@ visus::power_overwhelming::visa_instrument::query(_In_z_ const char *query,
 visus::power_overwhelming::blob
 visus::power_overwhelming::visa_instrument::query(_In_z_ const wchar_t *query,
         _In_ const std::size_t buffer_size) const {
-    return this->write(query).read_all(buffer_size);
+    auto& impl = this->check_not_disposed();
+    auto q = convert_string<char>(query);
+    impl.write(q.c_str());
+    // Note: we cannot check the system state in case of a query as this is a
+    // query in itself that cannot overlap.
+    return this->read_all(buffer_size);
 }
 
 
@@ -566,7 +579,8 @@ std::size_t visus::power_overwhelming::visa_instrument::read(
             "instrument must not be null.");
     }
 
-    return this->check_not_disposed().read(buffer, cnt);
+    auto& impl = this->check_not_disposed();
+    return impl.read(buffer, cnt);
 }
 
 
@@ -576,7 +590,8 @@ std::size_t visus::power_overwhelming::visa_instrument::read(
 visus::power_overwhelming::blob
 visus::power_overwhelming::visa_instrument::read_all(
         _In_ const std::size_t buffer_size) const {
-    return this->check_not_disposed().read_all(buffer_size);
+    auto& impl = this->check_not_disposed();
+    return impl.read_all(buffer_size);
 }
 
 
@@ -803,8 +818,12 @@ std::size_t visus::power_overwhelming::visa_instrument::write(
             "instrument must not be null.");
     }
 
-    return this->check_not_disposed().write(buffer, cnt);
+    auto& impl = this->check_not_disposed();
+    auto retval = impl.write(buffer, cnt);
+    impl.check_system_error();
+    return retval;
 }
+
 
 /*
  * visus::power_overwhelming::visa_instrument::write
@@ -817,7 +836,9 @@ visus::power_overwhelming::visa_instrument::write(
             "not be null.");
     }
 
-    this->check_not_disposed().write(str);
+    auto& impl = this->check_not_disposed();
+    impl.write(str);
+    impl.check_system_error();
     return *this;
 }
 
@@ -842,6 +863,7 @@ visus::power_overwhelming::visa_instrument::write(
     }
 
     impl.write_all(reinterpret_cast<const byte_type *>(s.data()), s.size());
+    impl.check_system_error();
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
@@ -859,7 +881,9 @@ visus::power_overwhelming::visa_instrument::write_all(
             "instrument must not be null.");
     }
 
-    this->check_not_disposed().write_all(buffer, cnt);
+    auto& impl = this->check_not_disposed();
+    impl.write_all(buffer, cnt);
+    impl.check_system_error();
     return *this;
 }
 

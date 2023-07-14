@@ -40,7 +40,7 @@ namespace power_overwhelming {
         /// <paramref name="cnt" /> is zero, or if
         /// <paramref name="configuration" /> is a configuration for a slave
         /// instrument.</exception>
-        rtx_instrument& configure_instrument(
+        static rtx_instrument& configure_instrument(
             _In_reads_(cnt) rtx_sensor *sensors,
             _In_ const std::size_t cnt,
             _In_ const rtx_instrument_configuration& configuration);
@@ -49,11 +49,29 @@ namespace power_overwhelming {
         /// Create sensor objects for all Rohde &amp; Schwarz RTA/RTB
         /// instruments that can be enumerated via VISA.
         /// </summary>
+        /// <remarks>
+        /// <para>This method will apply a default configuration to all
+        /// channels, which assume the voltage probe attached to all odd
+        /// channels and the corresponding current probe to the next even
+        /// channel. If the number of channels is not divisible by two, the
+        /// channels at the end are unused.</para>
+        /// <para>Aside from the channel index and the quantity (voltage or
+        /// current), the default configuration of
+        /// <see cref="oscilloscope_channel" /> is applied to each channel. If
+        /// you need to customise the probes, use <see cref="get_definitions" />
+        /// with a custom template and create the sensors from there.</para>
+        /// </remarks>
         /// <param name="dst ">An array receiving the sensors. If this is
         /// <c>nullptr</c>, nothing is returned. This buffer must be able to
         /// hold at least <paramref name="cnt" /> elements.</param>
         /// <param name="cnt">The number of sensors that can be stored in
         /// <paramref name="dst" />.</param>
+        /// <param name="time_range">The time range in milliseconds for a
+        /// single acquisition, that is configured on all instruments using the
+        /// <see cref="rtx_instrument_configuration" />. Callers can modify
+        /// this parts afterwards by passing all sensors to
+        /// <see cref="configure_instrument" /> with another configuration
+        /// object.</param>
         /// <param name="timeout">The timeout in milliseconds for establishing a
         /// connection to each instrument that was found. This parameter defaults
         /// to <see cref="visa_instrument::default_timeout" />.</param>
@@ -62,6 +80,7 @@ namespace power_overwhelming {
         static std::size_t for_all(
             _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_sensor *dst,
             _In_ std::size_t cnt,
+            _In_ const visa_instrument::timeout_type time_range = 200,
             _In_ const visa_instrument::timeout_type timeout
             = visa_instrument::default_timeout);
 

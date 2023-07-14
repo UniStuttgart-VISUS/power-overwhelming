@@ -32,6 +32,8 @@ visus::power_overwhelming::detail::visa_instrument_impl::create(
             *is_new = false;
         }
 
+        assert(retval->_counter > 0);
+
     } else {
         // If no existing scope was found or if the previous scope has been
         // deleted, create a new one.
@@ -88,6 +90,8 @@ visus::power_overwhelming::detail::visa_instrument_impl::create(
         if (is_new != nullptr) {
             *is_new = true;
         }
+
+        assert(retval->_counter == 0);
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
         throw std::logic_error(no_visa_error_msg);
@@ -285,7 +289,6 @@ std::size_t visus::power_overwhelming::detail::visa_instrument_impl::read(
             buffer,
             static_cast<ViUInt32>(cnt),
             &retval));
-    this->check_system_error();
     return retval;
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
@@ -313,7 +316,6 @@ visus::power_overwhelming::detail::visa_instrument_impl::read_all(
             retval.as<ViByte>(offset),
             static_cast<ViUInt32>(retval.size() - offset),
             &read);
-        this->check_system_error();
         offset += read;
 
         if (status == VI_SUCCESS_MAX_CNT) {
@@ -562,7 +564,6 @@ std::size_t visus::power_overwhelming::detail::visa_instrument_impl::write(
             buffer,
             static_cast<ViUInt32>(cnt),
             &retval));
-    this->check_system_error();
     return retval;
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
@@ -606,7 +607,6 @@ void visus::power_overwhelming::detail::visa_instrument_impl::write_all(
                 buffer + total,
                 cnt - total,
                 &last));
-        this->check_system_error();
         total += last;
     }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */

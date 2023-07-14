@@ -277,9 +277,8 @@ namespace detail {
         /// Read from the instrument into the given buffer.
         /// </summary>
         /// <remarks>
-        /// <para>This method will perform a check of the system state on
-        /// completion if <see cref="enable_system_checks" /> is <c>true</c>.
-        /// </para>
+        /// <para>This method never checks the system state, because it is
+        /// required for implementing the check of the system state.</para>
         /// </remarks>
         /// <param name="buffer">The buffer to write the data to.</param>
         /// <param name="cnt">The size of the buffer in bytes.</param>
@@ -294,8 +293,8 @@ namespace detail {
         /// Read a full response.
         /// </summary>
         /// <remarks>
-        /// <para>This method will perform a check of the system state on
-        /// completion if <see cref="enable_system_checks" /> is <c>true</c>.
+        /// <para>This method never checks the system state, because it is
+        /// required for implementing the check of the system state.</para>
         /// </para>
         /// </remarks>
         /// <param name="buffer_size">The size of the read buffer being used. If
@@ -311,8 +310,8 @@ namespace detail {
         /// bytes to follow.
         /// </summary>
         /// <remarks>
-        /// <para>This method will perform a check of the system state on
-        /// completion if <see cref="enable_system_checks" /> is <c>true</c>.
+        /// <para>This method never checks the system state, because it is
+        /// required for implementing the check of the system state.</para>
         /// </para>
         /// </remarks>
         /// <returns>The binary data excluding the length marker.</returns>
@@ -352,6 +351,12 @@ namespace detail {
         /// <see cref="std::runtime_exception" /> if the device is in an error
         /// state.
         /// </summary>
+        /// <remarks>
+        /// <para><b>Important:</c> This method must not be called from within
+        /// any of the raw read or write functions in this implementation class
+        /// as this will cause an infinite recursion. The <see cref="format" />
+        /// template is OK as it is not used here.</para>
+        /// </remarks>
         void throw_on_system_error(void) const;
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
@@ -378,8 +383,8 @@ namespace detail {
         /// instrument.
         /// </summary>
         /// <remarks>
-        /// <para>This method will perform a check of the system state on
-        /// completion if <see cref="enable_system_checks" /> is <c>true</c>.
+        /// <para>This method never checks the system state, because it is
+        /// required for implementing the check of the system state.</para>
         /// </para>
         /// </remarks>
         /// <param name="buffer">The buffer holding the data to write.</param>
@@ -398,8 +403,8 @@ namespace detail {
         /// <para>If the command is not terminated with
         /// <see cref="terminal_character" />, the terminal character will be
         /// appended to <see cref="str" /> before writing.</para>
-        /// <para>This method will perform a check of the system state on
-        /// completion if <see cref="enable_system_checks" /> is <c>true</c>.
+        /// <para>This method never checks the system state, because it is
+        /// required for implementing the check of the system state.</para>
         /// </para>
         /// </remarks>
         /// <param name="str">A null-terminated string to write to the device.
@@ -411,8 +416,8 @@ namespace detail {
         /// Write the given data to the instrument.
         /// </summary>
         /// <remarks>
-        /// <para>This method will perform a check of the system state on
-        /// completion if <see cref="enable_system_checks" /> is <c>true</c>.
+        /// <para>This method never checks the system state, because it is
+        /// required for implementing the check of the system state.</para>
         /// </para>
         /// </remarks>
         /// <param name="buffer">The buffer holding the data to write.</param>

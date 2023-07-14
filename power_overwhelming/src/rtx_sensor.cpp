@@ -9,9 +9,9 @@
 #include <cassert>
 #include <limits>
 #include <memory>
-#include <set>
 #include <stdexcept>
 #include <utility>
+#include <vector>
 
 #include "power_overwhelming/convert_string.h"
 
@@ -26,9 +26,9 @@
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_sensor::configure_instrument(
-        _In_reads_(cnt) rtx_sensor *sensors,
-        _In_ const std::size_t cnt,
-        _In_ const rtx_instrument_configuration& configuration) {
+    _In_reads_(cnt) rtx_sensor *sensors,
+    _In_ const std::size_t cnt,
+    _In_ const rtx_instrument_configuration& configuration) {
     if ((sensors == nullptr) || (cnt < 1)) {
         throw std::invalid_argument("The list of sensors to configure the "
             "instrument for must not be empty.");
@@ -38,11 +38,18 @@ visus::power_overwhelming::rtx_sensor::configure_instrument(
             "be a configuration for a slave instrument.");
     }
 
-    std::set<rtx_instrument *> instruments;
+    // Compile a list of unique instruments used by any of the sensors.
+    std::vector<rtx_instrument *> instruments;
     for (std::size_t i = 0; i < cnt; ++i) {
-        instruments.insert(std::addressof(sensors[i]._instrument));
+        const auto ii = std::addressof(sensors[i]._instrument);
+        if (std::none_of(instruments.begin(), instruments.end(),
+                [ii](rtx_instrument *ij) { return ii->alias_of(*ij); })) {
+            instruments.push_back(ii);
+        }
     }
 
+    // Apply the master configuration to the first instrument and a slave
+    // configuration derived from it on all subsequent ones.
     auto master = true;
     auto slave_config = configuration.as_slave();
 
@@ -65,6 +72,7 @@ visus::power_overwhelming::rtx_sensor::configure_instrument(
 std::size_t visus::power_overwhelming::rtx_sensor::for_all(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_sensor *dst,
         _In_ std::size_t cnt,
+        _In_ const visa_instrument::timeout_type time_range,
         _In_ const visa_instrument::timeout_type timeout) {
     std::vector<rtx_sensor_definition> definitions;
     auto retval = rtx_sensor::get_definitions(nullptr, 0);
@@ -76,6 +84,15 @@ std::size_t visus::power_overwhelming::rtx_sensor::for_all(
         for (std::size_t i = 0; (i < retval) && (i < cnt); ++i) {
             dst[i] = rtx_sensor(definitions[i], timeout);
         }
+
+        // Configure the instruments using a mostly default configuration. If
+        // the user-defined timeout is less than twice the range of the
+        // acquisition, increase the timeout, because we want to be able to
+        // safely wait for the acquisition to complete.
+        rtx_instrument_configuration config(
+            oscilloscope_quantity(time_range, "ms"),
+            (std::max)(timeout, 2 * time_range));
+        configure_instrument(dst, cnt, config);
     }
 
     return retval;

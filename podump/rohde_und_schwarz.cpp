@@ -192,7 +192,7 @@ void query_rtx_instrument(void) {
             //    .range(oscilloscope_quantity(5)));
 
             std::cout << "Main " << std::this_thread::get_id() << std::endl;
-            i.on_operation_complete([](visa_instrument &i, void *c) {
+            i.on_operation_complete([](visa_instrument& i, void *) {
                 std::cout << "bla " << std::this_thread::get_id() << std::endl;
             });
             i.operation_complete_async();
