@@ -170,6 +170,19 @@ visus::power_overwhelming::detail::visa_instrument_impl::~visa_instrument_impl(
 }
 
 
+/*
+ * visus::power_overwhelming::detail::visa_instrument_impl::check_system_error
+ */
+void visus::power_overwhelming::detail::visa_instrument_impl::check_system_error(
+        void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    if (this->enable_system_checks) {
+        this->throw_on_system_error();
+    }
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
 #if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * visus::power_overwhelming::detail::visa_instrument_impl::disable_event
@@ -180,6 +193,7 @@ void visus::power_overwhelming::detail::visa_instrument_impl::disable_event(
         this->session, event_type, mechanism));
 }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
@@ -233,6 +247,7 @@ void visus::power_overwhelming::detail::visa_instrument_impl::install_handler(
         _In_ ViAddr context) {
     visa_exception::throw_on_error(visa_library::instance().viInstallHandler(
         this->session, event_type, handler, context));
+    this->check_system_error();
 }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
@@ -268,6 +283,7 @@ std::size_t visus::power_overwhelming::detail::visa_instrument_impl::read(
             buffer,
             static_cast<ViUInt32>(cnt),
             &retval));
+    this->check_system_error();
     return retval;
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
@@ -295,6 +311,7 @@ visus::power_overwhelming::detail::visa_instrument_impl::read_all(
             retval.as<ViByte>(offset),
             static_cast<ViUInt32>(retval.size() - offset),
             &read);
+        this->check_system_error();
         offset += read;
 
         if (status == VI_SUCCESS_MAX_CNT) {
@@ -524,6 +541,7 @@ void visus::power_overwhelming::detail::visa_instrument_impl::uninstall_handler(
         _In_ ViAddr context) {
     visa_exception::throw_on_error(visa_library::instance().viUninstallHandler(
         this->session, event_type, handler, context));
+    this->check_system_error();
 }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
@@ -542,6 +560,7 @@ std::size_t visus::power_overwhelming::detail::visa_instrument_impl::write(
             buffer,
             static_cast<ViUInt32>(cnt),
             &retval));
+    this->check_system_error();
     return retval;
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return 0;
@@ -585,6 +604,7 @@ void visus::power_overwhelming::detail::visa_instrument_impl::write_all(
                 buffer + total,
                 cnt - total,
                 &last));
+        this->check_system_error();
         total += last;
     }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */

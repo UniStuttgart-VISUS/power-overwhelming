@@ -171,6 +171,12 @@ namespace detail {
         }
 
         /// <summary>
+        /// Checks for a system error if <see cref="enable_system_checks" />
+        /// is <c>true</c> and throws an exception if there is a system errror.
+        /// </summary>
+        void check_system_error(void) const;
+
+        /// <summary>
         /// Answer the current value of the reference counter.
         /// </summary>
         /// <returns></returns>
@@ -179,22 +185,31 @@ namespace detail {
         }
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
+        /// <summary>
+        /// Prevents events of the specified type being delivered with the
+        /// specified mechanism.
+        /// </summary>
+        /// <param name="event_type"></param>
+        /// <param name="mechanism"></param>
         void disable_event(_In_ const ViEventType event_type,
             _In_ const ViUInt16 mechanism = VI_HNDLR);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
+//#if defined(POWER_OVERWHELMING_WITH_VISA)
         void enable_event(_In_  const ViEventType event_type,
             _In_ const ViUInt16 mechanism = VI_HNDLR,
             _In_ const ViEventFilter context = VI_NULL);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+//#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
         /// <summary>
         /// Invoke <see cref="viPrintf" /> on the instrument.
         /// </summary>
         /// <remarks>
-        /// This method does nothing if the library was compiled without support
-        /// for VISA.
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// <para>This method will perform a check of the system state on
+        /// completion if <see cref="enable_system_checks" /> is <c>true</c>.
+        /// </para>
         /// </remarks>
         /// <typeparam name="TArgs">The types of the arguments to be formatted.
         /// </typeparam>
@@ -219,6 +234,11 @@ namespace detail {
         /// <summary>
         /// Installs the given callback for the given type of event.
         /// </summary>
+        /// <remarks>
+        /// <para>This method will perform a check of the system state on
+        /// completion if <see cref="enable_system_checks" /> is <c>true</c>.
+        /// </para>
+        /// </remarks>
         /// <param name="event_type"></param>
         /// <param name="handler"></param>
         /// <param name="context"></param>
@@ -249,6 +269,11 @@ namespace detail {
         /// <summary>
         /// Read from the instrument into the given buffer.
         /// </summary>
+        /// <remarks>
+        /// <para>This method will perform a check of the system state on
+        /// completion if <see cref="enable_system_checks" /> is <c>true</c>.
+        /// </para>
+        /// </remarks>
         /// <param name="buffer">The buffer to write the data to.</param>
         /// <param name="cnt">The size of the buffer in bytes.</param>
         /// <returns>The number of bytes actually read. If this is equal to
@@ -261,6 +286,11 @@ namespace detail {
         /// <summary>
         /// Read a full response.
         /// </summary>
+        /// <remarks>
+        /// <para>This method will perform a check of the system state on
+        /// completion if <see cref="enable_system_checks" /> is <c>true</c>.
+        /// </para>
+        /// </remarks>
         /// <param name="buffer_size">The size of the read buffer being used. If
         /// this is less than the response size, the buffer will be resized
         /// until everything was read.
@@ -273,6 +303,11 @@ namespace detail {
         /// Reads a binary response starting with the # marker for the number of
         /// bytes to follow.
         /// </summary>
+        /// <remarks>
+        /// <para>This method will perform a check of the system state on
+        /// completion if <see cref="enable_system_checks" /> is <c>true</c>.
+        /// </para>
+        /// </remarks>
         /// <returns>The binary data excluding the length marker.</returns>
         /// <exception cref="visa_exception">If the operation failed.</exception>
         /// <exception cref="std::runtime_error">If the data being read are not
@@ -316,6 +351,11 @@ namespace detail {
         /// <summary>
         /// Uninstalls the specified callback.
         /// </summary>
+        /// <remarks>
+        /// <para>This method will perform a check of the system state on
+        /// completion if <see cref="enable_system_checks" /> is <c>true</c>.
+        /// </para>
+        /// </remarks>
         /// <param name="event_type"></param>
         /// <param name="handler"></param>
         /// <param name="context"></param>
@@ -330,6 +370,11 @@ namespace detail {
         /// Write at most <paramref name="cnt" /> bytes of the given data to the
         /// instrument.
         /// </summary>
+        /// <remarks>
+        /// <para>This method will perform a check of the system state on
+        /// completion if <see cref="enable_system_checks" /> is <c>true</c>.
+        /// </para>
+        /// </remarks>
         /// <param name="buffer">The buffer holding the data to write.</param>
         /// <param name="cnt">The size of <paramref name="buffer" /> in bytes.
         /// </param>
@@ -343,9 +388,12 @@ namespace detail {
         /// Writes the given null-terminated data to the instrument.
         /// </summary>
         /// <remarks>
-        /// If the command is not terminated with
+        /// <para>If the command is not terminated with
         /// <see cref="terminal_character" />, the terminal character will be
-        /// appended to <see cref="str" /> before writing.
+        /// appended to <see cref="str" /> before writing.</para>
+        /// <para>This method will perform a check of the system state on
+        /// completion if <see cref="enable_system_checks" /> is <c>true</c>.
+        /// </para>
         /// </remarks>
         /// <param name="str">A null-terminated string to write to the device.
         /// </param>
@@ -355,6 +403,11 @@ namespace detail {
         /// <summary>
         /// Write the given data to the instrument.
         /// </summary>
+        /// <remarks>
+        /// <para>This method will perform a check of the system state on
+        /// completion if <see cref="enable_system_checks" /> is <c>true</c>.
+        /// </para>
+        /// </remarks>
         /// <param name="buffer">The buffer holding the data to write.</param>
         /// <param name="cnt">The size of <paramref name="buffer" /> in bytes.
         /// </param>

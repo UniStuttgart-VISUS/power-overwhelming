@@ -949,12 +949,6 @@ namespace power_overwhelming {
         /// released.</exception>
         const detail::visa_instrument_impl& check_not_disposed(void) const;
 
-        /// <summary>
-        /// Checks for a system error if checks are enabled and throws an
-        /// exception if there is one.
-        /// </summary>
-        void check_system_error(void) const;
-
     private:
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
