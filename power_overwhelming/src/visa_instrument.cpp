@@ -710,7 +710,7 @@ int visus::power_overwhelming::visa_instrument::system_error(void) const {
             status.end(),
             [](const byte_type b) { return b == ','; });
 
-        if (delimiter != status.end()) {
+        if ((delimiter != nullptr) && (delimiter != status.end())) {
             *delimiter = '\0';
             return std::atoi(reinterpret_cast<char *>(status.begin()));
         }
@@ -837,6 +837,7 @@ visus::power_overwhelming::visa_instrument::write(
             "not be null.");
     }
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
     auto s = convert_string<char>(str);
 
@@ -845,6 +846,7 @@ visus::power_overwhelming::visa_instrument::write(
     }
 
     impl.write_all(reinterpret_cast<const byte_type *>(s.data()), s.size());
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 
