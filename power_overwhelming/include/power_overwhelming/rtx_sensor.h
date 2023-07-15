@@ -5,7 +5,9 @@
 
 #pragma once
 
+#include "power_overwhelming/measurement_data_series.h"
 #include "power_overwhelming/sensor.h"
+#include "power_overwhelming/timestamp_resolution.h"
 #include "power_overwhelming/rtx_instrument.h"
 #include "power_overwhelming/rtx_instrument_configuration.h"
 #include "power_overwhelming/rtx_sensor_definition.h"
@@ -60,6 +62,15 @@ namespace power_overwhelming {
         /// <see cref="oscilloscope_channel" /> is applied to each channel. If
         /// you need to customise the probes, use <see cref="get_definitions" />
         /// with a custom template and create the sensors from there.</para>
+        /// <para>The method will apply the default
+        /// <see cref="rtx_instrument_configuration" /> with the provided
+        /// <paramref name="time_range" /> to all instruments used by the
+        /// sensors. The instrument used by the first sensor returned will
+        /// be configured to be the master instrument that must be triggered
+        /// for measurement. All other instruments are configured as slaves
+        /// that trigger on the external trigger input. If this is not
+        /// desirable, you can always reconfigure the instruments by calling
+        /// <see cref="configure_instrument" /> on the list of sensors.</para>
         /// </remarks>
         /// <param name="dst ">An array receiving the sensors. If this is
         /// <c>nullptr</c>, nothing is returned. This buffer must be able to
@@ -186,6 +197,28 @@ namespace power_overwhelming {
         /// Finalise the instance.
         /// </summary>
         virtual ~rtx_sensor(void) = default;
+
+        /// <summary>
+        /// Acquires two waveforms from the underlying instrument and combines
+        /// these into a data series of corresponding voltage and current
+        /// measurements.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method assumes that the instrument and its channels have
+        /// been properly configured and not been changed since. Most
+        /// importantly, it is assume that the instrument is in single
+        /// acquisition mode.</para>
+        /// <para>The method will run a single acquisition on the instrument and
+        /// afterwards download the full-resolution data of the channels
+        /// configured for voltage and current for this sensor. Other sensors
+        /// using the same instrument might acquire data as well, but these will
+        /// not be processed.</para>
+        /// </remarks>
+        /// <param name="resolution"></param>
+        /// <returns>The data series for the waveforms acquired from the
+        /// instrument.</returns>
+        measurement_data_series acquire(
+            _In_ const timestamp_resolution resolution);
 
         /// <summary>
         /// Gets the name of the sensor.

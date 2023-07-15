@@ -243,24 +243,39 @@ namespace power_overwhelming {
         /// mode.</param>
         /// <param name="run">If <c>true</c>, start the acquisiton. This
         /// parameter defaults to <c>false</c>.</param>
+        /// <param name="wait">If <paramref name="run" /> is <c>true</c> and
+        /// this parameter is set <c>true</c> as well, the method will add an
+        /// <c>*OPC?</c> query and block the calling code until the acquisition
+        /// has completed.</param>
         /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the instument has been
         /// disposed by a move.</exception>
         /// <exception cref="visa_exception">If a VISA call failed.</exception>
         rtx_instrument& acquisition(
             _In_ const oscilloscope_single_acquisition& acquisition,
-            _In_ const bool run = false);
+            _In_ const bool run = false,
+            _In_ const bool wait = false);
 
         /// <summary>
         /// Changes the acquisition state of the instrument.
         /// </summary>
         /// <param name="state">The new state of the instrument.</param>
+        /// <param name="wait">If the <paramref name="state" /> parameter is
+        /// <see cref="oscilloscope_acquisition_state::single" /> and this
+        /// parameter is <c>true</c>, the method will issue an <c>*OPC?</c>
+        /// query after the single acquisition causing the calling code to block
+        /// until the acquisition completed. Likewise, if a continuous
+        /// acquisition is stopped gracefully by
+        /// <see cref="oscilloscope_acquisition_state::stop" />, an <c>*OPC?</c>
+        /// query will be added causing the calling code to block until the
+        /// acquisition actually ended.</param>
         /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the instument has been
         /// disposed by a move.</exception>
         /// <exception cref="visa_exception">If a VISA call failed.</exception>
         rtx_instrument& acquisition(
-            _In_ const oscilloscope_acquisition_state state);
+            _In_ const oscilloscope_acquisition_state state,
+            _In_ const bool wait = false);
 
 #if false
         /// <summary>

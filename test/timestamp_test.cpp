@@ -80,7 +80,7 @@ namespace test {
         }
 
         TEST_METHOD(test_nanoseconds) {
-            typedef std::chrono::milliseconds unit;
+            typedef std::chrono::nanoseconds unit;
             static const auto resolution = timestamp_resolution::milliseconds;
             const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
 

@@ -199,9 +199,44 @@ visus::power_overwhelming::rtx_sensor::rtx_sensor(
 
 
 /*
+ * visus::power_overwhelming::rtx_sensor::acquire
+ */
+visus::power_overwhelming::measurement_data_series
+visus::power_overwhelming::rtx_sensor::acquire(
+        _In_ const timestamp_resolution resolution) {
+    const auto begin = detail::create_timestamp(resolution);
+    this->_instrument.acquisition(oscilloscope_acquisition_state::single, true);
+    assert(this->name() != nullptr);
+
+    // Download the data from the instrument.
+    const auto current = this->_instrument.data(this->_channel_current,
+        oscilloscope_waveform_points::maximum);
+    const auto voltage = this->_instrument.data(this->_channel_voltage,
+        oscilloscope_waveform_points::maximum);
+
+    // Convert the two waveforms into a data series.
+    assert(current.record_length() == voltage.record_length());
+    measurement_data_series retval(this->name());
+    auto dst = measurement_data_series::resize(retval, current.record_length());
+    const auto dist = std::chrono::duration<float>(current.sample_distance());
+    const auto dt = detail::convert(dist, resolution);
+    assert(dt > 0);
+
+    for (std::size_t i = 0; i < current.record_length(); ++i) {
+        dst[i] = measurement_data(begin + i * dt,
+            voltage.sample(i),
+            current.sample(i));
+    }
+
+    return retval;
+}
+
+
+/*
  * *visus::power_overwhelming::rtx_sensor::name
  */
-_Ret_maybenull_z_ const wchar_t *visus::power_overwhelming::rtx_sensor::name(
+_Ret_maybenull_z_
+const wchar_t *visus::power_overwhelming::rtx_sensor::name(
         void) const noexcept {
     return this->_name.as<wchar_t>();
 }

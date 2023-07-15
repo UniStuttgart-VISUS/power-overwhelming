@@ -183,7 +183,8 @@ visus::power_overwhelming::rtx_instrument::rtx_instrument(
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::acquisition(
         _In_ const oscilloscope_single_acquisition& acquisition,
-        _In_ const bool run) {
+        _In_ const bool run,
+        _In_ const bool wait) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
 
@@ -198,7 +199,7 @@ visus::power_overwhelming::rtx_instrument::acquisition(
     impl.format("ACQ:SEGM:STAT %s\n", acquisition.segmented() ? "ON" : "OFF");
 
     if (run) {
-        impl.format("SING\n");
+        this->acquisition(oscilloscope_acquisition_state::single, wait);
     }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
@@ -211,20 +212,30 @@ visus::power_overwhelming::rtx_instrument::acquisition(
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::acquisition(
-        _In_ const oscilloscope_acquisition_state state) {
+        _In_ const oscilloscope_acquisition_state state,
+        _In_ const bool wait) {
     switch (state) {
         case oscilloscope_acquisition_state::run:
             this->write("ACQ:STAT RUN\n");
             break;
 
         case oscilloscope_acquisition_state::stop:
-            this->write("ACQ:STAT STOP\n");
+            if (wait) {
+                this->query("ACQ:STAT STOP; *OPC?\n");
+            } else {
+                this->write("ACQ:STAT STOP\n");
+            }
             break;
 
         case oscilloscope_acquisition_state::single:
-            this->write("SING\n");
+            if (wait) {
+                this->query("*SING; *OPC?\n");
+            } else {
+                this->write("SING\n");
+            }
             break;
 
+        case oscilloscope_acquisition_state::interrupt:
         default:
             this->write("ACQ:STAT BREAK\n");
             break;
@@ -268,8 +279,8 @@ visus::power_overwhelming::rtx_instrument::binary_data(
     auto& impl = this->check_not_disposed();
 
     impl.write("FORM REAL,32\n");
-
     impl.write("FORM:BORD LSBF\n");
+    impl.check_system_error();
 
     impl.format("CHAN%u:DATA?\n", channel);
     return impl.read_binary();
