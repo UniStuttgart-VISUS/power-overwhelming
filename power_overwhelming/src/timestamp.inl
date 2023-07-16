@@ -55,7 +55,7 @@ template<class TRep, class TPeriod>
 visus::power_overwhelming::timestamp_type
 visus::power_overwhelming::detail::convert(
         _In_ const std::chrono::duration<TRep, TPeriod> dur,
-        _In_ const timestamp_resolution resolution)  {
+        _In_ const timestamp_resolution resolution) {
     using namespace std::chrono;
     typedef duration<timestamp_type, filetime_period> filetime_dur;
 

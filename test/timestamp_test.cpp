@@ -43,6 +43,23 @@ namespace test {
             Assert::AreEqual(this->_filetime_zero, a, L"Unix epoch as FILETIME", LINE_INFO());
         }
 
+        TEST_METHOD(test_convert_duration) {
+            {
+                const std::chrono::seconds duration(1);
+                Assert::AreEqual(std::int64_t(1), detail::convert(duration, timestamp_resolution::seconds), L"s to s", LINE_INFO());
+                Assert::AreEqual(std::int64_t(1000), detail::convert(duration, timestamp_resolution::milliseconds), L"s to ms", LINE_INFO());
+                Assert::AreEqual(std::int64_t(1000000), detail::convert(duration, timestamp_resolution::microseconds), L"s to us", LINE_INFO());
+                Assert::AreEqual(std::int64_t(10000000), detail::convert(duration, timestamp_resolution::hundred_nanoseconds), L"s to 100 ns", LINE_INFO());
+                Assert::AreEqual(std::int64_t(1000000000), detail::convert(duration, timestamp_resolution::nanoseconds), L"s to ns", LINE_INFO());
+            }
+
+            {
+                const std::chrono::microseconds duration(1);
+                Assert::AreEqual(std::int64_t(1), detail::convert(duration, timestamp_resolution::microseconds), L"us to us", LINE_INFO());
+                Assert::AreEqual(std::int64_t(1000), detail::convert(duration, timestamp_resolution::nanoseconds), L"us to ns", LINE_INFO());
+            }
+        }
+
         TEST_METHOD(test_microseconds) {
             typedef std::chrono::microseconds unit;
             static const auto resolution = timestamp_resolution::microseconds;
