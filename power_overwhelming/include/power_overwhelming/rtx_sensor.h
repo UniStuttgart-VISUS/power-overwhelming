@@ -257,16 +257,34 @@ namespace power_overwhelming {
             _In_ const timestamp_resolution resolution
             = timestamp_resolution::milliseconds) const;
 
-
+        /// <summary>
+        /// Answer the channel on which the current is measured.
+        /// </summary>
+        /// <returns>The one-based index of the channel with the current probe.
+        /// </returns>
         inline std::uint32_t channel_current(void) const noexcept {
             return this->_channel_current;
         }
 
+        /// <summary>
+        /// Answer the channel on which voltage is measured.
+        /// </summary>
+        /// <returns>The one-based index of the channel with the voltage probe.
+        /// </returns>
         inline std::uint32_t channel_voltage(void) const noexcept {
             return this->_channel_voltage;
         }
 
-        waveform_decimation_method _decimation_method;
+        /// <summary>
+        /// Answer the method the sensor uses to transform a waveform into a
+        /// single sample of type <see cref="measurement_data" />.
+        /// </summary>
+        /// <returns>The decimation method collapsing a waveform into a single
+        /// sample.</returns>
+        inline waveform_decimation_method decimation_method(
+                void) const noexcept {
+            return this->_decimation_method;
+        }
 
         /// <summary>
         /// Answer the instrument that is being used by the sensor.
