@@ -1,3 +1,4 @@
+#include "string_functions.h"
 // <copyright file="string_functions.inl" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
@@ -200,6 +201,18 @@ visus::power_overwhelming::detail::safe_assign(
     }
 
     return dst;
+}
+
+
+/*
+ * visus::power_overwhelming::detail::safe_assign
+ */
+template<class TChar>
+visus::power_overwhelming::blob visus::power_overwhelming::detail::safe_assign(
+        _Inout_ blob&& dst, _In_opt_z_ const TChar *src) {
+    auto retval = std::move(dst);
+    safe_assign(retval, src);
+    return retval;
 }
 
 

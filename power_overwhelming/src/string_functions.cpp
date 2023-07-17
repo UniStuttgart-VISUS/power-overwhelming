@@ -11,7 +11,8 @@
 /*
  * visus::power_overwhelming::detail::safe_duplicate
  */
-_Ret_maybenull_z_ wchar_t *visus::power_overwhelming::detail::safe_duplicate(
+_Ret_maybenull_z_
+wchar_t *visus::power_overwhelming::detail::safe_duplicate(
         _In_opt_z_ const wchar_t *src) {
     if (src != nullptr) {
         auto retval = ::wcsdup(src);
