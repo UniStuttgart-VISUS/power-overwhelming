@@ -76,6 +76,14 @@ namespace power_overwhelming {
         ~measurement_data_series(void);
 
         /// <summary>
+        /// Answer the last data element.
+        /// </summary>
+        /// <returns>The last data element in the series.</returns>
+        /// <exception cref="std::range_error">If the data series is empty.
+        /// </exception>
+        const value_type& back(void) const;
+
+        /// <summary>
         /// Answer a pointer to the first data element.
         /// </summary>
         /// <returns>A pointer to the first value or <c>nullptr</c> if the
@@ -98,6 +106,14 @@ namespace power_overwhelming {
         inline bool empty(void) const noexcept {
             return ((this->_data == nullptr) || (this->_size == 0));
         }
+
+        /// <summary>
+        /// Answer the first data element.
+        /// </summary>
+        /// <returns>The first data element in the series.</returns>
+        /// <exception cref="std::range_error">If the data series is empty.
+        /// </exception>
+        const value_type& front(void) const;
 
         /// <summary>
         /// A pointer to the element <i>after</i> the last valid value.

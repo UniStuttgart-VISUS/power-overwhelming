@@ -273,9 +273,9 @@ namespace power_overwhelming {
         /// <exception cref="std::runtime_error">If the instument has been
         /// disposed by a move.</exception>
         /// <exception cref="visa_exception">If a VISA call failed.</exception>
-        rtx_instrument& acquisition(
+        const rtx_instrument& acquisition(
             _In_ const oscilloscope_acquisition_state state,
-            _In_ const bool wait = false);
+            _In_ const bool wait = false) const;
 
 #if false
         /// <summary>
@@ -287,11 +287,14 @@ namespace power_overwhelming {
 #endif
 
         /// <summary>
-        /// 
+        /// Downloads the data of the specified channel as floating-point
+        /// numbers.
         /// </summary>
-        /// <param name="channel"></param>
-        /// <returns></returns>
-        blob binary_data(_In_ const std::uint32_t channel);
+        /// <param name="channel">The one-based index of the channel to
+        /// retrieve.</param>
+        /// <returns>The channel data as a series of <c>float</c> values.
+        /// </returns>
+        blob binary_data(_In_ const std::uint32_t channel) const;
 
         /// <summary>
         /// Apply the specified channel configuration.
@@ -330,7 +333,7 @@ namespace power_overwhelming {
         /// transferred.</param>
         /// <returns>The waveform for the specified channel.</returns>
         oscilloscope_waveform data(_In_ const std::uint32_t channel,
-            _In_ const oscilloscope_waveform_points points);
+            _In_ const oscilloscope_waveform_points points) const;
 
         /// <summary>
         /// Enable and configure one of the mathematical expressions.

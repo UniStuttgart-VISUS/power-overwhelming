@@ -9,6 +9,7 @@
 #include <cassert>
 #include <limits>
 #include <memory>
+#include <numeric>
 #include <stdexcept>
 #include <utility>
 #include <vector>
@@ -102,6 +103,7 @@ std::size_t visus::power_overwhelming::rtx_sensor::for_all(
         _In_ std::size_t cnt,
         _In_ const visa_instrument::timeout_type time_range,
         _In_ const unsigned int samples,
+        _In_ const waveform_decimation_method decimation_method,
         _In_ const visa_instrument::timeout_type timeout) {
     std::vector<rtx_sensor_definition> definitions;
     auto retval = rtx_sensor::get_definitions(nullptr, 0);
@@ -111,7 +113,7 @@ std::size_t visus::power_overwhelming::rtx_sensor::for_all(
         rtx_sensor::get_definitions(definitions.data(), definitions.size());
 
         for (std::size_t i = 0; (i < retval) && (i < cnt); ++i) {
-            dst[i] = rtx_sensor(definitions[i], timeout);
+            dst[i] = rtx_sensor(definitions[i], decimation_method, timeout);
         }
 
         // Configure the instruments using a mostly default configuration. If
@@ -221,8 +223,10 @@ std::size_t visus::power_overwhelming::rtx_sensor::get_definitions(
  */
 visus::power_overwhelming::rtx_sensor::rtx_sensor(
         _In_ const rtx_sensor_definition& definition,
+        _In_ const waveform_decimation_method decimation_method,
         _In_ const visa_instrument::timeout_type timeout)
-    : _channel_current(0), _channel_voltage(0), _instrument(
+    : _channel_current(0), _channel_voltage(0),
+        _decimation_method(decimation_method), _instrument(
         rtx_instrument::create_and_reset_new(definition.path(), timeout)) {
     this->initialise(definition, timeout);
 }
@@ -233,7 +237,7 @@ visus::power_overwhelming::rtx_sensor::rtx_sensor(
  */
 visus::power_overwhelming::measurement_data_series
 visus::power_overwhelming::rtx_sensor::acquire(
-        _In_ const timestamp_resolution resolution) {
+        _In_ const timestamp_resolution resolution) const {
     const auto begin = detail::create_timestamp(resolution);
     this->_instrument.acquisition(oscilloscope_acquisition_state::single, true);
     // If the acquisition before succeeded, the instrument must be valid and
@@ -287,8 +291,62 @@ visus::power_overwhelming::rtx_sensor::operator bool(void) const noexcept {
 visus::power_overwhelming::measurement_data
 visus::power_overwhelming::rtx_sensor::sample_sync(
         _In_ const timestamp_resolution resolution) const {
-    throw "TODO";
+    return decimate(this->acquire(resolution), this->_decimation_method);
+}
 
+
+/*
+ * visus::power_overwhelming::rtx_sensor::decimate
+ */
+visus::power_overwhelming::measurement_data
+visus::power_overwhelming::rtx_sensor::decimate(
+        _In_ const measurement_data_series& series,
+        _In_ const waveform_decimation_method method) {
+    switch (method) {
+        case waveform_decimation_method::first:
+            return series.front();
+
+        case waveform_decimation_method::last:
+            return series.back();
+
+        case waveform_decimation_method::mean: {
+            const auto t = (series.back().timestamp()
+                - series.front().timestamp()) / 2;
+
+            auto c = 0.0f;
+            auto v = 0.0f;
+
+            for (std::size_t i = 0; i < series.size(); ++i) {
+                auto& s = series.sample(i);
+                c += (s.current() - c) / (i + 1);
+                v += (s.voltage() - v) / (i + 1);
+            }
+
+            return measurement_data(t, v, c);
+            }
+
+        case waveform_decimation_method::middle:
+            return series.sample(series.size() / 2);
+
+        case waveform_decimation_method::rms:
+        default: {
+            const auto t = (series.back().timestamp()
+                - series.front().timestamp()) / 2;
+            auto c = 0.0f;
+            auto v = 0.0f;
+
+            for (std::size_t i = 0; i < series.size(); ++i) {
+                auto& s = series.sample(i);
+                c += (s.current() * s.current() - c) / (i + 1);
+                v += (s.voltage() * s.voltage() - v) / (i + 1);
+            }
+
+            c = std::sqrt(c);
+            v = std::sqrt(v);
+
+            return measurement_data(t, v, c);
+            }
+    }
 }
 
 

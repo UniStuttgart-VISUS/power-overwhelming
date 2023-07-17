@@ -569,7 +569,7 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the operation failed.
         /// </exception>
-        visa_instrument& operation_complete(void);
+        const visa_instrument& operation_complete(void) const;
 
         /// <summary>
         /// Queues an <c>*OPC</c> instruction on the instrument, which will
@@ -586,7 +586,7 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the operation failed.
         /// </exception>
-        visa_instrument& operation_complete_async(void);
+        const visa_instrument& operation_complete_async(void) const;
 
         /// <summary>
         /// Gets the VISA path of the device.

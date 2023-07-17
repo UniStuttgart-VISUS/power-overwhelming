@@ -78,18 +78,46 @@ visus::power_overwhelming::measurement_data_series::~measurement_data_series(
 
 
 /*
+ * visus::power_overwhelming::measurement_data_series::back
+ */
+const visus::power_overwhelming::measurement_data_series::value_type&
+visus::power_overwhelming::measurement_data_series::back(void) const {
+    if (this->empty()) {
+        throw std::range_error("An empty data series has no last element.");
+    }
+
+    return *(this->_data + this->_size - 1);
+}
+
+
+/*
  * visus::power_overwhelming::measurement_data_series::begin
  */
-_Ret_maybenull_ const visus::power_overwhelming::measurement_data_series::value_type *
+_Ret_maybenull_
+const visus::power_overwhelming::measurement_data_series::value_type *
 visus::power_overwhelming::measurement_data_series::begin(void) const noexcept {
     return (this->_size > 0) ? this->_data : nullptr;
 }
 
 
 /*
+ * visus::power_overwhelming::measurement_data_series::front
+ */
+const visus::power_overwhelming::measurement_data_series::value_type&
+visus::power_overwhelming::measurement_data_series::front(void) const {
+    if (this->empty()) {
+        throw std::range_error("An empty data series has no front element.");
+    }
+
+    return *this->begin();
+}
+
+
+/*
  * visus::power_overwhelming::measurement_data_series::end
  */
-_Ret_maybenull_ const visus::power_overwhelming::measurement_data_series::value_type *
+_Ret_maybenull_
+const visus::power_overwhelming::measurement_data_series::value_type *
 visus::power_overwhelming::measurement_data_series::end(void) const noexcept {
     return (this->_size > 0) ? this->_data + this->_size : nullptr;
 }

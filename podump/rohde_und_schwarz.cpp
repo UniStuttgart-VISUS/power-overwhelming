@@ -103,11 +103,19 @@ void query_rtx(void) {
             for (std::size_t i = 0; (i < 8) && (i < waveform.size()); ++i) {
                 auto& s = waveform.sample(i);
                 std::wcout << s.timestamp() << L": "
-                    << s.voltage() << "V, "
-                    << s.current() << "A, "
-                    << s.power() << "W"
+                    << s.voltage() << L"V, "
+                    << s.current() << L"A, "
+                    << s.power() << L"W"
                     << std::endl;
             }
+
+            auto sample = s.sample(timestamp_resolution::hundred_nanoseconds);
+            std::wcout << sample.sensor() << L"@"
+                << sample.timestamp() << L": "
+                << sample.voltage() << L"V, "
+                << sample.current() << L"A, "
+                << sample.power() << L"W"
+                << std::endl;
         }
     } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;

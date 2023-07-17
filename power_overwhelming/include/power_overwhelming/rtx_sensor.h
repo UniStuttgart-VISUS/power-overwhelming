@@ -11,6 +11,7 @@
 #include "power_overwhelming/rtx_instrument.h"
 #include "power_overwhelming/rtx_instrument_configuration.h"
 #include "power_overwhelming/rtx_sensor_definition.h"
+#include "power_overwhelming/waveform_decimation_method.h"
 
 
 namespace visus {
@@ -94,6 +95,8 @@ namespace power_overwhelming {
         /// parameter defaults to the minimum of 5000 sample points. Note that
         /// increasing the number of points might significantly slow down the
         /// sensor as the download of the data becomes slower.</param>
+        /// <param name="decimation_method">Determines how the sensor converts
+        /// a waveform into a single sample.</param>
         /// <param name="timeout">The timeout in milliseconds for establishing a
         /// connection to each instrument that was found. This parameter defaults
         /// to <see cref="visa_instrument::default_timeout" />.</param>
@@ -104,6 +107,8 @@ namespace power_overwhelming {
             _In_ std::size_t cnt,
             _In_ const visa_instrument::timeout_type time_range = 200,
             _In_ const unsigned int samples = 5000,
+            _In_ const waveform_decimation_method decimation_method
+            = waveform_decimation_method::rms,
             _In_ const visa_instrument::timeout_type timeout
             = visa_instrument::default_timeout);
 
@@ -157,6 +162,8 @@ namespace power_overwhelming {
         /// configured for probes measuring voltage.</param>
         /// <param name="current_attenuation">The attenuation that will be
         /// configurated for probes measuring current.</param>
+        /// <param name="decimation_method">Determines how the sensor converts
+        /// a waveform into a single sample.</param>
         /// <param name="timeout">A timeout in milliseconds which is used when
         /// connecting to the instrument. This parameter defaults to
         /// <see cref="visa_instrument::default_timeout" />.</param>
@@ -182,6 +189,8 @@ namespace power_overwhelming {
         /// <param name="definition">The definition of the sensor, which must
         /// contain the path of the instrument and the configuration of the
         /// voltage and the current channel.</param>
+        /// <param name="decimation_method">Determines how the sensor converts
+        /// a waveform into a single sample.</param>
         /// <param name="timeout">The timeout for connecting to the instrument,
         /// in milliseconds, which is also set as the initial VISA timeout. Make
         /// sure to choose a sufficiently large number to wait for the channels
@@ -196,6 +205,8 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
         explicit rtx_sensor(_In_ const rtx_sensor_definition& definition,
+            _In_ const waveform_decimation_method decimation_method
+            = waveform_decimation_method::rms,
             _In_ const visa_instrument::timeout_type timeout
             = visa_instrument::default_timeout);
 
@@ -244,7 +255,7 @@ namespace power_overwhelming {
         /// instrument.</returns>
         measurement_data_series acquire(
             _In_ const timestamp_resolution resolution
-            = timestamp_resolution::milliseconds);
+            = timestamp_resolution::milliseconds) const;
 
         /// <summary>
         /// Answer the instrument that is being used by the sensor.
@@ -330,11 +341,16 @@ namespace power_overwhelming {
 
     private:
 
+        static measurement_data decimate(
+            _In_ const measurement_data_series& series,
+            _In_ const waveform_decimation_method method);
+
         void initialise(_In_ const rtx_sensor_definition& definition,
             _In_ const visa_instrument::timeout_type timeout);
 
         std::uint32_t _channel_current;
         std::uint32_t _channel_voltage;
+        waveform_decimation_method _decimation_method;
         rtx_instrument _instrument;
         blob _name;
     };

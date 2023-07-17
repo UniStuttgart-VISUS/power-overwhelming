@@ -210,10 +210,10 @@ visus::power_overwhelming::rtx_instrument::acquisition(
 /*
  * visus::power_overwhelming::rtx_instrument::acquisition
  */
-visus::power_overwhelming::rtx_instrument&
+const visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::acquisition(
         _In_ const oscilloscope_acquisition_state state,
-        _In_ const bool wait) {
+        _In_ const bool wait) const {
     switch (state) {
         case oscilloscope_acquisition_state::run:
             this->write("ACQ:STAT RUN\n");
@@ -274,7 +274,7 @@ visus::power_overwhelming::rtx_instrument::ascii_data(
  */
 visus::power_overwhelming::blob
 visus::power_overwhelming::rtx_instrument::binary_data(
-        _In_ const std::uint32_t channel) {
+        _In_ const std::uint32_t channel) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
 
@@ -427,7 +427,7 @@ std::size_t visus::power_overwhelming::rtx_instrument::channels(
 visus::power_overwhelming::oscilloscope_waveform
 visus::power_overwhelming::rtx_instrument::data(
         _In_ const std::uint32_t channel,
-        _In_ const oscilloscope_waveform_points points) {
+        _In_ const oscilloscope_waveform_points points) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
 

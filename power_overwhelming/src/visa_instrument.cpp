@@ -490,8 +490,9 @@ visus::power_overwhelming::visa_instrument::on_operation_complete(
 /*
  * visus::power_overwhelming::visa_instrument::operation_complete
  */
-visus::power_overwhelming::visa_instrument&
-visus::power_overwhelming::visa_instrument::operation_complete(void) {
+const visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::operation_complete(
+        void) const {
     // Cf. https://www.rohde-schwarz.com/at/driver-pages/fernsteuerung/measurements-synchronization_231248.html
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     this->query("*OPC?\n");
@@ -503,8 +504,9 @@ visus::power_overwhelming::visa_instrument::operation_complete(void) {
 /*
  * visus::power_overwhelming::visa_instrument::operation_complete_async
  */
-visus::power_overwhelming::visa_instrument&
-visus::power_overwhelming::visa_instrument::operation_complete_async(void) {
+const visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::operation_complete_async(
+        void) const {
     // Cf. https://www.rohde-schwarz.com/at/driver-pages/fernsteuerung/measurements-synchronization_231248.html
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     this->write("*OPC\n");

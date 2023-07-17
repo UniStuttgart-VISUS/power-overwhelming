@@ -31,7 +31,7 @@ namespace power_overwhelming {
         /// <exception cref="std::invalid_argument">If
         /// <paramref name="header" /> is null or does not have the expected
         /// format, or if the number of samples specified in the header does
-        /// not match the size of <paramref name="samples" />.
+        /// not match the size of <paramref name="samples" />.</exception>
         oscilloscope_waveform(_In_z_ const char *header,
             _Inout_ blob&& samples);
 
