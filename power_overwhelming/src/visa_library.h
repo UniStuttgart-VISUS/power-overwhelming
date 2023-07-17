@@ -93,4 +93,3 @@ namespace detail {
 } /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
-

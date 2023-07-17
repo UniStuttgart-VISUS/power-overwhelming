@@ -11,10 +11,12 @@
  */
 visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configuration(
         _In_ const oscilloscope_quantity time_range,
+        _In_ const unsigned int samples,
         _In_ visa_instrument::timeout_type timeout)
     : _slave(false), _timeout(0), _time_range(time_range),
         _trigger(external_trigger()) {
-    this->_acquisition.enable_automatic_points().segmented(true);
+    this->_acquisition.points(samples).segmented(true);
+    this->_trigger.mode(oscilloscope_trigger_mode::automatic);
 }
 
 
@@ -55,13 +57,24 @@ void visus::power_overwhelming::rtx_instrument_configuration::apply(
         instrument.timeout(this->_timeout);
     }
 
+    // Create a preliminary trigger configuration that triggers automatically
+    // and thus makes sure that switching to single mode acquisition will
+    // complete even if there is no valid trigger signal available.
+    auto preliminary_trigger = this->_trigger;
+    preliminary_trigger.mode(oscilloscope_trigger_mode::automatic);
+
     // Apply the configuration changes. Note that the order of changes is
     // deliberate for automatic changes the instrument may make to be most
     // predictable.
     instrument.time_range(this->_time_range)
-        .acquisition(this->_acquisition)
         .trigger_output(oscilloscope_trigger_output::pulse)
-        .trigger(this->_trigger)
+        .trigger(preliminary_trigger)
+        .acquisition(this->_acquisition, true)
+        .operation_complete();
+
+    // Apply the actual trigger, which might make time out the acquisition if
+    // it is using normal mode and there is no actual trigger present.
+    instrument.trigger(this->_trigger)
         .operation_complete();
 }
 

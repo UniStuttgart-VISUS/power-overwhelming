@@ -23,6 +23,12 @@ namespace power_overwhelming {
 
     public:
 
+        //static void acquire(_Out_writes_(cnt) measurement_data_series *dst,
+        //    _In_reads_(cnt) rtx_sensor *sensors,
+        //    _In_ const std::size_t cnt,
+        //    _In_ const timestamp_resolution resolution
+        //    = timestamp_resolution::milliseconds);
+
         /// <summary>
         /// Applies the given configuration to the instruments used by the
         /// given sensors.
@@ -42,7 +48,7 @@ namespace power_overwhelming {
         /// <paramref name="cnt" /> is zero, or if
         /// <paramref name="configuration" /> is a configuration for a slave
         /// instrument.</exception>
-        static rtx_instrument& configure_instrument(
+        static _Ret_maybenull_ rtx_instrument *configure_instrument(
             _In_reads_(cnt) rtx_sensor *sensors,
             _In_ const std::size_t cnt,
             _In_ const rtx_instrument_configuration& configuration);
@@ -83,6 +89,11 @@ namespace power_overwhelming {
         /// this parts afterwards by passing all sensors to
         /// <see cref="configure_instrument" /> with another configuration
         /// object.</param>
+        /// <param name="samples">The number of samples the instrument is
+        /// configured to acquire during <paramref name="time_range" />. This
+        /// parameter defaults to the minimum of 5000 sample points. Note that
+        /// increasing the number of points might significantly slow down the
+        /// sensor as the download of the data becomes slower.</param>
         /// <param name="timeout">The timeout in milliseconds for establishing a
         /// connection to each instrument that was found. This parameter defaults
         /// to <see cref="visa_instrument::default_timeout" />.</param>
@@ -92,6 +103,7 @@ namespace power_overwhelming {
             _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_sensor *dst,
             _In_ std::size_t cnt,
             _In_ const visa_instrument::timeout_type time_range = 200,
+            _In_ const unsigned int samples = 5000,
             _In_ const visa_instrument::timeout_type timeout
             = visa_instrument::default_timeout);
 
@@ -213,12 +225,62 @@ namespace power_overwhelming {
         /// configured for voltage and current for this sensor. Other sensors
         /// using the same instrument might acquire data as well, but these will
         /// not be processed.</para>
+        /// <para>This method will block until the acquisition completed.
+        /// Callers must make sure that, if a trigger has been configured and
+        /// the instrument is triggering in normal mode, the trigger actually
+        /// occurs within the timeout period of the instrument. If the
+        /// acquisition times out because of the lack of a trigger, the method
+        /// will fail.</para>
+        /// <para>This method will download two waveforms from the instrument at
+        /// their native resolution. This might take a significant amount of
+        /// time, during which the calling thread will be blocked, depending on
+        /// the number of sample points the underlying instrument is configured
+        /// to obtain for a single acquisition.</para>
         /// </remarks>
-        /// <param name="resolution"></param>
+        /// <param name="resolution">The resolution of the timestamps generated
+        /// for the samples. This parameter defaults to
+        /// <see cref="timestamp_resolution::milliseconds" />.</param>
         /// <returns>The data series for the waveforms acquired from the
         /// instrument.</returns>
         measurement_data_series acquire(
-            _In_ const timestamp_resolution resolution);
+            _In_ const timestamp_resolution resolution
+            = timestamp_resolution::milliseconds);
+
+        /// <summary>
+        /// Answer the instrument that is being used by the sensor.
+        /// </summary>
+        /// <remarks>
+        /// <para>The instrument may be used by more than one sensor. Make sure
+        /// not to make any changes to the configuration of the instrument that
+        /// might influence the sensors created on the instrument. Additionally,
+        /// you should not trigger manual acquisitions on an instrument that is
+        /// used by one or more sensors, but only acquire data via the sensor.
+        /// </para>
+        /// </remarks>
+        /// <returns>The instrument used by the sensor. The sensor remains the
+        /// owner of the memory returned. Callers must not release or move the
+        /// instrument returned.</returns>
+        inline _Ret_ rtx_instrument *instrument(void) noexcept {
+            return &this->_instrument;
+        }
+
+        /// <summary>
+        /// Answer the instrument that is being used by the sensor.
+        /// </summary>
+        /// <remarks>
+        /// <para>The instrument may be used by more than one sensor. Make sure
+        /// not to make any changes to the configuration of the instrument that
+        /// might influence the sensors created on the instrument. Additionally,
+        /// you should not trigger manual acquisitions on an instrument that is
+        /// used by one or more sensors, but only acquire data via the sensor.
+        /// </para>
+        /// </remarks>
+        /// <returns>The instrument used by the sensor. The sensor remains the
+        /// owner of the memory returned. Callers must not release or move the
+        /// instrument returned.</returns>
+        inline _Ret_ const rtx_instrument *instrument(void) const noexcept {
+            return &this->_instrument;
+        }
 
         /// <summary>
         /// Gets the name of the sensor.
@@ -241,22 +303,6 @@ namespace power_overwhelming {
         }
 
         using sensor::sample;
-
-        /// <summary>
-        /// Synchonises the date and time on the instrument with the system
-        /// clock of the computer calling this API.
-        /// </summary>
-        /// <param name="utc">If <c>true</c>, UTC will be used, the local time
-        /// otherwise. This parameter defaults to <c>false</c>.</param>
-        /// <returns><c>*this</c>.</returns>
-        /// <exception cref="std::runtime_error">If the method is called on an
-        /// object that has been disposed by moving it.</exception>
-        /// <exception cref="visa_exception">If the VISA command was not
-        /// processed successfully.</exception>
-        inline rtx_sensor& synchronise_clock(_In_ const bool utc = false) {
-            this->_instrument.synchronise_clock(utc);
-            return *this;
-        }
 
         /// <summary>
         /// Move assignment.

@@ -107,6 +107,16 @@ namespace power_overwhelming {
         _Ret_maybenull_ const value_type *end(void) const noexcept;
 
         /// <summary>
+        /// Returns the <paramref name="i" />th sample in the series.
+        /// </summary>
+        /// <param name="i">The zero-based index of the sample to retrieve.
+        /// </param>
+        /// <returns>The sample at the specified position.</returns>
+        /// <exception cref="std::range_error">If <paramref name="i" /> does
+        /// not designate a valid sample position.</exception>
+        const value_type& sample(_In_ const std::size_t i) const;
+
+        /// <summary>
         /// Answer the name of the sensor.
         /// </summary>
         /// <returns>The name of the sensor the values are from.</returns>

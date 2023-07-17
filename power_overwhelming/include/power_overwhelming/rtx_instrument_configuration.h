@@ -42,8 +42,31 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
+        /// <remarks>
+        /// <para>The default configuration uses the defaults of the
+        /// <see cref="oscilloscope_single_acquisition" /> and
+        /// <see cref="oscilloscope_edge_trigger" /> with the following changes:
+        /// On the acquisition, fast-segmentation is enabled and the number of
+        /// points is computed automatically. The rationally for that is that we
+        /// want the instrument to be as fast as possible in production mode.
+        /// Furthermore, computing the number of samples automatically is most
+        /// suitable for this construction, which is designed to require the
+        /// least user input possible. The edge trigger is configured in
+        /// <see cref="oscilloscope_trigger_mode::automatic" /> automatic, which
+        /// ensures that the instrument forces a trigger if none occurs on the
+        /// device. This might not be desirable if working with external
+        /// triggers on the instrument, but it is the least error-prone way to
+        /// configure the instrument. Therefore, it is again the most reasonable
+        /// thing for this simplified constructor. If you have additional
+        /// requirements, you must configure new instances using fully
+        /// customised configuration objects.</para>
+        /// </remarks>
         /// <param name="time_range">The time range the oscilloscope should
         /// acquire after it has been triggers.</param>
+        /// <parama name="samples">The number of samples to be acquired during
+        /// <paramref name="time_range" />. If this is zero, which is the
+        /// default, the instrument will be configured to determine the best
+        /// number of samples on its own.</param>
         /// <param name="timeout">The timeout of the instrument (for connections
         /// and for I/O operations including <c>*OPC?</c> queries. If this value
         /// is zero, which is the default, the timeout will not be modified. Be
@@ -52,6 +75,7 @@ namespace power_overwhelming {
         /// acquire.</param>
         explicit rtx_instrument_configuration(
             _In_ const oscilloscope_quantity time_range,
+            _In_ const unsigned int samples = 0,
             _In_ visa_instrument::timeout_type timeout = 0);
 
         /// <summary>

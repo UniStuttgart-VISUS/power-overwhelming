@@ -21,10 +21,45 @@
 #include "visa_library.h"
 
 
+namespace visus {
+namespace power_overwhelming {
+namespace detail {
+
+    /// <summary>
+    /// Determines the list of unique instruments for the
+    /// <see cref="rtx_sensor" />s in the given range.
+    /// </summary>
+    template<class TIterator>
+    std::vector<rtx_instrument *> unique_instruments(TIterator begin,
+            TIterator end) {
+        std::vector<rtx_instrument *> retval;
+        retval.reserve(std::distance(begin, end));
+
+        for (auto it = begin; it != end; ++it) {
+            const auto instrument = it->instrument();
+            const auto unique = std::none_of(retval.begin(), retval.end(),
+                    [instrument](rtx_instrument *i) {
+                return instrument->alias_of(*i);
+            });
+
+            if (unique) {
+                retval.push_back(instrument);
+            }
+        }
+
+        return retval;
+    }
+
+} /* namespace detail */
+} /* namespace power_overwhelming */
+} /* namespace visus */
+
+
 /*
  * visus::power_overwhelming::rtx_sensor::configure_instrument
  */
-visus::power_overwhelming::rtx_instrument&
+_Ret_maybenull_
+visus::power_overwhelming::rtx_instrument *
 visus::power_overwhelming::rtx_sensor::configure_instrument(
     _In_reads_(cnt) rtx_sensor *sensors,
     _In_ const std::size_t cnt,
@@ -39,14 +74,7 @@ visus::power_overwhelming::rtx_sensor::configure_instrument(
     }
 
     // Compile a list of unique instruments used by any of the sensors.
-    std::vector<rtx_instrument *> instruments;
-    for (std::size_t i = 0; i < cnt; ++i) {
-        const auto ii = std::addressof(sensors[i]._instrument);
-        if (std::none_of(instruments.begin(), instruments.end(),
-                [ii](rtx_instrument *ij) { return ii->alias_of(*ij); })) {
-            instruments.push_back(ii);
-        }
-    }
+    auto instruments = detail::unique_instruments(sensors, sensors + cnt);
 
     // Apply the master configuration to the first instrument and a slave
     // configuration derived from it on all subsequent ones.
@@ -62,7 +90,7 @@ visus::power_overwhelming::rtx_sensor::configure_instrument(
         }
     }
 
-    return **(instruments.begin());
+    return instruments.empty() ? nullptr : instruments.front();
 }
 
 
@@ -73,6 +101,7 @@ std::size_t visus::power_overwhelming::rtx_sensor::for_all(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_sensor *dst,
         _In_ std::size_t cnt,
         _In_ const visa_instrument::timeout_type time_range,
+        _In_ const unsigned int samples,
         _In_ const visa_instrument::timeout_type timeout) {
     std::vector<rtx_sensor_definition> definitions;
     auto retval = rtx_sensor::get_definitions(nullptr, 0);
@@ -91,7 +120,8 @@ std::size_t visus::power_overwhelming::rtx_sensor::for_all(
         // safely wait for the acquisition to complete.
         rtx_instrument_configuration config(
             oscilloscope_quantity(time_range, "ms"),
-            (std::max)(timeout, 2 * time_range));
+            (std::max)(timeout, 2 * time_range),
+            samples);
         configure_instrument(dst, cnt, config);
     }
 
@@ -206,6 +236,8 @@ visus::power_overwhelming::rtx_sensor::acquire(
         _In_ const timestamp_resolution resolution) {
     const auto begin = detail::create_timestamp(resolution);
     this->_instrument.acquisition(oscilloscope_acquisition_state::single, true);
+    // If the acquisition before succeeded, the instrument must be valid and
+    // therefore the sensor should be valid as well (and have a name).
     assert(this->name() != nullptr);
 
     // Download the data from the instrument.
@@ -219,11 +251,10 @@ visus::power_overwhelming::rtx_sensor::acquire(
     measurement_data_series retval(this->name());
     auto dst = measurement_data_series::resize(retval, current.record_length());
     const auto dist = std::chrono::duration<float>(current.sample_distance());
-    const auto dt = detail::convert(dist, resolution);
-    assert(dt > 0);
 
     for (std::size_t i = 0; i < current.record_length(); ++i) {
-        dst[i] = measurement_data(begin + i * dt,
+        dst[i] = measurement_data(
+            begin + detail::convert(i * dist, resolution),
             voltage.sample(i),
             current.sample(i));
     }

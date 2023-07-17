@@ -93,3 +93,17 @@ _Ret_maybenull_ const visus::power_overwhelming::measurement_data_series::value_
 visus::power_overwhelming::measurement_data_series::end(void) const noexcept {
     return (this->_size > 0) ? this->_data + this->_size : nullptr;
 }
+
+
+/*
+ * visus::power_overwhelming::measurement_data_series::sample
+ */
+const visus::power_overwhelming::measurement_data_series::value_type&
+visus::power_overwhelming::measurement_data_series::sample(
+        _In_ const std::size_t i) const {
+    if (i >= this->_size) {
+        throw std::range_error("The specified sample index is out of range.");
+    }
+
+    return this->_data[i];
+}
