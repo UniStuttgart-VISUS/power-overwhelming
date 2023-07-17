@@ -387,6 +387,7 @@ visus::power_overwhelming::rtx_instrument::channel(
  */
 std::size_t visus::power_overwhelming::rtx_instrument::channels(
         _In_ const timeout_type timeout) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     try {
         auto& impl = this->check_not_disposed();
         std::size_t retval = 1;
@@ -396,7 +397,6 @@ std::size_t visus::power_overwhelming::rtx_instrument::channels(
         // the detection below.
         impl.write("*CLS; *OPC?\n");
         impl.read_all();
-
 
         while (true) {
             try {
@@ -418,6 +418,10 @@ std::size_t visus::power_overwhelming::rtx_instrument::channels(
         // If disposed, we have no channel.
         return 0;
     }
+
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    return 0;
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

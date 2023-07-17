@@ -167,7 +167,11 @@ namespace detail {
         /// <returns><c>true</c> if a non-zero <see cref="terminal_character" />
         /// is set, <c>false</c> otherwise.</returns>
         inline bool auto_terminate(void) const noexcept {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
             return (this->terminal_character != 0);
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+            return false;
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
         }
 
         /// <summary>
