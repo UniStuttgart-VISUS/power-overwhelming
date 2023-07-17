@@ -119,15 +119,17 @@ namespace detail {
     /// API of the library. It is only exported for testing purposes.</para>
     /// </remarks>
     /// <typeparam name="TChar">The type of the characters.</typeparam>
+    /// <typeparam name="TTraits">The type of a character traits.</typeparam>
+    /// <typeparam name="TAlloc">The allocator of the string.</typeparam>
     /// <param name="dst">The string variable to receive the copy of
     /// <paramref name="src" />. If not <c>nullptr</c>, it is assumed that this
     /// string has been allocated on the heap using <see cref="malloc /">.</param>
     /// <param name="src">The string to be copied.</param>
     /// <exception cref="std::bad_alloc">If the memory for
     /// <paramref name="dst" /> could not be allocated.</exception>
-    template<class TChar>
+    template<class TChar, class TTraits, class TAlloc>
     inline void safe_assign(_Inout_opt_z_ TChar *& dst,
-            _In_ const std::basic_string<TChar>& src) {
+            _In_ const std::basic_string<TChar, TTraits, TAlloc>& src) {
         safe_assign(dst, src.c_str());
     }
 
@@ -144,23 +146,6 @@ namespace detail {
     /// <returns><paramref name="dst" />.</returns>
     template<class TChar>
     blob& safe_assign(_Inout_ blob& dst, _In_opt_z_ const TChar *src);
-
-    /// <summary>
-    /// Copy a string into a <see cref="blob" />.
-    /// </summary>
-    /// <typeparam name="TChar">The type of the characters.</typeparam>
-    /// <param name="dst">The blob variable to receive the copy of
-    /// <paramref name="src" />. The blob will be resized to be able to hold
-    /// the whole <paramref name="src" />.</param>
-    /// <param name="src">The string to be copied.</param>
-    /// <exception cref="std::bad_alloc">If the memory for
-    /// <paramref name="dst" /> could not be allocated.</exception>
-    /// <returns><paramref name="dst" />.</returns>
-    template<class TChar>
-    inline blob safe_assign(_Inout_ blob& dst,
-            _In_ const std::basic_string<TChar>& src) {
-        return safe_assign(dst, src.c_str());
-    }
 
     /// <summary>
     /// Copy a string into a <see cref="blob" />.
