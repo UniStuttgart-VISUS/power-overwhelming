@@ -157,7 +157,10 @@ namespace detail {
     /// <paramref name="dst" /> could not be allocated.</exception>
     /// <returns><paramref name="dst" />.</returns>
     template<class TChar>
-    blob safe_assign(_Inout_ blob&& dst, _In_opt_z_ const TChar *src);
+    inline blob safe_assign(_Inout_ blob& dst,
+            _In_ const std::basic_string<TChar>& src) {
+        return safe_assign(dst, src.c_str());
+    }
 
     /// <summary>
     /// Copy a string into a <see cref="blob" />.

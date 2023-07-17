@@ -257,6 +257,17 @@ namespace power_overwhelming {
             _In_ const timestamp_resolution resolution
             = timestamp_resolution::milliseconds) const;
 
+
+        inline std::uint32_t channel_current(void) const noexcept {
+            return this->_channel_current;
+        }
+
+        inline std::uint32_t channel_voltage(void) const noexcept {
+            return this->_channel_voltage;
+        }
+
+        waveform_decimation_method _decimation_method;
+
         /// <summary>
         /// Answer the instrument that is being used by the sensor.
         /// </summary>

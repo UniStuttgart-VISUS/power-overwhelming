@@ -33,8 +33,7 @@ visus::power_overwhelming::rtx_sensor_definition::rtx_sensor_definition(
         _In_ const oscilloscope_waveform_points waveform_points)
     : _current_channel(current_channel),
         _description(detail::safe_assign(blob(), description)),
-        _path(detail::safe_assign(std::move(blob()),
-            convert_string<char>(path))),
+        _path(detail::safe_assign(blob(), convert_string<char>(path))),
         _voltage_channel(voltage_channel),
         _waveform_points(waveform_points) {
     if (this->_path.empty() || (*this->path() == 0)) {
@@ -59,7 +58,7 @@ visus::power_overwhelming::rtx_sensor_definition::rtx_sensor_definition(
         _In_ const oscilloscope_waveform_points waveform_points)
     : _current_channel(current_channel),
         _description(detail::safe_assign(blob(), description)),
-        _path(detail::safe_assign(std::move(blob()), path)),
+        _path(detail::safe_assign(blob(), path)),
         _voltage_channel(voltage_channel),
         _waveform_points(waveform_points) {
     if (this->_path.empty() || (*this->path() == 0)) {
@@ -87,8 +86,7 @@ visus::power_overwhelming::rtx_sensor_definition::rtx_sensor_definition(
     : _current_channel(oscilloscope_channel(channel_current)
         .attenuation(oscilloscope_quantity(attenuation_current, "A"))),
         _description(detail::safe_assign(blob(), description)),
-        _path(detail::safe_assign(std::move(blob()),
-            convert_string<char>(path))),
+        _path(detail::safe_assign(blob(), convert_string<char>(path))),
         _voltage_channel(oscilloscope_channel(channel_voltage)
         .attenuation(oscilloscope_quantity(attenuation_voltage, "V"))),
         _waveform_points(waveform_points) {
@@ -115,7 +113,7 @@ visus::power_overwhelming::rtx_sensor_definition::rtx_sensor_definition(
     : _current_channel(oscilloscope_channel(channel_current)
         .attenuation(oscilloscope_quantity(attenuation_current, "A"))),
         _description(detail::safe_assign(blob(), description)),
-        _path(detail::safe_assign(std::move(blob()), path)),
+        _path(detail::safe_assign(blob(), path)),
         _voltage_channel(oscilloscope_channel(channel_voltage)
         .attenuation(oscilloscope_quantity(attenuation_voltage, "V"))),
         _waveform_points(waveform_points) {
