@@ -46,7 +46,7 @@ namespace detail {
         ViSession _session;
         visa_instrument::timeout_type _timeout;
     };
-#endif /* */defined(POWER_OVERWHELMING_WITH_VISA) */
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
 } /* namespace detail */
 } /* namespace power_overwhelming */
