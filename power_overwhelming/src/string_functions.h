@@ -149,6 +149,20 @@ namespace detail {
     /// Copy a string into a <see cref="blob" />.
     /// </summary>
     /// <typeparam name="TChar">The type of the characters.</typeparam>
+    /// <param name="dst">The blob variable to receive the copy of
+    /// <paramref name="src" />. The blob will be resized to be able to hold
+    /// the whole <paramref name="src" />.</param>
+    /// <param name="src">The string to be copied.</param>
+    /// <exception cref="std::bad_alloc">If the memory for
+    /// <paramref name="dst" /> could not be allocated.</exception>
+    /// <returns><paramref name="dst" />.</returns>
+    template<class TChar>
+    blob safe_assign(_Inout_ blob&& dst, _In_opt_z_ const TChar *src);
+
+    /// <summary>
+    /// Copy a string into a <see cref="blob" />.
+    /// </summary>
+    /// <typeparam name="TChar">The type of the characters.</typeparam>
     /// <typeparam name="TTraits">The type of a character traits.</typeparam>
     /// <typeparam name="TAlloc">The allocator of the string.</typeparam>
     /// <param name="dst">The blob variable to receive the copy of

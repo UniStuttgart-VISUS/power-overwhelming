@@ -326,12 +326,14 @@ namespace detail {
         static inline nlohmann::json serialise(const value_type& value) {
             auto name = power_overwhelming::convert_string<char>(value.name());
             auto path = power_overwhelming::convert_string<char>(value.path());
+            auto timeout = value.instrument()->timeout();
+
 
             return nlohmann::json::object({
                 { json_field_type, type_name },
                 { json_field_name, name },
                 { json_field_path, path },
-                { json_field_timeout, 3000 }
+                { json_field_timeout, timeout }
             });
         }
     };

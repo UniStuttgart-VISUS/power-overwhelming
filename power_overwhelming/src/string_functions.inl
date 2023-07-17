@@ -207,6 +207,33 @@ visus::power_overwhelming::detail::safe_assign(
  * visus::power_overwhelming::detail::safe_assign
  */
 template<class TChar>
+visus::power_overwhelming::blob
+visus::power_overwhelming::detail::safe_assign(
+        _Inout_ blob&& dst, _In_opt_z_ const TChar *src) {
+    auto retval = std::move(dst);
+
+    if (retval.as<TChar>() != src) {
+        if (src != nullptr) {
+            auto len = std::char_traits<TChar>::length(src) + 1;
+            len *= sizeof(TChar);
+            retval.reserve(len);
+            ::memcpy(retval.data(), src, len);
+
+        } else {
+            retval.reserve(1);
+            *retval.as<TChar>() = static_cast<TChar>(0);
+        }
+    }
+
+    return retval;
+}
+
+
+
+/*
+ * visus::power_overwhelming::detail::safe_assign
+ */
+template<class TChar>
 void visus::power_overwhelming::detail::safe_assign(
         _Inout_opt_z_ TChar *& dst, _In_ const std::nullptr_t) noexcept {
     if (dst != nullptr) {
