@@ -40,6 +40,7 @@
 #define _Out_writes_bytes_(cnt)
 #define _Out_writes_opt_(cnt)
 #define _Out_writes_opt_z_(cnt)
+#define _Ret_
 #define _Ret_maybenull_
 #define _Ret_maybenull_z_
 #define _Ret_valid_
