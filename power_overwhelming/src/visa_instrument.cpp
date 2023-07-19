@@ -774,9 +774,9 @@ void visus::power_overwhelming::visa_instrument::throw_on_system_error(
 visus::power_overwhelming::visa_instrument::timeout_type
 visus::power_overwhelming::visa_instrument::timeout(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    timeout_type retval;
+    ViUInt32 retval;
     this->attribute(&retval, VI_ATTR_TMO_VALUE);
-    return retval;
+    return static_cast<timeout_type>(retval);
 #else /* defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(detail::no_visa_error_msg);
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
