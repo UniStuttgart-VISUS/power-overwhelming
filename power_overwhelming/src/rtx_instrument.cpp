@@ -749,7 +749,7 @@ visus::power_overwhelming::rtx_instrument::unit(
 
 
 /*
- * visus::power_overwhelming::rtx_instrument::trigger_position
+ * visus::power_overwhelming::rtx_instrument::unit
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::unit(
