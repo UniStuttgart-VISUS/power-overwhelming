@@ -20,6 +20,7 @@
 
 #include "described_sensor_type.h"
 #include "msr_sensor_impl.h"
+#include "rtx_serialisation.h"
 #include "tinkerforge_sensor_impl.h"
 
 
@@ -44,10 +45,13 @@ namespace power_overwhelming {
 namespace detail {
 
     static constexpr const char *json_field_channel = "channel";
+    static constexpr const char *json_field_channel_current = "current";
+    static constexpr const char *json_field_channel_voltage = "voltage";
     static constexpr const char *json_field_core = "core";
-    static constexpr const char *json_field_domain = "domain";
+    static constexpr const char *json_field_decimation = "decimation";
     static constexpr const char *json_field_description = "description";
     static constexpr const char *json_field_dev_guid = "deviceGuid";
+    static constexpr const char *json_field_domain = "domain"; 
     static constexpr const char *json_field_host = "host";
     static constexpr const char *json_field_name = "name";
     static constexpr const char *json_field_offset = "offset";
@@ -317,23 +321,41 @@ namespace detail {
         POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC(false);
 
         static inline value_type deserialise(const nlohmann::json& value) {
+            typedef std::underlying_type<waveform_decimation_method>::type
+                dec_type;
+            typedef decltype(std::declval<value_type>().channel_current())
+                chan_type;
+
+            auto channel_current = value[json_field_channel_current]
+                .get<chan_type>();
+            auto channel_voltage = value[json_field_channel_current]
+                .get<chan_type>();
+            auto decimation = value[json_field_decimation].get<dec_type>();
             auto path = value[json_field_path].get<std::string>();
             auto timeout = value[json_field_timeout].get<std::int32_t>();
+
+            //rtx_sensor_definition definition()
+            //return value_type()
             throw "TODO";
-            //return value_type(path.c_str(), timeout);
         }
 
         static inline nlohmann::json serialise(const value_type& value) {
+            typedef std::underlying_type<waveform_decimation_method>::type
+                dec_type;
+
+            auto decimation = static_cast<dec_type>(value.decimation_method());
             auto name = power_overwhelming::convert_string<char>(value.name());
             auto path = power_overwhelming::convert_string<char>(value.path());
             auto timeout = value.instrument()->timeout();
-
 
             return nlohmann::json::object({
                 { json_field_type, type_name },
                 { json_field_name, name },
                 { json_field_path, path },
-                { json_field_timeout, timeout }
+                { json_field_timeout, timeout },
+                { json_field_channel_current, value.channel_current() },
+                { json_field_channel_voltage, value.channel_voltage() },
+                { json_field_decimation, decimation }
             });
         }
     };

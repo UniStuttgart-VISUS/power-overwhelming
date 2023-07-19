@@ -38,6 +38,7 @@
 #include <msr_magic.h>
 #include <nvml_exception.h>
 #include <nvml_scope.h>
+#include <rtx_serialisation.h>
 #include <sensor_desc.h>
 #include <setup_api.h>
 #include <string_functions.h>

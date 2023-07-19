@@ -285,7 +285,7 @@ const visus::power_overwhelming::visa_instrument &
 visus::power_overwhelming::visa_instrument::attribute(
         _Out_ void *dst, _In_ ViAttr name) const {
     visa_exception::throw_on_error(detail::visa_library::instance()
-        .viGetAttribute(this->check_not_disposed().session, name, &dst));
+        .viGetAttribute(this->check_not_disposed().session, name, dst));
     return *this;
 }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */

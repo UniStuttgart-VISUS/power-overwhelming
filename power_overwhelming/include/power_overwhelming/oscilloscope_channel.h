@@ -133,7 +133,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="decimation_mode">The desired decimation mode.</param>
         /// <returns><c>*this</c>.</returns>
-        inline oscilloscope_channel& count(
+        inline oscilloscope_channel& decimation_mode(
                 _In_ const oscilloscope_decimation_mode decimation_mode)
                 noexcept {
             this->_decimation_mode = decimation_mode;
@@ -294,6 +294,7 @@ namespace power_overwhelming {
         /// <para>You can assess the zero error by measuring the mean value of
         /// a signal that should return zero.</para>
         /// <param name="zero_offset">The zero offset.</param>
+        /// </remarks>
         /// <returns><c>*this</c>.</returns>
         inline oscilloscope_channel& zero_offset(
             _In_ const oscilloscope_quantity& zero_offset) noexcept {

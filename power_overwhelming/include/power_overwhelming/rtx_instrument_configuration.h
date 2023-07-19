@@ -63,7 +63,7 @@ namespace power_overwhelming {
         /// </remarks>
         /// <param name="time_range">The time range the oscilloscope should
         /// acquire after it has been triggers.</param>
-        /// <parama name="samples">The number of samples to be acquired during
+        /// <param name="samples">The number of samples to be acquired during
         /// <paramref name="time_range" />. If this is zero, which is the
         /// default, the instrument will be configured to determine the best
         /// number of samples on its own.</param>
