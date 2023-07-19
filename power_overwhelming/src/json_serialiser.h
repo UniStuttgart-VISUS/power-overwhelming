@@ -5,11 +5,11 @@
 
 #pragma once
 
-#include "power_overwhelming/power_overwhelming_api.h"
-
 #include <type_traits>
 
 #include <nlohmann/json.hpp>
+
+#include "power_overwhelming/convert_string.h"
 
 
 namespace visus {
@@ -82,6 +82,22 @@ namespace detail {
     };
 
     /// <summary>
+    /// Specialisation for strings.
+    /// </summary>
+    template<> struct json_serialiser<std::wstring, false, false> final {
+        static inline std::wstring deserialise(
+                _In_ const nlohmann::json& json) {
+            auto retval = json.get<std::string>();
+            return power_overwhelming::convert_string<wchar_t>(retval);
+        }
+
+        static inline const std::string& serialise(
+                _In_ const std::wstring& value) {
+            return power_overwhelming::convert_string<char>(value);
+        }
+    };
+
+    /// <summary>
     /// Specialisation for C-style strings.
     /// </summary>
     template<> struct json_serialiser<const char *, false, false> final {
@@ -92,7 +108,22 @@ namespace detail {
         }
 
         static inline value_type serialise(_In_z_ const char *value) {
-            return value;
+            return (value != nullptr) ? value : "";
+        }
+    };
+
+    /// <summary>
+    /// Specialisation for C-style strings.
+    /// </summary>
+    template<> struct json_serialiser<const wchar_t *, false, false> final {
+        static inline std::wstring deserialise(
+                _In_ const nlohmann::json& json) {
+            auto retval = json.get<std::string>();
+            return power_overwhelming::convert_string<wchar_t>(retval);
+        }
+
+        static inline std::string serialise(_In_z_ const wchar_t *value) {
+            return power_overwhelming::convert_string<char>(value);
         }
     };
 

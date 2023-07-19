@@ -452,7 +452,7 @@ namespace detail {
 #undef POWER_OVERWHELMING_DECLARE_SENSOR_NAME
 #undef POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC
 
-    
+
     /// <summary>
     /// A type list of all known sensors, which allows for compile-time
     /// enumeration of known sensor types.

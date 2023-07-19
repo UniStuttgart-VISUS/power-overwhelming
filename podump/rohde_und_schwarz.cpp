@@ -162,6 +162,12 @@ void query_rtx_instrument(void) {
 
             std::wcout << L"The device has " << i.channels() << L" channels."
                 << std::endl;
+            std::wcout << L"The device has currently " << i.history_segments()
+                << L" history segments in memory." << std::endl;
+            std::wcout << L"The horizontal time range is "
+                << i.time_range().value() << L"s." << std::endl;
+            std::wcout << L"The horizontal time scale is "
+                << i.time_scale().value() << L"s." << std::endl;
 
             i.reference_position(oscilloscope_reference_point::left);
             i.time_scale(oscilloscope_quantity(10, "ms"));

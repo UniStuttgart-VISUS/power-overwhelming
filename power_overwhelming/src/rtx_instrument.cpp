@@ -294,6 +294,85 @@ visus::power_overwhelming::rtx_instrument::binary_data(
 /*
  * visus::power_overwhelming::rtx_instrument::channel
  */
+visus::power_overwhelming::oscilloscope_channel
+visus::power_overwhelming::rtx_instrument::channel(
+        _In_ const std::uint32_t channel) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+    oscilloscope_channel retval(channel);
+
+    {
+        impl.format("PROB%d:SET:ATT:UNIT?\n", channel);
+        auto unit = impl.read_all();
+
+        impl.format("PROB%d:SET:ATT:MAN?\n", channel);
+        auto value = impl.read_all();
+
+        retval.attenuation(oscilloscope_quantity(
+            std::atof(value.as<char>()),
+            unit.as<char>()));
+    }
+
+    {
+        impl.format("CHAN%d:BAND?\n", channel);
+        auto value = impl.read_all();
+    }
+
+    {
+        impl.format("CHAN%d:COUP?\n", channel);
+        auto value = impl.read_all();
+    }
+
+    {
+        impl.format("CHAN%d:TYPE?\n", channel);
+        auto value = impl.read_all();
+    }
+
+    {
+        impl.format("CHAN%d:LAB?\n", channel);
+        auto text = impl.read_all();
+
+        impl.format("CHAN%d:LAB:STAT?\n", channel);
+        auto visible = impl.read_all();
+    }
+
+    {
+        impl.format("CHAN%d:OFFS?\n", channel);
+        auto value = impl.read_all();
+    }
+
+    {
+        impl.format("CHAN%d:RANG?\n", channel);
+        auto value = impl.read_all();
+    }
+
+    {
+        impl.format("CHAN%d:SKEW?\n", channel);
+        auto value = impl.read_all();
+    }
+
+    {
+        impl.format("CHAN%d:STAT?\n", channel);
+        auto value = impl.read_all();
+    }
+
+    {
+        impl.format("CHAN%d:ZOFF?\n", channel);
+        auto value = impl.read_all();
+        retval.state(*value.as<char>(0) != '0');
+    }
+
+    return retval;
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::channel
+ */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::channel(
         _In_ const oscilloscope_channel& channel) {
@@ -314,6 +393,7 @@ visus::power_overwhelming::rtx_instrument::channel(
             impl.format("CHAN%d:BAND B20\n", channel.channel());
             break;
 
+        case oscilloscope_channel_bandwidth::full:
         default:
             impl.format("CHAN%d:BAND FULL\n", channel.channel());
             break;
@@ -328,6 +408,7 @@ visus::power_overwhelming::rtx_instrument::channel(
             impl.format("CHAN%d:COUP GND\n", channel.channel());
             break;
 
+        case oscilloscope_channel_coupling::direct_current_limit:
         default:
             impl.format("CHAN%d:COUP DCL\n", channel.channel());
             break;
@@ -549,6 +630,22 @@ std::size_t visus::power_overwhelming::rtx_instrument::history_segments(
 /*
  * visus::power_overwhelming::rtx_instrument::reference_position
  */
+visus::power_overwhelming::oscilloscope_reference_point
+visus::power_overwhelming::rtx_instrument::reference_position(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("TIM:REF?\n");
+    auto position = std::atof(response.as<char>()) * 100;
+    return static_cast<oscilloscope_reference_point>(position);
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::reference_position
+ */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::reference_position(
         _In_ const oscilloscope_reference_point position) {
@@ -561,12 +658,42 @@ visus::power_overwhelming::rtx_instrument::reference_position(
 /*
  * visus::power_overwhelming::rtx_instrument::time_range
  */
+visus::power_overwhelming::oscilloscope_quantity
+visus::power_overwhelming::rtx_instrument::time_range(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("TIM:RANG?\n");
+    return std::atof(response.as<char>());
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::time_range
+ */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::time_range(
         _In_ const oscilloscope_quantity& scale) {
     auto &impl = this->check_not_disposed();
     impl.format("TIM:RANG %f %s\n", scale.value(), scale.unit());
     return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::time_scale
+ */
+visus::power_overwhelming::oscilloscope_quantity
+visus::power_overwhelming::rtx_instrument::time_scale(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("TIM:SCAL?\n");
+    return std::atof(response.as<char>());
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

@@ -297,6 +297,20 @@ namespace power_overwhelming {
         blob binary_data(_In_ const std::uint32_t channel) const;
 
         /// <summary>
+        /// Retrieve the configuration for the specified channel.
+        /// </summary>
+        /// <param name="channel">The one-based index of the channel to
+        /// retrieve the configuration for.</param>
+        /// <returns>The configuration for the specified channel.</returns>
+        /// <exception cref="std::runtime_error">If the instance was disposed
+        /// by moving it.</exception>
+        /// <exception cref="visa_exception">If the sensor could not be
+        /// initialised.</exception>
+        /// <exception cref="std::logic_error">If the library was compiled
+        /// without support for VISA.</exception>
+        oscilloscope_channel channel(_In_ const std::uint32_t channel) const;
+
+        /// <summary>
         /// Apply the specified channel configuration.
         /// </summary>
         /// <remarks>
@@ -305,8 +319,8 @@ namespace power_overwhelming {
         /// </remarks>
         /// <param name="channel">The channel configuration to apply.</param>
         /// <returns><c>*this</c>.</returns>
-        /// <exception cref="std::system_error">If the VISA library could not be
-        /// loaded.</exception>
+        /// <exception cref="std::runtime_error">If the instance was disposed
+        /// by moving it.</exception>
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
         rtx_instrument& channel(_In_ const oscilloscope_channel& channel);
@@ -415,6 +429,13 @@ namespace power_overwhelming {
         std::size_t history_segments(void) const;
 
         /// <summary>
+        /// Gets the current position of the reference point in the diagram.
+        /// </summary>
+        /// <returns>The location of the reference point on the horizontal
+        /// axis.</returns>
+        oscilloscope_reference_point reference_position(void) const;
+
+        /// <summary>
         /// Sets the reference point in the diagram.
         /// </summary>
         /// <param name="position">The location of the reference point on the
@@ -425,12 +446,25 @@ namespace power_overwhelming {
             _In_ const oscilloscope_reference_point position);
 
         /// <summary>
-        /// Sets the time range of a single acquisition covering all grid
-        ///  divisions.
+        /// Gets the length of a single acquisition covering all horizontal grid
+        /// divisions.
         /// </summary>
-        /// <param name="scale">Time scale within [250e-12, 500].</param>
+        /// <returns>The time range of the whole waveform displayed.</returns>
+        oscilloscope_quantity time_range(void) const;
+
+        /// <summary>
+        /// Sets the time range of a single acquisition covering all grid
+        /// divisions.
+        /// </summary>
+        /// <param name="scale">Time range within [250e-12, 500].</param>
         /// <returns><c>*this</c>.</returns>
         rtx_instrument& time_range(_In_ const oscilloscope_quantity& scale);
+
+        /// <summary>
+        /// Gets the length of a horizontal single grid division.
+        /// </summary>
+        /// <returns>The time scale of a single grid division.</returns>
+        oscilloscope_quantity time_scale(void) const;
 
         /// <summary>
         /// Sets the horizontal scale for all channels in time units per grid
