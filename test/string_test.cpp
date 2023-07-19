@@ -238,6 +238,76 @@ namespace test {
 
         }
 
+        TEST_METHOD(test_parse_float) {
+            {
+                const auto actual = detail::parse_float(nullptr);
+                Assert::AreEqual(0.0f, actual, L"nullptr", LINE_INFO());
+            }
+
+            {
+                const auto actual = detail::parse_float("");
+                Assert::AreEqual(0.0f, actual, L"empty", LINE_INFO());
+            }
+
+            {
+                const auto actual = detail::parse_float("horst");
+                Assert::AreEqual(0.0f, actual, L"horst", LINE_INFO());
+            }
+
+            {
+                const auto actual = detail::parse_float("1.2");
+                Assert::AreEqual(1.2f, actual, L"1.2", LINE_INFO());
+            }
+
+            {
+                const auto actual = detail::parse_float("1e1");
+                Assert::AreEqual(10.0f, actual, L"1e1", LINE_INFO());
+            }
+        }
+
+        TEST_METHOD(test_parse_int) {
+            {
+                const auto actual = detail::parse_int(nullptr);
+                Assert::AreEqual(0, actual, L"nullptr", LINE_INFO());
+            }
+
+            {
+                const auto actual = detail::parse_int("");
+                Assert::AreEqual(0, actual, L"empty", LINE_INFO());
+            }
+
+            {
+                const auto actual = detail::parse_int("horst");
+                Assert::AreEqual(0, actual, L"horst", LINE_INFO());
+            }
+
+            {
+                const auto actual = detail::parse_int("1");
+                Assert::AreEqual(1, actual, L"1.2", LINE_INFO());
+            }
+
+            {
+                const auto actual = detail::parse_int("1bla");
+                Assert::AreEqual(1, actual, L"1bla", LINE_INFO());
+            }
+        }
+
+        TEST_METHOD(test_equals_string) {
+            Assert::IsTrue(detail::equals((char *) nullptr, (char *) nullptr), L"nullptr", LINE_INFO());
+            Assert::IsFalse(detail::equals((char *) nullptr, "bla"), L"nullptr vs. string", LINE_INFO());
+            Assert::IsTrue(detail::equals("bla", "bla"), L"bla, bla", LINE_INFO());
+            Assert::IsFalse(detail::equals("bla", "BLA"), L"bla, BLA", LINE_INFO());
+            Assert::IsTrue(detail::equals("bla", "BLA", true), L"bla, BLA case-insensitive", LINE_INFO());
+        }
+
+        TEST_METHOD(test_equals_wstring) {
+            Assert::IsTrue(detail::equals((wchar_t *) nullptr, (wchar_t *) nullptr), L"nullptr", LINE_INFO());
+            Assert::IsFalse(detail::equals((wchar_t *) nullptr, L"bla"), L"nullptr vs. string", LINE_INFO());
+            Assert::IsTrue(detail::equals(L"bla", L"bla"), L"bla, bla", LINE_INFO());
+            Assert::IsFalse(detail::equals(L"bla", L"BLA"), L"bla, BLA", LINE_INFO());
+            Assert::IsTrue(detail::equals(L"bla", L"BLA", true), L"bla, BLA case-insensitive", LINE_INFO());
+        }
+
     };
 } /* namespace test */
 } /* namespace power_overwhelming */

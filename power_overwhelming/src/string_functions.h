@@ -27,6 +27,36 @@ namespace power_overwhelming {
 namespace detail {
 
     /// <summary>
+    /// Tests two strings for equality.
+    /// </summary>
+     /// <remarks>
+    /// This function is only exported from the library for testing purposes.
+    /// </remarks><param name="lhs">The left-hand side string.</param>
+    /// <param name="rhs">The right-hand side string.</param>
+    /// <param name="ignore_case">If <c>true</c>, consider both strings equal if
+    /// they only differ in case. If <c>false</c>, which is the default, both
+    /// strings must match exactly.</param>
+    /// <returns><c>true</c> if both strings are equal, <c>false</c> otherwise.
+    /// </returns>
+    POWER_OVERWHELMING_API bool equals(_In_opt_z_ const char *lhs,
+        _In_opt_z_ const char *rhs, _In_ const bool ignore_case = false);
+
+    /// <summary>
+    /// Tests two strings for equality.
+    /// </summary>
+     /// <remarks>
+    /// This function is only exported from the library for testing purposes.
+    /// </remarks><param name="lhs">The left-hand side string.</param>
+    /// <param name="rhs">The right-hand side string.</param>
+    /// <param name="ignore_case">If <c>true</c>, consider both strings equal if
+    /// they only differ in case. If <c>false</c>, which is the default, both
+    /// strings must match exactly.</param>
+    /// <returns><c>true</c> if both strings are equal, <c>false</c> otherwise.
+    /// </returns>
+    POWER_OVERWHELMING_API bool equals(_In_opt_z_ const wchar_t *lhs,
+        _In_opt_z_ const wchar_t *rhs, _In_ const bool ignore_case = false);
+
+    /// <summary>
     /// Format the given string into a new string.
     /// </summary>
     /// <typeparam name="TArgs">The list of arguments used to replace the
@@ -51,6 +81,28 @@ namespace detail {
     /// <returns>The formatted string.</returns>
     template<class... TArgs>
     std::string format_string(_In_z_ const char *format, TArgs&&... args);
+
+    /// <summary>
+    /// Parse the given text as floating-point number.
+    /// </summary>
+    /// <remarks>
+    /// This function is only exported from the library for testing purposes.
+    /// </remarks>
+    /// <param name="str">The string to be parsed.</param>
+    /// <returns>The number represented by the given string or zero in case
+    /// the string does not represent a number.</returns>
+    POWER_OVERWHELMING_API float parse_float(_In_opt_z_ const char *str);
+
+    /// <summary>
+    /// Parse the given text as signed integer number.
+    /// </summary>
+    /// <remarks>
+    /// This function is only exported from the library for testing purposes.
+    /// </remarks>
+    /// <param name="str">The string to be parsed.</param>
+    /// <returns>The number represented by the given string or zero in case
+    /// the string does not represent a number.</returns>
+    POWER_OVERWHELMING_API int parse_int(_In_opt_z_ const char *str);
 
     /// <summary>
     /// Remove all white-space characters from <paramref name="str" />.
@@ -217,6 +269,9 @@ namespace detail {
     /// <summary>
     /// Duplicates <paramref name="src" />.
     /// </summary>
+    /// <remarks>
+    /// This function is only exported from the library for testing purposes.
+    /// </remarks>
     /// <param name="src">The string variable to duplicated. The memory returned
     /// must be released using <see cref="free" />. It is safe to pass
     /// <c>nullptr</c>.</param>
@@ -228,6 +283,9 @@ namespace detail {
     /// <summary>
     /// Duplicates <paramref name="src" />.
     /// </summary>
+    /// <remarks>
+    /// This function is only exported from the library for testing purposes.
+    /// </remarks>
     /// <param name="src">The string variable to duplicated. The memory returned
     /// must be released using <see cref="free" />. It is safe to pass
     /// <c>nullptr</c>.</param>

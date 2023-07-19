@@ -309,7 +309,7 @@ visus::power_overwhelming::rtx_instrument::channel(
         auto value = impl.read_all();
 
         retval.attenuation(oscilloscope_quantity(
-            std::atof(value.as<char>()),
+            detail::parse_float(value.as<char>()),
             unit.as<char>()));
     }
 
