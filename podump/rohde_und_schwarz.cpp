@@ -168,16 +168,18 @@ void query_rtx_instrument(void) {
                 << i.time_range().value() << L"s." << std::endl;
             std::wcout << L"The horizontal time scale is "
                 << i.time_scale().value() << L"s." << std::endl;
+            std::wcout << L"Acquisition state is "
+                << int(i.acquisition()) << std::endl;
 
             for (std::uint16_t c = 0; c < i.channels(); ++c){
                 auto channel = i.channel(c);
                 std::wcout << L"Channel " << c << L" attenuation: "
                     << channel.attenuation().value() << std::endl;
-                std::wcout << L"Channel " << c << L" bandwidth:   "
+                std::wcout << L"Channel " << c << L" bandwidth: "
                     << int(channel.bandwidth()) << std::endl;
-                std::wcout << L"Channel " << c << L" channel:"
+                std::wcout << L"Channel " << c << L" channel: "
                     << channel.channel() << std::endl;
-                std::wcout << L"Channel " << c << L" coupling:"
+                std::wcout << L"Channel " << c << L" coupling: "
                     << int(channel.coupling()) << std::endl;
                 std::wcout << L"Channel " << c << L" decimation_mode: "
                     << int(channel.decimation_mode()) << std::endl;
@@ -213,6 +215,28 @@ void query_rtx_instrument(void) {
                     << a.points() << std::endl;
                 std::wcout << L"Fast segmentation: "
                     << a.segmented() << std::endl;
+            }
+
+            {
+                auto t = i.edge_trigger();
+                std::wcout << L"Trigger coupling: "
+                    << int(t.coupling()) << std::endl;
+                std::wcout << L"Trigger hold-off: "
+                    << convert_string<wchar_t>(t.hold_off()) << std::endl;
+                std::wcout << L"Trigger hysteresis: "
+                    << int(t.hysteresis()) << std::endl;
+                std::wcout << L"Trigger input: "
+                    << t.input() << std::endl;
+                std::wcout << L"Trigger level: "
+                    << t.level().value() << std::endl;
+                std::wcout << L"Trigger mode: "
+                    << int(t.mode()) << std::endl;
+                std::wcout << L"Trigger slope: "
+                    << int(t.slope()) << std::endl;
+                std::wcout << L"Trigger slope: "
+                    << convert_string<wchar_t>(t.source()) << std::endl;
+                std::wcout << L"Trigger type: "
+                    << convert_string<wchar_t>(t.type()) << std::endl;
             }
 
             i.reference_position(oscilloscope_reference_point::left);

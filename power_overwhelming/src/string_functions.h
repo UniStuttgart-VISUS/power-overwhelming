@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cctype>
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
@@ -454,6 +455,24 @@ namespace detail {
     template<class TChar, class TPredicate>
     _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
     TChar *trim_end_if(_In_opt_z_ TChar *str, _In_ const TPredicate& predicate);
+
+    /// <summary>
+    /// Determine the last whitespace character from the end of the given
+    /// string. If this pointer is used as the end of the new string, all spaces
+    /// have been trimmed from the end.
+    /// </summary>
+    /// <typeparam name="TChar">The type of the character in the string.
+    /// </typeparam>
+    /// <param name="str">The string to be trimmed. It is safe to pass
+    /// <c>nullptr</c>, in which case the result will be <c>nullptr</c>, too.
+    /// </param>
+    /// <returns>A pointer to the last character from the end of the string that
+    /// is a white space character.</returns>
+    template<class TChar>
+    _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
+    inline TChar *trim_end(_In_opt_z_ TChar *str) {
+        return trim_end_if(str, [](const TChar c) {return std::isspace(c); });
+    }
 
 } /* namespace detail */
 } /* namespace power_overwhelming */
