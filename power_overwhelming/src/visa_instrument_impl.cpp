@@ -399,9 +399,12 @@ visus::power_overwhelming::detail::visa_instrument_impl::read_binary(
         rem -= this->read(retval.end() - rem, rem);
     }
 
-    // Read and discard all that is still in the buffer (the "\n"). If we do not
-    // do this, the next query would be interrupted.
-    this->read_all();
+    // Read and discard all junk that might be in the buffer. If we do not
+    // do this, the next query could be interrupted. This might also fail,
+    // in which case we just ignore it.
+    try {
+        this->read_all();
+    } catch (...) { }
 
     return retval;
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */

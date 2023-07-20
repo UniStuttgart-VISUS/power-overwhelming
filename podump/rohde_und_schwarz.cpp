@@ -171,7 +171,7 @@ void query_rtx_instrument(void) {
             std::wcout << L"Acquisition state is "
                 << int(i.acquisition()) << std::endl;
 
-            for (std::uint16_t c = 0; c < i.channels(); ++c){
+            for (std::uint16_t c = 1; c <= i.channels(); ++c){
                 auto channel = i.channel(c);
                 std::wcout << L"Channel " << c << L" attenuation: "
                     << channel.attenuation().value() << std::endl;
@@ -285,6 +285,10 @@ void query_rtx_instrument(void) {
                 .segmented(false))
                 .operation_complete();
 
+            i.save_state_to_instrument(L"_PODUMP.SET").operation_complete();
+            i.reset(true, true);
+            i.load_state_from_instrument(L"_PODUMP.SET").operation_complete();
+
             i.acquisition(oscilloscope_acquisition_state::single)
                 .operation_complete();
             //i.operation_complete();
@@ -309,7 +313,6 @@ void query_rtx_instrument(void) {
                 << "Buffer size: "
                 << segment0.end() - segment0.begin() << std::endl;
 
-
             //i.history_segment(-1);
             //std::cout << "Segment "
             //    << i.history_segment()
@@ -317,7 +320,7 @@ void query_rtx_instrument(void) {
             //    << i.history_segments()
             //    << std::endl;
             //auto segment1 = i.data(1);
-            int x = 123;
+            int x = 1234;
         }
 
     } catch (std::exception& ex) {

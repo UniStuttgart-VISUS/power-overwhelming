@@ -6,7 +6,11 @@
 #include "power_overwhelming/rtx_instrument.h"
 
 #include <cassert>
+#include <cstdlib>
+#include <fstream>
+#include <random>
 
+#include "on_exit.h"
 #include "no_visa_error_msg.h"
 #include "visa_instrument_impl.h"
 
@@ -49,6 +53,25 @@ namespace detail {
         visa_instrument::timeout_type _timeout;
     };
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+
+    /// <summary>
+    /// Creates a random temporary file name for on-instrument use.
+    /// </summary>
+    static std::string make_random_file_name(const std::string& ext = ".TMP") {
+        std::string name;
+        name.reserve(8 + 1 + 3);
+
+        std::random_device rd;
+        std::mt19937 rng(rd());
+        std::uniform_int_distribution<> distribution('A', 'Z');
+
+        for (std::size_t i = 0; i < 8; ++i) {
+            name.push_back(distribution(rng));
+        }
+
+        name += ext;
+        return name;
+    }
 
 } /* namespace detail */
 } /* namespace power_overwhelming */
@@ -569,6 +592,131 @@ std::size_t visus::power_overwhelming::rtx_instrument::channels(
 
 
 /*
+ * visus::power_overwhelming::rtx_instrument::copy_file_from_instrument
+ */
+visus::power_overwhelming::blob
+visus::power_overwhelming::rtx_instrument::copy_file_from_instrument(
+        _In_z_ const wchar_t *name, _In_opt_z_ const wchar_t *path) const {
+    auto n = convert_string<char>(name);
+    auto p = convert_string<char>(path);
+    return this->copy_file_from_instrument(n.c_str(), p.c_str());
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::copy_file_from_instrument
+ */
+visus::power_overwhelming::blob
+visus::power_overwhelming::rtx_instrument::copy_file_from_instrument(
+        _In_z_ const char *name, _In_opt_z_ const char *path) const {
+    if ((name == nullptr) || (*name == 0)) {
+        throw std::invalid_argument("The name of the file to read cannot be "
+            "null or empty.");
+    }
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto &impl = this->check_not_disposed();
+
+    if ((path != nullptr) && (*path != 0)) {
+        impl.format("MMEM:CDIR \"%s\"\n", path);
+    }
+
+    impl.format("MMEM:DATA? \"%s\"\n", name);
+    return impl.read_binary();
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::copy_file_to_instrument
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::copy_file_to_instrument(
+        _In_z_ const wchar_t *name,
+        _In_ const blob& content,
+        _In_opt_z_ const wchar_t *path) {
+    auto n = convert_string<char>(name);
+    auto p = convert_string<char>(path);
+    return this->copy_file_to_instrument(n.c_str(), content, p.c_str());
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::copy_file_to_instrument
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::copy_file_to_instrument(
+        _In_z_ const char *name,
+        _In_ const blob& content,
+        _In_opt_z_ const char *path) {
+    if ((name == nullptr) || (*name == 0)) {
+        throw std::invalid_argument("The name of the file to read cannot be "
+            "null or empty.");
+    }
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto &impl = this->check_not_disposed();
+
+    if ((path != nullptr) && (*path != 0)) {
+        impl.format("MMEM:CDIR \"%s\"\n", path);
+    }
+
+    auto length = std::to_string(content.size());
+    if (length.size() > 9) {
+        throw std::invalid_argument("The specified content is too long to be "
+            "uploaded to the instrument.");
+    }
+
+    auto header = detail::format_string("MMEM:DATA \"%s\", #%u%s",
+        name, length.size(), length.c_str());
+    auto body = content.as<std::uint8_t>();
+
+    impl.write(header.c_str());
+    if (body != nullptr) {
+        impl.write_all(body, content.size());
+    }
+    //impl.write("\n");
+    impl.check_system_error();
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+    return *this;
+}
+
+
+#if false
+// TODO: that does not work atm. If we upload this again, the state is corrupted.
+/*
+ * visus::power_overwhelming::rtx_instrument::copy_state_from_instrument
+ */
+visus::power_overwhelming::blob
+visus::power_overwhelming::rtx_instrument::copy_state_from_instrument(
+        void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+
+    // Save to temporary file on internal device memory.
+    auto file = detail::make_random_file_name(".SET");
+    this->save_state_to_instrument(file.c_str());
+    this->operation_complete();
+
+    // Download the temporary file.
+    auto retval = this->copy_file_from_instrument(file.c_str());
+    this->operation_complete();
+
+    // Delete the temporary file from device memory.
+    impl.format("MMEM:DEL \"%s\"\n", file.c_str());
+
+    return retval;
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+#endif
+
+
+/*
  * visus::power_overwhelming::rtx_instrument::data
  */
 visus::power_overwhelming::oscilloscope_waveform
@@ -812,6 +960,42 @@ visus::power_overwhelming::rtx_instrument::reference_position(void) const {
 
 
 /*
+ * visus::power_overwhelming::rtx_instrument::load_state_from_instrument
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::load_state_from_instrument(
+        _In_z_ const wchar_t *name, _In_z_ const wchar_t *path) {
+    auto n = convert_string<char>(name);
+    auto p = convert_string<char>(path);
+    return this->load_state_from_instrument(n.c_str(), p.c_str());
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::load_state_from_instrument
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::load_state_from_instrument(
+        _In_z_ const char *name, _In_z_ const char *path) {
+    if ((name == nullptr) || (*name == 0)) {
+        throw std::invalid_argument("The name of the settings file cannot be "
+            "empty.");
+    }
+    if ((path == nullptr) || (*path == 0)) {
+        throw std::invalid_argument("The path for reading the settings file "
+            "from cannot be empty.");
+    }
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto &impl = this->check_not_disposed();
+    impl.format("MMEM:CDIR \"%s\"\n", path);
+    impl.format("MMEM:LOAD:STAT 1, \"%s\"\n", name);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
  * visus::power_overwhelming::rtx_instrument::reference_position
  */
 visus::power_overwhelming::rtx_instrument&
@@ -819,6 +1003,63 @@ visus::power_overwhelming::rtx_instrument::reference_position(
         _In_ const oscilloscope_reference_point position) {
     auto& impl = this->check_not_disposed();
     impl.format("TIM:REF %f\n", static_cast<float>(position) / 100.0f);
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::save_state_to_instrument
+ */
+const visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::save_state_to_instrument(
+        _In_z_ const wchar_t *name, _In_z_ const wchar_t *path) const {
+    auto n = convert_string<char>(name);
+    auto p = convert_string<char>(path);
+    return this->save_state_to_instrument(n.c_str(), p.c_str());
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::save_state_to_instrument
+ */
+const visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::save_state_to_instrument(
+        _In_z_ const char *name, _In_z_ const char *path) const {
+    if ((name == nullptr) || (*name == 0)) {
+        throw std::invalid_argument("The name of the settings file cannot be "
+            "empty.");
+    }
+    if ((path == nullptr) || (*path == 0)) {
+        throw std::invalid_argument("The path for storing the settings file "
+            "cannot be empty.");
+    }
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+
+    impl.format("MMEM:CDIR \"%s\"\n", path);
+
+    std::string file_name(name);
+    std::string ext(".SET");
+
+    // Check whether we have a user-defined extension.
+    const auto ext_pos = file_name.find_last_of('.');
+    if (ext_pos != std::string::npos) {
+        ext = file_name.substr(ext_pos);
+        file_name = file_name.substr(0, ext_pos);
+    }
+
+    // Truncate to 8.3 format on device.
+    if (file_name.length() > 8) {
+        file_name = file_name.substr(0, 8);
+    }
+    if (ext.length() > 4) {
+        ext = ext.substr(0, 4);
+    }
+    file_name += ext;
+
+    impl.format("MMEM:STOR:STAT 1, \"%s\"\n", file_name.c_str());
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 

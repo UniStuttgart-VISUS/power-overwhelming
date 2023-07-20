@@ -400,6 +400,114 @@ namespace power_overwhelming {
         std::size_t channels(_In_ const timeout_type timeout = 500) const;
 
         /// <summary>
+        /// Reads a file from the device into memory.
+        /// </summary>
+        /// <param name="name">The name of the file to retrieve.</param>
+        /// <param name="path">The directory where the file is located. This
+        /// parameter defaults to <c>nullptr</c>, which means that the file
+        /// must be located in the current directory.</param>
+        /// <returns>The content of the file.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If <paramref name="name" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
+        blob copy_file_from_instrument(_In_z_ const wchar_t *name,
+            _In_opt_z_ const wchar_t *path = nullptr) const;
+
+        /// <summary>
+        /// Reads a file from the device into memory.
+        /// </summary>
+        /// <param name="name">The name of the file to retrieve.</param>
+        /// <param name="path">The directory where the file is located. This
+        /// parameter defaults to <c>nullptr</c>, which means that the file
+        /// must be located in the current directory.</param>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If <paramref name="name" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
+        blob copy_file_from_instrument(_In_z_ const char *name,
+            _In_opt_z_ const char *path = nullptr) const;
+
+        /// <summary>
+        /// Copies the given content into a file on the instrument.
+        /// </summary>
+        /// <remarks>
+        /// It is safe to call this method if the library was built without
+        /// support for VISA. Nothing will be done in this case.
+        /// </remarks>
+        /// <param name="name">The name of the file to be created on the
+        /// instrument. Please note that the instrument only supports 8.3 file
+        /// names.</param>
+        /// <param name="content">The content to be copied to the device.
+        /// </param>
+        /// <param name="path">The path where the file should be created, e.g.
+        /// &quot;INT&quot; for the internal memory. This parameter can be
+        /// <c>nullptr</c>, which is the default. In this case, the file will
+        /// be copied to the current directory.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If any of the parameters
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        rtx_instrument& copy_file_to_instrument(_In_z_ const wchar_t *name,
+            _In_ const blob& content, _In_opt_z_ const wchar_t *path = nullptr);
+
+        /// <summary>
+        /// Copies the given content into a file on the instrument.
+        /// </summary>
+        /// <remarks>
+        /// It is safe to call this method if the library was built without
+        /// support for VISA. Nothing will be done in this case.
+        /// </remarks>
+        /// <param name="name">The name of the file to be created on the
+        /// instrument. Please note that the instrument only supports 8.3 file
+        /// names.</param>
+        /// <param name="content">The content to be copied to the device.
+        /// </param>
+        /// <param name="path">The path where the file should be created, e.g.
+        /// &quot;INT&quot; for the internal memory. This parameter can be
+        /// <c>nullptr</c>, which is the default. In this case, the file will
+        /// be copied to the current directory.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If any of the parameters
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        rtx_instrument& copy_file_to_instrument(_In_z_ const char *name,
+            _In_ const blob& content, _In_opt_z_ const char *path = nullptr);
+
+#if false
+        /// <summary>
+        /// Persists the current state of the instrument and downloads it to
+        /// the host computer.
+        /// </summary>
+        /// <returns>A <see cref="blob" /> holding the state of the instrument.
+        /// You can persist this on the host computer, but you should make sure
+        /// that the file is stored in binary mode.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If any of the parameters
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
+        blob copy_state_from_instrument(void) const;
+#endif
+
+        /// <summary>
         /// Retrieves the waveform data for the specified channel.
         /// </summary>
         /// <param name="channel">The one-based index of the channel to retrieve
@@ -511,6 +619,42 @@ namespace power_overwhelming {
         oscilloscope_reference_point reference_position(void) const;
 
         /// <summary>
+        /// Restores the state of the instrument from a file stored on the
+        /// instrument itself or on a USB mass-storage device connected to the
+        /// instrument.
+        /// </summary>
+        /// <param name="name">The name of the settings file.</param>
+        /// <param name="path">The path where to load the settings file
+        /// from. This parameter defaults to &quot;/INT/SETTINGS&quot;.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If any of the parameters
+        /// is <c>nullptr</c> or empty.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        rtx_instrument& load_state_from_instrument(_In_z_ const wchar_t *name,
+            _In_z_ const wchar_t *path = L"/INT/SETTINGS");
+
+        /// <summary>
+        /// Restores the state of the instrument from a file stored on the
+        /// instrument itself or on a USB mass-storage device connected to the
+        /// instrument.
+        /// </summary>
+        /// <param name="name">The name of the settings file.</param>
+        /// <param name="path">The path where to load the settings file
+        /// from. This parameter defaults to &quot;/INT/SETTINGS&quot;.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If any of the parameters
+        /// is <c>nullptr</c> or empty.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        rtx_instrument& load_state_from_instrument(_In_z_ const char *name,
+            _In_z_ const char *path = "/INT/SETTINGS");
+
+        /// <summary>
         /// Sets the reference point in the diagram.
         /// </summary>
         /// <param name="position">The location of the reference point on the
@@ -523,6 +667,58 @@ namespace power_overwhelming {
         /// instrument failed.</exception>
         rtx_instrument& reference_position(
             _In_ const oscilloscope_reference_point position);
+
+        /// <summary>
+        /// Persists the current state of the instrument to internal memory (or
+        /// to a USB mass storage device connected to the instrument).
+        /// </summary>
+        /// <remarks>
+        /// It is safe to call the method if the library was built without
+        /// support for VISA, in which case nothing will happen.
+        /// </remarks>
+        /// <param name="name">The name of the state file, which will be
+        /// truncated to eight characters if longer. The file extension
+        /// &quot;.SET&quot; will be added by the method. If the file name has
+        /// any other extension, it will be truncated to at most three
+        /// characters.</param>
+        /// <param name="path">The directory where to store the settings. This
+        /// defaults to &quot;/INT/SETTINGS&quot;</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If any of the parameters
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        const rtx_instrument& save_state_to_instrument(
+            _In_z_ const wchar_t *name,
+            _In_z_ const wchar_t *path = L"/INT/SETTINGS") const;
+
+        /// <summary>
+        /// Persists the current state of the instrument to internal memory (or
+        /// to a USB mass storage device connected to the instrument).
+        /// </summary>
+        /// <remarks>
+        /// It is safe to call the method if the library was built without
+        /// support for VISA, in which case nothing will happen.
+        /// </remarks>
+        /// <param name="name">The name of the state file, which will be
+        /// truncated to eight characters if longer. The file extension
+        /// &quot;.SET&quot; will be added by the method. If the file name has
+        /// any other extension, it will be truncated to at most three
+        /// characters.</param>
+        /// <param name="path">The directory where to store the settings. This
+        /// defaults to &quot;/INT/SETTINGS&quot;</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If any of the parameters
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        const rtx_instrument& save_state_to_instrument(
+            _In_z_ const char *name,
+            _In_z_ const char *path = "/INT/SETTINGS") const;
 
         /// <summary>
         /// Answer the part of the configuration of the instrument that is
