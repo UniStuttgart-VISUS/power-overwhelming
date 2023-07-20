@@ -340,6 +340,16 @@ namespace power_overwhelming {
 #endif
 
         /// <summary>
+        /// Makes the instrument beep.
+        /// </summary>
+        /// <remarks>
+        /// This method has no effect if the library was compiled without
+        /// support for VISA.
+        /// </remarks>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument& beep(void);
+
+        /// <summary>
         /// Downloads the data of the specified channel as floating-point
         /// numbers.
         /// </summary>
@@ -524,6 +534,19 @@ namespace power_overwhelming {
         oscilloscope_waveform data(_In_ const std::uint32_t channel,
             _In_ const oscilloscope_waveform_points points) const;
 
+        /// <summary>
+        /// Retrieves the trigger configuration provided the configured trigger
+        /// is an edge trigger.
+        /// </summary>
+        /// <returns>The trigger configuration</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the configured trigger is not an edge trigger.</exception>
         oscilloscope_edge_trigger edge_trigger(void) const;
 
         /// <summary>

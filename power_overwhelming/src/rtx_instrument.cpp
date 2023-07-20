@@ -321,6 +321,17 @@ visus::power_overwhelming::rtx_instrument::ascii_data(
 
 
 /*
+ * visus::power_overwhelming::rtx_instrument::beep
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::beep(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    this->write("SYST:BEEP:IMM\n");
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+/*
  * visus::power_overwhelming::rtx_instrument::binary_data
  */
 visus::power_overwhelming::blob
