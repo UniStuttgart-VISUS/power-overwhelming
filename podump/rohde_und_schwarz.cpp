@@ -169,6 +169,52 @@ void query_rtx_instrument(void) {
             std::wcout << L"The horizontal time scale is "
                 << i.time_scale().value() << L"s." << std::endl;
 
+            for (std::uint16_t c = 0; c < i.channels(); ++c){
+                auto channel = i.channel(c);
+                std::wcout << L"Channel " << c << L" attenuation: "
+                    << channel.attenuation().value() << std::endl;
+                std::wcout << L"Channel " << c << L" bandwidth:   "
+                    << int(channel.bandwidth()) << std::endl;
+                std::wcout << L"Channel " << c << L" channel:"
+                    << channel.channel() << std::endl;
+                std::wcout << L"Channel " << c << L" coupling:"
+                    << int(channel.coupling()) << std::endl;
+                std::wcout << L"Channel " << c << L" decimation_mode: "
+                    << int(channel.decimation_mode()) << std::endl;
+                std::wcout << L"Channel " << c << L" label: "
+                    << channel.label().text() << L", visible: "
+                    << channel.label().visible() << std::endl;
+                std::wcout << L"Channel " << c << L" offset: "
+                    << channel.offset().value() << std::endl;
+                std::wcout << L"Channel " << c << L" polarity: "
+                    << int(channel.polarity()) << std::endl;
+                std::wcout << L"Channel " << c << L" range: "
+                    << channel.range().value() << std::endl;
+                std::wcout << L"Channel " << c << L" skew: "
+                    << channel.skew().value() << std::endl;
+                std::wcout << L"Channel " << c << L" state: "
+                    << channel.state() << std::endl;
+                std::wcout << L"Channel " << c << L" zero_offset: "
+                    << channel.zero_offset().value() << std::endl;
+
+                std::vector<wchar_t> u(i.unit(nullptr, 0, c));
+                i.unit(u.data(), u.size(), c);
+                std::wcout << L"Probe " << c << L" measures "
+                    << u.data() << std::endl;
+            }
+
+            {
+                auto a = i.single_acquisition();
+                std::wcout << L"Automatic points enabled: "
+                    << a.automatic_points() << std::endl;
+                std::wcout << L"Number of segments: "
+                    << a.count() << std::endl;
+                std::wcout << L"Number of points: "
+                    << a.points() << std::endl;
+                std::wcout << L"Fast segmentation: "
+                    << a.segmented() << std::endl;
+            }
+
             i.reference_position(oscilloscope_reference_point::left);
             i.time_scale(oscilloscope_quantity(10, "ms"));
 

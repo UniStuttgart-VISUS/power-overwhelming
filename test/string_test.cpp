@@ -298,6 +298,9 @@ namespace test {
             Assert::IsTrue(detail::equals("bla", "bla"), L"bla, bla", LINE_INFO());
             Assert::IsFalse(detail::equals("bla", "BLA"), L"bla, BLA", LINE_INFO());
             Assert::IsTrue(detail::equals("bla", "BLA", true), L"bla, BLA case-insensitive", LINE_INFO());
+            Assert::IsTrue(detail::equals(std::string("bla"), "BLA", true), L"string left", LINE_INFO());
+            Assert::IsTrue(detail::equals("bla", std::string("BLA"), true), L"string right", LINE_INFO());
+            Assert::IsTrue(detail::equals(std::string("bla"), std::string("BLA"), true), L"string both", LINE_INFO());
         }
 
         TEST_METHOD(test_equals_wstring) {
@@ -306,6 +309,67 @@ namespace test {
             Assert::IsTrue(detail::equals(L"bla", L"bla"), L"bla, bla", LINE_INFO());
             Assert::IsFalse(detail::equals(L"bla", L"BLA"), L"bla, BLA", LINE_INFO());
             Assert::IsTrue(detail::equals(L"bla", L"BLA", true), L"bla, BLA case-insensitive", LINE_INFO());
+            Assert::IsTrue(detail::equals(std::wstring(L"bla"), L"BLA", true), L"string left", LINE_INFO());
+            Assert::IsTrue(detail::equals(L"bla", std::wstring(L"BLA"), true), L"string right", LINE_INFO());
+            Assert::IsTrue(detail::equals(std::wstring(L"bla"), std::wstring(L"BLA"), true), L"string both", LINE_INFO());
+        }
+
+        TEST_METHOD(test_starts_with_string) {
+            Assert::IsTrue(detail::starts_with((char *) nullptr, (char *) nullptr), L"nullptr, nullptr", LINE_INFO());
+            Assert::IsTrue(detail::starts_with("bla", (char *) nullptr), L"bla, nullptr", LINE_INFO());
+            Assert::IsFalse(detail::starts_with((char *) nullptr, "bla"), L"nullptr, bla", LINE_INFO());
+            Assert::IsFalse(detail::starts_with("", "bla"), L"\"\", bla", LINE_INFO());
+            Assert::IsTrue(detail::starts_with("foo", "foo"), L"foo, foo", LINE_INFO());
+            Assert::IsTrue(detail::starts_with("foobar", "foo"), L"foobar, foo", LINE_INFO());
+            Assert::IsFalse(detail::starts_with("foo", "foobar"), L"foo, foobar", LINE_INFO());
+        }
+
+        TEST_METHOD(test_starts_with_wstring) {
+            Assert::IsTrue(detail::starts_with((wchar_t *) nullptr, (wchar_t *) nullptr), L"nullptr, nullptr", LINE_INFO());
+            Assert::IsTrue(detail::starts_with(L"bla", (wchar_t *) nullptr), L"bla, nullptr", LINE_INFO());
+            Assert::IsFalse(detail::starts_with((wchar_t *) nullptr, L"bla"), L"nullptr, bla", LINE_INFO());
+            Assert::IsFalse(detail::starts_with(L"", L"bla"), L"\"\", bla", LINE_INFO());
+            Assert::IsTrue(detail::starts_with(L"foo", L"foo"), L"foo, foo", LINE_INFO());
+            Assert::IsTrue(detail::starts_with(L"foobar", L"foo"), L"foobar, foo", LINE_INFO());
+            Assert::IsFalse(detail::starts_with(L"foo", L"foobar"), L"foo, foobar", LINE_INFO());
+        }
+
+        TEST_METHOD(test_trim_end_if_string) {
+            Assert::IsNull(detail::trim_end_if((char *) nullptr, [](const char c) { return true; }), L"nullptr", LINE_INFO());
+
+            {
+                auto str = "bla";
+                Assert::IsTrue(detail::trim_end_if(str, [](const char c) { return true; }) == str, L"trim all", LINE_INFO());
+            }
+
+            {
+                auto str = "blaaa";
+                Assert::IsTrue(detail::trim_end_if(str, [](const char c) { return c == 'a'; }) == (str + 2), L"trim a", LINE_INFO());
+            }
+
+            {
+                auto str = "bla\r\n\t ";
+                Assert::IsTrue(detail::trim_end_if(str, [](const char c) { return std::isspace(c); }) == (str + 3), L"trim space", LINE_INFO());
+            }
+        }
+
+        TEST_METHOD(test_trim_end_if_wstring) {
+            Assert::IsNull(detail::trim_end_if((wchar_t *) nullptr, [](const char c) { return true; }), L"nullptr", LINE_INFO());
+
+            {
+                auto str = L"bla";
+                Assert::IsTrue(detail::trim_end_if(str, [](const char c) { return true; }) == str, L"trim all", LINE_INFO());
+            }
+
+            {
+                auto str = L"blaaa";
+                Assert::IsTrue(detail::trim_end_if(str, [](const char c) { return c == 'a'; }) == (str + 2), L"trim a", LINE_INFO());
+            }
+
+            {
+                auto str = L"bla\r\n\t ";
+                Assert::IsTrue(detail::trim_end_if(str, [](const char c) { return std::isspace(c); }) == (str + 3), L"trim space", LINE_INFO());
+            }
         }
 
     };

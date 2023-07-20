@@ -74,6 +74,15 @@ int visus::power_overwhelming::detail::parse_int(_In_opt_z_ const char *str) {
 
 
 /*
+ * visus::power_overwhelming::detail::parse_uint
+ */
+unsigned int visus::power_overwhelming::detail::parse_uint(
+        _In_opt_z_ const char *str) {
+    return (str != nullptr) ? static_cast<unsigned int>(std::atoll(str)) : 0;
+}
+
+
+/*
  * visus::power_overwhelming::detail::safe_duplicate
  */
 _Ret_maybenull_z_ wchar_t *visus::power_overwhelming::detail::safe_duplicate(
@@ -107,5 +116,65 @@ _Ret_maybenull_z_ char *visus::power_overwhelming::detail::safe_duplicate(
 
     } else {
         return nullptr;
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::starts_with
+ */
+bool visus::power_overwhelming::detail::starts_with(_In_opt_z_ const char *str,
+        _In_opt_z_ const char *start, _In_ const bool ignore_case) {
+    if ((start == nullptr) || (*start == 0)) {
+        // Trivial accept of empty prefix.
+        return true;
+    }
+
+    if (str == nullptr) {
+        // Trivial reject of empty haystack.
+        return false;
+    }
+
+    auto len_str = ::strlen(str);
+    auto len_start = ::strlen(start);
+
+    if (len_str < len_start) {
+        return false;
+    }
+
+    if (ignore_case) {
+        return (::strnicmp(str, start, len_start) == 0);
+    } else {
+        return (::strncmp(str, start, len_start) == 0);
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::starts_with
+ */
+bool visus::power_overwhelming::detail::starts_with(_In_opt_z_ const wchar_t *str,
+        _In_opt_z_ const wchar_t *start, _In_ const bool ignore_case) {
+    if ((start == nullptr) || (*start == 0)) {
+        // Trivial accept of empty prefix.
+        return true;
+    }
+
+    if (str == nullptr) {
+        // Trivial reject of empty haystack.
+        return false;
+    }
+
+    auto len_str = ::wcslen(str);
+    auto len_start = ::wcslen(start);
+
+    if (len_str < len_start) {
+        return false;
+    }
+
+    if (ignore_case) {
+        return (::wcsnicmp(str, start, len_start) == 0);
+    } else {
+        return (::wcsncmp(str, start, len_start) == 0);
     }
 }

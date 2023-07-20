@@ -1,4 +1,3 @@
-#include "string_functions.h"
 // <copyright file="string_functions.inl" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
@@ -226,4 +225,31 @@ void visus::power_overwhelming::detail::safe_assign(
         ::free(dst);
         dst = nullptr;
     }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::trim_end_if
+ */
+template<class TChar, class TPredicate>
+_When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
+TChar *visus::power_overwhelming::detail::trim_end_if(_In_opt_z_ TChar *str,
+        _In_ const TPredicate& predicate) {
+    if (str == nullptr) {
+        return nullptr;
+    }
+
+    auto retval = str;
+    while (*retval != static_cast<TChar>(0)) {
+        ++retval;
+    }
+    assert(*retval == 0);
+    --retval;
+
+    while ((retval >= str) && predicate(*retval)) {
+        --retval;
+    }
+    assert((retval < str) || !predicate(*retval));
+
+    return ++retval;
 }

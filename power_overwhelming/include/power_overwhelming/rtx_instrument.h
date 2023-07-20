@@ -1,4 +1,4 @@
-﻿// <copyright file="rtx_instrumen.h" company="Visualisierungsinstitut der Universität Stuttgart">
+﻿// <copyright file="rtx_instrument.h" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -49,7 +49,8 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="path">The VISA resource path of the instrument.</param>
         /// <param name="on_new">The callback to be invoked if the instrument
-        /// is new.</param>
+        /// is new. If you only plan to reset the instrument, you can also
+        /// use <see cref="create_and_reset_new" />.</param>
         /// <param name="context">A user-defined context pointer to be passed
         /// to the <see cref="on_new" /> callback.</param>
         /// <param name="timeout">The timeout for the connection attempt in
@@ -76,7 +77,8 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="path">The VISA resource path of the instrument.</param>
         /// <param name="on_new">The callback to be invoked if the instrument
-        /// is new.</param>
+        /// is new. If you only plan to reset the instrument, you can also
+        /// use <see cref="create_and_reset_new" />.</param>
         /// <param name="context">A user-defined context pointer to be passed
         /// to the <see cref="on_new" /> callback.</param>
         /// <param name="timeout">The timeout for the connection attempt in
@@ -155,6 +157,17 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
+        /// <remarks>
+        /// <para>This method will initialise a new instance of the instrument
+        /// and reuse any shared connection that is already open for the
+        /// given <paramref name="path" />. If you need to know whether the
+        /// instrument is an alias, you can use the factory methods of the
+        /// class, which allow you to know whether an existing connection was
+        /// reused or this is the first connection to the instrument with the
+        /// specified <paramref name="path" />. The factory methods allow you
+        /// to perform one-time initialisation operations if the instrument
+        /// is the first connection.</para>
+        /// </remarks>
         /// <param name="path">The VISA resource path of the instrument.</param>
         /// <param name="timeout">The timeout for the connection attempt in
         /// milliseconds. This parameter defaults to
@@ -173,6 +186,17 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
+        /// <remarks>
+        /// <para>This method will initialise a new instance of the instrument
+        /// and reuse any shared connection that is already open for the
+        /// given <paramref name="path" />. If you need to know whether the
+        /// instrument is an alias, you can use the factory methods of the
+        /// class, which allow you to know whether an existing connection was
+        /// reused or this is the first connection to the instrument with the
+        /// specified <paramref name="path" />. The factory methods allow you
+        /// to perform one-time initialisation operations if the instrument
+        /// is the first connection.</para>
+        /// </remarks>
         /// <param name="path">The VISA resource path of the instrument.</param>
         /// <param name="timeout">The timeout for the connection attempt in
         /// milliseconds. This parameter defaults to
@@ -237,8 +261,21 @@ namespace power_overwhelming {
             _In_ const timeout_type timeout = default_timeout);
 
         /// <summary>
-        /// Configures signle acquisition mode on the device.
+        /// Configures single acquisition mode on the device.
         /// </summary>
+        /// <remarks>
+        /// The subset of the instrument's state configured by this method can
+        /// be retrieved via the <see cref="single_acquisition" /> method. There
+        /// is no way in C++ to safely return a polymorphic object without a
+        /// heap allocation, so the caller needs to know which kind of
+        /// acquisition information to retrieve. As it is strongly recommended
+        /// to use only single acquisition mode for programmatically obtaining
+        /// data from RTA/RTB instruments, it is safe to assume that the
+        /// instrument is configured for single acquisition. However, the
+        /// current design allows for future extensions of the API without
+        /// breaking code if the need to configure additional types of
+        /// acquisitions arises.
+        /// </remarks>
         /// <param name="acquisition">The configuration of single acquisition
         /// mode.</param>
         /// <param name="run">If <c>true</c>, start the acquisiton. This
@@ -255,6 +292,22 @@ namespace power_overwhelming {
             _In_ const oscilloscope_single_acquisition& acquisition,
             _In_ const bool run = false,
             _In_ const bool wait = false);
+
+        /// <summary>
+        /// Answer the current acquisition state of the instrument.
+        /// </summary>
+        /// <returns>The current acquisition state of the instrument.</returns>
+        /// <exception cref="std::runtime_error">If the instance was disposed
+        /// by moving it.</exception>
+        /// <exception cref="visa_exception">If the sensor could not be
+        /// initialised.</exception>
+        /// <exception cref="std::logic_error">If the library was compiled
+        /// without support for VISA.</exception>
+        /// <exception cref="std::range_error">If the response of the instrument
+        /// did not fall into the range of states that can be expressed by the
+        /// <see cref="oscilloscope_acquisition_state" /> enumeration.
+        /// </exception>
+        oscilloscope_acquisition_state acquisition(void) const;
 
         /// <summary>
         /// Changes the acquisition state of the instrument.
@@ -294,6 +347,12 @@ namespace power_overwhelming {
         /// retrieve.</param>
         /// <returns>The channel data as a series of <c>float</c> values.
         /// </returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
         blob binary_data(_In_ const std::uint32_t channel) const;
 
         /// <summary>
@@ -330,7 +389,9 @@ namespace power_overwhelming {
         /// </summary>
         /// <remarks>
         /// It is safe to call this method on an instrument that has been
-        /// disposed.
+        /// disposed. It is also safe to call the method if the library has
+        /// been compiled without support for VISA. In both cases, the method
+        /// will return zero.
         /// </remarks>
         /// <remarks>An override timeout that the implementation uses for
         /// probing the channels. The previous timeout will be restored before
@@ -346,14 +407,22 @@ namespace power_overwhelming {
         /// <param name="points">Specifies which sample points should be
         /// transferred.</param>
         /// <returns>The waveform for the specified channel.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
         oscilloscope_waveform data(_In_ const std::uint32_t channel,
             _In_ const oscilloscope_waveform_points points) const;
+
+        oscilloscope_edge_trigger edge_trigger(void) const;
 
         /// <summary>
         /// Enable and configure one of the mathematical expressions.
         /// </summary>
         /// <param name="channel">The maths channel to be configured. For an
-        /// RTB2004, this must be within [1, 4].</param>
+        /// RTA4004 or and RTB2004, this must be within [1, 4].</param>
         /// <param name="expression">The arithmetic expression to be computed,
         /// ie &quot;CH1*CH2&quot;.</param>
         /// <param name="unit">The unit of the resulting values. If
@@ -433,6 +502,12 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>The location of the reference point on the horizontal
         /// axis.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
         oscilloscope_reference_point reference_position(void) const;
 
         /// <summary>
@@ -442,14 +517,37 @@ namespace power_overwhelming {
         /// horizontal axis, which can be the left side, the middle or the
         /// right side.</param>
         /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
         rtx_instrument& reference_position(
             _In_ const oscilloscope_reference_point position);
+
+        /// <summary>
+        /// Answer the part of the configuration of the instrument that is
+        /// relevant for single-mode acquisition.
+        /// </summary>
+        /// <returns>The single-mode acquisition configuration</returns>
+        /// <exception cref="std::runtime_errpr">If the method was called on an
+        /// instance that was disposed by moving it..</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
+        oscilloscope_single_acquisition single_acquisition(void) const;
 
         /// <summary>
         /// Gets the length of a single acquisition covering all horizontal grid
         /// divisions.
         /// </summary>
         /// <returns>The time range of the whole waveform displayed.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
         oscilloscope_quantity time_range(void) const;
 
         /// <summary>
@@ -458,12 +556,22 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="scale">Time range within [250e-12, 500].</param>
         /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
         rtx_instrument& time_range(_In_ const oscilloscope_quantity& scale);
 
         /// <summary>
         /// Gets the length of a horizontal single grid division.
         /// </summary>
         /// <returns>The time scale of a single grid division.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
         oscilloscope_quantity time_scale(void) const;
 
         /// <summary>
@@ -472,6 +580,10 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="scale">Time scale within [1e-9, 50].</param>
         /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
         rtx_instrument& time_scale(_In_ const oscilloscope_quantity& scale);
 
         /// <summary>
@@ -479,6 +591,10 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="trigger">The trigger configuration.</param>
         /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
         rtx_instrument& trigger(_In_ const oscilloscope_trigger& trigger);
 
         /// <summary>
@@ -489,14 +605,39 @@ namespace power_overwhelming {
         /// has actually triggered. This parameter defaults to <c>false</c>.
         /// </param>
         /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
         rtx_instrument& trigger(_In_ const bool wait = false);
 
         /// <summary>
-        /// Convfigures which signal is generated on the auxilliary trigger
+        /// Gets what kind of trigger signal the instrument produces on the
+        /// auxilliary trigger output.
+        /// </summary>
+        /// <returns>THe behaviour of the trigger output.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
+        /// <exception cref="std::range_error">If the response of the instrument
+        /// did not fall into the range of states that can be expressed by the
+        /// <see cref="oscilloscope_trigger_output" /> enumeration.
+        /// </exception>
+        oscilloscope_trigger_output trigger_output(void) const;
+
+        /// <summary>
+        /// Configures which signal is generated on the auxilliary trigger
         /// output.
         /// </summary>
         /// <param name="output">The behaviour of the trigger output.</param>
         /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
         rtx_instrument& trigger_output(
             _In_ const oscilloscope_trigger_output output);
 
@@ -511,21 +652,35 @@ namespace power_overwhelming {
         /// </remarks>
         /// <param name="offset">The offset of the trigger point.</param>
         /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
         rtx_instrument& trigger_position(
             _In_ const oscilloscope_quantity& offset);
 
         /// <summary>
-        /// Sets the unit of the specified channel.
+        /// Gets the unit of the specified channel.
         /// </summary>
-        /// <param name="channel">The number (starting at 1) of the channel to
-        /// be configured.</param>
-        /// <param name="unit">The unit being measured (either &quot;A&quot;
-        /// or &quot;V&quot;).</param>
-        /// <exception cref="std::invalid_argument">If <paramref name="unit" />
-        /// is <c>nullptr</c>.</exception>
-        /// <returns><c>*this</c>.</returns>
-        rtx_instrument& unit(_In_ const std::uint32_t channel,
-            _In_z_ const wchar_t *unit);
+        /// <param name="dst">A buffer of at least <paramref name="cnt" />
+        /// characters to receive the unit. It is safe to pass <c>nullptr</c>,
+        /// in which case the method will measure the required buffer size and
+        /// write nothing.</param>
+        /// <param name="cnt">The size of <paramref name="dst" /> in number
+        /// of characters.</param>
+        /// <param name="channel">The one-based index of the channel to retrieve
+        /// the unit for.</param>
+        /// <returns>The number of characters required to store the unit
+        /// including the terminating zero.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
+        std::size_t unit(_Out_writes_(cnt) wchar_t *dst,
+            _In_ const std::size_t cnt,
+            _In_ const std::uint32_t channel) const;
 
         /// <summary>
         /// Sets the unit of the specified channel.
@@ -534,11 +689,75 @@ namespace power_overwhelming {
         /// be configured.</param>
         /// <param name="unit">The unit being measured (either &quot;A&quot;
         /// or &quot;V&quot;).</param>
+        /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::invalid_argument">If <paramref name="unit" />
         /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        rtx_instrument& unit(_In_ const std::uint32_t channel,
+            _In_z_ const wchar_t *unit);
+
+        /// <summary>
+        /// Gets the unit of the specified channel.
+        /// </summary>
+        /// <param name="dst">A buffer of at least <paramref name="cnt" />
+        /// characters to receive the unit. It is safe to pass <c>nullptr</c>,
+        /// in which case the method will measure the required buffer size and
+        /// write nothing.</param>
+        /// <param name="cnt">The size of <paramref name="dst" /> in number
+        /// of characters.</param>
+        /// <param name="channel">The one-based index of the channel to retrieve
+        /// the unit for.</param>
+        /// <returns>The number of characters required to store the unit
+        /// including the terminating zero.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
+        std::size_t unit(_Out_writes_(cnt) char *dst,
+            _In_ const std::size_t cnt,
+            _In_ const std::uint32_t channel) const;
+
+        /// <summary>
+        /// Sets the unit of the specified channel.
+        /// </summary>
+        /// <param name="channel">The number (starting at 1) of the channel to
+        /// be configured.</param>
+        /// <param name="unit">The unit being measured (either &quot;A&quot;
+        /// or &quot;V&quot;).</param>
         /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="unit" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
         rtx_instrument& unit(_In_ const std::uint32_t channel,
             _In_z_ const char *unit);
+
+        /// <summary>
+        /// Measures the number of characters in the unit of the given
+        /// <paramref name="channel" />.
+        /// </summary>
+        /// <param name="dst">A <c>nullptr</c>.</param>
+        /// <param name="cnt">Any number.</param>
+        /// <param name="channel">The one-based index of the channel to retrieve
+        /// the unit for.</param>
+        /// <returns>The number of characters required to store the unit
+        /// including the terminating zero.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
+        std::size_t unit(_In_opt_ std::nullptr_t dst,
+            _In_ const std::size_t cnt,
+            _In_ const std::uint32_t channel) const;
     };
 
 } /* namespace power_overwhelming */

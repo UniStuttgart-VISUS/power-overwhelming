@@ -5,6 +5,8 @@
 
 #include "power_overwhelming/rtx_instrument.h"
 
+#include <cassert>
+
 #include "no_visa_error_msg.h"
 #include "visa_instrument_impl.h"
 
@@ -206,6 +208,32 @@ visus::power_overwhelming::rtx_instrument::acquisition(
     return *this;
 }
 
+/*
+ * visus::power_overwhelming::rtx_instrument::acquisition
+ */
+visus::power_overwhelming::oscilloscope_acquisition_state
+visus::power_overwhelming::rtx_instrument::acquisition(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto value = this->query("ACQ:STAT?\n");
+
+    if (detail::starts_with(value.as<char>(), "RUN")) {
+        return oscilloscope_acquisition_state::run;
+    } else if (detail::starts_with(value.as<char>(), "STOP")) {
+        return oscilloscope_acquisition_state::stop;
+    } else if (detail::starts_with(value.as<char>(), "SING")) {
+        return oscilloscope_acquisition_state::single;
+    } else if (detail::starts_with(value.as<char>(), "BREAK")) {
+        return oscilloscope_acquisition_state::interrupt;
+    } else {
+        throw std::range_error("The current acquisition state "
+            "does not fall in the range of known values.");
+    }
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
 
 /*
  * visus::power_overwhelming::rtx_instrument::acquisition
@@ -314,18 +342,43 @@ visus::power_overwhelming::rtx_instrument::channel(
     }
 
     {
+        typedef oscilloscope_channel_bandwidth enum_type;
         impl.format("CHAN%d:BAND?\n", channel);
         auto value = impl.read_all();
+
+        if (detail::starts_with(value.as<char>(), "B20")) {
+            retval.bandwidth(enum_type::limit_to_20_mhz);
+        } else if (detail::starts_with(value.as<char>(), "FULL")) {
+            retval.bandwidth(enum_type::full);
+        }
     }
 
     {
+        typedef oscilloscope_channel_coupling enum_type;
         impl.format("CHAN%d:COUP?\n", channel);
         auto value = impl.read_all();
+
+        if (detail::starts_with(value.as<char>(), "ACL")) {
+            retval.coupling(enum_type::alternating_current_limit);
+        } else if (detail::starts_with(value.as<char>(), "GND")) {
+            retval.coupling(enum_type::ground);
+        } else if (detail::starts_with(value.as<char>(), "DCL")) {
+            retval.coupling(enum_type::direct_current_limit);
+        }
     }
 
     {
+        typedef oscilloscope_decimation_mode enum_type;
         impl.format("CHAN%d:TYPE?\n", channel);
         auto value = impl.read_all();
+
+        if (detail::starts_with(value.as<char>(), "HRES")) {
+            retval.decimation_mode(enum_type::high_resolution);
+        } else if (detail::starts_with(value.as<char>(), "PDET")) {
+            retval.decimation_mode(enum_type::peak_detect);
+        } else if (detail::starts_with(value.as<char>(), "SAMP")) {
+            retval.decimation_mode(enum_type::sample);
+        }
     }
 
     {
@@ -334,36 +387,42 @@ visus::power_overwhelming::rtx_instrument::channel(
 
         impl.format("CHAN%d:LAB:STAT?\n", channel);
         auto visible = impl.read_all();
+
+        retval.label(oscilloscope_label(text.as<char>(),
+            !detail::starts_with(visible.as<char>(), "0")));
     }
 
     {
         impl.format("CHAN%d:OFFS?\n", channel);
         auto value = impl.read_all();
+        retval.offset(detail::parse_float(value.as<char>()));
     }
 
     {
         impl.format("CHAN%d:RANG?\n", channel);
         auto value = impl.read_all();
+        retval.range(detail::parse_float(value.as<char>()));
     }
 
     {
         impl.format("CHAN%d:SKEW?\n", channel);
         auto value = impl.read_all();
+        retval.skew(detail::parse_float(value.as<char>()));
     }
 
     {
         impl.format("CHAN%d:STAT?\n", channel);
         auto value = impl.read_all();
+        retval.state(!detail::starts_with(value.as<char>(), "0"));
     }
 
     {
         impl.format("CHAN%d:ZOFF?\n", channel);
         auto value = impl.read_all();
-        retval.state(*value.as<char>(0) != '0');
+        retval.zero_offset(detail::parse_float(value.as<char>()));
     }
 
     return retval;
-
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(detail::no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -542,6 +601,86 @@ visus::power_overwhelming::rtx_instrument::data(
 
 
 /*
+ * visus::power_overwhelming::rtx_instrument::edge_trigger
+ */
+visus::power_overwhelming::oscilloscope_edge_trigger
+visus::power_overwhelming::rtx_instrument::edge_trigger(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+
+    // First of all, we need to know the source for constructing the instance.
+    auto source = this->query("TRIG:A:SOUR?\n");
+    auto src = source.as<char>();
+    _Analysis_assume_(src != nullptr);
+    *detail::trim_end_if(src, [](const char c) { return std::isspace(c); }) = 0;
+
+    oscilloscope_edge_trigger retval(src);
+
+
+    //// Apply configuration that is valid for all triggers.
+    //switch (trigger.mode()) {
+    //    case oscilloscope_trigger_mode::automatic:
+    //        impl.format("TRIG:A:MODE AUTO\n");
+    //        break;
+
+    //    default:
+    //        impl.format("TRIG:A:MODE NORM\n");
+    //        break;
+    //}
+
+    //impl.format("TRIG:A:SOUR %s\n", trigger.source());
+    //impl.format("TRIG:A:TYPE %s\n", trigger.type());
+
+    //if (trigger.hold_off() == nullptr) {
+    //    impl.format("TRIG:A:HOLD:MODE OFF\n");
+
+    //} else {
+    //    impl.format("TRIG:A:HOLD:MODE TIME\n");
+    //    impl.format("TRIG:A:HOLD:TIME %s\n", trigger.hold_off());
+    //}
+
+    //// Apply special configuration if the trigger is an edge trigger.
+    //auto et = dynamic_cast<const oscilloscope_edge_trigger *>(&trigger);
+    //if (et != nullptr) {
+    //    switch (et->slope()) {
+    //        case oscilloscope_trigger_slope::both:
+    //            impl.format("TRIG:A:EDGE:SLOP EITH\n");
+    //            break;
+
+    //        case oscilloscope_trigger_slope::rising:
+    //            impl.format("TRIG:A:EDGE:SLOP POS\n");
+    //            break;
+
+    //        case oscilloscope_trigger_slope::falling:
+    //            impl.format("TRIG:A:EDGE:SLOP NEG\n");
+    //            break;
+    //    }
+
+    //    impl.format("TRIG:A:LEV%d:VAL %f %s\n", et->input(),
+    //        et->level().value(), et->level().unit());
+
+    //    switch (et->coupling()) {
+    //        case oscilloscope_trigger_coupling::alternating_current:
+    //            impl.format("TRIG:A:EDGE:COUP AC\n");
+    //            break;
+
+    //        case oscilloscope_trigger_coupling::direct_current:
+    //            impl.format("TRIG:A:EDGE:COUP DC\n");
+    //            break;
+
+    //        case oscilloscope_trigger_coupling::low_frequency_reject:
+    //            impl.format("TRIG:A:EDGE:COUP LFR\n");
+    //            break;
+    //    }
+
+    return retval;
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
  * visus::power_overwhelming::rtx_instrument::expression
  */
 visus::power_overwhelming::rtx_instrument&
@@ -591,7 +730,7 @@ visus::power_overwhelming::rtx_instrument::expression(
 int visus::power_overwhelming::rtx_instrument::history_segment(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto retval = this->query("CHAN:HIST:CURR?\n");
-    return std::atoi(retval.as<char>());
+    return detail::parse_int(retval.as<char>());
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(detail::no_visa_error_msg);
@@ -619,7 +758,7 @@ std::size_t visus::power_overwhelming::rtx_instrument::history_segments(
         void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto retval = this->query("ACQ:AVA?\n");
-    return std::atoi(retval.as<char>());
+    return detail::parse_int(retval.as<char>());
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(detail::no_visa_error_msg);
@@ -634,7 +773,7 @@ visus::power_overwhelming::oscilloscope_reference_point
 visus::power_overwhelming::rtx_instrument::reference_position(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto response = this->query("TIM:REF?\n");
-    auto position = std::atof(response.as<char>()) * 100;
+    auto position = detail::parse_float(response.as<char>()) * 100;
     return static_cast<oscilloscope_reference_point>(position);
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -656,13 +795,43 @@ visus::power_overwhelming::rtx_instrument::reference_position(
 
 
 /*
+ * visus::power_overwhelming::rtx_instrument::single_acquisition
+ */
+visus::power_overwhelming::oscilloscope_single_acquisition
+visus::power_overwhelming::rtx_instrument::single_acquisition(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+    oscilloscope_single_acquisition retval;
+
+    auto aut = this->query("ACQ:POIN:AUT?\n");
+    if (detail::starts_with(aut.as<char>(), "0")) {
+        auto points = this->query("ACQ:POIN:VAL?\n");
+        retval.points(detail::parse_uint(points.as<char>()));
+    } else {
+        retval.enable_automatic_points();
+    }
+
+    auto cnt = this->query("ACQ:NSIN:COUN?\n");
+    retval.count(detail::parse_uint(cnt.as<char>()));
+
+    auto seg = this->query("ACQ:SEGM:STAT?\n");
+    retval.segmented(!detail::starts_with(aut.as<char>(), "0"));
+
+    return retval;
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
  * visus::power_overwhelming::rtx_instrument::time_range
  */
 visus::power_overwhelming::oscilloscope_quantity
 visus::power_overwhelming::rtx_instrument::time_range(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto response = this->query("TIM:RANG?\n");
-    return std::atof(response.as<char>());
+    return detail::parse_float(response.as<char>());
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(detail::no_visa_error_msg);
@@ -689,7 +858,7 @@ visus::power_overwhelming::oscilloscope_quantity
 visus::power_overwhelming::rtx_instrument::time_scale(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto response = this->query("TIM:SCAL?\n");
-    return std::atof(response.as<char>());
+    return detail::parse_float(response.as<char>());
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(detail::no_visa_error_msg);
@@ -818,6 +987,34 @@ visus::power_overwhelming::rtx_instrument::trigger(
 /*
  * visus::power_overwhelming::rtx_instrument::trigger_output
  */
+visus::power_overwhelming::oscilloscope_trigger_output
+visus::power_overwhelming::rtx_instrument::trigger_output(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    typedef oscilloscope_trigger_output enum_type;
+    auto value = this->query("TRIG:OUT:MODEL?\n");
+
+    if (detail::starts_with(value.as<char>(), "MASK")) {
+        return enum_type::mask;
+    } else if (detail::starts_with(value.as<char>(), "TRIG")) {
+        return enum_type::pulse;
+    } else if (detail::starts_with(value.as<char>(), "REF")) {
+        return enum_type::reference;
+    } else if (detail::starts_with(value.as<char>(), "OFF")) {
+        return enum_type::off;
+    } else {
+        throw std::range_error("The trigger output currently configured "
+            "does not fall in the range of known values.");
+    }
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::trigger_output
+ */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::trigger_output(
         _In_ const oscilloscope_trigger_output output) {
@@ -859,6 +1056,27 @@ visus::power_overwhelming::rtx_instrument::trigger_position(
 /*
  * visus::power_overwhelming::rtx_instrument::unit
  */
+std::size_t visus::power_overwhelming::rtx_instrument::unit(
+        _Out_writes_(cnt) wchar_t *dst,
+        _In_ const std::size_t cnt,
+        _In_ const std::uint32_t channel) const {
+    auto retval = this->unit(static_cast<char *>(nullptr), 0, channel);
+
+    if ((dst != nullptr) && (cnt >= retval)) {
+        blob u(retval * sizeof(char));
+        auto src = u.as<char>();
+        _Analysis_assume_(src != nullptr);
+        this->unit(src, retval, channel);
+        detail::convert_string(dst, cnt, src, retval);
+    }
+
+    return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::unit
+ */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::unit(
         _In_ const std::uint32_t channel,
@@ -878,6 +1096,37 @@ visus::power_overwhelming::rtx_instrument::unit(
 /*
  * visus::power_overwhelming::rtx_instrument::unit
  */
+std::size_t visus::power_overwhelming::rtx_instrument::unit(
+        _Out_writes_(cnt) char *dst,
+        _In_ const std::size_t cnt,
+        _In_ const std::uint32_t channel) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+    impl.format("PROB%u:SET:ATT:UNIT?\n", channel);
+
+    // Read the answer and get a first guess of how long it is.
+    auto unit = impl.read_all();
+    auto src = unit.as<char>();
+    _Analysis_assume_(src != nullptr);
+
+    // Trim all spaces from the end, most importantly stuff like line breaks.
+    *detail::trim_end_if(src, [](const char c) { return std::isspace(c); }) = 0;
+    const auto retval = ::strlen(src);
+
+    if ((dst != nullptr) && (cnt >= retval)) {
+        ::memcpy(dst, src, retval * sizeof(char));
+    }
+
+    return unit.size();
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::unit
+ */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::unit(
         _In_ const std::uint32_t channel,
@@ -890,4 +1139,15 @@ visus::power_overwhelming::rtx_instrument::unit(
     impl.format("PROB%u:SET:ATT:UNIT %s\n", channel, unit);
 
     return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::unit
+ */
+std::size_t visus::power_overwhelming::rtx_instrument::unit(
+        _In_opt_ std::nullptr_t dst,
+        _In_ const std::size_t cnt,
+        _In_ const std::uint32_t channel) const {
+    return this->unit(static_cast<char *>(dst), 0, channel);
 }
