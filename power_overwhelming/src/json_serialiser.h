@@ -28,7 +28,11 @@ namespace detail {
     template<class TType,
         bool IsArithmetic = std::is_arithmetic<TType>::value,
         bool IsEnum = std::is_enum<TType>::value>
-    struct json_serialiser { };
+    struct json_serialiser final {
+        //static_assert(false, "A type that requires a specialisation for JSON "
+        //    "serialisation is being serialised, but the specialisation of "
+        //    "json_serialiser is missing.");
+    };
 
     /// <summary>
     /// Specialisation for serialising arithmetic types.
@@ -127,6 +131,41 @@ namespace detail {
         }
     };
 
+    /// <summary>
+    /// Specialisation for statically sized C-style strings of length
+    /// <typeparamref name="Length" />.
+    /// </summary>
+    template<std::size_t Length>
+    struct json_serialiser<char (&)[Length], false, false> final {
+        typedef std::string value_type;
+
+        static inline value_type deserialise(_In_ const nlohmann::json &json) {
+            return json.get<value_type>();
+        }
+
+        static inline value_type serialise(_In_ const char (&value)[Length]) {
+            return std::string(value, value + Length);
+        }
+    };
+
+    /// <summary>
+    /// Redirect references to <see cref="json_serialiser" /> for
+    /// <typeparamref name="TType" />.
+    /// </summary>
+    template<class TType, bool IsArithmetic, bool IsEnum>
+    struct json_serialiser<TType&, IsArithmetic, IsEnum> final {
+        typedef json_serialiser<typename std::decay<TType>::type> serialiser;
+
+        static inline auto deserialise(_In_ const nlohmann::json& json)
+                -> decltype(serialiser::deserialise(json)) {
+            return serialiser::deserialise(json);
+        }
+
+        static inline auto serialise(_In_ TType& value)
+                -> decltype(serialiser::serialise(value)) {
+            return serialiser::serialise(value);
+        }
+    };
 
     /// <summary>
     /// Deserialise the contents of a JSON field as
@@ -147,8 +186,7 @@ namespace detail {
     /// </summary>
     template<class TType>
     inline nlohmann::json json_serialise(_In_ TType&& value) {
-        typedef typename std::decay<TType>::type value_type;
-        typedef json_serialiser<value_type> serialiser_type;
+        typedef json_serialiser<TType> serialiser_type;
         return serialiser_type::serialise(std::forward<TType>(value));
     }
 
