@@ -99,6 +99,7 @@ namespace detail {
 
         static inline nlohmann::json serialise(_In_ const value_type& value) {
             return nlohmann::json::object({
+                { "xxx", json_serialise(value.attenuation())},
                 _PWOWG_SERIALISE_FIELD(attenuation),
                 _PWOWG_SERIALISE_FIELD(bandwidth),
                 _PWOWG_SERIALISE_FIELD(channel),
@@ -122,7 +123,7 @@ namespace detail {
     struct json_serialiser<oscilloscope_edge_trigger, false, false> final {
         typedef oscilloscope_edge_trigger value_type;
 
-        static inline value_type deserialise(_In_ const nlohmann::json &json) {
+        static inline value_type deserialise(_In_ const nlohmann::json& json) {
             _PWROWG_DESERIALISE_FIELD(coupling);
             _PWROWG_DESERIALISE_FIELD(hold_off);
             _PWROWG_DESERIALISE_FIELD(hysteresis);
@@ -142,7 +143,7 @@ namespace detail {
                 .hold_off(hold_off.c_str()));
         }
 
-        static inline nlohmann::json serialise(_In_ const value_type &value) {
+        static inline nlohmann::json serialise(_In_ const value_type& value) {
             return nlohmann::json::object({
                 _PWOWG_SERIALISE_FIELD(coupling),
                 _PWOWG_SERIALISE_FIELD(hold_off),
@@ -164,7 +165,7 @@ namespace detail {
             false, false> final {
         typedef oscilloscope_single_acquisition value_type;
 
-        static inline value_type deserialise(_In_ const nlohmann::json &json) {
+        static inline value_type deserialise(_In_ const nlohmann::json& json) {
             _PWROWG_DESERIALISE_FIELD(count);
             _PWROWG_DESERIALISE_FIELD(points);
             _PWROWG_DESERIALISE_FIELD(segmented);
@@ -174,7 +175,7 @@ namespace detail {
                 .segmented(segmented);
         }
 
-        static inline nlohmann::json serialise(_In_ const value_type &value) {
+        static inline nlohmann::json serialise(_In_ const value_type& value) {
             return nlohmann::json::object({
                 _PWOWG_SERIALISE_FIELD(count),
                 _PWOWG_SERIALISE_FIELD(points),
@@ -199,7 +200,7 @@ namespace detail {
             return value_type(time_range, acquisition, trigger, timeout);
         }
 
-        static inline nlohmann::json serialise(_In_ const value_type &value) {
+        static inline nlohmann::json serialise(_In_ const value_type& value) {
             return nlohmann::json::object({
                 _PWOWG_SERIALISE_FIELD(acquisition),
                 _PWOWG_SERIALISE_FIELD(timeout),
