@@ -81,7 +81,10 @@ visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
 visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
         _Inout_ hmc8015_sensor&& rhs) noexcept
     : _instrument(std::move(rhs._instrument)),
-        _name(std::move(rhs._name)) { }
+        _name(std::move(rhs._name)) {
+    assert(!static_cast<bool>(rhs._name));
+    assert(rhs._name.data() == nullptr);
+}
 
 
 /*
@@ -401,6 +404,7 @@ visus::power_overwhelming::hmc8015_sensor::operator =(
         assert(rhs._instrument == false);
         this->_name = std::move(rhs._name);
         assert(!static_cast<bool>(rhs._name));
+        assert(rhs._name.data() == nullptr);
     }
 
     return *this;
@@ -471,7 +475,7 @@ void visus::power_overwhelming::hmc8015_sensor::initialise(void) {
     // Query the instrument name for use a sensor name.
     {
         auto l = this->_instrument.identify(static_cast<wchar_t *>(nullptr), 0);
-        this->_name.reserve(l);
+        this->_name.reserve(l * sizeof(wchar_t));
         this->_instrument.identify(this->_name.as<wchar_t>(), l);
     }
 

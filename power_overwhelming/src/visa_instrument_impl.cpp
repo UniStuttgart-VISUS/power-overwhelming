@@ -224,19 +224,13 @@ std::string visus::power_overwhelming::detail::visa_instrument_impl::identify(
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     const auto cmd = "*IDN?\n";
     this->write_all(reinterpret_cast<const byte_type *>(cmd) , ::strlen(cmd));
-    auto retval = this->read_all();
+    auto id = this->read_all();
 
-    _Analysis_assume_(retval.begin() != nullptr);
-    _Analysis_assume_(retval.end() != nullptr);
-    auto it = std::find_if(retval.begin(), retval.end(),
-        [](const byte_type b) { return ((b == '\r') || (b == '\n')); });
-    if (it != retval.end()) {
-        // TODO: potential hazard when writing this
-        *it = '\0';
-    }
+    auto retval = id.as<char>();
+    _Analysis_assume_(retval != nullptr);
+    *::strchr(retval, '\n') = 0;
 
-    return retval.as<char>();
-
+    return retval;
 #else/*defined(POWER_OVERWHELMING_WITH_VISA) */
     return "";
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
