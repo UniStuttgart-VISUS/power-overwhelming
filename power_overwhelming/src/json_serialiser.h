@@ -58,7 +58,7 @@ namespace detail {
     template<class TEnum>
     struct json_serialiser<TEnum, false, true> final {
         typedef typename std::underlying_type<TEnum>::type integral_type;
-        typedef typename TEnum value_type;
+        typedef TEnum value_type;
 
         static inline value_type deserialise(_In_ const nlohmann::json& json) {
             return static_cast<value_type>(json.get<integral_type>());
@@ -95,7 +95,7 @@ namespace detail {
             return power_overwhelming::convert_string<wchar_t>(retval);
         }
 
-        static inline const std::string& serialise(
+        static inline const std::string serialise(
                 _In_ const std::wstring& value) {
             return power_overwhelming::convert_string<char>(value);
         }
