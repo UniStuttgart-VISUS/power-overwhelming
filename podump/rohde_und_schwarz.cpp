@@ -203,6 +203,7 @@ void query_rtx_instrument(void) {
                 i.unit(u.data(), u.size(), c);
                 std::wcout << L"Probe " << c << L" measures "
                     << u.data() << std::endl;
+                i.beep(c);
             }
 
             {
@@ -265,6 +266,7 @@ void query_rtx_instrument(void) {
                 .level(5, oscilloscope_quantity(2000.0f, "mV"))
                 .slope(oscilloscope_trigger_slope::rising)
                 .mode(oscilloscope_trigger_mode::normal));
+            i.throw_on_system_error();
 
             std::cout << "RTX interface type: "
                 << i.interface_type()
@@ -284,10 +286,11 @@ void query_rtx_instrument(void) {
                 .count(1)
                 .segmented(false))
                 .operation_complete();
+            i.throw_on_system_error();
 
-            i.save_state_to_instrument(L"_PODUMP.SET").operation_complete();
-            i.reset(true, true);
-            i.load_state_from_instrument(L"_PODUMP.SET").operation_complete();
+            //i.save_state_to_instrument(L"_PODUMP.SET").operation_complete();
+            //i.reset(true, true);
+            //i.load_state_from_instrument(L"_PODUMP.SET").operation_complete();
 
             i.acquisition(oscilloscope_acquisition_state::single)
                 .operation_complete();
@@ -295,6 +298,7 @@ void query_rtx_instrument(void) {
 
             i.trigger();
             i.operation_complete();
+            i.throw_on_system_error();
 
             auto b = std::chrono::high_resolution_clock::now();
             std::cout << "Segment "

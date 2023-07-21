@@ -324,9 +324,11 @@ visus::power_overwhelming::rtx_instrument::ascii_data(
  * visus::power_overwhelming::rtx_instrument::beep
  */
 visus::power_overwhelming::rtx_instrument&
-visus::power_overwhelming::rtx_instrument::beep(void) {
+visus::power_overwhelming::rtx_instrument::beep(_In_ const std::size_t cnt) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    this->write("SYST:BEEP:IMM\n");
+    for (std::size_t i = 0; i < cnt; ++i) {
+        this->write("SYST:BEEP:IMM\n");
+    }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }

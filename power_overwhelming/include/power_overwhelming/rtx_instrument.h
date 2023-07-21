@@ -346,12 +346,14 @@ namespace power_overwhelming {
         /// This method has no effect if the library was compiled without
         /// support for VISA.
         /// </remarks>
+        /// <param name="cnt">The number of times the method should beep. This
+        /// defaults to one.</param>
         /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If any of the API calls to the
         /// instrument failed.</exception>
-        rtx_instrument& beep(void);
+        rtx_instrument& beep(_In_ const std::size_t cnt = 1);
 
         /// <summary>
         /// Downloads the data of the specified channel as floating-point

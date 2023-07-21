@@ -303,14 +303,14 @@ namespace detail {
 
         static inline value_type deserialise(const nlohmann::json& value) {
             auto channel_current = json_deserialise<oscilloscope_channel>(
-                json_field_channel_current);
+                value[json_field_channel_current]);
             auto channel_voltage = json_deserialise<oscilloscope_channel>(
-                json_field_channel_voltage);
+                value[json_field_channel_voltage]);
             auto decimation = json_deserialise<waveform_decimation_method>(
-                json_field_decimation);
+                value[json_field_decimation]);
             auto instrument_config = json_deserialise<
-                rtx_instrument_configuration>(json_field_instrument);
-            auto path = json_deserialise<std::string>(json_field_path);
+                rtx_instrument_configuration>(value[json_field_instrument]);
+            auto path = json_deserialise<std::string>(value[json_field_path]);
 
             rtx_sensor_definition definition(path.c_str(),
                 channel_voltage,
