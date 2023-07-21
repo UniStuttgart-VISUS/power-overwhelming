@@ -5,8 +5,9 @@
 
 #include "power_overwhelming/measurement.h"
 
-#include <cassert>
 #include <stdexcept>
+
+#include "string_functions.h"
 
 
 /*
@@ -84,7 +85,7 @@ visus::power_overwhelming::measurement&
 visus::power_overwhelming::measurement::operator =(const measurement& rhs) {
     if (this != std::addressof(rhs)) {
         this->_data = rhs._data;
-        this->set_sensor(rhs._sensor);
+        detail::safe_assign(this->_sensor, rhs._sensor);
     }
 
     return *this;
@@ -98,8 +99,7 @@ visus::power_overwhelming::measurement&
 visus::power_overwhelming::measurement::operator =(measurement&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         this->_data = std::move(rhs._data);
-        this->_sensor = rhs._sensor;
-        rhs._sensor = nullptr;
+        detail::safe_assign(this->_sensor, std::move(rhs._sensor));
     }
 
     return *this;
@@ -123,12 +123,5 @@ void visus::power_overwhelming::measurement::set_sensor(
         throw std::invalid_argument("A valid sensor name must be specified.");
     }
 
-    if (this->_sensor != nullptr) {
-        ::free(this->_sensor);
-    }
-
-    this->_sensor = ::wcsdup(sensor);
-    if (this->_sensor == nullptr) {
-        throw std::bad_alloc();
-    }
+    detail::safe_assign(this->_sensor, sensor);
 }

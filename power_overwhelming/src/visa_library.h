@@ -36,8 +36,7 @@ namespace detail {
         /// <summary>
         /// Gets the only instance of the class.
         /// </summary>
-        /// <param name=""></param>
-        /// <returns></returns>
+        /// <returns>The only instance of this class.</returns>
         /// <exception cref="std::system_error">If the library could not
         /// be loaded, eg because the VISA SDK has not been installed on the
         /// machine or the VISA DLL has not been deployed.
@@ -94,4 +93,3 @@ namespace detail {
 } /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
-

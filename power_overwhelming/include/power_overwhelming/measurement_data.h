@@ -16,7 +16,7 @@ namespace power_overwhelming {
 
     /// <summary>
     /// Container for the raw measurement data of a single sample for current,
-    ///  voltage and power.
+    /// voltage and power.
     /// </summary>
     /// <remarks>
     /// This class has been newly introduced to reduce the overhead of code that
@@ -169,10 +169,15 @@ namespace power_overwhelming {
 
     private:
 
+        inline measurement_data(void) : _current(invalid_value),
+            _power(invalid_value), _timestamp(0), _voltage(invalid_value) { }
+
         value_type _current;
         value_type _power;
         timestamp_type _timestamp;
         value_type _voltage;
+
+        friend class measurement_data_series;
     };
 
 } /* namespace power_overwhelming */

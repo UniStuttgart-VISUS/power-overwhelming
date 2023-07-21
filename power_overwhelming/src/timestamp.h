@@ -96,6 +96,18 @@ namespace detail {
 #endif /* defined(_WIN32) */
 
     /// <summary>
+    /// Convert an STL duration into ticks of the specified resolution.
+    /// </summary>
+    /// <typeparam name="TRep"></typeparam>
+    /// <typeparam name="TPeriod"></typeparam>
+    /// <param name="dur"></param>
+    /// <param name="resolution"></param>
+    /// <returns></returns>
+    template<class TRep, class TPeriod>
+    timestamp_type convert(_In_ const std::chrono::duration<TRep, TPeriod> dur,
+        _In_ const timestamp_resolution resolution);
+
+    /// <summary>
     /// Convert an STL time point to a time stamp.
     /// </summary>
     /// <typeparam name="TDuration"></typeparam>

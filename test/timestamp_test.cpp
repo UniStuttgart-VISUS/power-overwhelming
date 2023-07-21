@@ -43,64 +43,21 @@ namespace test {
             Assert::AreEqual(this->_filetime_zero, a, L"Unix epoch as FILETIME", LINE_INFO());
         }
 
-        TEST_METHOD(test_micros_to_time_point) {
-            typedef std::chrono::microseconds unit;
-            static const auto resolution = timestamp_resolution::microseconds;
-            const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
+        TEST_METHOD(test_convert_duration) {
+            {
+                const std::chrono::seconds duration(1);
+                Assert::AreEqual(std::int64_t(1), detail::convert(duration, timestamp_resolution::seconds), L"s to s", LINE_INFO());
+                Assert::AreEqual(std::int64_t(1000), detail::convert(duration, timestamp_resolution::milliseconds), L"s to ms", LINE_INFO());
+                Assert::AreEqual(std::int64_t(1000000), detail::convert(duration, timestamp_resolution::microseconds), L"s to us", LINE_INFO());
+                Assert::AreEqual(std::int64_t(10000000), detail::convert(duration, timestamp_resolution::hundred_nanoseconds), L"s to 100 ns", LINE_INFO());
+                Assert::AreEqual(std::int64_t(1000000000), detail::convert(duration, timestamp_resolution::nanoseconds), L"s to ns", LINE_INFO());
+            }
 
-            const auto n = std::chrono::system_clock::now();
-            const auto t = detail::create_timestamp(resolution);
-            const auto c = to_time_point<std::chrono::system_clock::duration>(t, resolution);
-
-            Assert::IsTrue((c - n).count() <= max_dt, L"Convert timestamp to time point", LINE_INFO());
-        }
-
-        TEST_METHOD(test_millis_to_time_point) {
-            typedef std::chrono::milliseconds unit;
-            static const auto resolution = timestamp_resolution::milliseconds;
-            const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
-
-            const auto n = std::chrono::system_clock::now();
-            const auto t = detail::create_timestamp(resolution);
-            const auto c = to_time_point<std::chrono::system_clock::duration>(t, resolution);
-
-            Assert::IsTrue((c - n).count() <= max_dt, L"Convert timestamp to time point", LINE_INFO());
-        }
-
-        TEST_METHOD(test_100ns_to_time_point) {
-            typedef std::chrono::duration<std::chrono::system_clock::duration::rep, detail::filetime_period> unit;
-            static const auto resolution = timestamp_resolution::hundred_nanoseconds;
-            const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
-
-            const auto n = std::chrono::system_clock::now();
-            const auto t = detail::create_timestamp(resolution);
-            const auto c = to_time_point<std::chrono::system_clock::duration>(t, resolution);
-
-            Assert::IsTrue((c - n).count() <= max_dt, L"Convert timestamp to time point", LINE_INFO());
-        }
-
-        TEST_METHOD(test_nanos_to_time_point) {
-            typedef std::chrono::nanoseconds unit;
-            static const auto resolution = timestamp_resolution::nanoseconds;
-            const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
-
-            const auto n = std::chrono::system_clock::now();
-            const auto t = detail::create_timestamp(resolution);
-            const auto c = to_time_point<std::chrono::system_clock::duration>(t, resolution);
-
-            Assert::IsTrue((c - n).count() <= max_dt, L"Convert timestamp to time point", LINE_INFO());
-        }
-
-        TEST_METHOD(test_secs_to_time_point) {
-            typedef std::chrono::seconds unit;
-            static const auto resolution = timestamp_resolution::seconds;
-            const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
-
-            const auto n = std::chrono::system_clock::now();
-            const auto t = detail::create_timestamp(resolution);
-            const auto c = to_time_point<std::chrono::system_clock::duration>(t, resolution);
-
-            Assert::IsTrue((c - n).count() <= max_dt, L"Convert timestamp to time point", LINE_INFO());
+            {
+                const std::chrono::microseconds duration(1);
+                Assert::AreEqual(std::int64_t(1), detail::convert(duration, timestamp_resolution::microseconds), L"us to us", LINE_INFO());
+                Assert::AreEqual(std::int64_t(1000), detail::convert(duration, timestamp_resolution::nanoseconds), L"us to ns", LINE_INFO());
+            }
         }
 
         TEST_METHOD(test_microseconds) {
@@ -149,7 +106,7 @@ namespace test {
         }
 
         TEST_METHOD(test_nanoseconds) {
-            typedef std::chrono::milliseconds unit;
+            typedef std::chrono::nanoseconds unit;
             static const auto resolution = timestamp_resolution::milliseconds;
             const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
 

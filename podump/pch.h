@@ -22,7 +22,7 @@
 #include "power_overwhelming/measurement.h"
 #include "power_overwhelming/msr_sensor.h"
 #include "power_overwhelming/nvml_sensor.h"
-#include "power_overwhelming/rtb_sensor.h"
+#include "power_overwhelming/rtx_sensor.h"
 #include "power_overwhelming/stable_power_state_scope.h"
 #include "power_overwhelming/tinkerforge_display.h"
 #include "power_overwhelming/tinkerforge_sensor.h"
