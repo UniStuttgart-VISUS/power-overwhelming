@@ -21,7 +21,7 @@ namespace test {
             async_sampling as;
             Assert::IsNull(as.context(), L"Context is null", LINE_INFO());
             Assert::AreEqual(int(tinkerforge_sensor_source::all), int(as.tinkerforge_sensor_source()), L"All Tinkerforge enabled", LINE_INFO());
-            Assert::AreEqual(std::uint64_t(1000), as.interval(), L"1000 us default interval", LINE_INFO());
+            Assert::AreEqual(async_sampling::default_interval, as.interval(), L"1000 us default interval", LINE_INFO());
             Assert::IsFalse(bool(as), L"Not enabled", LINE_INFO());
             Assert::AreEqual(int(timestamp_resolution::milliseconds), int(as.resolution()), L"Timestamps are in ms", LINE_INFO());
         }

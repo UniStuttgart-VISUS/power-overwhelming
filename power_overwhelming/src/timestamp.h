@@ -134,21 +134,6 @@ namespace detail {
         _In_ const timestamp_resolution resolution);
 
 } /* namespace detail */
-
-    /// <summary>
-    /// Convert a timestamp of the specified resolution into an STL time point.
-    /// </summary>
-    /// <typeparam name="TDuration">The unit of duration for measuring the time
-    /// since the clock's epoch.</typeparam>
-    /// <param name="timestamp">The timestamp to be converted.</param>
-    /// <param name="resolution">The resolution of the timestamp provided as
-    /// the <pararmef name="timestamp" /> parameter.</param>
-    /// <returns>The STL time point representing the timestamp.</returns>
-    template<class TDuration>
-    std::chrono::time_point<std::chrono::system_clock, TDuration> to_time_point(
-        _In_ const timestamp_type timestamp,
-        _In_ const timestamp_resolution resolution);
-
 } /* namespace power_overwhelming */
 } /* namespace visus */
 
