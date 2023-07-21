@@ -76,9 +76,15 @@ namespace power_overwhelming {
         /// Move <paramref name="rhs" /> invalidating it.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        inline async_sampling(_Inout_ async_sampling&& rhs) noexcept {
+        inline async_sampling(_Inout_ async_sampling&& rhs) noexcept
+                : _context(nullptr), _context_deleter(nullptr) {
             *this = std::move(rhs);
         }
+
+        /// <summary>
+        /// Finalises the instance.
+        /// </summary>
+        ~async_sampling(void) noexcept;
 
         /// <summary>
         /// Gets the user-defined context, if any, to be passed to the callback.
@@ -176,7 +182,7 @@ namespace power_overwhelming {
         /// that this pointer remains valid as long as the sensor is producing
         /// samples.</param>
         /// <returns><c>*this</c>.</returns>
-        async_sampling& passing_context(_In_opt_ void *context) noexcept;
+        async_sampling& passes_context(_In_opt_ void *context) noexcept;
 
         /// <summary>
         /// Answer whether the <see cref="sensor" /> should produce samples of
@@ -214,6 +220,36 @@ namespace power_overwhelming {
             _In_ const microseconds_type interval) noexcept;
 
         /// <summary>
+        /// Enables or disables delivery of samples on a trigger.
+        /// </summary>
+        /// <remarks>
+        /// <para>This setting is only relevant for oscilloscope-based sensors
+        /// that can record data on a trigger signal, either externally or on
+        /// the waveforms measured.</para>
+        /// <para>Enabling this feature will disable timer-based delivery of
+        /// samples from the sensor. Instead, the sensor configures an
+        /// asynchronous callback that receives data as the instrument is
+        /// triggered and delivers it afterwards. The caller must make sure that
+        /// the instrument has been configured to record data on a trigger
+        /// signal. Otherwise, no data will ever by delivered from such a
+        /// sensor.</para>
+        /// </remarks>
+        /// <param name="triggered">If <c>true</c>, enables sampling on trigger,
+        /// if <c>false</c>, disables it.</param>
+        /// <returns><c>*this</c>.</returns>
+        async_sampling& samples_on_trigger(
+                _In_ const bool triggered = true) noexcept {
+            this->_triggered = triggered;
+            return *this;
+        }
+
+        template<class TContext>
+        async_sampling& stores_and_passes_context(_In_ const TContext& context);
+
+        template<class TContext>
+        async_sampling& stores_and_passes_context(_In_ TContext&& context);
+
+        /// <summary>
         /// Answer the Tinkerforge sensor data to obtain in case the sensor
         /// is a Tinkerforge sensor.
         /// </summary>
@@ -221,6 +257,20 @@ namespace power_overwhelming {
         inline power_overwhelming::tinkerforge_sensor_source
         tinkerforge_sensor_source(void) const noexcept {
             return this->_tinkerforge_sensor_source;
+        }
+
+        /// <summary>
+        /// Answers whether the sensor should produce samples on an external
+        /// trigger.
+        /// </summary>
+        /// <remarks>
+        /// See <see cref="samples_on_trigger" /> for more details on this
+        /// feature.
+        /// </remarks>
+        /// <returns><c>true</c> if triggering is enabled, <c>false</c>
+        /// otherwise.</returns>
+        inline bool triggered(void) const noexcept {
+            return this->_triggered;
         }
 
         /// <summary>
@@ -251,13 +301,17 @@ namespace power_overwhelming {
     private:
 
         void *_context;
+        void (*_context_deleter)(void *);
         microseconds_type _interval;
         on_measurement_callback _on_measurement;
         on_measurement_data_callback _on_measurement_data;
         timestamp_resolution _timestamp_resolution;
         power_overwhelming::tinkerforge_sensor_source
             _tinkerforge_sensor_source;
+        bool _triggered;
     };
 
 } /* namespace power_overwhelming */
 } /* namespace visus */
+
+#include "power_overwhelming/async_sampling.inl"

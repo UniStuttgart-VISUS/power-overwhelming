@@ -22,6 +22,7 @@ namespace test {
             Assert::IsNull(as.context(), L"Context is null", LINE_INFO());
             Assert::AreEqual(int(tinkerforge_sensor_source::all), int(as.tinkerforge_sensor_source()), L"All Tinkerforge enabled", LINE_INFO());
             Assert::AreEqual(async_sampling::default_interval, as.interval(), L"1000 us default interval", LINE_INFO());
+            Assert::IsFalse(as.triggered(), L"Not triggered", LINE_INFO());
             Assert::IsFalse(bool(as), L"Not enabled", LINE_INFO());
             Assert::AreEqual(int(timestamp_resolution::milliseconds), int(as.resolution()), L"Timestamps are in ms", LINE_INFO());
         }
@@ -31,15 +32,17 @@ namespace test {
 
             async_sampling as;
             as.samples_every(1000)
-                .from_source(tinkerforge_sensor_source::power)
-                .passing_context((void *) 42)
                 .delivers_measurements_to(cb)
-                .using_resolution(timestamp_resolution::nanoseconds);
+                .from_source(tinkerforge_sensor_source::power)
+                .passes_context((void *) 42)
+                .using_resolution(timestamp_resolution::nanoseconds)
+                .samples_on_trigger();
 
             Assert::AreEqual(intptr_t(42), intptr_t(as.context()), L"Context is 42", LINE_INFO());
             Assert::AreEqual(int(tinkerforge_sensor_source::power), int(as.tinkerforge_sensor_source()), L"Power only", LINE_INFO());
             Assert::AreEqual(std::uint64_t(1000), as.interval(), L"1 ms interval", LINE_INFO());
             Assert::IsTrue(as.on_measurement(), L"on_measurement enabled", LINE_INFO());
+            Assert::IsTrue(as.triggered(), L"Triggered", LINE_INFO());
             Assert::IsTrue(bool(as), L"Is enabled", LINE_INFO());
             Assert::AreEqual(int(timestamp_resolution::nanoseconds), int(as.resolution()), L"Timestamps are in ns", LINE_INFO());
         }
@@ -49,20 +52,38 @@ namespace test {
 
              const auto as = std::move(async_sampling()
                  .samples_every(1000)
-                 .from_source(tinkerforge_sensor_source::power)
-                 .passing_context((void *)42)
                  .delivers_measurement_data_to(cb)
-                 .using_resolution(timestamp_resolution::hundred_nanoseconds));
+                 .from_source(tinkerforge_sensor_source::power)
+                 .passes_context((void *)42)
+                 .using_resolution(timestamp_resolution::hundred_nanoseconds)
+                 .samples_on_trigger());
 
             Assert::AreEqual(intptr_t(42), intptr_t(as.context()), L"Context is 42", LINE_INFO());
             Assert::AreEqual(int(tinkerforge_sensor_source::power), int(as.tinkerforge_sensor_source()), L"Power only", LINE_INFO());
             Assert::AreEqual(std::uint64_t(1000), as.interval(), L"1 ms interval", LINE_INFO());
             Assert::IsTrue(as.on_measurement_data(), L"on_measurement_data enabled", LINE_INFO());
+            Assert::IsTrue(as.triggered(), L"Triggered", LINE_INFO());
             Assert::IsTrue(bool(as), L"Is enabled", LINE_INFO());
             Assert::AreEqual(int(timestamp_resolution::hundred_nanoseconds), int(as.resolution()), L"Timestamps are in 100 ns", LINE_INFO());
         }
 
+        TEST_METHOD(test_owned_context) {
+            const auto cb = [](const sensor &, const measurement_data &, void *) {};
+
+            auto as = std::move(async_sampling()
+                .delivers_measurement_data_to(cb)
+                .stores_and_passes_context(42));
+
+            Assert::IsNotNull(as.context(), L"Context created", LINE_INFO());
+            Assert::AreEqual(42, *((int *) as.context()), L"Context is 42", LINE_INFO());
+
+            std::vector<int> context { 41, 42, 43 };
+            as.stores_and_passes_context(std::move(context));
+            Assert::IsTrue(context.empty(), L"Original context moved away", LINE_INFO());
+            Assert::AreEqual(std::size_t(3), ((std::vector<int> *) as.context())->size(), L"Context has size 3", LINE_INFO());
+        }
     };
+
 } /* namespace test */
 } /* namespace power_overwhelming */
 } /* namespace visus */

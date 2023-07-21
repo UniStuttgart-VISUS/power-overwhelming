@@ -25,12 +25,22 @@ visus::power_overwhelming::async_sampling::default_interval;
  */
 visus::power_overwhelming::async_sampling::async_sampling(void)
         : _context(nullptr),
+        _context_deleter(nullptr),
         _interval(default_interval),
         _on_measurement(nullptr),
         _on_measurement_data(nullptr),
         _timestamp_resolution(timestamp_resolution::milliseconds),
         _tinkerforge_sensor_source(
-            power_overwhelming::tinkerforge_sensor_source::all) { }
+            power_overwhelming::tinkerforge_sensor_source::all),
+        _triggered(false) { }
+
+
+/*
+ * visus::power_overwhelming::async_sampling::~async_sampling
+ */
+visus::power_overwhelming::async_sampling::~async_sampling(void) noexcept {
+    this->passes_context(nullptr);
+}
 
 
 /*
@@ -44,11 +54,12 @@ bool visus::power_overwhelming::async_sampling::deliver(
     if (this->_on_measurement_data != nullptr) {
         this->_on_measurement_data(source, sample, this->_context);
         retval = true;
-    }
 
-    if (this->_on_measurement != nullptr) {
-        this->_on_measurement(measurement(source.name(), sample),
-            this->_context);
+    } else if (this->_on_measurement != nullptr) {
+        auto s = source.name();
+        if (s != nullptr) {
+            this->_on_measurement(measurement(s, sample), this->_context);
+        }
         retval = true;
     }
 
@@ -110,12 +121,22 @@ visus::power_overwhelming::async_sampling::is_disabled(void) noexcept {
 
 
 /*
- * visus::power_overwhelming::async_sampling::passing_context
+ * visus::power_overwhelming::async_sampling::passes_context
  */
 visus::power_overwhelming::async_sampling&
-visus::power_overwhelming::async_sampling::passing_context(
+visus::power_overwhelming::async_sampling::passes_context(
         _In_opt_ void *context) noexcept {
+    if ((this->_context_deleter != nullptr) && (this->_context != nullptr)) {
+        // If there is an existing context owned by the object, free it first.
+        this->_context_deleter(this->_context);
+    }
+
+    // Register a caller-owned context.
     this->_context = context;
+
+    // Unregister the deleter to prevent deletion of non-owned context.
+    this->_context_deleter = nullptr;
+
     return *this;
 }
 
@@ -149,8 +170,10 @@ visus::power_overwhelming::async_sampling&
 visus::power_overwhelming::async_sampling::operator =(
         _Inout_ async_sampling&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
-        this->_context = rhs._context;
+        this->passes_context(rhs._context);  // Make sure deleter is called.
         rhs._context = nullptr;
+        this->_context_deleter = rhs._context_deleter;
+        rhs._context_deleter = nullptr;
         this->_interval = rhs._interval;
         rhs._interval = default_interval;
         this->_on_measurement = rhs._on_measurement;
@@ -162,6 +185,8 @@ visus::power_overwhelming::async_sampling::operator =(
         this->_tinkerforge_sensor_source = rhs._tinkerforge_sensor_source;
         rhs._tinkerforge_sensor_source
             = power_overwhelming::tinkerforge_sensor_source::all;
+        this->_triggered = rhs._triggered;
+        rhs._triggered = false;
     }
 
     return *this;

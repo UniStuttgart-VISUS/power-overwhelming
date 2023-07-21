@@ -7,6 +7,7 @@
 
 #include <cinttypes>
 
+#include "power_overwhelming/async_sampling.h"
 #include "power_overwhelming/measurement.h"
 #include "power_overwhelming/timestamp_resolution.h"
 
@@ -72,6 +73,13 @@ namespace power_overwhelming {
         /// due to a system call failing.</exception>
         measurement sample(_In_ const timestamp_resolution resolution
             = timestamp_resolution::milliseconds) const;
+
+        /// <summary>
+        /// Enables the specified asynchronous sampling on the sensor.
+        /// </summary>
+        /// <param name="async_sampling">The asynchronous sampling configuration
+        /// for the sensor.</param>
+        //virtual void sample(async_sampling&& async_sampling) = 0;
 
         /// <summary>
         /// Sample the sensor using a timestamp with the specified resolution,
