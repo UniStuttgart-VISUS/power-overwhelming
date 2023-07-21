@@ -53,6 +53,7 @@ namespace detail {
     static constexpr const char *json_field_dev_guid = "deviceGuid";
     static constexpr const char *json_field_domain = "domain"; 
     static constexpr const char *json_field_host = "host";
+    static constexpr const char *json_field_instrument = "instrument";
     static constexpr const char *json_field_name = "name";
     static constexpr const char *json_field_offset = "offset";
     static constexpr const char *json_field_path = "path";
@@ -321,41 +322,42 @@ namespace detail {
         POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC(false);
 
         static inline value_type deserialise(const nlohmann::json& value) {
-            typedef std::underlying_type<waveform_decimation_method>::type
-                dec_type;
-            typedef decltype(std::declval<value_type>().channel_current())
-                chan_type;
+            auto channel_current = json_deserialise<oscilloscope_channel>(
+                json_field_channel_current);
+            auto channel_voltage = json_deserialise<oscilloscope_channel>(
+                json_field_channel_voltage);
+            auto decimation = json_deserialise<waveform_decimation_method>(
+                json_field_decimation);
+            auto instrument_config = json_deserialise<
+                rtx_instrument_configuration>(json_field_instrument);
+            auto path = json_deserialise<std::string>(json_field_path);
 
-            auto channel_current = value[json_field_channel_current]
-                .get<chan_type>();
-            auto channel_voltage = value[json_field_channel_current]
-                .get<chan_type>();
-            auto decimation = value[json_field_decimation].get<dec_type>();
-            auto path = value[json_field_path].get<std::string>();
-            auto timeout = value[json_field_timeout].get<std::int32_t>();
+            rtx_sensor_definition definition(path.c_str(),
+                channel_voltage,
+                channel_current);
 
-            //rtx_sensor_definition definition()
-            //return value_type()
-            throw "TODO";
+            return value_type(definition, decimation,
+                instrument_config.timeout());
         }
 
         static inline nlohmann::json serialise(const value_type& value) {
-            typedef std::underlying_type<waveform_decimation_method>::type
-                dec_type;
-
-            auto decimation = static_cast<dec_type>(value.decimation_method());
-            auto name = power_overwhelming::convert_string<char>(value.name());
-            auto path = power_overwhelming::convert_string<char>(value.path());
-            auto timeout = value.instrument()->timeout();
+            auto instrument = value.instrument();
+            auto channel_current = instrument->channel(value.channel_current());
+            auto channel_voltage = instrument->channel(value.channel_voltage());
+            rtx_instrument_configuration instrument_config(
+                instrument->time_range(),
+                instrument->single_acquisition(),
+                instrument->edge_trigger(),
+                instrument->timeout());
 
             return nlohmann::json::object({
-                { json_field_type, type_name },
-                { json_field_name, name },
-                { json_field_path, path },
-                { json_field_timeout, timeout },
-                { json_field_channel_current, value.channel_current() },
-                { json_field_channel_voltage, value.channel_voltage() },
-                { json_field_decimation, decimation }
+                json_serialise(json_field_type, type_name),
+                json_serialise(json_field_name, value.name()),
+                json_serialise(json_field_path, value.path()),
+                json_serialise(json_field_channel_current, channel_current),
+                json_serialise(json_field_channel_voltage, channel_voltage),
+                json_serialise(json_field_decimation, value.decimation_method()),
+                { json_field_instrument, json_serialise(instrument_config) }
             });
         }
     };
