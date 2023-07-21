@@ -55,6 +55,37 @@ bool visus::power_overwhelming::async_sampling::deliver(
     return retval;
 }
 
+
+/*
+ * visus::power_overwhelming::async_sampling::delivers_measurements_to
+ */
+visus::power_overwhelming::async_sampling&
+visus::power_overwhelming::async_sampling::delivers_measurements_to(
+        _In_ const on_measurement_callback callback) noexcept {
+#if defined(_WIN32)
+    ::OutputDebugString(_T("PWROWG PERFORMANCE WARNING: Asynchronous sampling ")
+        _T("of measurement is only provided for backwards compatibility. Use ")
+        _T("measurement_data to reduce the amount of heap allocations for ")
+        _T("samples being delivered.\r\n"));
+#endif /* defined(_WIN32) */
+    this->_on_measurement = callback;
+    this->_on_measurement_data = nullptr;
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::async_sampling::delivers_measurement_data_to
+ */
+visus::power_overwhelming::async_sampling&
+visus::power_overwhelming::async_sampling::delivers_measurement_data_to(
+        _In_ const on_measurement_data_callback callback) noexcept {
+    this->_on_measurement_data = callback;
+    this->_on_measurement = nullptr;
+    return *this;
+}
+
+
 /*
  * visus::power_overwhelming::async_sampling::from_source
  */
@@ -85,36 +116,6 @@ visus::power_overwhelming::async_sampling&
 visus::power_overwhelming::async_sampling::passing_context(
         _In_opt_ void *context) noexcept {
     this->_context = context;
-    return *this;
-}
-
-
-/*
- * visus::power_overwhelming::async_sampling::produces_measurement
- */
-visus::power_overwhelming::async_sampling&
-visus::power_overwhelming::async_sampling::produces_measurement(
-        _In_ const on_measurement_callback callback) noexcept {
-#if defined(_WIN32)
-    ::OutputDebugString(_T("PWROWG PERFORMANCE WARNING: Asynchronous sampling ")
-        _T("of measurement is only provided for backwards compatibility. Use ")
-        _T("measurement_data to reduce the amount of heap allocations for ")
-        _T("samples being delivered.\r\n"));
-#endif /* defined(_WIN32) */
-    this->_on_measurement = callback;
-    this->_on_measurement_data = nullptr;
-    return *this;
-}
-
-
-/*
- * visus::power_overwhelming::async_sampling::produces_measurement_data
- */
-visus::power_overwhelming::async_sampling&
-visus::power_overwhelming::async_sampling::produces_measurement_data(
-        _In_ const on_measurement_data_callback callback) noexcept {
-    this->_on_measurement_data = callback;
-    this->_on_measurement = nullptr;
     return *this;
 }
 

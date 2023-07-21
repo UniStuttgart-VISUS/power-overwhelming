@@ -120,6 +120,24 @@ namespace power_overwhelming {
             _In_ const measurement_data& sample) const;
 
         /// <summary>
+        /// Configures the <see cref="sensor" /> such that it produces samples
+        /// of type <see cref="measurement" />.
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <returns><c>*this</c>.</returns>
+        async_sampling& delivers_measurements_to(
+            _In_ const on_measurement_callback callback) noexcept;
+
+        /// <summary>
+        /// Configures the <see cref="sensor" /> such that it produces samples
+        /// of type <see cref="measurement_data" />.
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <returns><c>*this</c>.</returns>
+        async_sampling& delivers_measurement_data_to(
+            _In_ const on_measurement_data_callback callback) noexcept;
+
+        /// <summary>
         /// If the sensor this sampling configuration is passed to is a
         /// Tinkerforge sensor, instructs the sensor to obtain data only from
         /// the specified sources.
@@ -165,36 +183,18 @@ namespace power_overwhelming {
         /// type <see cref="measurement" />.
         /// </summary>
         /// <returns></returns>
-        inline bool produces_measurement(void) const noexcept {
+        inline bool on_measurement(void) const noexcept {
             return (this->_on_measurement != nullptr);
         }
-
-        /// <summary>
-        /// Configures the <see cref="sensor" /> such that it produces samples
-        /// of type <see cref="measurement" />.
-        /// </summary>
-        /// <param name="callback"></param>
-        /// <returns><c>*this</c>.</returns>
-        async_sampling& produces_measurement(
-            _In_ const on_measurement_callback callback) noexcept;
 
         /// <summary>
         /// Answer whether the <see cref="sensor" /> should produce samples of
         /// type <see cref="measurement_data" />.
         /// </summary>
         /// <returns></returns>
-        inline bool produces_measurement_data(void) const noexcept {
+        inline bool on_measurement_data(void) const noexcept {
             return (this->_on_measurement_data != nullptr);
         }
-
-        /// <summary>
-        /// Configures the <see cref="sensor" /> such that it produces samples
-        /// of type <see cref="measurement_data" />.
-        /// </summary>
-        /// <param name="callback"></param>
-        /// <returns><c>*this</c>.</returns>
-        async_sampling& produces_measurement_data(
-            _In_ const on_measurement_data_callback callback) noexcept;
 
         /// <summary>
         /// Answer the resolution of the teimstamps to be produced.
@@ -245,8 +245,7 @@ namespace power_overwhelming {
         /// <returns><c>true</c> if asynchronous sampling is enabled,
         /// <c>false</c> otherwise.</returns>
         inline operator bool(void) const noexcept {
-            return (this->produces_measurement()
-                || this->produces_measurement_data());
+            return (this->on_measurement() || this->on_measurement_data());
         }
 
     private:

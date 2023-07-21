@@ -30,15 +30,16 @@ namespace test {
             const auto cb = [](const measurement&, void *) { };
 
             async_sampling as;
-            as.samples_every(5000)
+            as.samples_every(1000)
                 .from_source(tinkerforge_sensor_source::power)
                 .passing_context((void *) 42)
-                .produces_measurement(cb)
+                .delivers_measurements_to(cb)
                 .using_resolution(timestamp_resolution::nanoseconds);
 
             Assert::AreEqual(intptr_t(42), intptr_t(as.context()), L"Context is 42", LINE_INFO());
             Assert::AreEqual(int(tinkerforge_sensor_source::power), int(as.tinkerforge_sensor_source()), L"Power only", LINE_INFO());
-            Assert::AreEqual(std::uint64_t(5000), as.interval(), L"5 ms interval", LINE_INFO());
+            Assert::AreEqual(std::uint64_t(1000), as.interval(), L"1 ms interval", LINE_INFO());
+            Assert::IsTrue(as.on_measurement(), L"on_measurement enabled", LINE_INFO());
             Assert::IsTrue(bool(as), L"Is enabled", LINE_INFO());
             Assert::AreEqual(int(timestamp_resolution::nanoseconds), int(as.resolution()), L"Timestamps are in ns", LINE_INFO());
         }
@@ -47,15 +48,16 @@ namespace test {
             const auto cb = [](const sensor&, const measurement_data&, void *) { };
 
              const auto as = std::move(async_sampling()
-                 .samples_every(5000)
+                 .samples_every(1000)
                  .from_source(tinkerforge_sensor_source::power)
                  .passing_context((void *)42)
-                 .produces_measurement_data(cb)
+                 .delivers_measurement_data_to(cb)
                  .using_resolution(timestamp_resolution::hundred_nanoseconds));
 
             Assert::AreEqual(intptr_t(42), intptr_t(as.context()), L"Context is 42", LINE_INFO());
             Assert::AreEqual(int(tinkerforge_sensor_source::power), int(as.tinkerforge_sensor_source()), L"Power only", LINE_INFO());
-            Assert::AreEqual(std::uint64_t(5000), as.interval(), L"5 ms interval", LINE_INFO());
+            Assert::AreEqual(std::uint64_t(1000), as.interval(), L"1 ms interval", LINE_INFO());
+            Assert::IsTrue(as.on_measurement_data(), L"on_measurement_data enabled", LINE_INFO());
             Assert::IsTrue(bool(as), L"Is enabled", LINE_INFO());
             Assert::AreEqual(int(timestamp_resolution::hundred_nanoseconds), int(as.resolution()), L"Timestamps are in 100 ns", LINE_INFO());
         }
