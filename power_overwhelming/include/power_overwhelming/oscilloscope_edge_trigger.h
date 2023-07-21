@@ -97,20 +97,28 @@ namespace power_overwhelming {
         }
 
         /// <summary>
-        /// Configuret the trigger level.
+        /// Configures the trigger level.
         /// </summary>
         /// <param name="input">Selects the trigger input within [1, 5]. Valid
         /// values depend on the hardware. Channel 5 is the external trigger
         /// input.</param>
         /// <param name="level">The trigger level.</param>
         /// <returns><c>*this</c>.</returns>
-        /// <exception cref="std::invalid_argument">If <paramref name="unit" />
-        /// is <c>nullptr</c>.</exception>
         inline oscilloscope_edge_trigger& level(_In_ const input_type input,
                 _In_ const oscilloscope_quantity& level) {
             this->_input = input;
             this->_level = level;
             return *this;
+        }
+
+        /// <summary>
+        /// Configures the trigger level for all channels.
+        /// </summary>
+        /// <param name="level">The trigger level.</param>
+        /// <returns><c>*this</c>.</returns>
+        inline oscilloscope_edge_trigger& level(
+                _In_ const oscilloscope_quantity& level) {
+            return this->level(0, level);
         }
 
         /// <summary>

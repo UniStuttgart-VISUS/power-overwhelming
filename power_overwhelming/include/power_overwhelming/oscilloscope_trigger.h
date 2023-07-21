@@ -57,6 +57,13 @@ namespace power_overwhelming {
         oscilloscope_trigger& hold_off(_In_opt_z_ const char *hold_off);
 
         /// <summary>
+        /// Disables the hold-off for the trigger.
+        /// </summary>
+        /// <param name="n"><c>nullptr</c>.</param>
+        /// <returns><c>*this</c>.</returns>
+        oscilloscope_trigger& hold_off(_In_opt_z_ const std::nullptr_t n);
+
+        /// <summary>
         /// Gets the trigger mode.
         /// </summary>
         /// <returns>The trigger mode.</returns>

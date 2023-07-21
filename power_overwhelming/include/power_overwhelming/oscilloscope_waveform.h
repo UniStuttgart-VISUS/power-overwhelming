@@ -31,7 +31,7 @@ namespace power_overwhelming {
         /// <exception cref="std::invalid_argument">If
         /// <paramref name="header" /> is null or does not have the expected
         /// format, or if the number of samples specified in the header does
-        /// not match the size of <paramref name="samples" />.
+        /// not match the size of <paramref name="samples" />.</exception>
         oscilloscope_waveform(_In_z_ const char *header,
             _Inout_ blob&& samples);
 
@@ -78,12 +78,29 @@ namespace power_overwhelming {
         }
 
         /// <summary>
+        /// Answer the specified sample value.
+        /// </summary>
+        /// <param name="i">The index of the sample to retrieve.</param>
+        /// <returns>The value of the <paramref name="i" />th sample.</returns>
+        /// <exception cref="std::range_error">If the method is called on an
+        /// empty waveform (one that has no samples), or if
+        /// <paramref name="i" /> is too large.</exception>
+        float sample(_In_ const std::size_t i) const;
+
+        /// <summary>
         /// A pointer to the first sample of the waveform.
         /// </summary>
         /// <returns>A pointer to the first sample.</returns>
         inline const float *samples(void) const noexcept {
             return this->_samples.as<float>();
         }
+
+        /// <summary>
+        /// Answer the temporal distance between two adjacent samples in
+        /// seconds.
+        /// </summary>
+        /// <returns>The distance between two samples in seconds.</returns>
+        float sample_distance(void) const noexcept;
 
     private:
 

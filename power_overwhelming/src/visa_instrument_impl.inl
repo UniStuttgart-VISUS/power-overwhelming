@@ -13,5 +13,6 @@ void visus::power_overwhelming::detail::visa_instrument_impl::format(
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     visa_exception::throw_on_error(detail::visa_library::instance()
         .viPrintf(this->session, format, std::forward<TArgs>(args)...));
+    this->check_system_error();
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }

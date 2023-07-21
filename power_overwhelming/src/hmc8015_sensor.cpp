@@ -57,7 +57,7 @@ std::size_t visus::power_overwhelming::hmc8015_sensor::for_all(
 visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
         _In_z_ const wchar_t *path,
         _In_ const visa_instrument::timeout_type timeout)
-        : _instrument(path, timeout), _name(nullptr) {
+        : _instrument(path, timeout) {
     this->initialise();
     this->configure();
 }
@@ -69,7 +69,7 @@ visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
 visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
         _In_z_ const char *path,
         _In_ const visa_instrument::timeout_type timeout)
-        : _instrument(path, timeout), _name(nullptr) {
+        : _instrument(path, timeout) {
     this->initialise();
     this->configure();
 }
@@ -80,8 +80,10 @@ visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
  */
 visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
         _Inout_ hmc8015_sensor&& rhs) noexcept
-    : _instrument(std::move(rhs._instrument)), _name(rhs._name) {
-    rhs._name = nullptr;
+    : _instrument(std::move(rhs._instrument)),
+        _name(std::move(rhs._name)) {
+    assert(!static_cast<bool>(rhs._name));
+    assert(rhs._name.data() == nullptr);
 }
 
 
@@ -96,8 +98,6 @@ visus::power_overwhelming::hmc8015_sensor::~hmc8015_sensor(void) {
         // directly instead of the wrappers checking the state of the calls.
         this->_instrument.write("SYST:LOC\n");
     }
-
-    delete[] this->_name;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -374,7 +374,7 @@ visus::power_overwhelming::hmc8015_sensor::log_file(
  */
 _Ret_maybenull_z_ const wchar_t *
 visus::power_overwhelming::hmc8015_sensor::name(void) const noexcept {
-    return this->_name;
+    return this->_name.as<wchar_t>();
 }
 
 /*
@@ -402,8 +402,9 @@ visus::power_overwhelming::hmc8015_sensor::operator =(
     if (this != std::addressof(rhs)) {
         this->_instrument = std::move(rhs._instrument);
         assert(rhs._instrument == false);
-        this->_name = rhs._name;
-        rhs._name = nullptr;
+        this->_name = std::move(rhs._name);
+        assert(!static_cast<bool>(rhs._name));
+        assert(rhs._name.data() == nullptr);
     }
 
     return *this;
@@ -474,8 +475,8 @@ void visus::power_overwhelming::hmc8015_sensor::initialise(void) {
     // Query the instrument name for use a sensor name.
     {
         auto l = this->_instrument.identify(static_cast<wchar_t *>(nullptr), 0);
-        this->_name = new wchar_t[l];
-        this->_instrument.identify(this->_name, l);
+        this->_name.reserve(l * sizeof(wchar_t));
+        this->_instrument.identify(this->_name.as<wchar_t>(), l);
     }
 
     // Reset the device to default state.

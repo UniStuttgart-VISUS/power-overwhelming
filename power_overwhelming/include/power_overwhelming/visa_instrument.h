@@ -12,6 +12,8 @@
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 #include "power_overwhelming/blob.h"
+#include "power_overwhelming/visa_event_status.h"
+#include "power_overwhelming/visa_status_byte.h"
 
 
 namespace visus {
@@ -27,7 +29,7 @@ namespace power_overwhelming {
     /// <remarks>
     /// <para>The <see cref="visa_instrument" /> manages a
     /// <see cref="ViSession" /> on a single device, which might be used by
-    /// multiple <see cref="sensor" />s.
+    /// multiple <see cref="sensor" />s.</para>
     /// </remarks>
     class POWER_OVERWHELMING_API visa_instrument {
 
@@ -49,6 +51,8 @@ namespace power_overwhelming {
         /// <param name="query">The query to issue on the resource manager.
         /// </param>
         /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
         /// <para>The return value is a multi-sz string which can be procesed
         /// as follows:</para>
         /// <code>
@@ -76,10 +80,12 @@ namespace power_overwhelming {
         /// <param name="query">The query to issue on the resource manager.
         /// </param>
         /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
         /// <para>The return value is a multi-sz string which can be procesed
         /// as follows:</para>
         /// <code>
-        /// for (auto d = devices.as&lt;cjar&gt;();
+        /// for (auto d = devices.as&lt;char&gt;();
         ///         (d != nullptr) && (*d != 0);
         ///         d += ::strlen(d) + 1) {
         ///     visa_instrument instrument(d, 5000);
@@ -101,6 +107,10 @@ namespace power_overwhelming {
         /// Find all instruments of the specified type connected to the machine
         /// the code is running on.
         /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// </remarks>
         /// <param name="vendor_id">The ID of the vendor to search for.</param>
         /// <param name="instrument_id">The ID of the instrument to search for.
         /// </param>
@@ -120,6 +130,10 @@ namespace power_overwhelming {
         /// Find all instruments of the specified type connected to the machine
         /// the code is running on.
         /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// </remarks>
         /// <param name="vendor_id">The ID of the vendor to search for.</param>
         /// <param name="instrument_id">The ID of the instrument to search for.
         /// </param>
@@ -136,6 +150,36 @@ namespace power_overwhelming {
             _In_z_ const char *instrument_id);
 
         /// <summary>
+        /// Invokes <paramref name="callback" /> for each active instance of a
+        /// <see cref="visa_instrument" />.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// </remarks>
+        /// <param name="callback">The callback to be invoked for each
+        /// instrument. If the callback returns <c>false</c>, the enumeration
+        /// will be stopped after the current call. If the callback throws
+        /// an exception, this will be caught and treated as if the callback
+        /// had returned <c>false</c>.</param>
+        /// <param name="context">A user-defined context passed to the callback
+        /// function.</param>
+        /// <returns>The number of times the callback has been sucessfully
+        /// invoked. If the callback always returns <c>true</c>, this is the
+        /// number of active VISA instruments at the time of the call.</returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="callback" /> is <c>nullptr</c>.</exception>
+        static std::size_t foreach_instance(
+            _In_ bool (*callback)(visa_instrument&, void *),
+            _In_opt_ void *context = nullptr);
+
+        /// <summary>
+        /// The default timeout for connecting to a VISA instruments, in
+        /// milliseconds.
+        /// </summary>
+        static constexpr const timeout_type default_timeout = 5000;
+
+        /// <summary>
         /// The vendor ID of Rohde &amp; Schwarz.
         /// </summary>
         static constexpr const char *rohde_und_schwarz = "0x0AAD";
@@ -148,13 +192,10 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <remarks>
-        /// This constructor will set the name of the sensor to the identity
-        /// string of the instrument, reset the instrument and clear any error
-        /// state in the instrument.
-        /// </remarks>
-        /// <param name="path"></param>
-        /// <param name="timeout"></param>
+        /// <param name="path">The VISA resource path of the instrument.</param>
+        /// <param name="timeout">The timeout for the connection attempt in
+        /// milliseconds. This parameter defaults to
+        /// <see cref="default_timeout" />.</param>
         /// <exception cref="std::invalid_argument">If <paramref name="path" />
         /// is <c>nullptr</c>.</exception>
         /// <exception cref="std::bad_alloc">If the memory for the sensor state
@@ -164,18 +205,14 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
         visa_instrument(_In_z_ const wchar_t *path,
-            _In_ const timeout_type timeout = 2000);
+            _In_ const timeout_type timeout = default_timeout);
 
         /// <summary>
         /// Initialises a new instance.
-        /// </summary>
-        /// <remarks>
-        /// This constructor will set the name of the sensor to the identity
-        /// string of the instrument, reset the instrument and clear any error
-        /// state in the instrument.
-        /// </remarks>
-        /// <param name="path"></param>
-        /// <param name="timeout"></param>
+        /// <param name="path">The VISA resource path of the instrument.</param>
+        /// <param name="timeout">The timeout for the connection attempt in
+        /// milliseconds. This parameter defaults to
+        /// <see cref="default_timeout" />.</param>
         /// <exception cref="std::invalid_argument">If <paramref name="path" />
         /// is <c>nullptr</c>.</exception>
         /// <exception cref="std::bad_alloc">If the memory for the sensor state
@@ -185,7 +222,55 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the sensor could not be
         /// initialised.</exception>
         visa_instrument(_In_z_ const char *path,
-            _In_ const timeout_type timeout = 2000);
+            _In_ const timeout_type timeout = default_timeout);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="is_new_connection">Indicates whether a new connection
+        /// to an instrument was established or an existing one was reused. If
+        /// this parameter returns <c>false</c>, callers should be aware that
+        /// multiple code paths might manipulate the instrument independently.
+        /// </param>
+        /// <param name="path">The VISA resource path of the instrument.</param>
+        /// <param name="timeout">The timeout for the connection attempt in
+        /// milliseconds. This parameter defaults to
+        /// <see cref="default_timeout" />.</param>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the sensor state
+        /// could not be allocated.</exception>
+        /// <exception cref="std::system_error">If the VISA library could not be
+        /// loaded.</exception>
+        /// <exception cref="visa_exception">If the sensor could not be
+        /// initialised.</exception>
+        visa_instrument(_Out_ bool& is_new_connection,
+            _In_z_ const wchar_t *path,
+            _In_ const timeout_type timeout = default_timeout);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="is_new_connection">Indicates whether a new connection
+        /// to an instrument was established or an existing one was reused. If
+        /// this parameter returns <c>false</c>, callers should be aware that
+        /// multiple code paths might manipulate the instrument independently.
+        /// </param>
+        /// <param name="path">The VISA resource path of the instrument.</param>
+        /// <param name="timeout">The timeout for the connection attempt in
+        /// milliseconds. This parameter defaults to
+        /// <see cref="default_timeout" />.</param>
+        /// <exception cref="std::invalid_argument">If <paramref name="path" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::bad_alloc">If the memory for the sensor state
+        /// could not be allocated.</exception>
+        /// <exception cref="std::system_error">If the VISA library could not be
+        /// loaded.</exception>
+        /// <exception cref="visa_exception">If the sensor could not be
+        /// initialised.</exception>
+        visa_instrument(_Out_ bool& is_new_connection,
+            _In_z_ const char *path,
+            _In_ const timeout_type timeout = default_timeout);
 
         visa_instrument(const visa_instrument&) = delete;
 
@@ -202,6 +287,40 @@ namespace power_overwhelming {
         /// Finalise the instance.
         /// </summary>
         virtual ~visa_instrument(void);
+
+        /// <summary>
+        /// Indicates whether the instrument is aliased, ie whether there are
+        /// other instances of <see cref="visa_instrument" /> using the same
+        /// hardware.
+        /// </summary>
+        /// <remarks>
+        /// <para>It is safe to call this method if the library was compiled
+        /// without support for VISA, in which case the result will be
+        /// <c>false</c>.</para>
+        /// <para>It is safe to call this method on a disposed instance, in
+        /// which case the result will be <c>false</c>.</para>
+        /// </remarks>
+        /// <returns><c>true</c> if multiple instances use the hardware,
+        /// <c>false</c> otherwise.</returns>
+        bool aliased(void) const noexcept;
+
+        /// <summary>
+        /// Answer whether this instance uses the same hardware as
+        /// <paramref name="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// <para>It is safe to call this method if the library was compiled
+        /// without support for VISA, in which case the result will be
+        /// <c>false</c>.</para>
+        /// <para>It is safe to call this method on a disposed instance, in
+        /// which case the result will be <c>false</c>.</para>
+        /// </remarks>
+        /// <param name="instrument">The instrument to be compared. It is safe
+        /// to pass a disposed instrument.</param>
+        /// <returns><c>true</c> if this instrument and
+        /// <paramref name="instrument" /> share the same implementation object,
+        /// <c>false</c> otherwise.</returns>
+        bool alias_of(_In_ const visa_instrument& instrument) const noexcept;
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
         /// <summary>
@@ -238,6 +357,10 @@ namespace power_overwhelming {
         /// Shortcut to <see cref="viSetBuf" /> on the device session
         /// represented by <see cref="scope" />.
         /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// </remarks>
         /// <param name="mask"></param>
         /// <param name="size"></param>
         /// <returns><c>*this</c>.</returns>
@@ -256,8 +379,8 @@ namespace power_overwhelming {
         /// buffers.
         /// </summary>
         /// <remarks>
-        /// This method does nothing if the library was compiled without support
-        /// for VISA.
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
         /// </remarks>
         /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
@@ -270,8 +393,8 @@ namespace power_overwhelming {
         /// Clear the error queue of the instrument.
         /// </summary>
         /// <remarks>
-        /// This method does nothing if the library was compiled without support
-        /// for VISA.
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
         /// </remarks>
         /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
@@ -281,9 +404,67 @@ namespace power_overwhelming {
         visa_instrument& clear_status(void);
 
         /// <summary>
+        /// Enables internal checks of the instrument's system state after
+        /// changes to its configuration were made.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// <para>Within the methods of the instrument, there are checks of the
+        /// system state of the instrument after important changes. If you
+        /// enable these system checks, the code will fail early in case you
+        /// make any change that puts the system into an invalid state. By
+        /// default, the checks are disabled, because they cause significant
+        /// overhead. It is suggested to enable this only for debugging purposes
+        /// during development.</para>
+        /// </remarks>
+        /// <param name="enable">Indicates whether the checks are enabled or
+        /// disabled. This parameter defaults to <c>true</c>.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        visa_instrument& enable_system_checks(_In_ const bool enable = true);
+
+        /// <summary>
+        /// Reads the event status register using a <c>*ESR?</c> command.
+        /// </summary>
+        /// <returns>The current value of the event status register.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        /// <exception cref="std::logic_error">If the library was compiled
+        /// without support for VISA.</exception>
+        visa_event_status event_status(void) const;
+
+        /// <summary>
+        /// Changes the event status enable state to the given bitmask using
+        /// the <c>*ESE</c> command.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// <para>This method will add an <c>*OPC?</c> query after the set
+        /// operation, which makes sure that it does not return until the
+        /// command was executed on the instrument.</para>
+        /// </remarks>
+        /// <param name="status">The status of the individual event bits.
+        /// </param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        visa_instrument& event_status(_In_ const visa_event_status status);
+
+        /// <summary>
         /// Send the &quot;identify&quot; SCPI command to the instrument and
         /// return its response.
         /// </summary>
+        /// <remarks>
+        /// <para>The identity of an instrument is always the empty string if
+        /// the library was compiled without support for VISA.</para>
+        /// </remarks>
         /// <param name="dst">If not <c>nullptr</c>, receives at most
         /// <paramref name="cnt" /> characters of the identification string. It
         /// is safe to pass <c>nulltpr</c> in which case the string will only
@@ -304,6 +485,10 @@ namespace power_overwhelming {
         /// Send the &quot;identify&quot; SCPI command to the instrument and
         /// return its response.
         /// </summary>
+        /// <remarks>
+        /// <para>The identity of an instrument is always the empty string if
+        /// the library was compiled without support for VISA.</para>
+        /// </remarks>
         /// <param name="dst">If not <c>nullptr</c>, receives at most
         /// <paramref name="cnt" /> characters of the identification string. It
         /// is safe to pass <c>nulltpr</c> in which case the string will only
@@ -321,6 +506,21 @@ namespace power_overwhelming {
             _In_ const std::size_t cnt) const;
 
         /// <summary>
+        /// Counts the number of characters (including the terminating null)
+        /// required to hold the name of the device.
+        /// </summary>
+        /// <param name="dst">A <c>nullptr</c>.</param>
+        /// <param name="cnt">This parameter is ignored.</param>
+        /// <returns>The number of characters, including the terminating null,
+        /// required to store the identity of the instrument.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        std::size_t identify(_In_opt_ std::nullptr_t dst,
+            _In_ const std::size_t cnt);
+
+        /// <summary>
         /// Gets the interface type of the underlying session in the form of one
         /// of the enumerated values <c>VI_INTF_GPIB</c>, <c>VI_INTF_VXI</c>,
         /// <c>VI_INTF_GPIB_VXI</c>, <c>VI_INTF_ASRL</c>, <c>VI_INTF_PXI</c>,
@@ -331,13 +531,79 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="std::logic_error">If the library was compiled
         /// without support for VISA.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
         std::uint16_t interface_type(void) const;
+
+        /// <summary>
+        /// Installs a <paramref name="callback" /> to be invoked if an
+        /// ansynchronous <c>*OPC</c> instruction was reached.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// </remarks>
+        /// <param name="callback">The callback to be invoked on an operation
+        /// completing. If this is <c>nullptr</c>, an existing callback will be
+        /// uninstalled.</param>
+        /// <param name="context">A user-defined context pointer to be passed
+        /// to the callback.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        visa_instrument& on_operation_complete(
+            _In_opt_ void (*callback)(visa_instrument &, void *),
+            _In_opt_ void *context = nullptr);
+
+        /// <summary>
+        /// Issue and wait for an OPC query.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// </remarks>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        const visa_instrument& operation_complete(void) const;
+
+        /// <summary>
+        /// Queues an <c>*OPC</c> instruction on the instrument, which will
+        /// cause the callback installed via
+        /// <see cref="on_operation_complete" /> being invoked if the instrument
+        /// reaches the instruction.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// </remarks>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        const visa_instrument& operation_complete_async(void) const;
 
         /// <summary>
         /// Gets the VISA path of the device.
         /// </summary>
-        /// <returns>The VISA path used to open the device.</returns>
+        /// <returns>The VISA path used to open the device. If the instrument
+        /// has been disposed using a move operation, the path will be
+        /// <c>nullptr</c>.</returns>
         _Ret_maybenull_z_ const char *path(void) const noexcept;
+
+        ///// <summary>
+        ///// Sets the ESE filter to the OPC bit, sets the OPC bit and afterwards
+        ///// polls the status byte for the operation setting this bit being
+        ///// executed.
+        ///// </summary>
+        ///// <param name=""></param>
+        ///// <returns></returns>
+        //visa_instrument& poll_status_byte(void);
 
         /// <summary>
         /// Write the given data to the instrument and directly read the
@@ -453,20 +719,73 @@ namespace power_overwhelming {
         blob read_all(_In_ const std::size_t buffer_size = 1024) const;
 
         /// <summary>
-        /// Resets the instrument to its default state by issuing the *RST
-        /// command.
+        /// Resets the instrument to its default state by issuing the
+        /// <c>*RST</c> command.
         /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// <para>This method will issue an <c>*OPC?</c> query immediately after
+        /// the reset request in order to make sure that the calling code is
+        /// blocked until the instrument finished resetting. If the I/O buffers
+        /// are flushed and/or the status bits are cleared, these operations
+        /// are also guaranteed to have completed before the method returns.
+        /// </para>
+        /// </remarks>
+        /// <param name="flush_buffers">Also clear all I/O buffers before the
+        /// reset using <c>viClear</c>.</param>
+        /// <param name="clear_status">Also clear the status bits before
+        /// resetting the device.</param>
         /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        visa_instrument& reset(void);
+        visa_instrument& reset(_In_ const bool flush_buffers = false,
+            _In_ const bool clear_status = false);
+
+        /// <summary>
+        /// Changes the bits enabled in the service request enable (SRE)
+        /// register.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// <para>This method will add an <c>*OPC?</c> query after the set
+        /// operation, which makes sure that it does not return until the
+        /// command was executed on the instrument.</para>
+        /// </remarks>
+        /// <param name="status">The status of the individual SRE bits.
+        /// </param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        visa_instrument& service_request_status(
+            _In_ const visa_status_byte status);
+
+        /// <summary>
+        /// Reads the currently enabled bits in the service request enable (SRE)
+        /// register.
+        /// </summary>
+        /// <returns>The current value of the SRE register.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        /// <exception cref="std::logic_error">If the library was compiled
+        /// without support for VISA.</exception>
+        visa_status_byte service_request_status(void) const;
 
         /// <summary>
         /// Synchonises the date and time on the instrument with the system
         /// clock of the computer calling this API.
         /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// </remarks>
         /// <param name="utc">If <c>true</c>, UTC will be used, the local time
         /// otherwise. This parameter defaults to <c>false</c>.</param>
         /// <returns><c>*this</c>.</returns>
@@ -482,18 +801,18 @@ namespace power_overwhelming {
         /// <returns>The status bytes.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
-        /// <exception cref="std::logic_error">If the library was compiled
-        /// without support for VISA.</exception>
         /// <exception cref="visa_exception">If the operation failed.
         /// </exception>
-        std::int32_t status(void);
+        /// <exception cref="std::logic_error">If the library was compiled
+        /// without support for VISA.</exception>
+        visa_status_byte status(void) const;
 
         /// <summary>
         /// Query the oldest error in the queue.
         /// </summary>
         /// <remarks>
-        /// This method always returns zero if the library was compiled without
-        /// support for VISA.
+        /// <para>This method always returns zero if the library was compiled
+        /// without support for VISA.</para>
         /// </remarks>
         /// <returns>The current system error, or zero if the system has no
         /// previous error.</returns>
@@ -508,21 +827,36 @@ namespace power_overwhelming {
         /// <see cref="std::runtime_error" /> if it does not return zero.
         /// </summary>
         /// <remarks>
-        /// It is safe to call this method on a disposed instrument, in which
-        /// case nothing will happen.
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// <para>It is safe to call this method on a disposed instrument, in
+        /// which case nothing will happen.</para>
         /// </remarks>
         /// <exception cref="visa_exception">If the current system state could
         /// not be retrieved.</exception>
         /// <exception cref="std::runtime_error">If the current system state was
         /// retrieved and is not zero.</exception>
-        void throw_on_system_error(void);
+        void throw_on_system_error(void) const;
+
+        /// <summary>
+        /// Query the current timeout from the instrument.
+        /// </summary>
+        /// <returns>The current timeout of the instrument in milliseconds.
+        /// </returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the current system state could
+        /// not be retrieved.</exception>
+        /// <exception cref="std::logic_error">If the library was compiled
+        /// without support for VISA.</exception>
+        timeout_type timeout(void) const;
 
         /// <summary>
         /// Sets the timeout of the underlying VISA session.
         /// </summary>
         /// <remarks>
-        /// This method has no effect if the library was compiled without
-        /// support for VISA.
+        /// <para>This method has no effect if the library was compiled without
+        /// support for VISA.</para>
         /// </remarks>
         /// <param name="timeout">The timeout in milliseconds.</param>
         /// <returns><c>*this</c>.</returns>
@@ -533,11 +867,13 @@ namespace power_overwhelming {
         visa_instrument& timeout(_In_ const timeout_type timeout);
 
         /// <summary>
-        /// Issue and wait for an OPC query.
+        /// Waits for all previous commands to complete before continuing with
+        /// commands issued afterwards.
         /// </summary>
         /// <remarks>
-        /// This method does nothing if the library was compiled without support
-        /// for VISA.
+        /// <para>This method issues a <c>*WAI</c> command.</param>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
         /// </remarks>
         /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
@@ -551,8 +887,8 @@ namespace power_overwhelming {
         /// instrument.
         /// </summary>
         /// <remarks>
-        /// This method does nothing if the library was compiled without support
-        /// for VISA.
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
         /// </remarks>
         /// <param name="buffer">The buffer holding the data to write.</param>
         /// <param name="cnt">The size of <paramref name="buffer" /> in bytes.
@@ -571,11 +907,79 @@ namespace power_overwhelming {
             _In_ const std::size_t cnt) const;
 
         /// <summary>
+        /// Writes the given null-terminated data to the instrument.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// </remarks>
+        /// <param name="str">A null-terminated string to write to the device.
+        /// If this string does not end with the terminal character for
+        /// commands, it is appended by the method before writing.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="str" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        const visa_instrument& write(_In_z_ const char *str) const;
+
+        /// <summary>
+        /// Writes the given null-terminated data to the instrument.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// </remarks>
+        /// <param name="str">A null-terminated string to write to the device.
+        /// If this string does not end with the terminal character for
+        /// commands, it is appended by the method before writing.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="str" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        /// <exception cref="std::logic_error">If the library was compiled
+        /// without support for VISA.</exception>
+        const visa_instrument& write(_In_z_ const wchar_t *str) const;
+
+        /// <summary>
+        /// Writes the given string to the instrument.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// </remarks>
+        /// <typeparam name="TChar">The character type in a string. Only
+        /// <c>wchar_t</c> and <c>char</c> are supported here.</typeparam>
+        /// <param name="str">A string to write to the device.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed. Note that
+        /// a failure here only refers to the use of the API, ie the instrument
+        /// can be in a failed state even if the call succeeded. Use
+        /// <see cref="throw_on_system_error" /> to check the internal state of
+        /// the instrument after the call.</exception>
+        template<class TChar>
+        const visa_instrument& write(
+            _In_ const std::basic_string<TChar>& str) const;
+
+        /// <summary>
         /// Write the given data to the instrument.
         /// </summary>
         /// <remarks>
-        /// This method does nothing if the library was compiled without support
-        /// for VISA.
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
         /// </remarks>
         /// <param name="buffer">The buffer holding the data to write.</param>
         /// <param name="cnt">The size of <paramref name="buffer" /> in bytes.
@@ -593,70 +997,6 @@ namespace power_overwhelming {
         const visa_instrument& write_all(
             _In_reads_bytes_(cnt) const byte_type *buffer,
             _In_ const std::size_t cnt) const;
-
-        /// <summary>
-        /// Writes the given null-terminated data to the instrument.
-        /// </summary>
-        /// <remarks>
-        /// This method does nothing if the library was compiled without support
-        /// for VISA.
-        /// </remarks>
-        /// <param name="str">A null-terminated string to write to the device.
-        /// </param>
-        /// <returns><c>*this</c>.</returns>
-        /// <exception cref="std::runtime_error">If the method is called on an
-        /// object that has been disposed by moving it.</exception>
-        /// <exception cref="std::invalid_argument">If
-        /// <paramref name="str" /> is <c>nullptr</c>.</exception>
-        /// <exception cref="visa_exception">If the operation failed. Note that
-        /// a failure here only refers to the use of the API, ie the instrument
-        /// can be in a failed state even if the call succeeded. Use
-        /// <see cref="throw_on_system_error" /> to check the internal state of
-        /// the instrument after the call.</exception>
-        const visa_instrument& write(_In_z_ const char *str) const;
-
-        /// <summary>
-        /// Writes the given null-terminated data to the instrument.
-        /// </summary>
-        /// <remarks>
-        /// This method does nothing if the library was compiled without support
-        /// for VISA.
-        /// </remarks>
-        /// <param name="str">A null-terminated string to write to the device.
-        /// </param>
-        /// <returns><c>*this</c>.</returns>
-        /// <exception cref="std::runtime_error">If the method is called on an
-        /// object that has been disposed by moving it.</exception>
-        /// <exception cref="std::invalid_argument">If
-        /// <paramref name="str" /> is <c>nullptr</c>.</exception>
-        /// <exception cref="visa_exception">If the operation failed. Note that
-        /// a failure here only refers to the use of the API, ie the instrument
-        /// can be in a failed state even if the call succeeded. Use
-        /// <see cref="throw_on_system_error" /> to check the internal state of
-        /// the instrument after the call.</exception>
-        const visa_instrument& write(_In_z_ const wchar_t *str) const;
-
-        /// <summary>
-        /// Writes the given string to the instrument.
-        /// </summary>
-        /// <remarks>
-        /// This method does nothing if the library was compiled without support
-        /// for VISA.
-        /// </remarks>
-        /// <typeparam name="TChar">The character type in a string. Only
-        /// <c>wchar_t</c> and <c>char</c> are supported here.</typeparam>
-        /// <param name="str">A string to write to the device.</param>
-        /// <returns><c>*this</c>.</returns>
-        /// <exception cref="std::runtime_error">If the method is called on an
-        /// object that has been disposed by moving it.</exception>
-        /// <exception cref="visa_exception">If the operation failed. Note that
-        /// a failure here only refers to the use of the API, ie the instrument
-        /// can be in a failed state even if the call succeeded. Use
-        /// <see cref="throw_on_system_error" /> to check the internal state of
-        /// the instrument after the call.</exception>
-        template<class TChar>
-        const visa_instrument& write(
-            _In_ const std::basic_string<TChar>& str) const;
 
         visa_instrument& operator =(const visa_instrument&) = delete;
 
@@ -699,6 +1039,11 @@ namespace power_overwhelming {
         const detail::visa_instrument_impl& check_not_disposed(void) const;
 
     private:
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+        static ViStatus _VI_FUNCH on_event(ViSession session,
+            ViEventType event_type, ViEvent event, ViAddr context);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
         detail::visa_instrument_impl *_impl;
     };

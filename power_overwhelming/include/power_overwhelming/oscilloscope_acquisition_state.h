@@ -31,6 +31,11 @@ namespace power_overwhelming {
         /// Immediately interrupt the current acquisition.
         /// </summary>
         interrupt,
+
+        /// <summary>
+        /// Trigger a single acquisition.
+        /// </summary>
+        single
     };
 
 } /* namespace power_overwhelming */

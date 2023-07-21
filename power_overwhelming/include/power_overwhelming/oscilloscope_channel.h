@@ -30,8 +30,19 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
+        /// <param name="channel">The one-based index of the channel. This
+        /// parameter defaults to zero, which will create an unusable instance.
+        /// </param>
+        explicit oscilloscope_channel(_In_ const std::uint32_t channel = 0);
+
+        /// <summary>
+        /// Initialises a new intance.
+        /// </summary>
         /// <param name="channel">The one-based index of the channel.</param>
-        explicit oscilloscope_channel(_In_ const std::uint32_t channel);
+        /// <param name="channel_template">An existing channel configuration
+        /// that is being copied to <paramref name="channel" />.</param>
+        oscilloscope_channel(_In_ const std::uint32_t channel,
+            _In_ const oscilloscope_channel& channel_template);
 
         /// <summary>
         /// Finalises the instance.
@@ -42,7 +53,7 @@ namespace power_overwhelming {
         /// Gets the attenuation of the probe.
         /// </summary>
         /// <returns>The attenuation and unit of the probe.</returns>
-        inline oscilloscope_quantity attenuation(void) const noexcept {
+        inline const oscilloscope_quantity& attenuation(void) const noexcept {
             return this->_attenuation;
         }
 
@@ -51,13 +62,15 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="attenuation">The attenuation and unit of the probe.
         /// Note that this parameter must have set a unit and does not work
-        /// with the default unit.</param>
+        /// with the default unit unless the value is zero, in which case the
+        /// instrument will ignore this setting and leave whatever the device
+        /// has currently set (or what a probe that supports automatic
+        /// configuration reports to the instrument).</param>
         /// <returns><c>*this</c>.</returns>
-        inline oscilloscope_channel& attenuation(
-            _In_ const oscilloscope_quantity& attenuation) noexcept {
-            this->_attenuation = attenuation;
-            return *this;
-        }
+        /// <exception cref="std::invalid_argument">If the unit of the quantity
+        /// is not set while the value is not zero.</exception>
+        oscilloscope_channel& attenuation(
+            _In_ const oscilloscope_quantity& attenuation);
 
         /// <summary>
         /// Gets the bandwidth limit for the channel.
@@ -120,7 +133,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="decimation_mode">The desired decimation mode.</param>
         /// <returns><c>*this</c>.</returns>
-        inline oscilloscope_channel& count(
+        inline oscilloscope_channel& decimation_mode(
                 _In_ const oscilloscope_decimation_mode decimation_mode)
                 noexcept {
             this->_decimation_mode = decimation_mode;
@@ -281,6 +294,7 @@ namespace power_overwhelming {
         /// <para>You can assess the zero error by measuring the mean value of
         /// a signal that should return zero.</para>
         /// <param name="zero_offset">The zero offset.</param>
+        /// </remarks>
         /// <returns><c>*this</c>.</returns>
         inline oscilloscope_channel& zero_offset(
             _In_ const oscilloscope_quantity& zero_offset) noexcept {

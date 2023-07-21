@@ -93,6 +93,15 @@ namespace power_overwhelming {
         oscilloscope_quantity& operator =(
             _Inout_ oscilloscope_quantity&& rhs) noexcept;
 
+        /// <summary>
+        /// Allows for implicit conversion of the quantity into its numeric
+        /// value.
+        /// </summary>
+        /// <returns>The value of the quantity.</returns>
+        inline operator float(void) const noexcept {
+            return this->_value;
+        }
+
     private:
 
         char *_unit;

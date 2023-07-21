@@ -20,6 +20,7 @@
 
 #include "described_sensor_type.h"
 #include "msr_sensor_impl.h"
+#include "rtx_serialisation.h"
 #include "tinkerforge_sensor_impl.h"
 
 
@@ -44,11 +45,15 @@ namespace power_overwhelming {
 namespace detail {
 
     static constexpr const char *json_field_channel = "channel";
+    static constexpr const char *json_field_channel_current = "current";
+    static constexpr const char *json_field_channel_voltage = "voltage";
     static constexpr const char *json_field_core = "core";
-    static constexpr const char *json_field_domain = "domain";
+    static constexpr const char *json_field_decimation = "decimation";
     static constexpr const char *json_field_description = "description";
     static constexpr const char *json_field_dev_guid = "deviceGuid";
+    static constexpr const char *json_field_domain = "domain"; 
     static constexpr const char *json_field_host = "host";
+    static constexpr const char *json_field_instrument = "instrument";
     static constexpr const char *json_field_name = "name";
     static constexpr const char *json_field_offset = "offset";
     static constexpr const char *json_field_path = "path";
@@ -142,15 +147,11 @@ namespace detail {
         }
 
         static inline nlohmann::json serialise(const value_type& value) {
-            auto name = power_overwhelming::convert_string<char>(value.name());
-            auto source0 = to_string(value.source());
-            auto source = power_overwhelming::convert_string<char>(source0);
-
             return nlohmann::json::object({
-                { json_field_type, type_name },
-                { json_field_name, name },
-                { json_field_udid, value.udid() },
-                { json_field_source, source  }
+                json_serialise(json_field_type, type_name),
+                json_serialise(json_field_name, value.name()),
+                json_serialise(json_field_udid, value.udid()),
+                json_serialise(json_field_source, to_string(value.source()))
             });
         }
     };
@@ -201,15 +202,11 @@ namespace detail {
         }
 
         static inline nlohmann::json serialise(const value_type& value) {
-            auto channel = value.channel();
-            auto name = power_overwhelming::convert_string<char>(value.name());
-            auto path = power_overwhelming::convert_string<char>(value.path());
-
             return nlohmann::json::object({
-                { json_field_type, type_name },
-                { json_field_name, name },
-                { json_field_path, path },
-                { json_field_channel, channel }
+                json_serialise(json_field_type, type_name),
+                json_serialise(json_field_name, value.name()),
+                json_serialise(json_field_path, value.path()),
+                json_serialise(json_field_channel, value.channel())
             });
         }
     };
@@ -229,14 +226,11 @@ namespace detail {
         }
 
         static inline nlohmann::json serialise(const value_type& value) {
-            auto name = power_overwhelming::convert_string<char>(value.name());
-            auto path = power_overwhelming::convert_string<char>(value.path());
-
             return nlohmann::json::object({
-                { json_field_type, type_name },
-                { json_field_name, name },
-                { json_field_path, path },
-                { json_field_channel, 3000 }
+                json_serialise(json_field_type, type_name),
+                json_serialise(json_field_name, value.name()),
+                json_serialise(json_field_path, value.path()),
+                json_serialise(json_field_channel, 3000)
             });
         }
     };
@@ -265,20 +259,14 @@ namespace detail {
         }
 
         static inline nlohmann::json serialise(_In_ const value_type& value) {
-            auto core = value.core();
-            auto divisor = value._impl->unit_divisor;
-            auto domain0 = to_string(value.domain());
-            auto domain = power_overwhelming::convert_string<char>(domain0);
-            auto offset = value._impl->offset;
-            auto name = power_overwhelming::convert_string<char>(value.name());
-
             return nlohmann::json::object({
-                { json_field_type, type_name },
-                { json_field_name, name },
-                { json_field_core, core },
-                { json_field_domain, domain },
-                { json_field_offset, offset },
-                { json_field_unit_divisor, divisor }
+                json_serialise(json_field_type, type_name),
+                json_serialise(json_field_name, value.name()),
+                json_serialise(json_field_core, value.core()),
+                json_serialise(json_field_domain, to_string(value.domain())),
+                json_serialise(json_field_offset, value._impl->offset),
+                json_serialise(json_field_unit_divisor,
+                    value._impl->unit_divisor)
             });
         }
     };
@@ -297,13 +285,10 @@ namespace detail {
         }
 
         static inline nlohmann::json serialise(const value_type& value) {
-            auto guid = value.device_guid();
-            auto name = power_overwhelming::convert_string<char>(value.name());
-
             return nlohmann::json::object({
-                { json_field_type, type_name },
-                { json_field_name, name },
-                { json_field_dev_guid, guid }
+                json_serialise(json_field_type, type_name),
+                json_serialise(json_field_name, value.name()),
+                json_serialise(json_field_dev_guid, value.device_guid())
             });
         }
     };
@@ -317,20 +302,44 @@ namespace detail {
         POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC(false);
 
         static inline value_type deserialise(const nlohmann::json& value) {
-            auto path = value[json_field_path].get<std::string>();
-            auto timeout = value[json_field_timeout].get<std::int32_t>();
-            return value_type(path.c_str(), timeout);
+            auto channel_current = json_deserialise<oscilloscope_channel>(
+                value[json_field_channel_current]);
+            auto channel_voltage = json_deserialise<oscilloscope_channel>(
+                value[json_field_channel_voltage]);
+            auto decimation = json_deserialise<waveform_decimation_method>(
+                value[json_field_decimation]);
+            auto instrument_config = json_deserialise<
+                rtx_instrument_configuration>(value[json_field_instrument]);
+            auto path = json_deserialise<std::string>(value[json_field_path]);
+
+            rtx_sensor_definition definition(path.c_str(),
+                channel_voltage,
+                channel_current);
+
+            return value_type(definition,
+                decimation,
+                instrument_config.timeout(),
+                &instrument_config);
         }
 
         static inline nlohmann::json serialise(const value_type& value) {
-            auto name = power_overwhelming::convert_string<char>(value.name());
-            auto path = power_overwhelming::convert_string<char>(value.path());
+            auto instrument = value.instrument();
+            auto channel_current = instrument->channel(value.channel_current());
+            auto channel_voltage = instrument->channel(value.channel_voltage());
+            rtx_instrument_configuration instrument_config(
+                instrument->time_range(),
+                instrument->single_acquisition(),
+                instrument->edge_trigger(),
+                instrument->timeout());
 
             return nlohmann::json::object({
-                { json_field_type, type_name },
-                { json_field_name, name },
-                { json_field_path, path },
-                { json_field_timeout, 3000 }
+                json_serialise(json_field_type, type_name),
+                json_serialise(json_field_name, value.name()),
+                json_serialise(json_field_path, value.path()),
+                json_serialise(json_field_channel_current, channel_current),
+                json_serialise(json_field_channel_voltage, channel_voltage),
+                json_serialise(json_field_decimation, value.decimation_method()),
+                { json_field_instrument, json_serialise(instrument_config) }
             });
         }
     };
@@ -370,30 +379,24 @@ namespace detail {
             char uid[8];
             value.identify(uid);
 
-            auto desc = power_overwhelming::convert_string<char>(
-                value.description());
-            auto host = value_type::default_host;
-            auto name = power_overwhelming::convert_string<char>(value.name());
-            auto port = value_type::default_port;
-            auto source = power_overwhelming::convert_string<char>(to_string(
-                tinkerforge_sensor_source::all));
+            json_serialiser<char(&)[8]>::serialise(uid);
 
             return nlohmann::json::object({
-                { json_field_type, type_name },
-                { json_field_name, name },
-                { json_field_host, host },
-                { json_field_port, port },
-                { json_field_uid, uid },
-                { json_field_description, desc },
-                { json_field_source, source }
+                json_serialise(json_field_type, type_name),
+                json_serialise(json_field_name, value.name()),
+                json_serialise(json_field_host, value_type::default_host),
+                json_serialise(json_field_port, value_type::default_port),
+                json_serialise(json_field_uid, uid),
+                json_serialise(json_field_description, value.description()),
+                // TODO: Provide an API that allows for retrieving the callbacks enabled from the sensor.
+                json_serialise(json_field_source, to_string(
+                    tinkerforge_sensor_source::all))
             });
         }
 
         static inline nlohmann::json serialise_all(void) {
             auto retval = nlohmann::json::array();
 
-            auto host = value_type::default_host;
-            auto port = value_type::default_port;
             const auto source = power_overwhelming::convert_string<char>(
                 to_string(tinkerforge_sensor_source::all));
 
@@ -405,18 +408,19 @@ namespace detail {
                 descs.size());
 
             for (auto& d : descs) {
-                assert(d.uid() != nullptr);
-                _Analysis_assume_(d.uid() != nullptr);
+                const auto uid = d.uid();
+                assert(uid != nullptr);
+                _Analysis_assume_(uid != nullptr);
                 auto name = tinkerforge_sensor_impl::get_sensor_name(
-                    host, port, d.uid());
+                    value_type::default_host, value_type::default_port, uid);
 
                 retval.push_back({
-                    { json_field_type, type_name },
-                    { json_field_name, name },
-                    { json_field_host, host },
-                    { json_field_port, port },
-                    { json_field_uid, d.uid() },
-                    { json_field_source, source }
+                    json_serialise(json_field_type, type_name),
+                    json_serialise(json_field_name, name),
+                    json_serialise(json_field_host, value_type::default_host),
+                    json_serialise(json_field_port, value_type::default_port),
+                    json_serialise(json_field_uid, uid),
+                    json_serialise(json_field_source, source)
                 });
             }
 
@@ -427,7 +431,7 @@ namespace detail {
 #undef POWER_OVERWHELMING_DECLARE_SENSOR_NAME
 #undef POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC
 
-    
+
     /// <summary>
     /// A type list of all known sensors, which allows for compile-time
     /// enumeration of known sensor types.

@@ -25,7 +25,7 @@
 int _tmain(const int argc, const TCHAR **argv) {
 #if (defined(DEBUG) || defined(_DEBUG))
     ::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    //::_CrtSetBreakAlloc(327);
+    //::_CrtSetBreakAlloc(420);
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
 
 #if false
@@ -114,15 +114,15 @@ int _tmain(const int argc, const TCHAR **argv) {
 
     // Rohde & Schwarz sensors
 #if true
-#if false
+#if true
     ::query_hmc8015();
 #endif
 
-#if true
+#if false
     ::query_rtx_instrument();
 #endif
 
-#if true
+#if false
     ::query_rtx();
 #endif
 #endif

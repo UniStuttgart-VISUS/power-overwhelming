@@ -25,13 +25,6 @@
 
 
 /*
- * visus::power_overwhelming::visa_instrument::rohde_und_schwarz
- */
-constexpr const char *
-visus::power_overwhelming::visa_instrument::rohde_und_schwarz;
-
-
-/*
  * visus::power_overwhelming::visa_instrument::find_resources
  */
 visus::power_overwhelming::blob
@@ -42,11 +35,12 @@ visus::power_overwhelming::visa_instrument::find_resources(
         throw std::invalid_argument("The instrument query cannot be null.");
     }
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto q = convert_string<char>(query);
     auto devices = detail::visa_library::instance().find_resource(q.c_str());
 
     const auto len = std::accumulate(devices.begin(), devices.end(),
-        static_cast<std::size_t>(0), [](std::size_t s, const std::string &d) {
+        static_cast<std::size_t>(0), [](std::size_t s, const std::string& d) {
             return s + d.size() + 1;
         }) + 1;
 
@@ -66,6 +60,10 @@ visus::power_overwhelming::visa_instrument::find_resources(
 
     *cur = 0;
 
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    blob retval;
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+
     return retval;
 }
 
@@ -81,6 +79,7 @@ visus::power_overwhelming::visa_instrument::find_resources(
         throw std::invalid_argument("The instrument query cannot be null.");
     }
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto devices = detail::visa_library::instance().find_resource(query);
 
     const auto len = std::accumulate(devices.begin(), devices.end(),
@@ -100,6 +99,10 @@ visus::power_overwhelming::visa_instrument::find_resources(
     }
 
     *cur = 0;
+
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    blob retval;
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
     return retval;
 }
@@ -152,6 +155,49 @@ visus::power_overwhelming::visa_instrument::find_resources(
 
 
 /*
+ * visus::power_overwhelming::visa_instrument::foreach_instance
+ */
+std::size_t visus::power_overwhelming::visa_instrument::foreach_instance(
+        _In_ bool (*callback)(visa_instrument&, void *),
+        _In_opt_ void *context){
+    if (callback == nullptr) {
+        throw std::invalid_argument("The enumeration callback for VISA "
+            "instruments must not be nullptr.");
+    }
+
+    return detail::visa_instrument_impl::foreach(
+            [callback, context](detail::visa_instrument_impl *i) {
+        visa_instrument instrument;
+        auto retval = true;
+
+        instrument._impl = i;
+        try {
+            retval = callback(instrument, context);
+        } catch (...) {
+            retval = false;
+        }
+        instrument._impl = nullptr;
+
+        return retval;
+    });
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::rohde_und_schwarz
+ */
+constexpr const char *
+visus::power_overwhelming::visa_instrument::rohde_und_schwarz;
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::rohde_und_schwarz
+ */
+constexpr const visus::power_overwhelming::visa_instrument::timeout_type
+visus::power_overwhelming::visa_instrument::default_timeout;
+
+
+/*
  * visus::power_overwhelming::visa_instrument::visa_instrument
  */
 visus::power_overwhelming::visa_instrument::visa_instrument(void)
@@ -164,7 +210,7 @@ visus::power_overwhelming::visa_instrument::visa_instrument(void)
 visus::power_overwhelming::visa_instrument::visa_instrument(
         _In_z_ const wchar_t *path, _In_ const timeout_type timeout)
         : _impl(nullptr) {
-    this->_impl = detail::visa_instrument_impl::create(path, timeout);
+    this->_impl = detail::visa_instrument_impl::create(path, timeout, nullptr);
 }
 
 
@@ -174,7 +220,33 @@ visus::power_overwhelming::visa_instrument::visa_instrument(
 visus::power_overwhelming::visa_instrument::visa_instrument(
         _In_z_ const char *path, _In_ const timeout_type timeout)
         : _impl(nullptr) {
-    this->_impl = detail::visa_instrument_impl::create(path, timeout);
+    this->_impl = detail::visa_instrument_impl::create(path, timeout, nullptr);
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::visa_instrument
+ */
+visus::power_overwhelming::visa_instrument::visa_instrument(
+        _Out_ bool &is_new_connection,
+        _In_z_ const wchar_t *path,
+        _In_ const timeout_type timeout)
+        : _impl(nullptr) {
+    this->_impl = detail::visa_instrument_impl::create(path, timeout,
+        &is_new_connection);
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::visa_instrument
+ */
+visus::power_overwhelming::visa_instrument::visa_instrument(
+        _Out_ bool &is_new_connection,
+        _In_z_ const char *path,
+        _In_ const timeout_type timeout)
+        : _impl(nullptr) {
+    this->_impl = detail::visa_instrument_impl::create(path, timeout,
+        &is_new_connection);
 }
 
 
@@ -188,6 +260,23 @@ visus::power_overwhelming::visa_instrument::~visa_instrument(void) {
 }
 
 
+/*
+ * visus::power_overwhelming::visa_instrument::aliased
+ */
+bool visus::power_overwhelming::visa_instrument::aliased(void) const noexcept {
+    return ((this->_impl != nullptr) && (this->_impl->counter() > 0));
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::alias_of
+ */
+bool visus::power_overwhelming::visa_instrument::alias_of(
+        _In_ const visa_instrument& instrument) const noexcept {
+    return ((this->_impl != nullptr) && (this->_impl == instrument._impl));
+}
+
+
 #if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * visus::power_overwhelming::visa_instrument::attribute
@@ -196,7 +285,7 @@ const visus::power_overwhelming::visa_instrument &
 visus::power_overwhelming::visa_instrument::attribute(
         _Out_ void *dst, _In_ ViAttr name) const {
     visa_exception::throw_on_error(detail::visa_library::instance()
-        .viGetAttribute(this->check_not_disposed().session, name, &dst));
+        .viGetAttribute(this->check_not_disposed().session, name, dst));
     return *this;
 }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -254,6 +343,49 @@ visus::power_overwhelming::visa_instrument::clear_status(void) {
 
 
 /*
+ * visus::power_overwhelming::visa_instrument::enable_system_checks
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::enable_system_checks(
+        _In_ const bool enable) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    this->check_not_disposed().enable_system_checks = enable;
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::event_status
+ */
+visus::power_overwhelming::visa_event_status
+visus::power_overwhelming::visa_instrument::event_status(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("*ESR?\n");
+    auto status = std::atoi(response.as<char>());
+    return static_cast<visa_event_status>(status);
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::event_status
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::event_status(
+        _In_ const visa_event_status status) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto s = static_cast<int>(status);
+    this->check_not_disposed().format("*ESE %u; *OPC?\n", s);
+    this->read_all();
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
  * visus::power_overwhelming::visa_instrument::identify
  */
 std::size_t visus::power_overwhelming::visa_instrument::identify(
@@ -289,6 +421,17 @@ std::size_t visus::power_overwhelming::visa_instrument::identify(
 
 
 /*
+ * visus::power_overwhelming::visa_instrument::identify
+ */
+std::size_t visus::power_overwhelming::visa_instrument::identify(
+        _In_opt_ std::nullptr_t dst,
+        _In_ const std::size_t cnt) {
+    auto id = this->check_not_disposed().identify();
+    return (id.size() + 1);
+}
+
+
+/*
  * visus::power_overwhelming::visa_instrument::interface_type
  */
 std::uint16_t visus::power_overwhelming::visa_instrument::interface_type(
@@ -296,28 +439,87 @@ std::uint16_t visus::power_overwhelming::visa_instrument::interface_type(
     return this->check_not_disposed().interface_type();
 }
 
+
 /*
+ * visus::power_overwhelming::visa_instrument::on_operation_complete
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::on_operation_complete(
+        _In_opt_ void(*callback)(visa_instrument &, void *),
+        _In_opt_ void *context) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
 
-        else if (rsSession->sessionType == RS_INTF_GPIB)
-        {
-            rsSession->vxiCapable = (addFlags & 2) > 0 ? VI_FALSE : VI_TRUE;
-        }
-        else if (rsSession->sessionType == RS_INTF_TCPIP)
-        {
-            rsSession->vxiCapable = (addFlags & 4) > 0 ? VI_FALSE : VI_TRUE;
-        }
-        else if (rsSession->sessionType == RS_INTF_USB)
-        {
-            rsSession->vxiCapable = (addFlags & 1) > 0 ? VI_FALSE : VI_TRUE;
+    if (callback != nullptr) {
+        if (impl.opc_callback != callback) {
+            this->on_operation_complete(nullptr, nullptr);
+            assert(impl.opc_callback == nullptr);
+            impl.opc_callback = callback;
+            impl.opc_context = context;
+
+            auto es = this->event_status();
+            this->event_status(es | visa_event_status::operation_complete);
+            auto ss = this->service_request_status();
+            this->service_request_status(ss | visa_status_byte::master_status);
+
+            impl.install_handler(VI_EVENT_SERVICE_REQ, &on_event, this);
+            impl.enable_event(VI_EVENT_SERVICE_REQ);
         }
 
-*/
+    } else {
+        if (impl.opc_callback != nullptr) {
+            impl.disable_event(VI_EVENT_SERVICE_REQ);
+            impl.uninstall_handler(VI_EVENT_SERVICE_REQ, &on_event, this);
+
+            auto es = this->event_status();
+            this->event_status(es | ~visa_event_status::operation_complete);
+            // Note: While we disable the OPC event flag, we do not disable
+            // the events on master status, because this could be used for
+            // something else. The caller must do that on his own if this is
+            // desired.
+
+            impl.opc_callback = nullptr;
+            impl.opc_context = nullptr;
+        }
+    }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::operation_complete
+ */
+const visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::operation_complete(
+        void) const {
+    // Cf. https://www.rohde-schwarz.com/at/driver-pages/fernsteuerung/measurements-synchronization_231248.html
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    this->query("*OPC?\n");
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::operation_complete_async
+ */
+const visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::operation_complete_async(
+        void) const {
+    // Cf. https://www.rohde-schwarz.com/at/driver-pages/fernsteuerung/measurements-synchronization_231248.html
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    this->write("*OPC\n");
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
 
 
 /*
  * visus::power_overwhelming::visa_instrument::path
  */
-_Ret_maybenull_z_ const char *
+_Ret_maybenull_z_
+const char *
 visus::power_overwhelming::visa_instrument::path(void) const noexcept {
     return (*this) ? this->_impl->path().c_str() : nullptr;
 }
@@ -331,7 +533,11 @@ visus::power_overwhelming::visa_instrument::query(
         _In_reads_bytes_(cnt) const byte_type *query,
         _In_ const std::size_t cnt,
         _In_ const std::size_t buffer_size) const {
-    return this->write_all(query, cnt).read_all(buffer_size);
+    auto& impl = this->check_not_disposed();
+    impl.write(query, cnt);
+    // Note: we cannot check the system state in case of a query as this is a
+    // query in itself that cannot overlap.
+    return this->read_all(buffer_size);
 }
 
 
@@ -341,7 +547,11 @@ visus::power_overwhelming::visa_instrument::query(
 visus::power_overwhelming::blob
 visus::power_overwhelming::visa_instrument::query(_In_z_ const char *query,
         _In_ const std::size_t buffer_size) const {
-    return this->write(query).read_all(buffer_size);
+    auto& impl = this->check_not_disposed();
+    impl.write(query);
+    // Note: we cannot check the system state in case of a query as this is a
+    // query in itself that cannot overlap.
+    return this->read_all(buffer_size);
 }
 
 
@@ -351,7 +561,12 @@ visus::power_overwhelming::visa_instrument::query(_In_z_ const char *query,
 visus::power_overwhelming::blob
 visus::power_overwhelming::visa_instrument::query(_In_z_ const wchar_t *query,
         _In_ const std::size_t buffer_size) const {
-    return this->write(query).read_all(buffer_size);
+    auto& impl = this->check_not_disposed();
+    auto q = convert_string<char>(query);
+    impl.write(q.c_str());
+    // Note: we cannot check the system state in case of a query as this is a
+    // query in itself that cannot overlap.
+    return this->read_all(buffer_size);
 }
 
 
@@ -366,7 +581,8 @@ std::size_t visus::power_overwhelming::visa_instrument::read(
             "instrument must not be null.");
     }
 
-    return this->check_not_disposed().read(buffer, cnt);
+    auto& impl = this->check_not_disposed();
+    return impl.read(buffer, cnt);
 }
 
 
@@ -376,7 +592,8 @@ std::size_t visus::power_overwhelming::visa_instrument::read(
 visus::power_overwhelming::blob
 visus::power_overwhelming::visa_instrument::read_all(
         _In_ const std::size_t buffer_size) const {
-    return this->check_not_disposed().read_all(buffer_size);
+    auto& impl = this->check_not_disposed();
+    return impl.read_all(buffer_size);
 }
 
 
@@ -384,10 +601,51 @@ visus::power_overwhelming::visa_instrument::read_all(
  * visus::power_overwhelming::visa_instrument::reset
  */
 visus::power_overwhelming::visa_instrument&
-visus::power_overwhelming::visa_instrument::reset(void) {
-    this->check_not_disposed().format("*RST\n");
-    this->throw_on_system_error();
+visus::power_overwhelming::visa_instrument::reset(
+        _In_ const bool flush_buffers,
+        _In_ const bool clear_status) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    if (flush_buffers) {
+        this->clear();
+    }
+
+    if (clear_status) {
+        this->write("*CLS\n");
+    }
+
+    this->query("*RST;*OPC?\n");
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::service_request_status
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::service_request_status(
+        _In_ const visa_status_byte status) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto s = static_cast<int>(status);
+    this->check_not_disposed().format("*SRE %u; *OPC?\n", s);
+    this->read_all();
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::service_request_status
+ */
+visus::power_overwhelming::visa_status_byte
+visus::power_overwhelming::visa_instrument::service_request_status(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("*SRE?\n");
+    auto status = std::atoi(response.as<char>());
+    return static_cast<visa_status_byte>(status);
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -397,6 +655,7 @@ visus::power_overwhelming::visa_instrument::reset(void) {
 visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::synchronise_clock(
         _In_ const bool utc) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 #if defined(_WIN32)
     SYSTEMTIME time;
     if (utc) {
@@ -407,10 +666,8 @@ visus::power_overwhelming::visa_instrument::synchronise_clock(
 
     this->check_not_disposed().format("SYST:TIME %d, %d, %d\n",
         time.wHour, time.wMinute, time.wSecond);
-    this->throw_on_system_error();
     this->check_not_disposed().format("SYST:DATE %d, %d, %d\n",
         time.wYear, time.wMonth, time.wDay);
-    this->throw_on_system_error();
 
 #else /* defined(_WIN32) */
     struct timeval tv;
@@ -428,12 +685,10 @@ visus::power_overwhelming::visa_instrument::synchronise_clock(
 
     this->check_not_disposed().format("SYST:TIME %d, %d, %d\n",
         time->tm_hour, time->tm_min, time->tm_sec);
-    this->throw_on_system_error();
     this->check_not_disposed().format("SYST:DATE %d, %d, %d\n",
         time->tm_year + 1900, time->tm_mon + 1, time->tm_mday);
-    this->throw_on_system_error();
-
 #endif /* defined(_WIN32) */
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     return *this;
 }
@@ -442,12 +697,13 @@ visus::power_overwhelming::visa_instrument::synchronise_clock(
 /*
  * visus::power_overwhelming::visa_instrument::status
  */
-std::int32_t visus::power_overwhelming::visa_instrument::status(void) {
+visus::power_overwhelming::visa_status_byte
+visus::power_overwhelming::visa_instrument::status(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     ViUInt16 retval;
     visa_exception::throw_on_error(detail::visa_library::instance()
         .viReadSTB(this->check_not_disposed().session, &retval));
-    return static_cast<std::int32_t>(retval);
+    return static_cast<visa_status_byte>(retval);
 
     // Note: R&S does the following, but NI's documentation suggests that
     // viReadSTB will issue *STB? by itself as a fallback, so we try the easier
@@ -485,7 +741,7 @@ int visus::power_overwhelming::visa_instrument::system_error(void) const {
             status.end(),
             [](const byte_type b) { return b == ','; });
 
-        if (delimiter != status.end()) {
+        if ((delimiter != nullptr) && (delimiter != status.end())) {
             *delimiter = '\0';
             return std::atoi(reinterpret_cast<char *>(status.begin()));
         }
@@ -502,19 +758,28 @@ int visus::power_overwhelming::visa_instrument::system_error(void) const {
 /*
  * visus::power_overwhelming::visa_instrument::throw_on_system_error
  */
-void visus::power_overwhelming::visa_instrument::throw_on_system_error(void) {
+void visus::power_overwhelming::visa_instrument::throw_on_system_error(
+        void) const {
+    // This method is lenient, so if the instrument is invalid, do not check
+    // anything and do not raise an exception either.
     if (this->_impl != nullptr) {
-        std::string message;
-        auto error = this->_impl->system_error(message);
-
-        if (error != 0) {
-            if (message.empty()) {
-                message = std::to_string(error);
-            }
-
-            throw std::runtime_error(message);
-        }
+        this->_impl->throw_on_system_error();
     }
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::timeout
+ */
+visus::power_overwhelming::visa_instrument::timeout_type
+visus::power_overwhelming::visa_instrument::timeout(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    ViUInt32 retval;
+    this->attribute(&retval, VI_ATTR_TMO_VALUE);
+    return static_cast<timeout_type>(retval);
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -538,7 +803,7 @@ visus::power_overwhelming::visa_instrument::timeout(
 visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::wait(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    this->query("*OPC?");
+    this->query("*WAI\n");
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
@@ -555,24 +820,10 @@ std::size_t visus::power_overwhelming::visa_instrument::write(
             "instrument must not be null.");
     }
 
-    return this->check_not_disposed().write(buffer, cnt);
-}
-
-
-/*
- * visus::power_overwhelming::visa_instrument::write_all
- */
-const visus::power_overwhelming::visa_instrument&
-visus::power_overwhelming::visa_instrument::write_all(
-        _In_reads_bytes_(cnt) const byte_type *buffer,
-        _In_ const std::size_t cnt) const {
-    if (buffer == nullptr) {
-        throw std::invalid_argument("The buffer being written to the "
-            "instrument must not be null.");
-    }
-
-    this->check_not_disposed().write_all(buffer, cnt);
-    return *this;
+    auto& impl = this->check_not_disposed();
+    auto retval = impl.write(buffer, cnt);
+    impl.check_system_error();
+    return retval;
 }
 
 
@@ -587,8 +838,9 @@ visus::power_overwhelming::visa_instrument::write(
             "not be null.");
     }
 
-    this->check_not_disposed();
-    this->_impl->write(str);
+    auto& impl = this->check_not_disposed();
+    impl.write(str);
+    impl.check_system_error();
     return *this;
 }
 
@@ -604,10 +856,36 @@ visus::power_overwhelming::visa_instrument::write(
             "not be null.");
     }
 
-    this->check_not_disposed();
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
     auto s = convert_string<char>(str);
-    this->_impl->write_all(reinterpret_cast<const byte_type *>(s.data()),
-        s.size());
+
+    if (impl.auto_terminate() && (s.back() != impl.terminal_character)) {
+        s += impl.terminal_character;
+    }
+
+    impl.write_all(reinterpret_cast<const byte_type *>(s.data()), s.size());
+    impl.check_system_error();
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::write_all
+ */
+const visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::write_all(
+        _In_reads_bytes_(cnt) const byte_type *buffer,
+        _In_ const std::size_t cnt) const {
+    if (buffer == nullptr) {
+        throw std::invalid_argument("The buffer being written to the "
+            "instrument must not be null.");
+    }
+
+    auto& impl = this->check_not_disposed();
+    impl.write_all(buffer, cnt);
+    impl.check_system_error();
     return *this;
 }
 
@@ -625,6 +903,7 @@ visus::power_overwhelming::visa_instrument::operator =(
 
     return *this;
 }
+
 
 /*
  * visus::power_overwhelming::visa_instrument::operator bool
@@ -663,3 +942,41 @@ visus::power_overwhelming::visa_instrument::check_not_disposed(void) const {
             "a move operation cannot be used anymore.");
     }
 }
+
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+/*
+ * visus::power_overwhelming::visa_instrument::on_event
+ */
+ViStatus _VI_FUNCH visus::power_overwhelming::visa_instrument::on_event(
+        ViSession session, ViEventType event_type, ViEvent event,
+        ViAddr context) {
+    auto that = static_cast<visa_instrument *>(context);
+
+    if ((event_type == VI_EVENT_SERVICE_REQ)
+            && (that != nullptr)
+            && (that->_impl != nullptr)
+            && (that->_impl->opc_callback != nullptr)) {
+        try {
+            // According to
+            // https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vi_event_service_req.html,
+            // we must read the status byte here for the callback to work. We
+            // have to do that anyway, because this seems to be the only way
+            // to distinguish between OPC events and other status changes.
+            auto status = that->status();
+            if ((status & visa_status_byte::operation_status)
+                    != visa_status_byte::none) {
+                that->_impl->opc_callback(*that, that->_impl->opc_context);
+            }
+        } catch (...) {
+            // If the event handler does not return, which is the case when we
+            // throw an exception, we must free the event object manually. Cf.
+            // https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vieventhandler.html
+            detail::visa_library::instance().viClose(event);
+            throw;
+        }
+    }
+
+    return VI_SUCCESS;
+}
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */

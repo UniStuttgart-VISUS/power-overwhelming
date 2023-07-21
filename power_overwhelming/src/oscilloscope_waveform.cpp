@@ -37,3 +37,37 @@ visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform(
     // Do not move samples unless everything else succeeded.
     this->_samples = std::move(samples);
 }
+
+
+/*
+ * visus::power_overwhelming::oscilloscope_waveform::sample
+ */
+float visus::power_overwhelming::oscilloscope_waveform::sample(
+        _In_ const std::size_t i) const {
+    if (this->_samples.empty()) {
+        throw std::range_error("An empty waveform cannot be sampled.");
+    }
+    if (i >= this->_record_length) {
+        throw std::range_error("The specified sample index is out of range.");
+    }
+
+    return this->_samples.as<float>()[i];
+}
+
+
+/*
+ * visus::power_overwhelming::oscilloscope_waveform::sample_distance
+ */
+float visus::power_overwhelming::oscilloscope_waveform::sample_distance(
+        void) const noexcept {
+    if (this->_record_length == 0) {
+        return 0.0f;
+
+    } else {
+        // This should be the same as "CHAN:DATA:XINC?", but without an
+        // additional query.
+        const auto count = static_cast<float>(this->_record_length);
+        const auto dt = this->_time_end - this->_time_begin;
+        return (dt / count);
+    }
+}

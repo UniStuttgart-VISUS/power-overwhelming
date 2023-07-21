@@ -23,9 +23,11 @@
 #include <power_overwhelming/csv_iomanip.h>
 #include <power_overwhelming/measurement.h>
 #include <power_overwhelming/measurement_data.h>
+#include <power_overwhelming/measurement_data_series.h>
 #include <power_overwhelming/nvml_sensor.h>
-#include <power_overwhelming/oscilloscope_channel.h>
-#include <power_overwhelming/oscilloscope_sensor_definition.h>
+#include <power_overwhelming/rtx_instrument_configuration.h>
+#include <power_overwhelming/rtx_sensor.h>
+#include <power_overwhelming/rtx_sensor_definition.h>
 #include <power_overwhelming/rapl_domain.h>
 #include <power_overwhelming/tinkerforge_sensor_definition.h>
 
@@ -37,6 +39,7 @@
 #include <msr_magic.h>
 #include <nvml_exception.h>
 #include <nvml_scope.h>
+#include <rtx_serialisation.h>
 #include <sensor_desc.h>
 #include <setup_api.h>
 #include <string_functions.h>

@@ -51,6 +51,40 @@ visus::power_overwhelming::detail::timestamp<Resolution>::create(
 /*
  * visus::power_overwhelming::detail::convert
  */
+template<class TRep, class TPeriod>
+visus::power_overwhelming::timestamp_type
+visus::power_overwhelming::detail::convert(
+        _In_ const std::chrono::duration<TRep, TPeriod> dur,
+        _In_ const timestamp_resolution resolution) {
+    using namespace std::chrono;
+    typedef duration<timestamp_type, filetime_period> filetime_dur;
+
+    switch (resolution) {
+        case timestamp_resolution::hundred_nanoseconds:
+            return duration_cast<filetime_dur>(dur).count();
+
+        case timestamp_resolution::microseconds:
+            return duration_cast<microseconds>(dur).count();
+
+        case timestamp_resolution::milliseconds:
+            return duration_cast<milliseconds>(dur).count();
+
+        case timestamp_resolution::nanoseconds:
+            return duration_cast<nanoseconds>(dur).count();
+
+        case timestamp_resolution::seconds:
+            return duration_cast<seconds>(dur).count();
+
+        default:
+            throw std::invalid_argument("The specified timestamp_resolution "
+                "is unsupported.");
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::convert
+ */
 template<class TDuration>
 visus::power_overwhelming::timestamp_type
 visus::power_overwhelming::detail::convert(
@@ -58,7 +92,6 @@ visus::power_overwhelming::detail::convert(
             TDuration>& timestamp,
         _In_ const timestamp_resolution resolution) {
     using namespace std::chrono;
-    typedef duration<timestamp_type, filetime_period> filetime_dur;
 
     // The offset of the FILETIME epoch to the UNIX epoch.
     const auto dz = duration<timestamp_type,
@@ -72,25 +105,5 @@ visus::power_overwhelming::detail::convert(
         - system_clock::from_time_t(0);
 
     // Transform the origin of the timestamp clock to the origin of FILETIME.
-    switch (resolution) {
-        case timestamp_resolution::hundred_nanoseconds:
-            return duration_cast<filetime_dur>(dt + dz).count();
-
-        case timestamp_resolution::microseconds:
-            return duration_cast<microseconds>(dt + dz).count();
-
-        case timestamp_resolution::milliseconds:
-            return duration_cast<milliseconds>(dt + dz).count();
-
-        // TODO: This overflows, so we do not support it.
-        //case timestamp_resolution::nanoseconds:
-        //    return duration_cast<nanoseconds>(dt + dz).count();
-
-        case timestamp_resolution::seconds:
-            return duration_cast<seconds>(dt + dz).count();
-
-        default:
-            throw std::invalid_argument("The specified timestamp_resolution "
-                "is unsupported.");
-    }
+    return convert(dt + dz, resolution);
 }

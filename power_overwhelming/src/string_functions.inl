@@ -136,6 +136,19 @@ std::string visus::power_overwhelming::detail::format_string(
 
 
 /*
+ * visus::power_overwhelming::detail::remove_spaces
+ */
+template<class TChar, class TTraits, class TAlloc>
+std::basic_string<TChar> visus::power_overwhelming::detail::remove_spaces(
+        _In_ const std::basic_string<TChar, TTraits, TAlloc>& str) {
+    std::vector<TChar> retval(str.begin(), str.end());
+    auto end = std::remove_if(retval.begin(), retval.end(),
+        [](const TChar c) { return std::isspace(c); });
+    return std::basic_string<TChar>(retval.begin(), end);
+}
+
+
+/*
  * visus::power_overwhelming::detail::safe_assign
  */
 template<class TChar>
@@ -170,10 +183,94 @@ void visus::power_overwhelming::detail::safe_assign(
  * visus::power_overwhelming::detail::safe_assign
  */
 template<class TChar>
+visus::power_overwhelming::blob&
+visus::power_overwhelming::detail::safe_assign(
+        _Inout_ blob& dst, _In_opt_z_ const TChar *src) {
+    if (dst.as<TChar>() != src) {
+        if (src != nullptr) {
+            auto len = std::char_traits<TChar>::length(src) + 1;
+            len *= sizeof(TChar);
+            dst.reserve(len);
+            ::memcpy(dst.data(), src, len);
+
+        } else {
+            dst.reserve(1);
+            *dst.as<TChar>() = static_cast<TChar>(0);
+        }
+    }
+
+    return dst;
+}
+
+
+/*
+ * visus::power_overwhelming::detail::safe_assign
+ */
+template<class TChar>
+visus::power_overwhelming::blob visus::power_overwhelming::detail::safe_assign(
+        _Inout_ blob&& dst, _In_opt_z_ const TChar *src) {
+    auto retval = std::move(dst);
+    safe_assign(retval, src);
+    return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::detail::safe_assign
+ */
+template<class TChar>
 void visus::power_overwhelming::detail::safe_assign(
         _Inout_opt_z_ TChar *& dst, _In_ const std::nullptr_t) noexcept {
     if (dst != nullptr) {
         ::free(dst);
         dst = nullptr;
     }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::trim_begin_if
+ */
+template<class TChar, class TPredicate>
+_When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
+TChar *visus::power_overwhelming::detail::trim_begin_if(_In_opt_z_ TChar *str,
+        _In_ const TPredicate& predicate) {
+    auto retval = str;
+
+    if (retval == nullptr) {
+        return retval;
+    }
+
+    while ((*retval != 0) && predicate(*retval)) {
+        ++retval;
+    }
+
+    return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::detail::trim_end_if
+ */
+template<class TChar, class TPredicate>
+_When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
+TChar *visus::power_overwhelming::detail::trim_end_if(_In_opt_z_ TChar *str,
+        _In_ const TPredicate& predicate) {
+    if (str == nullptr) {
+        return nullptr;
+    }
+
+    auto retval = str;
+    while (*retval != static_cast<TChar>(0)) {
+        ++retval;
+    }
+    assert(*retval == 0);
+    --retval;
+
+    while ((retval >= str) && predicate(*retval)) {
+        --retval;
+    }
+    assert((retval < str) || !predicate(*retval));
+
+    return ++retval;
 }

@@ -44,6 +44,17 @@ visus::power_overwhelming::oscilloscope_trigger::hold_off(
 
 
 /*
+ * visus::power_overwhelming::oscilloscope_trigger::hold_off
+ */
+visus::power_overwhelming::oscilloscope_trigger&
+visus::power_overwhelming::oscilloscope_trigger::hold_off(
+        _In_opt_z_ const std::nullptr_t n) {
+    detail::safe_assign(this->_hold_off, nullptr);
+    return *this;
+}
+
+
+/*
  * visus::power_overwhelming::oscilloscope_trigger::mode
  */
 visus::power_overwhelming::oscilloscope_trigger&

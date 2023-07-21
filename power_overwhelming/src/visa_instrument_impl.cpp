@@ -17,7 +17,9 @@
  */
 visus::power_overwhelming::detail::visa_instrument_impl *
 visus::power_overwhelming::detail::visa_instrument_impl::create(
-        _In_ const std::string& path, _In_ const std::uint32_t timeout) {
+        _In_ const std::string& path,
+        _In_ const std::uint32_t timeout,
+        _Out_opt_ bool *is_new) {
     std::lock_guard<decltype(_lock_instruments)> l(_lock_instruments);
     visa_instrument_impl *retval = nullptr;
 
@@ -26,12 +28,18 @@ visus::power_overwhelming::detail::visa_instrument_impl::create(
         // Reuse existing instrument for same connection.
         retval = it->second;
 
+        if (is_new != nullptr) {
+            *is_new = false;
+        }
+
+        assert(retval->_counter > 0);
+
     } else {
         // If no existing scope was found or if the previous scope has been
         // deleted, create a new one.
+#if defined(POWER_OVERWHELMING_WITH_VISA)
         retval = new visa_instrument_impl();
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
         {
             auto status = visa_library::instance().viOpenDefaultRM(
                 &retval->resource_manager);
@@ -78,6 +86,13 @@ visus::power_overwhelming::detail::visa_instrument_impl::create(
         retval->_path = path;
 
         _instruments[path] = retval;
+
+        if (is_new != nullptr) {
+            *is_new = true;
+        }
+
+        assert(retval->_counter == 0);
+
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
         throw std::logic_error(no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -93,13 +108,16 @@ visus::power_overwhelming::detail::visa_instrument_impl::create(
  */
 visus::power_overwhelming::detail::visa_instrument_impl *
 visus::power_overwhelming::detail::visa_instrument_impl::create(
-        _In_z_ const wchar_t *path, _In_ const std::uint32_t timeout) {
+        _In_z_ const wchar_t *path,
+        _In_ const std::uint32_t timeout,
+        _Out_opt_ bool *is_new) {
     if (path == nullptr) {
         throw std::invalid_argument("The path to a VISA instrument must not "
             "be null.");
     }
 
-    return create(power_overwhelming::convert_string<char>(path), timeout);
+    return create(power_overwhelming::convert_string<char>(path), timeout,
+        is_new);
 }
 
 
@@ -108,13 +126,41 @@ visus::power_overwhelming::detail::visa_instrument_impl::create(
  */
 visus::power_overwhelming::detail::visa_instrument_impl *
 visus::power_overwhelming::detail::visa_instrument_impl::create(
-        _In_z_ const char *path, _In_ const std::uint32_t timeout) {
+        _In_z_ const char *path,
+        _In_ const std::uint32_t timeout,
+        _Out_opt_ bool *is_new) {
     if (path == nullptr) {
         throw std::invalid_argument("The path to a VISA instrument must not "
             "be null.");
     }
 
-    return create(std::string(path), timeout);
+    return create(std::string(path), timeout, is_new);
+}
+
+
+/*
+ * visus::power_overwhelming::detail::visa_instrument_impl::foreach
+ */
+std::size_t visus::power_overwhelming::detail::visa_instrument_impl::foreach(
+        _In_ const std::function<bool(visa_instrument_impl *)>& callback) {
+    if (!callback) {
+        throw std::invalid_argument("The enumeration callback for VISA "
+            "instruments must not be nullptr.");
+    }
+
+    std::size_t retval = 0;
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    std::lock_guard<decltype(_lock_instruments)> l(_lock_instruments);
+    for (auto& i : _instruments) {
+        ++retval;
+        if (!callback(i.second)) {
+            break;
+        }
+    }
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+    return retval;
 }
 
 
@@ -131,6 +177,46 @@ visus::power_overwhelming::detail::visa_instrument_impl::~visa_instrument_impl(
 
 
 /*
+ * visus::power_overwhelming::detail::visa_instrument_impl::check_system_error
+ */
+void visus::power_overwhelming::detail::visa_instrument_impl::check_system_error(
+        void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    if (this->enable_system_checks) {
+        this->throw_on_system_error();
+    }
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+/*
+ * visus::power_overwhelming::detail::visa_instrument_impl::disable_event
+ */
+void visus::power_overwhelming::detail::visa_instrument_impl::disable_event(
+        _In_ const ViEventType event_type, _In_ const ViUInt16 mechanism) {
+    visa_exception::throw_on_error(visa_library::instance().viDisableEvent(
+        this->session, event_type, mechanism));
+}
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+/*
+ * visus::power_overwhelming::detail::visa_instrument_impl::enable_event
+ */
+void visus::power_overwhelming::detail::visa_instrument_impl::enable_event(
+        _In_  const ViEventType event_type,
+        _In_ const ViUInt16 mechanism,
+        _In_ const ViEventFilter context) {
+    // Cf. https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vienableevent.html
+    visa_exception::throw_on_error(visa_library::instance().viEnableEvent(
+        this->session, event_type, mechanism, context));
+}
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+
+/*
  * visus::power_overwhelming::detail::visa_instrument_impl::identify
  */
 std::string visus::power_overwhelming::detail::visa_instrument_impl::identify(
@@ -138,23 +224,32 @@ std::string visus::power_overwhelming::detail::visa_instrument_impl::identify(
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     const auto cmd = "*IDN?\n";
     this->write_all(reinterpret_cast<const byte_type *>(cmd) , ::strlen(cmd));
-    auto retval = this->read_all();
+    auto id = this->read_all();
 
-    _Analysis_assume_(retval.begin() != nullptr);
-    _Analysis_assume_(retval.end() != nullptr);
-    auto it = std::find_if(retval.begin(), retval.end(),
-        [](const byte_type b) { return ((b == '\r') || (b == '\n')); });
-    if (it != retval.end()) {
-        // TODO: potential hazard when writing this
-        *it = '\0';
-    }
+    auto retval = id.as<char>();
+    _Analysis_assume_(retval != nullptr);
+    *::strchr(retval, '\n') = 0;
 
-    return retval.as<char>();
-
+    return retval;
 #else/*defined(POWER_OVERWHELMING_WITH_VISA) */
     return "";
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
+
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+/*
+ * visus::power_overwhelming::detail::visa_instrument_impl::install_handler
+ */
+void visus::power_overwhelming::detail::visa_instrument_impl::install_handler(
+        _In_ const ViEventType event_type,
+        _In_ const ViHndlr handler,
+        _In_ ViAddr context) {
+    visa_exception::throw_on_error(visa_library::instance().viInstallHandler(
+        this->session, event_type, handler, context));
+    this->check_system_error();
+}
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
 /*
@@ -292,11 +387,18 @@ visus::power_overwhelming::detail::visa_instrument_impl::read_binary(
     }
 
     retval.reserve(size);
-    this->read(retval.begin(), retval.size());
 
-    // Read and discard all that is still in the buffer (the "\n"). If we do not
-    // do this, the next query would be interrupted.
-    this->read_all();
+    auto rem = retval.size();
+    while (rem > 0) {
+        rem -= this->read(retval.end() - rem, rem);
+    }
+
+    // Read and discard all junk that might be in the buffer. If we do not
+    // do this, the next query could be interrupted. This might also fail,
+    // in which case we just ignore it.
+    try {
+        this->read_all();
+    } catch (...) { }
 
     return retval;
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -388,6 +490,64 @@ int visus::power_overwhelming::detail::visa_instrument_impl::system_error(
 
 
 /*
+ * ...::detail::visa_instrument_impl::throw_on_system_error
+ */
+void visus::power_overwhelming::detail::visa_instrument_impl::throw_on_system_error(
+        void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    static const auto have_error = static_cast<ViUInt16>(
+        visa_status_byte::error_queue_not_empty);
+
+    // First of all, determine the instrument status to check whether there i
+    // something in the queue to retrieve.
+    ViUInt16 status;
+    visa_exception::throw_on_error(detail::visa_library::instance()
+        .viReadSTB(this->session, &status));
+
+    if ((status & have_error) == 0) {
+        // If the error queue is empty, do not retrieve the status.
+        return;
+    }
+
+    std::string message;
+    auto error = this->system_error(message);
+    assert(error != 0);
+    if (error == 0) {
+        // If there is no error, which should never happen, bail out, too. We
+        // check this condition although this code path should be unreachable in
+        // order to prevent the infamous "The operation completed successfully"
+        // exceptions. If the above assertion is violated, callers might want to
+        // check whether they are concurrently clearing the error queue, which
+        // would be a bug.
+        return;
+    }
+
+    if (message.empty()) {
+        // If we have no custom message, display the error code.
+        message = std::to_string(error);
+    }
+
+    throw std::runtime_error(message);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+/*
+ * visus::power_overwhelming::detail::visa_instrument_impl::uninstall_handler
+ */
+void visus::power_overwhelming::detail::visa_instrument_impl::uninstall_handler(
+        _In_ const ViEventType event_type,
+        _In_ const ViHndlr handler,
+        _In_ ViAddr context) {
+    visa_exception::throw_on_error(visa_library::instance().viUninstallHandler(
+        this->session, event_type, handler, context));
+    this->check_system_error();
+}
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+
+/*
  * visus::power_overwhelming::detail::visa_instrument_impl::write
  */
 std::size_t visus::power_overwhelming::detail::visa_instrument_impl::write(
@@ -414,8 +574,19 @@ std::size_t visus::power_overwhelming::detail::visa_instrument_impl::write(
 void visus::power_overwhelming::detail::visa_instrument_impl::write(
         _In_z_ const char *str) const {
     assert(str != nullptr);
-    return this->write_all(reinterpret_cast<const byte_type *>(str),
-        ::strlen(str));
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto len = ::strlen(str);
+
+    if (this->auto_terminate() && (str[len - 1] != this->terminal_character)) {
+        std::vector<byte_type> term(len + 1);
+        ::memcpy(term.data(), str, len * sizeof(char));
+        term[len++] = this->terminal_character;
+        this->write_all(term.data(), len);
+
+    } else {
+        this->write_all(reinterpret_cast<const byte_type *>(str), len);
+    }
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

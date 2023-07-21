@@ -36,12 +36,16 @@
 #define _In_reads_or_z_(cnt)
 #define _In_z_
 #define _Out_
+#define _Out_opt_
 #define _Out_writes_(cnt)
 #define _Out_writes_bytes_(cnt)
 #define _Out_writes_opt_(cnt)
 #define _Out_writes_opt_z_(cnt)
+#define _Ret_
 #define _Ret_maybenull_
 #define _Ret_maybenull_z_
+#define _Ret_null_
 #define _Ret_valid_
 #define _Ret_z_
+#define _When_(expr, annotes)
 #endif /* defined(_WIN32) */
