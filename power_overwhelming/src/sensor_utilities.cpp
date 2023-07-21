@@ -39,7 +39,7 @@ namespace detail {
         !has_serialise_all<sensor_desc<TSensor>>::value>::type
     add_descs_of(nlohmann::json& dst) {
         auto sensors = get_all_sensors_of<TSensor>();
-        for (auto&s : sensors) {
+        for (auto& s : sensors) {
             dst.push_back(sensor_desc<TSensor>::serialise(s));
         }
     }

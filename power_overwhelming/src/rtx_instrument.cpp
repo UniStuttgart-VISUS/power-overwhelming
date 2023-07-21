@@ -367,13 +367,16 @@ visus::power_overwhelming::rtx_instrument::channel(
     {
         impl.format("PROB%d:SET:ATT:UNIT?\n", channel);
         auto unit = impl.read_all();
+        auto u = unit.as<char>();
+        _Analysis_assume_(u != nullptr);
+        *::strchr(u, '\n') = 0;
 
         impl.format("PROB%d:SET:ATT:MAN?\n", channel);
         auto value = impl.read_all();
 
         retval.attenuation(oscilloscope_quantity(
             detail::parse_float(value.as<char>()),
-            unit.as<char>()));
+            u));
     }
 
     {
@@ -422,6 +425,12 @@ visus::power_overwhelming::rtx_instrument::channel(
         auto txt = text.as<char>();
         _Analysis_assume_(txt != nullptr);
         *::strchr(txt, '\n') = 0;
+        txt = detail::trim_begin_if(txt, [](const char c) {
+            return (c == '"');
+        });
+        *detail::trim_end_if(txt, [](const char c) {
+            return (c == '"');
+        }) = 0;
 
         impl.format("CHAN%d:LAB:STAT?\n", channel);
         auto visible = impl.read_all();

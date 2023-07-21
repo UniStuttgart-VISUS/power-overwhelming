@@ -44,6 +44,7 @@
 #define _Ret_
 #define _Ret_maybenull_
 #define _Ret_maybenull_z_
+#define _Ret_null_
 #define _Ret_valid_
 #define _Ret_z_
 #define _When_(expr, annotes)

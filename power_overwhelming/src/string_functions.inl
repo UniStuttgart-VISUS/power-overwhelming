@@ -229,6 +229,27 @@ void visus::power_overwhelming::detail::safe_assign(
 
 
 /*
+ * visus::power_overwhelming::detail::trim_begin_if
+ */
+template<class TChar, class TPredicate>
+_When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
+TChar *visus::power_overwhelming::detail::trim_begin_if(_In_opt_z_ TChar *str,
+        _In_ const TPredicate& predicate) {
+    auto retval = str;
+
+    if (retval == nullptr) {
+        return retval;
+    }
+
+    while ((*retval != 0) && predicate(*retval)) {
+        ++retval;
+    }
+
+    return retval;
+}
+
+
+/*
  * visus::power_overwhelming::detail::trim_end_if
  */
 template<class TChar, class TPredicate>

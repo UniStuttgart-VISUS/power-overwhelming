@@ -99,7 +99,6 @@ namespace detail {
 
         static inline nlohmann::json serialise(_In_ const value_type& value) {
             return nlohmann::json::object({
-                { "xxx", json_serialise(value.attenuation())},
                 _PWOWG_SERIALISE_FIELD(attenuation),
                 _PWOWG_SERIALISE_FIELD(bandwidth),
                 _PWOWG_SERIALISE_FIELD(channel),

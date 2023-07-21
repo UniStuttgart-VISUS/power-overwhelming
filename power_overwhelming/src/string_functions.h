@@ -435,6 +435,48 @@ namespace detail {
         _In_opt_z_ const wchar_t *start, _In_ const bool ignore_case = false);
 
     /// <summary>
+    /// Determine the first character in the given string for which
+    /// <paramref name="predicate" /> does not hold any more. If this pointer is
+    /// used as the new start of the string, all characters at the begin for
+    /// which the <paramref name="predicate" /> holds are trimmed away.
+    /// </summary>
+    /// <typeparam name="TChar">The type of the character in the string.
+    /// </typeparam>
+    /// <typeparam name="TPredicate">The type of the predicate functor, which
+    /// must take a character of type <typeparamref name="TChar" /> and return a
+    /// <c>bool</c>.</typeparam>
+    /// <param name="str">The string to be trimmed. It is safe to pass
+    /// <c>nullptr</c>, in which case the result will be <c>nullptr</c>, too.
+    /// </param>
+    /// <param name="predicate">The predicate that all characters that are to be
+    /// removed must fulfil.</param>
+    /// <returns>A pointer to the first character for which 
+    /// <paramref name="predicate" /> does not hold any more.</returns>
+    template<class TChar, class TPredicate>
+    _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
+    TChar *trim_begin_if(_In_opt_z_ TChar *str,
+        _In_ const TPredicate& predicate);
+
+    /// <summary>
+    /// Determine the first non-white space character from the begin of the
+    /// given string. If this pointer is used as the start of the new string,
+    /// all spaces have been trimmed from the end.
+    /// </summary>
+    /// <typeparam name="TChar">The type of the character in the string.
+    /// </typeparam>
+    /// <param name="str">The string to be trimmed. It is safe to pass
+    /// <c>nullptr</c>, in which case the result will be <c>nullptr</c>, too.
+    /// </param>
+    /// <returns>A pointer to the first non-white space character.</returns>
+    template<class TChar>
+    _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
+    inline TChar *trim_begin(_In_opt_z_ TChar *str) {
+        return trim_begin_if(str, [](const TChar c) {
+            return std::isspace(c);
+        });
+    }
+
+    /// <summary>
     /// Determine the last character from the end of the given string for which
     /// <paramref name="predicate" /> does still hold. If this pointer is used
     /// as the new end of the string, all characters at the end for which the
@@ -471,7 +513,7 @@ namespace detail {
     template<class TChar>
     _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
     inline TChar *trim_end(_In_opt_z_ TChar *str) {
-        return trim_end_if(str, [](const TChar c) {return std::isspace(c); });
+        return trim_end_if(str, [](const TChar c) { return std::isspace(c); });
     }
 
 } /* namespace detail */
