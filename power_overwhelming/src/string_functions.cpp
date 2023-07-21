@@ -6,8 +6,8 @@
 #include "string_functions.h"
 
 #include <cmath>
+#include <cwchar>
 #include <stdexcept>
-
 
 
 /*
@@ -26,7 +26,11 @@ bool visus::power_overwhelming::detail::equals(_In_opt_z_ const char *lhs,
     }
 
     if (ignore_case) {
+#if defined(_WIN32)
         return (::stricmp(lhs, rhs) == 0);
+#else /* defined(_WIN32) */
+        return (::strcasecmp(lhs, rhs) == 0);
+#endif /* defined(_WIN32) */
     } else {
         return (::strcmp(lhs, rhs) == 0);
     }
@@ -49,7 +53,11 @@ bool visus::power_overwhelming::detail::equals(_In_opt_z_ const wchar_t *lhs,
     }
 
     if (ignore_case) {
+#if defined(_WIN32)
         return (::wcsicmp(lhs, rhs) == 0);
+#else /* defined(_WIN32) */
+        return (::wcscasecmp(lhs, rhs) == 0);
+#endif /* defined(_WIN32) */
     } else {
         return (::wcscmp(lhs, rhs) == 0);
     }
@@ -143,7 +151,11 @@ bool visus::power_overwhelming::detail::starts_with(_In_opt_z_ const char *str,
     }
 
     if (ignore_case) {
+#if defined(_WIN32)
         return (::strnicmp(str, start, len_start) == 0);
+#else /* defined(_WIN32) */
+        return (::strncasecmp(str, start, len_start) == 0);
+#endif /* defined(_WIN32) */
     } else {
         return (::strncmp(str, start, len_start) == 0);
     }
@@ -173,7 +185,11 @@ bool visus::power_overwhelming::detail::starts_with(_In_opt_z_ const wchar_t *st
     }
 
     if (ignore_case) {
+#if defined(_WIN32)
         return (::wcsnicmp(str, start, len_start) == 0);
+#else /* defined(_WIN32) */
+        return (::wcsncasecmp(str, start, len_start) == 0);
+#endif /* defined(_WIN32) */
     } else {
         return (::wcsncmp(str, start, len_start) == 0);
     }
