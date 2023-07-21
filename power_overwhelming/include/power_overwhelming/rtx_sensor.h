@@ -196,6 +196,9 @@ namespace power_overwhelming {
         /// sure to choose a sufficiently large number to wait for the channels
         /// being configured. This parameter defaults to
         /// <see cref="visa_instrument::default_timeout" />.</param>
+        /// <param name="instrument_config">If not <c>nullptr</c>, apply the
+        /// specified configuration to the instrument used provided the
+        /// instrument has not yet been opened before.</param>
         /// <exception cref="std::invalid_argument">If <paramref name="path" />
         /// is <c>nullptr</c>.</exception>
         /// <exception cref="std::bad_alloc">If the memory for the sensor state
@@ -208,7 +211,9 @@ namespace power_overwhelming {
             _In_ const waveform_decimation_method decimation_method
             = waveform_decimation_method::rms,
             _In_ const visa_instrument::timeout_type timeout
-            = visa_instrument::default_timeout);
+            = visa_instrument::default_timeout,
+            _In_opt_ const rtx_instrument_configuration *instrument_config
+            = nullptr);
 
         /// <summary>
         /// Move <paramref name="rhs" /> into a new instance.
@@ -369,6 +374,9 @@ namespace power_overwhelming {
             _In_ const timestamp_resolution resolution) const override;
 
     private:
+
+        static void configure_new(_In_ rtx_instrument& instrument,
+            _In_opt_ void *configuration);
 
         static measurement_data decimate(
             _In_ const measurement_data_series& series,

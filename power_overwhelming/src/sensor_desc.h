@@ -316,8 +316,10 @@ namespace detail {
                 channel_voltage,
                 channel_current);
 
-            return value_type(definition, decimation,
-                instrument_config.timeout());
+            return value_type(definition,
+                decimation,
+                instrument_config.timeout(),
+                &instrument_config);
         }
 
         static inline nlohmann::json serialise(const value_type& value) {

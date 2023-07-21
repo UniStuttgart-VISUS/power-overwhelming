@@ -225,10 +225,14 @@ std::size_t visus::power_overwhelming::rtx_sensor::get_definitions(
 visus::power_overwhelming::rtx_sensor::rtx_sensor(
         _In_ const rtx_sensor_definition& definition,
         _In_ const waveform_decimation_method decimation_method,
-        _In_ const visa_instrument::timeout_type timeout)
+        _In_ const visa_instrument::timeout_type timeout,
+        _In_opt_ const rtx_instrument_configuration *instrument_config)
     : _channel_current(0), _channel_voltage(0),
         _decimation_method(decimation_method), _instrument(
-        rtx_instrument::create_and_reset_new(definition.path(), timeout)) {
+        rtx_instrument::create(definition.path(),
+            &rtx_sensor::configure_new,
+            const_cast<rtx_instrument_configuration * >(instrument_config),
+            timeout)) {
     this->initialise(definition, timeout);
 }
 
@@ -293,6 +297,18 @@ visus::power_overwhelming::measurement_data
 visus::power_overwhelming::rtx_sensor::sample_sync(
         _In_ const timestamp_resolution resolution) const {
     return decimate(this->acquire(resolution), this->_decimation_method);
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::configure_new
+ */
+void visus::power_overwhelming::rtx_sensor::configure_new(
+        _In_ rtx_instrument& instrument, _In_opt_ void *configuration) {
+    if (configuration != nullptr) {
+        auto c = static_cast<rtx_instrument_configuration *>(configuration);
+        c->apply(instrument);
+    }
 }
 
 
