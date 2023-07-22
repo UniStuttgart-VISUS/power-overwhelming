@@ -49,16 +49,17 @@ visus::power_overwhelming::async_sampling::~async_sampling(void) noexcept {
 bool visus::power_overwhelming::async_sampling::deliver(
         _In_ const sensor& source,
         _In_ const measurement_data& sample) const {
+    auto context = const_cast<void *>(this->_context);
     auto retval = false;
 
     if (this->_on_measurement_data != nullptr) {
-        this->_on_measurement_data(source, sample, this->_context);
+        this->_on_measurement_data(source, sample, context);
         retval = true;
 
     } else if (this->_on_measurement != nullptr) {
         auto s = source.name();
         if (s != nullptr) {
-            this->_on_measurement(measurement(s, sample), this->_context);
+            this->_on_measurement(measurement(s, sample), context);
         }
         retval = true;
     }

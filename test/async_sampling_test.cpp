@@ -17,6 +17,21 @@ namespace test {
 
     public:
 
+        class dummy_sensor final : public sensor {
+        public:
+            _Ret_maybenull_z_ const wchar_t *name(void) const noexcept override {
+                return L"dummy";
+            }
+            operator bool(void) const noexcept override {
+                return true;
+            };
+
+        protected:
+            measurement_data sample_sync(_In_ const timestamp_resolution resolution) const override {
+                return measurement_data(42, 42.0f);
+            }
+        };
+
         TEST_METHOD(test_default) {
             async_sampling as;
             Assert::IsNull(as.context(), L"Context is null", LINE_INFO());
@@ -81,6 +96,18 @@ namespace test {
             as.stores_and_passes_context(std::move(context));
             Assert::IsTrue(context.empty(), L"Original context moved away", LINE_INFO());
             Assert::AreEqual(std::size_t(3), ((std::vector<int> *) as.context())->size(), L"Context has size 3", LINE_INFO());
+        }
+
+        TEST_METHOD(test_lambda) {
+            measurement_data data(0, 0.0f);
+
+            const auto as = std::move(async_sampling()
+                .delivers_measurement_data_to_functor([&](const sensor&, const measurement_data& m) { data = m; }));
+
+            Assert::IsNotNull(as.context(), L"Context created", LINE_INFO());
+            as.deliver(dummy_sensor(), measurement_data(1, 2.0f));
+            Assert::AreEqual(measurement_data::timestamp_type(1), data.timestamp(), L"timestamp assigned", LINE_INFO());
+            Assert::AreEqual(2.0f, data.power(), L"power assigned", LINE_INFO());
         }
     };
 

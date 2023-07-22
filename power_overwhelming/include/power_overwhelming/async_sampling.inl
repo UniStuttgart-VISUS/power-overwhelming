@@ -5,6 +5,25 @@
 
 
 /*
+ * ...::power_overwhelming::async_sampling::delivers_measurement_data_to_functor
+ */
+template<class TFunctor>
+visus::power_overwhelming::async_sampling&
+visus::power_overwhelming::async_sampling::delivers_measurement_data_to_functor(
+        _In_ TFunctor&& callback) {
+    typedef std::function<void(const sensor&, const measurement_data&)>
+        function_type;
+    this->stores_and_passes_context(function_type(
+        std::forward<TFunctor>(callback)));
+    this->delivers_measurement_data_to(
+            [](const sensor& s, const measurement_data& m, void *c) {
+        (*static_cast<function_type *>(c))(s, m);
+    });
+    return *this;
+}
+
+
+/*
  * visus::power_overwhelming::async_sampling::stores_and_passes_context
  */
 template<class TContext>

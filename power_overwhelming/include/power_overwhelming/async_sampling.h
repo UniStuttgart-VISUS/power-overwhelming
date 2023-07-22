@@ -5,6 +5,9 @@
 
 #pragma once
 
+#include <functional>
+#include <utility>
+
 #include "power_overwhelming/measurement.h"
 #include "power_overwhelming/timestamp_resolution.h"
 #include "power_overwhelming/tinkerforge_sensor_source.h"
@@ -142,6 +145,41 @@ namespace power_overwhelming {
         /// <returns><c>*this</c>.</returns>
         async_sampling& delivers_measurement_data_to(
             _In_ const on_measurement_data_callback callback) noexcept;
+
+        /// <summary>
+        /// Configures the <see cref="sensor" /> to deliver samples of type
+        /// <see cref="measurement_data" /> to a callable like a functor object
+        /// or <see cref="std::function" />.
+        /// </summary>
+        /// <remarks>
+        /// <para>The functor object is stored as the <see cref="context" /> of
+        /// the callback. <b>Callers must not set their own
+        /// <see cref="context" /> when registering a functor. The behaviour
+        /// when doing so is undefined, ie the whole thing will most likely
+        /// crash!</b></para>
+        /// <para>Using this method incurs additional overhead for a heap
+        /// allocation and for additional indirections when delivering a sample.
+        /// If you can use a lambda without a capture, you should register it
+        /// using <see cref="delivers_measurement_data_to" /> instead.</para>
+        /// <para>There is not variant for <see cref="measurement" /> instances,
+        /// because no backwards compatibility is required for functors and it
+        /// is discouraged to use <see cref="measurement" />-based callbacks for
+        /// performance reasons.</para>
+        /// </remarks>
+        /// <typeparam name="TFunctor">The type of the functor being called.
+        /// This must be a functional accepting a <see cref="sensor" /> and
+        /// <see cref="measurement_data" /> returning <c>void</c>. This type
+        /// must be convertible to 
+        /// <c>std::function<void(const sensor&quot;, const measurement_data&quot;)></c>.
+        /// Note that you cannot pass a context to your callback here, because
+        /// the context is reserved to store the <c>std::function</c> itself. If
+        /// you need contextual information, you have to use a lambda capture.
+        /// </typeparam>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        template<class TFunctor>
+        async_sampling& delivers_measurement_data_to_functor(
+            _In_ TFunctor&& callback);
 
         /// <summary>
         /// If the sensor this sampling configuration is passed to is a
