@@ -131,7 +131,6 @@ namespace power_overwhelming {
             _In_reads_(cnt) const measurement_data *samples,
             _In_ const std::size_t cnt) const;
 
-
         /// <summary>
         /// Invoke the callback for a <see cref="measurement" /> or for
         /// <see cref="measurement_data" />, whichever is set, to deliver the
@@ -188,14 +187,14 @@ namespace power_overwhelming {
         /// <typeparam name="TFunctor">The type of the functor being called.
         /// This must be a functional accepting a <see cref="sensor" /> and
         /// <see cref="measurement_data" /> returning <c>void</c>. This type
-        /// must be convertible to 
+        /// must be convertible to
         /// <c>std::function<void(const sensor&amp;, const measurement_data *, const std::size_t)></c>.
         /// Note that you cannot pass a context to your callback here, because
         /// the context is reserved to store the <c>std::function</c> itself. If
         /// you need contextual information, you have to use a lambda capture.
         /// </typeparam>
         /// <param name="callback"></param>
-        /// <returns></returns>
+        /// <returns><c>*this</c>.</returns>
         template<class TFunctor>
         async_sampling& delivers_measurement_data_to_functor(
             _In_ TFunctor&& callback);
@@ -300,9 +299,27 @@ namespace power_overwhelming {
             return *this;
         }
 
+        /// <summary>
+        /// Creates and stores a copy of <paramref name="context" /> and passes
+        /// it to the registered callback. Once the object is deleted or a new
+        /// context is set, the object will free the copy.
+        /// </summary>
+        /// <typeparam name="TContext">The type of the context object, which
+        /// must be copyable.</typeparam>
+        /// <param name="context">The context object to be copied.</param>
+        /// <returns><c>*this</c>.</returns>
         template<class TContext>
         async_sampling& stores_and_passes_context(_In_ const TContext& context);
 
+        /// <summary>
+        /// Moves the given <paramref name="context" /> into the object. The
+        /// object will pass the context to the registered callback and free it
+        /// once it is deleted or before a new context is set.
+        /// </summary>
+        /// <typeparam name="TContext">The type of the context object, which
+        /// must be movable.</typeparam>
+        /// <param name="context">The context to be moved.</param>
+        /// <returns><c>*this</c>.</returns>
         template<class TContext>
         async_sampling& stores_and_passes_context(_In_ TContext&& context);
 
