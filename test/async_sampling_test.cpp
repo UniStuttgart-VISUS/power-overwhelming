@@ -63,7 +63,7 @@ namespace test {
         }
 
         TEST_METHOD(test_measurement_data) {
-            const auto cb = [](const sensor&, const measurement_data&, void *) { };
+            const auto cb = [](const sensor&, const measurement_data *, const std::size_t, void *) { };
 
              const auto as = std::move(async_sampling()
                  .samples_every(1000)
@@ -83,7 +83,7 @@ namespace test {
         }
 
         TEST_METHOD(test_owned_context) {
-            const auto cb = [](const sensor &, const measurement_data &, void *) {};
+            const auto cb = [](const sensor &, const measurement_data *, const std::size_t, void *) {};
 
             auto as = std::move(async_sampling()
                 .delivers_measurement_data_to(cb)
@@ -102,7 +102,8 @@ namespace test {
             measurement_data data(0, 0.0f);
 
             const auto as = std::move(async_sampling()
-                .delivers_measurement_data_to_functor([&](const sensor&, const measurement_data& m) { data = m; }));
+                .delivers_measurement_data_to_functor([&](const sensor&,
+                    const measurement_data *m, const std::size_t) { data = *m; }));
 
             Assert::IsNotNull(as.context(), L"Context created", LINE_INFO());
             as.deliver(dummy_sensor(), measurement_data(1, 2.0f));

@@ -11,13 +11,13 @@ template<class TFunctor>
 visus::power_overwhelming::async_sampling&
 visus::power_overwhelming::async_sampling::delivers_measurement_data_to_functor(
         _In_ TFunctor&& callback) {
-    typedef std::function<void(const sensor&, const measurement_data&)>
-        function_type;
+    typedef std::function<void(const sensor&, const measurement_data *,
+        const std::size_t)> function_type;
     this->stores_and_passes_context(function_type(
         std::forward<TFunctor>(callback)));
-    this->delivers_measurement_data_to(
-            [](const sensor& s, const measurement_data& m, void *c) {
-        (*static_cast<function_type *>(c))(s, m);
+    this->delivers_measurement_data_to([](const sensor& s,
+            const measurement_data *m, const size_t i, void *c) {
+        (*static_cast<function_type *>(c))(s, m, i);
     });
     return *this;
 }

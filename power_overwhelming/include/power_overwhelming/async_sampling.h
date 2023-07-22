@@ -54,11 +54,12 @@ namespace power_overwhelming {
         typedef std::uint64_t microseconds_type;
 
         /// <summary>
-        /// The type of callback to be invoked if a sensor created one of the
-        /// new &quot;pure&quot; <see cref="measurement_data" /> samples.
+        /// The type of callback to be invoked if a sensor created one or more
+        /// of the new &quot;pure&quot; <see cref="measurement_data" /> samples.
         /// </summary>
         typedef void (*on_measurement_data_callback)(_In_ const sensor&,
-            _In_ const measurement_data&, _In_opt_ void *);
+            _In_ const measurement_data *, _In_ const std::size_t,
+            _In_opt_ void *);
 
         /// <summary>
         /// The default sampling interval, which is 5000 µs or 5 ms.
@@ -107,8 +108,8 @@ namespace power_overwhelming {
 
         /// <summary>
         /// Invoke the callback for a <see cref="measurement" /> or for
-        /// <see cref="measurement_data" />, whichever is set, to deliver a
-        /// sample.
+        /// <see cref="measurement_data" />, whichever is set, to deliver the
+        /// given samples.
         /// </summary>
         /// <remarks>
         /// <para>This method is not thread-safe. Callers must make sure that
@@ -120,13 +121,31 @@ namespace power_overwhelming {
         /// <paramref name="source" />.</para>
         /// </remarks>
         /// <param name="source">The sensor from which the
-        /// <paramref name="sample" /> originates.</param>
-        /// <param name="sample">The sample to deliver to the registered
-        /// callback.</param>
-        /// <returns><c>true</c> if the callback was invoked, <c>false</c> if it
-        /// has not been set.</returns>
+        /// <paramref name="samples" /> originates.</param>
+        /// <param name="samples">A pointer to <paramref name="cnt" /> samples
+        /// to deliver to the registered callback.</param>
+        /// <param name="cnt">The number of samples to deliver.</param>
+        /// <returns><c>true</c> if a callback was invoked, <c>false</c> if none
+        /// has been set.</returns>
         bool deliver(_In_ const sensor& source,
-            _In_ const measurement_data& sample) const;
+            _In_reads_(cnt) const measurement_data *samples,
+            _In_ const std::size_t cnt) const;
+
+
+        /// <summary>
+        /// Invoke the callback for a <see cref="measurement" /> or for
+        /// <see cref="measurement_data" />, whichever is set, to deliver the
+        /// given sample.
+        /// </summary>
+        /// <param name="source">The sensor from which the
+        /// <paramref name="sample" /> originates.</param>
+        /// <param name="sample">The sample to deliver.</param>
+        /// <returns><c>true</c> if a callback was invoked, <c>false</c> if none
+        /// has been set.</returns>
+        inline bool deliver(_In_ const sensor& source,
+                _In_ const measurement_data& sample) const {
+            return this->deliver(source, &sample, 1);
+        }
 
         /// <summary>
         /// Configures the <see cref="sensor" /> such that it produces samples
@@ -170,7 +189,7 @@ namespace power_overwhelming {
         /// This must be a functional accepting a <see cref="sensor" /> and
         /// <see cref="measurement_data" /> returning <c>void</c>. This type
         /// must be convertible to 
-        /// <c>std::function<void(const sensor&quot;, const measurement_data&quot;)></c>.
+        /// <c>std::function<void(const sensor&amp;, const measurement_data *, const std::size_t)></c>.
         /// Note that you cannot pass a context to your callback here, because
         /// the context is reserved to store the <c>std::function</c> itself. If
         /// you need contextual information, you have to use a lambda capture.
