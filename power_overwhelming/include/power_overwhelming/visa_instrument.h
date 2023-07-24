@@ -5,6 +5,9 @@
 
 #pragma once
 
+#include <cassert>
+#include <functional>
+#include <memory>
 #include <string>
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
@@ -548,6 +551,9 @@ namespace power_overwhelming {
         /// uninstalled.</param>
         /// <param name="context">A user-defined context pointer to be passed
         /// to the callback.</param>
+        /// <param name="context_deleter">If not <c>nullptr</c>, the object
+        /// takes ownership of the <paramref name="context" /> and will delete
+        /// it using this function when no longer needed.</param>
         /// <returns><c>*this</c>.</returns>
         /// <exception cref="std::runtime_error">If the method is called on an
         /// object that has been disposed by moving it.</exception>
@@ -555,7 +561,56 @@ namespace power_overwhelming {
         /// </exception>
         visa_instrument& on_operation_complete(
             _In_opt_ void (*callback)(visa_instrument &, void *),
-            _In_opt_ void *context = nullptr);
+            _In_opt_ void *context = nullptr,
+            _In_opt_ void (*context_deleter)(void *) = nullptr);
+
+        /// <summary>
+        /// Installs a <paramref name="callback" /> to be invoked if an
+        /// asynchronous <c>*OPC</c> instruction was reached.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// <para>The <pararmef name="context" /> passed to the method will be
+        /// moved to newly allocated heap memory that lives as long as the
+        /// callback is active. The object will take care of destructing the
+        /// object and freeing the heap mempry allocated for it.</para>
+        /// </remarks>
+        /// <typeparam name="TContext">The type of the context object passed to
+        /// the callback. This type must be movable.</typeparam>
+        /// <param name="callback">The callback to be invoked on an operation
+        /// completing. If this is <c>nullptr</c>, an existing callback will be
+        /// uninstalled.</param>
+        /// <param name="context">The context passed to the callback. The
+        /// instrument takes ownership of this object.</param>
+        /// <returns></returns>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        template<class TContext> visa_instrument& on_operation_complete(
+            _In_opt_ void (*callback)(visa_instrument&, void *),
+            _Inout_ TContext&& context);
+
+        /// <summary>
+        /// Installs a functional (<see cref="std::function" />, functor object
+        /// or lambda expression) to be invoked if an asynchronous <c>*OPC</c>
+        /// instruction was reached.
+        /// </summary>
+        /// <typeparam name="TFunctor">The type of the functor to register. This
+        /// functor must accept a reference to <see cref="visa_instrument" />.
+        /// Please note that you cannot use a custom context pointer with
+        /// functor objects. Use a closure if you need to capture the context of
+        /// a lambda expression.</typeparam>
+        /// <param name="callback"></param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the operation failed.
+        /// </exception>
+        template<class TFunctor> visa_instrument& on_operation_complete_ex(
+            _In_ TFunctor&& callback);
 
         /// <summary>
         /// Issue and wait for an OPC query.

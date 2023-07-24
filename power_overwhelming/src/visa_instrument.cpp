@@ -446,41 +446,39 @@ std::uint16_t visus::power_overwhelming::visa_instrument::interface_type(
 visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::on_operation_complete(
         _In_opt_ void(*callback)(visa_instrument &, void *),
-        _In_opt_ void *context) {
+        _In_opt_ void *context,
+        _In_opt_ void (*context_deleter)(void *)) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
 
-    if (callback != nullptr) {
-        if (impl.opc_callback != callback) {
-            this->on_operation_complete(nullptr, nullptr);
-            assert(impl.opc_callback == nullptr);
-            impl.opc_callback = callback;
-            impl.opc_context = context;
+    // Remember whether a callback was set before, which we need to know in
+    // order install or uninstall the handler and enabling the necessary
+    // service requests.
+    const auto was_on = static_cast<bool>(impl.opc_callback);
 
-            auto es = this->event_status();
-            this->event_status(es | visa_event_status::operation_complete);
-            auto ss = this->service_request_status();
-            this->service_request_status(ss | visa_status_byte::master_status);
+    // Set or remove the callback and the context passed to it.
+    impl.opc_callback = callback;
+    impl.opc_callback.context(context, context_deleter);
 
-            impl.install_handler(VI_EVENT_SERVICE_REQ, &on_event, this);
-            impl.enable_event(VI_EVENT_SERVICE_REQ);
-        }
+    if (impl.opc_callback && !was_on) {
+        auto es = this->event_status();
+        this->event_status(es | visa_event_status::operation_complete);
+        auto ss = this->service_request_status();
+        this->service_request_status(ss | visa_status_byte::master_status);
 
-    } else {
-        if (impl.opc_callback != nullptr) {
-            impl.disable_event(VI_EVENT_SERVICE_REQ);
-            impl.uninstall_handler(VI_EVENT_SERVICE_REQ, &on_event, this);
+        impl.install_handler(VI_EVENT_SERVICE_REQ, &on_event, this);
+        impl.enable_event(VI_EVENT_SERVICE_REQ);
 
-            auto es = this->event_status();
-            this->event_status(es | ~visa_event_status::operation_complete);
-            // Note: While we disable the OPC event flag, we do not disable
-            // the events on master status, because this could be used for
-            // something else. The caller must do that on his own if this is
-            // desired.
+    } else if (!impl.opc_callback && was_on) {
+        impl.disable_event(VI_EVENT_SERVICE_REQ);
+        impl.uninstall_handler(VI_EVENT_SERVICE_REQ, &on_event, this);
 
-            impl.opc_callback = nullptr;
-            impl.opc_context = nullptr;
-        }
+        auto es = this->event_status();
+        this->event_status(es | ~visa_event_status::operation_complete);
+        // Note: While we disable the OPC event flag, we do not disable
+        // the events on master status, because this could be used for
+        // something else. The caller must do that on his own if this is
+        // desired.
     }
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
@@ -955,8 +953,7 @@ ViStatus _VI_FUNCH visus::power_overwhelming::visa_instrument::on_event(
 
     if ((event_type == VI_EVENT_SERVICE_REQ)
             && (that != nullptr)
-            && (that->_impl != nullptr)
-            && (that->_impl->opc_callback != nullptr)) {
+            && (that->_impl != nullptr)) {
         try {
             // According to
             // https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vi_event_service_req.html,
@@ -966,7 +963,7 @@ ViStatus _VI_FUNCH visus::power_overwhelming::visa_instrument::on_event(
             auto status = that->status();
             if ((status & visa_status_byte::operation_status)
                     != visa_status_byte::none) {
-                that->_impl->opc_callback(*that, that->_impl->opc_context);
+                that->_impl->opc_callback(*that);
             }
         } catch (...) {
             // If the event handler does not return, which is the case when we

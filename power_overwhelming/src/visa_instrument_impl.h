@@ -1,7 +1,7 @@
-// <copyright file="visa_instrument_impl.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="visa_instrument_impl.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 Visualisierungsinstitut der UniversitÃ¤t Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #pragma once
 
@@ -18,6 +18,7 @@
 #include "power_overwhelming/visa_instrument.h"
 
 #include "string_functions.h"
+#include "visa_event_handler.h"
 #include "visa_exception.h"
 #include "visa_library.h"
 
@@ -122,12 +123,7 @@ namespace detail {
         /// <summary>
         /// A callback for asynchronous OPC queries.
         /// </summary>
-        void (*opc_callback)(visa_instrument&, void *);
-
-        /// <summary>
-        /// The context passed to <see cref="opc_callback" />.
-        /// </summary>
-        void *opc_context;
+        visa_event_handler opc_callback;
 
         /// <summary>
         /// The default resource manager.
@@ -445,8 +441,7 @@ namespace detail {
         /// </summary>
         inline visa_instrument_impl(void) :
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-            enable_system_checks(false), opc_callback(nullptr),
-            opc_context(nullptr), resource_manager(0), session(0),
+            enable_system_checks(false), resource_manager(0), session(0),
             terminal_character('\n'), vxi(false),
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
             _counter(0) { }

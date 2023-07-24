@@ -256,10 +256,12 @@ void query_rtx_instrument(void) {
             //    .range(oscilloscope_quantity(5)));
 
             std::cout << "Main " << std::this_thread::get_id() << std::endl;
+            i.on_operation_complete_ex([&](visa_instrument& i) { });
             i.on_operation_complete([](visa_instrument& i, void *) {
-                std::cout << "bla " << std::this_thread::get_id() << std::endl;
+                std::cout << "OPC in thread #" << std::this_thread::get_id() << std::endl;
             });
             i.operation_complete_async();
+
 
             i.trigger_position(oscilloscope_quantity(0.0f, "ms"));
             i.trigger(oscilloscope_edge_trigger("EXT")

@@ -57,7 +57,7 @@ namespace power_overwhelming {
         /// The type of callback to be invoked if a sensor created one or more
         /// of the new &quot;pure&quot; <see cref="measurement_data" /> samples.
         /// </summary>
-        typedef void (*on_measurement_data_callback)(_In_ const sensor&,
+        typedef void (*on_measurement_data_callback)(_In_z_ const wchar_t *,
             _In_ const measurement_data *, _In_ const std::size_t,
             _In_opt_ void *);
 
@@ -120,14 +120,15 @@ namespace power_overwhelming {
         /// from the given <paramref name="sample" /> and the name of the given
         /// <paramref name="source" />.</para>
         /// </remarks>
-        /// <param name="source">The sensor from which the
-        /// <paramref name="samples" /> originates.</param>
+        /// <param name="source">The name of the sensor from which the
+        /// <paramref name="samples" /> originate. This must not be
+        /// <c>nullptr</c>.</param>
         /// <param name="samples">A pointer to <paramref name="cnt" /> samples
         /// to deliver to the registered callback.</param>
         /// <param name="cnt">The number of samples to deliver.</param>
         /// <returns><c>true</c> if a callback was invoked, <c>false</c> if none
         /// has been set.</returns>
-        bool deliver(_In_ const sensor& source,
+        bool deliver(_In_z_ const wchar_t *source,
             _In_reads_(cnt) const measurement_data *samples,
             _In_ const std::size_t cnt) const;
 
@@ -136,12 +137,13 @@ namespace power_overwhelming {
         /// <see cref="measurement_data" />, whichever is set, to deliver the
         /// given sample.
         /// </summary>
-        /// <param name="source">The sensor from which the
-        /// <paramref name="sample" /> originates.</param>
+        /// <param name="source">The name of the sensor from which the
+        /// <paramref name="sample" /> originates. This must not be
+        /// <c>nullptr</c>.</param>
         /// <param name="sample">The sample to deliver.</param>
         /// <returns><c>true</c> if a callback was invoked, <c>false</c> if none
         /// has been set.</returns>
-        inline bool deliver(_In_ const sensor& source,
+        inline bool deliver(_In_ const wchar_t *source,
                 _In_ const measurement_data& sample) const {
             return this->deliver(source, &sample, 1);
         }

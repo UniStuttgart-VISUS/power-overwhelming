@@ -17,21 +17,6 @@ namespace test {
 
     public:
 
-        class dummy_sensor final : public sensor {
-        public:
-            _Ret_maybenull_z_ const wchar_t *name(void) const noexcept override {
-                return L"dummy";
-            }
-            operator bool(void) const noexcept override {
-                return true;
-            };
-
-        protected:
-            measurement_data sample_sync(_In_ const timestamp_resolution resolution) const override {
-                return measurement_data(42, 42.0f);
-            }
-        };
-
         TEST_METHOD(test_default) {
             async_sampling as;
             Assert::IsNull(as.context(), L"Context is null", LINE_INFO());
@@ -63,7 +48,7 @@ namespace test {
         }
 
         TEST_METHOD(test_measurement_data) {
-            const auto cb = [](const sensor&, const measurement_data *, const std::size_t, void *) { };
+            const auto cb = [](const wchar_t *, const measurement_data *, const std::size_t, void *) { };
 
              const auto as = std::move(async_sampling()
                  .samples_every(1000)
@@ -83,7 +68,7 @@ namespace test {
         }
 
         TEST_METHOD(test_owned_context) {
-            const auto cb = [](const sensor &, const measurement_data *, const std::size_t, void *) {};
+            const auto cb = [](const wchar_t *, const measurement_data *, const std::size_t, void *) {};
 
             auto as = std::move(async_sampling()
                 .delivers_measurement_data_to(cb)
@@ -100,15 +85,20 @@ namespace test {
 
         TEST_METHOD(test_lambda) {
             measurement_data data(0, 0.0f);
+            std::wstring source;
 
             const auto as = std::move(async_sampling()
-                .delivers_measurement_data_to_functor([&](const sensor&,
-                    const measurement_data *m, const std::size_t) { data = *m; }));
+                .delivers_measurement_data_to_functor(
+                        [&](const wchar_t *s, const measurement_data *m, const std::size_t) {
+                    data = *m;
+                    source = s;
+                }));
 
             Assert::IsNotNull(as.context(), L"Context created", LINE_INFO());
-            as.deliver(dummy_sensor(), measurement_data(1, 2.0f));
+            as.deliver(L"dummy", measurement_data(1, 2.0f));
             Assert::AreEqual(measurement_data::timestamp_type(1), data.timestamp(), L"timestamp assigned", LINE_INFO());
             Assert::AreEqual(2.0f, data.power(), L"power assigned", LINE_INFO());
+            Assert::AreEqual(L"dummy", source.c_str(), L"source assigned", LINE_INFO());
         }
     };
 

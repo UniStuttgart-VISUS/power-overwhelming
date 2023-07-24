@@ -47,9 +47,9 @@ visus::power_overwhelming::async_sampling::~async_sampling(void) noexcept {
  * visus::power_overwhelming::async_sampling::deliver
  */
 bool visus::power_overwhelming::async_sampling::deliver(
-        _In_ const sensor& source,
-            _In_reads_(cnt) const measurement_data *samples,
-            _In_ const std::size_t cnt) const {
+        _In_z_ const wchar_t *source,
+        _In_reads_(cnt) const measurement_data *samples,
+        _In_ const std::size_t cnt) const {
     auto context = const_cast<void *>(this->_context);
     auto retval = false;
 
@@ -58,11 +58,8 @@ bool visus::power_overwhelming::async_sampling::deliver(
         retval = true;
 
     } else if (this->_on_measurement != nullptr) {
-        auto s = source.name();
-        if (s != nullptr) {
-            for (std::size_t i = 0; i < cnt; ++i) {
-                this->_on_measurement(measurement(s, samples[i]), context);
-            }
+        for (std::size_t i = 0; i < cnt; ++i) {
+        this->_on_measurement(measurement(source, samples[i]), context);
         }
         retval = true;
     }
