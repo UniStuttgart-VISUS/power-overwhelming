@@ -1,5 +1,5 @@
-﻿// <copyright file="sampler.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+﻿// <copyright file="basic_sampler.h" company="Visualisierungsinstitut der Universität Stuttgart">
+// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -10,7 +10,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include "default_sampler_context.h"
+#include "with_context.h"
 
 
 namespace visus {
@@ -22,18 +22,18 @@ namespace detail {
     /// that do not have an asynchronous API themselves.
     /// </summary>
     /// <remarks>
-    /// The sampler is not working on the <see cref="sensor" /> interface, but
-    /// on the sensor implementation, because the abstract sensor class might be
-    /// disposed whereas the sensor implementation used in the PIMPL pattern is
-    /// guaranteed to live on until the last sensor was destroyed. Implementors
-    /// should make sure that the sensor implementation unregisters itself from
-    /// the sampler in its destructor to make sure that there are no dangling
-    /// pointers in the sampler.
+    /// <para>The sampler class is not working on the <see cref="sensor" />
+    /// interface, but on the sensor implementation, because the abstract sensor
+    /// class might be disposed whereas the sensor implementation used in the
+    /// PIMPL pattern is guaranteed to live on until the last sensor was
+    /// destroyed. Implementors should make sure that the sensor implementation
+    /// unregisters itself from the sampler in its destructor to make sure that
+    /// there are no dangling pointers in the sampler.</para>
     /// </remarks>
     /// <typeparam name="TContext">The type of the sampler context that
     /// implements the per-sensor sampling functionality. The interface must be
     /// like <see cref="default_sampler_context" />.</typeparam>
-    template<class TContext> class sampler final {
+    template<class TContext> class basic_sampler final {
 
     public:
 
