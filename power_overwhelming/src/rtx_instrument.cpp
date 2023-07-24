@@ -202,13 +202,56 @@ visus::power_overwhelming::rtx_instrument::rtx_instrument(
     : visa_instrument(is_new_connection, path, timeout) { }
 
 
+
+/*
+ * visus::power_overwhelming::rtx_instrument::acquisition
+ */
+visus::power_overwhelming::oscilloscope_acquisition
+visus::power_overwhelming::rtx_instrument::acquisition(void) const {
+    oscilloscope_acquisition retval;
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+
+    auto aut = this->query("ACQ:POIN:AUT?\n");
+    if (detail::starts_with(aut.as<char>(), "0")) {
+        auto points = this->query("ACQ:POIN:VAL?\n");
+        retval.points(detail::parse_uint(points.as<char>()));
+    } else {
+        retval.enable_automatic_points();
+    }
+
+    auto cnt = this->query("ACQ:NSIN:COUN?\n");
+    retval.count(detail::parse_uint(cnt.as<char>()));
+
+    auto seg = this->query("ACQ:SEGM:STAT?\n");
+    retval.segmented(!detail::starts_with(aut.as<char>(), "0"));
+
+    auto state = this->query("ACQ:STAT?\n");
+    if (detail::starts_with(state.as<char>(), "RUN")) {
+        retval.state(oscilloscope_acquisition_state::run);
+    } else if (detail::starts_with(state.as<char>(), "STOP")) {
+        retval.state(oscilloscope_acquisition_state::stop);
+    } else if (detail::starts_with(state.as<char>(), "SING")) {
+        retval.state(oscilloscope_acquisition_state::single);
+    } else if (detail::starts_with(state.as<char>(), "BREAK")) {
+        retval.state(oscilloscope_acquisition_state::interrupt);
+    } else {
+        retval.state(oscilloscope_acquisition_state::unknown);
+    }
+
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+    return retval;
+}
+
+
 /*
  * visus::power_overwhelming::rtx_sensor::acquisition
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::acquisition(
-        _In_ const oscilloscope_single_acquisition& acquisition,
-        _In_ const bool run,
+        _In_ const oscilloscope_acquisition& acquisition,
         _In_ const bool wait) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
@@ -223,38 +266,12 @@ visus::power_overwhelming::rtx_instrument::acquisition(
 
     impl.format("ACQ:SEGM:STAT %s\n", acquisition.segmented() ? "ON" : "OFF");
 
-    if (run) {
-        this->acquisition(oscilloscope_acquisition_state::single, wait);
+    if (acquisition.state() != oscilloscope_acquisition_state::unknown) {
+        this->acquisition(acquisition.state(), wait);
     }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     return *this;
-}
-
-/*
- * visus::power_overwhelming::rtx_instrument::acquisition
- */
-visus::power_overwhelming::oscilloscope_acquisition_state
-visus::power_overwhelming::rtx_instrument::acquisition(void) const {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    auto value = this->query("ACQ:STAT?\n");
-
-    if (detail::starts_with(value.as<char>(), "RUN")) {
-        return oscilloscope_acquisition_state::run;
-    } else if (detail::starts_with(value.as<char>(), "STOP")) {
-        return oscilloscope_acquisition_state::stop;
-    } else if (detail::starts_with(value.as<char>(), "SING")) {
-        return oscilloscope_acquisition_state::single;
-    } else if (detail::starts_with(value.as<char>(), "BREAK")) {
-        return oscilloscope_acquisition_state::interrupt;
-    } else {
-        throw std::range_error("The current acquisition state "
-            "does not fall in the range of known values.");
-    }
-
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-throw std::logic_error(detail::no_visa_error_msg);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -1084,36 +1101,6 @@ visus::power_overwhelming::rtx_instrument::save_state_to_instrument(
     impl.format("MMEM:STOR:STAT 1, \"%s\"\n", file_name.c_str());
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
-}
-
-
-/*
- * visus::power_overwhelming::rtx_instrument::single_acquisition
- */
-visus::power_overwhelming::oscilloscope_single_acquisition
-visus::power_overwhelming::rtx_instrument::single_acquisition(void) const {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    auto& impl = this->check_not_disposed();
-    oscilloscope_single_acquisition retval;
-
-    auto aut = this->query("ACQ:POIN:AUT?\n");
-    if (detail::starts_with(aut.as<char>(), "0")) {
-        auto points = this->query("ACQ:POIN:VAL?\n");
-        retval.points(detail::parse_uint(points.as<char>()));
-    } else {
-        retval.enable_automatic_points();
-    }
-
-    auto cnt = this->query("ACQ:NSIN:COUN?\n");
-    retval.count(detail::parse_uint(cnt.as<char>()));
-
-    auto seg = this->query("ACQ:SEGM:STAT?\n");
-    retval.segmented(!detail::starts_with(aut.as<char>(), "0"));
-
-    return retval;
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error(detail::no_visa_error_msg);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

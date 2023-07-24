@@ -328,7 +328,7 @@ namespace detail {
             auto channel_voltage = instrument->channel(value.channel_voltage());
             rtx_instrument_configuration instrument_config(
                 instrument->time_range(),
-                instrument->single_acquisition(),
+                instrument->acquisition(),
                 instrument->edge_trigger(),
                 instrument->timeout());
 

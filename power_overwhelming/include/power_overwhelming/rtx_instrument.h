@@ -5,12 +5,11 @@
 
 #pragma once
 
-#include "power_overwhelming/oscilloscope_acquisition_state.h"
+#include "power_overwhelming/oscilloscope_acquisition.h"
 #include "power_overwhelming/oscilloscope_channel.h"
 #include "power_overwhelming/oscilloscope_edge_trigger.h"
 #include "power_overwhelming/oscilloscope_quantity.h"
 #include "power_overwhelming/oscilloscope_reference_point.h"
-#include "power_overwhelming/oscilloscope_single_acquisition.h"
 #include "power_overwhelming/oscilloscope_trigger.h"
 #include "power_overwhelming/oscilloscope_trigger_output.h"
 #include "power_overwhelming/oscilloscope_waveform.h"
@@ -261,25 +260,37 @@ namespace power_overwhelming {
             _In_ const timeout_type timeout = default_timeout);
 
         /// <summary>
-        /// Configures single acquisition mode on the device.
+        /// Answer the part of the configuration of the instrument that is
+        /// relevant for acquisitions.
+        /// </summary>
+        /// <remarks>
+        /// An unmodified <see cref="oscilloscope_acquisition" /> with unknown
+        /// state is returned if the library was compiled without support for
+        /// VISA.
+        /// </remarks>
+        /// <returns>The current configuration and state.</returns>
+        /// <exception cref="std::runtime_errpr">If the method was called on an
+        /// instance that was disposed by moving it..</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        oscilloscope_acquisition acquisition(void) const;
+
+        /// <summary>
+        /// Configures acquisition-related settings on the instrument.
         /// </summary>
         /// <remarks>
         /// The subset of the instrument's state configured by this method can
-        /// be retrieved via the <see cref="single_acquisition" /> method. There
-        /// is no way in C++ to safely return a polymorphic object without a
-        /// heap allocation, so the caller needs to know which kind of
-        /// acquisition information to retrieve. As it is strongly recommended
-        /// to use only single acquisition mode for programmatically obtaining
-        /// data from RTA/RTB instruments, it is safe to assume that the
-        /// instrument is configured for single acquisition. However, the
-        /// current design allows for future extensions of the API without
-        /// breaking code if the need to configure additional types of
-        /// acquisitions arises.
+        /// be retrieved via the <see cref="acquisition" /> method.
         /// </remarks>
         /// <param name="acquisition">The configuration of single acquisition
-        /// mode.</param>
-        /// <param name="run">If <c>true</c>, start the acquisiton. This
-        /// parameter defaults to <c>false</c>.</param>
+        /// mode. If the state in <see cref="oscilloscope_acquisition" /> is
+        /// set to <see cref="oscilloscope_acquisition_state::unknown" />, the
+        /// state will not be changed. Otherwise, the configured state is
+        /// established at the end of the method. It is recommended using this
+        /// method only for establishing the expected configuration and changing
+        /// the acquisition state later using the overload that only starts
+        /// the acquisition rather than configuring the whole instrument.
+        /// </param>
         /// <param name="wait">If <paramref name="run" /> is <c>true</c> and
         /// this parameter is set <c>true</c> as well, the method will add an
         /// <c>*OPC?</c> query and block the calling code until the acquisition
@@ -289,25 +300,8 @@ namespace power_overwhelming {
         /// disposed by a move.</exception>
         /// <exception cref="visa_exception">If a VISA call failed.</exception>
         rtx_instrument& acquisition(
-            _In_ const oscilloscope_single_acquisition& acquisition,
-            _In_ const bool run = false,
+            _In_ const oscilloscope_acquisition& acquisition,
             _In_ const bool wait = false);
-
-        /// <summary>
-        /// Answer the current acquisition state of the instrument.
-        /// </summary>
-        /// <returns>The current acquisition state of the instrument.</returns>
-        /// <exception cref="std::runtime_error">If the instance was disposed
-        /// by moving it.</exception>
-        /// <exception cref="visa_exception">If the sensor could not be
-        /// initialised.</exception>
-        /// <exception cref="std::logic_error">If the library was compiled
-        /// without support for VISA.</exception>
-        /// <exception cref="std::range_error">If the response of the instrument
-        /// did not fall into the range of states that can be expressed by the
-        /// <see cref="oscilloscope_acquisition_state" /> enumeration.
-        /// </exception>
-        oscilloscope_acquisition_state acquisition(void) const;
 
         /// <summary>
         /// Changes the acquisition state of the instrument.
@@ -748,19 +742,6 @@ namespace power_overwhelming {
         const rtx_instrument& save_state_to_instrument(
             _In_z_ const char *name,
             _In_z_ const char *path = "/INT/SETTINGS") const;
-
-        /// <summary>
-        /// Answer the part of the configuration of the instrument that is
-        /// relevant for single-mode acquisition.
-        /// </summary>
-        /// <returns>The single-mode acquisition configuration</returns>
-        /// <exception cref="std::runtime_errpr">If the method was called on an
-        /// instance that was disposed by moving it..</exception>
-        /// <exception cref="visa_exception">If any of the API calls to the
-        /// instrument failed.</exception>
-        /// <exception cref="std::logic_error">If the method is called while
-        /// the library was compiled without support for VISA.</exception>
-        oscilloscope_single_acquisition single_acquisition(void) const;
 
         /// <summary>
         /// Gets the length of a single acquisition covering all horizontal grid

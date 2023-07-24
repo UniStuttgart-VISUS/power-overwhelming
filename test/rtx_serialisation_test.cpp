@@ -89,13 +89,13 @@ namespace test {
             Assert::AreEqual(input.unit(), output.unit(), L"unit", LINE_INFO());
         }
 
-        TEST_METHOD(test_oscilloscope_single_acquisition) {
-            const auto input = oscilloscope_single_acquisition()
+        TEST_METHOD(test_oscilloscope_acquisition) {
+            const auto input = oscilloscope_acquisition()
                 .count(8)
                 .points(42)
                 .segmented(true);
             const auto json = detail::json_serialise(input);
-            const auto output = detail::json_deserialise<oscilloscope_single_acquisition>(json);
+            const auto output = detail::json_deserialise<oscilloscope_acquisition>(json);
             Assert::AreEqual(input.automatic_points(), output.automatic_points(), L"automatic_points", LINE_INFO());
             Assert::AreEqual(input.count(), output.count(), L"count", LINE_INFO());
             Assert::AreEqual(input.points(), output.points(), L"points", LINE_INFO());
@@ -103,7 +103,7 @@ namespace test {
         }
 
         TEST_METHOD(test_rtx_instrument_configuration) {
-            const auto acquisition = oscilloscope_single_acquisition()
+            const auto acquisition = oscilloscope_acquisition()
                 .count(8)
                 .points(42)
                 .segmented(true);

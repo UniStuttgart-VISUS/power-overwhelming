@@ -18,6 +18,12 @@ namespace power_overwhelming {
     enum class oscilloscope_acquisition_state {
 
         /// <summary>
+        /// The state could not be retrieved or should not be modified in case
+        /// of a setter.
+        /// </summary>
+        unknown = 0x0000,
+
+        /// <summary>
         /// Starts the acquisition.
         /// </summary>
         run,

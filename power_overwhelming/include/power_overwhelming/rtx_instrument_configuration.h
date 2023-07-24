@@ -5,8 +5,8 @@
 
 #pragma once
 
+#include "power_overwhelming/oscilloscope_acquisition.h"
 #include "power_overwhelming/oscilloscope_quantity.h"
-#include "power_overwhelming/oscilloscope_single_acquisition.h"
 #include "power_overwhelming/oscilloscope_edge_trigger.h"
 #include "power_overwhelming/rtx_instrument.h"
 
@@ -95,7 +95,7 @@ namespace power_overwhelming {
         /// acquire.</param>
         rtx_instrument_configuration(
             _In_ const oscilloscope_quantity time_range,
-            _In_ const oscilloscope_single_acquisition& acquisition,
+            _In_ const oscilloscope_acquisition& acquisition,
             _In_ const oscilloscope_edge_trigger& trigger,
             _In_ visa_instrument::timeout_type timeout = 0);
 
@@ -103,10 +103,7 @@ namespace power_overwhelming {
         /// Answers the way the instrument will acquire one or more samples.
         /// </summary>
         /// <returns>The acquisition configuration of the instrument.</returns>
-        inline const oscilloscope_single_acquisition& acquisition(
-                void) const noexcept {
-            return this->_acquisition;
-        }
+        const oscilloscope_acquisition& acquisition(void) const noexcept;
 
         /// <summary>
         /// Creates a copy of the configuration, but configured such that the
@@ -168,7 +165,7 @@ namespace power_overwhelming {
 
         static oscilloscope_edge_trigger external_trigger(void);
 
-        oscilloscope_single_acquisition _acquisition;
+        oscilloscope_acquisition _acquisition;
         bool _slave;
         visa_instrument::timeout_type _timeout;
         oscilloscope_quantity _time_range;

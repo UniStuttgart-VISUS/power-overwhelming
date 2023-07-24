@@ -168,8 +168,6 @@ void query_rtx_instrument(void) {
                 << i.time_range().value() << L"s." << std::endl;
             std::wcout << L"The horizontal time scale is "
                 << i.time_scale().value() << L"s." << std::endl;
-            std::wcout << L"Acquisition state is "
-                << int(i.acquisition()) << std::endl;
 
             for (std::uint16_t c = 1; c <= i.channels(); ++c){
                 auto channel = i.channel(c);
@@ -207,7 +205,7 @@ void query_rtx_instrument(void) {
             }
 
             {
-                auto a = i.single_acquisition();
+                auto a = i.acquisition();
                 std::wcout << L"Automatic points enabled: "
                     << a.automatic_points() << std::endl;
                 std::wcout << L"Number of segments: "
@@ -216,6 +214,8 @@ void query_rtx_instrument(void) {
                     << a.points() << std::endl;
                 std::wcout << L"Fast segmentation: "
                     << a.segmented() << std::endl;
+                std::wcout << L"Acquisition state is "
+                    << int(a.state()) << std::endl;
             }
 
             {
@@ -283,7 +283,7 @@ void query_rtx_instrument(void) {
                 << static_cast<int>(i.event_status())
                 << std::endl;
 
-            i.acquisition(oscilloscope_single_acquisition()
+            i.acquisition(oscilloscope_acquisition()
                 .points(100000)
                 .count(1)
                 .segmented(false))

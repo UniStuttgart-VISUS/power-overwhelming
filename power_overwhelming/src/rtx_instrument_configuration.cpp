@@ -25,14 +25,26 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
  */
 visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configuration(
         _In_ const oscilloscope_quantity time_range,
-        _In_ const oscilloscope_single_acquisition& acquisition,
+        _In_ const oscilloscope_acquisition& acquisition,
         _In_ const oscilloscope_edge_trigger& trigger,
         _In_ visa_instrument::timeout_type timeout) 
     : _acquisition(acquisition),
         _slave(false),
         _timeout(timeout),
         _time_range(time_range),
-        _trigger(trigger) { }
+        _trigger(trigger) {
+    this->_acquisition.state(oscilloscope_acquisition_state::unknown);
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::acquisition
+ */
+const visus::power_overwhelming::oscilloscope_acquisition&
+visus::power_overwhelming::rtx_instrument_configuration::acquisition(
+        void) const noexcept {
+    return this->_acquisition;
+}
 
 
 /*

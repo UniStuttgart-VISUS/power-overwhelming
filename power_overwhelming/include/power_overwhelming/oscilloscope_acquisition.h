@@ -1,10 +1,11 @@
-﻿// <copyright file="oscilloscope_single_acquisition.h" company="Visualisierungsinstitut der Universität Stuttgart">
+﻿// <copyright file="oscilloscope_acquisition.h" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #pragma once
 
+#include "power_overwhelming/oscilloscope_acquisition_state.h"
 #include "power_overwhelming/power_overwhelming_api.h"
 
 
@@ -12,16 +13,23 @@ namespace visus {
 namespace power_overwhelming {
 
     /// <summary>
-    /// Configures the single acquisition mode of the oscilloscope.
+    /// Configures the acquisition mode of the oscilloscope.
     /// </summary>
-    class POWER_OVERWHELMING_API oscilloscope_single_acquisition final {
+    /// <remarks>
+    /// <para>Not all properties might be relevant for all modes.</para>
+    /// <para>For programmatic measurements, callers should typically configure
+    /// a single acquisition (possibly with multiple segments) as free running
+    /// acquisitions cannot be safely synchronised with the application logic.
+    /// </para>
+    /// </remarks>
+    class POWER_OVERWHELMING_API oscilloscope_acquisition final {
 
     public:
 
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        oscilloscope_single_acquisition(void);
+        oscilloscope_acquisition(void);
 
         /// <summary>
         /// Answer whether the number of points should be computed by the
@@ -45,9 +53,11 @@ namespace power_overwhelming {
         /// Sets the number of waveforms (segments) to be acquired on a single
         /// trigger.
         /// </summary>
+        /// <para>This setting is only relevant for single acqusition mode.
+        /// </para>
         /// <param name="count">The number of waveforms to acquire.</param>
         /// <returns><c>*this</c>.</returns>
-        inline oscilloscope_single_acquisition& count(
+        inline oscilloscope_acquisition& count(
                 _In_ const unsigned int count) noexcept {
             this->_count = count;
             return *this;
@@ -58,7 +68,7 @@ namespace power_overwhelming {
         /// waveform by itself.
         /// </summary>
         /// <returns><c>*this</c>.</returns>
-        inline oscilloscope_single_acquisition& enable_automatic_points(
+        inline oscilloscope_acquisition& enable_automatic_points(
                 void) noexcept {
             this->_points = 0;
             return *this;
@@ -83,7 +93,7 @@ namespace power_overwhelming {
         /// enumerated value and if it is not matched excatly, the instrument
         /// will choose the closest one.</param>
         /// <returns><c>*this</c>.</returns>
-        inline oscilloscope_single_acquisition& points(
+        inline oscilloscope_acquisition& points(
                 _In_ const unsigned int points) noexcept {
             this->_points = points;
             return *this;
@@ -102,17 +112,52 @@ namespace power_overwhelming {
         /// Enables or disables fast segmentation.
         /// </summary>
         /// <remarks>
-        /// If fast segmentation is enabled, the acquisitions are performed as
-        /// fast as possible without processing and displaying the waveforms.
-        /// Once the acquisition has been stopped, the data is processed and the
-        /// latest waveform is displayed. Older waveforms are stored in segments.
+        /// <para>If fast segmentation is enabled, the acquisitions are
+        /// performed as fast as possible without processing and displaying the
+        /// waveforms. Once the acquisition has been stopped, the data is
+        /// processed and the latest waveform is displayed. Older waveforms are
+        ///  stored in segments.</para>
+        /// <para>This setting is primarily for single acqusition mode.</para>
         /// </remarks>
         /// <param name="segmented"><c>true</c> to enable fast segmentation,
         /// <c>false</c> to disable it.</param>
         /// <returns><c>*this</c>.</returns>
-        inline oscilloscope_single_acquisition& segmented(
+        inline oscilloscope_acquisition& segmented(
                 _In_ const bool segmented) noexcept {
             this->_segmented = segmented;
+            return *this;
+        }
+
+        /// <summary>
+        /// Answer the current or requested state of the acquistion.
+        /// </summary>
+        /// <remarks>
+        /// <para>This member only reflects the actual state of the instrument
+        /// if the <see cref="oscilloscope_acquisition" /> was obtained from the
+        /// instrument.</para>
+        /// </remarks>
+        /// <returns>The acquisition state.</returns>
+        inline oscilloscope_acquisition_state state(void) const noexcept {
+            return this->_state;
+        }
+
+        /// <summary>
+        /// Sets the desired acquisition state.
+        /// </summary>
+        /// <remarks>
+        /// The default acquisition state is
+        /// <see cref="oscilloscope_acquisition_state::unknown" />, which leaves
+        /// the state untouched when this object is used to configure an
+        /// instrument.
+        /// </remarks>
+        /// <param name="state">The desired acquisition state. If this parameter
+        /// is <see cref="oscilloscope_acquisition_state::unknown" />, the state
+        /// will remain unchanged if the object is used to configure an
+        /// instrument.</param>
+        /// <returns><c>*this</c>.</returns>
+        inline oscilloscope_acquisition& state(
+                _In_ const oscilloscope_acquisition_state state) noexcept {
+            this->_state = state;
             return *this;
         }
 
@@ -121,6 +166,7 @@ namespace power_overwhelming {
         unsigned int _count;
         unsigned int _points;
         bool _segmented;
+        oscilloscope_acquisition_state _state;
     };
 
 } /* namespace power_overwhelming */

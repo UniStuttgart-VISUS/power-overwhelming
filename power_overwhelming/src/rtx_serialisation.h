@@ -22,6 +22,35 @@ namespace power_overwhelming {
 namespace detail {
 
     /// <summary>
+    /// Specialisation for <see cref="oscilloscope_acquisition" />.
+    /// </summary>
+    template<> struct json_serialiser<oscilloscope_acquisition,
+            false, false> final {
+        typedef oscilloscope_acquisition value_type;
+
+        static inline value_type deserialise(_In_ const nlohmann::json& json) {
+            _PWROWG_DESERIALISE_FIELD(count);
+            _PWROWG_DESERIALISE_FIELD(points);
+            _PWROWG_DESERIALISE_FIELD(segmented);
+            _PWROWG_DESERIALISE_FIELD(state);
+            return value_type()
+                .count(count)
+                .points(points)
+                .segmented(segmented)
+                .state(state);
+        }
+
+        static inline nlohmann::json serialise(_In_ const value_type& value) {
+            return nlohmann::json::object({
+                _PWOWG_SERIALISE_FIELD(count),
+                _PWOWG_SERIALISE_FIELD(points),
+                _PWOWG_SERIALISE_FIELD(segmented),
+                _PWOWG_SERIALISE_FIELD(state)
+            });
+        }
+    };
+
+    /// <summary>
     /// Specialisation for <see cref="oscilloscope_label" />.
     /// </summary>
     template<>
@@ -153,32 +182,6 @@ namespace detail {
                 _PWOWG_SERIALISE_FIELD(slope),
                 _PWOWG_SERIALISE_FIELD(source),
                 _PWOWG_SERIALISE_FIELD(type)
-                });
-        }
-    };
-
-    /// <summary>
-    /// Specialisation for <see cref="oscilloscope_single_acquisition" />.
-    /// </summary>
-    template<> struct json_serialiser<oscilloscope_single_acquisition,
-            false, false> final {
-        typedef oscilloscope_single_acquisition value_type;
-
-        static inline value_type deserialise(_In_ const nlohmann::json& json) {
-            _PWROWG_DESERIALISE_FIELD(count);
-            _PWROWG_DESERIALISE_FIELD(points);
-            _PWROWG_DESERIALISE_FIELD(segmented);
-            return value_type()
-                .count(count)
-                .points(points)
-                .segmented(segmented);
-        }
-
-        static inline nlohmann::json serialise(_In_ const value_type& value) {
-            return nlohmann::json::object({
-                _PWOWG_SERIALISE_FIELD(count),
-                _PWOWG_SERIALISE_FIELD(points),
-                _PWOWG_SERIALISE_FIELD(segmented)
                 });
         }
     };
