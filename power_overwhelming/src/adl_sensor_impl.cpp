@@ -96,10 +96,11 @@ visus::power_overwhelming::detail::adl_sensor_impl::get_sensor_ids(
         const adl_sensor_source source) {
     switch (source) {
         case adl_sensor_source::asic:
-            // HAZARD: We assume that only one of these can be set at the
-            // same time, but we cannot prove this from the docs.
-            return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_ASIC_POWER,
-                ADL_PMLOG_SSPAIRED_ASICPOWER };
+            // TODO: Due to the logic combining voltage, current and power,
+            // we currently cannot support SSPAIRED_ASICPOWER atm. Rework
+            // this in the future.
+            return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_ASIC_POWER /*,
+                ADL_PMLOG_SSPAIRED_ASICPOWER */ };
 
         case adl_sensor_source::cpu:
             return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_CPU_POWER };
