@@ -96,10 +96,16 @@ visus::power_overwhelming::detail::adl_sensor_impl::get_sensor_ids(
         const adl_sensor_source source) {
     switch (source) {
         case adl_sensor_source::asic:
-            return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_ASIC_POWER };
+            // HAZARD: We assume that only one of these can be set at the
+            // same time, but we cannot prove this from the docs.
+            return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_ASIC_POWER,
+                ADL_PMLOG_SSPAIRED_ASICPOWER };
 
         case adl_sensor_source::cpu:
             return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_CPU_POWER };
+
+        case adl_sensor_source::board:
+            return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_BOARD_POWER };
 
         case adl_sensor_source::graphics:
             return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_GFX_VOLTAGE,
@@ -180,9 +186,11 @@ bool visus::power_overwhelming::detail::adl_sensor_impl::is_power(
         const ADL_PMLOG_SENSORS id) {
     switch (id) {
         case ADL_PMLOG_ASIC_POWER:
+        case ADL_PMLOG_BOARD_POWER:
         case ADL_PMLOG_CPU_POWER:
         case ADL_PMLOG_GFX_POWER:
         case ADL_PMLOG_SOC_POWER:
+        case ADL_PMLOG_SSPAIRED_ASICPOWER:
             return true;
 
         default:
@@ -282,6 +290,11 @@ void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
     switch (this->source) {
         case adl_sensor_source::asic:
             this->sensor_name = L"ADL/ASIC/" + this->device_name
+                + L"/" + std::to_wstring(this->adapter_index);
+            break;
+
+        case adl_sensor_source::board:
+            this->sensor_name = L"ADL/BOARD/" + this->device_name
                 + L"/" + std::to_wstring(this->adapter_index);
             break;
 

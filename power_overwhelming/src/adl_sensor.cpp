@@ -1,5 +1,5 @@
 // <copyright file="adl_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -35,6 +35,8 @@ namespace detail {
     template<class TIterator>
     std::size_t for_adapter(TIterator oit, adl_scope& scope,
             const AdapterInfo& adapter, const adl_sensor_source source) {
+#define _PWROWG_ENABLED(haystack, needle) ((haystack & needle) == needle)
+
         int isActive = 0;
         std::size_t retval = 0;
         ADLPMLogSupportInfo supportInfo;
@@ -60,7 +62,7 @@ namespace detail {
         }
 
         // Now, check all of the supported sensor sources.
-        if ((source & adl_sensor_source::asic) == adl_sensor_source::asic) {
+        if (_PWROWG_ENABLED(source, adl_sensor_source::asic)) {
             auto source = adl_sensor_source::asic;
             auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
                 supportInfo);
@@ -73,7 +75,7 @@ namespace detail {
             }
         }
 
-        if ((source & adl_sensor_source::cpu) == adl_sensor_source::cpu) {
+        if (_PWROWG_ENABLED(source, adl_sensor_source::cpu)) {
             auto source = adl_sensor_source::cpu;
             auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
                 supportInfo);
@@ -86,8 +88,7 @@ namespace detail {
             }
         }
 
-        if ((source & adl_sensor_source::graphics)
-                == adl_sensor_source::graphics) {
+        if (_PWROWG_ENABLED(source, adl_sensor_source::graphics)) {
             auto source = adl_sensor_source::graphics;
             auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
                 supportInfo);
@@ -100,7 +101,7 @@ namespace detail {
             }
         }
 
-        if ((source & adl_sensor_source::soc) == adl_sensor_source::soc) {
+        if (_PWROWG_ENABLED(source, adl_sensor_source::soc)) {
             auto source = adl_sensor_source::soc;
             auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
                 supportInfo);
@@ -113,7 +114,21 @@ namespace detail {
             }
         }
 
+        if (_PWROWG_ENABLED(source, adl_sensor_source::board)) {
+            auto source = adl_sensor_source::board;
+            auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
+                supportInfo);
+
+            if (!ids.empty()) {
+                auto impl = new detail::adl_sensor_impl(adapter);
+                impl->configure_source(source, std::move(ids));
+                *oit++ = adl_sensor(std::move(impl));
+                ++retval;
+            }
+        }
+
         return retval;
+#undef _PWROWG_ENABLED
     }
 
     /// <summary>
@@ -236,7 +251,7 @@ visus::power_overwhelming::adl_sensor::from_index(_In_ const int index,
         throw adl_exception(status);
     }
 
-    throw "TODO";
+    throw "TODO: Implement retrieval from index.";
 
     return retval;
 }
