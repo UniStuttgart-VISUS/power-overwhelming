@@ -1,16 +1,22 @@
-﻿// <copyright file="basic_sampler.h" company="Visualisierungsinstitut der Universität Stuttgart">
+﻿// <copyright file="sampler_thread.h" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #pragma once
 
+#include <chrono>
 #include <functional>
 #include <memory>
 #include <stdexcept>
+#include <sstream>
+#include <string>
+#include <thread>
+#include <typeinfo>
 #include <vector>
 
-#include "with_context.h"
+#include "sampler_context.h"
+#include "thread_name.h"
 
 
 namespace visus {
@@ -33,30 +39,31 @@ namespace detail {
     /// <typeparam name="TContext">The type of the sampler context that
     /// implements the per-sensor sampling functionality. The interface must be
     /// like <see cref="default_sampler_context" />.</typeparam>
-    template<class TContext> class basic_sampler final {
+    template<class TContext> class basic_sampler_thread final {
 
     public:
 
         /// <summary>
-        /// The type of the sampler context that implements the per-sensor
-        /// sampling functionality.
+        /// The type of the context the sampler thread gets its data from.
         /// </summary>
+        /// <remarks>
+        /// <para>This class must implement the interface defined by
+        /// <see cref="basic_sampler_context" />, ie it must provide the actual
+        /// source of the samples and the configuration of the sampler thread.
+        /// </para>
+        /// </remarks>
         typedef TContext context_type;
 
         /// <summary>
         /// The type to express sampling intervals.
         /// </summary>
-        typedef typename TContext::interval_type interval_type;
-
-        /// <summary>
-        /// The type of the sensor implementation to be sampled by this sampler.
-        /// </summary>
-        typedef typename TContext::sensor_type sensor_type;
+        typedef std::chrono::duration<async_sampling::microseconds_type,
+            std::micro> interval_type;
 
         /// <summary>
         /// Finalises the instance.
         /// </summary>
-        ~sampler(void);
+        ~basic_sampler_thread(void);
 
         /// <summary>
         /// Add a new sensor to be sampled.
@@ -91,28 +98,50 @@ namespace detail {
         bool samples(sensor_type sensor) const;
 
         /// <summary>
-        /// Indicates whether the sampler is currently processing any active
-        /// sensor.
+        /// Indicates whether the sampler thread is currently processing any
+        /// active sensor.
         /// </summary>
-        /// <returns><c>true</c> if there is any sensor to be sampled in the
-        /// sampler, <c>false</c> otherwise.</returns>
+        /// <returns><c>true</c> if the sampler thread is running and processing
+        /// at least one sensor, <c>false</c> otherwise.</returns>
         bool samples(void) const;
 
     private:
 
         /// <summary>
-        /// The list of sampling threads.
+        /// Sample all <see cref="_contexts" />.
         /// </summary>
-        std::vector<std::unique_ptr<context_type>> _contexts;
+        /// <remarks>
+        /// This is the method that is executed in the sampler
+        /// <see cref="_thread" />. It will continue until it discovers that
+        /// <see cref="_contexts" /> is empty. Afterwards, a new thread needs to
+        /// be started if sensors are re-added.
+        /// </remarks>
+        void sample(void);
+
+        /// <summary>
+        /// The list of contexts sampled by this thread.
+        /// </summary>
+        std::vector<context_type> _contexts;
+
+        /// <summary>
+        /// The sampling interval of <see cref="_thread" />.
+        /// </summary>
+        interval_type _interval;
 
         /// <summary>
         /// A lock for protecting <see cref="_contexts" />.
         /// </summary>
         mutable std::mutex _lock;
+
+        /// <summary>
+        /// The sampler thread processing the configured
+        /// <see cref="_contexts" />.
+        /// </summary>
+        std::thread _thread;
     };
 
 } /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
 
-#include "sampler.inl"
+#include "sampler_thread.inl"

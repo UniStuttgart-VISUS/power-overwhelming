@@ -18,9 +18,7 @@ namespace detail {
     /// </summary>
     /// <typeparam name="TContext">The type of the context being attached to
     /// classes inheriting from this one.</typeparam>
-    template<class TContext> class with_context {
-
-    public:
+    template<class TContext> struct with_context {
 
         /// <summary>
         /// The type of the context being attached to classes inheriting from
@@ -28,12 +26,10 @@ namespace detail {
         /// </summary>
         typedef TContext context_type;
 
-    protected:
-
         /// <summary>
         /// The context.
         /// </summary>
-        context_type _context;
+        context_type context;
     };
 
 
@@ -41,8 +37,6 @@ namespace detail {
     /// Specialisations for no context.
     /// </summary>
     template<> class with_context<void> {
-
-    public:
 
         /// <summary>
         /// Indicates that there is no context.

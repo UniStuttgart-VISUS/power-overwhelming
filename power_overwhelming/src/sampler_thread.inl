@@ -1,14 +1,15 @@
-// <copyright file="sampler.inl" company="Visualisierungsinstitut der Universität Stuttgart">
+// <copyright file="sampler_thread.inl" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
 
 /*
- * visus::power_overwhelming::detail::sampler<TContext>::~sampler
+ * ...::basic_sampler_thread<TContext>::~basic_sampler_thread
  */
 template<class TContext>
-visus::power_overwhelming::detail::sampler<TContext>::~sampler(void) {
+visus::power_overwhelming::detail::basic_sampler_thread<TContext>
+::~basic_sampler_thread(void) {
     std::lock_guard<decltype(this->_lock)> l(this->_lock);
 
     for (auto& c : this->_contexts) {
@@ -27,10 +28,10 @@ visus::power_overwhelming::detail::sampler<TContext>::~sampler(void) {
 
 
 /*
- * visus::power_overwhelming::detail::sampler<TContext>::add
+ * visus::power_overwhelming::detail::basic_sampler_thread<TContext>::add
  */
 template<class TContext>
-bool visus::power_overwhelming::detail::sampler<TContext>::add(
+bool visus::power_overwhelming::detail::basic_sampler_thread<TContext>::add(
         sensor_type sensor, const measurement_callback callback,
         void *user_context, const interval_type interval) {
     if (sensor == nullptr) {
@@ -67,10 +68,10 @@ bool visus::power_overwhelming::detail::sampler<TContext>::add(
 
 
 /*
- * visus::power_overwhelming::detail::sampler<TContext>::remove
+ * visus::power_overwhelming::detail::basic_sampler_thread<TContext>::remove
  */
 template<class TContext>
-bool visus::power_overwhelming::detail::sampler<TContext>::remove(
+bool visus::power_overwhelming::detail::basic_sampler_thread<TContext>::remove(
         sensor_type sensor) {
     if (sensor == nullptr) {
         // Trivial reject: we never sample nullptrs.
@@ -93,10 +94,10 @@ bool visus::power_overwhelming::detail::sampler<TContext>::remove(
 
 
 /*
- * visus::power_overwhelming::detail::sampler<TContext>::samples
+ * visus::power_overwhelming::detail::basic_sampler_thread<TContext>::samples
  */
 template<class TContext>
-bool visus::power_overwhelming::detail::sampler<TContext>::samples(
+bool visus::power_overwhelming::detail::basic_sampler_thread<TContext>::samples(
         sensor_type sensor) const {
     if (sensor == nullptr) {
         // Trivial reject: we never sample nullptrs.
@@ -118,18 +119,46 @@ bool visus::power_overwhelming::detail::sampler<TContext>::samples(
 
 
 /*
- * visus::power_overwhelming::detail::sampler<TContext>::samples
+ * visus::power_overwhelming::detail::basic_sampler_thread<TContext>::samples
  */
 template<class TContext>
-bool visus::power_overwhelming::detail::sampler<TContext>::samples(
+bool visus::power_overwhelming::detail::basic_sampler_thread<TContext>::samples(
         void) const {
     std::lock_guard<decltype(this->_lock)> l(this->_lock);
-    for (auto& c : this->_contexts) {
-        if (!c->sensors.empty()) {
-            return true;
+    return !this->_contexts.empty();
+}
+
+
+/*
+ * visus::power_overwhelming::detail::basic_sampler_thread<TContext>::sample
+ */
+template<class TContext>
+void visus::power_overwhelming::detail::basic_sampler_thread<TContext>::sample(
+        void) {
+    auto have_sensors = true;
+
+    {
+        std::stringstream stream;
+        stream << "PwrOwg " << typeid(TContext).name() << " "
+            << this->_interval.count() << "us";
+        auto name = stream.str();
+        set_thread_name(name.c_str());
+    }
+
+    while (have_sensors) {
+        auto now = std::chrono::high_resolution_clock::now();
+
+        {
+            std::lock_guard<decltype(this->lock)> l(this->lock);
+            for (auto& c : this->_contexts) {
+                c.source->sample(c.configuration);
+            }
+
+            have_sensors = !this->_contexts.empty();
+        }
+
+        if (have_sensors) {
+            std::this_thread::sleep_until(now + this->_interval);
         }
     }
-    // No non-empty context found at this point.
-
-    return false;
 }

@@ -55,7 +55,7 @@ std::size_t visus::power_overwhelming::tinkerforge_sensor::for_all(
  * visus::power_overwhelming::tinkerforge_sensor::for_all
  */
 std::size_t visus::power_overwhelming::tinkerforge_sensor::for_all(
-        _Out_writes_(cnt_sensors) tinkerforge_sensor *out_sensors,
+        _Out_writes_opt_(cnt_sensors) tinkerforge_sensor *out_sensors,
         _In_ const std::size_t cnt_sensors,
         _In_opt_z_ const wchar_t *host,
         _In_ const std::uint16_t port,
