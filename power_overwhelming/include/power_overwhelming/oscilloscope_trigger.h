@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "power_overwhelming/blob.h"
 #include "power_overwhelming/oscilloscope_quantity.h"
 #include "power_overwhelming/oscilloscope_trigger_mode.h"
 
@@ -26,7 +27,7 @@ namespace power_overwhelming {
         /// <summary>
         /// Finalises the instance.
         /// </summary>
-        virtual ~oscilloscope_trigger(void);
+        virtual ~oscilloscope_trigger(void) = default;
 
         /// <summary>
         /// Gets the hold-off time for which a trigger cannot trigger again
@@ -35,7 +36,7 @@ namespace power_overwhelming {
         /// <returns>The hold-off time as a string or <c>nullptr</c> if no
         /// hold-off is configured.</returns>
         inline _Ret_maybenull_z_ const char *hold_off(void) const noexcept {
-            return this->_hold_off;
+            return this->_hold_off.as<char>();
         }
 
         /// <summary>
@@ -86,7 +87,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>The name of the trigger source.</returns>
         inline _Ret_maybenull_z_ const char *source(void) const noexcept {
-            return this->_source;
+            return this->_source.as<char>();
         }
 
         /// <summary>
@@ -132,20 +133,22 @@ namespace power_overwhelming {
         /// Clone <paramref name="rhs" />.
         /// </summary>
         /// <param name="rhs">The object to be cloned.</param>
-        oscilloscope_trigger(_In_ const oscilloscope_trigger& rhs);
+        oscilloscope_trigger(_In_ const oscilloscope_trigger& rhs) = default;
 
         /// <summary>
         /// Move <paramref name="rhs" />.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        oscilloscope_trigger(_Inout_ oscilloscope_trigger&& rhs) noexcept;
+        oscilloscope_trigger(
+            _Inout_ oscilloscope_trigger&& rhs) noexcept = default;
 
         /// <summary>
         /// Assignment.
         /// </summary>
         /// <param name="rhs">The right hand side operand.</param>
         /// <returns><c>*this</c>.</returns>
-        oscilloscope_trigger& operator =(_In_ const oscilloscope_trigger& rhs);
+        oscilloscope_trigger& operator =(
+            _In_ const oscilloscope_trigger& rhs) = default;
 
         /// <summary>
         /// Move assignment.
@@ -153,13 +156,13 @@ namespace power_overwhelming {
         /// <param name="rhs">The right hand side operand.</param>
         /// <returns><c>*this</c>.</returns>
         oscilloscope_trigger& operator =(
-            _Inout_ oscilloscope_trigger&& rhs) noexcept;
+            _Inout_ oscilloscope_trigger&& rhs) noexcept = default;
 
     private:
 
-        char *_hold_off;
+        blob _hold_off;
         oscilloscope_trigger_mode _mode;
-        char *_source;
+        blob _source;
     };
 
 } /* namespace power_overwhelming */
