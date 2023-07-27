@@ -54,6 +54,57 @@ namespace test {
             Assert::AreEqual("CH2", trigger.source(), L"Set source", LINE_INFO());
             Assert::AreEqual("EDGE", trigger.type(), L"Set type", LINE_INFO());
         }
+
+        TEST_METHOD(test_edge_trigger_copy_ctor) {
+            oscilloscope_edge_trigger expected("CH1");
+            expected.coupling(oscilloscope_trigger_coupling::alternating_current)
+                .hysteresis(oscilloscope_trigger_hysteresis::high)
+                .level(2, oscilloscope_quantity(42, "lvl"))
+                .slope(oscilloscope_trigger_slope::falling)
+                .coupling(oscilloscope_trigger_coupling::alternating_current)
+                .hold_off("holdoff")
+                .mode(oscilloscope_trigger_mode::automatic)
+                .source("CH2");
+
+            oscilloscope_edge_trigger trigger(expected);
+
+            Assert::AreEqual(int(expected.coupling()), int(trigger.coupling()), L"Copy coupling", LINE_INFO());
+            Assert::AreEqual(expected.hold_off(), trigger.hold_off(), L"Copy hold_off", LINE_INFO());
+            Assert::AreEqual(int(expected.hysteresis()), int(trigger.hysteresis()), L"Copy hysteresis", LINE_INFO());
+            Assert::AreEqual(int(expected.input()), int(trigger.input()), L"Copy input", LINE_INFO());
+            Assert::AreEqual(expected.level().unit(), trigger.level().unit(), L"Copy level unit", LINE_INFO());
+            Assert::AreEqual(expected.level().value(), trigger.level().value(), L"Copy level value", LINE_INFO());
+            Assert::AreEqual(int(expected.mode()), int(trigger.mode()), L"Copy mode", LINE_INFO());
+            Assert::AreEqual(int(expected.slope()), int(trigger.slope()), L"Copy slope", LINE_INFO());
+            Assert::AreEqual(expected.source(), trigger.source(), L"Copy source", LINE_INFO());
+            Assert::AreEqual(expected.type(), trigger.type(), L"Copy type", LINE_INFO());
+        }
+
+        TEST_METHOD(test_edge_trigger_assignment) {
+            oscilloscope_edge_trigger expected("CH1");
+            expected.coupling(oscilloscope_trigger_coupling::alternating_current)
+                .hysteresis(oscilloscope_trigger_hysteresis::high)
+                .level(2, oscilloscope_quantity(42, "lvl"))
+                .slope(oscilloscope_trigger_slope::falling)
+                .coupling(oscilloscope_trigger_coupling::alternating_current)
+                .hold_off("holdoff")
+                .mode(oscilloscope_trigger_mode::automatic)
+                .source("CH2");
+
+            oscilloscope_edge_trigger trigger("CH2");
+            trigger = expected;
+
+            Assert::AreEqual(int(expected.coupling()), int(trigger.coupling()), L"Copy coupling", LINE_INFO());
+            Assert::AreEqual(expected.hold_off(), trigger.hold_off(), L"Copy hold_off", LINE_INFO());
+            Assert::AreEqual(int(expected.hysteresis()), int(trigger.hysteresis()), L"Copy hysteresis", LINE_INFO());
+            Assert::AreEqual(int(expected.input()), int(trigger.input()), L"Copy input", LINE_INFO());
+            Assert::AreEqual(expected.level().unit(), trigger.level().unit(), L"Copy level unit", LINE_INFO());
+            Assert::AreEqual(expected.level().value(), trigger.level().value(), L"Copy level value", LINE_INFO());
+            Assert::AreEqual(int(expected.mode()), int(trigger.mode()), L"Copy mode", LINE_INFO());
+            Assert::AreEqual(int(expected.slope()), int(trigger.slope()), L"Copy slope", LINE_INFO());
+            Assert::AreEqual(expected.source(), trigger.source(), L"Copy source", LINE_INFO());
+            Assert::AreEqual(expected.type(), trigger.type(), L"Copy type", LINE_INFO());
+        }
     };
 
 } /* namespace test */
