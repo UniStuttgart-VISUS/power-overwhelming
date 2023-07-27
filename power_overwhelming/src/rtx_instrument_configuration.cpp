@@ -57,25 +57,26 @@ void visus::power_overwhelming::rtx_instrument_configuration::apply(
         instrument.timeout(this->_timeout);
     }
 
-    // Create a preliminary trigger configuration that triggers automatically
-    // and thus makes sure that switching to single mode acquisition will
-    // complete even if there is no valid trigger signal available.
-    auto preliminary_trigger = this->_trigger;
-    preliminary_trigger.mode(oscilloscope_trigger_mode::automatic);
+    //// Create a preliminary trigger configuration that triggers automatically
+    //// and thus makes sure that switching to single mode acquisition will
+    //// complete even if there is no valid trigger signal available.
+    //auto preliminary_trigger = this->_trigger;
+    //preliminary_trigger.mode(oscilloscope_trigger_mode::automatic);
 
     // Apply the configuration changes. Note that the order of changes is
     // deliberate for automatic changes the instrument may make to be most
     // predictable.
     instrument.time_range(this->_time_range)
         .trigger_output(oscilloscope_trigger_output::pulse)
-        .trigger(preliminary_trigger)
-        .acquisition(this->_acquisition, true)
+//        .trigger(preliminary_trigger)
+        .trigger(this->_trigger)
+        .acquisition(this->_acquisition, false, false)
         .operation_complete();
 
-    // Apply the actual trigger, which might make time out the acquisition if
-    // it is using normal mode and there is no actual trigger present.
-    instrument.trigger(this->_trigger)
-        .operation_complete();
+    //// Apply the actual trigger, which might make time out the acquisition if
+    //// it is using normal mode and there is no actual trigger present.
+    //instrument.trigger(this->_trigger)
+    //    .operation_complete();
 }
 
 
@@ -88,6 +89,5 @@ visus::power_overwhelming::rtx_instrument_configuration::external_trigger(
     // The external trigger usually uses 5V if passed on via the AUX output, so
     // 2.5 V is a safe bet.
     return oscilloscope_edge_trigger("EXT")
-        .level(5, oscilloscope_quantity(2.5, "V"))
-        .slope(oscilloscope_trigger_slope::rising);
+        .external(2.5f, oscilloscope_trigger_slope::rising);
 }
