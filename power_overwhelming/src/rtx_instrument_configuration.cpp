@@ -13,7 +13,11 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _In_ const oscilloscope_quantity time_range,
         _In_ const unsigned int samples,
         _In_ visa_instrument::timeout_type timeout)
-    : _slave(false), _timeout(0), _time_range(time_range),
+    : _beep_on_error(false),
+        _beep_on_trigger(false),
+        _slave(false),
+        _timeout(0),
+        _time_range(time_range),
         _trigger(external_trigger()) {
     this->_acquisition.points(samples).segmented(true);
     this->_trigger.mode(oscilloscope_trigger_mode::automatic);
@@ -29,6 +33,8 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _In_ const oscilloscope_edge_trigger& trigger,
         _In_ visa_instrument::timeout_type timeout) 
     : _acquisition(acquisition),
+        _beep_on_error(false),
+        _beep_on_trigger(false),
         _slave(false),
         _timeout(timeout),
         _time_range(time_range),
@@ -77,6 +83,28 @@ void visus::power_overwhelming::rtx_instrument_configuration::apply(
     //// it is using normal mode and there is no actual trigger present.
     //instrument.trigger(this->_trigger)
     //    .operation_complete();
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::beep_on_error
+ */
+visus::power_overwhelming::rtx_instrument_configuration&
+visus::power_overwhelming::rtx_instrument_configuration::beep_on_error(
+        _In_ const bool enable) noexcept {
+    this->_beep_on_error = enable;
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::beep_on_trigger
+ */
+visus::power_overwhelming::rtx_instrument_configuration&
+visus::power_overwhelming::rtx_instrument_configuration::beep_on_trigger(
+        _In_ const bool enable) noexcept {
+    this->_beep_on_trigger = enable;
+    return *this;
 }
 
 

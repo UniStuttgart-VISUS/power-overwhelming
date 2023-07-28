@@ -193,6 +193,8 @@ namespace detail {
 
         static inline value_type deserialise(_In_ const nlohmann::json &json) {
             _PWROWG_DESERIALISE_FIELD(acquisition);
+            _PWROWG_DESERIALISE_FIELD(beep_on_error);
+            _PWROWG_DESERIALISE_FIELD(beep_on_trigger);
             _PWROWG_DESERIALISE_FIELD(timeout);
             _PWROWG_DESERIALISE_FIELD(time_range);
             _PWROWG_DESERIALISE_FIELD(trigger);
@@ -202,6 +204,8 @@ namespace detail {
         static inline nlohmann::json serialise(_In_ const value_type& value) {
             return nlohmann::json::object({
                 _PWOWG_SERIALISE_FIELD(acquisition),
+                _PWOWG_SERIALISE_FIELD(beep_on_error),
+                _PWOWG_SERIALISE_FIELD(beep_on_trigger),
                 _PWOWG_SERIALISE_FIELD(timeout),
                 _PWOWG_SERIALISE_FIELD(time_range),
                 _PWOWG_SERIALISE_FIELD(trigger)

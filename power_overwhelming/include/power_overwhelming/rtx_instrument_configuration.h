@@ -128,13 +128,51 @@ namespace power_overwhelming {
         void apply(_Inout_ rtx_instrument& instrument) const;
 
         /// <summary>
+        /// Answer whether the instrument should be configured to beep if it
+        /// encounters an error.
+        /// </summary>
+        /// <returns><c>true</c> if the beep should be enabled, <c>false</c>
+        /// otherwise.</returns>
+        inline bool beep_on_error(void) const noexcept {
+            return this->_beep_on_error;
+        }
+
+        /// <summary>
+        /// Configures the instrument to beep if it encounters an error.
+        /// </summary>
+        /// <param name="enable"><c>true</c> to enable the beep, <c>false</c>
+        /// otherwise.</param>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument_configuration& beep_on_error(
+            _In_ const bool enable) noexcept;
+
+        /// <summary>
+        /// Answer whether the instrument should be configured to beep if a
+        /// trigger occurs.
+        /// </summary>
+        /// <returns><c>true</c> if the beep should be enabled, <c>false</c>
+        /// otherwise.</returns>
+        inline bool beep_on_trigger(void) const noexcept {
+            return this->_beep_on_trigger;
+        }
+
+        /// <summary>
+        /// Configures the instrument to beep if a trigger occurs.
+        /// </summary>
+        /// <param name="enable"><c>true</c> to enable the beep, <c>false</c>
+        /// otherwise.</param>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument_configuration& beep_on_trigger(
+            _In_ const bool enable) noexcept;
+
+        /// <summary>
         /// Indicates whether this configuration is for a slave instrument that
         /// is being triggered by another instrument via the external trigger
         /// input.
         /// </summary>
         /// <returns><c>true</c> if the instrument is running as slave,
         /// <c>false</c> if it needs to be triggered by the user.</returns>
-        inline const bool slave(void) const noexcept {
+        inline bool slave(void) const noexcept {
             return this->_slave;
         }
 
@@ -169,6 +207,8 @@ namespace power_overwhelming {
         static oscilloscope_edge_trigger external_trigger(void);
 
         oscilloscope_single_acquisition _acquisition;
+        bool _beep_on_error;
+        bool _beep_on_trigger;
         bool _slave;
         visa_instrument::timeout_type _timeout;
         oscilloscope_quantity _time_range;
