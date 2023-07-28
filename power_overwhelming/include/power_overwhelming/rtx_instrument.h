@@ -356,6 +356,21 @@ namespace power_overwhelming {
         rtx_instrument& beep(_In_ const std::size_t cnt = 1);
 
         /// <summary>
+        /// Answer whether the instrument beeps if it encounters an error.
+        /// </summary>
+        /// <remarks>
+        /// The answer will always be <c>false</c> if the library was compiled
+        /// without support for VISA.
+        /// </remarks>
+        /// <returns><c>true</c> if the beep is enabled, <c>false</c> otherwise.
+        /// </returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        bool beep_on_error(void);
+
+        /// <summary>
         /// Configures the instrument to beep or not to beep if it encounters
         /// an error.
         /// </summary>
@@ -371,6 +386,21 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If any of the API calls to the
         /// instrument failed.</exception>
         rtx_instrument& beep_on_error(_In_ const bool enable);
+
+        /// <summary>
+        /// Answer whether the instrument beeps if a trigger occurs.
+        /// </summary>
+        /// <remarks>
+        /// The answer will always be <c>false</c> if the library was compiled
+        /// without support for VISA.
+        /// </remarks>
+        /// <returns><c>true</c> if the beep is enabled, <c>false</c> otherwise.
+        /// </returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        bool beep_on_trigger(void);
 
         /// <summary>
         /// Configures the instrument to beep or not to beep if a trigger

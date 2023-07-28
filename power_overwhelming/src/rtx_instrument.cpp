@@ -337,6 +337,20 @@ visus::power_overwhelming::rtx_instrument::beep(_In_ const std::size_t cnt) {
 /*
  * visus::power_overwhelming::rtx_instrument::beep_on_error
  */
+bool visus::power_overwhelming::rtx_instrument::beep_on_error(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("SYST:BEEP:ERR:STAT?\n");
+    auto status = std::atoi(response.as<char>());
+    return (status != 0);
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return false;
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::beep_on_error
+ */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::beep_on_error(
         _In_ const bool enable) {
@@ -345,6 +359,20 @@ visus::power_overwhelming::rtx_instrument::beep_on_error(
     impl.format("SYST:BEEP:ERR:STAT %s\n", enable ? "ON" : "OFF");
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::beep_on_trigger
+ */
+bool visus::power_overwhelming::rtx_instrument::beep_on_trigger(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("SYST:BEEP:TRIG:STAT?\n");
+    auto status = std::atoi(response.as<char>());
+    return (status != 0);
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return false;
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
