@@ -12,7 +12,7 @@ mark_as_advanced(FORCE
 
 # AMD Display Library (this is a bit hacky ...)
 FetchContent_Declare(adl
-    URL "https://github.com/GPUOpen-LibrariesAndSDKs/display-library/archive/17.0.tar.gz"
+    URL "https://github.com/GPUOpen-LibrariesAndSDKs/display-library/archive/17.1.tar.gz"
 )
 FetchContent_MakeAvailable(adl)
 add_library(adl INTERFACE IMPORTED GLOBAL)

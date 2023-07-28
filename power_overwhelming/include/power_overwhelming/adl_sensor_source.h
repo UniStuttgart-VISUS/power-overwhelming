@@ -20,24 +20,29 @@ namespace power_overwhelming {
     enum class adl_sensor_source : std::uint32_t {
 
         /// <summary>
-        /// 
+        /// <c>ADL_PMLOG_SOC_POWER</c>.
         /// </summary>
         soc = 0x0001,
 
         /// <summary>
-        /// 
+        /// <c>ADL_PMLOG_GFX_POWER</c>.
         /// </summary>
         graphics = 0x0002,
 
         /// <summary>
-        /// 
+        /// <c>ADL_PMLOG_ASIC_POWER</c> or <c>ADL_PMLOG_SSPAIRED_ASICPOWER</c>.
         /// </summary>
         asic = 0x0004,
 
         /// <summary>
-        /// 
+        /// <c>ADL_PMLOG_CPU_POWER</c>.
         /// </summary>
         cpu = 0x0008,
+
+        /// <summary>
+        /// Total board power (<c>ADL_PMLOG_BOARD_POWER</c>).
+        /// </summary>
+        board = 0x0010,
 
         /// <summary>
         /// Represents all possible sensor sources.

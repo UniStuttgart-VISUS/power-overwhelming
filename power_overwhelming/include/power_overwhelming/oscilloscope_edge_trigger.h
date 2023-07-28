@@ -36,6 +36,20 @@ namespace power_overwhelming {
         explicit oscilloscope_edge_trigger(_In_ const char *source);
 
         /// <summary>
+        /// Clone <paramref name="rhs" />.
+        /// </summary>
+        /// <param name="rhs">The object to be cloned.</param>
+        oscilloscope_edge_trigger(
+            _In_ const oscilloscope_edge_trigger& rhs) = default;
+
+        /// <summary>
+        /// Move <paramref name="rhs" />.
+        /// </summary>
+        /// <param name="rhs">The object to be moved.</param>
+        oscilloscope_edge_trigger(
+            _Inout_ oscilloscope_edge_trigger&& rhs) noexcept = default;
+
+        /// <summary>
         /// Gets the coupling for the trigger source.
         /// </summary>
         /// <returns>The coupling for the trigger source.</returns>
@@ -53,6 +67,19 @@ namespace power_overwhelming {
             this->_coupling = coupling;
             return *this;
         }
+
+        /// <summary>
+        /// Configues the trigger as an external trigger on the given level.
+        /// </summary>
+        /// <param name="level">The trigger level in Volts. This parameter
+        /// defaults to 2.5 V.</param>
+        /// <param name="slope">The slope on which to trigger. This parameter
+        /// defaults to <see cref="oscilloscope_trigger_slope::rising" />.
+        /// </param>
+        /// <returns><c>*this</c>.</returns>
+        oscilloscope_edge_trigger& external(_In_ const float level = 2.5f,
+            _In_ const oscilloscope_trigger_slope slope
+            = oscilloscope_trigger_slope::rising);
 
         /// <summary>
         /// Gets the hysteresis range around the trigger level.
@@ -142,6 +169,22 @@ namespace power_overwhelming {
 
         /// <inheritdoc />
         _Ret_z_ const char *type(void) const noexcept override;
+
+        /// <summary>
+        /// Assignment.
+        /// </summary>
+        /// <param name="rhs">The right hand side operand.</param>
+        /// <returns><c>*this</c>.</returns>
+        oscilloscope_edge_trigger& operator =(
+            _In_ const oscilloscope_edge_trigger& rhs) = default;
+
+        /// <summary>
+        /// Move assignment.
+        /// </summary>
+        /// <param name="rhs">The right hand side operand.</param>
+        /// <returns><c>*this</c>.</returns>
+        oscilloscope_edge_trigger& operator =(
+            _Inout_ oscilloscope_edge_trigger&& rhs) noexcept = default;
 
     private:
 
