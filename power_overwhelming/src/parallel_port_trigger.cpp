@@ -16,8 +16,10 @@
 #include <thread>
 
 #if !defined(_WIN32)
+#include <ppdev.h>
 #include <unistd.h>
 #include <sys/io.h>
+#include <sys/ioctl.h>
 #endif /* !defined(_WIN32) */
 
 #include "power_overwhelming/convert_string.h"
@@ -173,7 +175,7 @@ void visus::power_overwhelming::parallel_port_trigger::open(
         throw std::system_error(::GetLastError(), std::system_category());
     }
 #else /* defined(_WIN32) */
-    this->_handle = ::open(path, O_WR);
+    this->_handle = ::open(path, O_RDWR);
     if (this->_handle == invalid_handle) {
         throw std::system_error(errno, std::system_category());
     }
