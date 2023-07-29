@@ -16,6 +16,7 @@
 #include <thread>
 
 #if !defined(_WIN32)
+#include <fcntl.h>
 #include <unistd.h>
 #include <linux/ppdev.h>
 #include <sys/io.h>
