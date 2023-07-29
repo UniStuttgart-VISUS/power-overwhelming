@@ -6,6 +6,7 @@
 #pragma once
 
 #include <cinttypes>
+#include <cstdlib>
 #include <limits>
 
 #if defined(_WIN32)
@@ -22,7 +23,7 @@ namespace power_overwhelming {
     /// Enables application to send trigger signals at low latency via a
     /// parallel port attached to the computer.
     /// </summary>
-    class parallel_port_trigger final {
+    class POWER_OVERWHELMING_API parallel_port_trigger final {
 
     public:
 
@@ -35,6 +36,29 @@ namespace power_overwhelming {
         /// The type of a data value that can be written to the port.
         /// </summary>
         typedef std::uint8_t value_type;
+
+        /// <summary>
+        /// Translate <paramref name="message" /> to Morse code for use with the
+        /// <see cref="morse" /> method.
+        /// </summary>
+        /// <remarks>
+        /// <para>The method performs a transformation based on the ITU
+        /// alphabet. Any character that is not translatable will be omitted in
+        /// the output.</para>
+        /// </remarks>
+        /// <param name="dst">Receives the Morse code. This parameter can be
+        /// <c>nullptr</c>, in which case the required buffer size will be
+        /// measured. The output is guaranteed to be null-terminated if the
+        /// buffer is able to hold at least one element.</param>
+        /// <param name="cnt">The size of <paramref name="dst" />.</param>
+        /// <param name="message">The message to be encoded. If this is larger
+        /// than <paramref name="cnt" />, the output is incomplete.</param>
+        /// <returns>The size of the buffer required, regardless of whether the
+        /// full message could be written or not.</returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="message" /> is <c>nullptr</c>.</exception>
+        static std::size_t to_morse(_Out_writes_opt_z_(cnt) wchar_t *dst,
+            _In_ const std::size_t cnt, _In_z_ const wchar_t *message);
 
         /// <summary>
         /// Extracts the data pins from <paramref name="pins" />.

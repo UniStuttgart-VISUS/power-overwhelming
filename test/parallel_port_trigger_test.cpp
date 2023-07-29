@@ -17,6 +17,39 @@ namespace test {
 
     public:
 
+        TEST_METHOD(test_to_morse) {
+            Assert::ExpectException<std::invalid_argument>([](void) {
+                parallel_port_trigger::to_morse(nullptr, 0, nullptr);
+            }, L"Invalid message", LINE_INFO());
+
+            {
+                const wchar_t *message = L"Power Overwhelming";
+                std::vector<wchar_t> code(parallel_port_trigger::to_morse(nullptr, 0, message));
+                parallel_port_trigger::to_morse(code.data(), code.size(), message);
+                Assert::AreEqual(L".--. --- .-- . .-. / --- ...- . .-. .-- .... . .-.. -- .. -. --.", code.data(), message, LINE_INFO());
+            }
+
+            {
+                const wchar_t *message = L"Die Kraft ist überwältigend!";
+                std::vector<wchar_t> code(parallel_port_trigger::to_morse(nullptr, 0, message));
+                parallel_port_trigger::to_morse(code.data(), code.size(), message);
+                Assert::AreEqual(L"-.. .. . / -.- .-. .- ..-. - / .. ... - / ..-- -... . .-. .-- .-.- .-.. - .. --. . -. -.. -.-.--", code.data(), message, LINE_INFO());
+            }
+
+            {
+                const wchar_t *message = L"Oberleutnant Behnisch, wir sind getroffen! Feuer im Maschinenraum!";
+                std::vector<wchar_t> code(parallel_port_trigger::to_morse(nullptr, 0, message));
+                parallel_port_trigger::to_morse(code.data(), code.size(), message);
+                Assert::AreEqual(L"--- -... . .-. .-.. . ..- - -. .- -. - / -... . .... -. .. ... -.-. .... --..-- / .-- .. .-. / ... .. -. -.. / --. . - .-. --- ..-. ..-. . -. -.-.-- / ..-. . ..- . .-. / .. -- / -- .- ... -.-. .... .. -. . -. .-. .- ..- -- -.-.--", code.data(), message, LINE_INFO());
+            }
+
+            {
+                const wchar_t *message = L"F€hler";
+                std::vector<wchar_t> code(parallel_port_trigger::to_morse(nullptr, 0, message));
+                parallel_port_trigger::to_morse(code.data(), code.size(), message);
+                Assert::AreEqual(L"..-. .... .-.. . .-.", code.data(), message, LINE_INFO());
+            }
+        }
         TEST_METHOD(test_to_value) {
             Assert::AreEqual(parallel_port_trigger::value_type(0), parallel_port_trigger::to_value(parallel_port_pin::none), L"none", LINE_INFO());
             Assert::AreEqual(parallel_port_trigger::value_type(1 << 0), parallel_port_trigger::to_value(parallel_port_pin::data0), L"data0", LINE_INFO());
