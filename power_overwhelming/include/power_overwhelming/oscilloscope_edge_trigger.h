@@ -71,6 +71,19 @@ namespace power_overwhelming {
         /// <summary>
         /// Configues the trigger as an external trigger on the given level.
         /// </summary>
+        /// <param name="level">The trigger level.</param>
+        /// <param name="slope">The slope on which to trigger. This parameter
+        /// defaults to <see cref="oscilloscope_trigger_slope::rising" />.
+        /// </param>
+        /// <returns><c>*this</c>.</returns>
+        oscilloscope_edge_trigger& external(
+            _In_ const oscilloscope_quantity& level,
+            _In_ const oscilloscope_trigger_slope slope
+            = oscilloscope_trigger_slope::rising);
+
+        /// <summary>
+        /// Configues the trigger as an external trigger on the given level.
+        /// </summary>
         /// <param name="level">The trigger level in Volts. This parameter
         /// defaults to 2.5 V.</param>
         /// <param name="slope">The slope on which to trigger. This parameter

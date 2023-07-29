@@ -107,7 +107,7 @@ namespace test {
                 .count(8)
                 .points(42)
                 .segmented(true);
-            const auto trigger = dynamic_cast<oscilloscope_edge_trigger &>(oscilloscope_edge_trigger("CH3")
+            const auto trigger = dynamic_cast<oscilloscope_edge_trigger&>(oscilloscope_edge_trigger("CH3")
                 .coupling(oscilloscope_trigger_coupling::low_frequency_reject)
                 .hysteresis(oscilloscope_trigger_hysteresis::high)
                 .level(3, oscilloscope_quantity(42.0f, "V"))
@@ -115,7 +115,8 @@ namespace test {
                 .hold_off("12s")
                 .mode(oscilloscope_trigger_mode::normal));
 
-            const auto input = rtx_instrument_configuration(oscilloscope_quantity(12.0f, "s"), acquisition, trigger, 899);
+            const auto input = rtx_instrument_configuration(oscilloscope_quantity(12.0f, "s"), acquisition, trigger, 899)
+                .beep_on_apply(42).beep_on_error(true).beep_on_trigger(true);
             const auto json = detail::json_serialise(input);
             const auto output = detail::json_deserialise<rtx_instrument_configuration>(json);
 
@@ -124,6 +125,9 @@ namespace test {
             Assert::AreEqual(input.acquisition().points(), output.acquisition().points(), L"acquisition.points", LINE_INFO());
             Assert::AreEqual(input.acquisition().segmented(), output.acquisition().segmented(), L"acquisition.segmented", LINE_INFO());
 
+            Assert::AreEqual(input.beep_on_apply(), output.beep_on_apply(), L"beep_on_apply", LINE_INFO());
+            Assert::AreEqual(input.beep_on_error(), output.beep_on_error(), L"beep_on_error", LINE_INFO());
+            Assert::AreEqual(input.beep_on_trigger(), output.beep_on_trigger(), L"beep_on_trigger", LINE_INFO());
             Assert::AreEqual(input.timeout(), output.timeout(), L"timeout", LINE_INFO());
             Assert::AreEqual(input.time_range().value(), output.time_range().value(), L"time_range.value", LINE_INFO());
             Assert::AreEqual(input.time_range().unit(), output.time_range().unit(), L"time_range.unit", LINE_INFO());

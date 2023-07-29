@@ -32,12 +32,24 @@ visus::power_overwhelming::oscilloscope_edge_trigger::oscilloscope_edge_trigger(
  */
 visus::power_overwhelming::oscilloscope_edge_trigger&
 visus::power_overwhelming::oscilloscope_edge_trigger::external(
-        _In_ const float level,
+        _In_ const oscilloscope_quantity& level,
         _In_ const oscilloscope_trigger_slope slope) {
-    this->level(5, oscilloscope_quantity(level, "V"))
+    this->level(5, level)
         .slope(slope)
         .source("EXT");
     return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::oscilloscope_edge_trigger::external
+ */
+
+visus::power_overwhelming::oscilloscope_edge_trigger&
+visus::power_overwhelming::oscilloscope_edge_trigger::external(
+        _In_ const float level,
+        _In_ const oscilloscope_trigger_slope slope) {
+    return this->external(oscilloscope_quantity(level, "V"), slope);
 }
 
 
