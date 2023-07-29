@@ -166,6 +166,9 @@ namespace test {
             {
                 const rtx_instrument_configuration c(time_range);
                 Assert::IsTrue(c.acquisition().automatic_points(), L"Default acquisition.automatic_poits", LINE_INFO());
+                Assert::AreEqual(std::size_t(0), c.beep_on_apply(), L"Default beep_on_apply", LINE_INFO());
+                Assert::IsFalse(c.beep_on_error(), L"Default beep_on_error", LINE_INFO());
+                Assert::IsFalse(c.beep_on_trigger(), L"Default beep_on_trigger", LINE_INFO());
                 Assert::AreEqual(int(1), int(c.acquisition().count()), L"Default acquisition.count", LINE_INFO());
                 Assert::IsTrue(c.acquisition().segmented(), L"Default acquisition.segmented", LINE_INFO());
                 Assert::IsFalse(c.slave(), L"Default slave", LINE_INFO());
@@ -176,7 +179,10 @@ namespace test {
             }
 
             {
-                const rtx_instrument_configuration c(time_range, acquisition, trigger, 2000);
+                const auto c = rtx_instrument_configuration(time_range, acquisition, trigger, 2000).beep_on_apply(42).beep_on_error(true).beep_on_trigger(true);
+                Assert::AreEqual(std::size_t(42), c.beep_on_apply(), L"Explicit beep_on_apply", LINE_INFO());
+                Assert::IsTrue(c.beep_on_error(), L"Explicit beep_on_error", LINE_INFO());
+                Assert::IsTrue(c.beep_on_trigger(), L"Explicit beep_on_trigger", LINE_INFO());
                 Assert::IsFalse(c.acquisition().automatic_points(), L"Explicit acquisition.automatic_poits", LINE_INFO());
                 Assert::AreEqual(int(16), int(c.acquisition().count()), L"Explicit acquisition.count", LINE_INFO());
                 Assert::IsFalse(c.acquisition().segmented(), L"Explicit acquisition.segmented", LINE_INFO());
