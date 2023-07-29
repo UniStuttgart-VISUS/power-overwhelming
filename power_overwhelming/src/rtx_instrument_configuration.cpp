@@ -5,6 +5,7 @@
 
 #include "power_overwhelming/rtx_instrument_configuration.h"
 
+#include <cstring>
 #include <stdexcept>
 #include <vector>
 
