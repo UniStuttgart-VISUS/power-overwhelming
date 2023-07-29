@@ -23,6 +23,13 @@ namespace test {
             }, L"Invalid message", LINE_INFO());
 
             {
+                const wchar_t *message = L"abcdefghijklmnopqrstuvwxyzäöü0123456789,.-:+=!";
+                std::vector<wchar_t> code(parallel_port_trigger::to_morse(nullptr, 0, message));
+                parallel_port_trigger::to_morse(code.data(), code.size(), message);
+                Assert::AreEqual(L".- -... -.-. -.. . ..-. --. .... .. .--- -.- .-.. -- -. --- .--. --.- .-. ... - ..- ...- .-- -..- -.-- --.. .-.- ---. ..-- ----- .---- ..--- ...-- ....- ..... -.... --... ---.. ----. --..-- .-.-.- -....- ---... .-.-. -...- -.-.--", code.data(), message, LINE_INFO());
+            }
+
+            {
                 const wchar_t *message = L"Power Overwhelming";
                 std::vector<wchar_t> code(parallel_port_trigger::to_morse(nullptr, 0, message));
                 parallel_port_trigger::to_morse(code.data(), code.size(), message);
