@@ -13,7 +13,6 @@
 #endif /* defined(_WIN32) */
 
 #include "power_overwhelming/parallel_port_pin.h"
-#include "power_overwhelming/power_overwhelming_api.h"
 
 
 namespace visus {

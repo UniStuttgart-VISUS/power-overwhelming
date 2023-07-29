@@ -8,6 +8,8 @@
 #include <cinttypes>
 #include <type_traits>
 
+#include "power_overwhelming/power_overwhelming_api.h"
+
 
 namespace visus {
 namespace power_overwhelming {
