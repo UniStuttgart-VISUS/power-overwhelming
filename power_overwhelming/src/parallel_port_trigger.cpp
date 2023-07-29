@@ -149,7 +149,7 @@ void visus::power_overwhelming::parallel_port_trigger::open(
     }
 #else /* defined(_WIN32) */
     auto p = convert_string<char>(path);
-    this->open(p);
+    this->open(p.c_str());
 #endif /* defined(_WIN32) */
 }
 
