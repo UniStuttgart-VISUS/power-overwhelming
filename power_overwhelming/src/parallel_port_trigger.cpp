@@ -16,8 +16,8 @@
 #include <thread>
 
 #if !defined(_WIN32)
-#include <ppdev.h>
 #include <unistd.h>
+#include <linux/ppdev.h>
 #include <sys/io.h>
 #include <sys/ioctl.h>
 #endif /* !defined(_WIN32) */
