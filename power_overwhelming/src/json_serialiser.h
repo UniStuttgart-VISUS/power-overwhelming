@@ -1,4 +1,4 @@
-﻿// <copyright file="json_serialiser.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+﻿// <copyright file="json_serialiser.h" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -202,6 +202,20 @@ namespace detail {
             _In_z_ const char *name, _In_ TType&& value) {
         return { name, json_serialise(std::forward<TType>(value)) };
     }
+
+    /// <summary>
+    /// Loads JSON from the file at the specified location.
+    /// </summary>
+    /// <param name="path"></param>
+    extern nlohmann::json load_json(_In_z_ const wchar_t *path);
+
+    /// <summary>
+    /// Saves the given JSON to the file at the specified location.
+    /// </summary>
+    /// <param name="json"></param>
+    /// <param name="path"></param>
+    extern void save_json(_In_ const nlohmann::json& json,
+        _In_z_ const wchar_t *path);
 
 } /* namespace detail */
 } /* namespace power_overwhelming */

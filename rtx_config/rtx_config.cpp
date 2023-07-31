@@ -3,7 +3,8 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/rtx_instrument.h"
+#include "power_overwhelming/convert_string.h"
+#include "power_overwhelming/rtx_instrument_configuration.h"
 
 #include <algorithm>
 #include <iostream>
@@ -51,11 +52,22 @@ int _tmain(const int argc, const TCHAR **argv) {
     }
 
     try {
+        auto path = convert_string<wchar_t>(cmd_line[2]);
+        std::vector<rtx_instrument> instrums(rtx_instrument::all(nullptr, 0));
+        rtx_instrument::all(instrums.data(), instrums.size());
+
         if (save) {
+            rtx_instrument_configuration::save(instrums.data(),
+                instrums.size(), path.c_str());
 
+        } else if (restore) {
+            for (auto& i : instrums) {
+                i.reset(true, true);
+            }
+
+            rtx_instrument_configuration::apply(instrums.data(),
+                instrums.size(), path.c_str());
         }
-
-        throw "TODO";
 
         return 0;
     } catch (std::exception& ex) {

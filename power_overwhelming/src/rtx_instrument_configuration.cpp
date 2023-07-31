@@ -7,12 +7,54 @@
 
 #include <cstring>
 #include <fstream>
+#include <map>
 #include <stdexcept>
 #include <vector>
 
 #include "power_overwhelming/convert_string.h"
 
 #include "rtx_serialisation.h"
+
+
+namespace visus {
+namespace power_overwhelming {
+namespace detail {
+
+    static constexpr const char *json_field_config = "configuration";
+    static constexpr const char *json_field_name = "name";
+    static constexpr const char *json_field_path = "path";
+
+    static void parse_rtx_instument_conf(_In_ const nlohmann::json obj,
+            _Inout_ std::vector<rtx_instrument_configuration>& configs,
+            _Inout_ std::map<std::string, std::size_t>& by_path,
+            _Inout_ std::map<std::string, std::size_t>& by_name) {
+        if (obj.contains(json_field_config)) {
+            // This is a compound object that potentially ties the
+            // configuration to a specific device.
+            const auto idx = configs.size();
+            configs.push_back(detail::json_deserialise<
+                rtx_instrument_configuration>(obj[json_field_config]));
+
+            const auto name = obj[json_field_name].get<std::string>();
+            if (!name.empty()) {
+                by_name[name] = idx;
+            }
+
+            const auto path = obj[json_field_path].get<std::string>();
+            if (!path.empty()) {
+                by_path[path] = idx;
+            }
+
+        } else {
+            // This must be the configuration object itself, so just add it.
+            configs.push_back(detail::json_deserialise<
+                rtx_instrument_configuration>(obj));
+        }
+    }
+
+} /* namespace detail */
+} /* namespace power_overwhelming */
+} /* namespace visus */
 
 
 /*
@@ -125,6 +167,142 @@ std::size_t visus::power_overwhelming::rtx_instrument_configuration::apply(
 }
 
 
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::apply
+ */
+void visus::power_overwhelming::rtx_instrument_configuration::apply(
+        _In_reads_(cnt) rtx_instrument *instruments,
+        _In_ const std::size_t cnt,
+        _In_z_ const wchar_t *path) {
+    auto json = detail::load_json(path);
+
+    std::vector<rtx_instrument_configuration> configs;
+    std::map<std::string, std::size_t> by_name;
+    std::map<std::string, std::size_t> by_path;
+
+    // Find out what kind of data we have. If we have an array, add all of its
+    // members. If we have a single object, just add this one. Any other type
+    // of data indicates an invalid file.
+    switch (json.type()) {
+        case nlohmann::json::value_t::array:
+            for (auto j : json) {
+                detail::parse_rtx_instument_conf(j, configs, by_path, by_name);
+            }
+            break;
+
+        case nlohmann::json::value_t::object:
+            detail::parse_rtx_instument_conf(json, configs, by_path, by_name);
+            break;
+
+        default:
+            throw std::invalid_argument("The specified file did not contain "
+                "a configuration object or an array thereof.");
+    }
+
+    if (configs.size() < 1) {
+        throw std::invalid_argument("The specified file did not contain any "
+            "valid configuration objects.");
+    }
+
+    for (std::size_t i = 0; i < cnt; ++i) {
+        auto& instrument = instruments[i];
+
+        {
+            auto it = by_path.find(instrument.path());
+            if (it != by_path.end()) {
+                configs[it->second].apply(instrument);
+                continue;
+            }
+        }
+
+        {
+            std::vector<char> name(instrument.name(nullptr, 0));
+            instrument.name(name.data(), name.size());
+
+            auto it = by_name.find(name.data());
+            if (it != by_name.end()) {
+                configs[it->second].apply(instrument);
+                continue;
+            }
+        }
+
+        std::cout << "No matching configuration was found for \""
+            << instrument.path() << "\" in the file provided, so the first "
+            "one is being applied." << std::endl;
+        configs.front().apply(instrument);
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::load
+ */
+std::size_t visus::power_overwhelming::rtx_instrument_configuration::load(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt))
+        rtx_instrument_configuration *dst,
+        _In_ std::size_t cnt,
+        _In_z_ const wchar_t *path) {
+    if (path == nullptr) {
+        throw std::invalid_argument("The path to the input file must not be "
+            "null");
+    }
+
+    auto json = detail::load_json(path);
+
+    // Determine the required memory.
+    std::size_t retval = 0;
+    switch (json.type()) {
+        case nlohmann::json::value_t::array:
+            retval = json.size();
+            break;
+
+        case nlohmann::json::value_t::object:
+            retval = 1;
+            break;
+
+        default:
+            retval = 0;
+            break;
+    }
+
+    // There is no space if the array is invalid.
+    if (dst == nullptr) {
+        cnt = 0;
+    }
+
+    // Load as many configurations as possible.
+    for (std::size_t i = 0; (i < cnt) && (i < retval); ++i) {
+        const auto& j = json[i];
+        dst[i] = detail::json_deserialise<rtx_instrument_configuration>(j);
+    }
+
+    return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::save
+ */
+void visus::power_overwhelming::rtx_instrument_configuration::save(
+        _In_reads_(cnt) rtx_instrument_configuration *configs,
+        _In_ const std::size_t cnt,
+        _In_z_ const wchar_t *path) {
+    if (configs == nullptr) {
+        throw std::invalid_argument("The instrument configurations array to be "
+            "serialised must not be null.");
+    }
+
+    auto data = nlohmann::json::array();
+
+    for (std::size_t i = 0; i < cnt; ++i) {
+        data.push_back(detail::json_serialise(configs[i]));
+    }
+
+    detail::save_json(data, path);
+}
+
+
 /*
  * visus::power_overwhelming::rtx_instrument_configuration::save
  */
@@ -132,15 +310,6 @@ void visus::power_overwhelming::rtx_instrument_configuration::save(
         _In_reads_(cnt) rtx_instrument *instruments,
         _In_ const std::size_t cnt,
         _In_z_ const wchar_t *path) {
-    if (instruments == nullptr) {
-        throw std::invalid_argument("The instrument array to be serialised "
-            "must not be null.");
-    }
-    if (path == nullptr) {
-        throw std::invalid_argument("The path to the output file must not be "
-            "null");
-    }
-
     auto data = nlohmann::json::array();
 
     for (std::size_t i = 0; i < cnt; ++i) {
@@ -149,22 +318,34 @@ void visus::power_overwhelming::rtx_instrument_configuration::save(
             instruments[i].single_acquisition(),
             instruments[i].edge_trigger(),
             instruments[i].timeout());
-        data.push_back(detail::json_serialise(config));
+        std::vector<char> name(instruments[i].name(nullptr, 0));
+        instruments[i].name(name.data(), name.size());
+
+        data.push_back(nlohmann::json::object({
+            detail::json_serialise(detail::json_field_path,
+                instruments[i].path()),
+            detail::json_serialise(detail::json_field_name,
+                std::string(name.data())),
+            detail::json_serialise(detail::json_field_config, config)
+        }));
     }
 
-    std::ofstream s;
-    s.exceptions(s.exceptions() | std::ios::failbit | std::ios::badbit);
-
-#if defined(_WIN32)
-    s.open(path, std::ofstream::trunc);
-#else /* defined(_WIN32) */
-    auto p = power_overwhelming::convert_string<char>(path);
-    s.open(p, std::ofstream::trunc);
-#endif /* defined(_WIN32) */
-
-    s << data;
-    s.close();
+    detail::save_json(data, path);
 }
+
+
+/*
+ * ...::rtx_instrument_configuration::rtx_instrument_configuration
+ */
+visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configuration(
+        void)
+    : _beep_on_apply(0),
+        _beep_on_error(false),
+        _beep_on_trigger(false),
+        _slave(false),
+        _timeout(0),
+        _time_range(0.0f),
+        _trigger("EXT") { }
 
 
 /*
