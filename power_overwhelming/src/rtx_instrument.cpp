@@ -7,6 +7,7 @@
 
 #include <cassert>
 #include <cstdlib>
+#include <regex>
 #include <fstream>
 #include <random>
 
@@ -883,7 +884,7 @@ visus::power_overwhelming::rtx_instrument::edge_trigger(void) const {
     auto source = this->query("TRIG:A:SOUR?\n");
     auto src = source.as<char>();
     _Analysis_assume_(src != nullptr);
-    *::strchr(src, '\n') = 0;
+    detail::trim_eol(src);
 
     oscilloscope_edge_trigger retval(src);
 
@@ -937,8 +938,25 @@ visus::power_overwhelming::rtx_instrument::edge_trigger(void) const {
     }
 
     {
-        auto level = this->query("TRIG:A:LEV:VAL?\n");
-        // TODO: Parse channel here for specific level?
+        std::cmatch match;
+        std::string query;
+        std::regex rx("^ch(\\d+)$", std::regex_constants::ECMAScript
+            | std::regex_constants::icase);
+
+        if (std::regex_match(retval.source(), match, rx)) {
+            // Analog channel that needs to be parsed.
+            auto input = match[1].str();
+            query = detail::format_string("TRIG:A:LEV%s:VAL?\n", input.c_str());
+
+        } else if (detail::equals(retval.source(), "EXT", true)) {
+            // External trigger is input #5 on RTA/RTB.
+            query = "TRIG:A:LEV5:VAL?\n";
+
+        } else {
+            query = "TRIG:A:LEV:VAL?\n";
+        }
+
+        auto level = this->query(query.c_str());
         retval.level(detail::parse_float(level.as<char>()));
     }
 

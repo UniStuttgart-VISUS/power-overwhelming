@@ -55,6 +55,7 @@ namespace detail {
     /// </summary>
      /// <remarks>
     /// This function is only exported from the library for testing purposes.
+    /// </remarks>
     /// <param name="lhs">The left-hand side string. It is safe to
     /// pass <c>nullptr</c>, in which case the result will only be <c>true</c>
     /// if <paramref name="lhs" /> and <paramref name="rhs" /> are both
