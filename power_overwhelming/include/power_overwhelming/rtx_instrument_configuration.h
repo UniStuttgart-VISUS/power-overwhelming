@@ -470,7 +470,7 @@ namespace power_overwhelming {
             _In_ const oscilloscope_channel& channel);
 
         /// <summary>
-        /// Counts or returns the number of channels configured.
+        /// Counts or returns the channels configured.
         /// </summary>
         /// <remarks>
         /// The value reported by this object does not necessarily reflect the
