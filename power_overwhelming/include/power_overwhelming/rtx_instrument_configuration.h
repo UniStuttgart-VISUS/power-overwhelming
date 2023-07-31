@@ -35,6 +35,10 @@ namespace power_overwhelming {
     /// strongly recommended to apply the same settings to all instruments when
     /// working with multiple oscilloscopes in order to produce consistent
     /// results.</para>
+    /// <para>This class does not at all interact with the actual instrument
+    /// until the configuration is applied. Therefore, it is possible to create
+    /// configurations that are invalid without noticing it until the
+    /// configuration is realised.</para>
     /// <para>Although it is possible to configure settings that are only
     /// relevant on a per-sensor basis, most notably the channels, using this
     /// class, you should never do this when using it in conjunction with
@@ -245,6 +249,12 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
+        /// <remarks>
+        /// The instance created by the default constructor is not really
+        /// usable. This constructor only exists such that it is possible to
+        /// create temporary variables and arrays of the type. Actual instances
+        /// should always be created using one of the other constructors.
+        /// </remarks>
         rtx_instrument_configuration(void);
 
         /// <summary>
@@ -320,6 +330,24 @@ namespace power_overwhelming {
             _In_ const oscilloscope_single_acquisition& acquisition,
             _In_ const oscilloscope_edge_trigger& trigger,
             _In_ visa_instrument::timeout_type timeout = 0);
+
+        /// <summary>
+        /// Extracts the configuration from the given instrument.
+        /// </summary>
+        /// <remarks>
+        /// This constructor tries enumerating the channels of the device until
+        /// it fails. It may therefore take significant time to complete as the
+        /// instrument must hit a timeout to detect that the final channel was
+        /// opened.
+        /// </remarks>
+        /// <param name="instrument">The instrument to retrieve the
+        /// configuration from.</param>
+        /// <param name="ignore_channels">If this parameter is set <c>true</c>,
+        /// the constructor will not try enumerating the channel configurations
+        /// of the instrument.</param>
+        explicit rtx_instrument_configuration(
+            _In_ const rtx_instrument& instrument,
+            _In_ const bool ignore_channels = false);
 
         /// <summary>
         /// Finalises the instance.

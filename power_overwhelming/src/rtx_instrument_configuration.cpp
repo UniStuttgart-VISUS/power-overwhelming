@@ -314,11 +314,7 @@ void visus::power_overwhelming::rtx_instrument_configuration::save(
     auto data = nlohmann::json::array();
 
     for (std::size_t i = 0; i < cnt; ++i) {
-        rtx_instrument_configuration config(
-            instruments[i].time_range(),
-            instruments[i].single_acquisition(),
-            instruments[i].edge_trigger(),
-            instruments[i].timeout());
+        rtx_instrument_configuration config(instruments[i]);
         std::vector<char> name(instruments[i].name(nullptr, 0));
         instruments[i].name(name.data(), name.size());
 
@@ -366,7 +362,12 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _timeout(rhs._timeout),
         _time_range(rhs._time_range),
         _trigger(rhs._trigger) {
-    this->_channels = new oscilloscope_channel[this->_cnt_channels];
+    typedef oscilloscope_channel chan_t;
+    // Create a unique_ptr for safety reasons: If any of the assignment
+    // operators of the channels fails, we must release this memory.
+    auto channels = std::unique_ptr<chan_t[]>(new chan_t[this->_cnt_channels]);
+    std::copy(rhs._channels, rhs._channels + rhs._cnt_channels, channels.get());
+    this->_channels = channels.release();
 }
 
 
@@ -429,6 +430,49 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _timeout(timeout),
         _time_range(time_range),
         _trigger(trigger) { }
+
+
+/*
+ * ...::rtx_instrument_configuration::rtx_instrument_configuration
+ */
+visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configuration(
+        _In_ const rtx_instrument& instrument,
+        _In_ const bool ignore_channels)
+    : _acquisition(instrument.single_acquisition()),
+        _beep_on_apply(0),
+        _beep_on_error(false),
+        _beep_on_trigger(false),
+        _channels(nullptr),
+        _cnt_channels(0),
+        _slave(false),
+        _timeout(instrument.timeout()),
+        _time_range(instrument.time_range()),
+        _trigger(instrument.edge_trigger()) {
+    typedef oscilloscope_channel chan_t;
+    std::vector<chan_t> channels;
+
+    if (!ignore_channels) {
+        // Probe the channels as there is no other way to find the number of
+        // channels. The instrument does the counting the same way, but as we
+        // would need to do the same queries anyway, we can fail here instread
+        // of enumerating everything twice.
+        for (std::size_t i = 0; true; ++i) {
+            try {
+                channels.push_back(instrument.channel(i));
+            } catch (...) {
+                instrument.query("*CLS; *OPC?\n");
+                break;
+            }
+        }
+
+        // As the copy of a single channel might throw, protect the memory via a
+        // unqiue_ptr until done.
+        auto channels0 = std::unique_ptr<chan_t[]>(new chan_t[this->_cnt_channels]);
+        std::copy(channels.begin(), channels.end(), channels0.get());
+        this->_channels = channels0.release();
+        this->_cnt_channels = channels.size();
+    }
+}
 
 
 /*

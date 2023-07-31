@@ -148,7 +148,8 @@ namespace test {
         TEST_METHOD(test_rtx_instrument_config_with_channels) {
             const auto input = rtx_instrument_configuration(12.0f)
                 .channel(oscilloscope_channel(1))
-                .channel(oscilloscope_channel(2));
+                .channel(oscilloscope_channel(2))
+                .channel(oscilloscope_channel(4));
             const auto json = detail::json_serialise(input);
             const auto output = detail::json_deserialise<rtx_instrument_configuration>(json);
 
@@ -161,6 +162,7 @@ namespace test {
             Assert::AreEqual(expected_channels.size(), actual_channels.size(), L"# of channels", LINE_INFO());
             Assert::AreEqual(expected_channels[0].channel(), actual_channels[0].channel(), L"CH1", LINE_INFO());
             Assert::AreEqual(expected_channels[1].channel(), actual_channels[1].channel(), L"CH2", LINE_INFO());
+            Assert::AreEqual(expected_channels[2].channel(), actual_channels[2].channel(), L"CH4", LINE_INFO());
         }
 
     };
