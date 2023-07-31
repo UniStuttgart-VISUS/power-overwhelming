@@ -12,6 +12,7 @@ include(GNUInstallDirs)
 option(PWROWG_BuildDemo "Build demo programme" OFF)
 cmake_dependent_option(PWROWG_BuildDriver "Build RAPL MSR driver" OFF WIN32 OFF)
 option(PWROWG_BuildDumpSensors "Build dump_sensors utility" ON)
+option(PWROWG_BuildRtxConfig "Build R&S RTA/RTB configuration utility" OFF)
 cmake_dependent_option(PWROWG_BuildStablePower "Build setstablepowerstate tool" OFF WIN32 OFF)
 cmake_dependent_option(PWROWG_BuildTests "Build unit tests." ON WIN32 OFF)
 cmake_dependent_option(PWROWG_BuildWeb "Build browser for benchmarking web-based visualisations" OFF WIN32 OFF)
@@ -43,6 +44,11 @@ endif ()
 # dump_sensors utility
 if (PWROWG_BuildDumpSensors)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/dump_sensors)
+endif ()
+
+# Oscilloscope configuration utility
+if (PWROWG_BuildRtxConfig)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/rtx_config)
 endif ()
 
 # Browser

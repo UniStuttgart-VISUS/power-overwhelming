@@ -167,6 +167,20 @@ namespace power_overwhelming {
             = oscilloscope_trigger_slope::rising);
 
         /// <summary>
+        /// Saves the given instrument configurations in a JSON file.
+        /// </summary>
+        /// <param name="instruments">The instruments to be saved.</param>
+        /// <param name="cnt">The number of <paramref name="instruments" /> in
+        /// the input array.</param>
+        /// <param name="path">The path to the output file.</param>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="instruments" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="path" /> is <c>nullptr</c>.</exception>
+        static void save(_In_reads_(cnt) rtx_instrument *instruments,
+            _In_ const std::size_t cnt, _In_z_ const wchar_t *path);
+
+        /// <summary>
         /// Initialises a new instance.
         /// </summary>
         /// <remarks>

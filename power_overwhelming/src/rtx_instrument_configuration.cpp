@@ -6,10 +6,13 @@
 #include "power_overwhelming/rtx_instrument_configuration.h"
 
 #include <cstring>
+#include <fstream>
 #include <stdexcept>
 #include <vector>
 
 #include "power_overwhelming/convert_string.h"
+
+#include "rtx_serialisation.h"
 
 
 /*
@@ -119,6 +122,48 @@ std::size_t visus::power_overwhelming::rtx_instrument_configuration::apply(
     }
 
     return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::save
+ */
+void visus::power_overwhelming::rtx_instrument_configuration::save(
+        _In_reads_(cnt) rtx_instrument *instruments,
+        _In_ const std::size_t cnt,
+        _In_z_ const wchar_t *path) {
+    if (instruments == nullptr) {
+        throw std::invalid_argument("The instrument array to be serialised "
+            "must not be null.");
+    }
+    if (path == nullptr) {
+        throw std::invalid_argument("The path to the output file must not be "
+            "null");
+    }
+
+    auto data = nlohmann::json::array();
+
+    for (std::size_t i = 0; i < cnt; ++i) {
+        rtx_instrument_configuration config(
+            instruments[i].time_range(),
+            instruments[i].single_acquisition(),
+            instruments[i].edge_trigger(),
+            instruments[i].timeout());
+        data.push_back(detail::json_serialise(config));
+    }
+
+    std::ofstream s;
+    s.exceptions(s.exceptions() | std::ios::failbit | std::ios::badbit);
+
+#if defined(_WIN32)
+    s.open(path, std::ofstream::trunc);
+#else /* defined(_WIN32) */
+    auto p = power_overwhelming::convert_string<char>(path);
+    s.open(p, std::ofstream::trunc);
+#endif /* defined(_WIN32) */
+
+    s << data;
+    s.close();
 }
 
 
