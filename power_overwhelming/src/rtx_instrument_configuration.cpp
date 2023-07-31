@@ -8,6 +8,7 @@
 #include <cstring>
 #include <fstream>
 #include <map>
+#include <memory>
 #include <stdexcept>
 #include <vector>
 
@@ -313,11 +314,7 @@ void visus::power_overwhelming::rtx_instrument_configuration::save(
     auto data = nlohmann::json::array();
 
     for (std::size_t i = 0; i < cnt; ++i) {
-        rtx_instrument_configuration config(
-            instruments[i].time_range(),
-            instruments[i].single_acquisition(),
-            instruments[i].edge_trigger(),
-            instruments[i].timeout());
+        rtx_instrument_configuration config(instruments[i]);
         std::vector<char> name(instruments[i].name(nullptr, 0));
         instruments[i].name(name.data(), name.size());
 
@@ -342,10 +339,56 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
     : _beep_on_apply(0),
         _beep_on_error(false),
         _beep_on_trigger(false),
+        _channels(nullptr),
+        _cnt_channels(0),
         _slave(false),
         _timeout(0),
         _time_range(0.0f),
         _trigger("EXT") { }
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configuration
+ */
+visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configuration(
+        _In_ const rtx_instrument_configuration& rhs)
+    : _acquisition(rhs._acquisition),
+        _beep_on_apply(rhs._beep_on_apply),
+        _beep_on_error(rhs._beep_on_error),
+        _beep_on_trigger(rhs._beep_on_trigger),
+        _channels(nullptr),
+        _cnt_channels(rhs._cnt_channels),
+        _slave(rhs._slave),
+        _timeout(rhs._timeout),
+        _time_range(rhs._time_range),
+        _trigger(rhs._trigger) {
+    typedef oscilloscope_channel chan_t;
+    // Create a unique_ptr for safety reasons: If any of the assignment
+    // operators of the channels fails, we must release this memory.
+    auto channels = std::unique_ptr<chan_t[]>(new chan_t[this->_cnt_channels]);
+    std::copy(rhs._channels, rhs._channels + rhs._cnt_channels, channels.get());
+    this->_channels = channels.release();
+}
+
+
+/*
+ * ...::rtx_instrument_configuration::rtx_instrument_configuration
+ */
+visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configuration(
+        _Inout_ rtx_instrument_configuration &&rhs) noexcept
+    : _acquisition(std::move(rhs._acquisition)),
+        _beep_on_apply(rhs._beep_on_apply),
+        _beep_on_error(rhs._beep_on_error),
+        _beep_on_trigger(rhs._beep_on_trigger),
+        _channels(rhs._channels),
+        _cnt_channels(rhs._cnt_channels),
+        _slave(rhs._slave),
+        _timeout(rhs._timeout),
+        _time_range(std::move(rhs._time_range)),
+        _trigger(std::move(rhs._trigger)) {
+    rhs._channels = nullptr;
+    rhs._cnt_channels = 0;
+}
 
 
 /*
@@ -358,6 +401,8 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
     : _beep_on_apply(0),
         _beep_on_error(false),
         _beep_on_trigger(false),
+        _channels(nullptr),
+        _cnt_channels(0),
         _slave(false),
         _timeout(0),
         _time_range(time_range),
@@ -379,10 +424,64 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _beep_on_apply(0),
         _beep_on_error(false),
         _beep_on_trigger(false),
+        _channels(nullptr),
+        _cnt_channels(0),
         _slave(false),
         _timeout(timeout),
         _time_range(time_range),
         _trigger(trigger) { }
+
+
+/*
+ * ...::rtx_instrument_configuration::rtx_instrument_configuration
+ */
+visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configuration(
+        _In_ const rtx_instrument& instrument,
+        _In_ const bool ignore_channels)
+    : _acquisition(instrument.single_acquisition()),
+        _beep_on_apply(0),
+        _beep_on_error(false),
+        _beep_on_trigger(false),
+        _channels(nullptr),
+        _cnt_channels(0),
+        _slave(false),
+        _timeout(instrument.timeout()),
+        _time_range(instrument.time_range()),
+        _trigger(instrument.edge_trigger()) {
+    typedef oscilloscope_channel chan_t;
+    std::vector<chan_t> channels;
+
+    if (!ignore_channels) {
+        // Probe the channels as there is no other way to find the number of
+        // channels. The instrument does the counting the same way, but as we
+        // would need to do the same queries anyway, we can fail here instread
+        // of enumerating everything twice.
+        for (std::size_t i = 0; true; ++i) {
+            try {
+                channels.push_back(instrument.channel(i));
+            } catch (...) {
+                instrument.query("*CLS; *OPC?\n");
+                break;
+            }
+        }
+
+        // As the copy of a single channel might throw, protect the memory via a
+        // unqiue_ptr until done.
+        auto channels0 = std::unique_ptr<chan_t[]>(new chan_t[this->_cnt_channels]);
+        std::copy(channels.begin(), channels.end(), channels0.get());
+        this->_channels = channels0.release();
+        this->_cnt_channels = channels.size();
+    }
+}
+
+
+/*
+ * ...::rtx_instrument_configuration::~rtx_instrument_configuration
+ */
+visus::power_overwhelming::rtx_instrument_configuration::~rtx_instrument_configuration(
+        void) {
+    delete[] this->_channels;
+}
 
 
 /*
@@ -414,8 +513,19 @@ void visus::power_overwhelming::rtx_instrument_configuration::apply(
     instrument.time_range(this->_time_range)
         .trigger_output(oscilloscope_trigger_output::pulse)
         .trigger(this->_trigger)
-        .acquisition(this->_acquisition, false, false)
-        .operation_complete();
+        .acquisition(this->_acquisition, false, false);
+
+    // If there are per-channel settings, apply them as well. Note that the
+    // pointer may be non-null while there are zero channels. This is perfectly
+    // legal and all data in '_channels' should be ignored in this case.
+    if (this->_channels != nullptr) {
+        for (std::size_t i = 0; i < this->_cnt_channels; ++i) {
+            instrument.channel(this->_channels[i]);
+        }
+    }
+
+    // Wait until the instrument has applied all of the before settings.
+    instrument.operation_complete();
 
     // Note: Beep will do nothing if the count is zero.
     instrument.beep(this->_beep_on_apply);
@@ -451,5 +561,147 @@ visus::power_overwhelming::rtx_instrument_configuration&
 visus::power_overwhelming::rtx_instrument_configuration::beep_on_trigger(
         _In_ const bool enable) noexcept {
     this->_beep_on_trigger = enable;
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::channel
+ */
+visus::power_overwhelming::rtx_instrument_configuration&
+visus::power_overwhelming::rtx_instrument_configuration::channel(
+        _In_ const oscilloscope_channel& channel) {
+    // If we already have channels, make sure that each channel is configured
+    // only once and overwrite any existing configuration for the same channel.
+    if (this->_channels != nullptr) {
+        for (std::size_t i = 0; i < this->_cnt_channels; ++i) {
+            if (this->_channels[i].channel() == channel.channel()) {
+                this->_channels[i] = channel;
+                return *this;
+            }
+        }
+    }
+    // At this point, we know that we do not know 'channel'.
+
+    auto old = this->_channels;
+    this->_channels = new oscilloscope_channel[this->_cnt_channels + 1];
+
+    // Copy the existing channels and delete them.
+    std::copy(old, old + this->_cnt_channels, this->_channels);
+    delete[] old;
+
+    // Append the new one.
+    this->_channels[this->_cnt_channels++] = channel;
+
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::channels
+ */
+std::size_t visus::power_overwhelming::rtx_instrument_configuration::channels(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) oscilloscope_channel *dst,
+        _In_ const std::size_t cnt) const {
+    if (dst != nullptr) {
+        std::copy(this->_channels,
+            this->_channels + (std::min)(cnt, this->_cnt_channels),
+            dst);
+    }
+
+    return this->_cnt_channels;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::ignore_channel
+ */
+visus::power_overwhelming::rtx_instrument_configuration&
+visus::power_overwhelming::rtx_instrument_configuration::ignore_channel(
+        _In_ const std::uint32_t channel) {
+    auto end = this->_channels + this->_cnt_channels;
+    auto it = std::remove_if(this->_channels, end,
+            [channel](const oscilloscope_channel& c) {
+        return (c.channel() == channel);
+    });
+
+    if (it != end) {
+        // Something has been removed. Note that we do not reallocate in this
+        // case as this is a rare use case and the amount of rubbish that we
+        // will keep unti something is added or everything is erased is small.
+        --this->_cnt_channels;
+    }
+
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::ignore_all_channels
+ */
+visus::power_overwhelming::rtx_instrument_configuration&
+visus::power_overwhelming::rtx_instrument_configuration::ignore_all_channels(
+        void) noexcept {
+    delete[] this->_channels;
+    this->_channels = nullptr;
+    this->_cnt_channels = 0;
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::operator =
+ */
+visus::power_overwhelming::rtx_instrument_configuration&
+visus::power_overwhelming::rtx_instrument_configuration::operator =(
+        _In_ const rtx_instrument_configuration& rhs) {
+    if (this != std::addressof(rhs)) {
+        this->_acquisition = rhs._acquisition;
+        this->_beep_on_apply = rhs._beep_on_apply;
+        this->_beep_on_error = rhs._beep_on_error;
+        this->_beep_on_trigger = rhs._beep_on_trigger;
+
+        delete[] this->_channels;
+        this->_channels = new oscilloscope_channel[rhs._cnt_channels];
+        std::copy(rhs._channels,
+            rhs._channels + rhs._cnt_channels,
+            this->_channels);
+
+        this->_cnt_channels = rhs._cnt_channels;
+        this->_slave = rhs._slave;
+        this->_timeout = rhs._timeout;
+        this->_time_range = rhs._time_range;
+        this->_trigger = rhs._trigger;
+    }
+
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::operator =
+ */
+visus::power_overwhelming::rtx_instrument_configuration&
+visus::power_overwhelming::rtx_instrument_configuration::operator =(
+        _Inout_ rtx_instrument_configuration&& rhs) noexcept {
+    if (this != std::addressof(rhs)) {
+        this->_acquisition = std::move(rhs._acquisition);
+        this->_beep_on_apply = rhs._beep_on_apply;
+        this->_beep_on_error = rhs._beep_on_error;
+        this->_beep_on_trigger = rhs._beep_on_trigger;
+
+        delete[] this->_channels;
+        this->_channels = rhs._channels;
+        rhs._channels = nullptr;
+
+        this->_cnt_channels = rhs._cnt_channels;
+        rhs._cnt_channels = 0;
+
+        this->_slave = rhs._slave;
+        this->_timeout = rhs._timeout;
+        this->_time_range = std::move(rhs._time_range);
+        this->_trigger = std::move(rhs._trigger);
+    }
+
     return *this;
 }

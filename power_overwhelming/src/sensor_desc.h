@@ -326,11 +326,7 @@ namespace detail {
             auto instrument = value.instrument();
             auto channel_current = instrument->channel(value.channel_current());
             auto channel_voltage = instrument->channel(value.channel_voltage());
-            rtx_instrument_configuration instrument_config(
-                instrument->time_range(),
-                instrument->single_acquisition(),
-                instrument->edge_trigger(),
-                instrument->timeout());
+            rtx_instrument_configuration instrument_config(*instrument);
 
             return nlohmann::json::object({
                 json_serialise(json_field_type, type_name),
