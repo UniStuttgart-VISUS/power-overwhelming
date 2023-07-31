@@ -30,10 +30,12 @@ namespace detail {
     /// </summary>
     template<> struct literal_selector<char> {
         typedef char char_type;
-        static const char_type select(_In_ const char n, _In_ const wchar_t w) {
+        static constexpr char_type select(_In_ const char n,
+                _In_ const wchar_t w) {
             return n;
         }
-        static _Ret_maybenull_z_ const char_type *select(_In_opt_z_ const char *n,
+        static _Ret_maybenull_z_ constexpr const char_type *select(
+                _In_opt_z_ const char *n,
                 _In_opt_z_ const wchar_t *w) {
             return n;
         }
@@ -44,10 +46,12 @@ namespace detail {
     /// </summary>
     template<> struct literal_selector<wchar_t> {
         typedef wchar_t char_type;
-        static const char_type select(_In_ const char n, _In_ const wchar_t w) {
+        static constexpr char_type select(_In_ const char n,
+                _In_ const wchar_t w) {
             return w;
         }
-        static _Ret_maybenull_z_ const char_type *select(_In_opt_z_ const char *n,
+        static _Ret_maybenull_z_ constexpr const char_type *select(
+                _In_opt_z_ const char *n,
                 _In_opt_z_ const wchar_t *w) {
             return w;
         }

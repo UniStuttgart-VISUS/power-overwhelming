@@ -7,6 +7,7 @@
 
 #include <cassert>
 #include <cstdlib>
+#include <regex>
 #include <fstream>
 #include <random>
 
@@ -76,6 +77,38 @@ namespace detail {
 } /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::all
+ */
+std::size_t visus::power_overwhelming::rtx_instrument::all(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_instrument *dst,
+        _In_ std::size_t cnt,
+        _In_ const std::int32_t timeout) {
+    // Search the instruments using VISA.
+    std::string query("?*::");                      // Any protocol
+    query += visa_instrument::rohde_und_schwarz;    // Only R&S
+    query += "::";
+    query += rtx_instrument::product_id;            // Only RTA/RTB
+    query += "::?*::INSTR";                         // All serial numbers
+
+    // Search the instruments using VISA.
+    auto devices = detail::visa_library::instance().find_resource(
+        query.c_str());
+
+    // Guard against misuse.
+    if (dst == nullptr) {
+        cnt = 0;
+    }
+
+    // Create a sensor for each instrument we found.
+    for (std::size_t i = 0; (i < cnt) && (i < devices.size()); ++i) {
+        dst[i] = rtx_instrument(devices[i].c_str(), timeout);
+    }
+
+    return devices.size();
+}
 
 
 /*
@@ -347,6 +380,62 @@ visus::power_overwhelming::rtx_instrument::beep(_In_ const std::size_t cnt) {
         this->write("SYST:BEEP:IMM\n");
     }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::beep_on_error
+ */
+bool visus::power_overwhelming::rtx_instrument::beep_on_error(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("SYST:BEEP:ERR:STAT?\n");
+    auto status = std::atoi(response.as<char>());
+    return (status != 0);
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return false;
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::beep_on_error
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::beep_on_error(
+        _In_ const bool enable) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+    impl.format("SYST:BEEP:ERR:STAT %s\n", enable ? "ON" : "OFF");
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::beep_on_trigger
+ */
+bool visus::power_overwhelming::rtx_instrument::beep_on_trigger(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("SYST:BEEP:TRIG:STAT?\n");
+    auto status = std::atoi(response.as<char>());
+    return (status != 0);
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return false;
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::beep_on_trigger
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::beep_on_trigger(
+        _In_ const bool enable) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+    impl.format("SYST:BEEP:TRIG:STAT %s\n", enable ? "ON" : "OFF");
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 
@@ -812,7 +901,7 @@ visus::power_overwhelming::rtx_instrument::edge_trigger(void) const {
     auto source = this->query("TRIG:A:SOUR?\n");
     auto src = source.as<char>();
     _Analysis_assume_(src != nullptr);
-    *::strchr(src, '\n') = 0;
+    detail::trim_eol(src);
 
     oscilloscope_edge_trigger retval(src);
 
@@ -866,8 +955,25 @@ visus::power_overwhelming::rtx_instrument::edge_trigger(void) const {
     }
 
     {
-        auto level = this->query("TRIG:A:LEV:VAL?\n");
-        // TODO: Parse channel here for specific level?
+        std::cmatch match;
+        std::string query;
+        std::regex rx("^ch(\\d+)$", std::regex_constants::ECMAScript
+            | std::regex_constants::icase);
+
+        if (std::regex_match(retval.source(), match, rx)) {
+            // Analog channel that needs to be parsed.
+            auto input = match[1].str();
+            query = detail::format_string("TRIG:A:LEV%s:VAL?\n", input.c_str());
+
+        } else if (detail::equals(retval.source(), "EXT", true)) {
+            // External trigger is input #5 on RTA/RTB.
+            query = "TRIG:A:LEV5:VAL?\n";
+
+        } else {
+            query = "TRIG:A:LEV:VAL?\n";
+        }
+
+        auto level = this->query(query.c_str());
         retval.level(detail::parse_float(level.as<char>()));
     }
 
@@ -1027,10 +1133,111 @@ visus::power_overwhelming::rtx_instrument::load_state_from_instrument(
     }
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    auto &impl = this->check_not_disposed();
+    auto& impl = this->check_not_disposed();
     impl.format("MMEM:CDIR \"%s\"\n", path);
     impl.format("MMEM:LOAD:STAT 1, \"%s\"\n", name);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::name
+ */
+std::size_t visus::power_overwhelming::rtx_instrument::name(
+        _Out_writes_(cnt) wchar_t *dst,
+        _In_ const std::size_t cnt) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto retval = this->name(nullptr, 0);
+
+    if ((dst != nullptr) && (cnt >= retval)) {
+        std::vector<char> buffer(retval);
+        retval = this->name(buffer.data(), buffer.size());
+        auto name = convert_string<wchar_t>(buffer.data());
+
+#if (defined(_MSC_VER) && (_MSC_VER >= 1400))
+        ::wcscpy_s(dst, cnt, name.c_str());
+#else /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
+        ::wcscpys(dst, name.c_str());
+#endif /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
+    }
+
+    return retval;
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return 0;
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::name
+ */
+std::size_t visus::power_overwhelming::rtx_instrument::name(
+        _Out_writes_(cnt) char *dst,
+        _In_ const std::size_t cnt) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto name = this->query("SYST:NAME?\n");
+    auto n = name.as<char>();
+    _Analysis_assume_(n != nullptr);
+
+    detail::trim_eol(n);
+    n = detail::trim_if(n, [](const char c) { return c == '"'; });
+    auto retval = ::strlen(n) + 1;
+
+    if ((dst != nullptr) && (cnt >= retval)) {
+#if (defined(_MSC_VER) && (_MSC_VER >= 1400))
+        ::strcpy_s(dst, cnt, n);
+#else /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
+        ::strcpy(dst, n);
+#endif /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
+    }
+
+    return retval;
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return 0;
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::name
+ */
+std::size_t visus::power_overwhelming::rtx_instrument::name(
+        _In_opt_ const std::nullptr_t dst,
+        _In_ const std::size_t cnt) const {
+    return this->name(static_cast<char *>(nullptr), 0);
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::name
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::name(_In_z_ const wchar_t *name) {
+    if (name == nullptr) {
+        throw std::invalid_argument("The name of the instrument must not be "
+            "null.");
+    }
+
+    auto n = convert_string<char>(name);
+    return this->name(n.c_str());
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::name
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::name(_In_z_ const char *name) {
+    if (name == nullptr) {
+        throw std::invalid_argument("The name of the instrument must not be "
+            "null.");
+    }
+
+    auto& impl = this->check_not_disposed();
+    impl.format("SYST:NAME \"%s\"\n", name);
     return *this;
 }
 

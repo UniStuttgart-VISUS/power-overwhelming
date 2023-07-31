@@ -105,6 +105,27 @@ namespace test {
             Assert::AreEqual(expected.source(), trigger.source(), L"Copy source", LINE_INFO());
             Assert::AreEqual(expected.type(), trigger.type(), L"Copy type", LINE_INFO());
         }
+
+        TEST_METHOD(test_parse_coupling) {
+            Assert::AreEqual(int(oscilloscope_trigger_coupling::alternating_current), int(parse_oscilloscope_trigger_coupling(L"alternating_current")), L"alternating_current", LINE_INFO());
+            Assert::AreEqual(int(oscilloscope_trigger_coupling::direct_current), int(parse_oscilloscope_trigger_coupling(L"direct_current")), L"direct_current", LINE_INFO());
+            Assert::AreEqual(int(oscilloscope_trigger_coupling::low_frequency_reject), int(parse_oscilloscope_trigger_coupling(L"low_frequency_reject")), L"low_frequency_reject", LINE_INFO());
+            Assert::ExpectException<std::invalid_argument>([](void) {
+                auto dummy = parse_oscilloscope_channel_polarity(L"nullptr");
+            }, L"nullptr", LINE_INFO());
+            Assert::ExpectException<std::invalid_argument>([](void) {
+                auto dummy = parse_oscilloscope_channel_polarity(L"horst");
+            }, L"invalid value", LINE_INFO());
+        }
+
+        TEST_METHOD(test_coupling_to_string) {
+            Assert::AreEqual(L"alternating_current", to_string(oscilloscope_trigger_coupling::alternating_current), L"alternating_current", LINE_INFO());
+            Assert::AreEqual(L"direct_current", to_string(oscilloscope_trigger_coupling::direct_current), L"direct_current", LINE_INFO());
+            Assert::AreEqual(L"low_frequency_reject", to_string(oscilloscope_trigger_coupling::low_frequency_reject), L"low_frequency_reject", LINE_INFO());
+            Assert::ExpectException<std::invalid_argument>([](void) {
+                auto dummy = to_string(static_cast<oscilloscope_trigger_coupling>(-1));
+            }, L"invalid value", LINE_INFO());
+        }
     };
 
 } /* namespace test */

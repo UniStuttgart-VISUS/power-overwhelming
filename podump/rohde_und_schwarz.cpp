@@ -130,20 +130,10 @@ void query_rtx_instrument(void) {
     using namespace visus::power_overwhelming;
 
     try {
-        auto devices = visa_instrument::find_resources(L"0x0AAD", L"0x01D6");
+        std::vector<rtx_instrument> devices(rtx_instrument::all(nullptr, 0));
+        rtx_instrument::all(devices.data(), devices.size());
 
-        for (auto d = devices.as<wchar_t>();
-                (d != nullptr) && (*d != 0);
-                d += ::wcslen(d) + 1) {
-            auto is_new = false;
-            rtx_instrument i(is_new, d);
-
-            if (is_new) {
-                std::wcout << L"Connected to new instrument." << std::endl;
-            } else {
-                std::wcout << L"Reused existing connection." << std::endl;
-            }
-
+        for (auto& i : devices) {
             visa_instrument::foreach_instance([](visa_instrument& i, void *) {
                 blob name(i.identify(nullptr, 0) * sizeof(wchar_t));
                 i.identify(name.as<wchar_t>(), name.size() / sizeof(wchar_t));
@@ -160,11 +150,19 @@ void query_rtx_instrument(void) {
                 .service_request_status(visa_status_byte::master_status)
                 .operation_complete();
 
+            {
+                i.name("test-instrument").operation_complete();
+                std::vector<wchar_t> name(i.name(nullptr, 0));
+                i.name(name.data(), name.size());
+                std::wcout << L"The user-defined device name is \""
+                    << name.data() << "\"." << std::endl;
+            }
+
             std::wcout << L"The device has " << i.channels() << L" channels."
                 << std::endl;
             std::wcout << L"The device has currently " << i.history_segments()
                 << L" history segments in memory." << std::endl;
-            std::wcout << L"The horizontal time range is "
+            std::wcout << L"The h orizontal time range is "
                 << i.time_range().value() << L"s." << std::endl;
             std::wcout << L"The horizontal time scale is "
                 << i.time_scale().value() << L"s." << std::endl;

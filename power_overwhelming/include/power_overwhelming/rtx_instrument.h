@@ -42,6 +42,25 @@ namespace power_overwhelming {
     public:
 
         /// <summary>
+        /// Retrieves all RTA and RTB instruments connected to the system.
+        /// </summary>
+        /// <param name="dst">Receives the instruments. It is safe to pass
+        /// <c>nullptr</c>, in which case the number of instruments will be
+        /// counted.</param>
+        /// <param name="cnt">The number of elements in
+        /// <paramref name="dst" />.</param>
+        /// <param name="timeout">The timeout for establishing the connection,
+        /// in milliseconds.</param>
+        /// <returns>The number of instruments attached to the machine.
+        /// </returns>
+        /// <exception cref="visa_exception">If any of the API calls failed.
+        /// </exception>
+        static std::size_t all(
+            _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_instrument *dst,
+            _In_ std::size_t cnt,
+            _In_ const std::int32_t timeout = default_timeout);
+
+        /// <summary>
         /// Creates a new istrument and invokes the given callback if the
         /// instrument was newly opened in contrast to be reused from other
         /// instances.
@@ -62,7 +81,7 @@ namespace power_overwhelming {
         /// could not be allocated.</exception>
         /// <exception cref="std::system_error">If the VISA library could not be
         /// loaded.</exception>
-        /// <exception cref="visa_exception">If the sensor could not be
+        /// <exception cref="visa_exception">If the instrument could not be
         /// initialised.</exception>
         static rtx_instrument create(_In_z_ const wchar_t *path,
             _In_ void (*on_new)(rtx_instrument&, void *),
@@ -348,6 +367,70 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If any of the API calls to the
         /// instrument failed.</exception>
         rtx_instrument& beep(_In_ const std::size_t cnt = 1);
+
+        /// <summary>
+        /// Answer whether the instrument beeps if it encounters an error.
+        /// </summary>
+        /// <remarks>
+        /// The answer will always be <c>false</c> if the library was compiled
+        /// without support for VISA.
+        /// </remarks>
+        /// <returns><c>true</c> if the beep is enabled, <c>false</c> otherwise.
+        /// </returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        bool beep_on_error(void);
+
+        /// <summary>
+        /// Configures the instrument to beep or not to beep if it encounters
+        /// an error.
+        /// </summary>
+        /// <remarks>
+        /// This method has no effect if the library was compiled without
+        /// support for VISA.
+        /// </remarks>
+        /// <param name="enable">Set <c>true</c> to enable beeps on errors,
+        /// <c>false</c> to disable them.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        rtx_instrument& beep_on_error(_In_ const bool enable);
+
+        /// <summary>
+        /// Answer whether the instrument beeps if a trigger occurs.
+        /// </summary>
+        /// <remarks>
+        /// The answer will always be <c>false</c> if the library was compiled
+        /// without support for VISA.
+        /// </remarks>
+        /// <returns><c>true</c> if the beep is enabled, <c>false</c> otherwise.
+        /// </returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        bool beep_on_trigger(void);
+
+        /// <summary>
+        /// Configures the instrument to beep or not to beep if a trigger
+        /// occurs.
+        /// </summary>
+        /// <remarks>
+        /// This method has no effect if the library was compiled without
+        /// support for VISA.
+        /// </remarks>
+        /// <param name="enable">Set <c>true</c> to enable beeps on triggers,
+        /// <c>false</c> to disable them.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        rtx_instrument& beep_on_trigger(_In_ const bool enable);
 
         /// <summary>
         /// Downloads the data of the specified channel as floating-point
@@ -676,6 +759,86 @@ namespace power_overwhelming {
         /// instrument failed.</exception>
         rtx_instrument& load_state_from_instrument(_In_z_ const char *name,
             _In_z_ const char *path = "/INT/SETTINGS");
+
+        /// <summary>
+        /// Gets the configured name of the instrument.
+        /// </summary>
+        /// <param name="dst">A buffer that is able to hold at least
+        /// <paramref name="cnt" /> elements. It is safe to pass <c>nullptr</c>,
+        /// in which case the method will only measure the required buffer size.
+        /// </param>
+        /// <param name="cnt">The size of <paramref name="dst" /> in number of
+        /// characters. The name of an RTA/RTB instrument cannot exceed 20
+        /// characters, so a buffer of 21 characters should always suffice.
+        /// </param>
+        /// <returns>The required buffer size for the name, including the
+        /// terminating zero.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        std::size_t name(_Out_writes_(cnt) wchar_t *dst,
+            _In_ const std::size_t cnt) const;
+
+        /// <summary>
+        /// Gets the configured name of the instrument.
+        /// </summary>
+        /// <param name="dst">A buffer that is able to hold at least
+        /// <paramref name="cnt" /> elements. It is safe to pass <c>nullptr</c>,
+        /// in which case the method will only measure the required buffer size.
+        /// </param>
+        /// <param name="cnt">The size of <paramref name="dst" /> in number of
+        /// characters. The name of an RTA/RTB instrument cannot exceed 20
+        /// characters, so a buffer of 21 characters should always suffice.
+        /// </param>
+        /// <returns>The required buffer size for the name, including the
+        /// terminating zero.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        std::size_t name(_Out_writes_(cnt) char *dst,
+            _In_ const std::size_t cnt) const;
+
+        /// <summary>
+        /// Measures the size of the buffer to hold the name of the instrument.
+        /// </summary>
+        /// <param name="dst"><c>nullptr</c>.</param>
+        /// <param name="cnt">This parameter is ignored.</param>
+        /// <returns>The required buffer size for the name, including the
+        /// terminating zero.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        std::size_t name(_In_opt_ const std::nullptr_t dst,
+            _In_ const std::size_t cnt) const;
+
+        /// <summary>
+        /// Sets the name of the instrument.
+        /// </summary>
+        /// <param name="name">The new name of the instrument.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="name" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        rtx_instrument& name(_In_z_ const wchar_t *name);
+
+        /// <summary>
+        /// Sets the name of the instrument.
+        /// </summary>
+        /// <param name="name">The new name of the instrument.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="name" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        rtx_instrument& name(_In_z_ const char *name);
 
         /// <summary>
         /// Sets the reference point in the diagram.
