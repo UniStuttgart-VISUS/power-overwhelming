@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "power_overwhelming/blob.h"
+#include "power_overwhelming/literal.h"
 
 
 namespace visus {
@@ -450,7 +451,7 @@ namespace detail {
     /// </param>
     /// <param name="predicate">The predicate that all characters that are to be
     /// removed must fulfil.</param>
-    /// <returns>A pointer to the first character for which 
+    /// <returns>A pointer to the first character for which
     /// <paramref name="predicate" /> does not hold any more.</returns>
     template<class TChar, class TPredicate>
     _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
@@ -515,6 +516,37 @@ namespace detail {
     inline TChar *trim_end(_In_opt_z_ TChar *str) {
         return trim_end_if(str, [](const TChar c) { return std::isspace(c); });
     }
+
+    /// <summary>
+    /// Terminates the given string at the first occurrence of a new line.
+    /// </summary>
+    /// <typeparam name="TChar">The type of the character in the string.
+    /// </typeparam>
+    /// <param name="str">The string to be trimmed. It is safe to pass
+    /// <c>nullptr</c>, in which case nothing will be done.</param>
+    template<class TChar> void trim_eol(_In_opt_z_ TChar *str);
+
+    /// <summary>
+    /// Removes all characters matching the given predicate from the begin and
+    /// end of the given string.
+    /// </summary>
+    /// <typeparam name="TChar">The type of the character in the string.
+    /// </typeparam>
+    /// <typeparam name="TPredicate">The type of the predicate functor, which
+    /// must take a character of type <typeparamref name="TChar" /> and return a
+    /// <c>bool</c>.</typeparam>
+    /// <param name="str">The string to be trimmed. It is safe to pass
+    /// <c>nullptr</c>, in which case the result will be <c>nullptr</c>, too.
+    /// </param>
+    /// <param name="predicate">The predicate that all characters to be removed
+    /// must fulfil.</param>
+    /// <returns>A pointer to the first character in <paramref name="str" /> for
+    /// which <paramref name="predicate" /> does not hold any more. The
+    /// characters at the end will be trimmed by setting the null-terminating
+    /// character accordingly.</returns>
+    template<class TChar, class TPredicate>
+    _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
+    TChar *trim_if(_In_opt_z_ TChar *str, _In_ const TPredicate& predicate);
 
 } /* namespace detail */
 } /* namespace power_overwhelming */

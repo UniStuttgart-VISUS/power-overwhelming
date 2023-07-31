@@ -43,6 +43,25 @@ namespace power_overwhelming {
     public:
 
         /// <summary>
+        /// Retrieves all RTA and RTB instruments connected to the system.
+        /// </summary>
+        /// <param name="dst">Receives the instruments. It is safe to pass
+        /// <c>nullptr</c>, in which case the number of instruments will be
+        /// counted.</param>
+        /// <param name="cnt">The number of elements in
+        /// <paramref name="dst" />.</param>
+        /// <param name="timeout">The timeout for establishing the connection,
+        /// in milliseconds.</param>
+        /// <returns>The number of instruments attached to the machine.
+        /// </returns>
+        /// <exception cref="visa_exception">If any of the API calls failed.
+        /// </exception>
+        static std::size_t all(
+            _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_instrument *dst,
+            _In_ std::size_t cnt,
+            _In_ const std::int32_t timeout = default_timeout);
+
+        /// <summary>
         /// Creates a new istrument and invokes the given callback if the
         /// instrument was newly opened in contrast to be reused from other
         /// instances.
@@ -63,7 +82,7 @@ namespace power_overwhelming {
         /// could not be allocated.</exception>
         /// <exception cref="std::system_error">If the VISA library could not be
         /// loaded.</exception>
-        /// <exception cref="visa_exception">If the sensor could not be
+        /// <exception cref="visa_exception">If the instrument could not be
         /// initialised.</exception>
         static rtx_instrument create(_In_z_ const wchar_t *path,
             _In_ void (*on_new)(rtx_instrument&, void *),

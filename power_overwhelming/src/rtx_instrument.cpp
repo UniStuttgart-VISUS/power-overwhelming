@@ -79,6 +79,38 @@ namespace detail {
 
 
 /*
+ * visus::power_overwhelming::rtx_instrument::all
+ */
+std::size_t visus::power_overwhelming::rtx_instrument::all(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_instrument *dst,
+        _In_ std::size_t cnt,
+        _In_ const std::int32_t timeout) {
+    // Search the instruments using VISA.
+    std::string query("?*::");                      // Any protocol
+    query += visa_instrument::rohde_und_schwarz;    // Only R&S
+    query += "::";
+    query += rtx_instrument::product_id;            // Only RTA/RTB
+    query += "::?*::INSTR";                         // All serial numbers
+
+    // Search the instruments using VISA.
+    auto devices = detail::visa_library::instance().find_resource(
+        query.c_str());
+
+    // Guard against misuse.
+    if (dst == nullptr) {
+        cnt = 0;
+    }
+
+    // Create a sensor for each instrument we found.
+    for (std::size_t i = 0; (i < cnt) && (i < devices.size()); ++i) {
+        dst[i] = rtx_instrument(devices[i].c_str(), timeout);
+    }
+
+    return devices.size();
+}
+
+
+/*
  * visus::power_overwhelming::rtx_instrument::create
  */
 visus::power_overwhelming::rtx_instrument
@@ -1083,7 +1115,7 @@ std::size_t visus::power_overwhelming::rtx_instrument::name(
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto retval = this->name(nullptr, 0);
 
-    if ((dst != nullptr) && (cnt > retval)) {
+    if ((dst != nullptr) && (cnt >= retval)) {
         std::vector<char> buffer(retval);
         retval = this->name(buffer.data(), buffer.size());
         auto name = convert_string<wchar_t>(buffer.data());
@@ -1114,8 +1146,8 @@ std::size_t visus::power_overwhelming::rtx_instrument::name(
     auto n = name.as<char>();
     _Analysis_assume_(n != nullptr);
 
-    *::strchr(n, '\n') = 0;
-    // TODO: possibly requires removing quotes.
+    detail::trim_eol(n);
+    n = detail::trim_if(n, [](const char c) { return c == '"'; });
     auto retval = ::strlen(n) + 1;
 
     if ((dst != nullptr) && (cnt >= retval)) {

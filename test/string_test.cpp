@@ -354,21 +354,142 @@ namespace test {
         }
 
         TEST_METHOD(test_trim_end_if_wstring) {
-            Assert::IsNull(detail::trim_end_if((wchar_t *) nullptr, [](const char c) { return true; }), L"nullptr", LINE_INFO());
+            typedef wchar_t char_type;
+            Assert::IsNull(detail::trim_end_if((char_type *) nullptr, [](const char_type c) { return true; }), L"nullptr", LINE_INFO());
 
             {
                 auto str = L"bla";
-                Assert::IsTrue(detail::trim_end_if(str, [](const char c) { return true; }) == str, L"trim all", LINE_INFO());
+                Assert::IsTrue(detail::trim_end_if(str, [](const char_type c) { return true; }) == str, L"trim all", LINE_INFO());
             }
 
             {
                 auto str = L"blaaa";
-                Assert::IsTrue(detail::trim_end_if(str, [](const char c) { return c == 'a'; }) == (str + 2), L"trim a", LINE_INFO());
+                Assert::IsTrue(detail::trim_end_if(str, [](const char_type c) { return c == L'a'; }) == (str + 2), L"trim a", LINE_INFO());
             }
 
             {
                 auto str = L"bla\r\n\t ";
-                Assert::IsTrue(detail::trim_end_if(str, [](const char c) { return std::isspace(c); }) == (str + 3), L"trim space", LINE_INFO());
+                Assert::IsTrue(detail::trim_end_if(str, [](const char_type c) { return std::isspace(c); }) == (str + 3), L"trim space", LINE_INFO());
+            }
+        }
+
+        TEST_METHOD(test_trim_if_string) {
+            typedef char char_type;
+            Assert::IsNull(detail::trim_if((char_type *) nullptr, [](const char_type c) {return true; }), L"nullptr", LINE_INFO());
+
+            {
+                char_type str[] = "bla";
+                Assert::AreEqual("", detail::trim_if(str, [](const char_type c) { return true; }), L"trim all", LINE_INFO());
+            }
+
+            {
+                char_type str[] = "bla";
+                Assert::AreEqual(str, detail::trim_if(str, [](const char_type c) { return false; }), L"trim nothing", LINE_INFO());
+            }
+
+            {
+                char_type str[] = "ablahaa";
+                auto actual = detail::trim_if(str, [](const char_type c) { return c == 'a'; });
+                Assert::AreEqual("blah", actual, L"trim a", LINE_INFO());
+            }
+
+            {
+                char_type str[] = "\r\t\nbla\r\n\t ";
+                Assert::AreEqual("bla", detail::trim_if(str, [](const char_type c) { return std::isspace(c); }), L"trim space", LINE_INFO());
+            }
+        }
+
+        TEST_METHOD(test_trim_if_wstring) {
+            typedef wchar_t char_type;
+            Assert::IsNull(detail::trim_if((char_type *) nullptr, [](const char_type c) {return true; }), L"nullptr", LINE_INFO());
+
+            {
+                char_type str[] = L"bla";
+                Assert::AreEqual(L"", detail::trim_if(str, [](const char_type c) { return true; }), L"trim all", LINE_INFO());
+            }
+
+            {
+                char_type str[] = L"bla";
+                Assert::AreEqual(str, detail::trim_if(str, [](const char_type c) { return false; }), L"trim nothing", LINE_INFO());
+            }
+
+            {
+                char_type str[] = L"ablahaa";
+                auto actual = detail::trim_if(str, [](const char_type c) { return c == L'a'; });
+                Assert::AreEqual(L"blah", actual, L"trim a", LINE_INFO());
+            }
+
+            {
+                char_type str[] = L"\r\t\nbla\r\n\t ";
+                Assert::AreEqual(L"bla", detail::trim_if(str, [](const char_type c) { return std::isspace(c); }), L"trim space", LINE_INFO());
+            }
+        }
+
+        TEST_METHOD(test_trim_eol_string) {
+            typedef char char_type;
+
+            {
+                char_type str[] = "bla";
+                detail::trim_eol(str);
+                Assert::AreEqual("bla", str, L"bla", LINE_INFO());
+            }
+
+            {
+                char_type str[] = "bla\r";
+                detail::trim_eol(str);
+                Assert::AreEqual("bla", str, L"bla\\r", LINE_INFO());
+            }
+
+            {
+                char_type str[] = "bla\r\n";
+                detail::trim_eol(str);
+                Assert::AreEqual("bla", str, L"bla\\r\\n", LINE_INFO());
+            }
+
+            {
+                char_type str[] = "bla\n";
+                detail::trim_eol(str);
+                Assert::AreEqual("bla", str, L"bla\\n", LINE_INFO());
+            }
+
+            {
+                char_type str[] = "bla\n\r";
+                detail::trim_eol(str);
+                Assert::AreEqual("bla", str, L"bla\\n\\r", LINE_INFO());
+            }
+        }
+
+        TEST_METHOD(test_trim_eol_wstring) {
+            typedef wchar_t char_type;
+
+            {
+                char_type str[] = L"bla";
+                detail::trim_eol(str);
+                Assert::AreEqual(L"bla", str, L"bla", LINE_INFO());
+            }
+
+            {
+                char_type str[] = L"bla\r";
+                detail::trim_eol(str);
+                Assert::AreEqual(L"bla", str, L"bla\\r", LINE_INFO());
+            }
+
+            {
+                char_type str[] = L"bla\r\n";
+                detail::trim_eol(str);
+                Assert::AreEqual(L"bla", str, L"bla\\r\\n", LINE_INFO());
+            }
+
+            {
+                char_type str[] = L"bla\n";
+                detail::trim_eol(str);
+                Assert::AreEqual(L"bla", str, L"bla\\n", LINE_INFO());
+            }
+
+            {
+                char_type str[] = L"bla\n\r";
+                detail::trim_eol(str);
+                Assert::AreEqual(L"bla", str, L"bla\\n\\r", LINE_INFO());
             }
         }
 
