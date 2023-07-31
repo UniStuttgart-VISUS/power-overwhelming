@@ -167,6 +167,79 @@ namespace power_overwhelming {
             = oscilloscope_trigger_slope::rising);
 
         /// <summary>
+        /// Loads the instruments configurations from the given file and applies
+        /// them based on the device path to the given instruments.
+        /// </summary>
+        /// <remarks>
+        /// <para>If no matching configuration could be found for any of the
+        /// given instruments, the first one from the file will be used.</para>
+        /// </remarks>
+        /// <param name="instruments">The instruments to be configured.</param>
+        /// <param name="cnt">The number of instruments in
+        /// <paramref name="instruments" />.</param>
+        /// <param name="path">The path to the configuration file.</param>
+        static void apply(_In_reads_(cnt) rtx_instrument *instruments,
+            _In_ const std::size_t cnt, _In_z_ const wchar_t *path);
+
+        /// <summary>
+        /// Loads the instrument configurations from the given file.
+        /// </summary>
+        /// <param name="dst">The array to receive the configuration object. If
+        /// not <c>nullptr</c>, this array must be able to receive at least
+        /// <paramref name="cnt" /> elements.</param>
+        /// <param name="cnt">The number of elements in <paramref name="dst" />.
+        /// </param>
+        /// <param name="path">The path to read the configuration from.</param>
+        /// <returns>The number of configurations in the file, regardless of
+        /// whether these have been written to <paramref name="dst" />.
+        /// </returns>
+        static std::size_t load(_When_(dst != nullptr, _Out_writes_opt_(cnt))
+            rtx_instrument_configuration *dst,
+            _In_ std::size_t cnt, _In_z_ const wchar_t *path);
+
+        /// <summary>
+        /// Saves the given instrument configurations in a JSON file.
+        /// </summary>
+        /// <param name="configs">The configurations to be saved.</param>
+        /// <param name="cnt">The number of <paramref name="instruments" /> in
+        /// the input array.</param>
+        /// <param name="path">The path to the output file.</param>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="instruments" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="path" /> is <c>nullptr</c>.</exception>
+        static void save(_In_reads_(cnt) rtx_instrument_configuration *configs,
+            _In_ const std::size_t cnt, _In_z_ const wchar_t *path);
+
+        /// <summary>
+        /// Saves the given instrument configurations in a JSON file.
+        /// </summary>
+        /// <remarks>
+        /// <para>In contrast to the method overload accepting
+        /// <see cref="rtx_instrument_configuration" />, this method will
+        /// preserve the identity of the instrument along the configuration.
+        /// Files from this method can therefore be used to restore the state
+        /// of multiple known instruments at once. It is the preferred way of
+        /// storing setups for future use with the <see cref="apply" /> method.
+        /// </para>
+        /// </remarks>
+        /// <param name="instruments">The instruments to be saved.</param>
+        /// <param name="cnt">The number of <paramref name="instruments" /> in
+        /// the input array.</param>
+        /// <param name="path">The path to the output file.</param>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="instruments" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="path" /> is <c>nullptr</c>.</exception>
+        static void save(_In_reads_(cnt) rtx_instrument *instruments,
+            _In_ const std::size_t cnt, _In_z_ const wchar_t *path);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        rtx_instrument_configuration(void);
+
+        /// <summary>
         /// Initialises a new instance.
         /// </summary>
         /// <remarks>
