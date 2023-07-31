@@ -27,19 +27,27 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
+        /// <remarks>
+        /// This constructor allows for implicit conversion from strings to
+        /// labels.
+        /// </remarks>
         /// <param name="text">The text to be displayed.</param>
         /// <param name="visible">Indicates whether the label is visible or
         /// hidden. This parameter defaults to <c>true</c>.</param>
-        explicit oscilloscope_label(_In_opt_z_ const wchar_t *text,
+        oscilloscope_label(_In_opt_z_ const wchar_t *text,
             _In_ const bool visible = true);
 
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
+        /// <remarks>
+        /// This constructor allows for implicit conversion from strings to
+        /// labels.
+        /// </remarks>
         /// <param name="text">The text to be displayed.</param>
         /// <param name="visible">Indicates whether the label is visible or
         /// hidden. This parameter defaults to <c>false</c>.</param>
-        explicit oscilloscope_label(_In_opt_z_ const char *text,
+        oscilloscope_label(_In_opt_z_ const char *text,
             _In_ const bool visible = true);
 
         /// <summary>

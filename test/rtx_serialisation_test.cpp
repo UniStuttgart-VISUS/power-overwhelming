@@ -128,6 +128,7 @@ namespace test {
             Assert::AreEqual(input.beep_on_apply(), output.beep_on_apply(), L"beep_on_apply", LINE_INFO());
             Assert::AreEqual(input.beep_on_error(), output.beep_on_error(), L"beep_on_error", LINE_INFO());
             Assert::AreEqual(input.beep_on_trigger(), output.beep_on_trigger(), L"beep_on_trigger", LINE_INFO());
+            Assert::AreEqual(input.channels(), output.channels(), L"channels", LINE_INFO());
             Assert::AreEqual(input.timeout(), output.timeout(), L"timeout", LINE_INFO());
             Assert::AreEqual(input.time_range().value(), output.time_range().value(), L"time_range.value", LINE_INFO());
             Assert::AreEqual(input.time_range().unit(), output.time_range().unit(), L"time_range.unit", LINE_INFO());
@@ -142,6 +143,24 @@ namespace test {
             Assert::AreEqual(int(input.trigger().slope()), int(output.trigger().slope()), L"trigger.slope", LINE_INFO());
             Assert::AreEqual(input.trigger().source(), output.trigger().source(), L"trigger.source", LINE_INFO());
             Assert::AreEqual(input.trigger().type(), output.trigger().type(), L"trigger.type", LINE_INFO());
+        }
+
+        TEST_METHOD(test_rtx_instrument_config_with_channels) {
+            const auto input = rtx_instrument_configuration(12.0f)
+                .channel(oscilloscope_channel(1))
+                .channel(oscilloscope_channel(2));
+            const auto json = detail::json_serialise(input);
+            const auto output = detail::json_deserialise<rtx_instrument_configuration>(json);
+
+            std::vector<oscilloscope_channel> expected_channels(input.channels());
+            input.channels(expected_channels.data(), expected_channels.size());
+
+            std::vector<oscilloscope_channel> actual_channels(input.channels());
+            input.channels(actual_channels.data(), actual_channels.size());
+
+            Assert::AreEqual(expected_channels.size(), actual_channels.size(), L"# of channels", LINE_INFO());
+            Assert::AreEqual(expected_channels[0].channel(), actual_channels[0].channel(), L"CH1", LINE_INFO());
+            Assert::AreEqual(expected_channels[1].channel(), actual_channels[1].channel(), L"CH2", LINE_INFO());
         }
 
     };

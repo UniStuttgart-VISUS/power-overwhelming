@@ -35,6 +35,13 @@ namespace power_overwhelming {
     /// strongly recommended to apply the same settings to all instruments when
     /// working with multiple oscilloscopes in order to produce consistent
     /// results.</para>
+    /// <para>Although it is possible to configure settings that are only
+    /// relevant on a per-sensor basis, most notably the channels, using this
+    /// class, you should never do this when using it in conjunction with
+    /// <see cref="rtx_sensor" /> as this might apply an invalid configuration
+    /// for this use case. Make sure to call <see cref="ignore_all_channels" />
+    /// when working with a configuration object that you have not built
+    /// yourself.</para>
     /// </remarks>
     class POWER_OVERWHELMING_API rtx_instrument_configuration final {
 
@@ -460,6 +467,14 @@ namespace power_overwhelming {
         /// <returns><c>*this</c>.</returns>
         rtx_instrument_configuration& ignore_channel(
             _In_ const std::uint32_t channel);
+
+        /// <summary>
+        /// Removes all per-channel configurations from the object such that the
+        /// channels of the instrument remain unchanged when applying the
+        /// configuration.
+        /// </summary>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument_configuration& ignore_all_channels(void) noexcept;
 
         /// <summary>
         /// Indicates whether this configuration is for a slave instrument that

@@ -191,7 +191,7 @@ namespace detail {
             false> final {
         typedef rtx_instrument_configuration value_type;
 
-        static inline value_type deserialise(_In_ const nlohmann::json &json) {
+        static inline value_type deserialise(_In_ const nlohmann::json& json) {
             _PWROWG_DESERIALISE_FIELD(acquisition);
             _PWROWG_DESERIALISE_FIELD(beep_on_apply);
             _PWROWG_DESERIALISE_FIELD(beep_on_error);
@@ -199,18 +199,40 @@ namespace detail {
             _PWROWG_DESERIALISE_FIELD(timeout);
             _PWROWG_DESERIALISE_FIELD(time_range);
             _PWROWG_DESERIALISE_FIELD(trigger);
-            return value_type(time_range, acquisition, trigger, timeout)
+
+            value_type retval(time_range, acquisition, trigger, timeout);
+
+            // The channels are special and need to be added one by one.
+            auto channels = json["channels"];
+            if (channels.type() == nlohmann::json::value_t::array) {
+                for (auto& c : channels) {
+                    retval.channel(json_deserialise<oscilloscope_channel>(c));
+                }
+            }
+
+            return retval
                 .beep_on_apply(beep_on_apply)
                 .beep_on_error(beep_on_error)
                 .beep_on_trigger(beep_on_trigger);
         }
 
         static inline nlohmann::json serialise(_In_ const value_type& value) {
+            // Obtain the channel array manually and convert it to JSON  one by
+            // one. This is too special for automating it.
+            std::vector<oscilloscope_channel> channels(value.channels());
+            value.channels(channels.data(), channels.size());
+
+            auto channels_json = nlohmann::json::array();
+            for (auto& c: channels) {
+                channels_json.push_back(json_serialise(c));
+            }
+
             return nlohmann::json::object({
                 _PWOWG_SERIALISE_FIELD(acquisition),
                 _PWOWG_SERIALISE_FIELD(beep_on_apply),
                 _PWOWG_SERIALISE_FIELD(beep_on_error),
                 _PWOWG_SERIALISE_FIELD(beep_on_trigger),
+                { "channels", channels_json },
                 _PWOWG_SERIALISE_FIELD(timeout),
                 _PWOWG_SERIALISE_FIELD(time_range),
                 _PWOWG_SERIALISE_FIELD(trigger)

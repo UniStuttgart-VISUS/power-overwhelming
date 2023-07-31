@@ -469,8 +469,19 @@ void visus::power_overwhelming::rtx_instrument_configuration::apply(
     instrument.time_range(this->_time_range)
         .trigger_output(oscilloscope_trigger_output::pulse)
         .trigger(this->_trigger)
-        .acquisition(this->_acquisition, false, false)
-        .operation_complete();
+        .acquisition(this->_acquisition, false, false);
+
+    // If there are per-channel settings, apply them as well. Note that the
+    // pointer may be non-null while there are zero channels. This is perfectly
+    // legal and all data in '_channels' should be ignored in this case.
+    if (this->_channels != nullptr) {
+        for (std::size_t i = 0; i < this->_cnt_channels; ++i) {
+            instrument.channel(this->_channels[i]);
+        }
+    }
+
+    // Wait until the instrument has applied all of the before settings.
+    instrument.operation_complete();
 
     // Note: Beep will do nothing if the count is zero.
     instrument.beep(this->_beep_on_apply);
@@ -564,16 +575,32 @@ std::size_t visus::power_overwhelming::rtx_instrument_configuration::channels(
 visus::power_overwhelming::rtx_instrument_configuration&
 visus::power_overwhelming::rtx_instrument_configuration::ignore_channel(
         _In_ const std::uint32_t channel) {
-    auto it = std::find_if(this->_channels,
-        this->_channels + this->_cnt_channels,
+    auto end = this->_channels + this->_cnt_channels;
+    auto it = std::remove_if(this->_channels, end,
             [channel](const oscilloscope_channel& c) {
         return (c.channel() == channel);
     });
 
-    if (it != this->_channels + this->_cnt_channels) {
-        throw "TODO";
+    if (it != end) {
+        // Something has been removed. Note that we do not reallocate in this
+        // case as this is a rare use case and the amount of rubbish that we
+        // will keep unti something is added or everything is erased is small.
+        --this->_cnt_channels;
     }
 
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::ignore_all_channels
+ */
+visus::power_overwhelming::rtx_instrument_configuration&
+visus::power_overwhelming::rtx_instrument_configuration::ignore_all_channels(
+        void) noexcept {
+    delete[] this->_channels;
+    this->_channels = nullptr;
+    this->_cnt_channels = 0;
     return *this;
 }
 
