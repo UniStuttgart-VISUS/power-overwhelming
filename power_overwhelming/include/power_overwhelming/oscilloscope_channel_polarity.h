@@ -48,8 +48,8 @@ namespace power_overwhelming {
     /// Convert the given channel polarity to a human-readable string
     /// representation.
     /// </summary>
-    /// <param name="polarity">The polarity to be converted.</param>
-    /// <returns>The string representation of teh value.</returns>
+    /// <param name="polarity">The value to be converted.</param>
+    /// <returns>The string representation of the value.</returns>
     /// <exception cref="std::invalid_argument">If the input is not
     /// valid and therefore could not be converted.</exception>
     extern POWER_OVERWHELMING_API _Ret_valid_ const wchar_t *to_string(
