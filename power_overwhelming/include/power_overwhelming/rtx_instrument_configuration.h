@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "power_overwhelming/oscilloscope_channel.h"
 #include "power_overwhelming/oscilloscope_quantity.h"
 #include "power_overwhelming/oscilloscope_single_acquisition.h"
 #include "power_overwhelming/oscilloscope_edge_trigger.h"
@@ -240,6 +241,20 @@ namespace power_overwhelming {
         rtx_instrument_configuration(void);
 
         /// <summary>
+        /// Clone <paramref name="rhs" />.
+        /// </summary>
+        /// <param name="rhs">The object to be cloned.</param>
+        rtx_instrument_configuration(
+            _In_ const rtx_instrument_configuration& rhs);
+
+        /// <summary>
+        /// Move <paramref name="rhs" /> to a new instance.
+        /// </summary>
+        /// <param name="rhs">The object to be moved.</param>
+        rtx_instrument_configuration(
+            _Inout_ rtx_instrument_configuration&& rhs) noexcept;
+
+        /// <summary>
         /// Initialises a new instance.
         /// </summary>
         /// <remarks>
@@ -298,6 +313,11 @@ namespace power_overwhelming {
             _In_ const oscilloscope_single_acquisition& acquisition,
             _In_ const oscilloscope_edge_trigger& trigger,
             _In_ visa_instrument::timeout_type timeout = 0);
+
+        /// <summary>
+        /// Finalises the instance.
+        /// </summary>
+        ~rtx_instrument_configuration(void);
 
         /// <summary>
         /// Answers the way the instrument will acquire one or more samples.
@@ -404,6 +424,44 @@ namespace power_overwhelming {
             _In_ const bool enable) noexcept;
 
         /// <summary>
+        /// Configures the given channel.
+        /// </summary>
+        /// <param name="channel">The channel configuration to apply. Please
+        /// note that each channel can only be configured once. Subsequent
+        /// calls with the name channel number will overwrite any existing
+        /// configuration.</param>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument_configuration& channel(
+            _In_ const oscilloscope_channel& channel);
+
+        /// <summary>
+        /// Counts or returns the number of channels configured.
+        /// </summary>
+        /// <remarks>
+        /// The value reported by this object does not necessarily reflect the
+        /// number of channels on the instrument. It only reflects the channels
+        /// that should be configured by it.
+        /// </remarks>
+        /// <param name="dst">Receives at most <paramref name="cnt" /> channels
+        /// if not <c>nullptr</c>.</param>
+        /// <param name="cnt">The number of elements that can be written to
+        /// <paramref name="dst" />.</param>
+        /// <returns>The number of channels configured.</returns>
+        std::size_t channels(_When_(dst != nullptr, _Out_writes_opt_(cnt))
+            oscilloscope_channel *dst = nullptr,
+            _In_ const std::size_t cnt = 0) const;
+
+        /// <summary>
+        /// Removes the channel with the given number from the configuration.
+        /// </summary>
+        /// <param name="channel">The channel to be removed. It is safe to pass
+        /// a channel that is not configured, in which case nothing will happen.
+        /// </param>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument_configuration& ignore_channel(
+            _In_ const std::uint32_t channel);
+
+        /// <summary>
         /// Indicates whether this configuration is for a slave instrument that
         /// is being triggered by another instrument via the external trigger
         /// input.
@@ -440,12 +498,30 @@ namespace power_overwhelming {
             return this->_trigger;
         }
 
+        /// <summary>
+        /// Assignment.
+        /// </summary>
+        /// <param name="rhs">The right-hand side operand.</param>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument_configuration& operator =(
+            _In_ const rtx_instrument_configuration& rhs);
+
+        /// <summary>
+        /// Move assignment.
+        /// </summary>
+        /// <param name="rhs">The right-hand side operand.</param>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument_configuration& operator =(
+            _Inout_ rtx_instrument_configuration&& rhs) noexcept;
+
     private:
 
         oscilloscope_single_acquisition _acquisition;
         std::size_t _beep_on_apply;
         bool _beep_on_error;
         bool _beep_on_trigger;
+        oscilloscope_channel *_channels;
+        std::size_t _cnt_channels;
         bool _slave;
         visa_instrument::timeout_type _timeout;
         oscilloscope_quantity _time_range;
