@@ -9,7 +9,6 @@
 #include <stdexcept>
 
 
-
 /*
  * nlohmann::json visus::power_overwhelming::detail::load_json
  */
@@ -59,6 +58,6 @@ void visus::power_overwhelming::detail::save_json(
     s.open(p, std::ofstream::trunc);
 #endif /* defined(_WIN32) */
 
-    json >> s;
+    s << json;
     s.close();
 }
