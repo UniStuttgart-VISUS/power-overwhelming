@@ -274,3 +274,39 @@ TChar *visus::power_overwhelming::detail::trim_end_if(_In_opt_z_ TChar *str,
 
     return ++retval;
 }
+
+
+/*
+ * visus::power_overwhelming::detail::trim_eol
+ */
+template<class TChar>
+void visus::power_overwhelming::detail::trim_eol(_In_opt_z_ TChar *str) {
+    static constexpr auto cr = POWER_OVERWHELMING_TPL_LITERAL(TChar, '\r');
+    static constexpr auto eos = static_cast<TChar>(0);
+    static constexpr auto lf = POWER_OVERWHELMING_TPL_LITERAL(TChar, '\n');
+
+    if (str != nullptr) {
+        auto end = str;
+        while ((*end != eos) && (*end != cr) && (*end != lf)) {
+            ++end;
+        }
+        *end = eos;
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::trim_if
+ */
+template<class TChar, class TPredicate>
+_When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
+TChar *visus::power_overwhelming::detail::trim_if(_In_opt_z_ TChar *str,
+        _In_ const TPredicate& predicate) {
+    auto retval = trim_begin_if(str, predicate);
+    auto end = trim_end_if(retval, predicate);
+    if (end != nullptr) {
+        *end = static_cast<TChar>(0);
+    }
+
+    return retval;
+}
