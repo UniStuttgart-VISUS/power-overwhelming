@@ -456,7 +456,7 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         // channels. The instrument does the counting the same way, but as we
         // would need to do the same queries anyway, we can fail here instread
         // of enumerating everything twice.
-        for (std::size_t i = 0; true; ++i) {
+        for (std::size_t i = 1; true; ++i) {
             try {
                 channels.push_back(instrument.channel(i));
             } catch (...) {
@@ -464,12 +464,14 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
                 break;
             }
         }
+    }
 
-        // As the copy of a single channel might throw, protect the memory via a
-        // unqiue_ptr until done.
-        auto channels0 = std::unique_ptr<chan_t[]>(new chan_t[this->_cnt_channels]);
-        std::copy(channels.begin(), channels.end(), channels0.get());
-        this->_channels = channels0.release();
+    if (!channels.empty()) {
+        // As the copy of a single channel might throw, protect the memory
+        // via a unqiue_ptr until done.
+        std::unique_ptr<chan_t[]> channels1(new chan_t[channels.size()]);
+        std::copy(channels.begin(), channels.end(), channels1.get());
+        this->_channels = channels1.release();
         this->_cnt_channels = channels.size();
     }
 }

@@ -169,7 +169,7 @@ void query_rtx_instrument(void) {
             std::wcout << L"Acquisition state is "
                 << int(i.acquisition()) << std::endl;
 
-            for (std::uint16_t c = 1; c <= i.channels(); ++c){
+            for (std::size_t c = 1; c <= i.channels(); ++c){
                 auto channel = i.channel(c);
                 std::wcout << L"Channel " << c << L" attenuation: "
                     << channel.attenuation().value() << std::endl;
