@@ -6,6 +6,7 @@
 #pragma once
 
 #include "power_overwhelming/oscilloscope_acquisition.h"
+#include "power_overwhelming/oscilloscope_channel.h"
 #include "power_overwhelming/oscilloscope_quantity.h"
 #include "power_overwhelming/oscilloscope_edge_trigger.h"
 #include "power_overwhelming/rtx_instrument.h"
@@ -34,6 +35,17 @@ namespace power_overwhelming {
     /// strongly recommended to apply the same settings to all instruments when
     /// working with multiple oscilloscopes in order to produce consistent
     /// results.</para>
+    /// <para>This class does not at all interact with the actual instrument
+    /// until the configuration is applied. Therefore, it is possible to create
+    /// configurations that are invalid without noticing it until the
+    /// configuration is realised.</para>
+    /// <para>Although it is possible to configure settings that are only
+    /// relevant on a per-sensor basis, most notably the channels, using this
+    /// class, you should never do this when using it in conjunction with
+    /// <see cref="rtx_sensor" /> as this might apply an invalid configuration
+    /// for this use case. Make sure to call <see cref="ignore_all_channels" />
+    /// when working with a configuration object that you have not built
+    /// yourself.</para>
     /// </remarks>
     class POWER_OVERWHELMING_API rtx_instrument_configuration final {
 
@@ -178,6 +190,12 @@ namespace power_overwhelming {
         /// <param name="cnt">The number of instruments in
         /// <paramref name="instruments" />.</param>
         /// <param name="path">The path to the configuration file.</param>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="path" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::ifstream::failure">If the I/O operation
+        /// failed.</exception>
+        /// <exception cref="visa_exception">If the configuration could not be
+        /// applied to one or more of the instruments.</exception>
         static void apply(_In_reads_(cnt) rtx_instrument *instruments,
             _In_ const std::size_t cnt, _In_z_ const wchar_t *path);
 
@@ -193,9 +211,28 @@ namespace power_overwhelming {
         /// <returns>The number of configurations in the file, regardless of
         /// whether these have been written to <paramref name="dst" />.
         /// </returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="path" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::ifstream::failure">If the I/O operation
+        /// failed.</exception>
         static std::size_t load(_When_(dst != nullptr, _Out_writes_opt_(cnt))
             rtx_instrument_configuration *dst,
             _In_ std::size_t cnt, _In_z_ const wchar_t *path);
+
+        /// <summary>
+        /// Loads a single configuration from the given JSON file.
+        /// </summary>
+        /// <remarks>
+        /// If the JSON file contains an array, only the first configuration is
+        /// read and returned.
+        /// </remarks>
+        /// <param name="path">The path to read the configuration from.</param>
+        /// <returns>The first or only configuration in the file.</returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="path" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::ifstream::failure">If the I/O operation
+        /// failed.</exception>
+        static rtx_instrument_configuration load(_In_z_ const wchar_t *path);
 
         /// <summary>
         /// Saves the given instrument configurations in a JSON file.
@@ -208,7 +245,10 @@ namespace power_overwhelming {
         /// <paramref name="instruments" /> is <c>nullptr</c>.</exception>
         /// <exception cref="std::invalid_argument">If
         /// <paramref name="path" /> is <c>nullptr</c>.</exception>
-        static void save(_In_reads_(cnt) rtx_instrument_configuration *configs,
+        /// <exception cref="std::ofstream::failure">If the I/O operation
+        /// failed.</exception>
+        static void save(
+            _In_reads_(cnt) const rtx_instrument_configuration *configs,
             _In_ const std::size_t cnt, _In_z_ const wchar_t *path);
 
         /// <summary>
@@ -231,13 +271,47 @@ namespace power_overwhelming {
         /// <paramref name="instruments" /> is <c>nullptr</c>.</exception>
         /// <exception cref="std::invalid_argument">If
         /// <paramref name="path" /> is <c>nullptr</c>.</exception>
-        static void save(_In_reads_(cnt) rtx_instrument *instruments,
+        /// <exception cref="std::ofstream::failure">If the I/O operation
+        /// failed.</exception>
+        static void save(_In_reads_(cnt) const rtx_instrument *instruments,
             _In_ const std::size_t cnt, _In_z_ const wchar_t *path);
+
+        /// <summary>
+        /// Saves the given configuration as a JSON file.
+        /// </summary>
+        /// <param name="configuration">The configuration to save.</param>
+        /// <param name="path">The path to the output file.</param>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="path" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::ofstream::failure">If the I/O operation
+        /// failed.</exception>
+        static void save(_In_ const rtx_instrument_configuration& configuration,
+            _In_z_ const wchar_t *path);
 
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
+        /// <remarks>
+        /// The instance created by the default constructor is not really
+        /// usable. This constructor only exists such that it is possible to
+        /// create temporary variables and arrays of the type. Actual instances
+        /// should always be created using one of the other constructors.
+        /// </remarks>
         rtx_instrument_configuration(void);
+
+        /// <summary>
+        /// Clone <paramref name="rhs" />.
+        /// </summary>
+        /// <param name="rhs">The object to be cloned.</param>
+        rtx_instrument_configuration(
+            _In_ const rtx_instrument_configuration& rhs);
+
+        /// <summary>
+        /// Move <paramref name="rhs" /> to a new instance.
+        /// </summary>
+        /// <param name="rhs">The object to be moved.</param>
+        rtx_instrument_configuration(
+            _Inout_ rtx_instrument_configuration&& rhs) noexcept;
 
         /// <summary>
         /// Initialises a new instance.
@@ -298,6 +372,29 @@ namespace power_overwhelming {
             _In_ const oscilloscope_acquisition& acquisition,
             _In_ const oscilloscope_edge_trigger& trigger,
             _In_ visa_instrument::timeout_type timeout = 0);
+
+        /// <summary>
+        /// Extracts the configuration from the given instrument.
+        /// </summary>
+        /// <remarks>
+        /// This constructor tries enumerating the channels of the device until
+        /// it fails. It may therefore take significant time to complete as the
+        /// instrument must hit a timeout to detect that the final channel was
+        /// opened.
+        /// </remarks>
+        /// <param name="instrument">The instrument to retrieve the
+        /// configuration from.</param>
+        /// <param name="ignore_channels">If this parameter is set <c>true</c>,
+        /// the constructor will not try enumerating the channel configurations
+        /// of the instrument.</param>
+        explicit rtx_instrument_configuration(
+            _In_ const rtx_instrument& instrument,
+            _In_ const bool ignore_channels = false);
+
+        /// <summary>
+        /// Finalises the instance.
+        /// </summary>
+        ~rtx_instrument_configuration(void);
 
         /// <summary>
         /// Answers the way the instrument will acquire one or more samples.
@@ -401,6 +498,52 @@ namespace power_overwhelming {
             _In_ const bool enable) noexcept;
 
         /// <summary>
+        /// Configures the given channel.
+        /// </summary>
+        /// <param name="channel">The channel configuration to apply. Please
+        /// note that each channel can only be configured once. Subsequent
+        /// calls with the name channel number will overwrite any existing
+        /// configuration.</param>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument_configuration& channel(
+            _In_ const oscilloscope_channel& channel);
+
+        /// <summary>
+        /// Counts or returns the channels configured.
+        /// </summary>
+        /// <remarks>
+        /// The value reported by this object does not necessarily reflect the
+        /// number of channels on the instrument. It only reflects the channels
+        /// that should be configured by it.
+        /// </remarks>
+        /// <param name="dst">Receives at most <paramref name="cnt" /> channels
+        /// if not <c>nullptr</c>.</param>
+        /// <param name="cnt">The number of elements that can be written to
+        /// <paramref name="dst" />.</param>
+        /// <returns>The number of channels configured.</returns>
+        std::size_t channels(_When_(dst != nullptr, _Out_writes_opt_(cnt))
+            oscilloscope_channel *dst = nullptr,
+            _In_ const std::size_t cnt = 0) const;
+
+        /// <summary>
+        /// Removes the channel with the given number from the configuration.
+        /// </summary>
+        /// <param name="channel">The channel to be removed. It is safe to pass
+        /// a channel that is not configured, in which case nothing will happen.
+        /// </param>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument_configuration& ignore_channel(
+            _In_ const std::uint32_t channel);
+
+        /// <summary>
+        /// Removes all per-channel configurations from the object such that the
+        /// channels of the instrument remain unchanged when applying the
+        /// configuration.
+        /// </summary>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument_configuration& ignore_all_channels(void) noexcept;
+
+        /// <summary>
         /// Indicates whether this configuration is for a slave instrument that
         /// is being triggered by another instrument via the external trigger
         /// input.
@@ -437,12 +580,30 @@ namespace power_overwhelming {
             return this->_trigger;
         }
 
+        /// <summary>
+        /// Assignment.
+        /// </summary>
+        /// <param name="rhs">The right-hand side operand.</param>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument_configuration& operator =(
+            _In_ const rtx_instrument_configuration& rhs);
+
+        /// <summary>
+        /// Move assignment.
+        /// </summary>
+        /// <param name="rhs">The right-hand side operand.</param>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument_configuration& operator =(
+            _Inout_ rtx_instrument_configuration&& rhs) noexcept;
+
     private:
 
         oscilloscope_acquisition _acquisition;
         std::size_t _beep_on_apply;
         bool _beep_on_error;
         bool _beep_on_trigger;
+        oscilloscope_channel *_channels;
+        std::size_t _cnt_channels;
         bool _slave;
         visa_instrument::timeout_type _timeout;
         oscilloscope_quantity _time_range;
