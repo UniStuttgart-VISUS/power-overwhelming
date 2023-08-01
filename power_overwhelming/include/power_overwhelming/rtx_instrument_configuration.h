@@ -190,6 +190,12 @@ namespace power_overwhelming {
         /// <param name="cnt">The number of instruments in
         /// <paramref name="instruments" />.</param>
         /// <param name="path">The path to the configuration file.</param>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="path" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::ifstream::failure">If the I/O operation
+        /// failed.</exception>
+        /// <exception cref="visa_exception">If the configuration could not be
+        /// applied to one or more of the instruments.</exception>
         static void apply(_In_reads_(cnt) rtx_instrument *instruments,
             _In_ const std::size_t cnt, _In_z_ const wchar_t *path);
 
@@ -205,9 +211,28 @@ namespace power_overwhelming {
         /// <returns>The number of configurations in the file, regardless of
         /// whether these have been written to <paramref name="dst" />.
         /// </returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="path" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::ifstream::failure">If the I/O operation
+        /// failed.</exception>
         static std::size_t load(_When_(dst != nullptr, _Out_writes_opt_(cnt))
             rtx_instrument_configuration *dst,
             _In_ std::size_t cnt, _In_z_ const wchar_t *path);
+
+        /// <summary>
+        /// Loads a single configuration from the given JSON file.
+        /// </summary>
+        /// <remarks>
+        /// If the JSON file contains an array, only the first configuration is
+        /// read and returned.
+        /// </remarks>
+        /// <param name="path">The path to read the configuration from.</param>
+        /// <returns>The first or only configuration in the file.</returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="path" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::ifstream::failure">If the I/O operation
+        /// failed.</exception>
+        static rtx_instrument_configuration load(_In_z_ const wchar_t *path);
 
         /// <summary>
         /// Saves the given instrument configurations in a JSON file.
@@ -220,7 +245,10 @@ namespace power_overwhelming {
         /// <paramref name="instruments" /> is <c>nullptr</c>.</exception>
         /// <exception cref="std::invalid_argument">If
         /// <paramref name="path" /> is <c>nullptr</c>.</exception>
-        static void save(_In_reads_(cnt) rtx_instrument_configuration *configs,
+        /// <exception cref="std::ofstream::failure">If the I/O operation
+        /// failed.</exception>
+        static void save(
+            _In_reads_(cnt) const rtx_instrument_configuration *configs,
             _In_ const std::size_t cnt, _In_z_ const wchar_t *path);
 
         /// <summary>
@@ -243,8 +271,22 @@ namespace power_overwhelming {
         /// <paramref name="instruments" /> is <c>nullptr</c>.</exception>
         /// <exception cref="std::invalid_argument">If
         /// <paramref name="path" /> is <c>nullptr</c>.</exception>
-        static void save(_In_reads_(cnt) rtx_instrument *instruments,
+        /// <exception cref="std::ofstream::failure">If the I/O operation
+        /// failed.</exception>
+        static void save(_In_reads_(cnt) const rtx_instrument *instruments,
             _In_ const std::size_t cnt, _In_z_ const wchar_t *path);
+
+        /// <summary>
+        /// Saves the given configuration as a JSON file.
+        /// </summary>
+        /// <param name="configuration">The configuration to save.</param>
+        /// <param name="path">The path to the output file.</param>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="path" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::ofstream::failure">If the I/O operation
+        /// failed.</exception>
+        static void save(_In_ const rtx_instrument_configuration& configuration,
+            _In_z_ const wchar_t *path);
 
         /// <summary>
         /// Initialises a new instance.

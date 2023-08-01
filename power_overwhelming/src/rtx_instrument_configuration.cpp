@@ -283,10 +283,40 @@ std::size_t visus::power_overwhelming::rtx_instrument_configuration::load(
 
 
 /*
+ * visus::power_overwhelming::rtx_instrument_configuration::load
+ */
+visus::power_overwhelming::rtx_instrument_configuration
+visus::power_overwhelming::rtx_instrument_configuration::load(
+        _In_z_ const wchar_t *path) {
+    auto json = detail::load_json(path);
+
+    switch (json.type()) {
+        case nlohmann::json::value_t::array:
+            if (json.size() == 0) {
+                throw std::invalid_argument("The configuration array provided "
+                    "must not be empty.");
+            }
+
+            json = json[0];
+            break;
+
+        case nlohmann::json::value_t::object:
+            break;
+
+        default:
+            throw std::invalid_argument("The JSON file provided must contain "
+                "an object or a non-emtpy array of objects.");
+    }
+
+    return detail::json_deserialise<rtx_instrument_configuration>(json);
+}
+
+
+/*
  * visus::power_overwhelming::rtx_instrument_configuration::save
  */
 void visus::power_overwhelming::rtx_instrument_configuration::save(
-        _In_reads_(cnt) rtx_instrument_configuration *configs,
+        _In_reads_(cnt) const rtx_instrument_configuration *configs,
         _In_ const std::size_t cnt,
         _In_z_ const wchar_t *path) {
     if (configs == nullptr) {
@@ -308,7 +338,7 @@ void visus::power_overwhelming::rtx_instrument_configuration::save(
  * visus::power_overwhelming::rtx_instrument_configuration::save
  */
 void visus::power_overwhelming::rtx_instrument_configuration::save(
-        _In_reads_(cnt) rtx_instrument *instruments,
+        _In_reads_(cnt) const rtx_instrument *instruments,
         _In_ const std::size_t cnt,
         _In_z_ const wchar_t *path) {
     auto data = nlohmann::json::array();
@@ -328,6 +358,16 @@ void visus::power_overwhelming::rtx_instrument_configuration::save(
     }
 
     detail::save_json(data, path);
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::save
+ */
+void visus::power_overwhelming::rtx_instrument_configuration::save(
+        _In_ const rtx_instrument_configuration& configuration,
+        _In_z_ const wchar_t *path) {
+    detail::save_json(detail::json_serialise(configuration), path);
 }
 
 
