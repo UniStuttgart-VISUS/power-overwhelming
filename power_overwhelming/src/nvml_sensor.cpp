@@ -10,6 +10,7 @@
 #include "nvidia_management_library.h"
 #include "nvml_exception.h"
 #include "nvml_sensor_impl.h"
+#include "sampler_collection.h"
 
 
 /*
@@ -209,21 +210,10 @@ void visus::power_overwhelming::nvml_sensor::sample(
         _In_opt_ const measurement_callback on_measurement,
         _In_ const microseconds_type period,
         _In_opt_ void *context) {
-    typedef decltype(detail::nvml_sensor_impl::sampler)::interval_type
-        interval_type;
-
-    this->check_not_disposed();
-
-    if (on_measurement != nullptr) {
-        if (!detail::nvml_sensor_impl::sampler.add(this->_impl, on_measurement,
-                context, interval_type(period))) {
-            throw std::logic_error("Asynchronous sampling cannot be started "
-                "while it is already running.");
-        }
-
-    } else {
-        detail::nvml_sensor_impl::sampler.remove(this->_impl);
-    }
+    this->sample_async(std::move(async_sampling()
+        .samples_every(period)
+        .delivers_measurements_to(on_measurement)
+        .passes_context(context)));
 }
 
 
@@ -248,6 +238,25 @@ visus::power_overwhelming::nvml_sensor::operator =(
 visus::power_overwhelming::nvml_sensor::operator bool(void) const noexcept {
     return (this->_impl != nullptr);
 }
+
+
+/*
+ * visus::power_overwhelming::nvml_sensor::sample_async
+ */
+void visus::power_overwhelming::nvml_sensor::sample_async(
+        _Inout_ async_sampling&& sampling) {
+    if (sampling) {
+        if (!detail::sampler_collection::default.add(this->_impl,
+                std::move(sampling))) {
+            throw std::logic_error("Asynchronous sampling cannot be started "
+                "while it is already running.");
+        }
+
+    } else {
+        detail::sampler_collection::default.remove(this->_impl);
+    }
+}
+
 
 
 /*

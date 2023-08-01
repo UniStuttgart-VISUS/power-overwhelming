@@ -162,6 +162,14 @@ namespace power_overwhelming {
         void check_not_disposed(void) const;
 
         /// <summary>
+        /// Apply the given asynchronous sampling configuration.
+        /// </summary>
+        /// <param name="sampling">The new asynchronous sampling configuration
+        /// of the sensor, which may enable, change or disable asynchronous
+        /// sampling.</param>
+        virtual void sample_async(_Inout_ async_sampling&& sampling) = 0;
+
+        /// <summary>
         /// Synchronously sample the sensor using a timestamp with the specified
         /// resolution.
         /// </summary>

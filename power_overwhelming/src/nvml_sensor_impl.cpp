@@ -1,5 +1,5 @@
 // <copyright file="nvml_sensor_impl.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -11,15 +11,7 @@
 
 #include "nvidia_management_library.h"
 #include "nvml_exception.h"
-
-
-/*
- * visus::power_overwhelming::detail::nvml_sensor_impl::sampler
- */
-visus::power_overwhelming::detail::sampler<
-    visus::power_overwhelming::detail::default_sampler_context<
-    visus::power_overwhelming::detail::nvml_sensor_impl>>
-visus::power_overwhelming::detail::nvml_sensor_impl::sampler;
+#include "sampler_collection.h"
 
 
 /*
@@ -28,7 +20,7 @@ visus::power_overwhelming::detail::nvml_sensor_impl::sampler;
 visus::power_overwhelming::detail::nvml_sensor_impl::~nvml_sensor_impl(void) {
     // Make sure that a sensor that is being destroyed is removed from all
     // asynchronous sampling threads.
-    nvml_sensor_impl::sampler.remove(this);
+    sampler_collection::default.remove(this);
 }
 
 

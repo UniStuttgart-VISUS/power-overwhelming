@@ -14,7 +14,8 @@
 
 #include "adl_scope.h"
 #include "amd_display_library.h"
-#include "sampler.h"
+#include "basic_async_measurement_data_source.h"
+#include "sampler_collection.h"
 #include "timestamp.h"
 
 
@@ -25,7 +26,8 @@ namespace detail {
     /// <summary>
     /// Private data container for <see cref="adl_sensor" />.
     /// </summary>
-    struct adl_sensor_impl final {
+    struct adl_sensor_impl final
+            : public basic_async_measurement_data_source<adl_sensor_impl> {
 
         /// <summary>
         /// Counts how many valid sensor readings are in <paramref name="data" />.
@@ -112,10 +114,13 @@ namespace detail {
         static bool is_voltage(const ADL_PMLOG_SENSORS id);
 
         /// <summary>
-        /// A sampler for ADL sensors.
+        /// A collection of samplers dedicated to ADL sensors.
         /// </summary>
-        static detail::sampler<default_sampler_context<
-            adl_sensor_impl>> sampler;
+        /// <remarks>
+        /// We need to hold a dedicated collection for ADL as we want to stop
+        /// the sensor if all samplers have been removed.
+        /// </remarks>
+        static sampler_collection samplers;
 
         /// <summary>
         /// The adpater index of the device, which is required for a series of
@@ -235,8 +240,7 @@ namespace detail {
         /// <param name="resolution">The resolution of the timestamp being
         /// returned.</param>
         /// <returns>The current measurement from the sensor.</returns>
-        measurement_data sample(const timestamp_resolution resolution
-            = timestamp_resolution::milliseconds);
+        measurement_data sample(const timestamp_resolution resolution);
 
         /// <summary>
         /// Starts the source if not yet running.

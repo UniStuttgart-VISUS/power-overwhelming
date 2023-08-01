@@ -9,8 +9,8 @@
 
 #include <nvml.h>
 
+#include "basic_async_measurement_data_source.h"
 #include "nvml_scope.h"
-#include "sampler.h"
 #include "timestamp.h"
 
 
@@ -21,13 +21,8 @@ namespace detail {
     /// <summary>
     /// Private data container for the <see cref="nvml_sensor" />.
     /// </summary>
-    struct nvml_sensor_impl final {
-
-        /// <summary>
-        /// A sampler for NVML sensors.
-        /// </summary>
-        static detail::sampler<default_sampler_context<
-            nvml_sensor_impl>> sampler;
+    struct nvml_sensor_impl final
+            : public basic_async_measurement_data_source<nvml_sensor_impl> {
 
         /// <summary>
         /// The NVML device the sensor is reading from.
@@ -79,8 +74,7 @@ namespace detail {
         /// <param name="resolution">The resolution of the timestamp to be
         /// generated, which defaults to milliseconds.</param>
         /// <returns>A measurement from the sensor.</returns>
-        measurement_data sample(const timestamp_resolution resolution
-            = timestamp_resolution::milliseconds) const;
+        measurement_data sample(const timestamp_resolution resolution) const;
     };
 
 } /* namespace detail */

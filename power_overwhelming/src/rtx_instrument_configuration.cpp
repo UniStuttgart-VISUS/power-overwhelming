@@ -490,7 +490,7 @@ visus::power_overwhelming::rtx_instrument_configuration::acquisition(
 visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configuration(
         _In_ const rtx_instrument& instrument,
         _In_ const bool ignore_channels)
-    : _acquisition(instrument.single_acquisition()),
+    : _acquisition(instrument.acquisition()),
         _beep_on_apply(0),
         _beep_on_error(false),
         _beep_on_trigger(false),
@@ -512,6 +512,7 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
             try {
                 channels.push_back(instrument.channel(i));
             } catch (...) {
+                // Clear any error state from the failed call before.
                 instrument.query("*CLS; *OPC?\n");
                 break;
             }
@@ -567,7 +568,7 @@ void visus::power_overwhelming::rtx_instrument_configuration::apply(
     instrument.time_range(this->_time_range)
         .trigger_output(oscilloscope_trigger_output::pulse)
         .trigger(this->_trigger)
-        .acquisition(this->_acquisition, false, false);
+        .acquisition(this->_acquisition, false);
 
     // If there are per-channel settings, apply them as well. Note that the
     // pointer may be non-null while there are zero channels. This is perfectly

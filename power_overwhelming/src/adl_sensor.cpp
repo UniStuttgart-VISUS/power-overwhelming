@@ -15,6 +15,7 @@
 #include "adl_exception.h"
 #include "adl_scope.h"
 #include "adl_sensor_impl.h"
+#include "sampler_collection.h"
 #include "zero_memory.h"
 
 
@@ -327,35 +328,10 @@ void visus::power_overwhelming::adl_sensor::sample(
         _In_opt_ const measurement_callback on_measurement,
         _In_ const microseconds_type period,
         _In_opt_ void *context) {
-    using std::chrono::duration_cast;
-    typedef decltype(detail::adl_sensor_impl::sampler)::interval_type
-        interval_type;
-
-    this->check_not_disposed();
-
-    if (on_measurement != nullptr) {
-        auto sampler_rate = interval_type(period);
-        auto adl_rate = duration_cast<std::chrono::milliseconds>(sampler_rate);
-
-        // Make sure that the sensor is running before queuing to the thread.
-        if (!this->_impl->running()) {
-            this->_impl->start(static_cast<unsigned long>(adl_rate.count()));
-        }
-
-        if (!detail::adl_sensor_impl::sampler.add(this->_impl, on_measurement,
-                context, sampler_rate)) {
-            throw std::logic_error("Asynchronous sampling cannot be started "
-                "while it is already running.");
-        }
-
-    } else {
-        detail::adl_sensor_impl::sampler.remove(this->_impl);
-
-        if (!detail::adl_sensor_impl::sampler.samples()) {
-            // If there is no sensor left to sample, stop the sensor.
-            this->_impl->stop();
-        }
-    }
+    this->sample_async(std::move(async_sampling()
+        .samples_every(period)
+        .delivers_measurements_to(on_measurement)
+        .passes_context(context)));
 }
 
 
@@ -365,8 +341,7 @@ void visus::power_overwhelming::adl_sensor::sample(
 void visus::power_overwhelming::adl_sensor::start(
         _In_ const microseconds_type sampling_period) {
     using std::chrono::duration_cast;
-    typedef decltype(detail::adl_sensor_impl::sampler)::interval_type
-        interval_type;
+    typedef detail::sampler_collection::interval_type interval_type;
 
     this->check_not_disposed();
 
@@ -429,6 +404,46 @@ visus::power_overwhelming::adl_sensor::operator =(
  */
 visus::power_overwhelming::adl_sensor::operator bool(void) const noexcept {
     return (this->_impl != nullptr);
+}
+
+
+/*
+ * visus::power_overwhelming::adl_sensor::sample_async
+ */
+void visus::power_overwhelming::adl_sensor::sample_async(
+        _Inout_ async_sampling&& sampling) {
+    using std::chrono::duration_cast;
+    typedef detail::sampler_collection::interval_type interval_type;
+
+    if (sampling) {
+        auto sampler_rate = interval_type(sampling.interval());
+        auto adl_rate = duration_cast<std::chrono::milliseconds>(sampler_rate);
+
+        // Make sure that the sensor is running before queuing to the thread.
+        if (!this->_impl->running()) {
+            this->_impl->start(static_cast<unsigned long>(adl_rate.count()));
+        }
+
+        // Register in the sampler collection dedicated to ADL. This is required
+        // as we need to be able to find out when the last ADL sampler was
+        // removed from the collection. We therefore cannot share the samplers
+        // with other sensors.
+        if (!detail::adl_sensor_impl::samplers.add(this->_impl,
+                std::move(sampling))) {
+            throw std::logic_error("Asynchronous sampling cannot be started "
+                "while it is already running.");
+        }
+
+    } else {
+        detail::adl_sensor_impl::samplers.remove(this->_impl);
+
+        if (!detail::adl_sensor_impl::samplers) {
+            // If there is no sensor left to sample, stop the sensor. This
+            // condition is the reason for having a dedicated ADL sampler
+            // collection.
+            this->_impl->stop();
+        }
+    }
 }
 
 

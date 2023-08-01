@@ -17,29 +17,31 @@ namespace detail {
     /// be used with the generic asynchronous sampler implementation.
     /// </summary>
     /// <remarks>
-    /// 
+    /// <para>The interface is used by the generic sampler implementation and
+    /// manages the callback registered and the sample delivery. It is held
+    /// generic in that implementors manage more than once callback in this
+    /// class. Some implementations might be so special that they have their
+    /// own threads and therefore completely bypass this interface.</para>
     /// </remarks>
     class async_measurement_data_source {
 
     public:
 
         /// <summary>
-        /// The type of the callback that receives asynchronous samples.
+        /// Synchronously delivers a sample to the registered callback or
+        /// callbacks.
         /// </summary>
-        typedef async_sampling::on_measurement_data_callback async_callback;
+        virtual void deliver_async(void) const = 0;
 
         /// <summary>
-        /// Delivers one or more samples to the specified callback for
-        /// asynchronous <see cref="measurement_data" />.
+        /// Changes the asynchronous sampling configuration.
         /// </summary>
-        /// <remarks>
-        /// <para>Sensor implementations using the default sampler
-        /// implementation must provide their samples via this method.</para>
-        /// </remarks>
-        /// <param name="sampling">The sampling configuration that determines
-        /// where to deliver the samples.</param>
-        virtual void sample(_In_ const async_sampling& sampling) const = 0;
+        /// <param name="sampling">The new configuration object.</param>
+        virtual void update_async(_Inout_ async_sampling&& sampling) = 0;
 
+    protected:
+
+        async_measurement_data_source(void) = default;
     };
 
 } /* namespace detail */
