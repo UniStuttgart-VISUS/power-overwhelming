@@ -8,15 +8,15 @@
 #include <chrono>
 #include <vector>
 
+#include "power_overwhelming/async_sampling.h"
 #include "power_overwhelming/cpu_affinity.h"
 #include "power_overwhelming/cpu_info.h"
 #include "power_overwhelming/msr_sensor.h"
 #include "power_overwhelming/rapl_domain.h"
 #include "power_overwhelming/measurement.h"
 
+#include "device_sampler_source.h"
 #include "msr_device_factory.h"
-#include "msr_sampler_context.h"
-#include "sampler.h"
 
 
 namespace visus {
@@ -31,6 +31,13 @@ namespace detail {
     /// Private data container for the <see cref="msr_sensor" />.
     /// </summary>
     struct msr_sensor_impl final {
+
+        /// <summary>
+        /// The type of the asynchronous sampler source used for this kind of
+        /// sensor.
+        /// </summary>
+        typedef device_sampler_source<msr_sensor_impl,
+            msr_device_factory::device_type> sampler_source_type;
 
         /// <summary>
         /// Determines which RAPL domains are in principle supported for the
@@ -48,9 +55,9 @@ namespace detail {
             _In_ const cpu_vendor vendor);
 
         /// <summary>
-        /// A sampler for MSR sensors.
+        /// The asynchronous sampling configuration for this sensor.
         /// </summary>
-        static detail::sampler<msr_sampler_context> sampler;
+        async_sampling async_sampling;
 
         /// <summary>
         /// The core the sensor is sampling.
@@ -103,6 +110,11 @@ namespace detail {
             last_sample(0), offset(0), unit_divisor(1) { }
 
         /// <summary>
+        /// Finalises the instance.
+        /// </summary>
+        ~msr_sensor_impl(void) noexcept;
+
+        /// <summary>
         /// Reads the current value of the register and optionally performs the
         /// unit conversion.
         /// </summary>
@@ -127,7 +139,8 @@ namespace detail {
         /// <param name="resolution">The resolution of the timestamp being
         /// created.</param>
         /// <returns>The result of the measurement.</returns>
-        measurement_data sample(_In_ const timestamp_resolution resolution) const;
+        measurement_data sample(
+            _In_ const timestamp_resolution resolution) const;
 
         /// <summary>
         /// Sets the initial parameters.

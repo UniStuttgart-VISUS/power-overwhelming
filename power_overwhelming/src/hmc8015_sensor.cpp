@@ -420,6 +420,15 @@ visus::power_overwhelming::hmc8015_sensor::operator bool(void) const noexcept {
 
 
 /*
+ * visus::power_overwhelming::hmc8015_sensor::sample_async
+ */
+void visus::power_overwhelming::hmc8015_sensor::sample_async(
+        _Inout_ async_sampling&& sampling) {
+    throw "TODO: Asynchronous sampling is not supported for HMC8015 at the moment.";
+}
+
+
+/*
  * visus::power_overwhelming::hmc8015_sensor::sample_sync
  */
 visus::power_overwhelming::measurement_data

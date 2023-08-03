@@ -9,7 +9,9 @@
 #include <map>
 #include <stdexcept>
 
+#include "device_sampler_source.h"
 #include "msr_magic.h"
+#include "sampler.h"
 #include "timestamp.h"
 
 
@@ -96,11 +98,13 @@ visus::power_overwhelming::detail::msr_sensor_impl::supported_domains(
 
 
 /*
- * visus::power_overwhelming::detail::msr_sensor_impl::sampler
+ * visus::power_overwhelming::detail::msr_sensor_impl::~msr_sensor_impl
  */
-visus::power_overwhelming::detail::sampler<
-    visus::power_overwhelming::detail::msr_sampler_context>
-    visus::power_overwhelming::detail::msr_sensor_impl::sampler;
+visus::power_overwhelming::detail::msr_sensor_impl::~msr_sensor_impl(
+        void) noexcept {
+    // Make sure that the sensor is unregistered from asynchronous sampling.
+    sampler::default -= this;
+}
 
 
 /*

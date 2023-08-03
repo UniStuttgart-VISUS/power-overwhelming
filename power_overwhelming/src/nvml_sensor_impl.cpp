@@ -11,7 +11,7 @@
 
 #include "nvidia_management_library.h"
 #include "nvml_exception.h"
-#include "sampler_collection.h"
+#include "sampler.h"
 
 
 /*
@@ -20,7 +20,7 @@
 visus::power_overwhelming::detail::nvml_sensor_impl::~nvml_sensor_impl(void) {
     // Make sure that a sensor that is being destroyed is removed from all
     // asynchronous sampling threads.
-    sampler_collection::default.remove(this);
+    sampler::default -= this;
 }
 
 

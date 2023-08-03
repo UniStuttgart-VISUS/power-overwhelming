@@ -9,7 +9,7 @@
 
 #include <nvml.h>
 
-#include "basic_async_measurement_data_source.h"
+#include "basic_sampler_source.h"
 #include "nvml_scope.h"
 #include "timestamp.h"
 
@@ -22,7 +22,7 @@ namespace detail {
     /// Private data container for the <see cref="nvml_sensor" />.
     /// </summary>
     struct nvml_sensor_impl final
-            : public basic_async_measurement_data_source<nvml_sensor_impl> {
+            : public basic_sampler_source<nvml_sensor_impl> {
 
         /// <summary>
         /// The NVML device the sensor is reading from.

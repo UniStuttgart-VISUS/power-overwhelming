@@ -5,12 +5,13 @@
 
 #include "power_overwhelming/nvml_sensor.h"
 
+#include <cassert>
 #include <stdexcept>
 
 #include "nvidia_management_library.h"
 #include "nvml_exception.h"
 #include "nvml_sensor_impl.h"
-#include "sampler_collection.h"
+#include "sampler.h"
 
 
 /*
@@ -210,6 +211,12 @@ void visus::power_overwhelming::nvml_sensor::sample(
         _In_opt_ const measurement_callback on_measurement,
         _In_ const microseconds_type period,
         _In_opt_ void *context) {
+#if defined(_WIN32)
+    ::OutputDebugStringW(L"PWROWG DEPRECATION WARNING: This method is only "
+        L"provided for backwards compatibility and might be removed in "
+        L"future versions of the library. Use async_sampling to configure"
+        L"asynchronous sampling.");
+#endif /* defined(_WIN32) */
     this->sample_async(std::move(async_sampling()
         .samples_every(period)
         .delivers_measurements_to(on_measurement)
@@ -245,15 +252,13 @@ visus::power_overwhelming::nvml_sensor::operator bool(void) const noexcept {
  */
 void visus::power_overwhelming::nvml_sensor::sample_async(
         _Inout_ async_sampling&& sampling) {
-    if (sampling) {
-        if (!detail::sampler_collection::default.add(this->_impl,
-                std::move(sampling))) {
-            throw std::logic_error("Asynchronous sampling cannot be started "
-                "while it is already running.");
-        }
+    assert(this->_impl != nullptr);
+    this->_impl->async_sampling = std::move(sampling);
 
+    if (this->_impl->async_sampling) {
+        detail::sampler::default += this->_impl;
     } else {
-        detail::sampler_collection::default.remove(this->_impl);
+        detail::sampler::default -= this->_impl;
     }
 }
 
@@ -265,6 +270,6 @@ void visus::power_overwhelming::nvml_sensor::sample_async(
 visus::power_overwhelming::measurement_data
 visus::power_overwhelming::nvml_sensor::sample_sync(
         _In_ const timestamp_resolution resolution) const {
-    this->check_not_disposed();
+    assert(this->_impl != nullptr);
     return this->_impl->sample(resolution);
 }

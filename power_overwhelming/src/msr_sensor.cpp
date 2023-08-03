@@ -11,6 +11,7 @@
 
 #include "msr_magic.h"
 #include "msr_sensor_impl.h"
+#include "sampler.h"
 
 
 /*
@@ -174,23 +175,16 @@ void visus::power_overwhelming::msr_sensor::sample(
         _In_ const microseconds_type period,
         _In_ const timestamp_resolution timestamp_resolution,
         _In_opt_ void *context) {
-    typedef decltype(detail::msr_sensor_impl::sampler)::interval_type
-        interval_type;
-
-    this->check_not_disposed();
-
-    // TODO: set resolution
-
-    if (on_measurement != nullptr) {
-        if (!detail::msr_sensor_impl::sampler.add(this->_impl, on_measurement,
-                context, interval_type(period))) {
-            throw std::logic_error("Asynchronous sampling cannot be started "
-                "while it is already running.");
-        }
-
-    } else {
-        detail::msr_sensor_impl::sampler.remove(this->_impl);
-    }
+#if defined(_WIN32)
+    ::OutputDebugStringW(L"PWROWG DEPRECATION WARNING: This method is only "
+        L"provided for backwards compatibility and might be removed in "
+        L"future versions of the library. Use async_sampling to configure"
+        L"asynchronous sampling.");
+#endif /* defined(_WIN32) */
+    this->sample_async(std::move(async_sampling()
+        .samples_every(period)
+        .delivers_measurements_to(on_measurement)
+        .passes_context(context)));
 }
 
 
@@ -219,11 +213,34 @@ visus::power_overwhelming::msr_sensor::operator bool(void) const noexcept {
 
 
 /*
+ * visus::power_overwhelming::msr_sensor::sample_async
+ */
+void visus::power_overwhelming::msr_sensor::sample_async(
+        _Inout_ async_sampling&& sampling) {
+    typedef detail::sampler::interval_type interval_type;
+    assert(this->_impl);
+
+    throw "TODO";
+
+    if ((this->_impl->async_sampling = std::move(sampling))) {
+        if (!detail::msr_sensor_impl::sampler.add(this->_impl, on_measurement,
+            context, interval_type(period))) {
+            throw std::logic_error("Asynchronous sampling cannot be started "
+                "while it is already running.");
+        }
+
+    } else {
+        detail::msr_sensor_impl::sampler.remove(this->_impl);
+    }
+}
+
+
+/*
  * visus::power_overwhelming::msr_sensor::sample_sync
  */
 visus::power_overwhelming::measurement_data
 visus::power_overwhelming::msr_sensor::sample_sync(
         _In_ const timestamp_resolution resolution) const {
-    this->check_not_disposed();
+    assert(this->_impl);
     return this->_impl->sample(resolution);
 }

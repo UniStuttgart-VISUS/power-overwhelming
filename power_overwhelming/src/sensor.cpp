@@ -12,6 +12,7 @@
 visus::power_overwhelming::measurement
 visus::power_overwhelming::sensor::sample(
         _In_ const timestamp_resolution resolution) const {
+    this->check_not_disposed();
     auto name = this->name();
     _Analysis_assume_(name != nullptr);
     return measurement(name, this->sample_sync(resolution));

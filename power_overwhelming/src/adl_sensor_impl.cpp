@@ -12,7 +12,6 @@
 #include "power_overwhelming/convert_string.h"
 
 #include "adl_exception.h"
-#include "sampler_collection.h"
 #include "zero_memory.h"
 
 
@@ -218,10 +217,10 @@ bool visus::power_overwhelming::detail::adl_sensor_impl::is_voltage(
 
 
 /*
- * visus::power_overwhelming::detail::adl_sensor_impl::samplers
+ * visus::power_overwhelming::detail::adl_sensor_impl::sampler
  */
-visus::power_overwhelming::detail::sampler_collection
-visus::power_overwhelming::detail::adl_sensor_impl::samplers;
+visus::power_overwhelming::detail::sampler
+visus::power_overwhelming::detail::adl_sensor_impl::sampler;
 
 
 /*
@@ -257,7 +256,7 @@ visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(
  */
 visus::power_overwhelming::detail::adl_sensor_impl::~adl_sensor_impl(void) {
     // Unregister from any sampler the sensor might be referenced in.
-    adl_sensor_impl::samplers.remove(this);
+    adl_sensor_impl::sampler -= this;
 
     if (this->device != 0) {
         // Note: AMD's sample uses zero as guard as well, so we assume this is
@@ -336,7 +335,7 @@ void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
  */
 visus::power_overwhelming::measurement_data
 visus::power_overwhelming::detail::adl_sensor_impl::sample(
-        const timestamp_resolution resolution) {
+        const timestamp_resolution resolution) const {
     assert(this->state.load() == 1);
     const auto data = static_cast<ADLPMLogData *>(
         this->start_output.pLoggingAddress);

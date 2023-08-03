@@ -15,7 +15,6 @@
 #include "adl_exception.h"
 #include "adl_scope.h"
 #include "adl_sensor_impl.h"
-#include "sampler_collection.h"
 #include "zero_memory.h"
 
 
@@ -328,6 +327,12 @@ void visus::power_overwhelming::adl_sensor::sample(
         _In_opt_ const measurement_callback on_measurement,
         _In_ const microseconds_type period,
         _In_opt_ void *context) {
+#if defined(_WIN32)
+    ::OutputDebugStringW(L"PWROWG DEPRECATION WARNING: This method is only "
+        L"provided for backwards compatibility and might be removed in "
+        L"future versions of the library. Use async_sampling to configure"
+        L"asynchronous sampling.");
+#endif /* defined(_WIN32) */
     this->sample_async(std::move(async_sampling()
         .samples_every(period)
         .delivers_measurements_to(on_measurement)
@@ -341,7 +346,7 @@ void visus::power_overwhelming::adl_sensor::sample(
 void visus::power_overwhelming::adl_sensor::start(
         _In_ const microseconds_type sampling_period) {
     using std::chrono::duration_cast;
-    typedef detail::sampler_collection::interval_type interval_type;
+    typedef detail::sampler::interval_type interval_type;
 
     this->check_not_disposed();
 
@@ -413,9 +418,9 @@ visus::power_overwhelming::adl_sensor::operator bool(void) const noexcept {
 void visus::power_overwhelming::adl_sensor::sample_async(
         _Inout_ async_sampling&& sampling) {
     using std::chrono::duration_cast;
-    typedef detail::sampler_collection::interval_type interval_type;
+    typedef detail::sampler::interval_type interval_type;
 
-    if (sampling) {
+    if ((this->_impl->async_sampling = std::move(sampling))) {
         auto sampler_rate = interval_type(sampling.interval());
         auto adl_rate = duration_cast<std::chrono::milliseconds>(sampler_rate);
 
@@ -428,16 +433,12 @@ void visus::power_overwhelming::adl_sensor::sample_async(
         // as we need to be able to find out when the last ADL sampler was
         // removed from the collection. We therefore cannot share the samplers
         // with other sensors.
-        if (!detail::adl_sensor_impl::samplers.add(this->_impl,
-                std::move(sampling))) {
-            throw std::logic_error("Asynchronous sampling cannot be started "
-                "while it is already running.");
-        }
+        detail::adl_sensor_impl::sampler += this->_impl;
 
     } else {
-        detail::adl_sensor_impl::samplers.remove(this->_impl);
+        detail::adl_sensor_impl::sampler -= this->_impl;
 
-        if (!detail::adl_sensor_impl::samplers) {
+        if (!detail::adl_sensor_impl::sampler) {
             // If there is no sensor left to sample, stop the sensor. This
             // condition is the reason for having a dedicated ADL sampler
             // collection.
