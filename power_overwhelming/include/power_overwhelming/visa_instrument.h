@@ -589,7 +589,7 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the operation failed.
         /// </exception>
-        template<class TContext> visa_instrument& on_operation_complete(
+        template<class TContext> visa_instrument& on_operation_complete_ex(
             _In_opt_ void (*callback)(visa_instrument&, void *),
             _Inout_ TContext&& context);
 

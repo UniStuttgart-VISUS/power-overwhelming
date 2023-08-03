@@ -318,7 +318,7 @@ void query_rtx_instrument(void) {
             i.on_operation_complete_ex([&](visa_instrument& i) { });
             i.on_operation_complete([](visa_instrument& i, void *) {
                 std::cout << "OPC in thread #" << std::this_thread::get_id() << std::endl;
-            });
+            }, &i);
             i.operation_complete_async();
 
             i.trigger_position(oscilloscope_quantity(0.0f, "ms"));

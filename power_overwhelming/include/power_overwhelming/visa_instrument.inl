@@ -10,7 +10,7 @@
  */
 template<class TContext>
 visus::power_overwhelming::visa_instrument&
-visus::power_overwhelming::visa_instrument::on_operation_complete(
+visus::power_overwhelming::visa_instrument::on_operation_complete_ex(
         _In_opt_ void (*callback)(visa_instrument&, void *),
         _Inout_ TContext&& context) {
     // Allocate memory for the new context and move it in.
@@ -37,7 +37,7 @@ visus::power_overwhelming::visa_instrument::on_operation_complete_ex(
         _In_ TFunctor&& callback) {
     typedef std::function<void(visa_instrument&)> callback_type;
     callback_type cb(std::forward<TFunctor>(callback));
-    return this->on_operation_complete([](visa_instrument& i, void *c) {
+    return this->on_operation_complete_ex([](visa_instrument& i, void *c) {
         (*static_cast<callback_type *>(c))(i);
     }, std::move(cb));
 }
