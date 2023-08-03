@@ -64,7 +64,6 @@ void sample_msr_sensor_async(const unsigned int dt) {
         sensors.resize(msr_sensor::for_all(nullptr, 0));
         msr_sensor::for_all(sensors.data(), sensors.size());
 
-#if false
         // Enable asynchronous sampling.
         for (auto& s : sensors) {
             s.sample([](const measurement& m, void *) {
@@ -82,8 +81,6 @@ void sample_msr_sensor_async(const unsigned int dt) {
         for (auto& s : sensors) {
             s.sample(nullptr);
         }
-#endif
-
     } catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;
     }

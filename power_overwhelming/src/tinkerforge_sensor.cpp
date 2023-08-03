@@ -350,7 +350,7 @@ void visus::power_overwhelming::tinkerforge_sensor::sample_async(
     std::lock_guard<decltype(this->_impl->async_lock)> l(
         this->_impl->async_lock);
     const auto enabled = static_cast<bool>(this->_impl->async_sampling);
-    if (enabled) {
+    if (enabled && sampling) {
         throw std::logic_error("Asynchronous sampling cannot be started while "
             "it is already running.");
     }
