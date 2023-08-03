@@ -208,6 +208,13 @@ namespace detail {
             const timestamp_resolution resolution);
 
         /// <summary>
+        /// Evaluate the given channel data and deliver them to the registered
+        /// asynchronous sampling callback.
+        /// </summary>
+        /// <param name="data"></param>
+        bool evaluate_async(const std::vector<std::uint8_t>& data);
+
+        /// <summary>
         /// Initialise the sensor.
         /// </summary>
         /// <remarks>

@@ -97,8 +97,7 @@ bool visus::power_overwhelming::detail::device_sampler_source<TSensor,
     if (retval) {
         auto sample = TSensor::sample(this->_sensors.front()->device);
         for (auto& s : this->_sensors) {
-            return s->async_sampling.deliver(s->sensor_name.c_str(),
-                s->evaluate(sample, s->async_sampling.resolution()));
+            return s->evaluate_async(sample);
         }
 
     } else {

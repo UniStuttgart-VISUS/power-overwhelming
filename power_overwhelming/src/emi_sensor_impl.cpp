@@ -130,6 +130,20 @@ visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
 
 
 /*
+ * visus::power_overwhelming::detail::emi_sensor_impl::evaluate_async
+ */
+bool visus::power_overwhelming::detail::emi_sensor_impl::evaluate_async(
+        const std::vector<std::uint8_t>& data) {
+    if (this->async_sampling) {
+        return this->async_sampling.deliver(this->sensor_name.c_str(),
+            this->evaluate(data, this->async_sampling.resolution()));
+    } else {
+        return false;
+    }
+}
+
+
+/*
  * visus::power_overwhelming::detail::emi_sensor_impl::set
  */
 void visus::power_overwhelming::detail::emi_sensor_impl::set(
