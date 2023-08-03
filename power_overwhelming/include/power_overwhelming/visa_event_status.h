@@ -109,5 +109,21 @@ namespace power_overwhelming {
         return static_cast<enum_type>(~s);
     }
 
+    /// <summary>
+    /// Answer whether the intersection between <paramref name="lhs" /> and
+    /// <paramref name="rhs" /> is not empty.
+    /// </summary>
+    /// <param name="lhs">The left-hand side operand.</param>
+    /// <param name="rhs">The right-hand side operand.</param>
+    /// <returns><c>true</c> if both operands have at least one bit in common,
+    /// <c>false</c> otherwise.</returns>
+    inline bool operator &&(_In_ const visa_event_status lhs,
+        _In_ const visa_event_status rhs) {
+        typedef std::decay<decltype(lhs)>::type enum_type;
+        auto l = static_cast<std::underlying_type<enum_type>::type>(lhs);
+        auto r = static_cast<std::underlying_type<enum_type>::type>(rhs);
+        return ((l & r) != 0);
+    }
+
 } /* namespace power_overwhelming */
 } /* namespace visus */

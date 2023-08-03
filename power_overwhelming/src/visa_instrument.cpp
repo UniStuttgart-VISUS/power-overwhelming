@@ -967,10 +967,11 @@ ViStatus _VI_FUNCH visus::power_overwhelming::visa_instrument::on_event(
             // we must read the status byte here for the callback to work. We
             // have to do that anyway, because this seems to be the only way
             // to distinguish between OPC events and other status changes.
-            auto status = that->status();
-            if ((status & visa_status_byte::operation_status)
-                    != visa_status_byte::none) {
-                that->_impl->opc_callback(*that);
+            if (that->status() && visa_status_byte::operation_status) {
+                auto events = that->event_status();
+                if (events && visa_event_status::operation_complete) {
+                    that->_impl->opc_callback(*that);
+                }
             }
         } catch (...) {
             // If the event handler does not return, which is the case when we
