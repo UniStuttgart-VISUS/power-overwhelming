@@ -232,6 +232,7 @@ visus::power_overwhelming::nvml_sensor&
 visus::power_overwhelming::nvml_sensor::operator =(
         _In_ nvml_sensor&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
+        delete this->_impl;
         this->_impl = rhs._impl;
         rhs._impl = nullptr;
     }

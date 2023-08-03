@@ -397,6 +397,7 @@ visus::power_overwhelming::adl_sensor&
 visus::power_overwhelming::adl_sensor::operator =(
         _In_ adl_sensor&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
+        delete this->_impl;
         this->_impl = rhs._impl;
         rhs._impl = nullptr;
     }

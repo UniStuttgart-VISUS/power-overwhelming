@@ -320,6 +320,7 @@ visus::power_overwhelming::tinkerforge_sensor&
 visus::power_overwhelming::tinkerforge_sensor::operator =(
         _In_ tinkerforge_sensor&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
+        delete this->_impl;
         this->_impl = rhs._impl;
         rhs._impl = nullptr;
     }

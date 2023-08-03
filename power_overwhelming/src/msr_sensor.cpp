@@ -196,6 +196,7 @@ visus::power_overwhelming::msr_sensor&
 visus::power_overwhelming::msr_sensor::operator =(
         _In_ msr_sensor&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
+        delete this->_impl;
         this->_impl = rhs._impl;
         rhs._impl = nullptr;
     }
