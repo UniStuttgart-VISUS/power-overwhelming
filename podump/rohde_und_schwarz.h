@@ -7,9 +7,19 @@
 
 
 /// <summary>
-/// Query the HMC8015 power anaylser.
+/// Query the HMC8015 power analyser.
 /// </summary>
 void query_hmc8015(void);
+
+/// <summary>
+/// Sample the HMC8015 power analyser.
+/// </summary>
+void sample_hmc8015(void);
+
+/// <summary>
+/// Sample the HMC8015 power analyser asynchronously.
+/// </summary>
+void sample_hmc8015_async(const unsigned int dt);
 
 /// <summary>
 /// Query RTA4004 or RTB2004 oscilloscopes.

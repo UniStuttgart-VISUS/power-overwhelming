@@ -118,6 +118,14 @@ int _tmain(const int argc, const TCHAR **argv) {
     ::query_hmc8015();
 #endif
 
+#if false
+    ::sample_hmc8015();
+#endif
+
+#if false
+    ::sample_hmc8015_async(5);
+#endif
+
 #if true
     ::query_rtx_instrument();
 #endif

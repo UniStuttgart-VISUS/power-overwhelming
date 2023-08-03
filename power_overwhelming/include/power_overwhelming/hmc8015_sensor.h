@@ -21,6 +21,10 @@
 namespace visus {
 namespace power_overwhelming {
 
+    /* Forward declarations. */
+    namespace detail { struct hmc8015_sensor_impl; }
+
+
     /// <summary>
     /// Allows for controlling a Rohde &amp; Schwarz HMC8015 power analyser.
     /// </summary>
@@ -32,18 +36,18 @@ namespace power_overwhelming {
         /// Create sensor objects for all Rohde &amp; Schwarz HMC8015
         /// instruments that can be enumerated via VISA.
         /// </summary>
-        /// <param name="out_sensors">An array receiving the sensors. If this is
+        /// <param name="dst">An array receiving the sensors. If this is
         /// <c>nullptr</c>, nothing is returned.</param>
-        /// <param name="cnt_sensors">The number of sensors that can be stored in
-        /// <paramref name="out_sensors" />.</param>
+        /// <param name="cnt">The number of sensors that can be stored in
+        /// <paramref name="cnt" />.</param>
         /// <param name="timeout">The timeout in milliseconds for establishing a
         /// connection to each instrument that was found. This parameter defaults
         /// to 3000.</param>
         /// <returns>The number of HMC8015 instruments found, regardless of how
         /// many have been returned to <paramref name="out_sensors" />.</returns>
         static std::size_t for_all(
-            _Out_writes_opt_(cnt_sensors) hmc8015_sensor *out_sensors,
-            _In_ std::size_t cnt_sensors,
+            _When_(dst != nullptr, _Out_writes_opt_(cnt)) hmc8015_sensor *dst,
+            _In_ std::size_t cnt,
             _In_ const std::int32_t timeout = 3000);
 
         /// <summary>
@@ -59,7 +63,7 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        inline hmc8015_sensor(void) = default;
+        inline hmc8015_sensor(void) : _impl(nullptr) { }
 
         /// <summary>
         /// Initialises a new instance.
@@ -297,9 +301,7 @@ namespace power_overwhelming {
         /// Gets the VISA path of the instrument.
         /// </summary>
         /// <returns>The path of the instrument.</returns>
-        inline _Ret_maybenull_z_ const char *path(void) const noexcept {
-            return this->_instrument.path();
-        }
+        _Ret_maybenull_z_ const char *path(void) const noexcept;
 
         /// <summary>
         /// Resets the instrument to its default state.
@@ -324,10 +326,7 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        inline hmc8015_sensor& synchronise_clock(_In_ const bool utc = false) {
-            this->_instrument.synchronise_clock(utc);
-            return *this;
-        }
+        hmc8015_sensor& synchronise_clock(_In_ const bool utc = false);
 
         /// <summary>
         /// Sets the voltage range.
@@ -389,15 +388,12 @@ namespace power_overwhelming {
 
         void configure(void);
 
-        void initialise(void);
-
         void set_range(_In_ const std::int32_t channel,
             _In_z_ const char *quantity,
             _In_ const instrument_range range,
             _In_ const float value);
 
-        visa_instrument _instrument;
-        blob _name;
+        detail::hmc8015_sensor_impl *_impl;
     };
 
 } /* namespace power_overwhelming */

@@ -20,6 +20,16 @@ visus::power_overwhelming::sensor::sample(
 
 
 /*
+ *visus::power_overwhelming::sensor::sample
+ */
+void visus::power_overwhelming::sensor::sample(
+        _Inout_ async_sampling&& async_sampling) {
+    this->check_not_disposed();
+    this->sample_async(std::move(async_sampling));
+}
+
+
+/*
  * visus::power_overwhelming::sensor::check_not_disposed
  */
 void visus::power_overwhelming::sensor::check_not_disposed(void) const {

@@ -76,12 +76,13 @@ void sample_emi_sensor_async(const unsigned int dt) {
 
         // Enable asynchronous sampling.
         for (auto &s : sensors) {
-            s.sample([](const measurement &m, void *) {
-                std::wcout << m.timestamp() << L" "
-                    << "(" << m.sensor() << "): "
-                    << m.power() << L" W"
-                    << std::endl;
+            async_sampling config;
+            config.delivers_measurements_to([](const measurement& m, void *) {
+                std::wcout << m.timestamp() << L" ("
+                    << m.sensor() << L"): "
+                    << m.power() << L" W" << std::endl;
             });
+            s.sample(std::move(config));
         }
 
         // Wait for the requested number of seconds.
@@ -89,7 +90,7 @@ void sample_emi_sensor_async(const unsigned int dt) {
 
         // Disable asynchronous sampling.
         for (auto &s : sensors) {
-            s.sample(nullptr);
+            s.sample(async_sampling());
         }
 
     } catch (std::exception& ex) {

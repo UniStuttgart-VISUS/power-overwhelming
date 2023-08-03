@@ -18,7 +18,7 @@ void sample_adl_sensor(void) {
         sensors.resize(adl_sensor::for_all(nullptr, 0));
         adl_sensor::for_all(sensors.data(), sensors.size());
 
-        for (auto &s : sensors) {
+        for (auto& s : sensors) {
             std::wcout << s.name() << L":" << std::endl;
             auto m = s.sample();
             std::wcout << m.timestamp() << L" (" << m.sensor() << L"): "
@@ -70,12 +70,15 @@ void sample_adl_sensor_async(const unsigned int dt) {
 
         // Enable asynchronous sampling.
         for (auto& s : sensors) {
-            s.sample([](const measurement& m, void *) {
-                std::wcout << m.timestamp() << L" (" << m.sensor() << L"): "
+            async_sampling config;
+            config.delivers_measurements_to([](const measurement& m, void *) {
+                std::wcout << m.timestamp() << L" ("
+                    << m.sensor() << L"): "
                     << m.voltage() << L" V, "
                     << m.current() << L" A, "
                     << m.power() << L" W" << std::endl;
-                });
+            });
+            s.sample(std::move(config));
         }
 
         // Wait for the requested number of seconds.
@@ -83,10 +86,10 @@ void sample_adl_sensor_async(const unsigned int dt) {
 
         // Disable asynchronous sampling.
         for (auto& s : sensors) {
-            s.sample(nullptr);
+            s.sample(async_sampling());
         }
 
-    } catch (std::exception &ex) {
+    } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
 }

@@ -79,7 +79,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="async_sampling">The asynchronous sampling configuration
         /// for the sensor.</param>
-        //virtual void sample(async_sampling&& async_sampling) = 0;
+        void sample(_Inout_ async_sampling&& async_sampling);
 
         /// <summary>
         /// Sample the sensor using a timestamp with the specified resolution,
@@ -164,6 +164,10 @@ namespace power_overwhelming {
         /// <summary>
         /// Apply the given asynchronous sampling configuration.
         /// </summary>
+        /// <remarks>
+        /// <para>Implementors can assume that the base class will call this method
+        /// only if the sensor has not been disposed.</para>
+        /// </remarks>
         /// <param name="sampling">The new asynchronous sampling configuration
         /// of the sensor, which may enable, change or disable asynchronous
         /// sampling.</param>
@@ -173,6 +177,10 @@ namespace power_overwhelming {
         /// Synchronously sample the sensor using a timestamp with the specified
         /// resolution.
         /// </summary>
+        /// <remarks>
+        /// <para>Implementors can assume that the base class will call this method
+        /// only if the sensor has not been disposed.</para>
+        /// </remarks>
         /// <param name="resolution">The resolution of the timestamp to be
         /// created.</param>
         /// <returns>A single measurement made by the sensor.</returns>

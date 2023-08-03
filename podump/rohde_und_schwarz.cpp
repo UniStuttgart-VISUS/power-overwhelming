@@ -61,6 +61,67 @@ void query_hmc8015(void) {
 
 
 /*
+ * ::sample_hmc8015
+ */
+void sample_hmc8015(void) {
+    using namespace visus::power_overwhelming;
+
+    try {
+        std::vector<hmc8015_sensor> sensors;
+        sensors.resize(hmc8015_sensor::for_all(nullptr, 0));
+        hmc8015_sensor::for_all(sensors.data(), sensors.size());
+
+        for (auto& s : sensors) {
+            auto m = s.sample();
+            std::wcout << m.timestamp()
+                << L" (" << m.sensor() << L"): "
+                << m.voltage() << L" V, "
+                << m.current() << L" A, "
+                << m.power() << L" W" << std::endl;
+        }
+    } catch (std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+}
+
+
+/*
+ * ::sample_hmc8015_async
+ */
+void sample_hmc8015_async(const unsigned int dt) {
+    using namespace visus::power_overwhelming;
+
+    try {
+        std::vector<hmc8015_sensor> sensors;
+        sensors.resize(hmc8015_sensor::for_all(nullptr, 0));
+        hmc8015_sensor::for_all(sensors.data(), sensors.size());
+
+        // Enable asynchronous sampling.
+        for (auto& s : sensors) {
+            async_sampling config;
+            config.delivers_measurements_to([](const measurement& m, void *) {
+                std::wcout << m.timestamp() << L" ("
+                    << m.sensor() << L"): "
+                    << m.power() << L" W" << std::endl;
+            });
+            s.sample(std::move(config));
+        }
+
+        // Wait for the requested number of seconds.
+        std::this_thread::sleep_for(std::chrono::seconds(dt));
+
+        // Disable asynchronous sampling.
+        for (auto& s : sensors) {
+            s.sample(async_sampling());
+        }
+
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+}
+
+
+/*
  * ::query_rtx
  */
 void query_rtx(void) {
