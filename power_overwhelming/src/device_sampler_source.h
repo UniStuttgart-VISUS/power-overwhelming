@@ -5,10 +5,12 @@
 
 #pragma once
 
-#include "sampler_source.h"
-
+#include <algorithm>
 #include <mutex>
 #include <map>
+#include <vector>
+
+#include "sampler_source.h"
 
 
 namespace visus {
@@ -28,6 +30,8 @@ namespace detail {
 
         static _Ret_valid_ source_type create(_In_ sensor_type sensor);
 
+        static bool release(_In_opt_ sensor_type sensor);
+
         /// <inheritdoc />
         bool deliver(void) const override;
 
@@ -39,9 +43,9 @@ namespace detail {
         static std::mutex _lock;
         static std::map<device_type, source_type> _sources;
 
-        device_sampler_source(void);
+        device_sampler_source(_In_ sensor_type sensor);
 
-        sensor_type _sensor;
+        std::vector<sensor_type> _sensors;
     };
 
 } /* namespace detail */

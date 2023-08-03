@@ -604,6 +604,13 @@ visus::power_overwhelming::visa_instrument::reset(
         _In_ const bool clear_status) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     if (flush_buffers) {
+        // First, do the R&S flush ...
+        this->check_not_disposed();
+        try {
+            this->_impl->flush_data();
+        } catch (...) { /* Ignore this. */ }
+
+        // ... then, do the standard VISA flush.
         this->clear();
     }
 

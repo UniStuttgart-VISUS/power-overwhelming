@@ -217,6 +217,43 @@ void visus::power_overwhelming::detail::visa_instrument_impl::enable_event(
 
 
 /*
+ * visus::power_overwhelming::detail::visa_instrument_impl::flush_data
+ */
+void visus::power_overwhelming::detail::visa_instrument_impl::flush_data(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    std::array<std::uint8_t, 1024> buffer;
+    auto have_more = true;
+    ViUInt32 requested = 8;
+    ViUInt32 read = 0;
+
+    while (have_more) {
+        auto status = detail::visa_library::instance().viRead(
+            this->session,
+            buffer.data(),
+            requested,
+            &read);
+
+        auto have_more = (status == VI_SUCCESS_MAX_CNT);
+
+        if (!have_more) {
+            visa_exception::throw_on_error(status);
+            // I honestly do not know why one would do that, but R&s are doing
+            // it in their code and as it works more reliably then ours, I guess
+            // it is beneficial somehow ...
+            have_more = (buffer[read - 1] != '\n');
+        }
+
+        // We assume a small amount of data in the buffer left initially, but if
+        // we did not read everything, request progressively more in subsequent
+        // calls to speed up the process.
+        requested = (std::min)(2 * requested,
+            static_cast<ViUInt32>(buffer.size()));
+    }
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
  * visus::power_overwhelming::detail::visa_instrument_impl::identify
  */
 std::string visus::power_overwhelming::detail::visa_instrument_impl::identify(

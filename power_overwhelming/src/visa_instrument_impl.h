@@ -209,6 +209,12 @@ namespace detail {
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
         /// <summary>
+        /// Reads and discards all data that are possibly in the input buffer of
+        /// the instrument.
+        /// </summary>
+        void flush_data(void);
+
+        /// <summary>
         /// Invoke <see cref="viPrintf" /> on the instrument.
         /// </summary>
         /// <remarks>
