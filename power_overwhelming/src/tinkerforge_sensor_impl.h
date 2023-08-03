@@ -6,7 +6,6 @@
 #pragma once
 
 #include <array>
-#include <atomic>
 #include <mutex>
 #include <functional>
 
@@ -16,6 +15,7 @@
 #include <Windows.h>
 #endif /* defined(_WIN32) */
 
+#include "power_overwhelming/async_sampling.h"
 #include "power_overwhelming/measurement.h"
 
 #include "timestamp.h"
@@ -85,25 +85,20 @@ namespace detail {
         std::array<measurement::value_type, 3> async_data;
 
         /// <summary>
-        /// A lock for protecting <see cref="async_data" />.
+        /// A lock for protecting <see cref="async_data" /> and the callback
+        /// configuration.
         /// </summary>
         std::mutex async_lock;
+
+        /// <summary>
+        /// The asynchronous sampling configuration for the sensor.
+        /// </summary>
+        async_sampling async_sampling;
 
         /// <summary>
         /// A user-defined description of what the sensor is actually measuring.
         /// </summary>
         std::wstring description;
-
-        /// <summary>
-        /// A callback to be invoked if a <see cref="measurement" /> is received
-        /// asynchronously.
-        /// </summary>
-        std::atomic<measurement_callback> on_measurement;
-
-        /// <summary>
-        /// The context pointer passed to <see cref="on_measurement" />.
-        /// </summary>
-        std::atomic<void *> on_measurement_context;
 
         /// <summary>
         /// The name of the sensor, which has been created from the host,

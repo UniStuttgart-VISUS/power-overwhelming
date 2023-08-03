@@ -13,8 +13,8 @@
 #include "power_overwhelming/emi_sensor.h"
 #include "power_overwhelming/measurement.h"
 
+#include "device_sampler_source.h"
 #include "emi_device_factory.h"
-#include "emi_sampler_context.h"
 #include "sampler.h"
 #include "timestamp.h"
 
@@ -41,6 +41,12 @@ namespace detail {
             energy_type;
 
         /// <summary>
+        /// The type of the asynchronous sampler source.
+        /// </summary>
+        typedef device_sampler_source<emi_sensor_impl,
+            emi_device_factory::device_type> sampler_source_type;
+
+        /// <summary>
         /// The type of string we use for Win32 API calls.
         /// </summary>
         typedef std::basic_string<emi_sensor::char_type> string_type;
@@ -65,6 +71,29 @@ namespace detail {
             std::size_t cnt_sensors, TPredicate predicate);
 
         /// <summary>
+        /// Obtains a sample from the given device by issuing the
+        /// <c>IOCTL_EMI_GET_MEASUREMENT</c> I/O control request.
+        /// </summary>
+        /// <param name="device">The device to be sampled.</param>
+        /// <param name="dst">Receives the sample.</param>
+        /// <param name="cnt">The size of the buffer designated by
+        /// <paramref name="dst" /> in bytes.</param>
+        /// <returns>The actual size of the sample in bytes.</returns>
+        static std::size_t sample(_In_ emi_device_factory::device_type& device,
+            _Out_writes_(cnt) void *dst, _In_ const ULONG cnt);
+
+        /// <summary>
+        /// Obtains a sample from the given device by issuing the
+        /// <c>IOCTL_EMI_GET_MEASUREMENT</c> I/O control request.
+        /// </summary>
+        /// <param name="device">The device to be sampled.</param>
+        /// <returns>The sample obtained from the device. The caller must
+        /// interpret the data according to the version reported by the
+        /// underlying device.</returns>
+        static std::vector<std::uint8_t> sample(
+            _In_ emi_device_factory::device_type& device);
+
+        /// <summary>
         /// Caches all devices and makes them accessible via their path.
         /// </summary>
         /// <remarks>
@@ -82,9 +111,9 @@ namespace detail {
         static std::mutex lock;
 
         /// <summary>
-        /// A sampler for EMI sensors.
+        /// The asynchronous sampling configuration.
         /// </summary>
-        static detail::sampler<emi_sampler_context> sampler;
+        async_sampling async_sampling;
 
         /// <summary>
         /// The channel that is sampled by this sensor.
@@ -112,11 +141,6 @@ namespace detail {
         string_type path;
 
         /// <summary>
-        /// The size of a raw sample obtained from the this sensor in bytes.
-        /// </summary>
-        std::size_t sample_size;
-
-        /// <summary>
         /// The sensor name.
         /// </summary>
         std::wstring sensor_name;
@@ -137,8 +161,7 @@ namespace detail {
         /// Initialises a new instance.
         /// </summary>
         inline emi_sensor_impl(void) : channel(0), last_energy(0), last_time(0),
-            sample_size(0), time_offset(0),
-            unit(EmiMeasurementUnitPicowattHours) { }
+            time_offset(0), unit(EmiMeasurementUnitPicowattHours) { }
 
         /// <summary>
         /// Finalises the instance.
@@ -179,31 +202,10 @@ namespace detail {
         /// <see cref="emi_sensor_impl::last_time" />.
         /// </summary>
         /// <param name="data"></param>
-        /// <param name="version"></param>
         /// <param name="resolution"></param>
         /// <returns></returns>
         measurement_data evaluate(const std::vector<std::uint8_t>& data,
-            const emi_sensor::version_type version,
             const timestamp_resolution resolution);
-
-        /// <summary>
-        /// Obtains a sample from the sensor by issuing the
-        /// <c>IOCTL_EMI_GET_MEASUREMENT</c> I/O control request on the device.
-        /// </summary>
-        /// <param name="dst">Receives the sample.</param>
-        /// <param name="cnt">The size of the buffer designated by
-        /// <paramref name="dst" /> in bytes.</param>
-        /// <returns>The actual size of the sample in bytes.</returns>
-        std::size_t sample(void *dst, const ULONG cnt);
-
-        /// <summary>
-        /// Obtains a sample from the sensor by issuing the
-        /// <c>IOCTL_EMI_GET_MEASUREMENT</c> I/O control request on the device.
-        /// </summary>
-        /// <returns>The sample obtained from the device. The caller must
-        /// interpret the data according to the version reported by the
-        /// underlying device.</returns>
-        std::vector<std::uint8_t> sample(void);
 
         /// <summary>
         /// Initialise the sensor.

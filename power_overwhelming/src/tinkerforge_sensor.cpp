@@ -12,6 +12,7 @@
 
 #include <bricklet_voltage_current_v2.h>
 
+#include "sampler.h"
 #include "timestamp.h"
 #include "tinkerforge_exception.h"
 #include "tinkerforge_sensor_impl.h"
@@ -298,63 +299,17 @@ void visus::power_overwhelming::tinkerforge_sensor::sample(
         _In_ const tinkerforge_sensor_source source,
         _In_ const microseconds_type period,
         _In_opt_ void *context) {
-    static constexpr auto one = static_cast<microseconds_type>(1);
-    static constexpr auto thousand = static_cast<microseconds_type>(1000);
-
-    if (!*this) {
-        throw std::runtime_error("A disposed instance of tinkerforge_sensor "
-            "cannot be sampled.");
-    }
-
-    if (on_measurement != nullptr) {
-        // Callback is non-null, so user wants to enable asynchronous sampling.
-        measurement_callback expected = nullptr;
-
-        if (!this->_impl->on_measurement.compare_exchange_strong(expected,
-                on_measurement)) {
-            throw std::logic_error("Asynchronous sampling cannot be started "
-                "while it is already running.");
-        }
-
-        try {
-            auto millis = static_cast<std::int32_t>((std::max)(one,
-                period / thousand));
-
-            this->_impl->on_measurement_context = context;
-
-            if (source == tinkerforge_sensor_source::all) {
-                // Enable all sensor readings.
-                this->_impl->enable_callbacks(millis);
-
-            } else {
-                // Enable individual sensor readings.
-                if ((source & tinkerforge_sensor_source::current)
-                        == tinkerforge_sensor_source::current) {
-                    this->_impl->enable_current_callback(millis);
-                }
-                if ((source & tinkerforge_sensor_source::power)
-                    == tinkerforge_sensor_source::power) {
-                    this->_impl->enable_power_callback(millis);
-                }
-                if ((source & tinkerforge_sensor_source::voltage)
-                    == tinkerforge_sensor_source::voltage) {
-                    this->_impl->enable_voltage_callback(millis);
-                }
-            }
-        } catch (...) {
-            // Clear the guard in case the operation failed.
-            this->_impl->on_measurement.exchange(nullptr);
-            throw;
-        }
-
-    } else {
-        // If the callback is null, disable asynchronous sampling.
-        if (this->_impl->on_measurement != nullptr) {
-            this->_impl->disable_callbacks();
-        }
-
-        this->_impl->on_measurement.exchange(on_measurement);
-    }
+#if defined(_WIN32)
+    ::OutputDebugStringW(L"PWROWG DEPRECATION WARNING: This method is only "
+        L"provided for backwards compatibility and might be removed in "
+        L"future versions of the library. Use async_sampling to configure"
+        L"asynchronous sampling.");
+#endif /* defined(_WIN32) */
+    this->check_not_disposed();
+    this->sample_async(std::move(async_sampling()
+        .samples_every(period)
+        .delivers_measurements_to(on_measurement)
+        .passes_context(context)));
 }
 
 
@@ -380,6 +335,68 @@ visus::power_overwhelming::tinkerforge_sensor::operator bool(
         void) const noexcept {
     return (this->_impl != nullptr);
 }
+
+
+/*
+ * visus::power_overwhelming::tinkerforge_sensor::sample_async
+ */
+void visus::power_overwhelming::tinkerforge_sensor::sample_async(
+        _Inout_ async_sampling&& sampling) {
+    static constexpr auto one = static_cast<microseconds_type>(1);
+    static constexpr auto thousand = static_cast<microseconds_type>(1000);
+
+    this->check_not_disposed();
+
+    std::lock_guard<decltype(this->_impl->async_lock)> l(
+        this->_impl->async_lock);
+    const auto enabled = static_cast<bool>(this->_impl->async_sampling);
+    if (enabled) {
+        throw std::logic_error("Asynchronous sampling cannot be started while "
+            "it is already running.");
+    }
+
+    if ((this->_impl->async_sampling = std::move(sampling))) {
+        // Callback is non-null, so user wants to enable asynchronous sampling.
+
+        try {
+            const auto millis = static_cast<std::int32_t>((std::max)(one,
+                this->_impl->async_sampling.interval() / thousand));
+            const auto source = sampling.tinkerforge_sensor_source();
+
+            if (source == tinkerforge_sensor_source::all) {
+                // Enable all sensor readings.
+                this->_impl->enable_callbacks(millis);
+
+            } else {
+                // Enable individual sensor readings.
+                if ((source & tinkerforge_sensor_source::current)
+                        == tinkerforge_sensor_source::current) {
+                    this->_impl->enable_current_callback(millis);
+                }
+                if ((source & tinkerforge_sensor_source::power)
+                        == tinkerforge_sensor_source::power) {
+                    this->_impl->enable_power_callback(millis);
+                }
+                if ((source & tinkerforge_sensor_source::voltage)
+                        == tinkerforge_sensor_source::voltage) {
+                    this->_impl->enable_voltage_callback(millis);
+                }
+            }
+
+        } catch (...) {
+            // Clear the guard in case the operation failed.
+            this->_impl->async_sampling.is_disabled();
+            throw;
+        }
+
+    } else {
+        // If sampling was enabled, disable it.
+        if (enabled) {
+            this->_impl->disable_callbacks();
+        }
+    }
+}
+
 
 
 /*

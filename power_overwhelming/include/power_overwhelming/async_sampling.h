@@ -152,19 +152,23 @@ namespace power_overwhelming {
         /// Configures the <see cref="sensor" /> such that it produces samples
         /// of type <see cref="measurement" />.
         /// </summary>
-        /// <param name="callback"></param>
+        /// <param name="callback">The callbeck to deliver to. If this is
+        /// <c>nullptr</c>, sampling will be disabled (this is equivalent to
+        /// calling <see cref="is_disabled" />).</param>
         /// <returns><c>*this</c>.</returns>
         async_sampling& delivers_measurements_to(
-            _In_ const on_measurement_callback callback) noexcept;
+            _In_opt_ const on_measurement_callback callback) noexcept;
 
         /// <summary>
         /// Configures the <see cref="sensor" /> such that it produces samples
         /// of type <see cref="measurement_data" />.
         /// </summary>
-        /// <param name="callback"></param>
+        /// <param name="callback">The callbeck to deliver to. If this is
+        /// <c>nullptr</c>, sampling will be disabled (this is equivalent to
+        /// calling <see cref="is_disabled" />).</param>
         /// <returns><c>*this</c>.</returns>
         async_sampling& delivers_measurement_data_to(
-            _In_ const on_measurement_data_callback callback) noexcept;
+            _In_opt_ const on_measurement_data_callback callback) noexcept;
 
         /// <summary>
         /// Configures the <see cref="sensor" /> to deliver samples of type

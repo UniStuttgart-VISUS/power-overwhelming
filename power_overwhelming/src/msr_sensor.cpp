@@ -181,6 +181,7 @@ void visus::power_overwhelming::msr_sensor::sample(
         L"future versions of the library. Use async_sampling to configure"
         L"asynchronous sampling.");
 #endif /* defined(_WIN32) */
+    this->check_not_disposed();
     this->sample_async(std::move(async_sampling()
         .samples_every(period)
         .delivers_measurements_to(on_measurement)
@@ -217,20 +218,13 @@ visus::power_overwhelming::msr_sensor::operator bool(void) const noexcept {
  */
 void visus::power_overwhelming::msr_sensor::sample_async(
         _Inout_ async_sampling&& sampling) {
-    typedef detail::sampler::interval_type interval_type;
-    assert(this->_impl);
+    assert(this->_impl != nullptr);
+    this->_impl->async_sampling = std::move(sampling);
 
-    throw "TODO";
-
-    if ((this->_impl->async_sampling = std::move(sampling))) {
-        if (!detail::msr_sensor_impl::sampler.add(this->_impl, on_measurement,
-            context, interval_type(period))) {
-            throw std::logic_error("Asynchronous sampling cannot be started "
-                "while it is already running.");
-        }
-
+    if (this->_impl->async_sampling) {
+        detail::sampler::default += this->_impl;
     } else {
-        detail::msr_sensor_impl::sampler.remove(this->_impl);
+        detail::sampler::default -= this->_impl;
     }
 }
 

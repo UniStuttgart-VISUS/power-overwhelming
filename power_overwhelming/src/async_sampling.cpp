@@ -73,7 +73,7 @@ bool visus::power_overwhelming::async_sampling::deliver(
  */
 visus::power_overwhelming::async_sampling&
 visus::power_overwhelming::async_sampling::delivers_measurements_to(
-        _In_ const on_measurement_callback callback) noexcept {
+        _In_opt_ const on_measurement_callback callback) noexcept {
 #if defined(_WIN32)
     ::OutputDebugString(_T("PWROWG PERFORMANCE WARNING: Asynchronous sampling ")
         _T("of measurement is only provided for backwards compatibility. Use ")
@@ -91,7 +91,7 @@ visus::power_overwhelming::async_sampling::delivers_measurements_to(
  */
 visus::power_overwhelming::async_sampling&
 visus::power_overwhelming::async_sampling::delivers_measurement_data_to(
-        _In_ const on_measurement_data_callback callback) noexcept {
+        _In_opt_ const on_measurement_data_callback callback) noexcept {
     this->_on_measurement_data = callback;
     this->_on_measurement = nullptr;
     return *this;

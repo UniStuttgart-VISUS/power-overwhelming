@@ -15,7 +15,7 @@
 #include "power_overwhelming/rapl_domain.h"
 #include "power_overwhelming/measurement.h"
 
-#include "device_sampler_source.h"
+#include "basic_sampler_source.h"
 #include "msr_device_factory.h"
 
 
@@ -30,14 +30,8 @@ namespace detail {
     /// <summary>
     /// Private data container for the <see cref="msr_sensor" />.
     /// </summary>
-    struct msr_sensor_impl final {
-
-        /// <summary>
-        /// The type of the asynchronous sampler source used for this kind of
-        /// sensor.
-        /// </summary>
-        typedef device_sampler_source<msr_sensor_impl,
-            msr_device_factory::device_type> sampler_source_type;
+    struct msr_sensor_impl final
+            : public basic_sampler_source<msr_sensor_impl> {
 
         /// <summary>
         /// Determines which RAPL domains are in principle supported for the
@@ -53,11 +47,6 @@ namespace detail {
         /// given vendor.</returns>
         static std::vector<rapl_domain> supported_domains(
             _In_ const cpu_vendor vendor);
-
-        /// <summary>
-        /// The asynchronous sampling configuration for this sensor.
-        /// </summary>
-        async_sampling async_sampling;
 
         /// <summary>
         /// The core the sensor is sampling.
@@ -162,7 +151,6 @@ namespace detail {
         void set(_In_ const msr_device::core_type core,
             _In_ const rapl_domain domain,
             _In_opt_ const msr_magic_config *config_override);
-
     };
 
 } /* namespace detail */

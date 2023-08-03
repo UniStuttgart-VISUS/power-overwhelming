@@ -236,24 +236,16 @@ void visus::power_overwhelming::emi_sensor::sample(
         _In_ const microseconds_type period,
         _In_opt_ void *context) {
 #if defined(_WIN32)
-    typedef decltype(detail::emi_sensor_impl::sampler)::interval_type
-        interval_type;
-
-    this->check_not_disposed();
-
-    if (on_measurement != nullptr) {
-        if (!detail::emi_sensor_impl::sampler.add(this->_impl, on_measurement,
-                context, interval_type(period))) {
-            throw std::logic_error("Asynchronous sampling cannot be started "
-                "while it is already running.");
-        }
-
-    } else {
-        detail::emi_sensor_impl::sampler.remove(this->_impl);
-    }
-#else /* defined(_WIN32) */
-    throw std::logic_error(ERROR_MSG_NOT_SUPPORTED);
+    ::OutputDebugStringW(L"PWROWG DEPRECATION WARNING: This method is only "
+        L"provided for backwards compatibility and might be removed in "
+        L"future versions of the library. Use async_sampling to configure"
+        L"asynchronous sampling.");
 #endif /* defined(_WIN32) */
+    this->check_not_disposed();
+    this->sample_async(std::move(async_sampling()
+        .samples_every(period)
+        .delivers_measurements_to(on_measurement)
+        .passes_context(context)));
 }
 
 
@@ -270,7 +262,8 @@ _Ret_ EMI_MEASUREMENT_DATA_V1 *visus::power_overwhelming::emi_sensor::sample(
             "device.");
     }
 
-    this->_impl->sample(&measurement, sizeof(measurement));
+    detail::emi_sensor_impl::sample(this->_impl->device, &measurement,
+        sizeof(measurement));
     return &measurement;
 }
 #endif /* defined(_WIN32) */
@@ -294,7 +287,7 @@ _Ret_ EMI_MEASUREMENT_DATA_V2 *visus::power_overwhelming::emi_sensor::sample(
             "least the EMI_MEASUREMENT_DATA_V2 structure.");
     }
 
-    this->_impl->sample(measurement, size);
+    detail::emi_sensor_impl::sample(this->_impl->device, measurement, size);
     return measurement;
 }
 #endif /* defined(_WIN32) */
@@ -341,6 +334,29 @@ visus::power_overwhelming::emi_sensor::operator bool(void) const noexcept {
 
 
 /*
+ * visus::power_overwhelming::emi_sensor::sample_async
+ */
+void visus::power_overwhelming::emi_sensor::sample_async(
+        _Inout_ async_sampling&& sampling) {
+#if defined(_WIN32)
+    assert(this->_impl != nullptr);
+
+    if ((this->_impl->async_sampling = std::move(sampling))) {
+        auto source = detail::emi_sensor_impl::sampler_source_type::create(
+            this->_impl);
+        detail::sampler::default += source;
+
+    } else {
+        detail::emi_sensor_impl::sampler_source_type::release(this->_impl);
+    }
+
+#else /* defined(_WIN32) */
+    throw std::logic_error(ERROR_MSG_NOT_SUPPORTED);
+#endif /* defined(_WIN32) */
+}
+
+
+/*
  * visus::power_overwhelming::emi_sensor::sample_sync
  */
 visus::power_overwhelming::measurement_data
@@ -352,12 +368,12 @@ visus::power_overwhelming::emi_sensor::sample_sync(
     switch (this->version()) {
         case EMI_VERSION_V1: {
             EMI_MEASUREMENT_DATA_V1 s;
-            this->_impl->sample(&s, sizeof(s));
+            detail::emi_sensor_impl::sample(this->_impl->device, &s, sizeof(s));
             return this->_impl->evaluate(s, resolution);
             }
 
         case EMI_VERSION_V2: {
-            auto m = this->_impl->sample();
+            auto m = detail::emi_sensor_impl::sample(this->_impl->device);
             auto s = reinterpret_cast<EMI_MEASUREMENT_DATA_V2 *>(m.data());
             return this->_impl->evaluate(*s, resolution);
             }

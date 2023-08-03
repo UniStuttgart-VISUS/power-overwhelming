@@ -38,6 +38,16 @@ namespace detail {
             return this->_interval;
         }
 
+        /// <summary>
+        /// Remove <paramref name="source" /> from being sampled by this thread
+        /// and answer whether the thread can be terminated.
+        /// </summary>
+        /// <param name="source">The source to be removed.</param>
+        /// <returns><c>true</c> if the thread has no sources to sample any
+        /// more, <c>false</c> if there are other sources being sampled.
+        /// </returns>
+        bool remove(_In_ sampler_source *source);
+
         bool samples(_In_ const sampler_source *source) const;
 
     private:

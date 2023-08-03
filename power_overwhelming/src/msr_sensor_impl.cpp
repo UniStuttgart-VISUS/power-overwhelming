@@ -103,7 +103,7 @@ visus::power_overwhelming::detail::msr_sensor_impl::supported_domains(
 visus::power_overwhelming::detail::msr_sensor_impl::~msr_sensor_impl(
         void) noexcept {
     // Make sure that the sensor is unregistered from asynchronous sampling.
-    sampler::default -= this;
+    sampler::default += this;
 }
 
 

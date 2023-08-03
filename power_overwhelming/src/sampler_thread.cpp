@@ -53,6 +53,26 @@ void visus::power_overwhelming::detail::sampler_thread::add(
 
 
 /*
+ * visus::power_overwhelming::detail::sampler_thread::remove
+ */
+bool visus::power_overwhelming::detail::sampler_thread::remove(
+        _In_ sampler_source *source) {
+    std::lock_guard<decltype(this->_lock)> l(this->_lock);
+    auto it = std::remove(this->_sources.begin(), this->_sources.end(),
+        source);
+    this->_sources.erase(it, this->_sources.end());
+
+    const auto retval = this->_sources.empty();
+
+    if (retval && this->_thread.joinable()) {
+        this->_thread.detach();
+    }
+
+    return retval;
+}
+
+
+/*
  * visus::power_overwhelming::detail::sampler_thread::samples
  */
 bool visus::power_overwhelming::detail::sampler_thread::samples(

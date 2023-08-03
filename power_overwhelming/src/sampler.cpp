@@ -69,22 +69,19 @@ visus::power_overwhelming::detail::sampler::operator +=(
 visus::power_overwhelming::detail::sampler&
 visus::power_overwhelming::detail::sampler::operator -=(
         _In_ source_type source) {
-    auto wait_thread = false;
+    if (source != nullptr) {
+        std::lock_guard<decltype(this->_lock)> l(this->_lock);
+        auto wait_thread = false;
 
-    throw "TODO";
-
-    //if (source != nullptr) {
-    //    std::lock_guard<decltype(this->_lock)> l(this->lock);
-    //    auto it = std::remove(this->_sources.begin(),
-    //        this->_sources.end(),
-    //        source);
-    //    this->_sources.erase(it, this->_sources.end());
-    //    wait_thread = this->_sources.empty();
-    //}
-
-    //if (wait_thread) {
-    //    this->_thread.join();
-    //}
+        for (auto it = this->_threads.begin(); it != this->_threads.end(); ) {
+            if (it->second.remove(source)) {
+                // This thread is done, so remove it.
+                it = this->_threads.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
 
     return *this;
 }

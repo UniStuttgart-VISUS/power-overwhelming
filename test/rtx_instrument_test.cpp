@@ -18,7 +18,7 @@ namespace test {
     public:
 
         TEST_METHOD(test_config_dft_ctor) {
-            const oscilloscope_single_acquisition expected_acquisition;
+            const oscilloscope_acquisition expected_acquisition;
             const oscilloscope_edge_trigger expected_trigger("EXT");
 
             rtx_instrument_configuration config;
@@ -45,7 +45,7 @@ namespace test {
         }
 
         TEST_METHOD(test_config_copy_ctor) {
-            const auto expected_acquisition = oscilloscope_single_acquisition()
+            const auto expected_acquisition = oscilloscope_acquisition()
                 .count(42)
                 .points(1024)
                 .segmented(true);
@@ -134,7 +134,7 @@ namespace test {
         }
 
         TEST_METHOD(test_config_assign) {
-            const auto expected_acquisition = oscilloscope_single_acquisition()
+            const auto expected_acquisition = oscilloscope_acquisition()
                 .count(42)
                 .points(1024)
                 .segmented(true);
@@ -206,7 +206,7 @@ namespace test {
 
 
         TEST_METHOD(test_config_move_ctor) {
-            const auto expected_acquisition = oscilloscope_single_acquisition()
+            const auto expected_acquisition = oscilloscope_acquisition()
                 .count(42)
                 .points(1024)
                 .segmented(true);
@@ -269,7 +269,7 @@ namespace test {
         }
 
         TEST_METHOD(test_config_move_assign) {
-            const auto expected_acquisition = oscilloscope_single_acquisition()
+            const auto expected_acquisition = oscilloscope_acquisition()
                 .count(42)
                 .points(1024)
                 .segmented(true);
@@ -385,7 +385,7 @@ namespace test {
         TEST_METHOD(test_config_save_load) {
             const auto expected_config = rtx_instrument_configuration(
                 oscilloscope_quantity(42.42f, "ms"),
-                oscilloscope_single_acquisition().count(42).points(1024).segmented(true),
+                oscilloscope_acquisition().count(42).points(1024).segmented(true),
                 oscilloscope_edge_trigger("CH2").coupling(oscilloscope_trigger_coupling::low_frequency_reject).level(42.0f),
                 17)
                 .beep_on_apply(8)
@@ -423,7 +423,7 @@ namespace test {
             const std::vector<rtx_instrument_configuration> expected_configs = {
                 rtx_instrument_configuration(
                     oscilloscope_quantity(42.42f, "ms"),
-                    oscilloscope_single_acquisition().count(42).points(1024).segmented(true),
+                    oscilloscope_acquisition().count(42).points(1024).segmented(true),
                     oscilloscope_edge_trigger("CH2").coupling(oscilloscope_trigger_coupling::low_frequency_reject).level(42.0f),
                     17)
                 .beep_on_apply(8)

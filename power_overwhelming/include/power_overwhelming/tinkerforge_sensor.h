@@ -413,6 +413,9 @@ namespace power_overwhelming {
     protected:
 
         /// <inheritdoc />
+        void sample_async(_Inout_ async_sampling&& sampling) override;
+
+        /// <inheritdoc />
         measurement_data sample_sync(
             _In_ const timestamp_resolution resolution) const override;
 

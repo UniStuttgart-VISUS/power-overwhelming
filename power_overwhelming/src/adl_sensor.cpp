@@ -333,6 +333,7 @@ void visus::power_overwhelming::adl_sensor::sample(
         L"future versions of the library. Use async_sampling to configure"
         L"asynchronous sampling.");
 #endif /* defined(_WIN32) */
+    this->check_not_disposed();
     this->sample_async(std::move(async_sampling()
         .samples_every(period)
         .delivers_measurements_to(on_measurement)

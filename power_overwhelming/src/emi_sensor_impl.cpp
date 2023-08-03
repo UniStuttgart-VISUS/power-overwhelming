@@ -13,11 +13,49 @@
 
 #if defined(_WIN32)
 /*
- * visus::power_overwhelming::detail::emi_sensor_impl::sampler
+ * visus::power_overwhelming::detail::emi_sensor_impl::sample
  */
-visus::power_overwhelming::detail::sampler<
-    visus::power_overwhelming::detail::emi_sampler_context>
-visus::power_overwhelming::detail::emi_sensor_impl::sampler;
+std::size_t visus::power_overwhelming::detail::emi_sensor_impl::sample(
+        _In_ emi_device_factory::device_type& device,
+        _Out_writes_(cnt) void *dst,
+        _In_ const ULONG cnt) {
+    assert(device != nullptr);
+    assert(dst != nullptr);
+
+    DWORD retval = 0;
+    if (!::DeviceIoControl(*device, IOCTL_EMI_GET_MEASUREMENT, nullptr, 0,
+            dst, cnt, &retval, 0)) {
+        throw std::system_error(::GetLastError(), std::system_category());
+    }
+
+    return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::detail::emi_sensor_impl::sample
+ */
+std::vector<std::uint8_t> visus::power_overwhelming::detail::emi_sensor_impl::sample(
+        _In_ emi_device_factory::device_type& device) {
+    std::vector<std::uint8_t> retval(0);
+
+    switch (device->version().EmiVersion) {
+        case EMI_VERSION_V1:
+            retval.resize(sizeof(EMI_MEASUREMENT_DATA_V1));
+            break;
+
+        case EMI_VERSION_V2: {
+            retval.resize(sizeof(EMI_MEASUREMENT_DATA_V2)
+                + device->metadata_as<EMI_METADATA_V2>()->ChannelCount
+                * sizeof(EMI_CHANNEL_MEASUREMENT_DATA));
+            break;
+        }
+    }
+
+    sample(device, retval.data(), retval.size());
+
+    return retval;
+}
 
 
 /*
@@ -26,7 +64,7 @@ visus::power_overwhelming::detail::emi_sensor_impl::sampler;
 visus::power_overwhelming::detail::emi_sensor_impl::~emi_sensor_impl(void) {
     // Make sure that a sensor that is being destroyed is removed from all
     // asynchronous sampling threads.
-    emi_sensor_impl::sampler.remove(this);
+    sampler_source_type::release(this);
 }
 
 
@@ -70,11 +108,8 @@ visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
 visus::power_overwhelming::measurement_data
 visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
         const std::vector<std::uint8_t>& data,
-        const emi_sensor::version_type version,
         const timestamp_resolution resolution) {
-    assert(this->device->version().EmiVersion == version);
-
-    switch (version) {
+    switch (this->device->version().EmiVersion) {
         case EMI_VERSION_V1:
             assert(data.size() >= sizeof(EMI_MEASUREMENT_DATA_V1));
             return this->evaluate(
@@ -95,35 +130,6 @@ visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
 
 
 /*
- * visus::power_overwhelming::detail::emi_sensor_impl::sample
- */
-std::size_t visus::power_overwhelming::detail::emi_sensor_impl::sample(
-        void *dst, const ULONG cnt) {
-    assert(this->device != nullptr);
-    assert(dst != nullptr);
-
-    DWORD retval = 0;
-    if (!::DeviceIoControl(*this->device, IOCTL_EMI_GET_MEASUREMENT, nullptr, 0,
-            dst, cnt, &retval, 0)) {
-        throw std::system_error(::GetLastError(), std::system_category());
-    }
-
-    return retval;
-}
-
-
-/*
- * visus::power_overwhelming::detail::emi_sensor_impl::sample
- */
-std::vector<std::uint8_t>
-visus::power_overwhelming::detail::emi_sensor_impl::sample(void) {
-    std::vector<std::uint8_t> retval(this->sample_size);
-    this->sample(retval.data(), retval.size());
-    return retval;
-}
-
-
-/*
  * visus::power_overwhelming::detail::emi_sensor_impl::set
  */
 void visus::power_overwhelming::detail::emi_sensor_impl::set(
@@ -140,7 +146,6 @@ void visus::power_overwhelming::detail::emi_sensor_impl::set(
         case EMI_VERSION_V1: {
             // The channel is irrelevant for v1 sensors.
             this->channel = 0;
-            this->sample_size = sizeof(EMI_MEASUREMENT_DATA_V1);
 
             auto md = this->device->metadata_as<EMI_METADATA_V1>();
             this->unit = md->MeasurementUnit;
@@ -149,7 +154,7 @@ void visus::power_overwhelming::detail::emi_sensor_impl::set(
             // point that allows us to compute the difference between any two
             // samples requested by the user.
             EMI_MEASUREMENT_DATA_V1 m;
-            this->sample(&m, sizeof(m));
+            sample(this->device, &m, sizeof(m));
             FILETIME t;
             ::GetSystemTimePreciseAsFileTime(&t);
 
@@ -167,17 +172,8 @@ void visus::power_overwhelming::detail::emi_sensor_impl::set(
                     "invalid.");
             }
 
-            // Compute the size of a sample.
-            assert(md->ChannelCount > 0);
-            {
-                auto extra = (md->ChannelCount - 1);
-                this->sample_size = sizeof(EMI_MEASUREMENT_DATA_V2)
-                    + extra * sizeof(EMI_CHANNEL_MEASUREMENT_DATA);
-            }
-
             // As for v1, obtain the initial sample now.
-            std::vector<std::uint8_t> m(this->sample_size);
-            this->sample(m.data(), m.size());
+            auto m = sample(this->device);
             FILETIME t;
             ::GetSystemTimePreciseAsFileTime(&t);
 

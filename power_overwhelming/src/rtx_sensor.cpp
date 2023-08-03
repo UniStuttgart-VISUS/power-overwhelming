@@ -291,6 +291,16 @@ visus::power_overwhelming::rtx_sensor::operator bool(void) const noexcept {
 
 
 /*
+ * visus::power_overwhelming::rtx_sensor::sample_async
+ */
+void visus::power_overwhelming::rtx_sensor::sample_async(
+        _Inout_ async_sampling&& sampling) {
+    throw "TODO";
+}
+
+
+
+/*
  * visus::power_overwhelming::rtx_sensor::sample_sync
  */
 visus::power_overwhelming::measurement_data
