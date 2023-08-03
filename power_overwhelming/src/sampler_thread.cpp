@@ -61,14 +61,7 @@ bool visus::power_overwhelming::detail::sampler_thread::remove(
     auto it = std::remove(this->_sources.begin(), this->_sources.end(),
         source);
     this->_sources.erase(it, this->_sources.end());
-
-    const auto retval = this->_sources.empty();
-
-    if (retval && this->_thread.joinable()) {
-        this->_thread.detach();
-    }
-
-    return retval;
+    return this->_sources.empty();
 }
 
 

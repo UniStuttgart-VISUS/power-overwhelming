@@ -79,7 +79,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // NVML sensors
-#if false
+#if true
 #if true
     ::sample_nvml_sensor();
 #endif
@@ -113,7 +113,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // Rohde & Schwarz sensors
-#if true
+#if false
 #if false
     ::query_hmc8015();
 #endif

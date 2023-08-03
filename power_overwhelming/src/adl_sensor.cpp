@@ -331,7 +331,7 @@ void visus::power_overwhelming::adl_sensor::sample(
     ::OutputDebugStringW(L"PWROWG DEPRECATION WARNING: This method is only "
         L"provided for backwards compatibility and might be removed in "
         L"future versions of the library. Use async_sampling to configure"
-        L"asynchronous sampling.");
+        L"asynchronous sampling.\r\n");
 #endif /* defined(_WIN32) */
     this->check_not_disposed();
     this->sample_async(std::move(async_sampling()
