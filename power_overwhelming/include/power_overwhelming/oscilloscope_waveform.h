@@ -26,6 +26,8 @@ namespace power_overwhelming {
         /// the end of the waveform, the number of samples in the waveform and
         /// the number of values per sample.
         /// </param>
+        /// <param name="segment_offset">The segment offset retrieved via
+        /// <c>CHAN:HIST:TSR?</c>.</param>
         /// <param name="samples">A blob holding the <c>float</c> samples of
         /// the waveform.</param>
         /// <exception cref="std::invalid_argument">If
@@ -33,7 +35,7 @@ namespace power_overwhelming {
         /// format, or if the number of samples specified in the header does
         /// not match the size of <paramref name="samples" />.</exception>
         oscilloscope_waveform(_In_z_ const char *header,
-            _Inout_ blob&& samples);
+            _In_ const float segment_offset, _Inout_ blob&& samples);
 
         /// <summary>
         /// A pointer to the first sample of the waveform.
@@ -96,6 +98,15 @@ namespace power_overwhelming {
         }
 
         /// <summary>
+        /// Answer the time difference of the segment of the waveform to the
+        /// newest segment in the acquisition.
+        /// </summary>
+        /// <returns>The offset of the segment.</returns>
+        inline float segment_offset(void) const noexcept {
+            return this->_segment_offset;
+        }
+
+        /// <summary>
         /// Answer the temporal distance between two adjacent samples in
         /// seconds.
         /// </summary>
@@ -106,6 +117,7 @@ namespace power_overwhelming {
 
         std::size_t _record_length;
         blob _samples;
+        float _segment_offset;
         float _time_begin;
         float _time_end;
     };

@@ -870,9 +870,19 @@ visus::power_overwhelming::rtx_instrument::data(
             break;
     }
 
-    const auto query = detail::format_string("CHAN%u:DATA:HEAD?\n", channel);
-    const auto header = this->query(query.c_str());
-    return oscilloscope_waveform(header.as<char>(), this->binary_data(channel));
+    const auto qheader = detail::format_string("CHAN%u:DATA:HEAD?\n", channel);
+    const auto rheader = this->query(qheader.c_str());
+    const auto header = rheader.as<char>();
+    _Analysis_assume_(header != nullptr);
+
+    const auto qtsr = detail::format_string("CHAN%u:HIST:TSR?\n", channel);
+    auto rtsr = this->query(qtsr.c_str());
+    auto tsr = rtsr.as<char>();
+    _Analysis_assume_(tsr != nullptr);
+    detail::trim_eol(tsr);
+    const auto offset = std::atof(tsr);
+
+    return oscilloscope_waveform(header, offset, this->binary_data(channel));
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(detail::no_visa_error_msg);

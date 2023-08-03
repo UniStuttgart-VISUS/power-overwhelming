@@ -321,12 +321,11 @@ void query_rtx_instrument(void) {
             });
             i.operation_complete_async();
 
-
             i.trigger_position(oscilloscope_quantity(0.0f, "ms"));
             i.trigger(oscilloscope_edge_trigger("EXT")
                 .level(5, oscilloscope_quantity(2000.0f, "mV"))
                 .slope(oscilloscope_trigger_slope::rising)
-                .mode(oscilloscope_trigger_mode::normal));
+                .mode(oscilloscope_trigger_mode::automatic));
             i.throw_on_system_error();
 
             std::cout << "RTX interface type: "
@@ -344,7 +343,7 @@ void query_rtx_instrument(void) {
 
             i.acquisition(oscilloscope_acquisition()
                 .points(100000)
-                .count(1)
+                .count(2)
                 .segmented(false))
                 .operation_complete();
             i.throw_on_system_error();
@@ -354,38 +353,34 @@ void query_rtx_instrument(void) {
             //i.load_state_from_instrument(L"_PODUMP.SET").operation_complete();
 
             i.acquisition(oscilloscope_acquisition_state::single)
-                .operation_complete();
-            //i.operation_complete();
+                .operation_complete()
+                .throw_on_system_error();
 
-            i.trigger();
-            i.operation_complete();
-            i.throw_on_system_error();
+            for (std::size_t s = 0; s < i.history_segments(); ++s) {
+                i.history_segment(0 - s).operation_complete();
+                i.beep(s + 1);
 
-            auto b = std::chrono::high_resolution_clock::now();
-            std::cout << "Segment "
-                << i.history_segment()
-                << " of "
-                << i.history_segments()
-                << std::endl;
-            auto segment0 = i.data(1, oscilloscope_waveform_points::maximum);
-            auto e = std::chrono::high_resolution_clock::now();
-            std::cout << "Download took "
-                << std::chrono::duration_cast<std::chrono::milliseconds>(e - b).count()
-                << " ms" << std::endl;
+                std::cout << "Segment "
+                    << i.history_segment()
+                    << " of "
+                    << i.history_segments()
+                    << std::endl;
+                
+                auto b = std::chrono::high_resolution_clock::now();
+                auto segment = i.data(1, oscilloscope_waveform_points::maximum);
+                auto e = std::chrono::high_resolution_clock::now();
+                std::cout << "Download took "
+                    << std::chrono::duration_cast<std::chrono::milliseconds>(e - b).count()
+                    << " ms" << std::endl;
 
-            std::cout << "Record length: "
-                << segment0.record_length() << std::endl
-                << "Buffer size: "
-                << segment0.end() - segment0.begin() << std::endl;
-
-            //i.history_segment(-1);
-            //std::cout << "Segment "
-            //    << i.history_segment()
-            //    << " of "
-            //    << i.history_segments()
-            //    << std::endl;
-            //auto segment1 = i.data(1);
-            int x = 1234;
+                std::cout << "Record length: "
+                    << segment.record_length() << std::endl
+                    << "Buffer size: "
+                    << segment.end() - segment.begin() << std::endl
+                    << "Begin: " << segment.time_begin() << std::endl
+                    << "End: " << segment.time_end() << std::endl
+                    << "Offset: " << segment.segment_offset() << std::endl;
+            }
         }
 
     } catch (std::exception& ex) {

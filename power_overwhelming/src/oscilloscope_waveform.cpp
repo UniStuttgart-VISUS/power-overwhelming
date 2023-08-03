@@ -13,8 +13,11 @@
  * visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform
  */
 visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform(
-        _In_z_ const char *header, _Inout_ blob&& samples)
-        : _record_length(0),  _time_begin(0), _time_end(0) {
+        _In_z_ const char *header,
+        _In_ const float segment_offset,
+        _Inout_ blob&& samples)
+        : _record_length(0), _segment_offset(segment_offset), _time_begin(0),
+        _time_end(0) {
     if (header == nullptr) {
         throw std::invalid_argument("The data header must not be nullptr.");
     }
