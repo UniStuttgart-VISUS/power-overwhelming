@@ -7,6 +7,39 @@
 #include "tinkerforge.h"
 
 
+
+/*
+ * ::sample_all_tinkerforge_sensors
+  */
+void sample_all_tinkerforge_sensors(void) {
+    using namespace visus::power_overwhelming;
+
+    try {
+        std::vector<tinkerforge_sensor> sensors;
+        sensors.resize(tinkerforge_sensor::for_all(nullptr, 0));
+        auto cnt = tinkerforge_sensor::for_all(sensors.data(),
+            sensors.size());
+
+        if (cnt < sensors.size()) {
+            sensors.resize(cnt);
+        }
+
+        for (auto& s : sensors) {
+            std::wcout << s.name() << L":" << std::endl;
+            auto m = s.sample();
+            std::wcout << m.timestamp() << L": "
+                << m.voltage() << " V * "
+                << m.current() << " A = "
+                << m.power() << L" W"
+                << std::endl;
+        }
+
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+}
+
+
 /*
  * ::sample_tinkerforge_sensor
  */
@@ -23,7 +56,7 @@ void sample_tinkerforge_sensor(void) {
             descs.resize(cnt);
         }
 
-        for (auto &d : descs) {
+        for (auto& d : descs) {
             tinkerforge_sensor s(d);
             std::wcout << s.name() << L":" << std::endl;
             auto m = s.sample();
@@ -56,7 +89,7 @@ void sample_tinkerforge_sensor_data(void) {
             descs.resize(cnt);
         }
 
-        for (auto &d : descs) {
+        for (auto& d : descs) {
             tinkerforge_sensor s(d);
             std::wcout << s.name() << L":" << std::endl;
             auto m = s.sample_data();
@@ -67,7 +100,7 @@ void sample_tinkerforge_sensor_data(void) {
                 << std::endl;
         }
 
-    } catch (std::exception &ex) {
+    } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
 }

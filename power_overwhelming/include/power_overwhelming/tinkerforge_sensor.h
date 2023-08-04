@@ -148,7 +148,7 @@ namespace power_overwhelming {
         /// <paramref name="cnt_definitions" />, the remaining elements in
         /// the output array are invalid and must not be used. Spurious return
         /// values can even occur when using the pattern of calling the method
-        /// with <c>nullptr</c> for <paramref name="out_definitions" /> to
+        /// with <c>nullptr</c> for <paramref name="dst" /> to
         /// count the required space, allocating this space and then calling
         /// it again. This is due to the cached bricklets only being locked
         /// when inside the method, not between calls.</para>
@@ -164,11 +164,11 @@ namespace power_overwhelming {
         /// bricklets. Callers should then allocate the required output buffer
         /// and call the method again with a small timeout.</para>
         /// </remarks>
-        /// <param name="out_definitions">Receives the sensor definitions. If
+        /// <param name="dst">Receives the sensor definitions. If
         /// <c>nullptr</c>, the sensors will only be counted.</param>
         /// <param name="cnt">Size of
-        /// <paramref name="out_definitions" /> in elements. It is safe to pass
-        /// any number if <paramref name="out_definitions" /> is <c>nullptr</c>.
+        /// <paramref name="dst" /> in elements. It is safe to pass
+        /// any number if <paramref name="dst" /> is <c>nullptr</c>.
         /// In this case, the number is interpreted as the expected number of
         /// bricklets to wait for.</param>
         /// <param name="timeout">The number of milliseconds to wait for the
@@ -181,7 +181,8 @@ namespace power_overwhelming {
         /// <returns>The number of current/voltage bricklets available,
         /// regardless of how many have been copied.</returns>
         static std::size_t get_definitions(
-            _Out_writes_opt_(cnt) tinkerforge_sensor_definition *out_definitions,
+            _When_(dst != nullptr, _Out_writes_opt_(cnt))
+            tinkerforge_sensor_definition *dst,
             _In_ const std::size_t cnt,
             _In_ const std::size_t timeout = 1000,
             _In_opt_z_ const char *host = default_host,

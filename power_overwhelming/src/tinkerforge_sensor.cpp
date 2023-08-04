@@ -70,28 +70,39 @@ std::size_t visus::power_overwhelming::tinkerforge_sensor::for_all(
  * visus::power_overwhelming::tinkerforge_sensor::get_definitions
  */
 std::size_t visus::power_overwhelming::tinkerforge_sensor::get_definitions(
-        _Out_writes_opt_(cnt) tinkerforge_sensor_definition *out_definitions,
+        _When_(dst != nullptr, _Out_writes_opt_(cnt))
+        tinkerforge_sensor_definition *dst,
         _In_ const std::size_t cnt,
         _In_ const std::size_t timeout,
         _In_opt_z_ const char *host,
         _In_ const std::uint16_t port) {
-    std::vector<detail::tinkerforge_bricklet> bricklets;
-    const auto h = (host != nullptr) ? host : default_host;
-    detail::tinkerforge_scope scope(h, port);
+    typedef detail::tinkerforge_bricklet bricklet_type;
 
-    auto retval = scope.copy_bricklets(std::back_inserter(bricklets),
-        [](const detail::tinkerforge_bricklet& b) {
-            return (b.device_type() == VOLTAGE_CURRENT_V2_DEVICE_IDENTIFIER);
-        }, std::chrono::milliseconds(timeout), cnt);
+    try {
+        std::vector<bricklet_type> bricklets;
+        const auto h = (host != nullptr) ? host : default_host;
+        detail::tinkerforge_scope scope(h, port);
 
-    if (out_definitions != nullptr) {
-        for (std::size_t i = 0; (i < cnt) && (i < retval); ++i) {
-            out_definitions[i] = tinkerforge_sensor_definition(
-                bricklets[i].uid().c_str());
+        auto retval = scope.copy_bricklets(
+            std::back_inserter(bricklets),
+            [](const bricklet_type& b) { return (b.device_type()
+                == VOLTAGE_CURRENT_V2_DEVICE_IDENTIFIER); },
+            std::chrono::milliseconds(timeout),
+            cnt);
+
+        if (dst != nullptr) {
+            for (std::size_t i = 0; (i < cnt) && (i < retval); ++i) {
+                dst[i] = tinkerforge_sensor_definition(
+                    bricklets[i].uid().c_str());
+            }
         }
-    }
 
-    return retval;
+        return retval;
+    } catch (tinkerforge_exception) {
+        // If the connection failed in the scope, we do not have any bricklets.
+        // This is typically caused by brickd not running on 'host'.
+        return 0;
+    }
 }
 
 

@@ -7,6 +7,11 @@
 
 
 /// <summary>
+/// Print values of all Tinkerforge bricklets, obtained via for_all.
+/// </summary>
+void sample_all_tinkerforge_sensors(void);
+
+/// <summary>
 /// Print values of all Tinkerforge bricklets attached to the machine.
 /// </summary>
 void sample_tinkerforge_sensor(void);
