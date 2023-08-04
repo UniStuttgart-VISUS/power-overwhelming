@@ -31,7 +31,7 @@ visus::power_overwhelming::detail::sampler::~sampler(void) noexcept {
 visus::power_overwhelming::detail::sampler&
 visus::power_overwhelming::detail::sampler::operator +=(
         _In_ source_type source) {
-    if ((source != nullptr) && (source->interval() > interval_type::zero())) {
+    if ((source != nullptr) && (source->interval() > 0)) {
         std::lock_guard<decltype(this->_lock)> l(this->_lock);
 
         // Make sure that 'source' is not being sampled at the moment.

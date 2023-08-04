@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <memory>
 #include <mutex>
 #include <sstream>
@@ -27,7 +28,8 @@ namespace detail {
         /// <summary>
         /// The type used to specify the sampling interval.
         /// </summary>
-        typedef sampler_source::interval_type interval_type;
+        typedef std::chrono::duration<sampler_source::interval_type,
+            std::micro> interval_type;
 
         explicit sampler_thread(_In_ sampler_source *source);
 

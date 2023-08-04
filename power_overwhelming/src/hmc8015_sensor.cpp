@@ -21,37 +21,6 @@
 #include "visa_library.h"
 
 
-namespace visus {
-namespace power_overwhelming {
-namespace detail {
-
-    /// <summary>
-    /// Sampler source for the <see cref="hmc8015_sensor" />.
-    /// </summary>
-    class hmc8015_sampler_source final : public sampler_source {
-
-    public:
-
-        inline hmc8015_sampler_source(_Inout_ async_sampling&& async_sampling)
-            : _async_sampling(async_sampling) { }
-
-        /// <inheritdoc />
-        bool deliver(void) const override;
-
-        /// <inheritdoc />
-        interval_type interval(void) const noexcept;
-
-    private:
-
-        async_sampling _async_sampling;
-    };
-
-} /* namespace detail */
-} /* namespace power_overwhelming */
-} /* namespace visus */
-
-
-
 /*
  * visus::power_overwhelming::hmc8015_sensor::for_all
  */
@@ -90,7 +59,7 @@ std::size_t visus::power_overwhelming::hmc8015_sensor::for_all(
 visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
         _In_z_ const wchar_t *path,
         _In_ const visa_instrument::timeout_type timeout)
-        : _instrument(path, timeout), _source(nullptr) {
+        : _instrument(path, timeout) {
     this->initialise();
     this->configure();
 }
@@ -102,7 +71,7 @@ visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
 visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
         _In_z_ const char *path,
         _In_ const visa_instrument::timeout_type timeout)
-        : _instrument(path, timeout), _source(nullptr) {
+        : _instrument(path, timeout) {
     this->initialise();
     this->configure();
 }
@@ -113,10 +82,9 @@ visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
  */
 visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
         _Inout_ hmc8015_sensor&& rhs) noexcept
-    : _instrument(std::move(rhs._instrument)),
-        _name(std::move(rhs._name)), _source(nullptr) {
-    rhs._source = nullptr;
-}
+    : _async_sampling(std::move(rhs._async_sampling)),
+        _instrument(std::move(rhs._instrument)),
+        _name(std::move(rhs._name)) { }
 
 
 /*
@@ -124,14 +92,15 @@ visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
  */
 visus::power_overwhelming::hmc8015_sensor::~hmc8015_sensor(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
+    // Make sure that we are not registered any more for asynchronous sampling.
+    detail::sampler::default -= this;
+
     if (this->_instrument) {
         // Reset the system state to local operations, but make sure that we
         // do not throw in the destructor. Therefore, we use the library
         // directly instead of the wrappers checking the state of the calls.
         this->_instrument.write("SYST:LOC\n");
     }
-
-    delete this->_source;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -421,29 +390,15 @@ visus::power_overwhelming::hmc8015_sensor::reset(void) {
 
 
 /*
- * visus::power_overwhelming::hmc8015_sensor::synchronise_clock
- */
-visus::power_overwhelming::hmc8015_sensor&
-visus::power_overwhelming::hmc8015_sensor::synchronise_clock(
-        _In_ const bool utc) {
-    this->check_not_disposed();
-    this->_instrument.synchronise_clock(utc);
-    return *this;
-}
-
-
-/*
  * visus::power_overwhelming::hmc8015_sensor::operator =
  */
 visus::power_overwhelming::hmc8015_sensor&
 visus::power_overwhelming::hmc8015_sensor::operator =(
         _Inout_ hmc8015_sensor&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
+        this->_async_sampling = std::move(rhs._async_sampling);
         this->_instrument = std::move(rhs._instrument);
         this->_name = std::move(rhs._name);
-        delete this->_source;
-        this->_source = rhs._source;
-        rhs._source = nullptr;
     }
 
     return *this;
@@ -463,22 +418,15 @@ visus::power_overwhelming::hmc8015_sensor::operator bool(void) const noexcept {
  */
 void visus::power_overwhelming::hmc8015_sensor::sample_async(
         _Inout_ async_sampling&& sampling) {
-    if (sampling) {
-        // If not yet active, create a source adapter and register it with the
-        // default sampler thread.
-        if (this->_source != nullptr) {
+    if (this->_async_sampling && sampling) {
+        throw std::logic_error("Asynchronous sampling cannot be started while "
+            "it is already running.");
+    }
 
-        }
-
-        this->_source = new detail::hmc8015_sampler_source(std::move(sampling));
-        detail::sampler::default += this->_source;
-
+    if ((this->_async_sampling = std::move(sampling))) {
+        detail::sampler::default += this;
     } else {
-        // Unregister and delete the source adapter afterwards.
-        detail::sampler::default -= this->_source;
-
-        delete this->_source;
-        this->_source = nullptr;
+        detail::sampler::default -= this;
     }
 }
 
@@ -489,6 +437,8 @@ void visus::power_overwhelming::hmc8015_sensor::sample_async(
 visus::power_overwhelming::measurement_data
 visus::power_overwhelming::hmc8015_sensor::sample_sync(
         _In_ const timestamp_resolution resolution) const {
+    assert(*this);
+
     auto response = this->_instrument.query("CHAN1:MEAS:DATA?\n");
     auto timestamp = detail::create_timestamp(resolution);
     auto tokens = detail::tokenise(std::string(response.begin(),
@@ -506,7 +456,7 @@ visus::power_overwhelming::hmc8015_sensor::sample_sync(
  * visus::power_overwhelming::hmc8015_sensor::configure
  */
 void visus::power_overwhelming::hmc8015_sensor::configure(void) {
-    assert(this->_impl != nullptr);
+    assert(*this);
 
     // Configure the display to show always the same stuff.
     // Default: URMS,IRMS,P,FPLL,URAN,IRAN,S,Q,LAMB,PHI
@@ -535,9 +485,26 @@ void visus::power_overwhelming::hmc8015_sensor::configure(void) {
 
 
 /*
+ * visus::power_overwhelming::hmc8015_sensor::deliver
+ */
+bool visus::power_overwhelming::hmc8015_sensor::deliver(void) const {
+    auto retval = static_cast<bool>(this->_async_sampling);
+
+    if (retval) {
+        retval = this->_async_sampling.deliver(this->name(),
+            this->sample_sync(this->_async_sampling.resolution()));
+    }
+
+    return retval;
+}
+
+
+/*
  * visus::power_overwhelming::hmc8015_sensor::initialise
  */
 void visus::power_overwhelming::hmc8015_sensor::initialise(void) {
+    assert(*this);
+
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     // Query the instrument name for use a sensor name.
     {
@@ -567,12 +534,21 @@ void visus::power_overwhelming::hmc8015_sensor::initialise(void) {
 
 
 /*
+ * visus::power_overwhelming::hmc8015_sensor::interval
+ */
+visus::power_overwhelming::hmc8015_sensor::interval_type
+visus::power_overwhelming::hmc8015_sensor::interval(void) const noexcept {
+    return this->_async_sampling.interval();
+}
+
+
+/*
  * visus::power_overwhelming::hmc8015_sensor::set_range
  */
 void visus::power_overwhelming::hmc8015_sensor::set_range(
         _In_ const std::int32_t channel, _In_z_ const char *quantity,
         _In_ const instrument_range range, _In_ const float value) {
-    assert(this->_impl != nullptr);
+    assert(*this);
     assert(quantity != nullptr);
 
     switch (range) {

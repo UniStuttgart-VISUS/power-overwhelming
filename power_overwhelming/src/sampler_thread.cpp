@@ -16,7 +16,7 @@ visus::power_overwhelming::detail::sampler_thread::sampler_thread(
             "if its initial source is valid");
     }
 
-    this->_interval = source->interval();
+    this->_interval = interval_type(source->interval());
     this->_sources.push_back(source);
     this->_thread = std::thread(&sampler_thread::sample, this);
 }
@@ -41,7 +41,7 @@ visus::power_overwhelming::detail::sampler_thread::~sampler_thread(
 void visus::power_overwhelming::detail::sampler_thread::add(
         _In_ sampler_source *source) {
     if (source != nullptr) {
-        if (source->interval() != this->_interval) {
+        if (source->interval() != this->_interval.count()) {
             throw std::invalid_argument("The specified source does not match "
                 "the sampling interval of the sampler thread.");
         }

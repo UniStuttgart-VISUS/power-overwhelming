@@ -292,8 +292,10 @@ namespace power_overwhelming {
         /// </remarks>
         /// <returns>The implementation-defined, human-readable name of the
         /// sensor.</returns>
-        _Ret_maybenull_z_ virtual const wchar_t *name(
-            void) const noexcept override;
+        inline _Ret_maybenull_z_ virtual const wchar_t *name(
+                void) const noexcept override {
+            return this->_name.as<wchar_t>();
+        }
 
         /// <summary>
         /// Gets the VISA path of the instrument.
@@ -392,13 +394,18 @@ namespace power_overwhelming {
 
         void configure(void);
 
+        bool deliver(void) const override;
+
         void initialise(void);
+
+        interval_type interval(void) const noexcept override;
 
         void set_range(_In_ const std::int32_t channel,
             _In_z_ const char *quantity,
             _In_ const instrument_range range,
             _In_ const float value);
 
+        async_sampling _async_sampling;
         visa_instrument _instrument;
         blob _name;
 

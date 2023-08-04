@@ -19,7 +19,8 @@ namespace detail {
     /// <remarks>
     /// <para>This interface is typically implemented by the implementation
     /// classes of a sensor, but in some cases, it might be easier if the sensor
-    /// implements it by itself.</para>
+    /// implements it by itself. In general, there is no use for end users of
+    /// the Power Overwhelming library in using this interface.</para>
     /// <para>Sensors that are inherently synchronous can use the template
     /// <see cref="basic_sampler_source" /> to make their implementation object
     /// a source of asynchronous samples without any additional implementation
