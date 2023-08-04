@@ -31,6 +31,25 @@ visus::power_overwhelming::oscilloscope_sample::oscilloscope_sample(
 
 
 /*
+ * visus::power_overwhelming::oscilloscope_sample::oscilloscope_sample
+ */
+visus::power_overwhelming::oscilloscope_sample::oscilloscope_sample(
+        _Inout_updates_(cnt) channel_waveform *waveforms,
+        _In_ const std::size_t cnt)
+        : _size(cnt), _waveforms(nullptr) {
+    if (this->_size > 0) {
+        this->_waveforms = static_cast<channel_waveform *>(
+            ::operator new(this->_size * sizeof(channel_waveform)));
+
+        for (std::size_t i = 0; i < this->_size; ++i) {
+            new (this->_waveforms + i) channel_waveform(
+                std::move(waveforms[i]));
+        }
+    }
+}
+
+
+/*
  * visus::power_overwhelming::oscilloscope_sample::~oscilloscope_sample
  */
 visus::power_overwhelming::oscilloscope_sample::~oscilloscope_sample(void) {

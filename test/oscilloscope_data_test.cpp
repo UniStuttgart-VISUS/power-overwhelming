@@ -88,6 +88,8 @@ namespace test {
             Assert::IsNotNull(sample.begin(), L"begin", LINE_INFO());
             Assert::IsNotNull(sample.end(), L"begin", LINE_INFO());
 
+            Assert::IsNull(waveform.samples(), L"waveform moved", LINE_INFO());
+
             Assert::AreEqual(channel, sample[0].channel(), L"channel", LINE_INFO());
             Assert::AreEqual(std::size_t(8), sample[0].waveform().record_length(), L"record_length", LINE_INFO());
         }

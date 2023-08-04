@@ -88,12 +88,29 @@ namespace power_overwhelming {
         /// IDs.</param>
         /// <param name="waveforms">An array of <paramref name="cnt" />
         /// waveforms that are in the same order as the
-        /// <paramref name="channels" />.</param>
+        /// <paramref name="channels" />. For performance reasons, the waveforms
+        /// are moved into the sample. The caller, however, remains owner of the
+        /// memory of the array.</param>
         /// <param name="cnt">The number of channels for which waveforms are
         /// provided.</param>
+        /// <exception cref="std::bad_alloc">If the allocation of the buffer for
+        /// the waveforms failed.</exception>
         oscilloscope_sample(
             _In_reads_(cnt) const oscilloscope_channel::channel_type *channels,
             _Inout_updates_(cnt) oscilloscope_waveform *waveforms,
+            _In_ const std::size_t cnt);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="waveforms">An array of <paramref name="cnt" />
+        /// per-channel waveforms. For performance reasons, the waveforms are
+        /// moved into the sample. The caller, however, remains owner of the
+        /// memory of the array.</param>
+        /// <param name="cnt">The number of waveforms provided.</param>
+        /// <exception cref="std::bad_alloc">If the allocation of the buffer for
+        /// the waveforms failed.</exception>
+        oscilloscope_sample(_Inout_updates_(cnt) channel_waveform *waveforms,
             _In_ const std::size_t cnt);
 
         /// <summary>
