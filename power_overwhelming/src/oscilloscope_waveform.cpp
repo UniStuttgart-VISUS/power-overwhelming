@@ -54,7 +54,10 @@ float visus::power_overwhelming::oscilloscope_waveform::sample(
         throw std::range_error("The specified sample index is out of range.");
     }
 
-    return this->_samples.as<float>()[i];
+    auto retval = this->_samples.as<float>();
+    _Analysis_assume_(retval != nullptr);
+
+    return retval[i];
 }
 
 

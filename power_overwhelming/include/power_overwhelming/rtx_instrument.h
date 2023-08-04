@@ -42,6 +42,11 @@ namespace power_overwhelming {
     public:
 
         /// <summary>
+        /// The type to number channels.
+        /// </summary>
+        typedef oscilloscope_channel::channel_type channel_type;
+
+        /// <summary>
         /// Retrieves all RTA and RTB instruments connected to the system.
         /// </summary>
         /// <param name="dst">Receives the instruments. It is safe to pass
@@ -446,7 +451,7 @@ namespace power_overwhelming {
         /// instrument failed.</exception>
         /// <exception cref="std::logic_error">If the method is called while
         /// the library was compiled without support for VISA.</exception>
-        blob binary_data(_In_ const std::uint32_t channel) const;
+        blob binary_data(_In_ const channel_type channel) const;
 
         /// <summary>
         /// Retrieve the configuration for the specified channel.
@@ -460,7 +465,7 @@ namespace power_overwhelming {
         /// initialised.</exception>
         /// <exception cref="std::logic_error">If the library was compiled
         /// without support for VISA.</exception>
-        oscilloscope_channel channel(_In_ const std::uint32_t channel) const;
+        oscilloscope_channel channel(_In_ const channel_type channel) const;
 
         /// <summary>
         /// Apply the specified channel configuration.
@@ -614,7 +619,7 @@ namespace power_overwhelming {
         /// instrument failed.</exception>
         /// <exception cref="std::logic_error">If the method is called while
         /// the library was compiled without support for VISA.</exception>
-        oscilloscope_waveform data(_In_ const std::uint32_t channel,
+        oscilloscope_waveform data(_In_ const channel_type channel,
             _In_ const oscilloscope_waveform_points points) const;
 
         /// <summary>
@@ -647,7 +652,7 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If any of the API calls to the
         /// instrument failed.</exception>
-        rtx_instrument& expression(_In_ const std::uint32_t channel,
+        rtx_instrument& expression(_In_ const channel_type channel,
             _In_opt_z_ const wchar_t *expression,
             _In_opt_z_ const wchar_t *unit = nullptr);
 
@@ -666,7 +671,7 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If any of the API calls to the
         /// instrument failed.</exception>
-        rtx_instrument& expression(_In_ const std::uint32_t channel,
+        rtx_instrument& expression(_In_ const channel_type channel,
             _In_opt_z_ const char *expression,
             _In_opt_z_ const char *unit = nullptr);
 
@@ -1049,7 +1054,7 @@ namespace power_overwhelming {
         /// the library was compiled without support for VISA.</exception>
         std::size_t unit(_Out_writes_(cnt) wchar_t *dst,
             _In_ const std::size_t cnt,
-            _In_ const std::uint32_t channel) const;
+            _In_ const channel_type channel) const;
 
         /// <summary>
         /// Sets the unit of the specified channel.
@@ -1065,7 +1070,7 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If any of the API calls to the
         /// instrument failed.</exception>
-        rtx_instrument& unit(_In_ const std::uint32_t channel,
+        rtx_instrument& unit(_In_ const channel_type channel,
             _In_z_ const wchar_t *unit);
 
         /// <summary>
@@ -1089,7 +1094,7 @@ namespace power_overwhelming {
         /// the library was compiled without support for VISA.</exception>
         std::size_t unit(_Out_writes_(cnt) char *dst,
             _In_ const std::size_t cnt,
-            _In_ const std::uint32_t channel) const;
+            _In_ const channel_type channel) const;
 
         /// <summary>
         /// Sets the unit of the specified channel.
@@ -1105,7 +1110,7 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If any of the API calls to the
         /// instrument failed.</exception>
-        rtx_instrument& unit(_In_ const std::uint32_t channel,
+        rtx_instrument& unit(_In_ const channel_type channel,
             _In_z_ const char *unit);
 
         /// <summary>
@@ -1126,7 +1131,7 @@ namespace power_overwhelming {
         /// the library was compiled without support for VISA.</exception>
         std::size_t unit(_In_opt_ std::nullptr_t dst,
             _In_ const std::size_t cnt,
-            _In_ const std::uint32_t channel) const;
+            _In_ const channel_type channel) const;
     };
 
 } /* namespace power_overwhelming */

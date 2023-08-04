@@ -6,6 +6,7 @@
 #pragma once
 
 #include "power_overwhelming/measurement_data_series.h"
+#include "power_overwhelming/oscilloscope_sample.h"
 #include "power_overwhelming/sensor.h"
 #include "power_overwhelming/timestamp_resolution.h"
 #include "power_overwhelming/rtx_instrument.h"
@@ -177,6 +178,14 @@ namespace power_overwhelming {
             _In_ const std::size_t force_channels = 0,
             _In_ const visa_instrument::timeout_type timeout
             = visa_instrument::default_timeout);
+
+        /// <summary>
+        /// Obtains two or more waveforms from the given instrument.
+        /// </summary>
+        /// <param name="device">The instrument to be sampled.</param>
+        /// <returns>The <see cref="oscilloscope_sample" /> obtained from the
+        /// instrument.</returns>
+        static oscilloscope_sample sample(_In_ const rtx_instrument& device);
 
         /// <summary>
         /// Initialises a new instance.

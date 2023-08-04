@@ -282,30 +282,6 @@ namespace power_overwhelming {
             _In_ const microseconds_type interval) noexcept;
 
         /// <summary>
-        /// Enables or disables delivery of samples on a trigger.
-        /// </summary>
-        /// <remarks>
-        /// <para>This setting is only relevant for oscilloscope-based sensors
-        /// that can record data on a trigger signal, either externally or on
-        /// the waveforms measured.</para>
-        /// <para>Enabling this feature will disable timer-based delivery of
-        /// samples from the sensor. Instead, the sensor configures an
-        /// asynchronous callback that receives data as the instrument is
-        /// triggered and delivers it afterwards. The caller must make sure that
-        /// the instrument has been configured to record data on a trigger
-        /// signal. Otherwise, no data will ever by delivered from such a
-        /// sensor.</para>
-        /// </remarks>
-        /// <param name="triggered">If <c>true</c>, enables sampling on trigger,
-        /// if <c>false</c>, disables it.</param>
-        /// <returns><c>*this</c>.</returns>
-        async_sampling& samples_on_trigger(
-                _In_ const bool triggered = true) noexcept {
-            this->_triggered = triggered;
-            return *this;
-        }
-
-        /// <summary>
         /// Creates and stores a copy of <paramref name="context" /> and passes
         /// it to the registered callback. Once the object is deleted or a new
         /// context is set, the object will free the copy.
@@ -337,20 +313,6 @@ namespace power_overwhelming {
         inline power_overwhelming::tinkerforge_sensor_source
         tinkerforge_sensor_source(void) const noexcept {
             return this->_tinkerforge_sensor_source;
-        }
-
-        /// <summary>
-        /// Answers whether the sensor should produce samples on an external
-        /// trigger.
-        /// </summary>
-        /// <remarks>
-        /// See <see cref="samples_on_trigger" /> for more details on this
-        /// feature.
-        /// </remarks>
-        /// <returns><c>true</c> if triggering is enabled, <c>false</c>
-        /// otherwise.</returns>
-        inline bool triggered(void) const noexcept {
-            return this->_triggered;
         }
 
         /// <summary>
@@ -388,7 +350,6 @@ namespace power_overwhelming {
         timestamp_resolution _timestamp_resolution;
         power_overwhelming::tinkerforge_sensor_source
             _tinkerforge_sensor_source;
-        bool _triggered;
     };
 
 } /* namespace power_overwhelming */

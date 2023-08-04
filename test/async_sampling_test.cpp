@@ -22,7 +22,6 @@ namespace test {
             Assert::IsNull(as.context(), L"Context is null", LINE_INFO());
             Assert::AreEqual(int(tinkerforge_sensor_source::all), int(as.tinkerforge_sensor_source()), L"All Tinkerforge enabled", LINE_INFO());
             Assert::AreEqual(async_sampling::default_interval, as.interval(), L"1000 us default interval", LINE_INFO());
-            Assert::IsFalse(as.triggered(), L"Not triggered", LINE_INFO());
             Assert::IsFalse(bool(as), L"Not enabled", LINE_INFO());
             Assert::AreEqual(int(timestamp_resolution::milliseconds), int(as.resolution()), L"Timestamps are in ms", LINE_INFO());
         }
@@ -35,14 +34,12 @@ namespace test {
                 .delivers_measurements_to(cb)
                 .from_source(tinkerforge_sensor_source::power)
                 .passes_context((void *) 42)
-                .using_resolution(timestamp_resolution::nanoseconds)
-                .samples_on_trigger();
+                .using_resolution(timestamp_resolution::nanoseconds);
 
             Assert::AreEqual(intptr_t(42), intptr_t(as.context()), L"Context is 42", LINE_INFO());
             Assert::AreEqual(int(tinkerforge_sensor_source::power), int(as.tinkerforge_sensor_source()), L"Power only", LINE_INFO());
             Assert::AreEqual(std::uint64_t(1000), as.interval(), L"1 ms interval", LINE_INFO());
             Assert::IsTrue(as.on_measurement(), L"on_measurement enabled", LINE_INFO());
-            Assert::IsTrue(as.triggered(), L"Triggered", LINE_INFO());
             Assert::IsTrue(bool(as), L"Is enabled", LINE_INFO());
             Assert::AreEqual(int(timestamp_resolution::nanoseconds), int(as.resolution()), L"Timestamps are in ns", LINE_INFO());
         }
@@ -55,14 +52,12 @@ namespace test {
                  .delivers_measurement_data_to(cb)
                  .from_source(tinkerforge_sensor_source::power)
                  .passes_context((void *)42)
-                 .using_resolution(timestamp_resolution::hundred_nanoseconds)
-                 .samples_on_trigger());
+                 .using_resolution(timestamp_resolution::hundred_nanoseconds));
 
             Assert::AreEqual(intptr_t(42), intptr_t(as.context()), L"Context is 42", LINE_INFO());
             Assert::AreEqual(int(tinkerforge_sensor_source::power), int(as.tinkerforge_sensor_source()), L"Power only", LINE_INFO());
             Assert::AreEqual(std::uint64_t(1000), as.interval(), L"1 ms interval", LINE_INFO());
             Assert::IsTrue(as.on_measurement_data(), L"on_measurement_data enabled", LINE_INFO());
-            Assert::IsTrue(as.triggered(), L"Triggered", LINE_INFO());
             Assert::IsTrue(bool(as), L"Is enabled", LINE_INFO());
             Assert::AreEqual(int(timestamp_resolution::hundred_nanoseconds), int(as.resolution()), L"Timestamps are in 100 ns", LINE_INFO());
         }

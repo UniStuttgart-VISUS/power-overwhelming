@@ -220,6 +220,19 @@ std::size_t visus::power_overwhelming::rtx_sensor::get_definitions(
 
 
 /*
+ * visus::power_overwhelming::rtx_sensor::sample
+ */
+visus::power_overwhelming::oscilloscope_sample
+visus::power_overwhelming::rtx_sensor::sample(
+        _In_ const rtx_instrument& device) {
+    device.acquisition(oscilloscope_acquisition_state::single, true);
+
+
+    return oscilloscope_sample();
+}
+
+
+/*
  * visus::power_overwhelming::rtx_sensor::rtx_sensor
  */
 visus::power_overwhelming::rtx_sensor::rtx_sensor(

@@ -14,7 +14,7 @@
  * visus::power_overwhelming::oscilloscope_channel::oscilloscope_channel
  */
 visus::power_overwhelming::oscilloscope_channel::oscilloscope_channel(
-        _In_ const std::uint32_t channel)
+        _In_ const channel_type channel)
     : _attenuation(oscilloscope_quantity(0.0f)),
         _bandwidth(oscilloscope_channel_bandwidth::full),
         _channel(channel),
@@ -28,7 +28,7 @@ visus::power_overwhelming::oscilloscope_channel::oscilloscope_channel(
  * visus::power_overwhelming::oscilloscope_channel::oscilloscope_channel
  */
 visus::power_overwhelming::oscilloscope_channel::oscilloscope_channel(
-        _In_ const std::uint32_t channel,
+        _In_ const channel_type channel,
         _In_ const oscilloscope_channel& channel_template) 
     : _attenuation(channel_template._attenuation),
         _bandwidth(channel_template._bandwidth),

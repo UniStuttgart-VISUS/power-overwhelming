@@ -31,8 +31,7 @@ visus::power_overwhelming::async_sampling::async_sampling(void)
         _on_measurement_data(nullptr),
         _timestamp_resolution(timestamp_resolution::milliseconds),
         _tinkerforge_sensor_source(
-            power_overwhelming::tinkerforge_sensor_source::all),
-        _triggered(false) { }
+            power_overwhelming::tinkerforge_sensor_source::all) { }
 
 
 /*
@@ -186,8 +185,6 @@ visus::power_overwhelming::async_sampling::operator =(
         this->_tinkerforge_sensor_source = rhs._tinkerforge_sensor_source;
         rhs._tinkerforge_sensor_source
             = power_overwhelming::tinkerforge_sensor_source::all;
-        this->_triggered = rhs._triggered;
-        rhs._triggered = false;
     }
 
     return *this;

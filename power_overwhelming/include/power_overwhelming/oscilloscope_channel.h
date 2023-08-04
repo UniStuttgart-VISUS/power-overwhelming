@@ -28,12 +28,17 @@ namespace power_overwhelming {
     public:
 
         /// <summary>
+        /// The type to number channels.
+        /// </summary>
+        typedef std::uint32_t channel_type;
+
+        /// <summary>
         /// Initialises a new instance.
         /// </summary>
         /// <param name="channel">The one-based index of the channel. This
         /// parameter defaults to zero, which will create an unusable instance.
         /// </param>
-        explicit oscilloscope_channel(_In_ const std::uint32_t channel = 0);
+        explicit oscilloscope_channel(_In_ const channel_type channel = 0);
 
         /// <summary>
         /// Initialises a new intance.
@@ -41,7 +46,7 @@ namespace power_overwhelming {
         /// <param name="channel">The one-based index of the channel.</param>
         /// <param name="channel_template">An existing channel configuration
         /// that is being copied to <paramref name="channel" />.</param>
-        oscilloscope_channel(_In_ const std::uint32_t channel,
+        oscilloscope_channel(_In_ const channel_type channel,
             _In_ const oscilloscope_channel& channel_template);
 
         /// <summary>
@@ -95,7 +100,7 @@ namespace power_overwhelming {
         /// Gets the one-based index of the channel.
         /// </summary>
         /// <returns>The index of the channel.</returns>
-        inline std::uint32_t channel(void) const noexcept {
+        inline channel_type channel(void) const noexcept {
             return this->_channel;
         }
 
@@ -306,7 +311,7 @@ namespace power_overwhelming {
 
         oscilloscope_quantity _attenuation;
         oscilloscope_channel_bandwidth _bandwidth;
-        std::uint32_t _channel;
+        channel_type _channel;
         oscilloscope_channel_coupling _coupling;
         oscilloscope_decimation_mode _decimation_mode;
         oscilloscope_label _label;

@@ -445,7 +445,7 @@ visus::power_overwhelming::rtx_instrument::beep_on_trigger(
  */
 visus::power_overwhelming::blob
 visus::power_overwhelming::rtx_instrument::binary_data(
-        _In_ const std::uint32_t channel) const {
+        _In_ const channel_type channel) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
 
@@ -467,7 +467,7 @@ visus::power_overwhelming::rtx_instrument::binary_data(
  */
 visus::power_overwhelming::oscilloscope_channel
 visus::power_overwhelming::rtx_instrument::channel(
-        _In_ const std::uint32_t channel) const {
+        _In_ const channel_type channel) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
     oscilloscope_channel retval(channel);
@@ -850,7 +850,7 @@ visus::power_overwhelming::rtx_instrument::copy_state_from_instrument(
  */
 visus::power_overwhelming::oscilloscope_waveform
 visus::power_overwhelming::rtx_instrument::data(
-        _In_ const std::uint32_t channel,
+        _In_ const channel_type channel,
         _In_ const oscilloscope_waveform_points points) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
@@ -1018,7 +1018,7 @@ throw std::logic_error(detail::no_visa_error_msg);
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::expression(
-        _In_ const std::uint32_t channel,
+        _In_ const channel_type channel,
         _In_opt_z_ const wchar_t *expression,
         _In_opt_z_ const wchar_t *unit) {
     auto e = convert_string<char>(expression);
@@ -1034,7 +1034,7 @@ visus::power_overwhelming::rtx_instrument::expression(
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::expression(
-        _In_ const std::uint32_t channel,
+        _In_ const channel_type channel,
         _In_opt_z_ const char *expression,
         _In_opt_z_ const char *unit) {
     auto& impl = this->check_not_disposed();
@@ -1561,7 +1561,7 @@ visus::power_overwhelming::rtx_instrument::trigger_position(
 std::size_t visus::power_overwhelming::rtx_instrument::unit(
         _Out_writes_(cnt) wchar_t *dst,
         _In_ const std::size_t cnt,
-        _In_ const std::uint32_t channel) const {
+        _In_ const channel_type channel) const {
     auto retval = this->unit(static_cast<char *>(nullptr), 0, channel);
 
     if ((dst != nullptr) && (cnt >= retval)) {
@@ -1581,7 +1581,7 @@ std::size_t visus::power_overwhelming::rtx_instrument::unit(
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::unit(
-        _In_ const std::uint32_t channel,
+        _In_ const channel_type channel,
         _In_z_ const wchar_t *unit) {
     if (unit == nullptr) {
         throw std::invalid_argument("The unit for a probe cannot be null.");
@@ -1601,7 +1601,7 @@ visus::power_overwhelming::rtx_instrument::unit(
 std::size_t visus::power_overwhelming::rtx_instrument::unit(
         _Out_writes_(cnt) char *dst,
         _In_ const std::size_t cnt,
-        _In_ const std::uint32_t channel) const {
+        _In_ const channel_type channel) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
     impl.format("PROB%u:SET:ATT:UNIT?\n", channel);
@@ -1630,7 +1630,7 @@ std::size_t visus::power_overwhelming::rtx_instrument::unit(
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::unit(
-        _In_ const std::uint32_t channel,
+        _In_ const channel_type channel,
         _In_z_ const char *unit) {
     if (unit == nullptr) {
         throw std::invalid_argument("The unit for a probe cannot be null.");
@@ -1649,6 +1649,6 @@ visus::power_overwhelming::rtx_instrument::unit(
 std::size_t visus::power_overwhelming::rtx_instrument::unit(
         _In_opt_ std::nullptr_t dst,
         _In_ const std::size_t cnt,
-        _In_ const std::uint32_t channel) const {
+        _In_ const channel_type channel) const {
     return this->unit(static_cast<char *>(dst), 0, channel);
 }
