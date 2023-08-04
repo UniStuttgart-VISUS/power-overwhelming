@@ -81,7 +81,16 @@ namespace power_overwhelming {
         /// </summary>
         inline oscilloscope_sample(void) : _size(0), _waveforms(nullptr) { }
 
-
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="channels">An array of <paramref name="cnt" /> channel
+        /// IDs.</param>
+        /// <param name="waveforms">An array of <paramref name="cnt" />
+        /// waveforms that are in the same order as the
+        /// <paramref name="channels" />.</param>
+        /// <param name="cnt">The number of channels for which waveforms are
+        /// provided.</param>
         oscilloscope_sample(
             _In_reads_(cnt) const oscilloscope_channel::channel_type *channels,
             _Inout_updates_(cnt) oscilloscope_waveform *waveforms,
