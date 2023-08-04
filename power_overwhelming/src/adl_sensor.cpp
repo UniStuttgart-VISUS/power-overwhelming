@@ -346,8 +346,9 @@ void visus::power_overwhelming::adl_sensor::sample(
  */
 void visus::power_overwhelming::adl_sensor::start(
         _In_ const microseconds_type sampling_period) {
+    using std::chrono::duration;
     using std::chrono::duration_cast;
-    typedef detail::sampler::interval_type interval_type;
+    typedef duration<microseconds_type, std::micro> interval_type;
 
     this->check_not_disposed();
 
@@ -419,8 +420,9 @@ visus::power_overwhelming::adl_sensor::operator bool(void) const noexcept {
  */
 void visus::power_overwhelming::adl_sensor::sample_async(
         _Inout_ async_sampling&& sampling) {
+    using std::chrono::duration;
     using std::chrono::duration_cast;
-    typedef detail::sampler::interval_type interval_type;
+    typedef duration<microseconds_type, std::micro> interval_type;
 
     if ((this->_impl->async_sampling = std::move(sampling))) {
         auto sampler_rate = interval_type(sampling.interval());

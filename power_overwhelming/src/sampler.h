@@ -7,7 +7,8 @@
 
 #include <map>
 
-#include "sampler_source.h"
+#include "power_overwhelming/sampler_source.h"
+
 #include "sampler_thread.h"
 
 
@@ -15,6 +16,10 @@ namespace visus {
 namespace power_overwhelming {
 namespace detail {
 
+    /// <summary>
+    /// Manages the <see cref="sampler_thread" />s used for asynchronously
+    /// sampling inherently synchronous sources.
+    /// </summary>
     class sampler final {
 
     public:

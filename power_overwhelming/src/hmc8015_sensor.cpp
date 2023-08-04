@@ -16,7 +16,40 @@
 #include "hmc8015_sensor_impl.h"
 #include "sampler.h"
 #include "string_functions.h"
+#include "timestamp.h"
+#include "tokenise.h"
 #include "visa_library.h"
+
+
+namespace visus {
+namespace power_overwhelming {
+namespace detail {
+
+    /// <summary>
+    /// Sampler source for the <see cref="hmc8015_sensor" />.
+    /// </summary>
+    class hmc8015_sampler_source final : public sampler_source {
+
+    public:
+
+        inline hmc8015_sampler_source(_Inout_ async_sampling&& async_sampling)
+            : _async_sampling(async_sampling) { }
+
+        /// <inheritdoc />
+        bool deliver(void) const override;
+
+        /// <inheritdoc />
+        interval_type interval(void) const noexcept;
+
+    private:
+
+        async_sampling _async_sampling;
+    };
+
+} /* namespace detail */
+} /* namespace power_overwhelming */
+} /* namespace visus */
+
 
 
 /*
@@ -57,7 +90,8 @@ std::size_t visus::power_overwhelming::hmc8015_sensor::for_all(
 visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
         _In_z_ const wchar_t *path,
         _In_ const visa_instrument::timeout_type timeout)
-        : _impl(new detail::hmc8015_sensor_impl(path, timeout)) {
+        : _instrument(path, timeout), _source(nullptr) {
+    this->initialise();
     this->configure();
 }
 
@@ -68,7 +102,8 @@ visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
 visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
         _In_z_ const char *path,
         _In_ const visa_instrument::timeout_type timeout)
-        : _impl(new detail::hmc8015_sensor_impl(path, timeout)) {
+        : _instrument(path, timeout), _source(nullptr) {
+    this->initialise();
     this->configure();
 }
 
@@ -77,8 +112,10 @@ visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
  * visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor
  */
 visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
-        _Inout_ hmc8015_sensor&& rhs) noexcept : _impl(rhs._impl) {
-    rhs._impl = nullptr;
+        _Inout_ hmc8015_sensor&& rhs) noexcept
+    : _instrument(std::move(rhs._instrument)),
+        _name(std::move(rhs._name)), _source(nullptr) {
+    rhs._source = nullptr;
 }
 
 
@@ -87,12 +124,14 @@ visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
  */
 visus::power_overwhelming::hmc8015_sensor::~hmc8015_sensor(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    if ((this->_impl != nullptr) && (this->_impl->instrument)) {
+    if (this->_instrument) {
         // Reset the system state to local operations, but make sure that we
         // do not throw in the destructor. Therefore, we use the library
         // directly instead of the wrappers checking the state of the calls.
-        this->_impl->instrument.write("SYST:LOC\n");
+        this->_instrument.write("SYST:LOC\n");
     }
+
+    delete this->_source;
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -107,9 +146,9 @@ visus::power_overwhelming::hmc8015_sensor::display(
 
     if (text != nullptr) {
         auto cmd = detail::format_string("DISP:TEXT:DATA \"%s\"\n", text);
-        this->_impl->instrument.write(cmd);
+        this->_instrument.write(cmd);
     } else {
-        this->_impl->instrument.write("DISP:TEXT:CLE\n");
+        this->_instrument.write("DISP:TEXT:CLE\n");
     }
 
     return *this;
@@ -127,9 +166,9 @@ visus::power_overwhelming::hmc8015_sensor::display(
     if (text != nullptr) {
         auto cmd = convert_string<char>(detail::format_string(
             L"DISP:TEXT:DATA \"%s\"\n", text));
-        this->_impl->instrument.write(cmd);
+        this->_instrument.write(cmd);
     } else {
-        this->_impl->instrument.write("DISP:TEXT:CLE\n");
+        this->_instrument.write("DISP:TEXT:CLE\n");
     }
 
     return *this;
@@ -141,7 +180,7 @@ visus::power_overwhelming::hmc8015_sensor::display(
  */
 bool visus::power_overwhelming::hmc8015_sensor::is_log(void) {
     this->check_not_disposed();
-    auto response = this->_impl->instrument.query("LOG:STATE?\n");
+    auto response = this->_instrument.query("LOG:STATE?\n");
     return (!response.empty() && (*response.as<char>() != '0'));
 }
 
@@ -172,7 +211,7 @@ visus::power_overwhelming::hmc8015_sensor::log(_In_ const bool enable) {
     //}
 
     auto cmd = detail::format_string("LOG:STAT %s\n", enable ? "ON" : "OFF");
-    this->_impl->instrument.write(cmd);
+    this->_instrument.write(cmd);
 
     return *this;
 }
@@ -197,28 +236,28 @@ visus::power_overwhelming::hmc8015_sensor::log_behaviour(
     // Configure the logging mode.
     switch (mode) {
         case log_mode::count:
-            this->_impl->instrument.write("LOG:MODE COUN\n");
+            this->_instrument.write("LOG:MODE COUN\n");
             if (value == std::numeric_limits<decltype(value)>::lowest()) {
-                this->_impl->instrument.write("LOG:COUN MIN\n");
+                this->_instrument.write("LOG:COUN MIN\n");
             } else if (value == (std::numeric_limits<decltype(value)>::max)()) {
-                this->_impl->instrument.write("LOG:COUN MAX\n");
+                this->_instrument.write("LOG:COUN MAX\n");
             } else {
                 auto cmd = detail::format_string("LOG:COUN %d\n", value);
-                this->_impl->instrument.write(cmd);
+                this->_instrument.write(cmd);
             }
 
             //this->_impl->printf("INT:MODE MAN\n");
             break;
 
         case log_mode::duration:
-            this->_impl->instrument.write("LOG:MODE DUR\n");
+            this->_instrument.write("LOG:MODE DUR\n");
             if (value == std::numeric_limits<decltype(value)>::lowest()) {
-                this->_impl->instrument.write("LOG:DUR MIN\n");
+                this->_instrument.write("LOG:DUR MIN\n");
             } else if (value == (std::numeric_limits<decltype(value)>::max)()) {
-                this->_impl->instrument.write("LOG:DUR MAX\n");
+                this->_instrument.write("LOG:DUR MAX\n");
             } else {
                 auto cmd = detail::format_string("LOG:DUR %d\n", value);
-                this->_impl->instrument.write(cmd);
+                this->_instrument.write(cmd);
             }
 
             //this->_impl->printf("INT:MODE DUR\n");
@@ -233,22 +272,22 @@ visus::power_overwhelming::hmc8015_sensor::log_behaviour(
 
         case log_mode::time_span:
             throw std::invalid_argument("time_span does not work ...");
-            this->_impl->instrument.write("LOG:MODE SPAN\n");
+            this->_instrument.write("LOG:MODE SPAN\n");
 
             {
                 auto cmd = detail::format_string(
                     "LOG:STIM %d, %d, %d, %d, %d, %d\n",
                     year, month, day, hour, minute, second);
-                this->_impl->instrument.write(cmd);
+                this->_instrument.write(cmd);
             }
 
             if (value == std::numeric_limits<decltype(value)>::lowest()) {
-                this->_impl->instrument.write("LOG:DUR MIN\n");
+                this->_instrument.write("LOG:DUR MIN\n");
             } else if (value == (std::numeric_limits<decltype(value)>::max)()) {
-                this->_impl->instrument.write("LOG:DUR MAX\n");
+                this->_instrument.write("LOG:DUR MAX\n");
             } else {
                 auto cmd = detail::format_string("LOG:DUR %d\n", value);
-                this->_impl->instrument.write(cmd.c_str());
+                this->_instrument.write(cmd.c_str());
             }
 
             //this->_impl->printf("INT:MODE SPAN\n");
@@ -264,7 +303,7 @@ visus::power_overwhelming::hmc8015_sensor::log_behaviour(
             break;
 
         case log_mode::unlimited:
-            this->_impl->instrument.write("LOG:MODE UNL\n");
+            this->_instrument.write("LOG:MODE UNL\n");
             //this->_impl->printf("INT:MODE MAN\n");
             break;
 
@@ -275,16 +314,16 @@ visus::power_overwhelming::hmc8015_sensor::log_behaviour(
 
     // Configure the logging interval.
     if (interval == std::numeric_limits<decltype(interval)>::lowest()) {
-        this->_impl->instrument.write("LOG:INT MIN\n");
+        this->_instrument.write("LOG:INT MIN\n");
     } else if (interval == (std::numeric_limits<decltype(interval)>::max)()) {
-        this->_impl->instrument.write("LOG:INT MAX\n");
+        this->_instrument.write("LOG:INT MAX\n");
     } else {
         auto cmd = detail::format_string("LOG:INT %f\n", interval);
-        this->_impl->instrument.write(cmd);
+        this->_instrument.write(cmd);
     }
 
     // Use the first page configured in the constructor.
-    this->_impl->instrument.write("LOG:PAGE 1\n");
+    this->_instrument.write("LOG:PAGE 1\n");
 
     return *this;
 }
@@ -296,7 +335,7 @@ visus::power_overwhelming::hmc8015_sensor::log_behaviour(
 std::size_t visus::power_overwhelming::hmc8015_sensor::log_file(
         _Out_writes_opt_z_(cnt) char *path, _In_ const std::size_t cnt) {
     this->check_not_disposed();
-    auto value = this->_impl->instrument.query("LOG:FNAM?\n");
+    auto value = this->_instrument.query("LOG:FNAM?\n");
 
     // Copy as much as the output buffer can hold.
     if (path != nullptr) {
@@ -333,15 +372,15 @@ visus::power_overwhelming::hmc8015_sensor::log_file(
     if (overwrite) {
         auto cmd = detail::format_string("DATA:DEL \"%s\", %s\n", path,
             location);
-        this->_impl->instrument.write(cmd);
+        this->_instrument.write(cmd);
         // Clear error in case file did not exist.
-        this->_impl->instrument.clear_status();
+        this->_instrument.clear_status();
     }
 
     {
         auto cmd = detail::format_string("LOG:FNAM \"%s\", %s\n", path,
             location);
-        this->_impl->instrument.write(cmd);
+        this->_instrument.write(cmd);
     }
 
     return *this;
@@ -366,37 +405,16 @@ visus::power_overwhelming::hmc8015_sensor::log_file(
 
 
 /*
- * visus::power_overwhelming::hmc8015_sensor::name
- */
-_Ret_maybenull_z_ const wchar_t *
-visus::power_overwhelming::hmc8015_sensor::name(void) const noexcept {
-    return (this->_impl != nullptr)
-        ? this->_impl->sensor_name.c_str()
-        : nullptr;
-}
-
-
-/*
- * visus::power_overwhelming::hmc8015_sensor::path
- */
-const char *visus::power_overwhelming::hmc8015_sensor::path(
-        void) const noexcept {
-    return (this->_impl != nullptr)
-        ? this->_impl->instrument.path()
-        : nullptr;
-}
-
-/*
  * visus::power_overwhelming::hmc8015_sensor::reset
  */
 visus::power_overwhelming::hmc8015_sensor&
 visus::power_overwhelming::hmc8015_sensor::reset(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     this->check_not_disposed();
-    this->_impl->instrument.reset();
+    this->_instrument.reset();
     this->configure();
-    this->_impl->instrument.throw_on_system_error();
-    this->_impl->instrument.clear_status();
+    this->_instrument.throw_on_system_error();
+    this->_instrument.clear_status();
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
@@ -409,7 +427,7 @@ visus::power_overwhelming::hmc8015_sensor&
 visus::power_overwhelming::hmc8015_sensor::synchronise_clock(
         _In_ const bool utc) {
     this->check_not_disposed();
-    this->_impl->instrument.synchronise_clock(utc);
+    this->_instrument.synchronise_clock(utc);
     return *this;
 }
 
@@ -421,9 +439,11 @@ visus::power_overwhelming::hmc8015_sensor&
 visus::power_overwhelming::hmc8015_sensor::operator =(
         _Inout_ hmc8015_sensor&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
-        delete this->_impl;
-        this->_impl = rhs._impl;
-        rhs._impl = nullptr;
+        this->_instrument = std::move(rhs._instrument);
+        this->_name = std::move(rhs._name);
+        delete this->_source;
+        this->_source = rhs._source;
+        rhs._source = nullptr;
     }
 
     return *this;
@@ -434,7 +454,7 @@ visus::power_overwhelming::hmc8015_sensor::operator =(
  * visus::power_overwhelming::hmc8015_sensor::operator bool
  */
 visus::power_overwhelming::hmc8015_sensor::operator bool(void) const noexcept {
-    return ((this->_impl != nullptr) && this->_impl->instrument);
+    return static_cast<bool>(this->_instrument);
 }
 
 
@@ -443,13 +463,22 @@ visus::power_overwhelming::hmc8015_sensor::operator bool(void) const noexcept {
  */
 void visus::power_overwhelming::hmc8015_sensor::sample_async(
         _Inout_ async_sampling&& sampling) {
-    assert(this->_impl != nullptr);
-    this->_impl->async_sampling = std::move(sampling);
+    if (sampling) {
+        // If not yet active, create a source adapter and register it with the
+        // default sampler thread.
+        if (this->_source != nullptr) {
 
-    if (this->_impl->async_sampling) {
-        detail::sampler::default += this->_impl;
+        }
+
+        this->_source = new detail::hmc8015_sampler_source(std::move(sampling));
+        detail::sampler::default += this->_source;
+
     } else {
-        detail::sampler::default -= this->_impl;
+        // Unregister and delete the source adapter afterwards.
+        detail::sampler::default -= this->_source;
+
+        delete this->_source;
+        this->_source = nullptr;
     }
 }
 
@@ -460,8 +489,16 @@ void visus::power_overwhelming::hmc8015_sensor::sample_async(
 visus::power_overwhelming::measurement_data
 visus::power_overwhelming::hmc8015_sensor::sample_sync(
         _In_ const timestamp_resolution resolution) const {
-    assert(this->_impl != nullptr);
-    return this->_impl->sample(resolution);
+    auto response = this->_instrument.query("CHAN1:MEAS:DATA?\n");
+    auto timestamp = detail::create_timestamp(resolution);
+    auto tokens = detail::tokenise(std::string(response.begin(),
+        response.end()), ',', true);
+
+    auto v = static_cast<measurement::value_type>(::atof(tokens[0].c_str()));
+    auto c = static_cast<measurement::value_type>(::atof(tokens[1].c_str()));
+    auto p = static_cast<measurement::value_type>(::atof(tokens[2].c_str()));
+
+    return measurement_data(timestamp, v, c, p);
 }
 
 
@@ -473,27 +510,59 @@ void visus::power_overwhelming::hmc8015_sensor::configure(void) {
 
     // Configure the display to show always the same stuff.
     // Default: URMS,IRMS,P,FPLL,URAN,IRAN,S,Q,LAMB,PHI
-    this->_impl->instrument.write("VIEW:NUM:SHOW 1\n");
-    this->_impl->instrument.write("VIEW:NUM:PAGE1:SIZE 10\n");
-    this->_impl->instrument.write("VIEW:NUM:PAGE1:CELL1:FUNC URMS\n");
-    this->_impl->instrument.write("VIEW:NUM:PAGE1:CELL2:FUNC IRMS\n");
-    this->_impl->instrument.write("VIEW:NUM:PAGE1:CELL3:FUNC URAN\n");
-    this->_impl->instrument.write("VIEW:NUM:PAGE1:CELL4:FUNC IRAN\n");
+    this->_instrument.write("VIEW:NUM:SHOW 1\n");
+    this->_instrument.write("VIEW:NUM:PAGE1:SIZE 10\n");
+    this->_instrument.write("VIEW:NUM:PAGE1:CELL1:FUNC URMS\n");
+    this->_instrument.write("VIEW:NUM:PAGE1:CELL2:FUNC IRMS\n");
+    this->_instrument.write("VIEW:NUM:PAGE1:CELL3:FUNC URAN\n");
+    this->_instrument.write("VIEW:NUM:PAGE1:CELL4:FUNC IRAN\n");
     //this->_impl->printf("VIEW:NUM:PAGE1:CELL3:FUNC UAVG\n");
     //this->_impl->printf("VIEW:NUM:PAGE1:CELL4:FUNC IAVG\n");
-    this->_impl->instrument.write("VIEW:NUM:PAGE1:CELL5:FUNC P\n");
-    this->_impl->instrument.write("VIEW:NUM:PAGE1:CELL6:FUNC S\n");
-    this->_impl->instrument.write("VIEW:NUM:PAGE1:CELL7:FUNC Q\n");
-    this->_impl->instrument.write("VIEW:NUM:PAGE1:CELL8:FUNC TIME\n");
-    this->_impl->instrument.write("VIEW:NUM:PAGE1:CELL9:FUNC WH\n");
-    this->_impl->instrument.write("VIEW:NUM:PAGE1:CELL10:FUNC AH\n");
+    this->_instrument.write("VIEW:NUM:PAGE1:CELL5:FUNC P\n");
+    this->_instrument.write("VIEW:NUM:PAGE1:CELL6:FUNC S\n");
+    this->_instrument.write("VIEW:NUM:PAGE1:CELL7:FUNC Q\n");
+    this->_instrument.write("VIEW:NUM:PAGE1:CELL8:FUNC TIME\n");
+    this->_instrument.write("VIEW:NUM:PAGE1:CELL9:FUNC WH\n");
+    this->_instrument.write("VIEW:NUM:PAGE1:CELL10:FUNC AH\n");
 
     // Configure the stuff we want to measure.
     // Default: URMS,IRMS,P,FPLL,URAN,IRAN,S,Q,LAMB,PHI
-    this->_impl->instrument.write("CHAN1:MEAS:FUNC URMS, URAN, IRMS, "
+    this->_instrument.write("CHAN1:MEAS:FUNC URMS, URAN, IRMS, "
         "IRAN, S, P\n");
 
-    this->_impl->instrument.write("CHAN1:ACQ:MODE AUTO\n");
+    this->_instrument.write("CHAN1:ACQ:MODE AUTO\n");
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::initialise
+ */
+void visus::power_overwhelming::hmc8015_sensor::initialise(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    // Query the instrument name for use a sensor name.
+    {
+        auto l = this->_instrument.identify(static_cast<wchar_t *>(nullptr), 0);
+        this->_name.reserve(l * sizeof(wchar_t));
+        this->_instrument.identify(this->_name.as<wchar_t>(), l);
+    }
+
+    // Reset the device to default state.
+    this->_instrument.reset();
+
+    // Configure the device as in the R&S instrument driver.
+    this->_instrument.attribute(VI_ATTR_TMO_VALUE, 5000);
+    this->_instrument.buffer((VI_READ_BUF | VI_WRITE_BUF), 4096);
+    this->_instrument.attribute(VI_ATTR_WR_BUF_OPER_MODE, VI_FLUSH_ON_ACCESS);
+    this->_instrument.attribute(VI_ATTR_RD_BUF_OPER_MODE, VI_FLUSH_ON_ACCESS);
+
+    // Lock the system to indicate that it is controlled by the software. As
+    // locking the system is not critical, do not check for system errors here.
+    this->_instrument.write("SYST:REM\n");
+
+    // Clear any error that might have been caused by our setup. We do not want
+    // to abort just because the display does not look as expected.
+    this->_instrument.clear_status();
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -510,26 +579,26 @@ void visus::power_overwhelming::hmc8015_sensor::set_range(
         case instrument_range::automatically: {
             auto cmd = detail::format_string("CHAN%d:ACQ:%s:RANG:AUTO ON\n",
                 channel, quantity);
-            this->_impl->instrument.write(cmd);
+            this->_instrument.write(cmd);
             } break;
 
         case instrument_range::maximum: {
             auto cmd = detail::format_string("CHAN%d:ACQ:%s:RANG MAX\n",
                 channel, quantity);
-            this->_impl->instrument.write(cmd);
+            this->_instrument.write(cmd);
             } break;
 
         case instrument_range::minimum: {
             auto cmd = detail::format_string("CHAN%d:ACQ:%s:RANG MIN\n",
                 channel, quantity);
-            this->_impl->instrument.write(cmd);
+            this->_instrument.write(cmd);
             } break;
 
         case instrument_range::explicitly:
         default: {
             auto cmd = detail::format_string("CHAN%d:ACQ:%s:RANG %f\n",
                 channel, quantity, value);
-            this->_impl->instrument.write(cmd);
+            this->_instrument.write(cmd);
             } break;
     }
 }

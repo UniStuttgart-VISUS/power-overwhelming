@@ -10,7 +10,7 @@
 #include <map>
 #include <vector>
 
-#include "sampler_source.h"
+#include "power_overwhelming/sampler_source.h"
 
 
 namespace visus {

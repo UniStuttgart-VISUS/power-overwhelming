@@ -11,6 +11,7 @@
 #include <cinttypes>
 
 #include "power_overwhelming/blob.h"
+#include "power_overwhelming/sampler_source.h"
 #include "power_overwhelming/sensor.h"
 #include "power_overwhelming/visa_instrument.h"
 
@@ -21,14 +22,11 @@
 namespace visus {
 namespace power_overwhelming {
 
-    /* Forward declarations. */
-    namespace detail { struct hmc8015_sensor_impl; }
-
-
     /// <summary>
     /// Allows for controlling a Rohde &amp; Schwarz HMC8015 power analyser.
     /// </summary>
-    class POWER_OVERWHELMING_API hmc8015_sensor final : public sensor {
+    class POWER_OVERWHELMING_API hmc8015_sensor final
+            : public sensor, private detail::sampler_source {
 
     public:
 
@@ -63,7 +61,7 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        inline hmc8015_sensor(void) : _impl(nullptr) { }
+        hmc8015_sensor(void) = default;
 
         /// <summary>
         /// Initialises a new instance.
@@ -301,7 +299,10 @@ namespace power_overwhelming {
         /// Gets the VISA path of the instrument.
         /// </summary>
         /// <returns>The path of the instrument.</returns>
-        _Ret_maybenull_z_ const char *path(void) const noexcept;
+        /// <returns>The path of the instrument.</returns>
+        inline _Ret_maybenull_z_ const char *path(void) const noexcept {
+            return this->_instrument.path();
+        }
 
         /// <summary>
         /// Resets the instrument to its default state.
@@ -326,7 +327,10 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        hmc8015_sensor& synchronise_clock(_In_ const bool utc = false);
+        inline hmc8015_sensor &synchronise_clock(_In_ const bool utc = false) {
+            this->_instrument.synchronise_clock(utc);
+            return *this;
+        }
 
         /// <summary>
         /// Sets the voltage range.
@@ -388,12 +392,16 @@ namespace power_overwhelming {
 
         void configure(void);
 
+        void initialise(void);
+
         void set_range(_In_ const std::int32_t channel,
             _In_z_ const char *quantity,
             _In_ const instrument_range range,
             _In_ const float value);
 
-        detail::hmc8015_sensor_impl *_impl;
+        visa_instrument _instrument;
+        blob _name;
+
     };
 
 } /* namespace power_overwhelming */

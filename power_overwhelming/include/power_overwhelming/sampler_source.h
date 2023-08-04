@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include <chrono>
-
 #include "power_overwhelming/async_sampling.h"
 
 
@@ -19,20 +17,22 @@ namespace detail {
     /// generic <see cref="sampler_thread" />.
     /// </summary>
     /// <remarks>
+    /// <para>This interface is typically implemented by the implementation
+    /// classes of a sensor, but in some cases, it might be easier if the sensor
+    /// implements it by itself.</para>
     /// <para>Sensors that are inherently synchronous can use the template
     /// <see cref="basic_sampler_source" /> to make their implementation object
     /// a source of asynchronous samples without any additional implementation
     /// effort.</para>
     /// </remarks>
-    class sampler_source {
+    class POWER_OVERWHELMING_API sampler_source {
 
     public:
 
         /// <summary>
         /// The type used to specify the sampling interval.
         /// </summary>
-        typedef std::chrono::duration<async_sampling::microseconds_type,
-            std::micro> interval_type;
+        typedef async_sampling::microseconds_type interval_type;
 
         /// <summary>
         /// Synchronously delivers a sample to the registered callback or

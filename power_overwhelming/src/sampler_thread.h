@@ -11,7 +11,8 @@
 #include <thread>
 #include <vector>
 
-#include "sampler_source.h"
+#include "power_overwhelming/sampler_source.h"
+
 #include "thread_name.h"
 
 
