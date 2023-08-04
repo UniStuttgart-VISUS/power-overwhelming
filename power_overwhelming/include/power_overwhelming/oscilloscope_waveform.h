@@ -46,6 +46,15 @@ namespace power_overwhelming {
         }
 
         /// <summary>
+        /// Answer whether the waveform is empty.
+        /// </summary>
+        /// <returns><c>true</c> if the waveform is empty,
+        /// <c>false</c> otherwise.</returns>
+        inline bool empty(void) const noexcept {
+            return ((this->_record_length == 0) || (this->_samples == nullptr));
+        }
+
+        /// <summary>
         /// A pointer past the last sample of the waveform.
         /// </summary>
         /// <returns>A pointer to invalid memory past the last sample.

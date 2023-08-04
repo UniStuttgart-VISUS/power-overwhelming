@@ -81,6 +81,7 @@ namespace test {
 
             oscilloscope_channel::channel_type channel = 42;
             oscilloscope_waveform waveform("0.0, 1.0, 8, 1", 99.0f, std::move(data));
+            Assert::IsFalse(waveform.empty(), L"waveform not empty", LINE_INFO());
 
             oscilloscope_sample sample(&channel, &waveform, 1);
             Assert::IsFalse(sample.empty(), L"empty", LINE_INFO());
@@ -89,6 +90,7 @@ namespace test {
             Assert::IsNotNull(sample.end(), L"begin", LINE_INFO());
 
             Assert::IsNull(waveform.samples(), L"waveform moved", LINE_INFO());
+            Assert::IsTrue(waveform.empty(), L"waveform empty", LINE_INFO());
 
             Assert::AreEqual(channel, sample[0].channel(), L"channel", LINE_INFO());
             Assert::AreEqual(std::size_t(8), sample[0].waveform().record_length(), L"record_length", LINE_INFO());
