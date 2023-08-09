@@ -23,7 +23,7 @@ visus::power_overwhelming::oscilloscope_sample::oscilloscope_sample(
         this->_waveforms = new channel_waveform[this->_size];
 
         for (std::size_t i = 0; i < this->_size; ++i) {
-            this->_waveforms[i] = channel_waveform(channels[i],
+            this->_waveforms[i] = channel_waveform(channels[i % cnt],
                 std::move(waveforms[i]));
         }
     }

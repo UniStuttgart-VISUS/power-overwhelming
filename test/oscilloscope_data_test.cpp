@@ -112,6 +112,38 @@ namespace test {
             Assert::AreEqual(channel, sample[0].channel(), L"channel", LINE_INFO());
             Assert::AreEqual(std::size_t(8), sample[0].waveform().record_length(), L"record_length", LINE_INFO());
         }
+
+        TEST_METHOD(test_multi_channel_oscilloscope_sample) {
+            const oscilloscope_channel::channel_type channels[] = { 42, 44 };
+
+            blob data0(4 * sizeof(float));
+            for (std::size_t i = 0; i < data0.size() / sizeof(float); ++i) {
+                data0.as<float>()[i] = i;
+            }
+
+            blob data1(4 * sizeof(float));
+            for (std::size_t i = 0; i < data1.size() / sizeof(float); ++i) {
+                data1.as<float>()[i] = 2.0f * i;
+            }
+
+            oscilloscope_waveform waveforms[] = {
+                oscilloscope_waveform("0.0, 1.0, 4, 1", "1,2,3", "3, 4, 6", "99", std::move(data0)),
+                oscilloscope_waveform("0.0, 1.0, 4, 1", "2023,8,9", "17, 39, 00.5", "99", std::move(data1))
+            };
+
+            oscilloscope_sample sample(channels, waveforms, 2);
+            Assert::IsFalse(sample.empty(), L"empty", LINE_INFO());
+            Assert::AreEqual(std::size_t(2), sample.size(), L"size", LINE_INFO());
+            Assert::IsNotNull(sample.begin(), L"begin", LINE_INFO());
+            Assert::IsNotNull(sample.end(), L"begin", LINE_INFO());
+
+            Assert::AreEqual(channels[0], sample[0].channel(), L"channel #0", LINE_INFO());
+            Assert::AreEqual(channels[1], sample[1].channel(), L"channel #1", LINE_INFO());
+
+            Assert::AreEqual(std::size_t(4), sample[0].waveform().record_length(), L"record_length #0", LINE_INFO());
+            Assert::AreEqual(std::size_t(4), sample[1].waveform().record_length(), L"record_length #1", LINE_INFO());
+
+        }
     };
 
 } /* namespace test */

@@ -38,7 +38,6 @@ namespace power_overwhelming {
             /// <summary>
             /// Initialises a new instance.
             /// </summary>
-            /// <param name=""></param>
             inline channel_waveform(void) : _channel(0) { }
 
             /// <summary>
@@ -90,6 +89,13 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
+        /// <remarks>
+        /// Instances created via this constructor are usually produced by the
+        /// instrument. There should be no need for consumers of the library to
+        /// use this. If you must create your own sample, make sure to carefully
+        /// read the documentation on the layout expected by the constructor.
+        /// The channel-to-waveform mapping might be wrong if you fail to do so.
+        /// </remarks>
         /// <param name="channels">An array of <paramref name="cnt" /> channel
         /// IDs.</param>
         /// <param name="waveforms">An array of
@@ -101,8 +107,8 @@ namespace power_overwhelming {
         /// caller, however, remains owner of the memory of the array.</param>
         /// <param name="cnt">The number of channels for which waveforms are
         /// provided.</param>
-        /// <param name="cnt">The number of segments provided per channel. This
-        /// defaults to one segment.</param>
+        /// <param name="segments">The number of segments provided per channel.
+        /// This defaults to one segment.</param>
         /// <exception cref="std::bad_alloc">If the allocation of the buffer for
         /// the waveforms failed.</exception>
         oscilloscope_sample(
@@ -171,10 +177,10 @@ namespace power_overwhelming {
         const _Ret_maybenull_ channel_waveform *end(void) const noexcept;
 
         /// <summary>
-        /// Answer the number of channels (or better: the number of waveforms)
-        /// stored in the sample.
+        /// Answer the number of waveforms (number of channels multiplied by the
+        /// number of segments) stored in the sample.
         /// </summary>
-        /// <returns>The number of channels stored in the sample.</returns>
+        /// <returns>The number of waveforms stored in the sample.</returns>
         inline std::size_t size(void) const noexcept {
             return this->_size;
         }
