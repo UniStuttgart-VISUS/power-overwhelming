@@ -10,6 +10,7 @@
 #include "power_overwhelming/oscilloscope_edge_trigger.h"
 #include "power_overwhelming/oscilloscope_quantity.h"
 #include "power_overwhelming/oscilloscope_reference_point.h"
+#include "power_overwhelming/oscilloscope_sample.h"
 #include "power_overwhelming/oscilloscope_trigger.h"
 #include "power_overwhelming/oscilloscope_trigger_output.h"
 #include "power_overwhelming/oscilloscope_waveform.h"
@@ -683,6 +684,27 @@ namespace power_overwhelming {
         /// the library was compiled without support for VISA.</exception>
         oscilloscope_waveform data(_In_ const channel_type channel,
             _In_ const oscilloscope_waveform_points points) const;
+
+        /// <summary>
+        /// Retrieves the data of all segments for all active channels.
+        /// </summary>
+        /// <remarks>
+        /// This method will change the active segment as a side effect.
+        /// </remarks>
+        /// <param name="points">Specifies which sample points should be
+        /// transferred.</param>
+        /// <param name="timeout">The (typically shorter than default) timeout
+        /// for checking which channels are active.</param>
+        /// <returns>The waveforms of all active channels.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
+        oscilloscope_sample data(
+            _In_ const oscilloscope_waveform_points points,
+            _In_ const timeout_type timeout = 1000);
 
         /// <summary>
         /// Retrieves the trigger configuration provided the configured trigger

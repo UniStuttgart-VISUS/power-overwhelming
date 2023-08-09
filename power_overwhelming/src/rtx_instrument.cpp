@@ -960,6 +960,61 @@ visus::power_overwhelming::rtx_instrument::data(
 
 
 /*
+ * visus::power_overwhelming::rtx_instrument::data
+ */
+visus::power_overwhelming::oscilloscope_sample
+visus::power_overwhelming::rtx_instrument::data(
+        _In_ const oscilloscope_waveform_points points,
+        _In_ const timeout_type timeout) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    std::vector<channel_type> channels;
+    std::vector<oscilloscope_waveform> waveforms;
+
+    auto& impl = this->check_not_disposed();
+
+    {
+        const detail::rtx_timeout_override timeout(impl.session, timeout);
+
+        // Check for all channels that are enabled.
+        auto has_next = true;
+        for (channel_type c = 1; has_next; ++c) {
+            try {
+                auto request = detail::format_string("CHAN%u:STAT?\n", c);
+                auto response = this->query(request.c_str());
+                auto state = response.as<char>();
+                _Analysis_assume_(state != nullptr);
+                if (!response.empty() && (state[0] != '0')) {
+                    channels.push_back(c);
+                }
+            } catch (...) {
+                impl.write("*CLS; *OPC?\n");
+                impl.read_all();
+                has_next = false;
+            }
+        }
+    }
+
+    // Get the waveforms for all segments of the active channels.
+    const auto segments = this->history_segments();
+    waveforms.reserve(channels.size() * segments);
+
+    for (std::size_t s = 0; s < segments; ++s) {
+        this->history_segment(0 - s).operation_complete();
+
+        for (auto c : channels) {
+            waveforms.push_back(this->data(c, points));
+        }
+    }
+
+    return oscilloscope_sample(channels.data(), waveforms.data(),
+        channels.size(), segments);
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
  * visus::power_overwhelming::rtx_instrument::edge_trigger
  */
 visus::power_overwhelming::oscilloscope_edge_trigger

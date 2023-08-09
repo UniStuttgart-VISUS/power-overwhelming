@@ -92,19 +92,24 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="channels">An array of <paramref name="cnt" /> channel
         /// IDs.</param>
-        /// <param name="waveforms">An array of <paramref name="cnt" />
-        /// waveforms that are in the same order as the
-        /// <paramref name="channels" />. For performance reasons, the waveforms
-        /// are moved into the sample. The caller, however, remains owner of the
-        /// memory of the array.</param>
+        /// <param name="waveforms">An array of
+        /// <paramref name="cnt" /> * <paramref name="segments" /> waveforms
+        /// that are in the same order as the <paramref name="channels" />. It
+        /// is assumed that the segments are contiguous, ie first come the first
+        /// segments for all channels, followed by the second segments, etc. For
+        /// performance reasons, the waveforms are moved into the sample. The
+        /// caller, however, remains owner of the memory of the array.</param>
         /// <param name="cnt">The number of channels for which waveforms are
         /// provided.</param>
+        /// <param name="cnt">The number of segments provided per channel. This
+        /// defaults to one segment.</param>
         /// <exception cref="std::bad_alloc">If the allocation of the buffer for
         /// the waveforms failed.</exception>
         oscilloscope_sample(
             _In_reads_(cnt) const oscilloscope_channel::channel_type *channels,
             _Inout_updates_(cnt) oscilloscope_waveform *waveforms,
-            _In_ const std::size_t cnt);
+            _In_ const std::size_t cnt,
+            _In_ const std::size_t segments = 1);
 
         /// <summary>
         /// Initialises a new instance.

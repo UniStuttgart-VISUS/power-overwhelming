@@ -16,8 +16,9 @@
 visus::power_overwhelming::oscilloscope_sample::oscilloscope_sample(
         _In_reads_(cnt) const oscilloscope_channel::channel_type *channels,
         _Inout_updates_(cnt) oscilloscope_waveform *waveforms,
-        _In_ const std::size_t cnt)
-        : _size(cnt), _waveforms(nullptr) {
+        _In_ const std::size_t cnt,
+        _In_ const std::size_t segments)
+        : _size(cnt * segments), _waveforms(nullptr) {
     if (this->_size > 0) {
         this->_waveforms = new channel_waveform[this->_size];
 

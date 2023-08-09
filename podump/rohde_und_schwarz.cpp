@@ -391,6 +391,11 @@ void query_rtx_instrument(void) {
                     << "Offset: " << segment.segment_offset() << std::endl
                     << "Timestamp: " << segment.segment_timestamp() << std::endl;
             }
+
+            i.channel(oscilloscope_channel(2).state(true));
+            i.acquisition(oscilloscope_acquisition_state::single);
+            auto sample = i.data(oscilloscope_waveform_points::maximum);
+            std::cout << "Sample size: " << sample.size() << std::endl;
         }
 
     } catch (std::exception& ex) {

@@ -56,6 +56,10 @@ target_include_directories(${PROJECT_NAME}
     PRIVATE
         $<BUILD_INTERFACE:${SourceDir}>)
 
+if (WIN32)
+    target_compile_options(${PROJECT_NAME} PRIVATE "-doc")
+endif ()
+
 target_link_libraries(${PROJECT_NAME}
     PRIVATE adl nlohmann_json nvml tinkerforge)
 
