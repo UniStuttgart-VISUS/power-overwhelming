@@ -107,7 +107,7 @@ namespace test {
 
         TEST_METHOD(test_nanoseconds) {
             typedef std::chrono::nanoseconds unit;
-            static const auto resolution = timestamp_resolution::milliseconds;
+            static const auto resolution = timestamp_resolution::nanoseconds;
             const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
 
             auto n = std::chrono::system_clock::now();
@@ -135,7 +135,56 @@ namespace test {
             Assert::IsTrue(t - c <= max_dt, L"Convert nanosecond", LINE_INFO());
         }
 
+        TEST_METHOD(test_create) {
+            {
+                static const auto resolution = timestamp_resolution::hundred_nanoseconds;
+                const auto timestamp = detail::create_timestamp(resolution, 2000, 1, 2, 3, 4, 5, 6);
+                const auto expected = make_filetime(2000, 1, 2, 3, 4, 5, 6);
+                Assert::AreEqual(expected, timestamp, L"Create 100ns", LINE_INFO());
+            }
+
+            {
+                static const auto resolution = timestamp_resolution::hundred_nanoseconds;
+                const auto timestamp = detail::create_timestamp(resolution, 2000, 1, 2, 3, 4, 5, 6, 7, 800);
+                const auto filetime = make_filetime(2000, 1, 2, 3, 4, 5, 6);
+                const auto expected = detail::convert(filetime, resolution) + 70 + 8;
+                Assert::AreEqual(expected, timestamp, L"Create 100ns", LINE_INFO());
+            }
+
+            {
+                static const auto resolution = timestamp_resolution::microseconds;
+                const auto timestamp = detail::create_timestamp(resolution, 2000, 1, 2, 3, 4, 5, 6, 7);
+                const auto filetime = make_filetime(2000, 1, 2, 3, 4, 5, 6);
+                const auto expected = detail::convert(filetime + 70, resolution);
+                Assert::AreEqual(expected, timestamp, L"Create µs", LINE_INFO());
+            }
+        }
+
     private:
+
+        static inline timestamp_type make_filetime(const std::uint16_t year,
+                const std::uint16_t month, const std::uint16_t day,
+                const std::uint16_t hours, const std::uint16_t minutes,
+                const std::uint16_t seconds, const std::uint16_t millis) {
+            SYSTEMTIME utctime;
+            ::ZeroMemory(&utctime, sizeof(utctime));
+            utctime.wYear = year;
+            utctime.wMonth = month;
+            utctime.wDay = day;
+            utctime.wHour = hours;
+            utctime.wMinute = minutes;
+            utctime.wSecond = seconds;
+            utctime.wMilliseconds = millis;
+
+            FILETIME filetime;
+            Assert::IsTrue(::SystemTimeToFileTime(&utctime, &filetime));
+
+            LARGE_INTEGER retval;
+            retval.HighPart = filetime.dwHighDateTime;
+            retval.LowPart = filetime.dwLowDateTime;
+
+            return retval.QuadPart;
+        }
 
         std::int64_t _filetime_zero;
         std::chrono::system_clock::time_point _system_zero;

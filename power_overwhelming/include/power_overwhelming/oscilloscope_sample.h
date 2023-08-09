@@ -38,6 +38,12 @@ namespace power_overwhelming {
             /// <summary>
             /// Initialises a new instance.
             /// </summary>
+            /// <param name=""></param>
+            inline channel_waveform(void) : _channel(0) { }
+
+            /// <summary>
+            /// Initialises a new instance.
+            /// </summary>
             /// <param name="channel">The number of the channel the waveform was
             /// obtained from.</param>
             /// <param name="waveform">The waveform holding the samples for the

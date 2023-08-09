@@ -371,6 +371,63 @@ visus::power_overwhelming::rtx_instrument::ascii_data(
 
 
 /*
+ * visus::power_overwhelming::rtx_instrument::automatic_roll
+ */
+bool visus::power_overwhelming::rtx_instrument::automatic_roll(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("IM:ROLL:AUT?\n");
+    auto status = std::atoi(response.as<char>());
+    return (status != 0);
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return false;
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::automatic_roll
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::automatic_roll(
+        _In_ const bool enable) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    this->check_not_disposed().format("TIM:ROLL:AUT %s\n",
+        enable ? "ON" : "OFF");
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::automatic_roll_time
+ */
+visus::power_overwhelming::oscilloscope_quantity
+visus::power_overwhelming::rtx_instrument::automatic_roll_time(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("TIM:ROLL:MTIM?\n");
+    return detail::parse_float(response.as<char>());
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::automatic_roll_time
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::automatic_roll_time(
+        _In_ const oscilloscope_quantity& min_time_base) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    this->check_not_disposed().format("TIM:ROLL:MTIM %f%s\n",
+        min_time_base.value(), min_time_base.unit());
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
  * visus::power_overwhelming::rtx_instrument::beep
  */
 visus::power_overwhelming::rtx_instrument&
@@ -880,9 +937,21 @@ visus::power_overwhelming::rtx_instrument::data(
     auto tsr = rtsr.as<char>();
     _Analysis_assume_(tsr != nullptr);
     detail::trim_eol(tsr);
-    const auto offset = std::atof(tsr);
 
-    return oscilloscope_waveform(header, offset, this->binary_data(channel));
+    const auto qtsd = detail::format_string("CHAN%u:HIST:TSD?\n", channel);
+    auto rtsd = this->query(qtsd.c_str());
+    auto tsd = rtsd.as<char>();
+    _Analysis_assume_(tsd != nullptr);
+    detail::trim_eol(tsd);
+
+    const auto qtsab = detail::format_string("CHAN%u:HIST:TSAB?\n", channel);
+    auto rtsab = this->query(qtsab.c_str());
+    auto tsab = rtsab.as<char>();
+    _Analysis_assume_(tsab != nullptr);
+    detail::trim_eol(tsab);
+
+    return oscilloscope_waveform(header, tsd, tsab, tsr,
+        this->binary_data(channel));
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(detail::no_visa_error_msg);

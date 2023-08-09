@@ -19,11 +19,10 @@ visus::power_overwhelming::oscilloscope_sample::oscilloscope_sample(
         _In_ const std::size_t cnt)
         : _size(cnt), _waveforms(nullptr) {
     if (this->_size > 0) {
-        this->_waveforms = static_cast<channel_waveform *>(
-            ::operator new(this->_size * sizeof(channel_waveform)));
+        this->_waveforms = new channel_waveform[this->_size];
 
         for (std::size_t i = 0; i < this->_size; ++i) {
-            new (this->_waveforms + i) channel_waveform(channels[i],
+            this->_waveforms[i] = channel_waveform(channels[i],
                 std::move(waveforms[i]));
         }
     }
@@ -38,12 +37,10 @@ visus::power_overwhelming::oscilloscope_sample::oscilloscope_sample(
         _In_ const std::size_t cnt)
         : _size(cnt), _waveforms(nullptr) {
     if (this->_size > 0) {
-        this->_waveforms = static_cast<channel_waveform *>(
-            ::operator new(this->_size * sizeof(channel_waveform)));
+        this->_waveforms = new channel_waveform[this->_size];
 
         for (std::size_t i = 0; i < this->_size; ++i) {
-            new (this->_waveforms + i) channel_waveform(
-                std::move(waveforms[i]));
+            this->_waveforms[i] = std::move(waveforms[i]);
         }
     }
 }
@@ -53,7 +50,7 @@ visus::power_overwhelming::oscilloscope_sample::oscilloscope_sample(
  * visus::power_overwhelming::oscilloscope_sample::~oscilloscope_sample
  */
 visus::power_overwhelming::oscilloscope_sample::~oscilloscope_sample(void) {
-    this->clear();
+    delete[] this->_waveforms;
 }
 
 
@@ -61,12 +58,7 @@ visus::power_overwhelming::oscilloscope_sample::~oscilloscope_sample(void) {
  * visus::power_overwhelming::oscilloscope_sample::clear
  */
 void visus::power_overwhelming::oscilloscope_sample::clear(void) noexcept {
-    for (auto it = this->begin(), end = this->end(); it != end; ++it) {
-        it->~channel_waveform();
-    }
-
-    ::operator delete(this->_waveforms);
-
+    delete[] this->_waveforms;
     this->_size = 0;
     this->_waveforms = nullptr;
 }

@@ -54,6 +54,10 @@ namespace detail {
     /// Convert the given raw <see cref="LARGE_INTEGER" /> to a timestamp of the
     /// specified resolution.
     /// </summary>
+    /// <remarks>
+    /// This API is only exposed for unit tests and should not be accessed by
+    /// any other clients.
+    /// </remarks>
     /// <param name="file_time">The file time value in 100ns units.</param>
     /// <param name="resolution">The desired resolution of the timestamp.
     /// </param>
@@ -68,8 +72,12 @@ namespace detail {
 #if defined(_WIN32)
     /// <summary>
     /// Convert the given raw <see cref="FILETIME" /> to a 64-bit integer of the
-    /// same 100ns resolution
+    /// same 100ns resolution.
     /// </summary>
+    /// <remarks>
+    /// This API is only exposed for unit tests and should not be accessed by
+    /// any other clients.
+    /// </remarks>
     /// <param name="fileTime"></param>
     /// <returns></returns>
     inline POWER_OVERWHELMING_API decltype(LARGE_INTEGER::QuadPart) convert(
@@ -125,6 +133,10 @@ namespace detail {
     /// <summary>
     /// Create a new timestamp using the specified resolution per tick.
     /// </summary>
+    /// <remarks>
+    /// This API is only exposed for unit tests and should not be accessed by
+    /// any other clients.
+    /// </remarks>
     /// <param name="resolution">The resolution of the timestamp being returned.
     /// </param>
     /// <returns>The value of the current timestamp.</returns>
@@ -132,6 +144,47 @@ namespace detail {
     /// <paramref name="resolution" /> cannot be created.</exception>
     timestamp_type POWER_OVERWHELMING_API create_timestamp(
         _In_ const timestamp_resolution resolution);
+
+    /// <summary>
+    /// Create a new timestamp with the specified value.
+    /// </summary>
+    /// <remarks>
+    /// <para>As timestamps in Power Overwhelming are UTC, the input is assumed
+    /// to be UTC, too.</para>
+    /// <para>This API is only exposed for unit tests and should not be accessed
+    /// by any other clients.</para>
+    /// </remarks>
+    /// <param name="resolution">The resolution of the timestamp being returned.
+    /// </param>
+    /// <param name="year">The year of the timestamp.</param>
+    /// <param name="month">The one-based month of the timestamp.</param>
+    /// <param name="day">The one-based day of the timestamp.</param>
+    /// <param name="hours">The hours in 24-hours format.</param>
+    /// <param name="minutes">The minutes. This parameter defaults to zero.
+    /// </param>
+    /// <param name="seconds">The seconds. This parameter defaults to zero.
+    /// </param>
+    /// <param name="millis">The milliseconds. This parameter defaults to zero.
+    /// </param>
+    /// <param name="nanos">The nanoseconds. This parameter defaults to zero.
+    /// </param>
+    /// <param name="micros">The microseconds. This parameter defaults to zero.
+    /// </param>
+    /// <returns>The timestamp with the specified value in the given resolution.
+    /// </returns>
+    /// <exception cref="std::invalid_argument">If a timestamp fo the requested
+    /// <paramref name="resolution" /> cannot be created.</exception>
+    timestamp_type POWER_OVERWHELMING_API create_timestamp(
+        _In_ const timestamp_resolution resolution,
+        _In_ const int year,
+        _In_ const int month,
+        _In_ const int day,
+        _In_ const int hours = 0,
+        _In_ const int minutes = 0,
+        _In_ const int seconds = 0,
+        _In_ const int millis = 0,
+        _In_ const int micros = 0,
+        _In_ const int nanos = 0);
 
 } /* namespace detail */
 } /* namespace power_overwhelming */

@@ -19,23 +19,39 @@ namespace test {
 
         TEST_METHOD(test_oscilloscope_waveform_ctor) {
             Assert::ExpectException<std::invalid_argument>([](void) {
-                oscilloscope_waveform waveform(nullptr, 0.0f, blob());
+                oscilloscope_waveform waveform(nullptr, nullptr, nullptr, nullptr, blob());
             }, L"Header nullptr", LINE_INFO());
 
             Assert::ExpectException<std::invalid_argument>([](void) {
-                oscilloscope_waveform waveform("bla", 0.0f, blob());
+                oscilloscope_waveform waveform("bla", "1,1,1", "2,2,2", "3", blob());
             }, L"Invalid header", LINE_INFO());
 
             Assert::ExpectException<std::invalid_argument>([](void) {
-                oscilloscope_waveform waveform("0.0, 1.0, 42, 1", 0.0f, blob());
+                oscilloscope_waveform waveform("0.0, 1.0, 42, 1", "1,1,1", "2,2,2", "3", blob());
             }, L"Sample size mismatch", LINE_INFO());
 
             {
-                oscilloscope_waveform waveform("0.0, 1.0, 42, 1", 99.0f, blob(42 * sizeof(float)));
+                const oscilloscope_waveform waveform("0.0, 1.0, 42, 1", "1,2,3", "3, 4, 6", "99", blob(42 * sizeof(float)));
                 Assert::AreEqual(0.0f, waveform.time_begin(), L"time_begin", LINE_INFO());
                 Assert::AreEqual(1.0f, waveform.time_end(), L"time_end", LINE_INFO());
                 Assert::AreEqual(99.0f, waveform.segment_offset(), L"segment_offset", LINE_INFO());
                 Assert::AreEqual(std::size_t(42), waveform.record_length(), L"record_length", LINE_INFO());
+            }
+
+            {
+                oscilloscope_waveform waveform("0.0, 1.0, 42, 1", "1,2,3", "3, 4, 6", "99", blob(42 * sizeof(float)));
+                const oscilloscope_waveform expected("0.0, 1.0, 42, 1", "1,2,3", "3, 4, 6", "99", blob(42 * sizeof(float)));
+                const oscilloscope_waveform actual(std::move(waveform));
+
+                Assert::AreEqual(expected.time_begin(), actual.time_begin(), L"time_begin", LINE_INFO());
+                Assert::AreEqual(expected.time_end(), actual.time_end(), L"time_end", LINE_INFO());
+                Assert::AreEqual(expected.segment_offset(), actual.segment_offset(), L"segment_offset", LINE_INFO());
+                Assert::AreEqual(expected.record_length(), actual.record_length(), L"record_length", LINE_INFO());
+
+                Assert::AreEqual(0.0f, waveform.time_begin(), L"source time_begin", LINE_INFO());
+                Assert::AreEqual(0.0f, waveform.time_end(), L"source time_end", LINE_INFO());
+                Assert::AreEqual(0.0f, waveform.segment_offset(), L"source segment_offset", LINE_INFO());
+                Assert::AreEqual(std::size_t(0), waveform.record_length(), L"source record_length", LINE_INFO());
             }
         }
 
@@ -45,11 +61,12 @@ namespace test {
                 samples.as<float>()[i] = 2.0f * i;
             }
 
-            oscilloscope_waveform waveform("0.0, 1.0, 8, 1", 99.0f, std::move(samples));
+            oscilloscope_waveform waveform("0.0, 1.0, 8, 1", "1,2,3", "3, 4, 6", "99", std::move(samples));
             Assert::AreEqual(0.0f, waveform.time_begin(), L"time_begin", LINE_INFO());
             Assert::AreEqual(1.0f, waveform.time_end(), L"time_end", LINE_INFO());
             Assert::AreEqual(99.0f, waveform.segment_offset(), L"segment_offset", LINE_INFO());
             Assert::AreEqual(std::size_t(8), waveform.record_length(), L"record_length", LINE_INFO());
+            Assert::AreEqual(waveform.record_length(), waveform.size(), L"size", LINE_INFO());
 
             Assert::AreEqual(0.0f, waveform.sample(0), L"sample 0", LINE_INFO());
             Assert::AreEqual(2.0f, waveform.sample(1), L"sample 1", LINE_INFO());
@@ -80,7 +97,7 @@ namespace test {
             }
 
             oscilloscope_channel::channel_type channel = 42;
-            oscilloscope_waveform waveform("0.0, 1.0, 8, 1", 99.0f, std::move(data));
+            oscilloscope_waveform waveform("0.0, 1.0, 8, 1", "1,2,3", "3, 4, 6", "99", std::move(data));
             Assert::IsFalse(waveform.empty(), L"waveform not empty", LINE_INFO());
 
             oscilloscope_sample sample(&channel, &waveform, 1);

@@ -358,6 +358,68 @@ namespace power_overwhelming {
 #endif
 
         /// <summary>
+        /// Answer whether automatic roll mode is enabled or not.
+        /// </summary>
+        /// <remarks>
+        /// It is safe to call this method if the library was compiled without
+        /// support for VISA. The result will always be <c>false</c> then.
+        /// </remarks>
+        /// <returns><c>true</c> if it is enabled, <c>false</c> otherwise.
+        /// </returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        bool automatic_roll(void) const;
+
+        /// <summary>
+        /// Enables or disables automatic roll mode.
+        /// </summary>
+        /// <remarks>
+        /// Nothing will happen if the library was compiled without support for
+        /// VISA.
+        /// </remarks>
+        /// <param name="enable">The desired state.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        rtx_instrument& automatic_roll(_In_ const bool enable);
+
+        /// <summary>
+        /// Answer the time from which on the roll mode is automatically
+        /// enabled.
+        /// </summary>
+        /// <returns>The time limit for enabling automatic roll.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the library was compiled
+        /// without support for VISA.</exception>
+        oscilloscope_quantity automatic_roll_time(void) const;
+
+        /// <summary>
+        /// Sets the time from which on, when the size of a division exceeds
+        /// it, automatic roll is enabled.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method modifies <c>TIMebase:Roll:MTIMe</c>.</para>
+        /// <para>Nothing will happen if the library was compiled without
+        /// support for VISA.</para>
+        /// </remarks>
+        /// <param name="min_time_base">The limit for enabling roll
+        /// mode.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        rtx_instrument& automatic_roll_time(
+            _In_ const oscilloscope_quantity& min_time_base);
+
+        /// <summary>
         /// Makes the instrument beep.
         /// </summary>
         /// <remarks>

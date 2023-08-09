@@ -94,7 +94,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // Tinkerforge sensors
-#if true
+#if false
 #if true
     ::sample_tinkerforge_sensor();
 #endif
@@ -117,7 +117,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // Rohde & Schwarz sensors
-#if false
+#if true
 #if false
     ::query_hmc8015();
 #endif

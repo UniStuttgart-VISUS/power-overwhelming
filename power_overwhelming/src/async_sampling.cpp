@@ -153,6 +153,19 @@ visus::power_overwhelming::async_sampling::samples_every(
 
 
 /*
+ * visus::power_overwhelming::async_sampling::stores_and_passes_context
+ */
+visus::power_overwhelming::async_sampling&
+visus::power_overwhelming::async_sampling::stores_and_passes_context(
+        _In_ void *context,
+        _In_ void(CALLBACK *context_deleter)(void *)) {
+    this->passes_context(context);
+    this->_context_deleter = context_deleter;
+    return *this;
+}
+
+
+/*
  * visus::power_overwhelming::async_sampling::using_resolution
  */
 visus::power_overwhelming::async_sampling&

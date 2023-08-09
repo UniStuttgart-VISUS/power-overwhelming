@@ -6,6 +6,7 @@
 #pragma once
 
 #include "power_overwhelming/blob.h"
+#include "power_overwhelming/measurement_data.h"
 
 
 namespace visus {
@@ -14,9 +15,18 @@ namespace power_overwhelming {
     /// <summary>
     /// Defines a container for data obtained from an oscilloscope channel.
     /// </summary>
+    /// <remarks>
+    /// <para>The waveform is not copyable, but only movable for performance
+    /// reasons.</para>
+    /// </remarks>
     class POWER_OVERWHELMING_API oscilloscope_waveform final {
 
     public:
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        oscilloscope_waveform(void);
 
         /// <summary>
         /// Initialises a new instance.
@@ -35,7 +45,16 @@ namespace power_overwhelming {
         /// format, or if the number of samples specified in the header does
         /// not match the size of <paramref name="samples" />.</exception>
         oscilloscope_waveform(_In_z_ const char *header,
-            _In_ const float segment_offset, _Inout_ blob&& samples);
+            _In_z_ const char *segment_date,
+            _In_z_ const char *segment_time,
+            _In_z_ const char *segment_offset,
+            _Inout_ blob&& samples);
+
+        /// <summary>
+        /// Initialise from move.
+        /// </summary>
+        /// <param name="rhs">The object to be moved.</param>
+        oscilloscope_waveform(_Inout_ oscilloscope_waveform&& rhs) noexcept;
 
         /// <summary>
         /// A pointer to the first sample of the waveform.
@@ -107,6 +126,13 @@ namespace power_overwhelming {
         }
 
         /// <summary>
+        /// Answer the temporal distance between two adjacent samples in
+        /// seconds.
+        /// </summary>
+        /// <returns>The distance between two samples in seconds.</returns>
+        float sample_distance(void) const noexcept;
+
+        /// <summary>
         /// Answer the time difference of the segment of the waveform to the
         /// newest segment in the acquisition.
         /// </summary>
@@ -116,17 +142,51 @@ namespace power_overwhelming {
         }
 
         /// <summary>
-        /// Answer the temporal distance between two adjacent samples in
-        /// seconds.
+        /// Answer the absolute timestamp of the segment in 100 ns units from
+        /// 1st January 1601 (UTC).
         /// </summary>
-        /// <returns>The distance between two samples in seconds.</returns>
-        float sample_distance(void) const noexcept;
+        /// <remarks>
+        /// <para>The value of the timestamp is equivalent to the Windows
+        /// <see cref="FILETIME" />. This makes it compatible with the ADL
+        /// sensor, which we chose as our base as we cannot influence its
+        /// implementation. In terms of STL clocks, the ratio of the timestamp
+        /// is <c>std::ratio<1, 10000000></c> using
+        /// <see cref="timetamp_type" /> as the type of the counter.</para>
+        /// <para>The timestamp is retrieved from the instrument itself, so it
+        /// might not match the clock of the computer if the instrument has
+        /// not been synchronised and/or the clocks are drifting. It also seems
+        /// as if the instrument has only a second resolution for the first
+        /// segment of an acquisition and fractional seconds are only available
+        /// for subsequent timestamps.</para>
+        /// </remarks>
+        /// <returns>The absolute timestamp of the segment.</returns>
+        measurement_data::timestamp_type segment_timestamp(
+                void) const noexcept {
+            return this->_segment_timestamp;
+        }
+
+        /// <summary>
+        /// The length of the waveform in number of samples.
+        /// </summary>
+        /// <returns>The number of samples in the waveform.</returns>
+        inline std::size_t size(void) const noexcept {
+            return this->_record_length;
+        }
+
+        /// <summary>
+        /// Move assignment.
+        /// </summary>
+        /// <param name="rhs">The right-hand side operand.</param>
+        /// <returns><c>*this</c>.</returns>
+        oscilloscope_waveform& operator =(
+            _Inout_ oscilloscope_waveform&& rhs) noexcept;
 
     private:
 
         std::size_t _record_length;
         blob _samples;
         float _segment_offset;
+        measurement_data::timestamp_type _segment_timestamp;
         float _time_begin;
         float _time_end;
     };

@@ -30,25 +30,10 @@ template<class TContext>
 visus::power_overwhelming::async_sampling&
 visus::power_overwhelming::async_sampling::stores_and_passes_context(
         _In_ const TContext& context) {
-    // Free previous object-owned context, if any.
-    this->passes_context(nullptr);
-
-    // Allocate memory for the copy of the context.
-    this->_context = operator new(sizeof(TContext));
-
-    // Install the deleter. This must be done before assigning the context as
-    // the assignment operator might throw.
-    this->_context_deleter = [](void *c) { operator delete(c); };
-
-    // Copy the context.
-    new (this->_context) TContext(context);
-
-    // Update the deleter to include the destructor if the copy was a success.
-    this->_context_deleter = [](void *c) {
-        static_cast<TContext *>(c)->~TContext();
-        operator delete(c);
-    };
-
+    // TODO: We could further optimise this and store the context in
+    // the pointer if we discover that it is at most sizeof(intptr)
+    return this->stores_and_passes_context(new TContext(context),
+        [](void *c) { delete static_cast<TContext *>(c); });
     return *this;
 }
 
@@ -60,18 +45,9 @@ template<class TContext>
 visus::power_overwhelming::async_sampling&
 visus::power_overwhelming::async_sampling::stores_and_passes_context(
         _In_ TContext&& context) {
-    // Free previous object-owned context, if any.
-    this->passes_context(nullptr);
-
-    // Allocate memory for the new context and move it in.
-    this->_context = operator new(sizeof(TContext));
-    new (this->_context) TContext(std::move(context));
-
-    // Install the deleter at the end. Note that move must not throw.
-    this->_context_deleter = [](void *c) {
-        static_cast<TContext *>(c)->~TContext();
-        operator delete(c);
-    };
-
+    // TODO: We could further optimise this and store the context in
+    // the pointer if we discover that it is at most sizeof(intptr)
+    return this->stores_and_passes_context(new TContext(std::move(context)),
+        [](void *c) { delete static_cast<TContext *>(c); });
     return *this;
 }

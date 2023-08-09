@@ -6,6 +6,8 @@
 #include "pch.h"
 #include "rohde_und_schwarz.h"
 
+#include "power_overwhelming/event.h"
+
 
 /*
  * ::query_hmc8015
@@ -104,6 +106,16 @@ void sample_hmc8015_async(const unsigned int dt) {
                     << m.sensor() << L"): "
                     << m.power() << L" W" << std::endl;
             });
+
+
+            config.delivers_measurement_data_to(
+                    [](const wchar_t *sensor,
+                    const measurement_data *data,
+                    const std::size_t cnt,
+                    void *context) {
+                auto bla = static_cast<std::wstring *>(context);
+            });
+
             s.sample(std::move(config));
         }
 
@@ -223,7 +235,7 @@ void query_rtx_instrument(void) {
                 << std::endl;
             std::wcout << L"The device has currently " << i.history_segments()
                 << L" history segments in memory." << std::endl;
-            std::wcout << L"The h orizontal time range is "
+            std::wcout << L"The horizontal time range is "
                 << i.time_range().value() << L"s." << std::endl;
             std::wcout << L"The horizontal time scale is "
                 << i.time_scale().value() << L"s." << std::endl;
@@ -315,17 +327,24 @@ void query_rtx_instrument(void) {
             //    .range(oscilloscope_quantity(5)));
 
             std::cout << "Main " << std::this_thread::get_id() << std::endl;
-            i.on_operation_complete_ex([&](visa_instrument& i) { });
-            i.on_operation_complete([](visa_instrument& i, void *) {
+            auto event = visus::power_overwhelming::create_event();
+            i.on_operation_complete([](visa_instrument &i, void *) {
                 std::cout << "OPC in thread #" << std::this_thread::get_id() << std::endl;
             }, &i);
+            i.on_operation_complete_ex([&event](visa_instrument& i) {
+                std::cout << "OPC in thread #" << std::this_thread::get_id() << std::endl;
+                visus::power_overwhelming::set_event(event);
+            });
             i.operation_complete_async();
+            visus::power_overwhelming::wait_event(event);
+            i.on_operation_complete(nullptr);
 
             i.trigger_position(oscilloscope_quantity(0.0f, "ms"));
             i.trigger(oscilloscope_edge_trigger("EXT")
                 .level(5, oscilloscope_quantity(2000.0f, "mV"))
                 .slope(oscilloscope_trigger_slope::rising)
-                .mode(oscilloscope_trigger_mode::automatic));
+                .mode(oscilloscope_trigger_mode::automatic))
+                .operation_complete();
             i.throw_on_system_error();
 
             std::cout << "RTX interface type: "
@@ -379,7 +398,8 @@ void query_rtx_instrument(void) {
                     << segment.end() - segment.begin() << std::endl
                     << "Begin: " << segment.time_begin() << std::endl
                     << "End: " << segment.time_end() << std::endl
-                    << "Offset: " << segment.segment_offset() << std::endl;
+                    << "Offset: " << segment.segment_offset() << std::endl
+                    << "Timestamp:" << segment.segment_timestamp() << std::endl;
             }
         }
 

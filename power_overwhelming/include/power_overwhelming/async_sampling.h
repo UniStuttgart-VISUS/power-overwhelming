@@ -8,6 +8,12 @@
 #include <functional>
 #include <utility>
 
+#if defined(_WIN32)
+#include <Windows.h>
+#else /* defined(_WIN32) */
+#define CALLBACK
+#endif /* defined(_WIN32) */
+
 #include "power_overwhelming/measurement.h"
 #include "power_overwhelming/timestamp_resolution.h"
 #include "power_overwhelming/tinkerforge_sensor_source.h"
@@ -184,7 +190,26 @@ namespace power_overwhelming {
         /// <para>Using this method incurs additional overhead for a heap
         /// allocation and for additional indirections when delivering a sample.
         /// If you can use a lambda without a capture, you should register it
-        /// using <see cref="delivers_measurement_data_to" /> instead.</para>
+        /// using <see cref="delivers_measurement_data_to" /> instead. A more
+        /// efficient way to pass a single object to a free callback function
+        /// pointer would be using <see cref="stores_and_passes_context" /> to
+        /// create a copy of the context object that is managed by the
+        /// <see cref="async_sampling" /> object. This could look like:
+        /// <code>
+        /// std::wstring context(L"Bla, bla, bla, Mr Freeman");
+        /// config.stores_and_passes_context(std::move(context))
+        ///     .delivers_measurement_data_to(
+        ///             [](const wchar_t *sensor,
+        ///             const measurement_data *data,
+        ///             const std::size_t cnt,
+        ///             void *context) {
+        ///         auto bla = static_cast<std::wstring *>(context);
+        ///     });
+        /// </code>
+        /// This method avoids the additional indirection when invoking the
+        /// callback that is required when dereferencing the functor object to
+        /// invoke it.
+        /// </para>
         /// <para>There is not variant for <see cref="measurement" /> instances,
         /// because no backwards compatibility is required for functors and it
         /// is discouraged to use <see cref="measurement" />-based callbacks for
@@ -282,6 +307,33 @@ namespace power_overwhelming {
             _In_ const microseconds_type interval) noexcept;
 
         /// <summary>
+        /// Stores <paramref name="context" /> as the context of the callback
+        /// and changes ownership of the context to the object, which will use
+        /// <paramref name="context_deleter" /> to free it.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method can be used to create &quot;fire-and-forget&quot;
+        /// configurations that manage context objects on the heap by
+        /// themselves. An example for using it would be:
+        /// <code>
+        /// config.stores_and_passes_context(::malloc(42), ::free);
+        /// </code>
+        /// Typically, you would not just allocate typeless memory on the heap
+        /// here, but construct and destruct objects. To facilitate this use
+        /// case, there are templated overloads that accept context objects and
+        /// create deleters that destruct and free those objects on your behalf.
+        /// </para>
+        /// </remarks>
+        /// <param name="context">The context to be passed to the callback. The
+        /// object takes ownership of this object provided that
+        /// <paramref name="context_deleter" /> is not <c>nullptr</c>.</param>
+        /// <param name="context_deleter">The deleter that will free
+        /// <paramref name="context" /> once it is no longer needed.</param>
+        /// <returns><c>*this</c>.</returns>
+        async_sampling& stores_and_passes_context(_In_ void *context,
+            _In_ void (CALLBACK *context_deleter)(void *));
+
+        /// <summary>
         /// Creates and stores a copy of <paramref name="context" /> and passes
         /// it to the registered callback. Once the object is deleted or a new
         /// context is set, the object will free the copy.
@@ -343,7 +395,7 @@ namespace power_overwhelming {
     private:
 
         void *_context;
-        void (*_context_deleter)(void *);
+        void (CALLBACK *_context_deleter)(void *);
         microseconds_type _interval;
         on_measurement_callback _on_measurement;
         on_measurement_data_callback _on_measurement_data;
