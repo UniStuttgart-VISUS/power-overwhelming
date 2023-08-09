@@ -16,8 +16,12 @@ namespace power_overwhelming {
     /// Defines a raw sample that is obtained from an oscilloscope.
     /// </summary>
     /// <remarks>
-    /// The raw sample comprises the waveforms of all channels that are active
-    /// when obtaining the sample.
+    /// <para>The raw sample comprises the waveforms of all channels and all
+    /// history segments that are active when obtaining the sample. Callers can
+    /// use <see cref="channel_waveform::channel" /> and
+    /// <see cref="oscilloscope_waveform::segment_offset" /> to find out from
+    /// which channel each of the waveforms originated and which segment it is.
+    /// </para>
     /// </remarks>
     class POWER_OVERWHELMING_API oscilloscope_sample final {
 
@@ -196,6 +200,11 @@ namespace power_overwhelming {
         /// <summary>
         /// Answer the waveform at the specified position.
         /// </summary>
+        /// <remarks>
+        /// <para>Callers should use <see cref="channel_waveform::channel" />
+        /// and <see cref="oscilloscope_waveform::segment_offset" /> to
+        /// determine the source and offset of each individual waveform.</para>
+        /// </remarks>
         /// <param name="index">An index between [0, <see cref="size" />[.
         /// </param>
         /// <returns>The waveform at the specified position.</returns>
