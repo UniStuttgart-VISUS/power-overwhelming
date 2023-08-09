@@ -1065,7 +1065,7 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If any of the API calls to the
         /// instrument failed.</exception>
-        rtx_instrument& trigger(_In_ const bool wait);
+        rtx_instrument& trigger_manually(_In_ const bool wait = false);
 
         /// <summary>
         /// Gets what kind of trigger signal the instrument produces on the

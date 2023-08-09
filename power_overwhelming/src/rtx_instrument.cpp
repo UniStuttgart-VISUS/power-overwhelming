@@ -1501,21 +1501,6 @@ throw std::logic_error(detail::no_visa_error_msg);
  * visus::power_overwhelming::rtx_instrument::trigger
  */
 visus::power_overwhelming::rtx_instrument&
-visus::power_overwhelming::rtx_instrument::trigger(_In_ const bool wait) {
-    if (wait) {
-        this->query("*TRG; *OPC?\n");
-    } else {
-        this->check_not_disposed().write("*TRG\n");
-    }
-
-    return *this;
-}
-
-
-/*
- * visus::power_overwhelming::rtx_instrument::trigger
- */
-visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::trigger(
         _In_ const oscilloscope_trigger& trigger) {
     auto& impl = this->check_not_disposed();
@@ -1632,6 +1617,22 @@ visus::power_overwhelming::rtx_instrument::trigger_output(void) const {
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(detail::no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::trigger_manually
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::trigger_manually(
+        _In_ const bool wait) {
+    if (wait) {
+        this->query("*TRG; *OPC?\n");
+    } else {
+        this->check_not_disposed().write("*TRG\n");
+    }
+
+    return *this;
 }
 
 
