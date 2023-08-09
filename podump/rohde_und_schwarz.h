@@ -30,3 +30,8 @@ void query_rtx(void);
 /// Query RTA4004 or RTB2004 oscilloscopes.
 /// </summary>
 void query_rtx_instrument(void);
+
+/// <summary>
+/// Apply the configuration builder to RTA4004 or RTB2004 oscilloscopes.
+/// </summary>
+void configure_rtx_instrument(void);

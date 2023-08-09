@@ -100,13 +100,13 @@ void sample_hmc8015_async(const unsigned int dt) {
 
         // Enable asynchronous sampling.
         for (auto& s : sensors) {
-            async_sampling config;
-            config.delivers_measurements_to([](const measurement& m, void *) {
-                std::wcout << m.timestamp() << L" ("
-                    << m.sensor() << L"): "
-                    << m.power() << L" W" << std::endl;
-            });
-            s.sample(std::move(config));
+            s.sample(async_sampling()
+                .delivers_measurements_to([](const measurement& m, void *) {
+                    std::wcout << m.timestamp() << L" ("
+                        << m.sensor() << L"): "
+                        << m.power() << L" W" << std::endl;
+                })
+                .as_rvalue());
         }
 
         // Wait for the requested number of seconds.
@@ -389,11 +389,37 @@ void query_rtx_instrument(void) {
                     << "Begin: " << segment.time_begin() << std::endl
                     << "End: " << segment.time_end() << std::endl
                     << "Offset: " << segment.segment_offset() << std::endl
-                    << "Timestamp:" << segment.segment_timestamp() << std::endl;
+                    << "Timestamp: " << segment.segment_timestamp() << std::endl;
             }
         }
 
     } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+}
+
+
+/*
+ * ::configure_rtx_instrument
+ */
+void configure_rtx_instrument(void) {
+    using namespace visus::power_overwhelming;
+
+    try {
+        std::vector<rtx_instrument> devices(rtx_instrument::all(nullptr, 0));
+        rtx_instrument::all(devices.data(), devices.size());
+
+        rtx_instrument_configuration config(12,
+            oscilloscope_acquisition().points(12000).segmented(true),
+            oscilloscope_edge_trigger("CH1"));
+        config.prevent_automatic_roll();
+
+        for (auto& i : devices) {
+            i.reset();
+            config.apply(i);
+        }
+
+    } catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;
     }
 }

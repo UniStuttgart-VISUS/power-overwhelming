@@ -98,6 +98,23 @@ namespace power_overwhelming {
         ~async_sampling(void) noexcept;
 
         /// <summary>
+        /// Converts the object into an rvalue reference to move the result of a
+        /// chain of method calls directly into <see cref="sensor::sample "/>.
+        /// </summary>
+        /// <remarks>
+        /// The use case for this method is:
+        /// <code>
+        /// sensor.sample(async_sampling()
+        ///     .delivers_measurements_to([](const measurement& m, void *) { })
+        ///     .as_rvalue());
+        /// </code>
+        /// </remarks>
+        /// <returns><c>*this</c> as an rvalue reference.</returns>
+        inline async_sampling&& as_rvalue(void) noexcept {
+            return std::move(*this);
+        }
+
+        /// <summary>
         /// Gets the user-defined context, if any, to be passed to the callback.
         /// </summary>
         /// <returns>The user-defined context pointer.</returns>

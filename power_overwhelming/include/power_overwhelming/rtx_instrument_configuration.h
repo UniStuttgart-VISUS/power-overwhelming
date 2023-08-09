@@ -46,6 +46,8 @@ namespace power_overwhelming {
     /// for this use case. Make sure to call <see cref="ignore_all_channels" />
     /// when working with a configuration object that you have not built
     /// yourself.</para>
+    /// <para>This class effectively implements the builder pattern for
+    /// RTA/RTB oscilloscope instances.</para>
     /// </remarks>
     class POWER_OVERWHELMING_API rtx_instrument_configuration final {
 
@@ -526,6 +528,23 @@ namespace power_overwhelming {
             _In_ const std::size_t cnt = 0) const;
 
         /// <summary>
+        /// Disables automatic roll mode without changing <c>TIM:ROLL:MTIM</c>.
+        /// </summary>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument_configuration& disable_automatic_roll(void) noexcept;
+
+        /// <summary>
+        /// Sets automatic roll mode to be on.
+        /// </summary>
+        /// <remarks>
+        /// If automatic roll mode was configured to be prevented (which is the
+        /// default), the default minimum time base for RTA/RTB instruments will
+        /// be applied.
+        /// </remarks>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument_configuration& enable_automatic_roll(void) noexcept;
+
+        /// <summary>
         /// Removes the channel with the given number from the configuration.
         /// </summary>
         /// <param name="channel">The channel to be removed. It is safe to pass
@@ -542,6 +561,51 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns><c>*this</c>.</returns>
         rtx_instrument_configuration& ignore_all_channels(void) noexcept;
+
+        /// <summary>
+        /// Gets the minimum time base for which roll mode is enabled
+        /// automatically if the length of a division is undercut.
+        /// </summary>
+        /// <returns>The minimum time base in seconds.</returns>
+        inline float min_time_base(void) const noexcept {
+            return this->_min_time_base;
+        }
+
+        /// <summary>
+        /// Sets the minimum time base for which roll mode is enabled
+        /// automatically if the length of a division is undercut.
+        /// </summary>
+        /// <remarks>
+        /// <para>The instrument will enable roll mode automatically (which is
+        /// typically not desirable for automated measurement application cases)
+        /// if the length of a division undercuts the value configured here. The
+        /// default value for RTA/RTB instruments is half a second for this
+        /// value.</para>
+        /// <para>There are a few special cases in this implementation: If you
+        /// set a value of zero or a negative one, the method will disable
+        /// <c>TIM:ROLL:AUT</c>. If you set exactly zero, the maximum possible
+        /// value for <c>TIM:ROLL:MTIM</c> will be set, effectively preventing
+        /// for automatic roll to ever happen. If the value is negative, its
+        /// absolute will be set as the effective value.</para>
+        /// </remarks>
+        /// <param name="min_time_base">The minimum time base in seconds.
+        /// </param>
+        /// <returns><c>*this</c>.</returns>
+        inline rtx_instrument_configuration& min_time_base(
+                _In_ const float min_time_base) noexcept {
+            this->_min_time_base;
+            return *this;
+        }
+
+        /// <summary>
+        /// Configures the instrument such that automatic roll should never
+        /// occur.
+        /// </summary>
+        /// <returns><c>*this</c>.</returns>
+        rtx_instrument_configuration& prevent_automatic_roll(void) noexcept {
+            this->_min_time_base = 0.0f;
+            return *this;
+        }
 
         /// <summary>
         /// Indicates whether this configuration is for a slave instrument that
@@ -605,6 +669,7 @@ namespace power_overwhelming {
         oscilloscope_channel *_channels;
         std::size_t _cnt_channels;
         bool _slave;
+        float _min_time_base;
         visa_instrument::timeout_type _timeout;
         oscilloscope_quantity _time_range;
         oscilloscope_edge_trigger _trigger;

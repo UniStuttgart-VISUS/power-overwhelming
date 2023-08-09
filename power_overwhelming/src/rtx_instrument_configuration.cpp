@@ -7,6 +7,7 @@
 
 #include <cstring>
 #include <fstream>
+#include <limits>
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -381,6 +382,7 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _beep_on_trigger(false),
         _channels(nullptr),
         _cnt_channels(0),
+        _min_time_base(0.0f),
         _slave(false),
         _timeout(0),
         _time_range(0.0f),
@@ -398,6 +400,7 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _beep_on_trigger(rhs._beep_on_trigger),
         _channels(nullptr),
         _cnt_channels(rhs._cnt_channels),
+        _min_time_base(0.0f),
         _slave(rhs._slave),
         _timeout(rhs._timeout),
         _time_range(rhs._time_range),
@@ -415,13 +418,14 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
  * ...::rtx_instrument_configuration::rtx_instrument_configuration
  */
 visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configuration(
-        _Inout_ rtx_instrument_configuration &&rhs) noexcept
+        _Inout_ rtx_instrument_configuration&& rhs) noexcept
     : _acquisition(std::move(rhs._acquisition)),
         _beep_on_apply(rhs._beep_on_apply),
         _beep_on_error(rhs._beep_on_error),
         _beep_on_trigger(rhs._beep_on_trigger),
         _channels(rhs._channels),
         _cnt_channels(rhs._cnt_channels),
+        _min_time_base(rhs._min_time_base),
         _slave(rhs._slave),
         _timeout(rhs._timeout),
         _time_range(std::move(rhs._time_range)),
@@ -443,6 +447,7 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _beep_on_trigger(false),
         _channels(nullptr),
         _cnt_channels(0),
+        _min_time_base(0.0f),
         _slave(false),
         _timeout(0),
         _time_range(time_range),
@@ -466,21 +471,12 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _beep_on_trigger(false),
         _channels(nullptr),
         _cnt_channels(0),
+        _min_time_base(0.0f),
         _slave(false),
         _timeout(timeout),
         _time_range(time_range),
         _trigger(trigger) {
     this->_acquisition.state(oscilloscope_acquisition_state::unknown);
-}
-
-
-/*
- * visus::power_overwhelming::rtx_instrument_configuration::acquisition
- */
-const visus::power_overwhelming::oscilloscope_acquisition&
-visus::power_overwhelming::rtx_instrument_configuration::acquisition(
-        void) const noexcept {
-    return this->_acquisition;
 }
 
 
@@ -496,6 +492,7 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _beep_on_trigger(false),
         _channels(nullptr),
         _cnt_channels(0),
+        _min_time_base(0.0f),
         _slave(false),
         _timeout(instrument.timeout()),
         _time_range(instrument.time_range()),
@@ -540,6 +537,16 @@ visus::power_overwhelming::rtx_instrument_configuration::~rtx_instrument_configu
 
 
 /*
+ * visus::power_overwhelming::rtx_instrument_configuration::acquisition
+ */
+const visus::power_overwhelming::oscilloscope_acquisition&
+visus::power_overwhelming::rtx_instrument_configuration::acquisition(
+        void) const noexcept {
+    return this->_acquisition;
+}
+
+
+/*
  * visus::power_overwhelming::rtx_instrument_configuration::as_slave
  */
 visus::power_overwhelming::rtx_instrument_configuration
@@ -565,8 +572,17 @@ void visus::power_overwhelming::rtx_instrument_configuration::apply(
         instrument.timeout(this->_timeout);
     }
 
+    // The effective TIM:ROLL:MTIM to set. If automatic roll is enabled, we use
+    // the instrument default of half a second.
+    const auto roll = (this->_min_time_base > 0.0f);
+    const auto mtim = (this->_min_time_base == 0.0f)
+        ? (std::numeric_limits<float>::max)()
+        : std::abs(this->_min_time_base);
+
     instrument.time_range(this->_time_range)
         .trigger_output(oscilloscope_trigger_output::pulse)
+        .automatic_roll(roll)
+        .automatic_roll_time(mtim)
         .trigger(this->_trigger)
         .acquisition(this->_acquisition, false);
 
@@ -669,6 +685,36 @@ std::size_t visus::power_overwhelming::rtx_instrument_configuration::channels(
 
 
 /*
+ * ...::rtx_instrument_configuration::disable_automatic_roll
+ */
+visus::power_overwhelming::rtx_instrument_configuration&
+visus::power_overwhelming::rtx_instrument_configuration::disable_automatic_roll(
+        void) noexcept {
+    this->_min_time_base = -std::abs(this->_min_time_base);
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::enable_automatic_roll
+ */
+visus::power_overwhelming::rtx_instrument_configuration&
+visus::power_overwhelming::rtx_instrument_configuration::enable_automatic_roll(
+        void) noexcept {
+    this->_min_time_base = std::abs(this->_min_time_base);
+
+    if (this->_min_time_base == 0.0f) {
+        // If force disable was selected before, apply the default value for
+        // RTA/RTB instruments as we cannot discover that roll should be enabled
+        // otherwise.
+        this->_min_time_base = 0.5f;
+    }
+
+    return *this;
+}
+
+
+/*
  * visus::power_overwhelming::rtx_instrument_configuration::ignore_channel
  */
 visus::power_overwhelming::rtx_instrument_configuration&
@@ -723,6 +769,7 @@ visus::power_overwhelming::rtx_instrument_configuration::operator =(
             this->_channels);
 
         this->_cnt_channels = rhs._cnt_channels;
+        this->_min_time_base = rhs._min_time_base;
         this->_slave = rhs._slave;
         this->_timeout = rhs._timeout;
         this->_time_range = rhs._time_range;
@@ -752,6 +799,7 @@ visus::power_overwhelming::rtx_instrument_configuration::operator =(
         this->_cnt_channels = rhs._cnt_channels;
         rhs._cnt_channels = 0;
 
+        this->_min_time_base = rhs._min_time_base;
         this->_slave = rhs._slave;
         this->_timeout = rhs._timeout;
         this->_time_range = std::move(rhs._time_range);
