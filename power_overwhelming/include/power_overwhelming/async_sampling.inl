@@ -45,9 +45,10 @@ template<class TContext>
 visus::power_overwhelming::async_sampling&
 visus::power_overwhelming::async_sampling::stores_and_passes_context(
         _In_ TContext&& context) {
+    typedef typename std::decay<TContext>::type context_type;
     // TODO: We could further optimise this and store the context in
     // the pointer if we discover that it is at most sizeof(intptr)
-    return this->stores_and_passes_context(new TContext(std::move(context)),
-        [](void *c) { delete static_cast<TContext *>(c); });
+    return this->stores_and_passes_context(new context_type(std::move(context)),
+        [](void *c) { delete static_cast<context_type *>(c); });
     return *this;
 }
