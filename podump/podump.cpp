@@ -130,7 +130,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     ::sample_hmc8015_async(5);
 #endif
 
-#if false
+#if true
     ::query_rtx_instrument();
 #endif
 
@@ -138,7 +138,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     ::query_rtx();
 #endif
 
-#if true
+#if false
     ::configure_rtx_instrument();
 #endif
 #endif

@@ -492,13 +492,18 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _beep_on_trigger(false),
         _channels(nullptr),
         _cnt_channels(0),
-        _min_time_base(0.0f),
+        _min_time_base(instrument.automatic_roll_time()),
         _slave(false),
         _timeout(instrument.timeout()),
         _time_range(instrument.time_range()),
         _trigger(instrument.edge_trigger()) {
     typedef oscilloscope_channel chan_t;
     std::vector<chan_t> channels;
+
+    if (!instrument.automatic_roll()) {
+        // We indicate automatic roll being disabled by negative numbers.
+        this->_min_time_base *= -1.0f;
+    }
 
     if (!ignore_channels) {
         // Probe the channels as there is no other way to find the number of

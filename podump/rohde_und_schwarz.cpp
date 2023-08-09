@@ -417,6 +417,15 @@ void configure_rtx_instrument(void) {
         for (auto& i : devices) {
             i.reset();
             config.apply(i);
+
+            rtx_instrument_configuration actual(i);
+            std::cout << "acquisition.count: "
+                << actual.acquisition().count() << std::endl
+                << "acquisition.segmented: "
+                << actual.acquisition().segmented() << std::endl
+                << "min_time_base: " << actual.min_time_base() << std::endl
+                << "timeout: " << actual.timeout() << std::endl
+                << "time_range: " << actual.time_range().value() << std::endl;
         }
 
     } catch (std::exception &ex) {

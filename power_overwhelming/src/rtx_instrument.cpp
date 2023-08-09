@@ -375,7 +375,7 @@ visus::power_overwhelming::rtx_instrument::ascii_data(
  */
 bool visus::power_overwhelming::rtx_instrument::automatic_roll(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    auto response = this->query("IM:ROLL:AUT?\n");
+    auto response = this->query("TIM:ROLL:AUT?\n");
     auto status = std::atoi(response.as<char>());
     return (status != 0);
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
