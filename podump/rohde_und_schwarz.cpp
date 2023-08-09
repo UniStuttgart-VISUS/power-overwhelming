@@ -106,16 +106,6 @@ void sample_hmc8015_async(const unsigned int dt) {
                     << m.sensor() << L"): "
                     << m.power() << L" W" << std::endl;
             });
-
-
-            config.delivers_measurement_data_to(
-                    [](const wchar_t *sensor,
-                    const measurement_data *data,
-                    const std::size_t cnt,
-                    void *context) {
-                auto bla = static_cast<std::wstring *>(context);
-            });
-
             s.sample(std::move(config));
         }
 
