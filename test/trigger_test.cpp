@@ -19,7 +19,7 @@ namespace test {
 
         TEST_METHOD(test_edge) {
             {
-                oscilloscope_edge_trigger t("CH1");
+                auto t = oscilloscope_trigger::edge("CH1");
                 Assert::AreEqual(int(oscilloscope_trigger_coupling::direct_current), int(t.coupling()), L"Default coupling", LINE_INFO());
                 Assert::IsNull(t.hold_off(), L"Default hold_off", LINE_INFO());
                 Assert::AreEqual(int(oscilloscope_trigger_hysteresis::automatic), int(t.hysteresis()), L"Default hysteresis", LINE_INFO());

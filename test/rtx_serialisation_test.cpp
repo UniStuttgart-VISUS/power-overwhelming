@@ -51,16 +51,16 @@ namespace test {
         }
 
         TEST_METHOD(test_oscilloscope_edge_trigger) {
-            const auto input = dynamic_cast<oscilloscope_edge_trigger&>(oscilloscope_edge_trigger("CH3")
+            const auto input = oscilloscope_trigger::edge("CH3")
                 .coupling(oscilloscope_trigger_coupling::low_frequency_reject)
                 .hysteresis(oscilloscope_trigger_hysteresis::high)
                 .level(3, oscilloscope_quantity(42.0f, "V"))
                 .slope(oscilloscope_trigger_slope::both)
                 .hold_off("12s")
-                .mode(oscilloscope_trigger_mode::normal));
+                .mode(oscilloscope_trigger_mode::normal);
 
             const auto json = detail::json_serialise(input);
-            const auto output = detail::json_deserialise<oscilloscope_edge_trigger>(json);
+            const auto output = detail::json_deserialise<oscilloscope_trigger>(json);
             Assert::AreEqual(int(input.coupling()), int(output.coupling()), L"coupling", LINE_INFO());
             Assert::AreEqual(input.hold_off(), output.hold_off(), L"hold_off", LINE_INFO());
             Assert::AreEqual(int(input.hysteresis()), int(output.hysteresis()), L"hysteresis", LINE_INFO());
@@ -107,13 +107,13 @@ namespace test {
                 .count(8)
                 .points(42)
                 .segmented(true);
-            const auto trigger = dynamic_cast<oscilloscope_edge_trigger&>(oscilloscope_edge_trigger("CH3")
+            const auto trigger = oscilloscope_trigger::edge("CH3")
                 .coupling(oscilloscope_trigger_coupling::low_frequency_reject)
                 .hysteresis(oscilloscope_trigger_hysteresis::high)
                 .level(3, oscilloscope_quantity(42.0f, "V"))
                 .slope(oscilloscope_trigger_slope::both)
                 .hold_off("12s")
-                .mode(oscilloscope_trigger_mode::normal));
+                .mode(oscilloscope_trigger_mode::normal);
 
             const auto input = rtx_instrument_configuration(oscilloscope_quantity(12.0f, "s"), acquisition, trigger, 899)
                 .beep_on_apply(42).beep_on_error(true).beep_on_trigger(true);

@@ -159,7 +159,7 @@ namespace test {
         }
 
         TEST_METHOD(test_instrument_configuration) {
-            const auto trigger = oscilloscope_edge_trigger("CH1").level(1, 2.0f);
+            const auto trigger = oscilloscope_trigger::edge("CH1").level(1, 2.0f);
             const oscilloscope_quantity time_range(10, "s");
             const auto acquisition = oscilloscope_acquisition().count(16).points(10000);
 

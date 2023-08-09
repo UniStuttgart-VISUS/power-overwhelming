@@ -8,7 +8,7 @@
 #include "power_overwhelming/oscilloscope_acquisition.h"
 #include "power_overwhelming/oscilloscope_channel.h"
 #include "power_overwhelming/oscilloscope_quantity.h"
-#include "power_overwhelming/oscilloscope_edge_trigger.h"
+#include "power_overwhelming/oscilloscope_trigger.h"
 #include "power_overwhelming/rtx_instrument.h"
 
 
@@ -320,8 +320,8 @@ namespace power_overwhelming {
         /// </summary>
         /// <remarks>
         /// <para>The default configuration uses the defaults of the
-        /// <see cref="oscilloscope_single_acquisition" /> and
-        /// <see cref="oscilloscope_edge_trigger" /> with the following changes:
+        /// <see cref="oscilloscope_acquisition" /> and
+        /// <see cref="oscilloscope_tigger" /> with the following changes:
         /// On the acquisition, fast-segmentation is enabled and the number of
         /// points is computed automatically. The rationally for that is that we
         /// want the instrument to be as fast as possible in production mode.
@@ -372,7 +372,7 @@ namespace power_overwhelming {
         rtx_instrument_configuration(
             _In_ const oscilloscope_quantity time_range,
             _In_ const oscilloscope_acquisition& acquisition,
-            _In_ const oscilloscope_edge_trigger& trigger,
+            _In_ const oscilloscope_trigger& trigger,
             _In_ visa_instrument::timeout_type timeout = 0);
 
         /// <summary>
@@ -640,7 +640,7 @@ namespace power_overwhelming {
         /// Answer the trigger configured on the instrument.
         /// </summary>
         /// <returns>The trigger to be configured on the instrument.</returns>
-        inline const oscilloscope_edge_trigger& trigger(void) const noexcept {
+        inline const oscilloscope_trigger& trigger(void) const noexcept {
             return this->_trigger;
         }
 
@@ -672,7 +672,7 @@ namespace power_overwhelming {
         float _min_time_base;
         visa_instrument::timeout_type _timeout;
         oscilloscope_quantity _time_range;
-        oscilloscope_edge_trigger _trigger;
+        oscilloscope_trigger _trigger;
     };
 
 } /* namespace power_overwhelming */

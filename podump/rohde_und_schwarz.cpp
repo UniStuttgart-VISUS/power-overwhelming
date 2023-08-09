@@ -280,7 +280,7 @@ void query_rtx_instrument(void) {
             }
 
             {
-                auto t = i.edge_trigger();
+                auto t = i.trigger();
                 std::wcout << L"Trigger coupling: "
                     << int(t.coupling()) << std::endl;
                 std::wcout << L"Trigger hold-off: "
@@ -330,7 +330,7 @@ void query_rtx_instrument(void) {
             i.on_operation_complete(nullptr);
 
             i.trigger_position(oscilloscope_quantity(0.0f, "ms"));
-            i.trigger(oscilloscope_edge_trigger("EXT")
+            i.trigger(oscilloscope_trigger::edge("EXT")
                 .level(5, oscilloscope_quantity(2000.0f, "mV"))
                 .slope(oscilloscope_trigger_slope::rising)
                 .mode(oscilloscope_trigger_mode::automatic))
@@ -416,7 +416,7 @@ void configure_rtx_instrument(void) {
 
         rtx_instrument_configuration config(12,
             oscilloscope_acquisition().points(12000).segmented(true),
-            oscilloscope_edge_trigger("CH1"));
+            oscilloscope_trigger::edge("CH1"));
         config.prevent_automatic_roll();
 
         for (auto& i : devices) {

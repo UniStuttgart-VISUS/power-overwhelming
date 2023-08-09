@@ -386,7 +386,7 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _slave(false),
         _timeout(0),
         _time_range(0.0f),
-        _trigger("EXT") { }
+        _trigger("EXT", "EDGE") { }
 
 
 /*
@@ -451,7 +451,7 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _slave(false),
         _timeout(0),
         _time_range(time_range),
-        _trigger("EXT") {
+        _trigger("EXT", "EDGE") {
     this->_acquisition.points(samples).segmented(true);
     this->_trigger.external().mode(oscilloscope_trigger_mode::automatic);
 }
@@ -463,7 +463,7 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
 visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configuration(
         _In_ const oscilloscope_quantity time_range,
         _In_ const oscilloscope_acquisition& acquisition,
-        _In_ const oscilloscope_edge_trigger& trigger,
+        _In_ const oscilloscope_trigger& trigger,
         _In_ visa_instrument::timeout_type timeout) 
     : _acquisition(acquisition),
         _beep_on_apply(0),
@@ -496,7 +496,7 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _slave(false),
         _timeout(instrument.timeout()),
         _time_range(instrument.time_range()),
-        _trigger(instrument.edge_trigger()) {
+        _trigger(instrument.trigger()) {
     typedef oscilloscope_channel chan_t;
     std::vector<chan_t> channels;
 

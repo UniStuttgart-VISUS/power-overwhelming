@@ -5,12 +5,119 @@
 
 #include "power_overwhelming/oscilloscope_trigger.h"
 
+#include <cassert>
 #include <stdexcept>
+#include <string>
+#include <utility>
 
 #include "power_overwhelming/convert_string.h"
 
 #include "string_functions.h"
 
+
+/*
+ * visus::power_overwhelming::oscilloscope_trigger::edge
+ */
+visus::power_overwhelming::oscilloscope_trigger
+visus::power_overwhelming::oscilloscope_trigger::edge(
+        _In_z_ const wchar_t *source) {
+    return oscilloscope_trigger(source, L"EDGE");
+}
+
+
+/*
+ * visus::power_overwhelming::oscilloscope_trigger::edge
+ */
+visus::power_overwhelming::oscilloscope_trigger
+visus::power_overwhelming::oscilloscope_trigger::edge(
+        _In_z_ const char *source) {
+    return oscilloscope_trigger(source, "EDGE");
+}
+
+
+/*
+ * visus::power_overwhelming::oscilloscope_trigger::edge
+ */
+visus::power_overwhelming::oscilloscope_trigger
+visus::power_overwhelming::oscilloscope_trigger::edge(
+        _In_ const input_type source) {
+    const auto s = std::string("CH") + std::to_string(source);
+    return oscilloscope_trigger(s.c_str(), "EDGE");
+}
+
+
+/*
+ * visus::power_overwhelming::oscilloscope_trigger::oscilloscope_trigger
+ */
+visus::power_overwhelming::oscilloscope_trigger::oscilloscope_trigger(
+        _In_z_ const wchar_t *source, _In_z_ const wchar_t *type)
+    : _coupling(oscilloscope_trigger_coupling::direct_current),
+        _hysteresis(oscilloscope_trigger_hysteresis::automatic),
+        _input(0),
+        _mode(oscilloscope_trigger_mode::normal),
+        _slope(oscilloscope_trigger_slope::rising) {
+    this->source(source);
+    this->type(type);
+}
+
+
+
+
+/*
+ * visus::power_overwhelming::oscilloscope_trigger::oscilloscope_trigger
+ */
+visus::power_overwhelming::oscilloscope_trigger::oscilloscope_trigger(
+        _In_z_ const char *source, _In_z_ const char *type)
+    : _coupling(oscilloscope_trigger_coupling::direct_current),
+        _hysteresis(oscilloscope_trigger_hysteresis::automatic),
+        _input(0),
+        _mode(oscilloscope_trigger_mode::normal),
+        _slope(oscilloscope_trigger_slope::rising) {
+    this->source(source);
+    this->type(type);
+}
+
+
+/*
+ * visus::power_overwhelming::oscilloscope_trigger::oscilloscope_trigger
+ */
+visus::power_overwhelming::oscilloscope_trigger::oscilloscope_trigger(
+        _In_ const input_type source, _In_z_ const wchar_t *type)
+    : _coupling(oscilloscope_trigger_coupling::direct_current),
+        _hysteresis(oscilloscope_trigger_hysteresis::automatic),
+        _input(source),
+        _mode(oscilloscope_trigger_mode::normal),
+        _slope(oscilloscope_trigger_slope::rising) {
+    const auto s = std::string("CH") + std::to_string(source);
+    this->source(s.c_str());
+    this->type(type);
+}
+
+
+/*
+ * visus::power_overwhelming::oscilloscope_trigger::external
+ */
+visus::power_overwhelming::oscilloscope_trigger&
+visus::power_overwhelming::oscilloscope_trigger::external(
+        _In_ const oscilloscope_quantity& level,
+        _In_ const oscilloscope_trigger_slope slope) {
+    this->level(5, level)
+        .slope(slope)
+        .source("EXT");
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::oscilloscope_trigger::external
+ */
+
+visus::power_overwhelming::oscilloscope_trigger&
+visus::power_overwhelming::oscilloscope_trigger::external(
+        _In_ const float level,
+        _In_ const oscilloscope_trigger_slope slope) {
+    return this->external(oscilloscope_quantity(level, "V"), slope);
+}
 
 /*
  * visus::power_overwhelming::oscilloscope_trigger::hold_off
@@ -87,10 +194,29 @@ visus::power_overwhelming::oscilloscope_trigger::source(
 
 
 /*
- * visus::power_overwhelming::oscilloscope_trigger::oscilloscope_trigger
+ * visus::power_overwhelming::oscilloscope_trigger::type
  */
-visus::power_overwhelming::oscilloscope_trigger::oscilloscope_trigger(
-        _In_z_ const char *source)
-        : _mode(oscilloscope_trigger_mode::normal) {
-    this->source(source);
+visus::power_overwhelming::oscilloscope_trigger&
+visus::power_overwhelming::oscilloscope_trigger::type(_In_z_ const wchar_t *type) {
+    if (type == nullptr) {
+        throw std::invalid_argument("The trigger type must not be null.");
+    }
+
+    detail::safe_assign(this->_type, convert_string<char>(type));
+    return *this;
 }
+
+
+/*
+ * visus::power_overwhelming::oscilloscope_trigger::type
+ */
+visus::power_overwhelming::oscilloscope_trigger&
+visus::power_overwhelming::oscilloscope_trigger::type(_In_z_ const char *type) {
+    if (type == nullptr) {
+        throw std::invalid_argument("The trigger type must not be null.");
+    }
+
+    detail::safe_assign(this->_type, type);
+    return *this;
+}
+

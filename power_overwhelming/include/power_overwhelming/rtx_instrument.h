@@ -7,7 +7,6 @@
 
 #include "power_overwhelming/oscilloscope_acquisition.h"
 #include "power_overwhelming/oscilloscope_channel.h"
-#include "power_overwhelming/oscilloscope_edge_trigger.h"
 #include "power_overwhelming/oscilloscope_quantity.h"
 #include "power_overwhelming/oscilloscope_reference_point.h"
 #include "power_overwhelming/oscilloscope_sample.h"
@@ -707,21 +706,6 @@ namespace power_overwhelming {
             _In_ const timeout_type timeout = 1000);
 
         /// <summary>
-        /// Retrieves the trigger configuration provided the configured trigger
-        /// is an edge trigger.
-        /// </summary>
-        /// <returns>The trigger configuration</returns>
-        /// <exception cref="std::runtime_error">If the method is called on an
-        /// object that has been disposed by moving it.</exception>
-        /// <exception cref="visa_exception">If any of the API calls to the
-        /// instrument failed.</exception>
-        /// <exception cref="std::logic_error">If the method is called while
-        /// the library was compiled without support for VISA.</exception>
-        /// <exception cref="std::logic_error">If the method is called while
-        /// the configured trigger is not an edge trigger.</exception>
-        oscilloscope_edge_trigger edge_trigger(void) const;
-
-        /// <summary>
         /// Enable and configure one of the mathematical expressions.
         /// </summary>
         /// <param name="channel">The maths channel to be configured. For an
@@ -1045,6 +1029,20 @@ namespace power_overwhelming {
         rtx_instrument& time_scale(_In_ const oscilloscope_quantity& scale);
 
         /// <summary>
+        /// Retrieves the trigger configuration.
+        /// </summary>
+        /// <returns>The trigger configuration</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the configured trigger is not an edge trigger.</exception>
+        oscilloscope_trigger trigger(void) const;
+
+        /// <summary>
         /// Configures the trigger.
         /// </summary>
         /// <param name="trigger">The trigger configuration.</param>
@@ -1067,7 +1065,7 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If any of the API calls to the
         /// instrument failed.</exception>
-        rtx_instrument& trigger(_In_ const bool wait = false);
+        rtx_instrument& trigger(_In_ const bool wait);
 
         /// <summary>
         /// Gets what kind of trigger signal the instrument produces on the

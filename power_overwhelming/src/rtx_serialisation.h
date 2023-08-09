@@ -145,11 +145,11 @@ namespace detail {
     };
 
     /// <summary>
-    /// Specialisation for <see cref="oscilloscope_edge_trigger" />.
+    /// Specialisation for <see cref="oscilloscope_trigger" />.
     /// </summary>
     template<>
-    struct json_serialiser<oscilloscope_edge_trigger, false, false> final {
-        typedef oscilloscope_edge_trigger value_type;
+    struct json_serialiser<oscilloscope_trigger, false, false> final {
+        typedef oscilloscope_trigger value_type;
 
         static inline value_type deserialise(_In_ const nlohmann::json& json) {
             _PWROWG_DESERIALISE_FIELD(coupling);
@@ -162,13 +162,13 @@ namespace detail {
             _PWROWG_DESERIALISE_FIELD(source);
             _PWROWG_DESERIALISE_FIELD(type);
 
-            return dynamic_cast<value_type&>(value_type(source.c_str())
+            return value_type(source.c_str(), type.c_str())
                 .coupling(coupling)
                 .level(input, level)
                 .slope(slope)
                 .hysteresis(hysteresis)
                 .mode(mode)
-                .hold_off(hold_off.c_str()));
+                .hold_off(hold_off.c_str());
         }
 
         static inline nlohmann::json serialise(_In_ const value_type& value) {

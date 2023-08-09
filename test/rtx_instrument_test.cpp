@@ -19,7 +19,7 @@ namespace test {
 
         TEST_METHOD(test_config_dft_ctor) {
             const oscilloscope_acquisition expected_acquisition;
-            const oscilloscope_edge_trigger expected_trigger("EXT");
+            const auto expected_trigger = oscilloscope_trigger::edge("EXT");
 
             rtx_instrument_configuration config;
             Assert::AreEqual(expected_acquisition.automatic_points(), config.acquisition().automatic_points(), L"acquisition.automatic_points", LINE_INFO());
@@ -49,7 +49,7 @@ namespace test {
                 .count(42)
                 .points(1024)
                 .segmented(true);
-            const auto expected_trigger = oscilloscope_edge_trigger("EXT")
+            const auto expected_trigger = oscilloscope_trigger::edge("EXT")
                 .coupling(oscilloscope_trigger_coupling::low_frequency_reject)
                 .level(42.0f);
             const oscilloscope_quantity expected_time_range(42.42f, "ms");
@@ -138,7 +138,7 @@ namespace test {
                 .count(42)
                 .points(1024)
                 .segmented(true);
-            const auto expected_trigger = oscilloscope_edge_trigger("EXT")
+            const auto expected_trigger = oscilloscope_trigger::edge("EXT")
                 .coupling(oscilloscope_trigger_coupling::low_frequency_reject)
                 .level(42.0f);
             const oscilloscope_quantity expected_time_range(42.42f, "ms");
@@ -210,7 +210,7 @@ namespace test {
                 .count(42)
                 .points(1024)
                 .segmented(true);
-            const auto expected_trigger = oscilloscope_edge_trigger("EXT")
+            const auto expected_trigger = oscilloscope_trigger::edge("EXT")
                 .coupling(oscilloscope_trigger_coupling::low_frequency_reject)
                 .level(42.0f);
             const oscilloscope_quantity expected_time_range(42.42f, "ms");
@@ -273,7 +273,7 @@ namespace test {
                 .count(42)
                 .points(1024)
                 .segmented(true);
-            const auto expected_trigger = oscilloscope_edge_trigger("EXT")
+            const auto expected_trigger = oscilloscope_trigger::edge("EXT")
                 .coupling(oscilloscope_trigger_coupling::low_frequency_reject)
                 .level(42.0f);
             const oscilloscope_quantity expected_time_range(42.42f, "ms");
@@ -386,8 +386,7 @@ namespace test {
             const auto expected_config = rtx_instrument_configuration(
                 oscilloscope_quantity(42.42f, "ms"),
                 oscilloscope_acquisition().count(42).points(1024).segmented(true),
-                oscilloscope_edge_trigger("CH2").coupling(oscilloscope_trigger_coupling::low_frequency_reject).level(42.0f),
-                17)
+                oscilloscope_trigger::edge("CH2").coupling(oscilloscope_trigger_coupling::low_frequency_reject).level(42.0f), 17)
                 .beep_on_apply(8)
                 .beep_on_error(true)
                 .beep_on_trigger(true)
@@ -424,8 +423,7 @@ namespace test {
                 rtx_instrument_configuration(
                     oscilloscope_quantity(42.42f, "ms"),
                     oscilloscope_acquisition().count(42).points(1024).segmented(true),
-                    oscilloscope_edge_trigger("CH2").coupling(oscilloscope_trigger_coupling::low_frequency_reject).level(42.0f),
-                    17)
+                    oscilloscope_trigger::edge("CH2").coupling(oscilloscope_trigger_coupling::low_frequency_reject).level(42.0f), 17)
                 .beep_on_apply(8)
                 .beep_on_error(true)
                 .beep_on_trigger(true)

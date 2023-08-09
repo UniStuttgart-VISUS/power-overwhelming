@@ -18,7 +18,7 @@ namespace test {
     public:
 
         TEST_METHOD(test_edge_trigger_ctor) {
-            oscilloscope_edge_trigger trigger("CH1");
+            const auto trigger = oscilloscope_trigger::edge("CH1");
 
             Assert::AreEqual(int(oscilloscope_trigger_coupling::direct_current), int(trigger.coupling()), L"Default coupling", LINE_INFO());
             Assert::IsNull(trigger.hold_off(), L"Default hold_off", LINE_INFO());
@@ -33,7 +33,7 @@ namespace test {
         }
 
         TEST_METHOD(test_edge_trigger_fluid_api) {
-            oscilloscope_edge_trigger trigger("CH1");
+            auto trigger = oscilloscope_trigger::edge("CH1");
             trigger.coupling(oscilloscope_trigger_coupling::alternating_current)
                 .hysteresis(oscilloscope_trigger_hysteresis::high)
                 .level(2, oscilloscope_quantity(42, "lvl"))
@@ -56,7 +56,7 @@ namespace test {
         }
 
         TEST_METHOD(test_edge_trigger_copy_ctor) {
-            oscilloscope_edge_trigger expected("CH1");
+            auto expected = oscilloscope_trigger::edge("CH1");
             expected.coupling(oscilloscope_trigger_coupling::alternating_current)
                 .hysteresis(oscilloscope_trigger_hysteresis::high)
                 .level(2, oscilloscope_quantity(42, "lvl"))
@@ -66,7 +66,7 @@ namespace test {
                 .mode(oscilloscope_trigger_mode::automatic)
                 .source("CH2");
 
-            oscilloscope_edge_trigger trigger(expected);
+            oscilloscope_trigger trigger(expected);
 
             Assert::AreEqual(int(expected.coupling()), int(trigger.coupling()), L"Copy coupling", LINE_INFO());
             Assert::AreEqual(expected.hold_off(), trigger.hold_off(), L"Copy hold_off", LINE_INFO());
@@ -81,7 +81,7 @@ namespace test {
         }
 
         TEST_METHOD(test_edge_trigger_assignment) {
-            oscilloscope_edge_trigger expected("CH1");
+            auto expected = oscilloscope_trigger::edge("CH1");
             expected.coupling(oscilloscope_trigger_coupling::alternating_current)
                 .hysteresis(oscilloscope_trigger_hysteresis::high)
                 .level(2, oscilloscope_quantity(42, "lvl"))
@@ -91,7 +91,7 @@ namespace test {
                 .mode(oscilloscope_trigger_mode::automatic)
                 .source("CH2");
 
-            oscilloscope_edge_trigger trigger("CH2");
+            oscilloscope_trigger trigger("CH2", "HORST");
             trigger = expected;
 
             Assert::AreEqual(int(expected.coupling()), int(trigger.coupling()), L"Copy coupling", LINE_INFO());

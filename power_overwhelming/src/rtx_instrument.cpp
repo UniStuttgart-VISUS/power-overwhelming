@@ -13,6 +13,7 @@
 
 #include "on_exit.h"
 #include "no_visa_error_msg.h"
+#include "string_functions.h"
 #include "visa_instrument_impl.h"
 
 
@@ -1015,129 +1016,6 @@ visus::power_overwhelming::rtx_instrument::data(
 
 
 /*
- * visus::power_overwhelming::rtx_instrument::edge_trigger
- */
-visus::power_overwhelming::oscilloscope_edge_trigger
-visus::power_overwhelming::rtx_instrument::edge_trigger(void) const {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    auto& impl = this->check_not_disposed();
-
-    // First, check whether the trigger is actually an edge trigger.
-    {
-        auto type = this->query("TRIG:A:TYPE?\n");
-        if (!detail::starts_with(type.as<char>(), "EDGE")) {
-            throw std::logic_error("The currently configured trigger on "
-                "the instrument is not an edge trigger.");
-        }
-    }
-
-    // Next, we need to know the source for constructing the instance.
-    auto source = this->query("TRIG:A:SOUR?\n");
-    auto src = source.as<char>();
-    _Analysis_assume_(src != nullptr);
-    detail::trim_eol(src);
-
-    oscilloscope_edge_trigger retval(src);
-
-    {
-        typedef oscilloscope_trigger_mode enum_type;
-        auto mode = this->query("TRIG:A:MODE?\n");
-
-        if (detail::starts_with(mode.as<char>(), "AUTO")) {
-            retval.mode(enum_type::automatic);
-
-        } else if (detail::starts_with(mode.as<char>(), "NORM")) {
-            retval.mode(enum_type::normal);
-
-        } else {
-            throw std::range_error("The current trigger mode of the instrument "
-                "does not fall into the expected range of values.");
-        }
-    }
-
-    {
-        auto mode = this->query("TRIG:A:HOLD:MODE?\n");
-        if (detail::starts_with(mode.as<char>(), "TIME")) {
-            auto time = this->query("TRIG:A:HOLD:TIME?\n");
-            auto t = time.as<char>();
-            _Analysis_assume_(t != nullptr);
-            *::strchr(t, '\n') = 0;
-            retval.hold_off(t);
-
-        } else {
-            retval.hold_off(nullptr);
-        }
-    }
-
-    {
-        typedef oscilloscope_trigger_slope enum_type;
-        auto edge = this->query("TRIG:A:EDGE:SLOP?\n");
-
-        if (detail::starts_with(edge.as<char>(), "EITH")) {
-            retval.slope(enum_type::both);
-
-        } else if (detail::starts_with(edge.as<char>(), "POS")) {
-            retval.slope(enum_type::rising);
-
-        } else if (detail::starts_with(edge.as<char>(), "NEG")) {
-            retval.slope(enum_type::falling);
-
-        } else {
-            throw std::range_error("The current trigger slope of the "
-                "instrument does not fall into the expected range of values.");
-        }
-    }
-
-    {
-        std::cmatch match;
-        std::string query;
-        std::regex rx("^ch(\\d+)$", std::regex_constants::ECMAScript
-            | std::regex_constants::icase);
-
-        if (std::regex_match(retval.source(), match, rx)) {
-            // Analog channel that needs to be parsed.
-            auto input = match[1].str();
-            query = detail::format_string("TRIG:A:LEV%s:VAL?\n", input.c_str());
-
-        } else if (detail::equals(retval.source(), "EXT", true)) {
-            // External trigger is input #5 on RTA/RTB.
-            query = "TRIG:A:LEV5:VAL?\n";
-
-        } else {
-            query = "TRIG:A:LEV:VAL?\n";
-        }
-
-        auto level = this->query(query.c_str());
-        retval.level(detail::parse_float(level.as<char>()));
-    }
-
-    {
-        typedef oscilloscope_trigger_coupling enum_type;
-        auto coupling = this->query("TRIG:A:EDGE:COUP?\n");
-
-        if (detail::starts_with(coupling.as<char>(), "AC")) {
-            retval.coupling(enum_type::alternating_current);
-
-        } else if (detail::starts_with(coupling.as<char>(), "DC")) {
-            retval.coupling(enum_type::direct_current);
-
-        } else if (detail::starts_with(coupling.as<char>(), "LFR")) {
-            retval.coupling(enum_type::low_frequency_reject);
-
-        } else {
-            throw std::range_error("The current trigger coupling of the "
-                "instrument does not fall into the expected range of values.");
-        }
-    }
-
-    return retval;
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-throw std::logic_error(detail::no_visa_error_msg);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
-}
-
-
-/*
  * visus::power_overwhelming::rtx_instrument::expression
  */
 visus::power_overwhelming::rtx_instrument&
@@ -1502,6 +1380,126 @@ visus::power_overwhelming::rtx_instrument::time_scale(
 /*
  * visus::power_overwhelming::rtx_instrument::trigger
  */
+visus::power_overwhelming::oscilloscope_trigger
+visus::power_overwhelming::rtx_instrument::trigger(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+
+    // First, get the type of the trigger.
+    auto type = this->query("TRIG:A:TYPE?\n");
+    auto typ = type.as<char>();
+    _Analysis_assume_(typ != nullptr);
+    detail::trim_eol(typ);
+
+    // Next, we need to know the source for constructing the instance.
+    auto source = this->query("TRIG:A:SOUR?\n");
+    auto src = source.as<char>();
+    _Analysis_assume_(src != nullptr);
+    detail::trim_eol(src);
+
+    oscilloscope_trigger retval(src, typ);
+
+    {
+        typedef oscilloscope_trigger_mode enum_type;
+        auto mode = this->query("TRIG:A:MODE?\n");
+
+        if (detail::starts_with(mode.as<char>(), "AUTO")) {
+            retval.mode(enum_type::automatic);
+
+        } else if (detail::starts_with(mode.as<char>(), "NORM")) {
+            retval.mode(enum_type::normal);
+
+        } else {
+            throw std::range_error("The current trigger mode of the instrument "
+                "does not fall into the expected range of values.");
+        }
+    }
+
+    {
+        auto mode = this->query("TRIG:A:HOLD:MODE?\n");
+        if (detail::starts_with(mode.as<char>(), "TIME")) {
+            auto time = this->query("TRIG:A:HOLD:TIME?\n");
+            auto t = time.as<char>();
+            _Analysis_assume_(t != nullptr);
+            *::strchr(t, '\n') = 0;
+            retval.hold_off(t);
+
+        } else {
+            retval.hold_off(nullptr);
+        }
+    }
+
+    {
+        typedef oscilloscope_trigger_slope enum_type;
+        auto edge = this->query("TRIG:A:EDGE:SLOP?\n");
+
+        if (detail::starts_with(edge.as<char>(), "EITH")) {
+            retval.slope(enum_type::both);
+
+        } else if (detail::starts_with(edge.as<char>(), "POS")) {
+            retval.slope(enum_type::rising);
+
+        } else if (detail::starts_with(edge.as<char>(), "NEG")) {
+            retval.slope(enum_type::falling);
+
+        } else {
+            throw std::range_error("The current trigger slope of the "
+                "instrument does not fall into the expected range of values.");
+        }
+    }
+
+    {
+        std::cmatch match;
+        std::string query;
+        std::regex rx("^ch(\\d+)$", std::regex_constants::ECMAScript
+            | std::regex_constants::icase);
+
+        if (std::regex_match(retval.source(), match, rx)) {
+            // Analog channel that needs to be parsed.
+            auto input = match[1].str();
+            query = detail::format_string("TRIG:A:LEV%s:VAL?\n", input.c_str());
+
+        } else if (detail::equals(retval.source(), "EXT", true)) {
+            // External trigger is input #5 on RTA/RTB.
+            query = "TRIG:A:LEV5:VAL?\n";
+
+        } else {
+            query = "TRIG:A:LEV:VAL?\n";
+        }
+
+        auto level = this->query(query.c_str());
+        retval.level(detail::parse_float(level.as<char>()));
+    }
+
+    {
+        typedef oscilloscope_trigger_coupling enum_type;
+        auto coupling = this->query("TRIG:A:EDGE:COUP?\n");
+
+        if (detail::starts_with(coupling.as<char>(), "AC")) {
+            retval.coupling(enum_type::alternating_current);
+
+        } else if (detail::starts_with(coupling.as<char>(), "DC")) {
+            retval.coupling(enum_type::direct_current);
+
+        } else if (detail::starts_with(coupling.as<char>(), "LFR")) {
+            retval.coupling(enum_type::low_frequency_reject);
+
+        } else {
+            throw std::range_error("The current trigger coupling of the "
+                "instrument does not fall into the expected range of values.");
+        }
+    }
+
+    return retval;
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::trigger
+ */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::trigger(_In_ const bool wait) {
     if (wait) {
@@ -1545,9 +1543,8 @@ visus::power_overwhelming::rtx_instrument::trigger(
     }
 
     // Apply special configuration if the trigger is an edge trigger.
-    auto et = dynamic_cast<const oscilloscope_edge_trigger *>(&trigger);
-    if (et != nullptr) {
-        switch (et->slope()) {
+    if (detail::equals(trigger.type(), "EDGE", true)) {
+        switch (trigger.slope()) {
             case oscilloscope_trigger_slope::both:
                 impl.format("TRIG:A:EDGE:SLOP EITH\n");
                 break;
@@ -1561,15 +1558,15 @@ visus::power_overwhelming::rtx_instrument::trigger(
                 break;
         }
 
-        if (et->input() > 0) {
-            impl.format("TRIG:A:LEV%d:VAL %f%s\n", et->input(),
-                et->level().value(), et->level().unit());
+        if (trigger.input() > 0) {
+            impl.format("TRIG:A:LEV%d:VAL %f%s\n", trigger.input(),
+                trigger.level().value(), trigger.level().unit());
         } else {
-            impl.format("TRIG:A:LEV:VAL %f%s\n", et->level().value(),
-                et->level().unit());
+            impl.format("TRIG:A:LEV:VAL %f%s\n", trigger.level().value(),
+                trigger.level().unit());
         }
 
-        switch (et->coupling()) {
+        switch (trigger.coupling()) {
             case oscilloscope_trigger_coupling::alternating_current:
                 impl.format("TRIG:A:EDGE:COUP AC\n");
                 break;
