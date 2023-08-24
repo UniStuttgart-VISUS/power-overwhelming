@@ -1,4 +1,4 @@
-// <copyright file="set_thread_name.h" company="Visualisierungsinstitut der Universität Stuttgart">
+// <copyright file="thread_name.h" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>

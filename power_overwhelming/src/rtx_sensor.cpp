@@ -17,6 +17,8 @@
 
 #include "power_overwhelming/convert_string.h"
 
+#include "rtx_sampler.h"
+#include "rtx_sensor_impl.h"
 #include "string_functions.h"
 #include "timestamp.h"
 #include "tokenise.h"
@@ -226,10 +228,16 @@ visus::power_overwhelming::oscilloscope_sample
 visus::power_overwhelming::rtx_sensor::sample(
         _In_ const rtx_instrument& device) {
     device.acquisition(oscilloscope_acquisition_state::single, true);
-
+    throw "TODO";
 
     return oscilloscope_sample();
 }
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::rtx_sensor
+ */
+visus::power_overwhelming::rtx_sensor::rtx_sensor(void) : _impl(nullptr) { }
 
 
 /*
@@ -240,13 +248,29 @@ visus::power_overwhelming::rtx_sensor::rtx_sensor(
         _In_ const waveform_decimation_method decimation_method,
         _In_ const visa_instrument::timeout_type timeout,
         _In_opt_ const rtx_instrument_configuration *instrument_config)
-    : _channel_current(0), _channel_voltage(0),
-        _decimation_method(decimation_method), _instrument(
-        rtx_instrument::create(definition.path(),
-            &rtx_sensor::configure_new,
-            const_cast<rtx_instrument_configuration * >(instrument_config),
-            timeout)) {
+    : _impl(new detail::rtx_sensor_impl(definition.path(), timeout,
+        &rtx_sensor::configure_new,
+        const_cast<rtx_instrument_configuration *>(instrument_config))) {
+    this->_impl->decimation_method = decimation_method;
     this->initialise(definition, timeout);
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::rtx_sensor
+ */
+visus::power_overwhelming::rtx_sensor::rtx_sensor(
+        _Inout_ rtx_sensor&& rhs) noexcept
+        : _impl(rhs._impl) {
+    rhs._impl = nullptr;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::~rtx_sensor
+ */
+visus::power_overwhelming::rtx_sensor::~rtx_sensor(void) noexcept {
+    delete this->_impl;
 }
 
 
@@ -257,15 +281,19 @@ visus::power_overwhelming::measurement_data_series
 visus::power_overwhelming::rtx_sensor::acquire(
         _In_ const timestamp_resolution resolution) const {
     const auto begin = detail::create_timestamp(resolution);
-    this->_instrument.acquisition(oscilloscope_acquisition_state::single, true);
+    auto& instrument = this->check_not_disposed();
+    assert(this->_impl != nullptr);
+    assert(instrument == true);
+
+    instrument.acquisition(oscilloscope_acquisition_state::single, true);
     // If the acquisition before succeeded, the instrument must be valid and
     // therefore the sensor should be valid as well (and have a name).
     assert(this->name() != nullptr);
 
     // Download the data from the instrument.
-    const auto current = this->_instrument.data(this->_channel_current,
+    const auto current = instrument.data(this->_impl->channel_current,
         oscilloscope_waveform_points::maximum);
-    const auto voltage = this->_instrument.data(this->_channel_voltage,
+    const auto voltage = instrument.data(this->_impl->channel_voltage,
         oscilloscope_waveform_points::maximum);
 
     // Convert the two waveforms into a data series.
@@ -286,12 +314,92 @@ visus::power_overwhelming::rtx_sensor::acquire(
 
 
 /*
+ * visus::power_overwhelming::rtx_sensor::channel_current
+ */
+visus::power_overwhelming::rtx_instrument::channel_type
+visus::power_overwhelming::rtx_sensor::channel_current(void) const noexcept {
+    this->check_not_disposed();
+    return this->_impl->channel_current;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::channel_voltage
+ */
+visus::power_overwhelming::rtx_instrument::channel_type
+visus::power_overwhelming::rtx_sensor::channel_voltage(void) const noexcept {
+    this->check_not_disposed();
+    return this->_impl->channel_voltage;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::decimation_method
+ */
+visus::power_overwhelming::waveform_decimation_method
+visus::power_overwhelming::rtx_sensor::decimation_method(void) const noexcept {
+    this->check_not_disposed();
+    return this->_impl->decimation_method;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::instrument
+ */
+_Ret_maybenull_ visus::power_overwhelming::rtx_instrument *
+visus::power_overwhelming::rtx_sensor::instrument(void) noexcept {
+    return (this->_impl != nullptr)
+        ? std::addressof(this->_impl->instrument)
+        : nullptr;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::instrument
+ */
+_Ret_maybenull_ const visus::power_overwhelming::rtx_instrument *
+visus::power_overwhelming::rtx_sensor::instrument(void) const noexcept {
+    return (this->_impl != nullptr)
+        ? std::addressof(this->_impl->instrument)
+        : nullptr;
+}
+
+
+/*
  * *visus::power_overwhelming::rtx_sensor::name
  */
-_Ret_maybenull_z_
-const wchar_t *visus::power_overwhelming::rtx_sensor::name(
+_Ret_maybenull_z_ const wchar_t *visus::power_overwhelming::rtx_sensor::name(
         void) const noexcept {
-    return this->_name.as<wchar_t>();
+    return (this->_impl != nullptr)
+        ? this->_impl->sensor_name.c_str()
+        : nullptr;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::path
+ */
+_Ret_maybenull_z_ const char *visus::power_overwhelming::rtx_sensor::path(
+        void) const noexcept {
+    return (this->_impl != nullptr)
+        ? this->_impl->instrument.path()
+        : nullptr;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::operator =
+ */
+visus::power_overwhelming::rtx_sensor&
+visus::power_overwhelming::rtx_sensor::operator =(
+        _Inout_ rtx_sensor&& rhs) noexcept {
+    if (this != std::addressof(rhs)) {
+        delete this->_impl;
+        this->_impl = rhs._impl;
+        rhs._impl = nullptr;
+    }
+
+    return *this;
 }
 
 
@@ -299,7 +407,7 @@ const wchar_t *visus::power_overwhelming::rtx_sensor::name(
  * visus::power_overwhelming::rtx_sensor::operator bool
  */
 visus::power_overwhelming::rtx_sensor::operator bool(void) const noexcept {
-    return static_cast<bool>(this->_instrument);
+    return ((this->_impl != nullptr) && this->_impl->instrument);
 }
 
 
@@ -308,7 +416,14 @@ visus::power_overwhelming::rtx_sensor::operator bool(void) const noexcept {
  */
 void visus::power_overwhelming::rtx_sensor::sample_async(
         _Inout_ async_sampling&& sampling) {
-    throw "TODO";
+    assert(*this == true);
+    this->_impl->async_sampling = std::move(sampling);
+
+    if (this->_impl->async_sampling) {
+        detail::rtx_sampler::default.add(this->path(), this->_impl);
+    } else {
+        detail::rtx_sampler::default.remove(this->_impl);
+    }
 }
 
 
@@ -319,7 +434,8 @@ void visus::power_overwhelming::rtx_sensor::sample_async(
 visus::power_overwhelming::measurement_data
 visus::power_overwhelming::rtx_sensor::sample_sync(
         _In_ const timestamp_resolution resolution) const {
-    return decimate(this->acquire(resolution), this->_decimation_method);
+    assert(*this == true);
+    return decimate(this->acquire(resolution), this->_impl->decimation_method);
 }
 
 
@@ -370,8 +486,8 @@ visus::power_overwhelming::rtx_sensor::decimate(
 
         case waveform_decimation_method::rms:
         default: {
-            const auto t = (series.back().timestamp()
-                - series.front().timestamp()) / 2;
+            const auto begin = series.front().timestamp();
+            const auto t = begin + (series.back().timestamp() - begin) / 2;
             auto c = 0.0f;
             auto v = 0.0f;
 
@@ -387,6 +503,28 @@ visus::power_overwhelming::rtx_sensor::decimate(
             return measurement_data(t, v, c);
             }
     }
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::check_not_disposed
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_sensor::check_not_disposed(void) {
+    sensor::check_not_disposed();
+    assert(this->_impl != nullptr);
+    return this->_impl->instrument;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_sensor::check_not_disposed
+ */
+const visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_sensor::check_not_disposed(void) const {
+    sensor::check_not_disposed();
+    assert(this->_impl != nullptr);
+    return this->_impl->instrument;
 }
 
 
@@ -407,30 +545,31 @@ void visus::power_overwhelming::rtx_sensor::initialise(
             "use the same channel for voltage and current.");
     }
 
+    auto& instrument = this->check_not_disposed();
+    assert(this->_impl != nullptr);
+    assert(instrument == true);
+
     // Set the connection timeout as VISA timeout as well.
-    this->_instrument.timeout(timeout);
+    instrument.timeout(timeout);
 
     // Compose the name of the sensor.
-    std::vector<char> id(this->_instrument.identify(nullptr, 0));
-    this->_instrument.identify(id.data(), id.size());
+    std::vector<char> id(instrument.identify(nullptr, 0));
+    instrument.identify(id.data(), id.size());
 
-    auto name = convert_string<wchar_t>(id.data());
+    auto& name = this->_impl->sensor_name;
+    name = convert_string<wchar_t>(id.data());
     name += L"/CH" + std::to_wstring(definition.channel_voltage());
     name += L"+CH" + std::to_wstring(definition.channel_current());
-    detail::safe_assign(this->_name, name);
 
     // Make sure that time on instrument is in sync.
-    this->_instrument.synchronise_clock()
-        .operation_complete();
+    instrument.synchronise_clock().operation_complete();
 
     // Configure the channels. We wait separately to reduce the probability
     // of a timeout.
-    this->_instrument.channel(definition.current_channel())
-        .operation_complete();
-    this->_instrument.channel(definition.voltage_channel())
-        .operation_complete();
+    instrument.channel(definition.current_channel()).operation_complete();
+    instrument.channel(definition.voltage_channel()).operation_complete();
 
     // Remember the channel indices such that we can download the data.
-    this->_channel_current = definition.channel_current();
-    this->_channel_voltage = definition.channel_voltage();
+    this->_impl->channel_current = definition.channel_current();
+    this->_impl->channel_voltage = definition.channel_voltage();
 }

@@ -62,7 +62,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 
         } else if (restore) {
             for (auto& i : instrums) {
-                i.reset(true, true);
+                i.reset(rtx_instrument_reset::all);
             }
 
             rtx_instrument_configuration::apply(instrums.data(),

@@ -10,6 +10,7 @@
 #include <ctime>
 #include <memory>
 
+#include "filetime_period.h"
 #include "string_functions.h"
 #include "timestamp.h"
 #include "tokenise.h"
@@ -167,6 +168,21 @@ float visus::power_overwhelming::oscilloscope_waveform::sample_distance(
         const auto dt = this->_time_end - this->_time_begin;
         return (dt / count);
     }
+}
+
+
+/*
+ * visus::power_overwhelming::oscilloscope_waveform::sample_timestamp
+ */
+visus::power_overwhelming::measurement_data::timestamp_type
+visus::power_overwhelming::oscilloscope_waveform::sample_timestamp(
+        _In_ const std::size_t i) const noexcept {
+    using namespace std::chrono;
+    typedef duration<timestamp_type, detail::filetime_period> target_duration;
+    const auto count = static_cast<float>(this->_record_length);
+    const duration<double> dt(this->_time_end - this->_time_begin);
+    return this->segment_timestamp()
+        + duration_cast<target_duration>((dt * i) / count).count();
 }
 
 

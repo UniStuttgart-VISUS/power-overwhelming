@@ -21,6 +21,10 @@ namespace visus {
 namespace power_overwhelming {
 namespace detail {
 
+    /// <summary>
+    /// A thread that performs periodic sampling of inherently synchronous
+    /// sources.
+    /// </summary>
     class sampler_thread {
 
     public:

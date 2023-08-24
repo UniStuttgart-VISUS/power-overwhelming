@@ -32,6 +32,16 @@ void query_rtx(void);
 void query_rtx_instrument(void);
 
 /// <summary>
+/// Sample the RTA/RTB oscilloscopes.
+/// </summary>
+void sample_rtx(void);
+
+/// <summary>
+/// Sample the RTA/RTB oscilloscopes asynchronously.
+/// </summary>
+void sample_rtx_async(const unsigned int dt);
+
+/// <summary>
 /// Apply the configuration builder to RTA4004 or RTB2004 oscilloscopes.
 /// </summary>
 void configure_rtx_instrument(void);

@@ -54,7 +54,7 @@ visus::power_overwhelming::oscilloscope_trigger::oscilloscope_trigger(
     : _coupling(oscilloscope_trigger_coupling::direct_current),
         _hysteresis(oscilloscope_trigger_hysteresis::automatic),
         _input(0),
-        _mode(oscilloscope_trigger_mode::normal),
+        _mode(oscilloscope_trigger_mode::automatic),
         _slope(oscilloscope_trigger_slope::rising) {
     this->source(source);
     this->type(type);
@@ -71,7 +71,7 @@ visus::power_overwhelming::oscilloscope_trigger::oscilloscope_trigger(
     : _coupling(oscilloscope_trigger_coupling::direct_current),
         _hysteresis(oscilloscope_trigger_hysteresis::automatic),
         _input(0),
-        _mode(oscilloscope_trigger_mode::normal),
+        _mode(oscilloscope_trigger_mode::automatic),
         _slope(oscilloscope_trigger_slope::rising) {
     this->source(source);
     this->type(type);
@@ -86,7 +86,7 @@ visus::power_overwhelming::oscilloscope_trigger::oscilloscope_trigger(
     : _coupling(oscilloscope_trigger_coupling::direct_current),
         _hysteresis(oscilloscope_trigger_hysteresis::automatic),
         _input(source),
-        _mode(oscilloscope_trigger_mode::normal),
+        _mode(oscilloscope_trigger_mode::automatic),
         _slope(oscilloscope_trigger_slope::rising) {
     const auto s = std::string("CH") + std::to_string(source);
     this->source(s.c_str());

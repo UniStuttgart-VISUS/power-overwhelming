@@ -25,7 +25,7 @@
 int _tmain(const int argc, const TCHAR **argv) {
 #if (defined(DEBUG) || defined(_DEBUG))
     ::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    //::_CrtSetBreakAlloc(420);
+    //::_CrtSetBreakAlloc(893);
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
 
 #if false
@@ -130,12 +130,20 @@ int _tmain(const int argc, const TCHAR **argv) {
     ::sample_hmc8015_async(5);
 #endif
 
-#if true
+#if false
     ::query_rtx_instrument();
 #endif
 
 #if false
     ::query_rtx();
+#endif
+
+#if false
+    ::sample_rtx();
+#endif
+
+#if true
+    ::sample_rtx_async(10);
 #endif
 
 #if false

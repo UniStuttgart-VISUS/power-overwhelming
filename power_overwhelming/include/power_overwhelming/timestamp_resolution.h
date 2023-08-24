@@ -35,10 +35,6 @@ namespace power_overwhelming {
         /// </summary>
         hundred_nanoseconds,
 
-        /// <summary>
-        /// Timestamp is specified in nanoseconds (Billionth of a second).
-        /// </summary>
-        nanoseconds
     };
 
 } /* namespace power_overwhelming */

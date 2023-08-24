@@ -34,6 +34,10 @@ namespace detail {
         /// </summary>
         typedef sampler_source *source_type;
 
+        /// <summary>
+        /// The default sampler that runs a thread for every configured sampling
+        /// interval.
+        /// </summary>
         static sampler default;
 
         /// <summary>

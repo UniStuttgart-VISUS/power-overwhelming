@@ -69,8 +69,9 @@ visus::power_overwhelming::detail::convert(
         case timestamp_resolution::milliseconds:
             return duration_cast<milliseconds>(dur).count();
 
-        case timestamp_resolution::nanoseconds:
-            return duration_cast<nanoseconds>(dur).count();
+        // This would always overflow, so we do not support it any more.
+        //case timestamp_resolution::nanoseconds:
+        //    return duration_cast<nanoseconds>(dur).count();
 
         case timestamp_resolution::seconds:
             return duration_cast<seconds>(dur).count();

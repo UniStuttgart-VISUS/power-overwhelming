@@ -50,13 +50,11 @@ namespace test {
                 Assert::AreEqual(std::int64_t(1000), detail::convert(duration, timestamp_resolution::milliseconds), L"s to ms", LINE_INFO());
                 Assert::AreEqual(std::int64_t(1000000), detail::convert(duration, timestamp_resolution::microseconds), L"s to us", LINE_INFO());
                 Assert::AreEqual(std::int64_t(10000000), detail::convert(duration, timestamp_resolution::hundred_nanoseconds), L"s to 100 ns", LINE_INFO());
-                Assert::AreEqual(std::int64_t(1000000000), detail::convert(duration, timestamp_resolution::nanoseconds), L"s to ns", LINE_INFO());
             }
 
             {
                 const std::chrono::microseconds duration(1);
                 Assert::AreEqual(std::int64_t(1), detail::convert(duration, timestamp_resolution::microseconds), L"us to us", LINE_INFO());
-                Assert::AreEqual(std::int64_t(1000), detail::convert(duration, timestamp_resolution::nanoseconds), L"us to ns", LINE_INFO());
             }
         }
 
@@ -103,21 +101,6 @@ namespace test {
 
             auto c = detail::convert(n, resolution);
             Assert::IsTrue(t - c <= max_dt, L"Convert 100 nanoseconds", LINE_INFO());
-        }
-
-        TEST_METHOD(test_nanoseconds) {
-            typedef std::chrono::nanoseconds unit;
-            static const auto resolution = timestamp_resolution::nanoseconds;
-            const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
-
-            auto n = std::chrono::system_clock::now();
-            auto t = detail::create_timestamp(resolution);
-            auto s = std::chrono::duration_cast<unit>(n - this->_system_zero).count();
-            auto z = detail::convert(this->_filetime_zero, resolution);
-            Assert::IsTrue(t - z - s <= max_dt, L"timestamp nanosecond", LINE_INFO());
-
-            auto c = detail::convert(n, resolution);
-            Assert::IsTrue(t - c <= max_dt, L"Convert nanosecond", LINE_INFO());
         }
 
         TEST_METHOD(test_seconds) {

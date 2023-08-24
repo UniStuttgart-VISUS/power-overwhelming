@@ -206,7 +206,7 @@ void query_rtx_instrument(void) {
                 return true;
             });
 
-            i.reset(true, true)
+            i.reset(rtx_instrument_reset::all)
                 .enable_system_checks()
                 .timeout(20000);
             i.synchronise_clock()
@@ -405,6 +405,74 @@ void query_rtx_instrument(void) {
 
 
 /*
+ * ::sample_rtx
+ */
+void sample_rtx(void) {
+    using namespace visus::power_overwhelming;
+
+    try {
+        std::vector<rtx_sensor> sensors;
+        sensors.resize(rtx_sensor::for_all(nullptr, 0));
+        rtx_sensor::for_all(sensors.data(), sensors.size());
+
+        for (auto& s : sensors) {
+            std::wcout << s.name() << L":" << std::endl;
+            auto m = s.sample(timestamp_resolution::milliseconds);
+            std::wcout << m.timestamp() << L": "
+                << m.voltage() << " V * "
+                << m.current() << " A = "
+                << m.power() << L" W"
+                << std::endl;
+        }
+
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+}
+
+
+/*
+ * ::sample_rtx_async
+ */
+void sample_rtx_async(const unsigned int dt) {
+    using namespace visus::power_overwhelming;
+
+    try {
+        std::vector<rtx_sensor> sensors;
+        sensors.resize(rtx_sensor::for_all(nullptr, 0));
+        rtx_sensor::for_all(sensors.data(), sensors.size());
+
+        // Enable asynchronous sampling.
+        for (auto& s : sensors) {
+            async_sampling config;
+            s.sample(config.delivers_measurement_data_to(
+                    [](const wchar_t *s, const measurement_data *m, const std::size_t c, void *) {
+                for (std::size_t i = 0; i < c; ++i) {
+                    std::wcout << m[i].timestamp() << L" (" << s << L"): "
+                        << m[i].voltage() << " V * "
+                        << m[i].current() << " A = "
+                        << m[i].power() << L" W"
+                        << std::endl;
+                } })
+                .must_sleep_at_least(std::chrono::nanoseconds(100000))
+                .resolution(timestamp_resolution::microseconds)
+                .as_rvalue());
+        }
+
+        // Wait for the requested number of seconds.
+        std::this_thread::sleep_for(std::chrono::seconds(dt));
+
+        // Disable asynchronous sampling.
+        for (auto& s : sensors) {
+            s.sample(async_sampling());
+        }
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+}
+
+
+/*
  * ::configure_rtx_instrument
  */
 void configure_rtx_instrument(void) {
@@ -437,3 +505,4 @@ void configure_rtx_instrument(void) {
         std::cerr << ex.what() << std::endl;
     }
 }
+ 

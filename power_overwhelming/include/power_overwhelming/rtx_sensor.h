@@ -18,6 +18,10 @@
 namespace visus {
 namespace power_overwhelming {
 
+    /* Forward declarations */
+    namespace detail { struct rtx_sensor_impl; }
+
+
     /// <summary>
     /// A sensor using a Rohde &amp; Schwarz RTA and RTB series oscilloscope.
     /// </summary>
@@ -190,7 +194,7 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        rtx_sensor(void) = default;
+        rtx_sensor(void);
 
         /// <summary>
         /// Initialises a new instance.
@@ -228,12 +232,12 @@ namespace power_overwhelming {
         /// Move <paramref name="rhs" /> into a new instance.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
-        rtx_sensor(rtx_sensor&& rhs) noexcept = default;
+        rtx_sensor(_Inout_ rtx_sensor&& rhs) noexcept;
 
         /// <summary>
         /// Finalise the instance.
         /// </summary>
-        virtual ~rtx_sensor(void) = default;
+        virtual ~rtx_sensor(void) noexcept;
 
         /// <summary>
         /// Acquires two waveforms from the underlying instrument and combines
@@ -276,18 +280,14 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>The one-based index of the channel with the current probe.
         /// </returns>
-        inline std::uint32_t channel_current(void) const noexcept {
-            return this->_channel_current;
-        }
+        rtx_instrument::channel_type channel_current(void) const noexcept;
 
         /// <summary>
         /// Answer the channel on which voltage is measured.
         /// </summary>
         /// <returns>The one-based index of the channel with the voltage probe.
         /// </returns>
-        inline std::uint32_t channel_voltage(void) const noexcept {
-            return this->_channel_voltage;
-        }
+        rtx_instrument::channel_type channel_voltage(void) const noexcept;
 
         /// <summary>
         /// Answer the method the sensor uses to transform a waveform into a
@@ -295,10 +295,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>The decimation method collapsing a waveform into a single
         /// sample.</returns>
-        inline waveform_decimation_method decimation_method(
-                void) const noexcept {
-            return this->_decimation_method;
-        }
+        waveform_decimation_method decimation_method(void) const noexcept;
 
         /// <summary>
         /// Answer the instrument that is being used by the sensor.
@@ -314,9 +311,7 @@ namespace power_overwhelming {
         /// <returns>The instrument used by the sensor. The sensor remains the
         /// owner of the memory returned. Callers must not release or move the
         /// instrument returned.</returns>
-        inline _Ret_ rtx_instrument *instrument(void) noexcept {
-            return &this->_instrument;
-        }
+        _Ret_maybenull_ rtx_instrument *instrument(void) noexcept;
 
         /// <summary>
         /// Answer the instrument that is being used by the sensor.
@@ -332,9 +327,7 @@ namespace power_overwhelming {
         /// <returns>The instrument used by the sensor. The sensor remains the
         /// owner of the memory returned. Callers must not release or move the
         /// instrument returned.</returns>
-        inline _Ret_ const rtx_instrument *instrument(void) const noexcept {
-            return &this->_instrument;
-        }
+        _Ret_maybenull_ const rtx_instrument *instrument(void) const noexcept;
 
         /// <summary>
         /// Gets the name of the sensor.
@@ -352,9 +345,7 @@ namespace power_overwhelming {
         /// Gets the VISA path of the instrument.
         /// </summary>
         /// <returns>The path of the instrument.</returns>
-        inline _Ret_maybenull_z_ const char *path(void) const noexcept {
-            return this->_instrument.path();
-        }
+        _Ret_maybenull_z_ const char *path(void) const noexcept;
 
         using sensor::sample;
 
@@ -363,7 +354,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        rtx_sensor& operator =(rtx_sensor&& rhs) noexcept = default;
+        rtx_sensor& operator =(_Inout_ rtx_sensor&& rhs) noexcept;
 
         /// <summary>
         /// Determines whether the sensor is valid.
@@ -394,14 +385,14 @@ namespace power_overwhelming {
             _In_ const measurement_data_series& series,
             _In_ const waveform_decimation_method method);
 
+        rtx_instrument& check_not_disposed(void);
+
+        const rtx_instrument& check_not_disposed(void) const;
+
         void initialise(_In_ const rtx_sensor_definition& definition,
             _In_ const visa_instrument::timeout_type timeout);
 
-        std::uint32_t _channel_current;
-        std::uint32_t _channel_voltage;
-        waveform_decimation_method _decimation_method;
-        rtx_instrument _instrument;
-        blob _name;
+        detail::rtx_sensor_impl *_impl;
     };
 
 } /* namespace power_overwhelming */

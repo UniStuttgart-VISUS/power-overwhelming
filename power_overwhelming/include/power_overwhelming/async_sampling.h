@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <functional>
 #include <type_traits>
 #include <utility>
@@ -16,6 +17,7 @@
 #endif /* defined(_WIN32) */
 
 #include "power_overwhelming/measurement.h"
+#include "power_overwhelming/measurement_data_series.h"
 #include "power_overwhelming/timestamp_resolution.h"
 #include "power_overwhelming/tinkerforge_sensor_source.h"
 
@@ -159,6 +161,31 @@ namespace power_overwhelming {
         /// <summary>
         /// Invoke the callback for a <see cref="measurement" /> or for
         /// <see cref="measurement_data" />, whichever is set, to deliver the
+        /// given samples.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method is not thread-safe. Callers must make sure that
+        /// the instance is not changed while the callback is invoked from the
+        /// sampler thread.</para>
+        /// <para>If the method must deliver an instance of
+        /// <see cref="measurement" />, it will create this instance on the fly
+        /// from the given <paramref name="sample" /> and the name of the given
+        /// <paramref name="source" />.</para>
+        /// </remarks>
+        /// <param name="data">The measurement data to be delivered.</param>
+        /// <returns><c>true</c> if a callback was invoked, <c>false</c> if none
+        /// has been set.</returns>
+        bool deliver(_In_ const measurement_data_series& data) const {
+            const auto sensor = data.sensor();
+            const auto samples = data.data();
+            _Analysis_assume_(sensor != nullptr);
+            _Analysis_assume_(samples != nullptr);
+            return this->deliver(sensor, samples, data.size());
+        }
+
+        /// <summary>
+        /// Invoke the callback for a <see cref="measurement" /> or for
+        /// <see cref="measurement_data" />, whichever is set, to deliver the
         /// given sample.
         /// </summary>
         /// <param name="source">The name of the sensor from which the
@@ -272,6 +299,17 @@ namespace power_overwhelming {
         }
 
         /// <summary>
+        /// Sets the desired sampling interval.
+        /// </summary>
+        /// <param name="interval">The desired sampling interval in
+        /// microseconds.</param>
+        /// <returns><c>*this</c>.</returns>
+        inline async_sampling& interval(
+                _In_ const microseconds_type interval) noexcept {
+            return this->samples_every(interval);
+        }
+
+        /// <summary>
         /// Configures the asynchronous sampling such that it is disabled by
         /// removing all previously configured callbacks.
         /// </summary>
@@ -290,12 +328,85 @@ namespace power_overwhelming {
         async_sampling& passes_context(_In_opt_ void *context) noexcept;
 
         /// <summary>
+        /// Answer the minimum time span a sampler thread should give other
+        /// threads the ability to modify the sensor list.
+        /// </summary>
+        /// <returns>The minimum sleep time in microseconds.</returns>
+        inline microseconds_type minimum_sleep(void) const noexcept {
+            return this->_minimum_sleep;
+        }
+
+        /// <summary>
+        /// Instructs any active asynchronous sampling thread to sleep at least
+        /// for the specified number of microseconds to give other threads
+        /// (mostly the main thread) time to modify the sensor list to be
+        /// sampled.
+        /// </summary>
+        /// <param name="minimum_sleep">The minimum sleep time in microseconds.
+        /// You can set zero to enforce the sampling interval even if the
+        /// sensors are slow, but in this case, it will be very hard to
+        /// terminate the sampler thread.</param>
+        /// <returns><c>*this</c></returns>
+        async_sampling& minimum_sleep(
+                _In_ const microseconds_type minimum_sleep) noexcept {
+            return this->must_sleep_at_least(minimum_sleep);
+        }
+
+        /// <summary>
+        /// Instructs any active asynchronous sampling thread to sleep at least
+        /// for the specified number of microseconds to give other threads
+        /// (mostly the main thread) time to modify the sensor list to be
+        /// sampled.
+        /// </summary>
+        /// <param name="minimum_sleep">The minimum sleep time in microseconds.
+        /// You can set zero to enforce the sampling interval even if the
+        /// sensors are slow, but in this case, it will be very hard to
+        /// terminate the sampler thread.</param>
+        /// <returns><c>*this</c></returns>
+        async_sampling& must_sleep_at_least(
+                _In_ const microseconds_type minimum_sleep) noexcept {
+            this->_minimum_sleep = minimum_sleep;
+            return *this;
+        }
+
+        /// <summary>
+        /// Instructs any active asynchronous sampling thread to sleep at least
+        /// for the specified number of microseconds to give other threads
+        /// (mostly the main thread) time to modify the sensor list to be
+        /// sampled.
+        /// </summary>
+        /// <typeparam name="TValue">The type of the counter.</typeparam>
+        /// <typeparam name="TPeriod">The period of the duration.</typeparam>
+        /// <param name="interval">The minimal sleep duration for the
+        /// sampler thread.</param>
+        /// <returns><c>*this</c>.</returns>
+        template<class TValue, class TPeriod>
+        inline async_sampling& must_sleep_at_least(
+                _In_ const std::chrono::duration<TValue, TPeriod> interval) {
+            return this->must_sleep_at_least(std::chrono::duration_cast<
+                std::chrono::microseconds>(interval).count());
+        }
+
+        /// <summary>
         /// Answer whether the <see cref="sensor" /> should produce samples of
         /// type <see cref="measurement" />.
         /// </summary>
         /// <returns></returns>
         inline bool on_measurement(void) const noexcept {
             return (this->_on_measurement != nullptr);
+        }
+
+        /// <summary>
+        /// Configures the <see cref="sensor" /> such that it produces samples
+        /// of type <see cref="measurement" />.
+        /// </summary>
+        /// <param name="callback">The callbeck to deliver to. If this is
+        /// <c>nullptr</c>, sampling will be disabled (this is equivalent to
+        /// calling <see cref="is_disabled" />).</param>
+        /// <returns><c>*this</c>.</returns>
+        inline async_sampling& on_measurement(
+                _In_opt_ const on_measurement_callback callback) noexcept {
+            return this->delivers_measurements_to(callback);
         }
 
         /// <summary>
@@ -308,11 +419,36 @@ namespace power_overwhelming {
         }
 
         /// <summary>
+        /// Configures the <see cref="sensor" /> such that it produces samples
+        /// of type <see cref="measurement_data" />.
+        /// </summary>
+        /// <param name="callback">The callbeck to deliver to. If this is
+        /// <c>nullptr</c>, sampling will be disabled (this is equivalent to
+        /// calling <see cref="is_disabled" />).</param>
+        /// <returns><c>*this</c>.</returns>
+        inline async_sampling& on_measurement_data(
+                _In_opt_ const on_measurement_data_callback callback) noexcept {
+            return this->delivers_measurement_data_to(callback);
+        }
+
+        /// <summary>
         /// Answer the resolution of the teimstamps to be produced.
         /// </summary>
         /// <returns>The resolution of the timestamps to be produced.</returns>
         inline timestamp_resolution resolution(void) const noexcept {
             return this->_timestamp_resolution;
+        }
+
+        /// <summary>
+        /// Configures the <see cref="sensor" /> to produce timestamps of the
+        /// specified resolution.
+        /// </summary>
+        /// <param name="resolution">The resolution of the timestamps being
+        /// produced.</param>
+        /// <returns><c>*this</c>.</returns>
+        inline async_sampling& resolution(
+                _In_ const timestamp_resolution resolution) noexcept {
+            return this->using_resolution(resolution);
         }
 
         /// <summary>
@@ -323,6 +459,21 @@ namespace power_overwhelming {
         /// <returns><c>*this</c>.</returns>
         async_sampling& samples_every(
             _In_ const microseconds_type interval) noexcept;
+
+        /// <summary>
+        /// Sets the desired sampling interval.
+        /// </summary>
+        /// <typeparam name="TValue">The type of the counter.</typeparam>
+        /// <typeparam name="TPeriod">The period of the duration.</typeparam>
+        /// <param name="interval">The desired sampling interval in the unit
+        /// encoded by the type of the parameter.</param>
+        /// <returns><c>*this</c>.</returns>
+        template<class TValue, class TPeriod>
+        inline async_sampling& samples_every(
+                _In_ const std::chrono::duration<TValue, TPeriod> interval) {
+            return this->samples_every(std::chrono::duration_cast<
+                std::chrono::microseconds>(interval).count());
+        }
 
         /// <summary>
         /// Stores <paramref name="context" /> as the context of the callback
@@ -389,7 +540,8 @@ namespace power_overwhelming {
         /// Configures the <see cref="sensor" /> to produce timestamps of the
         /// specified resolution.
         /// </summary>
-        /// <param name="resolution"></param>
+        /// <param name="resolution">The resolution of the timestamps being
+        /// produced.</param>
         /// <returns><c>*this</c>.</returns>
         async_sampling& using_resolution(
             _In_ const timestamp_resolution resolution) noexcept;
@@ -415,6 +567,7 @@ namespace power_overwhelming {
         void *_context;
         void (CALLBACK *_context_deleter)(void *);
         microseconds_type _interval;
+        microseconds_type _minimum_sleep;
         on_measurement_callback _on_measurement;
         on_measurement_data_callback _on_measurement_data;
         timestamp_resolution _timestamp_resolution;

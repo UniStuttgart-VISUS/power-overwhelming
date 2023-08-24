@@ -15,46 +15,12 @@
 #include "no_visa_error_msg.h"
 #include "string_functions.h"
 #include "visa_instrument_impl.h"
+#include "visa_timeout_override.h"
 
 
 namespace visus {
 namespace power_overwhelming {
 namespace detail {
-
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    /// <summary>
-    /// RAAI override of the instrument timeout.
-    /// </summary>
-    class rtx_timeout_override final {
-
-    public:
-
-        inline rtx_timeout_override(_In_ ViSession session,
-                _In_ const visa_instrument::timeout_type timeout) 
-                : _session(session), _timeout(0) {
-            visa_exception::throw_on_error(visa_library::instance()
-                .viGetAttribute(this->_session, VI_ATTR_TMO_VALUE,
-                    &this->_timeout));
-            visa_exception::throw_on_error(visa_library::instance()
-                .viSetAttribute(this->_session, VI_ATTR_TMO_VALUE,
-                    timeout));
-        }
-
-        rtx_timeout_override(const rtx_timeout_override&) = delete;
-
-        inline ~rtx_timeout_override(void) {
-            visa_library::instance().viSetAttribute(this->_session,
-                VI_ATTR_TMO_VALUE, this->_timeout);
-        }
-
-        rtx_timeout_override& operator =(const rtx_timeout_override&) = delete;
-
-    private:
-
-        ViSession _session;
-        visa_instrument::timeout_type _timeout;
-    };
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
     /// <summary>
     /// Creates a random temporary file name for on-instrument use.
@@ -169,7 +135,7 @@ visus::power_overwhelming::rtx_instrument
 visus::power_overwhelming::rtx_instrument::create_and_reset_new(
         _In_z_ const wchar_t *path, _In_ const timeout_type timeout) {
     return rtx_instrument::create(path,
-        [](rtx_instrument& i, void *) { i.reset(true, true); },
+        [](rtx_instrument& i, void *) { i.reset(rtx_instrument_reset::all); },
         nullptr,
         timeout);
 }
@@ -182,7 +148,7 @@ visus::power_overwhelming::rtx_instrument
 visus::power_overwhelming::rtx_instrument::create_and_reset_new(
         _In_z_ const char *path, _In_ const timeout_type timeout) {
     return rtx_instrument::create(path,
-        [](rtx_instrument &i, void *) { i.reset(true, true); },
+        [](rtx_instrument &i, void *) { i.reset(rtx_instrument_reset::all); },
         nullptr,
         timeout);
 }
@@ -330,11 +296,14 @@ visus::power_overwhelming::rtx_instrument::acquisition(
             break;
 
         case oscilloscope_acquisition_state::single:
-            if (wait) {
-                this->query("*SING; *OPC?\n");
-            } else {
-                this->write("SING\n");
-            }
+            //if (wait) {
+            //    this->query("*SING; *OPC?\n");
+            //} else {
+            //    this->write("SING\n");
+            //}
+            // TODO: The above does not work reliably.
+            this->write("SING\n");
+            this->query("*OPC?\n");
             break;
 
         case oscilloscope_acquisition_state::interrupt:
@@ -744,7 +713,7 @@ std::size_t visus::power_overwhelming::rtx_instrument::channels(
     try {
         auto& impl = this->check_not_disposed();
         std::size_t retval = 1;
-        const detail::rtx_timeout_override timeout(impl.session, timeout);
+        const detail::visa_timeout_override t(impl.session, timeout);
 
         // Clear the status as we rely on the device to enter an error state for
         // the detection below.
@@ -974,7 +943,7 @@ visus::power_overwhelming::rtx_instrument::data(
     auto& impl = this->check_not_disposed();
 
     {
-        const detail::rtx_timeout_override timeout(impl.session, timeout);
+        const detail::visa_timeout_override t(impl.session, timeout);
 
         // Check for all channels that are enabled.
         auto has_next = true;
@@ -1115,6 +1084,27 @@ visus::power_overwhelming::rtx_instrument::reference_position(void) const {
     throw std::logic_error(detail::no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::reset
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::reset(
+        _In_ const rtx_instrument_reset flags) {
+    typedef rtx_instrument_reset flags_type;
+    visa_instrument::reset(
+        (flags & flags_type::buffers) == flags_type::buffers,
+        (flags & flags_type::status) == flags_type::status);
+
+    if ((flags & flags_type::stop) == flags_type::stop) {
+        this->acquisition(oscilloscope_acquisition_state::interrupt);
+        this->operation_complete();
+    }
+
+    return *this;
+}
+
 
 
 /*

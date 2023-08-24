@@ -34,14 +34,14 @@ namespace test {
                 .delivers_measurements_to(cb)
                 .from_source(tinkerforge_sensor_source::power)
                 .passes_context((void *) 42)
-                .using_resolution(timestamp_resolution::nanoseconds);
+                .using_resolution(timestamp_resolution::microseconds);
 
             Assert::AreEqual(intptr_t(42), intptr_t(as.context()), L"Context is 42", LINE_INFO());
             Assert::AreEqual(int(tinkerforge_sensor_source::power), int(as.tinkerforge_sensor_source()), L"Power only", LINE_INFO());
             Assert::AreEqual(std::uint64_t(1000), as.interval(), L"1 ms interval", LINE_INFO());
             Assert::IsTrue(as.on_measurement(), L"on_measurement enabled", LINE_INFO());
             Assert::IsTrue(bool(as), L"Is enabled", LINE_INFO());
-            Assert::AreEqual(int(timestamp_resolution::nanoseconds), int(as.resolution()), L"Timestamps are in ns", LINE_INFO());
+            Assert::AreEqual(int(timestamp_resolution::microseconds), int(as.resolution()), L"Timestamps are in ns", LINE_INFO());
         }
 
         TEST_METHOD(test_measurement_data) {

@@ -26,8 +26,9 @@ visus::power_overwhelming::detail::convert(
         case timestamp_resolution::milliseconds:
             return duration_cast<milliseconds>(ft).count();
 
-        case timestamp_resolution::nanoseconds:
-            return duration_cast<nanoseconds>(ft).count();
+        // This would always overflow, so we do not support it any more.
+        //case timestamp_resolution::nanoseconds:
+        //    return duration_cast<nanoseconds>(ft).count();
 
         case timestamp_resolution::hundred_nanoseconds:
             return file_time;

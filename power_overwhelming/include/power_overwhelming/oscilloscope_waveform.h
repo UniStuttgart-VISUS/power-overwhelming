@@ -133,6 +133,19 @@ namespace power_overwhelming {
         float sample_distance(void) const noexcept;
 
         /// <summary>
+        /// Answer the absolute timestamp of the <paramref name="i" />th sample
+        /// in the segment in 100 ns units from 1st January 1601 (UTC).
+        /// </summary>
+        /// <remarks>
+        /// See <see cref="segment_timestamp" /> for detailed information on
+        /// the form and quality of the timestamps.
+        /// </remarks>
+        /// <param name="i">The sample to retrieve the timestamp for.</param>
+        /// <returns>The absolute timestamp of the sample.</returns>
+        measurement_data::timestamp_type sample_timestamp(
+            _In_ const std::size_t i) const noexcept;
+
+        /// <summary>
         /// Answer the time difference of the segment of the waveform to the
         /// newest segment in the acquisition.
         /// </summary>
@@ -150,7 +163,7 @@ namespace power_overwhelming {
         /// <see cref="FILETIME" />. This makes it compatible with the ADL
         /// sensor, which we chose as our base as we cannot influence its
         /// implementation. In terms of STL clocks, the ratio of the timestamp
-        /// is <c>std::ratio<1, 10000000></c> using
+        /// is <c>std::ratio&lt;1, 10000000&gt;</c> using
         /// <see cref="timetamp_type" /> as the type of the counter.</para>
         /// <para>The timestamp is retrieved from the instrument itself, so it
         /// might not match the clock of the computer if the instrument has

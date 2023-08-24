@@ -14,6 +14,7 @@
 #include "power_overwhelming/oscilloscope_trigger_output.h"
 #include "power_overwhelming/oscilloscope_waveform.h"
 #include "power_overwhelming/oscilloscope_waveform_points.h"
+#include "power_overwhelming/rtx_instrument_reset.h"
 #include "power_overwhelming/visa_instrument.h"
 
 
@@ -796,6 +797,32 @@ namespace power_overwhelming {
         /// <exception cref="std::logic_error">If the method is called while
         /// the library was compiled without support for VISA.</exception>
         oscilloscope_reference_point reference_position(void) const;
+
+        /// <summary>
+        /// Resets the instrument to its default state by issuing the
+        /// <c>*RST</c> command and performs optionally additional cleanup
+        /// as specified by the given <see cref="rtx_instrument_reset" />
+        /// bitmask.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// <para>This method will issue an <c>*OPC?</c> query immediately after
+        /// the reset request in order to make sure that the calling code is
+        /// blocked until the instrument finished resetting.
+        /// </para>
+        /// <para>This method hides <see cref="visa_instrument::reset" />, which
+        /// is on purpose. The method internally calls the parent class before
+        /// performing instrument-specific cleanup.</para>
+        /// </remarks>
+        /// <param name="flags">Specifies the scope of the reset.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        rtx_instrument& reset(_In_ const rtx_instrument_reset flags
+            = rtx_instrument_reset::reset);
 
         /// <summary>
         /// Restores the state of the instrument from a file stored on the
