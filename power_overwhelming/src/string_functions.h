@@ -29,6 +29,26 @@ namespace power_overwhelming {
 namespace detail {
 
     /// <summary>
+    /// Copies an STL string into a character buffer provided the destination
+    /// buffer is sufficiently large.
+    /// </summary>
+    /// <typeparam name="TChar">The character type.</typeparam>
+    /// <typeparam name="TTraits">The character traits.</typeparam>
+    /// <typeparam name="TAlloc">The allocator of the input string.</typeparam>
+    /// <param name="dst">The destination buffer, which must be able to hold at
+    /// least <paramref name="cnt" /> elements. This buffer can only be
+    /// <c>nullptr</c> if <paramref name="cnt" /> is zero.</param>
+    /// <param name="cnt">The number of elements that can be stored to
+    /// <paramref name="cnt" />.</param>
+    /// <param name="string">The string to copy.</param>
+    /// <returns><c>true</c> if the string was copied, <c>false</c> otherwise.
+    /// </returns>
+    template<class TChar, class TTraits, class TAlloc>
+    bool copy_string(_When_(dst != nullptr, _Out_writes_opt_(cnt)) TChar *dst,
+        _In_ const std::size_t cnt,
+        _In_ const std::basic_string<TChar, TTraits, TAlloc>& string);
+
+    /// <summary>
     /// Tests two strings for equality.
     /// </summary>
      /// <remarks>

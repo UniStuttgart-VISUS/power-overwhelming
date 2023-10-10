@@ -16,6 +16,7 @@
 #include "power_overwhelming/convert_string.h"
 
 #include "rtx_serialisation.h"
+#include "string_functions.h"
 
 
 namespace visus {
@@ -26,6 +27,9 @@ namespace detail {
     static constexpr const char *json_field_name = "name";
     static constexpr const char *json_field_path = "path";
 
+    /// <summary>
+    /// Parse an instrument configuration from the given JSON object.
+    /// </summary>
     static void parse_rtx_instument_conf(_In_ const nlohmann::json obj,
             _Inout_ std::vector<rtx_instrument_configuration>& configs,
             _Inout_ std::map<std::string, std::size_t>& by_path,
@@ -54,12 +58,178 @@ namespace detail {
         }
     }
 
+    /// <summary>
+    /// Parse the (first) instument configuration from the given JSON object or
+    /// array.
+    /// </summary>
+    static rtx_instrument_configuration parse_rtx_instrument_conf(
+            _In_ nlohmann::json json) {
+        switch (json.type()) {
+            case nlohmann::json::value_t::array:
+                if (json.size() == 0) {
+                    throw std::invalid_argument("The configuration array provided "
+                        "must not be empty.");
+                }
+
+                json = json[0];
+                break;
+
+            case nlohmann::json::value_t::object:
+                break;
+
+            default:
+                throw std::invalid_argument("The JSON file provided must contain "
+                    "an object or a non-emtpy array of objects.");
+        }
+
+        return detail::json_deserialise<rtx_instrument_configuration>(json);
+    }
+
+    /// <summary>
+    /// Deserialises one or more configurations.
+    /// </summary>
+    std::size_t parse_rtx_instrument_confs(
+            _When_(dst != nullptr, _Out_writes_opt_(cnt))
+            rtx_instrument_configuration *dst,
+            _In_ std::size_t cnt,
+            _In_ const nlohmann::json& json) {
+        if ((cnt > 0) && (dst == nullptr)) {
+            throw std::invalid_argument("The configuration array to store "
+                "the configurations to must be valid unless the number of "
+                "configurations to configure is zero.");
+        }
+
+        // Determine the required memory.
+        std::size_t retval = 0;
+        switch (json.type()) {
+            case nlohmann::json::value_t::array:
+                retval = json.size();
+                break;
+
+            case nlohmann::json::value_t::object:
+                retval = 1;
+                break;
+
+            default:
+                retval = 0;
+                break;
+        }
+
+        // There is no space if the array is invalid.
+        if (dst == nullptr) {
+            cnt = 0;
+        }
+
+        // Load as many configurations as possible.
+        for (std::size_t i = 0; (i < cnt) && (i < retval); ++i) {
+            const auto &j = json[i];
+            dst[i] = detail::json_deserialise<rtx_instrument_configuration>(j);
+        }
+
+        return retval;
+    }
+
+    /// <summary>
+    /// Apply the configurations from the given JSON array to the given
+    /// instruments if they can be matched by path or name. If there is no
+    /// match, the first configuration in <paramref name="json" /> will be
+    /// used.
+    /// </summary>
+    static void apply(_In_reads_(cnt) rtx_instrument *instruments,
+            _In_ const std::size_t cnt,
+            _In_ const nlohmann::json& json) {
+        if ((cnt > 0) && (instruments == nullptr)) {
+            throw std::invalid_argument("The instrument array to apply the "
+                "configurations to must be valid unless the number of "
+                "instruments to configure is zero.");
+        }
+
+        std::vector<rtx_instrument_configuration> configs;
+        std::map<std::string, std::size_t> by_name;
+        std::map<std::string, std::size_t> by_path;
+
+        // Find out what kind of data we have. If we have an array, add all of its
+        // members. If we have a single object, just add this one. Any other type
+        // of data indicates an invalid file.
+        switch (json.type()) {
+            case nlohmann::json::value_t::array:
+                for (auto j : json) {
+                    detail::parse_rtx_instument_conf(j, configs, by_path, by_name);
+                }
+                break;
+
+            case nlohmann::json::value_t::object:
+                detail::parse_rtx_instument_conf(json, configs, by_path, by_name);
+                break;
+
+            default:
+                throw std::invalid_argument("The specified file did not contain "
+                    "a configuration object or an array thereof.");
+        }
+
+        if (configs.size() < 1) {
+            throw std::invalid_argument("The specified file did not contain any "
+                "valid configuration objects.");
+        }
+
+        for (std::size_t i = 0; i < cnt; ++i) {
+            auto& instrument = instruments[i];
+
+            {
+                auto it = by_path.find(instrument.path());
+                if (it != by_path.end()) {
+                    configs[it->second].apply(instrument);
+                    continue;
+                }
+            }
+
+            {
+                std::vector<char> name(instrument.name(nullptr, 0));
+                instrument.name(name.data(), name.size());
+
+                auto it = by_name.find(name.data());
+                if (it != by_name.end()) {
+                    configs[it->second].apply(instrument);
+                    continue;
+                }
+            }
+
+            configs.front().apply(instrument);
+        }
+    }
+
+    /// <summary>
+    /// Convert the given array of instrument configuration into an array of
+    /// JSON objects.
+    /// </summary>
+    static nlohmann::json to_json(
+            _In_reads_(cnt) const rtx_instrument_configuration *configs,
+            _In_ const std::size_t cnt) {
+        if ((cnt > 0) && (configs == nullptr)) {
+            throw std::invalid_argument("The instrument configurations array "
+                "to be serialised must be valid unless their number is zero.");
+        }
+
+        auto retval = nlohmann::json::array();
+
+        for (std::size_t i = 0; i < cnt; ++i) {
+            retval.push_back(detail::json_serialise(configs[i]));
+        }
+
+        return retval;
+    }
+
+    /// <summary>
+    /// Convert the given instruments into an array of JSON configuration
+    /// objects.
+    /// </summary>
     static nlohmann::json to_json(
             _In_reads_(cnt) const rtx_instrument *instruments,
             _In_ const std::size_t cnt) {
         if ((cnt > 0) && (instruments == nullptr)) {
-            throw std::invalid_argument("The instrument configurations array "
-                "to be serialised must not be null.");
+            throw std::invalid_argument("The instrument array to serialise "
+                "the configuration of must be valid unless their number is "
+                "zero.");
         }
 
         auto retval = nlohmann::json::array();
@@ -196,7 +366,6 @@ std::size_t visus::power_overwhelming::rtx_instrument_configuration::apply(
 }
 
 
-
 /*
  * visus::power_overwhelming::rtx_instrument_configuration::apply
  */
@@ -205,62 +374,24 @@ void visus::power_overwhelming::rtx_instrument_configuration::apply(
         _In_ const std::size_t cnt,
         _In_z_ const wchar_t *path) {
     auto json = detail::load_json(path);
+    detail::apply(instruments, cnt, json);
+}
 
-    std::vector<rtx_instrument_configuration> configs;
-    std::map<std::string, std::size_t> by_name;
-    std::map<std::string, std::size_t> by_path;
 
-    // Find out what kind of data we have. If we have an array, add all of its
-    // members. If we have a single object, just add this one. Any other type
-    // of data indicates an invalid file.
-    switch (json.type()) {
-        case nlohmann::json::value_t::array:
-            for (auto j : json) {
-                detail::parse_rtx_instument_conf(j, configs, by_path, by_name);
-            }
-            break;
-
-        case nlohmann::json::value_t::object:
-            detail::parse_rtx_instument_conf(json, configs, by_path, by_name);
-            break;
-
-        default:
-            throw std::invalid_argument("The specified file did not contain "
-                "a configuration object or an array thereof.");
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::apply_from_json
+ */
+void visus::power_overwhelming::rtx_instrument_configuration::apply_from_json(
+        _In_reads_(cnt) rtx_instrument *instruments,
+        _In_ const std::size_t cnt,
+        _In_z_ const char *str) {
+    if (str == nullptr) {
+        throw std::invalid_argument("A valid UTF-8-encoded JSON string must be "
+            "provided.");
     }
 
-    if (configs.size() < 1) {
-        throw std::invalid_argument("The specified file did not contain any "
-            "valid configuration objects.");
-    }
-
-    for (std::size_t i = 0; i < cnt; ++i) {
-        auto& instrument = instruments[i];
-
-        {
-            auto it = by_path.find(instrument.path());
-            if (it != by_path.end()) {
-                configs[it->second].apply(instrument);
-                continue;
-            }
-        }
-
-        {
-            std::vector<char> name(instrument.name(nullptr, 0));
-            instrument.name(name.data(), name.size());
-
-            auto it = by_name.find(name.data());
-            if (it != by_name.end()) {
-                configs[it->second].apply(instrument);
-                continue;
-            }
-        }
-
-        std::cout << "No matching configuration was found for \""
-            << instrument.path() << "\" in the file provided, so the first "
-            "one is being applied." << std::endl;
-        configs.front().apply(instrument);
-    }
+    const auto json = nlohmann::json::parse(str);
+    detail::apply(instruments, cnt, json);
 }
 
 
@@ -281,6 +412,25 @@ visus::power_overwhelming::rtx_instrument_configuration::deserialise(
 
 
 /*
+ * visus::power_overwhelming::rtx_instrument_configuration::deserialise
+ */
+std::size_t
+visus::power_overwhelming::rtx_instrument_configuration::deserialise(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt))
+        rtx_instrument_configuration *dst,
+        _In_ std::size_t cnt,
+        _In_z_ const char *str) {
+    if (str == nullptr) {
+        throw std::invalid_argument("A valid UTF-8-encoded JSON string must be "
+            "provided.");
+    }
+
+    const auto json = nlohmann::json::parse(str);
+    return detail::parse_rtx_instrument_confs(dst, cnt, json);
+}
+
+
+/*
  * visus::power_overwhelming::rtx_instrument_configuration::load
  */
 std::size_t visus::power_overwhelming::rtx_instrument_configuration::load(
@@ -288,41 +438,8 @@ std::size_t visus::power_overwhelming::rtx_instrument_configuration::load(
         rtx_instrument_configuration *dst,
         _In_ std::size_t cnt,
         _In_z_ const wchar_t *path) {
-    if (path == nullptr) {
-        throw std::invalid_argument("The path to the input file must not be "
-            "null");
-    }
-
     auto json = detail::load_json(path);
-
-    // Determine the required memory.
-    std::size_t retval = 0;
-    switch (json.type()) {
-        case nlohmann::json::value_t::array:
-            retval = json.size();
-            break;
-
-        case nlohmann::json::value_t::object:
-            retval = 1;
-            break;
-
-        default:
-            retval = 0;
-            break;
-    }
-
-    // There is no space if the array is invalid.
-    if (dst == nullptr) {
-        cnt = 0;
-    }
-
-    // Load as many configurations as possible.
-    for (std::size_t i = 0; (i < cnt) && (i < retval); ++i) {
-        const auto& j = json[i];
-        dst[i] = detail::json_deserialise<rtx_instrument_configuration>(j);
-    }
-
-    return retval;
+    return detail::parse_rtx_instrument_confs(dst, cnt, json);
 }
 
 
@@ -332,27 +449,7 @@ std::size_t visus::power_overwhelming::rtx_instrument_configuration::load(
 visus::power_overwhelming::rtx_instrument_configuration
 visus::power_overwhelming::rtx_instrument_configuration::load(
         _In_z_ const wchar_t *path) {
-    auto json = detail::load_json(path);
-
-    switch (json.type()) {
-        case nlohmann::json::value_t::array:
-            if (json.size() == 0) {
-                throw std::invalid_argument("The configuration array provided "
-                    "must not be empty.");
-            }
-
-            json = json[0];
-            break;
-
-        case nlohmann::json::value_t::object:
-            break;
-
-        default:
-            throw std::invalid_argument("The JSON file provided must contain "
-                "an object or a non-emtpy array of objects.");
-    }
-
-    return detail::json_deserialise<rtx_instrument_configuration>(json);
+    return detail::parse_rtx_instrument_conf(detail::load_json(path));
 }
 
 
@@ -363,18 +460,7 @@ void visus::power_overwhelming::rtx_instrument_configuration::save(
         _In_reads_(cnt) const rtx_instrument_configuration *configs,
         _In_ const std::size_t cnt,
         _In_z_ const wchar_t *path) {
-    if (configs == nullptr) {
-        throw std::invalid_argument("The instrument configurations array to be "
-            "serialised must not be null.");
-    }
-
-    auto data = nlohmann::json::array();
-
-    for (std::size_t i = 0; i < cnt; ++i) {
-        data.push_back(detail::json_serialise(configs[i]));
-    }
-
-    detail::save_json(data, path);
+    detail::save_json(detail::to_json(configs, cnt), path);
 }
 
 
@@ -385,8 +471,7 @@ void visus::power_overwhelming::rtx_instrument_configuration::save(
         _In_reads_(cnt) const rtx_instrument *instruments,
         _In_ const std::size_t cnt,
         _In_z_ const wchar_t *path) {
-    auto data = detail::to_json(instruments, cnt);
-    detail::save_json(data, path);
+    detail::save_json(detail::to_json(instruments, cnt), path);
 }
 
 
@@ -407,20 +492,26 @@ std::size_t visus::power_overwhelming::rtx_instrument_configuration::serialise(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) char *dst,
         _In_ const std::size_t cnt,
         _In_ const rtx_instrument_configuration& configuration) {
-    if ((cnt > 0) && (dst == nullptr)) {
-        throw std::invalid_argument("A valid output buffer must be provided "
-            "unless the buffer size is declared to be zero.");
-    }
-
     const auto json = detail::json_serialise(configuration);
     const auto str = json.dump();
     const auto retval = str.size() + 1;
+    detail::copy_string(dst, cnt, str);
+    return retval;
+}
 
-    if (cnt >= retval) {
-        std::copy(str.begin(), str.end(), dst);
-        dst[str.size()] = 0;
-    }
 
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::serialise
+ */
+std::size_t visus::power_overwhelming::rtx_instrument_configuration::serialise(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt_dst)) char *dst,
+        _In_ const std::size_t cnt_dst,
+        _In_reads_(cnt_configs) const rtx_instrument_configuration *configs,
+        _In_ const std::size_t cnt_configs) {
+    const auto json = detail::to_json(configs, cnt_configs);
+    const auto str = json.dump();
+    const auto retval = str.size() + 1;
+    detail::copy_string(dst, cnt_dst, str);
     return retval;
 }
 
@@ -433,20 +524,10 @@ std::size_t visus::power_overwhelming::rtx_instrument_configuration::serialise(
         _In_ const std::size_t cnt_dst,
         _In_reads_(cnt_instruments) const rtx_instrument *instruments,
         _In_ const std::size_t cnt_instruments) {
-    if ((cnt_dst > 0) && (dst == nullptr)) {
-        throw std::invalid_argument("A valid output buffer must be provided "
-            "unless the buffer size is declared to be zero.");
-    }
-
     const auto json = detail::to_json(instruments, cnt_instruments);
     const auto str = json.dump();
     const auto retval = str.size() + 1;
-
-    if (cnt_dst >= retval) {
-        std::copy(str.begin(), str.end(), dst);
-        dst[str.size()] = 0;
-    }
-
+    detail::copy_string(dst, cnt_dst, str);
     return retval;
 }
 

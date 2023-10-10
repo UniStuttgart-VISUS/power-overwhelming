@@ -539,6 +539,57 @@ namespace test {
             });
         }
 
+        TEST_METHOD(test_config_seralise_deserialise_array) {
+            const std::vector<rtx_instrument_configuration> expected_configs = {
+                rtx_instrument_configuration(
+                    oscilloscope_quantity(42.42f, "ms"),
+                    oscilloscope_acquisition().count(42).points(1024).segmented(true),
+                    oscilloscope_trigger::edge("CH2").coupling(oscilloscope_trigger_coupling::low_frequency_reject).level(42.0f), 17)
+                .beep_on_apply(8)
+                .beep_on_error(true)
+                .beep_on_trigger(true)
+                .channel(oscilloscope_channel(1).label("bla"))
+                .channel(oscilloscope_channel(3).label("blubb")),
+                rtx_instrument_configuration(oscilloscope_quantity(42.42f, "s"), 99, 4242)
+            };
+
+            auto required = rtx_instrument_configuration::serialise(nullptr, 0, expected_configs.data(), expected_configs.size());
+            Assert::IsTrue(required > 0, L"Measure serialised configuration", LINE_INFO());
+
+            std::vector<char> serialised(required);
+            Assert::AreEqual(required, rtx_instrument_configuration::serialise(serialised.data(), serialised.size(), expected_configs.data(), expected_configs.size()));
+
+            {
+                std::vector<rtx_instrument_configuration> actual_configs(rtx_instrument_configuration::deserialise(nullptr, 0, serialised.data()));
+                Assert::AreEqual(expected_configs.size(), actual_configs.size(), L"All configurations found", LINE_INFO());
+                rtx_instrument_configuration::deserialise(actual_configs.data(), actual_configs.size(), serialised.data());
+
+                for (std::size_t i = 0; i < actual_configs.size(); ++i) {
+                    Assert::AreEqual(expected_configs[i].acquisition().automatic_points(), actual_configs[i].acquisition().automatic_points(), L"acquisition.automatic_points", LINE_INFO());
+                    Assert::AreEqual(expected_configs[i].acquisition().count(), actual_configs[i].acquisition().count(), L"acquisition.count", LINE_INFO());
+                    Assert::AreEqual(expected_configs[i].acquisition().points(), actual_configs[i].acquisition().points(), L"acquisition.points", LINE_INFO());
+                    Assert::AreEqual(expected_configs[i].acquisition().segmented(), actual_configs[i].acquisition().segmented(), L"acquisition.segmented", LINE_INFO());
+                    Assert::AreEqual(expected_configs[i].beep_on_apply(), actual_configs[i].beep_on_apply(), L"beep_on_apply", LINE_INFO());
+                    Assert::AreEqual(expected_configs[i].beep_on_error(), actual_configs[i].beep_on_error(), L"beep_on_error", LINE_INFO());
+                    Assert::AreEqual(expected_configs[i].beep_on_trigger(), actual_configs[i].beep_on_trigger(), L"beep_on_trigger", LINE_INFO());
+                    Assert::AreEqual(expected_configs[i].channels(), actual_configs[i].channels(), L"channels", LINE_INFO());
+                    Assert::AreEqual(expected_configs[i].timeout(), actual_configs[i].timeout(), L"timeout", LINE_INFO());
+                    Assert::AreEqual(expected_configs[i].time_range().value(), actual_configs[i].time_range().value(), L"time_range.value", LINE_INFO());
+                    Assert::AreEqual(expected_configs[i].time_range().unit(), actual_configs[i].time_range().unit(), L"time_range.unit", LINE_INFO());
+                    Assert::AreEqual(int(expected_configs[i].trigger().coupling()), int(actual_configs[i].trigger().coupling()), L"trigger.coupling", LINE_INFO());
+                    Assert::AreEqual("", actual_configs[i].trigger().hold_off(), L"trigger.hold_off", LINE_INFO());
+                    Assert::AreEqual(int(expected_configs[i].trigger().hysteresis()), int(actual_configs[i].trigger().hysteresis()), L"trigger.hysteresis", LINE_INFO());
+                    Assert::AreEqual(int(expected_configs[i].trigger().input()), int(actual_configs[i].trigger().input()), L"trigger.input", LINE_INFO());
+                    Assert::AreEqual(expected_configs[i].trigger().level().value(), actual_configs[i].trigger().level().value(), L"trigger.level.value", LINE_INFO());
+                    Assert::AreEqual(expected_configs[i].trigger().level().unit(), actual_configs[i].trigger().level().unit(), "trigger.level.unit", LINE_INFO());
+                    Assert::AreEqual(int(expected_configs[i].trigger().mode()), int(actual_configs[i].trigger().mode()), L"trigger.mode", LINE_INFO());
+                    Assert::AreEqual(expected_configs[i].trigger().source(), actual_configs[i].trigger().source(), L"trigger.source", LINE_INFO());
+                    Assert::AreEqual(int(expected_configs[i].trigger().slope()), int(actual_configs[i].trigger().slope()), L"trigger.slope", LINE_INFO());
+                    Assert::AreEqual(expected_configs[i].trigger().type(), actual_configs[i].trigger().type(), L"trigger.type", LINE_INFO());
+                }
+            }
+        }
+
     };
 } /* namespace test */
 } /* namespace power_overwhelming */

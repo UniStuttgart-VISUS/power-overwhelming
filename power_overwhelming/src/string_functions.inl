@@ -39,6 +39,30 @@
 
 
 /*
+ * visus::power_overwhelming::detail::copy_string
+ */
+template<class TChar, class TTraits, class TAlloc>
+bool visus::power_overwhelming::detail::copy_string(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) TChar *dst,
+        _In_ const std::size_t cnt,
+        _In_ const std::basic_string<TChar, TTraits, TAlloc>& string) {
+    if ((cnt > 0) && (dst == nullptr)) {
+        throw std::invalid_argument("A valid output buffer must be provided "
+            "unless the buffer size is declared to be zero.");
+    }
+
+    const auto retval = (cnt > string.size());
+
+    if (retval) {
+        std::copy(string.begin(), string.end(), dst);
+        dst[string.size()] = static_cast<TChar>(0);
+    }
+
+    return retval;
+}
+
+
+/*
  * visus::power_overwhelming::detail::format_string
  */
 template<class ...TArgs>

@@ -202,6 +202,32 @@ namespace power_overwhelming {
             _In_ const std::size_t cnt, _In_z_ const wchar_t *path);
 
         /// <summary>
+        /// Deserialises the JSON-encoded instrument configuration from the
+        /// given string and applies them based on the device path to the given
+        /// instruments.
+        /// </summary>
+        /// <remarks>
+        /// <para>If no matching configuration could be found for any of the
+        /// given instruments, the first one from the file will be used.</para>
+        /// <para>The string provided <i>must</i> be encoded in UTF-8. Any other
+        /// narrow character string is illegal. Specifically, Latin-1 or
+        /// ISO 8859-1 literal strings are illegal.</para>
+        /// </remarks>
+        /// <param name="instruments">The instruments to be configured.</param>
+        /// <param name="cnt">The number of instruments in
+        /// <paramref name="instruments" />.</param>
+        /// <param name="str">The JSON configuration string.  This string
+        /// must be UTF-8.</param>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="str" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="nlohmann::json::exception">If the input could not
+        /// be parsed, eg because it is ISO 8859-1 and not UTF-8.</exception>
+        /// <exception cref="visa_exception">If the configuration could not be
+        /// applied to one or more of the instruments.</exception>
+        static void apply_from_json(_In_reads_(cnt) rtx_instrument *instruments,
+            _In_ const std::size_t cnt, _In_z_ const char *str);
+
+        /// <summary>
         /// Loads a single configuration from the given JSON string.
         /// </summary>
         /// <remarks>
@@ -217,6 +243,31 @@ namespace power_overwhelming {
         /// <exception cref="nlohmann::json::exception">If the input could not
         /// be parsed, eg because it is ISO 8859-1 and not UTF-8.</exception>
         static rtx_instrument_configuration deserialise(_In_z_ const char *str);
+
+        /// <summary>
+        /// Loads one or more configuration from the given JSON string.
+        /// </summary>
+        /// <remarks>
+        /// The string provided <i>must</i> be encoded in UTF-8. Any other
+        /// narrow character string is illegal. Specifically, Latin-1 or
+        /// ISO 8859-1 literal strings are illegal.
+        /// </remarks>
+        /// <param name="dst">Receives at most <paramref name="cnt" />
+        /// configurations from the JSON array provided.</param>
+        /// <param name="cnt">The number of elments that can be stored to
+        /// <paramref name="dst" />.</param>
+        /// <param name="str">The JSON string to be deserialised. This string
+        /// must be UTF-8 and can contain either an array or a single object.
+        /// </param>
+        /// <returns>The number of configurations found in
+        /// <paramref name="str" />.</returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="path" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="nlohmann::json::exception">If the input could not
+        /// be parsed, eg because it is ISO 8859-1 and not UTF-8.</exception>
+        static std::size_t deserialise(_When_(dst != nullptr,
+            _Out_writes_opt_(cnt)) rtx_instrument_configuration *dst,
+            _In_ std::size_t cnt, _In_z_ const char *str);
 
         /// <summary>
         /// Loads the instrument configurations from the given file.
@@ -329,6 +380,32 @@ namespace power_overwhelming {
             _In_ const rtx_instrument_configuration& configuration);
 
         /// <summary>
+        /// Serialises the given configurations as a JSON string.
+        /// </summary>
+        /// <param name="dst">A buffer of at least <paramref name="cnt_dst" />
+        /// code units to receive the output. This parameter can only be
+        /// <c>nullptr</c> if <paramref name="cnt_dst" /> is zero.</param>
+        /// <param name="cnt_dst">The size of <paramref name="dst" /> in number
+        /// of UTF-8 code units.</param>
+        /// <param name="configs">The configurations to serialise.</param>
+        /// <param name="cnt_configs">The number of configurations to serialise.
+        /// </param>
+        /// <returns>The number of UTF-8 code units (including the terminating
+        /// zero) required to store the JSON representation of the
+        /// configurations. Nothing will have been written if the return value is
+        /// larger than <paramref name="cnt" />.</returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="cnt_dst" /> is larger than zero, but
+        /// <paramref name="dst" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="configs" /> is <c>nullptr</c>.</exception>
+        static std::size_t serialise(
+            _When_(dst != nullptr, _Out_writes_opt_(cnt_dst)) char *dst,
+            _In_ const std::size_t cnt_dst,
+            _In_reads_(cnt_configs) const rtx_instrument_configuration *configs,
+            _In_ const std::size_t cnt_configs);
+
+        /// <summary>
         /// Serialises the configurations of the given instruments as a JSON
         /// string.
         /// </summary>
@@ -339,13 +416,15 @@ namespace power_overwhelming {
         /// of UTF-8 code units.</param>
         /// <param name="instruments">The instruments to serialise the
         /// configurations of.</param>
+        /// <param name="cnt_instruments">The number of instruments in
+        /// <paramref name="instruments" />.
         /// <returns>The number of UTF-8 code units (including the terminating
         /// zero) required to store the JSON representation of the
         /// configurations. Nothing will have been written if the return value is
-        /// larger than <paramref name="cnt" />.</returns>
-        /// <exception cref="std::invalid_argument">If <paramref name="cnt" />
-        /// is larger than zero, but <paramref name="dst" /> is <c>nullptr</c>.
-        /// </exception>
+        /// larger than <paramref name="cnt_dst" />.</returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="cnt_dst" /> is larger than zero, but
+        /// <paramref name="dst" /> is <c>nullptr</c>.</exception>
         /// <exception cref="std::invalid_argument">If
         /// <paramref name="instruments" /> is <c>nullptr</c>.</exception>
         static std::size_t serialise(
