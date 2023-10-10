@@ -202,6 +202,23 @@ namespace power_overwhelming {
             _In_ const std::size_t cnt, _In_z_ const wchar_t *path);
 
         /// <summary>
+        /// Loads a single configuration from the given JSON string.
+        /// </summary>
+        /// <remarks>
+        /// The string provided <i>must</i> be encoded in UTF-8. Any other
+        /// narrow character string is illegal. Specifically, Latin-1 or
+        /// ISO 8859-1 literal strings are illegal.
+        /// </remarks>
+        /// <param name="str">The JSON string to be deserialised. This string
+        /// must be UTF-8.</param>
+        /// <returns>The configuration represented by the string.</returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="path" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="nlohmann::json::exception">If the input could not
+        /// be parsed, eg because it is ISO 8859-1 and not UTF-8.</exception>
+        static rtx_instrument_configuration deserialise(_In_z_ const char *str);
+
+        /// <summary>
         /// Loads the instrument configurations from the given file.
         /// </summary>
         /// <param name="dst">The array to receive the configuration object. If
@@ -289,6 +306,27 @@ namespace power_overwhelming {
         /// failed.</exception>
         static void save(_In_ const rtx_instrument_configuration& configuration,
             _In_z_ const wchar_t *path);
+
+        /// <summary>
+        /// Serialises the given configuration as a JSON string.
+        /// </summary>
+        /// <param name="dst">A buffer of at least <paramref name="cnt" />
+        /// code units to receive the output. This parameter can only be
+        /// <c>nullptr</c> if <paramref name="cnt" /> is zero.</param>
+        /// <param name="cnt">The size of <paramref name="dst" /> in number
+        /// of characters.</param>
+        /// <param name="configuration">The configuration to be serialised.</param>
+        /// <returns>The number of UTF-8 code units (including the terminating
+        /// zero) required to store the JSON representation of the
+        /// configuration. Nothing will have been written if the return value is
+        /// larger than <paramref name="cnt" />.</returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="cnt" />
+        /// is larger than zero, but <paramref name="dst" /> is <c>nullptr</c>.
+        /// </exception>
+        static std::size_t serialise(
+            _When_(dst != nullptr, _Out_writes_opt_(cnt)) char *dst,
+            _In_ const std::size_t cnt,
+            _In_ const rtx_instrument_configuration& configuration);
 
         /// <summary>
         /// Initialises a new instance.

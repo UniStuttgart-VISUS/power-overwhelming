@@ -26,7 +26,7 @@ namespace test {
             Assert::AreEqual(0, int(trigger.input()), L"Default input", LINE_INFO());
             Assert::AreEqual("", trigger.level().unit(), L"Default level unit", LINE_INFO());
             Assert::AreEqual(0.0f, trigger.level().value(), L"Default level value", LINE_INFO());
-            Assert::AreEqual(int(oscilloscope_trigger_mode::normal), int(trigger.mode()), L"Default mode", LINE_INFO());
+            Assert::AreEqual(int(oscilloscope_trigger_mode::automatic), int(trigger.mode()), L"Default mode", LINE_INFO());
             Assert::AreEqual(int(oscilloscope_trigger_slope::rising), int(trigger.slope()), L"Default slope", LINE_INFO());
             Assert::AreEqual("CH1", trigger.source(), L"Default source", LINE_INFO());
             Assert::AreEqual("EDGE", trigger.type(), L"Default type", LINE_INFO());

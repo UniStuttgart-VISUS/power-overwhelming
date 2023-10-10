@@ -238,6 +238,22 @@ void visus::power_overwhelming::rtx_instrument_configuration::apply(
 
 
 /*
+ * visus::power_overwhelming::rtx_instrument_configuration::deserialise
+ */
+visus::power_overwhelming::rtx_instrument_configuration
+visus::power_overwhelming::rtx_instrument_configuration::deserialise(
+        _In_z_ const char *str) {
+    if (str == nullptr) {
+        throw std::invalid_argument("A valid UTF-8-encoded JSON string must be "
+            "provided.");
+    }
+
+    const auto json = nlohmann::json::parse(str);
+    return detail::json_deserialise<rtx_instrument_configuration>(json);
+}
+
+
+/*
  * visus::power_overwhelming::rtx_instrument_configuration::load
  */
 std::size_t visus::power_overwhelming::rtx_instrument_configuration::load(
@@ -369,6 +385,30 @@ void visus::power_overwhelming::rtx_instrument_configuration::save(
         _In_ const rtx_instrument_configuration& configuration,
         _In_z_ const wchar_t *path) {
     detail::save_json(detail::json_serialise(configuration), path);
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::serialise
+ */
+std::size_t visus::power_overwhelming::rtx_instrument_configuration::serialise(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) char *dst,
+        _In_ const std::size_t cnt,
+        _In_ const rtx_instrument_configuration& configuration) {
+    if ((cnt > 0) && (dst == nullptr)) {
+        throw std::invalid_argument("A valid output buffer must be provided.");
+    }
+
+    const auto json = detail::json_serialise(configuration);
+    const auto str = json.dump();
+    const auto retval = str.size() + 1;
+
+    if (cnt >= retval) {
+        std::copy(str.begin(), str.end(), dst);
+        dst[str.size()] = 0;
+    }
+
+    return retval;
 }
 
 
