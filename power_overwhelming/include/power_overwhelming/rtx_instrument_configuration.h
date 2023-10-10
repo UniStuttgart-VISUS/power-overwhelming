@@ -314,7 +314,7 @@ namespace power_overwhelming {
         /// code units to receive the output. This parameter can only be
         /// <c>nullptr</c> if <paramref name="cnt" /> is zero.</param>
         /// <param name="cnt">The size of <paramref name="dst" /> in number
-        /// of characters.</param>
+        /// of UTF-8 code units.</param>
         /// <param name="configuration">The configuration to be serialised.</param>
         /// <returns>The number of UTF-8 code units (including the terminating
         /// zero) required to store the JSON representation of the
@@ -327,6 +327,32 @@ namespace power_overwhelming {
             _When_(dst != nullptr, _Out_writes_opt_(cnt)) char *dst,
             _In_ const std::size_t cnt,
             _In_ const rtx_instrument_configuration& configuration);
+
+        /// <summary>
+        /// Serialises the configurations of the given instruments as a JSON
+        /// string.
+        /// </summary>
+        /// <param name="dst">A buffer of at least <paramref name="cnt_dst" />
+        /// code units to receive the output. This parameter can only be
+        /// <c>nullptr</c> if <paramref name="cnt_dst" /> is zero.</param>
+        /// <param name="cnt_dst">The size of <paramref name="dst" /> in number
+        /// of UTF-8 code units.</param>
+        /// <param name="instruments">The instruments to serialise the
+        /// configurations of.</param>
+        /// <returns>The number of UTF-8 code units (including the terminating
+        /// zero) required to store the JSON representation of the
+        /// configurations. Nothing will have been written if the return value is
+        /// larger than <paramref name="cnt" />.</returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="cnt" />
+        /// is larger than zero, but <paramref name="dst" /> is <c>nullptr</c>.
+        /// </exception>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="instruments" /> is <c>nullptr</c>.</exception>
+        static std::size_t serialise(
+            _When_(dst != nullptr, _Out_writes_opt_(cnt_dst)) char *dst,
+            _In_ const std::size_t cnt_dst,
+            _In_reads_(cnt_instruments) const rtx_instrument *instruments,
+            _In_ const std::size_t cnt_instruments);
 
         /// <summary>
         /// Initialises a new instance.

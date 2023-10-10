@@ -54,6 +54,33 @@ namespace detail {
         }
     }
 
+    static nlohmann::json to_json(
+            _In_reads_(cnt) const rtx_instrument *instruments,
+            _In_ const std::size_t cnt) {
+        if ((cnt > 0) && (instruments == nullptr)) {
+            throw std::invalid_argument("The instrument configurations array "
+                "to be serialised must not be null.");
+        }
+
+        auto retval = nlohmann::json::array();
+
+        for (std::size_t i = 0; i < cnt; ++i) {
+            rtx_instrument_configuration config(instruments[i]);
+            std::vector<char> name(instruments[i].name(nullptr, 0));
+            instruments[i].name(name.data(), name.size());
+
+            retval.push_back(nlohmann::json::object({
+                detail::json_serialise(detail::json_field_path,
+                    instruments[i].path()),
+                detail::json_serialise(detail::json_field_name,
+                    std::string(name.data())),
+                detail::json_serialise(detail::json_field_config, config)
+                }));
+        }
+
+        return retval;
+    }
+
 } /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
@@ -358,22 +385,7 @@ void visus::power_overwhelming::rtx_instrument_configuration::save(
         _In_reads_(cnt) const rtx_instrument *instruments,
         _In_ const std::size_t cnt,
         _In_z_ const wchar_t *path) {
-    auto data = nlohmann::json::array();
-
-    for (std::size_t i = 0; i < cnt; ++i) {
-        rtx_instrument_configuration config(instruments[i]);
-        std::vector<char> name(instruments[i].name(nullptr, 0));
-        instruments[i].name(name.data(), name.size());
-
-        data.push_back(nlohmann::json::object({
-            detail::json_serialise(detail::json_field_path,
-                instruments[i].path()),
-            detail::json_serialise(detail::json_field_name,
-                std::string(name.data())),
-            detail::json_serialise(detail::json_field_config, config)
-        }));
-    }
-
+    auto data = detail::to_json(instruments, cnt);
     detail::save_json(data, path);
 }
 
@@ -396,7 +408,8 @@ std::size_t visus::power_overwhelming::rtx_instrument_configuration::serialise(
         _In_ const std::size_t cnt,
         _In_ const rtx_instrument_configuration& configuration) {
     if ((cnt > 0) && (dst == nullptr)) {
-        throw std::invalid_argument("A valid output buffer must be provided.");
+        throw std::invalid_argument("A valid output buffer must be provided "
+            "unless the buffer size is declared to be zero.");
     }
 
     const auto json = detail::json_serialise(configuration);
@@ -404,6 +417,32 @@ std::size_t visus::power_overwhelming::rtx_instrument_configuration::serialise(
     const auto retval = str.size() + 1;
 
     if (cnt >= retval) {
+        std::copy(str.begin(), str.end(), dst);
+        dst[str.size()] = 0;
+    }
+
+    return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument_configuration::serialise
+ */
+std::size_t visus::power_overwhelming::rtx_instrument_configuration::serialise(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt_dst)) char *dst,
+        _In_ const std::size_t cnt_dst,
+        _In_reads_(cnt_instruments) const rtx_instrument *instruments,
+        _In_ const std::size_t cnt_instruments) {
+    if ((cnt_dst > 0) && (dst == nullptr)) {
+        throw std::invalid_argument("A valid output buffer must be provided "
+            "unless the buffer size is declared to be zero.");
+    }
+
+    const auto json = detail::to_json(instruments, cnt_instruments);
+    const auto str = json.dump();
+    const auto retval = str.size() + 1;
+
+    if (cnt_dst >= retval) {
         std::copy(str.begin(), str.end(), dst);
         dst[str.size()] = 0;
     }
