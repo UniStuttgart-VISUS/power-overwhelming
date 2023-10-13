@@ -357,9 +357,20 @@ void query_rtx_instrument(void) {
                 .operation_complete();
             i.throw_on_system_error();
 
-            //i.save_state_to_instrument(L"_PODUMP.SET").operation_complete();
-            //i.reset(true, true);
-            //i.load_state_from_instrument(L"_PODUMP.SET").operation_complete();
+            i.save_state_to_instrument(L"_PODUMP.SET").operation_complete();
+            i.reset(visus::power_overwhelming::rtx_instrument_reset::all);
+            i.load_state_from_instrument(L"_PODUMP.SET").operation_complete();
+            i.delete_file_from_instrument(L"_PODUMP.SET", L"/INT/SETTINGS");
+
+            {
+                auto state = i.copy_state_from_instrument();
+                std::ofstream of;
+                of.open("podump.set", std::ios::binary | std::ios::trunc);
+                of.write(state.as<char>(), state.size());
+                of.close();
+                i.reset(visus::power_overwhelming::rtx_instrument_reset::reset);
+                i.copy_state_to_instrument(state);
+            }
 
             i.acquisition(oscilloscope_acquisition_state::single)
                 .operation_complete()

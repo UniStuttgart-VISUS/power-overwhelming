@@ -649,7 +649,6 @@ namespace power_overwhelming {
         rtx_instrument& copy_file_to_instrument(_In_z_ const char *name,
             _In_ const blob& content, _In_opt_z_ const char *path = nullptr);
 
-#if false
         /// <summary>
         /// Persists the current state of the instrument and downloads it to
         /// the host computer.
@@ -665,8 +664,22 @@ namespace power_overwhelming {
         /// instrument failed.</exception>
         /// <exception cref="std::logic_error">If the method is called while
         /// the library was compiled without support for VISA.</exception>
-        blob copy_state_from_instrument(void) const;
-#endif
+        blob copy_state_from_instrument(void);
+
+        /// <summary>
+        /// Uploads the specified state to a temporary file on the instrument,
+        /// applies it and subsequently deletes the temporary file.
+        /// </summary>
+        /// <param name="state">A blob holding the state of the instrument
+        /// that should be applied.</param>
+        /// <returns><c>*this</c>.</returns>
+       /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If any of the parameters
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        rtx_instrument& copy_state_to_instrument(_In_ const blob& state);
 
         /// <summary>
         /// Retrieves the waveform data for the specified channel.
@@ -705,6 +718,48 @@ namespace power_overwhelming {
         oscilloscope_sample data(
             _In_ const oscilloscope_waveform_points points,
             _In_ const timeout_type timeout = 1000);
+
+        /// <summary>
+        /// Deletes the specified file from the instrumen.
+        /// </summary>
+        /// <remarks>
+        /// This method can be called if the library has been compiled without
+        /// support for VISA. It has no effect in this case.
+        /// </remarks>
+        /// <param name="name">The name of the file to be deleted.</param>
+        /// <param name="path">The path to the directory where the file is
+        /// located. If this is <c>nullptr</c>, the current working directory
+        /// on the instrument will be assumed.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="name" />
+        /// is <c>nullptr</c> or empty.</exception>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        rtx_instrument& delete_file_from_instrument(_In_z_ const wchar_t *name,
+            _In_opt_z_ const wchar_t *path = nullptr);
+
+        /// <summary>
+        /// Deletes the specified file from the instrumen.
+        /// </summary>
+        /// <remarks>
+        /// This method can be called if the library has been compiled without
+        /// support for VISA. It has no effect in this case.
+        /// </remarks>
+        /// <param name="name">The name of the file to be deleted.</param>
+        /// <param name="path">The path to the directory where the file is
+        /// located. If this is <c>nullptr</c>, the current working directory
+        /// on the instrument will be assumed.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="name" />
+        /// is <c>nullptr</c> or empty.</exception>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        rtx_instrument& delete_file_from_instrument(_In_z_ const char *name,
+            _In_opt_z_ const char *path = nullptr);
 
         /// <summary>
         /// Enable and configure one of the mathematical expressions.

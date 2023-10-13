@@ -329,7 +329,7 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        inline hmc8015_sensor &synchronise_clock(_In_ const bool utc = false) {
+        inline hmc8015_sensor& synchronise_clock(_In_ const bool utc = false) {
             this->_instrument.synchronise_clock(utc);
             return *this;
         }

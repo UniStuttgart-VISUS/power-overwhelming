@@ -813,7 +813,7 @@ visus::power_overwhelming::rtx_instrument::copy_file_to_instrument(
     }
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    auto &impl = this->check_not_disposed();
+    auto& impl = this->check_not_disposed();
 
     if ((path != nullptr) && (*path != 0)) {
         impl.format("MMEM:CDIR \"%s\"\n", path);
@@ -841,35 +841,64 @@ visus::power_overwhelming::rtx_instrument::copy_file_to_instrument(
 }
 
 
-#if false
-// TODO: that does not work atm. If we upload this again, the state is corrupted.
 /*
  * visus::power_overwhelming::rtx_instrument::copy_state_from_instrument
  */
 visus::power_overwhelming::blob
 visus::power_overwhelming::rtx_instrument::copy_state_from_instrument(
-        void) const {
+        void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
 
     // Save to temporary file on internal device memory.
-    auto file = detail::make_random_file_name(".SET");
-    this->save_state_to_instrument(file.c_str());
-    this->operation_complete();
+    const auto directory = "/INT";
+    const auto file = detail::make_random_file_name(".SET");
+    this->save_state_to_instrument(file.c_str(), directory);
+
+    // Delete the temporary file from the instrument once the method exits.
+    auto g = on_exit([this, directory, file] {
+        this->delete_file_from_instrument(file.c_str(), directory);
+    });
 
     // Download the temporary file.
+    this->operation_complete();
     auto retval = this->copy_file_from_instrument(file.c_str());
     this->operation_complete();
-
-    // Delete the temporary file from device memory.
-    impl.format("MMEM:DEL \"%s\"\n", file.c_str());
 
     return retval;
 #else /* defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(detail::no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
-#endif
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::copy_state_to_instrument
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::copy_state_to_instrument(
+        _In_ const blob& state) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+
+    // Upload the state file to the device.
+    const auto directory = "/INT";
+    const auto file = detail::make_random_file_name(".SET");
+    this->copy_file_to_instrument(file.c_str(), state, directory);
+
+    // Delete the temporary file from the instrument once the method exits.
+    auto g = on_exit([this, directory, file] {
+        this->delete_file_from_instrument(file.c_str(), directory);
+    });
+
+    // Apply the state.
+    this->operation_complete();
+    this->load_state_from_instrument(file.c_str(), directory);
+    this->operation_complete();
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+    return *this;
+}
 
 
 /*
@@ -981,6 +1010,49 @@ visus::power_overwhelming::rtx_instrument::data(
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(detail::no_visa_error_msg);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::delete_file_from_instrument
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::delete_file_from_instrument(
+        _In_z_ const wchar_t *name,
+        _In_opt_z_ const wchar_t *path) {
+    auto n = convert_string<char>(name);
+    auto p = convert_string<char>(path);
+    return this->delete_file_from_instrument(n.c_str(),
+        (path != nullptr) ? p.c_str() : nullptr);
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::delete_file_from_instrument
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::delete_file_from_instrument(
+        _In_z_ const char *name,
+        _In_opt_z_ const char *path) {
+    if ((name == nullptr) || (*name == 0)) {
+        throw std::invalid_argument("The name of the file to read cannot be "
+            "null or empty.");
+    }
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto cmd = std::string("MMEM:DEL \"");
+
+    if ((path != nullptr) && (*path != 0)) {
+        cmd += path;
+        cmd += "/";
+    }
+
+    cmd += name;
+    cmd += "\"\n";
+    this->write(cmd.c_str());
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+    return *this;
 }
 
 
@@ -1104,7 +1176,6 @@ visus::power_overwhelming::rtx_instrument::reset(
 
     return *this;
 }
-
 
 
 /*
