@@ -47,8 +47,8 @@ void CALLBACK
 visus::power_overwhelming::detail::tinkerforge_sensor_impl::power_callback(
         const std::int32_t power, void *data) {
     assert(data != nullptr);
-    const auto timestamp = create_timestamp(timestamp_resolution::milliseconds);
     auto that = static_cast<tinkerforge_sensor_impl *>(data);
+    const auto timestamp = create_timestamp(that->async_sampling.resolution());
     std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
     that->async_data[1] = static_cast<measurement::value_type>(power)
         / static_cast<measurement::value_type>(1000);
