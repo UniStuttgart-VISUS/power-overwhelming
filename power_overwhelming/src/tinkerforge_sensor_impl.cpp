@@ -17,10 +17,10 @@
  */
 void CALLBACK
 visus::power_overwhelming::detail::tinkerforge_sensor_impl::current_callback(
-    const std::int32_t current, void *data) {
+        const std::int32_t current, void *data) {
     assert(data != nullptr);
-    const auto timestamp = create_timestamp(timestamp_resolution::milliseconds);
     auto that = static_cast<tinkerforge_sensor_impl *>(data);
+    const auto timestamp = create_timestamp(that->async_sampling.resolution());
     std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
     that->async_data[0] = static_cast<measurement::value_type>(current)
         / static_cast<measurement::value_type>(1000);
@@ -63,8 +63,8 @@ void CALLBACK
 visus::power_overwhelming::detail::tinkerforge_sensor_impl::voltage_callback(
         const std::int32_t voltage, void *data) {
     assert(data != nullptr);
-    const auto timestamp = create_timestamp(timestamp_resolution::milliseconds);
     auto that = static_cast<tinkerforge_sensor_impl *>(data);
+    const auto timestamp = create_timestamp(that->async_sampling.resolution());
     std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
     that->async_data[2] = static_cast<measurement::value_type>(voltage)
         / static_cast<measurement::value_type>(1000);
