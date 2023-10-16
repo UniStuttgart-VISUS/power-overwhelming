@@ -14,10 +14,12 @@
 #include "power_overwhelming/convert_string.h"
 
 #include "hmc8015_sensor_impl.h"
+#include "no_visa_error_msg.h"
 #include "sampler.h"
 #include "string_functions.h"
 #include "timestamp.h"
 #include "tokenise.h"
+#include "visa_instrument_impl.h"
 #include "visa_library.h"
 
 
@@ -106,6 +108,122 @@ visus::power_overwhelming::hmc8015_sensor::~hmc8015_sensor(void) {
 
 
 /*
+ * visus::power_overwhelming::hmc8015_sensor::copy_file_from_instrument
+ */
+visus::power_overwhelming::blob
+visus::power_overwhelming::hmc8015_sensor::copy_file_from_instrument(
+        _In_z_ const wchar_t *name, _In_ const bool use_usb) const {
+    const auto n = convert_string<char>(name);
+    return this->copy_file_from_instrument(n.c_str(), use_usb);
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::copy_file_from_instrument
+ */
+visus::power_overwhelming::blob
+visus::power_overwhelming::hmc8015_sensor::copy_file_from_instrument(
+        _In_z_ const char *name, _In_  const bool use_usb) const {
+    if ((name == nullptr) || (*name == 0)) {
+        throw std::invalid_argument("The name of the file to read cannot be "
+            "null or empty.");
+    }
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    this->check_not_disposed();
+
+    std::string query("DATA:DATA? \"");
+    query += name;
+    query += "\", ";
+    query += (use_usb ? "EXT" : "INT");
+
+    this->_instrument.write(query.c_str());
+    return this->_instrument.read_binary();
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::runtime_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::custom_functions
+ */
+visus::power_overwhelming::hmc8015_sensor&
+visus::power_overwhelming::hmc8015_sensor::custom_functions(
+        _In_reads_(cnt) const hmc8015_function *functions,
+        _In_ const std::size_t cnt) {
+    if (functions == nullptr) {
+        throw std::invalid_argument("The list of measurement functions must be "
+            "valid.");
+    }
+
+    std::string cmd("CHAN1:MEAS:FUNC ");
+
+    for (std::size_t i = 0; i < cnt; ++i) {
+        if (i > 0) {
+            cmd += ",";
+        }
+        cmd += convert_string<char>(to_string(functions[i]));
+    }
+
+    cmd += "\n";
+
+    this->_instrument.write(cmd.c_str());
+
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::default_functions
+ */
+visus::power_overwhelming::hmc8015_sensor&
+visus::power_overwhelming::hmc8015_sensor::default_functions(void) {
+    this->check_not_disposed();
+    this->_instrument.write("CHAN1:MEAS:FUNC URMS, URAN, IRMS, "
+        "IRAN, S, P\n");
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::delete_file_from_instrument
+ */
+visus::power_overwhelming::hmc8015_sensor&
+visus::power_overwhelming::hmc8015_sensor::delete_file_from_instrument(
+        _In_z_ const wchar_t *name,
+        _In_ const bool use_usb) {
+    const auto n = convert_string<char>(name);
+    return this->delete_file_from_instrument(n.c_str(), use_usb);
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::delete_file_from_instrument
+ */
+visus::power_overwhelming::hmc8015_sensor&
+visus::power_overwhelming::hmc8015_sensor::delete_file_from_instrument(
+        _In_z_ const char *name,
+        _In_ const bool use_usb) {
+    if ((name == nullptr) || (*name == 0)) {
+        throw std::invalid_argument("The name of the file to write cannot be "
+            "null or empty.");
+    }
+
+    this->check_not_disposed();
+
+    std::string query("DATA:DEL \"");
+    query += name;
+    query += "\", ";
+    query += (use_usb ? "EXT" : "INT");
+
+    this->_instrument.write(query.c_str());
+    return *this;
+}
+
+
+/*
  * visus::power_overwhelming::hmc8015_sensor::display
  */
 visus::power_overwhelming::hmc8015_sensor&
@@ -145,12 +263,27 @@ visus::power_overwhelming::hmc8015_sensor::display(
 
 
 /*
- * visus::power_overwhelming::hmc8015_sensor::is_log
+ * visus::power_overwhelming::hmc8015_sensor::functions
  */
-bool visus::power_overwhelming::hmc8015_sensor::is_log(void) {
+std::size_t visus::power_overwhelming::hmc8015_sensor::functions(
+        _Out_writes_opt_z_(cnt) char *dst,
+        _In_ const std::size_t cnt) const {
     this->check_not_disposed();
-    auto response = this->_instrument.query("LOG:STATE?\n");
-    return (!response.empty() && (*response.as<char>() != '0'));
+    auto value = this->_instrument.query("CHAN1:MEAS:FUNC?\n");
+
+    // Copy as much as the output buffer can hold.
+    if (dst != nullptr) {
+        for (std::size_t i = 0; (i < cnt) && (i < value.size()); ++i) {
+            _Analysis_assume_(value.as<char>(i) != nullptr);
+            dst[i] = *value.as<char>(i);
+        }
+
+        // The last character in the reponse is always the line feed, which
+        // we just override with the the string terminator.
+        dst[cnt - 1] = 0;
+    }
+
+    return value.size();
 }
 
 
@@ -183,6 +316,16 @@ visus::power_overwhelming::hmc8015_sensor::log(_In_ const bool enable) {
     this->_instrument.write(cmd);
 
     return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::logging
+ */
+bool visus::power_overwhelming::hmc8015_sensor::logging(void) const {
+    this->check_not_disposed();
+    auto response = this->_instrument.query("LOG:STATE?\n");
+    return (!response.empty() && (*response.as<char>() != '0'));
 }
 
 
@@ -439,6 +582,7 @@ visus::power_overwhelming::hmc8015_sensor::sample_sync(
         _In_ const timestamp_resolution resolution) const {
     assert(*this);
 
+    // TODO: could use CHAN1:MEAS:FORM BIN here.
     auto response = this->_instrument.query("CHAN1:MEAS:DATA?\n");
     auto timestamp = detail::create_timestamp(resolution);
     auto tokens = detail::tokenise(std::string(response.begin(),
@@ -477,8 +621,7 @@ void visus::power_overwhelming::hmc8015_sensor::configure(void) {
 
     // Configure the stuff we want to measure.
     // Default: URMS,IRMS,P,FPLL,URAN,IRAN,S,Q,LAMB,PHI
-    this->_instrument.write("CHAN1:MEAS:FUNC URMS, URAN, IRMS, "
-        "IRAN, S, P\n");
+    this->default_functions();
 
     this->_instrument.write("CHAN1:ACQ:MODE AUTO\n");
 }

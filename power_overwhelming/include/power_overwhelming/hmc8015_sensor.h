@@ -5,12 +5,14 @@
 
 #pragma once
 
+#include <array>
 #include <climits>
 #include <cstddef>
 #include <cstdint>
 #include <cinttypes>
 
 #include "power_overwhelming/blob.h"
+#include "power_overwhelming/hmc8015_function.h"
 #include "power_overwhelming/sampler_source.h"
 #include "power_overwhelming/sensor.h"
 #include "power_overwhelming/visa_instrument.h"
@@ -109,6 +111,101 @@ namespace power_overwhelming {
         virtual ~hmc8015_sensor(void);
 
         /// <summary>
+        /// Reads a file from the device into memory.
+        /// </summary>
+        /// <remarks>
+        /// The specified file is downloaded in binary mode, ie if the file
+        /// contained text, the data received is not necessarily
+        /// null-terminated. If you expect a text file, copy the whole range of
+        /// the <see cref="blob" /> into a string object.
+        /// </remarks>
+        /// <param name="name">The name of the file to retrieve.</param>
+        /// <param name="use_usb">If <c>true</c>, the file is copied from a USB
+        /// thumb drive attached to the device rather than into the internal
+        /// memory of the device. This parameter defaults to <c>false</c>, ie
+        /// to the internal memory.</param>
+        /// <returns>The content of the file.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If <paramref name="name" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
+        blob copy_file_from_instrument(_In_z_ const wchar_t *name,
+            _In_ const bool use_usb = false) const;
+
+        /// <summary>
+        /// Reads a file from the device into memory.
+        /// </summary>
+        /// <remarks>
+        /// The specified file is downloaded in binary mode, ie if the file
+        /// contained text, the data received is not necessarily
+        /// null-terminated. If you expect a text file, copy the whole range of
+        /// the <see cref="blob" /> into a string object.
+        /// </remarks>
+        /// <param name="name">The name of the file to retrieve.</param>
+        /// <param name="use_usb">If <c>true</c>, the file is copied from a USB
+        /// thumb drive attached to the device rather than into the internal
+        /// memory of the device. This parameter defaults to <c>false</c>, ie
+        /// to the internal memory.</param>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If <paramref name="name" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
+        blob copy_file_from_instrument(_In_z_ const char *name,
+            _In_ const bool use_usb = false) const;
+
+        /// <summary>
+        /// Deletes the specified file from the instrument.
+        /// </summary>
+        /// <remarks>
+        /// This method can be called if the library has been compiled without
+        /// support for VISA. It has no effect in this case.
+        /// </remarks>
+        /// <param name="name">The name of the file to be deleted.</param>
+        /// <param name="use_usb">If <c>true</c>, the file is on a USB thumb
+        /// drive attached to the device rather than into the internal memory
+        /// of the device. This parameter defaults to <c>false</c>, ie to the
+        ///  internal memory.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If any of the parameters
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        hmc8015_sensor& delete_file_from_instrument(_In_z_ const wchar_t *name,
+            _In_ const bool use_usb = false);
+
+        /// <summary>
+        /// Deletes the specified file from the instrument.
+        /// </summary>
+        /// <remarks>
+        /// This method can be called if the library has been compiled without
+        /// support for VISA. It has no effect in this case.
+        /// </remarks>
+        /// <param name="name">The name of the file to be deleted.</param>
+        /// <param name="use_usb">If <c>true</c>, the file is on a USB thumb
+        /// drive attached to the device rather than into the internal memory
+        /// of the device. This parameter defaults to <c>false</c>, ie to the
+        ///  internal memory.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="std::invalid_argument">If any of the parameters
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        hmc8015_sensor& delete_file_from_instrument(_In_z_ const char *name,
+            _In_ const bool use_usb = false);
+
+        /// <summary>
         /// Sets the current range.
         /// </summary>
         /// <remarks>
@@ -138,6 +235,82 @@ namespace power_overwhelming {
         }
 
         /// <summary>
+        /// Changes the functions the instrument is sampling to the given
+        /// user-defined ones.
+        /// </summary>
+        /// <remarks>
+        /// <para>This is an advanced API which should only be used if you know
+        /// what you are doing. The <see cref="sample" /> method expects certain
+        /// functions to be enabled in a specific order. If you change this
+        /// here, the results of the sensor might be wrong or the sensor might
+        /// crash. The functions must therefore only changed for logging to a
+        /// file while never using the generic sampling methods defined by
+        /// <see cref="sensor" />. You can reset the functions to be sampled
+        /// using the <see cref="default_functions" /> method.</para>
+        /// </remarks>
+        /// <param name="functions">An array of <paramref name="cnt" />
+        /// <see cref="hmc8015_function" />s to measure.</param>
+        /// <param name="cnt">The number of functions to measure.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="functions" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        hmc8015_sensor& custom_functions(
+            _In_reads_(cnt) const hmc8015_function *functions,
+            _In_ const std::size_t cnt);
+
+        /// <summary>
+        /// Changes the functions the instrument is sampling to the given
+        /// compile-time list.
+        /// </summary>
+        /// <remarks>
+        /// <para>This is an advanced API which should only be used if you know
+        /// what you are doing. The <see cref="sample" /> method expects certain
+        /// functions to be enabled in a specific order. If you change this
+        /// here, the results of the sensor might be wrong or the sensor might
+        /// crash. The functions must therefore only changed for logging to a
+        /// file while never using the generic sampling methods defined by
+        /// <see cref="sensor" />. You can reset the functions to be sampled
+        /// using the <see cref="default_functions" /> method.</para>
+        /// <para>This method allows for easy specification of compile-time
+        /// function lists without declaring an array.</para>
+        /// </remarks>
+        /// <param name="functions">An initialiser list of the functions to be
+        /// enabled.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::invalid_argument">If
+        /// <paramref name="functions" /> is <c>nullptr</c>.</exception>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        inline std::size_t custom_functions(
+                _In_ std::initializer_list<hmc8015_function> functions) {
+            return this->custom_functions(functions.begin(), functions.size());
+        }
+
+        /// <summary>
+        /// Enables the functions that are required for sampling the sensor
+        /// using <see cref="sample" />.
+        /// </summary>
+        /// <remarks>
+        /// <para>The <see cref="sample" /> function assumes certain values in a
+        /// specific order. If the caller has changed these functions using
+        /// the <see cref="custom_functions" /> method, for instance to create a
+        /// custom log file, and wants to sample the instrument as a
+        /// sensor, this function needs to be called to reset the functions
+        /// to the expected layout.</para>
+        /// <para>For performance reasons, <see cref="sample" /> will not check
+        /// whether the functions have been reconfigured and do not match
+        /// the expected layout.</para>
+        /// </remarks>
+        /// <returns><c>*this</c>.</returns>
+        hmc8015_sensor& default_functions(void);
+
+        /// <summary>
         /// Displays the given text or clears the display.
         /// </summary>
         /// <param name="text">The text to be displayed or <c>nullptr</c> to
@@ -162,6 +335,19 @@ namespace power_overwhelming {
         hmc8015_sensor& display(_In_opt_z_ const wchar_t *text);
 
         /// <summary>
+        /// Answer the functions the instrument is currently sampling in form of
+        /// a comma-separated list.
+        /// </summary>
+        /// <param name="dst">A buffer to receive at least
+        /// <paramref name="cnt" /> characters.</param>
+        /// <param name="cnt">The size of <paramref name="dst" /> in characters.
+        /// </param>
+        /// <returns>The required buffer size to store the whole output, in
+        /// characters.</returns>
+        std::size_t functions(_Out_writes_opt_z_(cnt) char *dst,
+            _In_ const std::size_t cnt) const;
+
+        /// <summary>
         /// Gets whether logging is enabled or not.
         /// </summary>
         /// <returns><c>true</c> if the instrument is currently logging,
@@ -170,7 +356,9 @@ namespace power_overwhelming {
         /// object that has been disposed by moving it.</exception>
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
-        bool is_log(void);
+        inline bool is_log(void) const {
+            return this->logging();
+        }
 
         /// <summary>
         /// Enables or disables logging.
@@ -183,6 +371,17 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the VISA command was not
         /// processed successfully.</exception>
         hmc8015_sensor& log(_In_ const bool enable);
+
+        /// <summary>
+        /// Gets whether logging is enabled or not.
+        /// </summary>
+        /// <returns><c>true</c> if the instrument is currently logging,
+        /// <c>false</c> otherwise.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        bool logging(void) const;
 
         /// <summary>
         /// Configures how logging started by <see cref="log" /> behaves.

@@ -720,7 +720,7 @@ namespace power_overwhelming {
             _In_ const timeout_type timeout = 1000);
 
         /// <summary>
-        /// Deletes the specified file from the instrumen.
+        /// Deletes the specified file from the instrument.
         /// </summary>
         /// <remarks>
         /// This method can be called if the library has been compiled without
@@ -741,7 +741,7 @@ namespace power_overwhelming {
             _In_opt_z_ const wchar_t *path = nullptr);
 
         /// <summary>
-        /// Deletes the specified file from the instrumen.
+        /// Deletes the specified file from the instrument.
         /// </summary>
         /// <remarks>
         /// This method can be called if the library has been compiled without

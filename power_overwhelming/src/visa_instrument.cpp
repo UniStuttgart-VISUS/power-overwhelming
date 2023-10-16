@@ -596,6 +596,18 @@ visus::power_overwhelming::visa_instrument::read_all(
 
 
 /*
+ * visus::power_overwhelming::visa_instrument::read_binary
+ */
+visus::power_overwhelming::blob
+visus::power_overwhelming::visa_instrument::read_binary(void) const {
+    auto& impl = this->check_not_disposed();
+    auto retval = impl.read_binary();
+    this->throw_on_system_error();
+    return retval;
+}
+
+
+/*
  * visus::power_overwhelming::visa_instrument::reset
  */
 visus::power_overwhelming::visa_instrument&

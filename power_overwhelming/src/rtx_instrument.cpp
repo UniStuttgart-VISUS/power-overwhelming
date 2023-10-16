@@ -771,7 +771,7 @@ visus::power_overwhelming::rtx_instrument::copy_file_from_instrument(
     }
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    auto &impl = this->check_not_disposed();
+    auto& impl = this->check_not_disposed();
 
     if ((path != nullptr) && (*path != 0)) {
         impl.format("MMEM:CDIR \"%s\"\n", path);

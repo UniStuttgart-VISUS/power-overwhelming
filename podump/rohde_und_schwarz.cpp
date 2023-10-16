@@ -18,14 +18,20 @@ void query_hmc8015(void) {
     try {
         std::vector<hmc8015_sensor> sensors;
         sensors.resize(hmc8015_sensor::for_all(nullptr, 0));
-        hmc8015_sensor::for_all(sensors.data(), sensors.size());
+        hmc8015_sensor::for_all(sensors.data(), sensors.size(), 10000);
 
-        for (auto &s : sensors) {
+        for (auto& s : sensors) {
             s.display("Die Kraft ist überwältigend!");
             s.synchronise_clock();
             s.log_file("podump.csv", true, true);
             s.current_range(instrument_range::maximum);
             s.voltage_range(instrument_range::explicitly, 300);
+
+            {
+                std::vector<char> f(s.functions(nullptr, 0));
+                s.functions(f.data(), f.size());
+                std::cout << "Active functions: " << f.data() << std::endl;
+            }
 
 #if defined(_WIN32)
             SYSTEMTIME now;
@@ -42,7 +48,22 @@ void query_hmc8015(void) {
             s.log_behaviour(std::numeric_limits<float>::lowest(),
                 log_mode::duration);
             s.log(true);
-            std::wcout << s.is_log() << std::endl;
+            std::wcout << s.logging() << std::endl;
+
+            {
+                hmc8015_function input[] = { hmc8015_function::apparent_power, hmc8015_function::ampere_hour };
+                s.custom_functions(input, 2);
+                std::vector<char> functions(s.functions(nullptr, 0));
+                s.functions(functions.data(), functions.size());
+                std::cout << "Active functions: " << functions.data() << std::endl;
+            }
+
+            {
+                s.custom_functions({ hmc8015_function::rms_current, hmc8015_function::rms_voltage });
+                std::vector<char> functions(s.functions(nullptr, 0));
+                s.functions(functions.data(), functions.size());
+                std::cout << "Active functions: " << functions.data() << std::endl;
+            }
 
             std::vector<char> path(1024);
             s.log_file(path.data(), path.size());
@@ -50,10 +71,17 @@ void query_hmc8015(void) {
             s.log(false);
 
             std::wcout << s.name() << L":" << std::endl;
+            s.default_functions();
             auto m = s.sample(timestamp_resolution::milliseconds);
             std::wcout << m.timestamp() << L": " << m.voltage() << " V * "
                 << m.current() << " A = " << m.power() << L" W"
                 << std::endl;
+
+            auto log_data = s.copy_file_from_instrument("podump.csv", true);
+            std::string log(log_data.begin(), log_data.end());
+            std::cout << log << std::endl;
+
+            s.delete_file_from_instrument("podump.csv", true);
         }
 
     } catch (std::exception& ex) {

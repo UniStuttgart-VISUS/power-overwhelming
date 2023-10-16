@@ -774,6 +774,16 @@ namespace power_overwhelming {
         blob read_all(_In_ const std::size_t buffer_size = 1024) const;
 
         /// <summary>
+        /// Reads a binary response starting with the # marker for the number of
+        /// bytes to follow.
+        /// </summary>
+        /// <returns>The binary data excluding the length marker.</returns>
+        /// <exception cref="visa_exception">If the operation failed.</exception>
+        /// <exception cref="std::runtime_error">If the data being read are not
+        /// binary.</exception>
+        blob read_binary(void) const;
+
+        /// <summary>
         /// Resets the instrument to its default state by issuing the
         /// <c>*RST</c> command.
         /// </summary>
