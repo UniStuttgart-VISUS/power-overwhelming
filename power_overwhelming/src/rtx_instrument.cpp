@@ -296,14 +296,14 @@ visus::power_overwhelming::rtx_instrument::acquisition(
             break;
 
         case oscilloscope_acquisition_state::single:
-            //if (wait) {
-            //    this->query("*SING; *OPC?\n");
-            //} else {
-            //    this->write("SING\n");
-            //}
+            if (wait) {
+                this->query("SING; *OPC?\n");
+            } else {
+                this->write("SING\n");
+            }
             // TODO: The above does not work reliably.
-            this->write("SING\n");
-            this->query("*OPC?\n");
+            //this->write("SING\n");
+            //this->query("*OPC?\n");
             break;
 
         case oscilloscope_acquisition_state::interrupt:
