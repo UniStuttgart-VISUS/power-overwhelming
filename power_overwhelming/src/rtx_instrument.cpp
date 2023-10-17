@@ -1170,8 +1170,7 @@ visus::power_overwhelming::rtx_instrument::reset(
         (flags & flags_type::status) == flags_type::status);
 
     if ((flags & flags_type::stop) == flags_type::stop) {
-        this->acquisition(oscilloscope_acquisition_state::interrupt);
-        this->operation_complete();
+        this->acquisition(oscilloscope_acquisition_state::stop, true);
     }
 
     return *this;
