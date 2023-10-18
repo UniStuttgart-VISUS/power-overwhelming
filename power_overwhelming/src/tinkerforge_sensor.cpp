@@ -236,6 +236,25 @@ visus::power_overwhelming::tinkerforge_sensor::description(
 
 
 /*
+ * visus::power_overwhelming::tinkerforge_sensor::error_count
+ */
+visus::power_overwhelming::tinkerforge_error_count
+visus::power_overwhelming::tinkerforge_sensor::error_count(void) const {
+    this->check_not_disposed();
+
+    tinkerforge_error_count retval;
+    auto status = ::voltage_current_v2_get_spitfp_error_count(
+        &this->_impl->bricklet, &retval.ack_checksum, &retval.message_checksum,
+        &retval.frame, &retval.overflow);
+    if (status < 0) {
+        throw tinkerforge_exception(status);
+    }
+
+    return retval;
+}
+
+
+/*
  * visus::power_overwhelming::tinkerforge_sensor::identify
  */
 void visus::power_overwhelming::tinkerforge_sensor::identify(

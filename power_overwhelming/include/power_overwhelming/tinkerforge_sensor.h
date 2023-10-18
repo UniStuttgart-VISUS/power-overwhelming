@@ -8,6 +8,7 @@
 #include "power_overwhelming/conversion_time.h"
 #include "power_overwhelming/sample_averaging.h"
 #include "power_overwhelming/sensor.h"
+#include "power_overwhelming/tinkerforge_error_count.h"
 #include "power_overwhelming/tinkerforge_sensor_definition.h"
 #include "power_overwhelming/tinkerforge_sensor_source.h"
 
@@ -307,6 +308,17 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>The description of what the sensor is measuring.</returns>
         _Ret_maybenull_z_ const wchar_t *description(void) const noexcept;
+
+        /// <summary>
+        /// Answer the number of errors that occured while the brick
+        /// communicated to the bricklet.
+        /// </summary>
+        /// <returns>The error statistics</returns>
+        /// <exception cref="std::runtime_error">If the sensor has been disposed
+        /// by a move before.</exception>
+        /// <exception cref="tinkerforge_exception">If the operation failed.
+        /// </exception>
+        tinkerforge_error_count error_count(void) const;
 
         /// <summary>
         /// Identify the bricklet used for the sensor.
