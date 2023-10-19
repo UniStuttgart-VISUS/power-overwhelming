@@ -308,7 +308,7 @@ visus::power_overwhelming::rtx_instrument::acquisition(
 
         case oscilloscope_acquisition_state::interrupt:
         default:
-            this->write("ACQ:STAT BREAK\n");
+            this->write("ACQ:STAT BRE\n");
             break;
     }
 
@@ -1170,7 +1170,7 @@ visus::power_overwhelming::rtx_instrument::reset(
         (flags & flags_type::status) == flags_type::status);
 
     if ((flags & flags_type::stop) == flags_type::stop) {
-        this->acquisition(oscilloscope_acquisition_state::stop, true);
+        this->acquisition(oscilloscope_acquisition_state::interrupt, true);
     }
 
     return *this;
