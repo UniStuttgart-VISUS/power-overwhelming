@@ -445,7 +445,7 @@ std::uint16_t visus::power_overwhelming::visa_instrument::interface_type(
  */
 visus::power_overwhelming::visa_instrument&
 visus::power_overwhelming::visa_instrument::on_operation_complete(
-        _In_opt_ void(*callback)(visa_instrument &, void *),
+        _In_opt_ void(*callback)(visa_instrument&, void *),
         _In_opt_ void *context,
         _In_opt_ void (*context_deleter)(void *)) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
