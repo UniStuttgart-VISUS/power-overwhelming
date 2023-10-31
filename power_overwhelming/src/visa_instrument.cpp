@@ -304,6 +304,47 @@ visus::power_overwhelming::visa_instrument::attribute(_In_ ViAttr name,
 }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
+/*
+ * visus::power_overwhelming::visa_instrument::beep
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::beep(_In_ const std::size_t cnt) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    for (std::size_t i = 0; i < cnt; ++i) {
+        this->write("SYST:BEEP:IMM\n");
+    }
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::beep_on_error
+ */
+bool visus::power_overwhelming::visa_instrument::beep_on_error(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("SYST:BEEP:ERR:STAT?\n");
+    auto status = std::atoi(response.as<char>());
+    return (status != 0);
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return false;
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::beep_on_error
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::beep_on_error(
+        _In_ const bool enable) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto& impl = this->check_not_disposed();
+    impl.format("SYST:BEEP:ERR:STAT %s\n", enable ? "ON" : "OFF");
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
 
 /*
  * visus::power_overwhelming::visa_instrument::buffer
@@ -437,6 +478,108 @@ std::size_t visus::power_overwhelming::visa_instrument::identify(
 std::uint16_t visus::power_overwhelming::visa_instrument::interface_type(
         void) const {
     return this->check_not_disposed().interface_type();
+}
+
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::name
+ */
+std::size_t visus::power_overwhelming::visa_instrument::name(
+        _Out_writes_(cnt) wchar_t *dst,
+        _In_ const std::size_t cnt) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto retval = this->name(nullptr, 0);
+
+    if ((dst != nullptr) && (cnt >= retval)) {
+        std::vector<char> buffer(retval);
+        retval = this->name(buffer.data(), buffer.size());
+        auto name = convert_string<wchar_t>(buffer.data());
+
+#if (defined(_MSC_VER) && (_MSC_VER >= 1400))
+        ::wcscpy_s(dst, cnt, name.c_str());
+#else /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
+        ::wcscpys(dst, name.c_str());
+#endif /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
+    }
+
+    return retval;
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return 0;
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::name
+ */
+std::size_t visus::power_overwhelming::visa_instrument::name(
+        _Out_writes_(cnt) char *dst,
+        _In_ const std::size_t cnt) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto name = this->query("SYST:NAME?\n");
+    auto n = name.as<char>();
+    _Analysis_assume_(n != nullptr);
+
+    detail::trim_eol(n);
+    n = detail::trim_if(n, [](const char c) { return c == '"'; });
+    auto retval = ::strlen(n) + 1;
+
+    if ((dst != nullptr) && (cnt >= retval)) {
+#if (defined(_MSC_VER) && (_MSC_VER >= 1400))
+        ::strcpy_s(dst, cnt, n);
+#else /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
+        ::strcpy(dst, n);
+#endif /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
+    }
+
+    return retval;
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return 0;
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::name
+ */
+std::size_t visus::power_overwhelming::visa_instrument::name(
+        _In_opt_ const std::nullptr_t dst,
+        _In_ const std::size_t cnt) const {
+    return this->name(static_cast<char *>(nullptr), 0);
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::name
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::name(_In_z_ const wchar_t *name) {
+    if (name == nullptr) {
+        throw std::invalid_argument("The name of the instrument must not be "
+            "null.");
+    }
+
+    auto n = convert_string<char>(name);
+    return this->name(n.c_str());
+}
+
+
+/*
+ * visus::power_overwhelming::visa_instrument::name
+ */
+visus::power_overwhelming::visa_instrument&
+visus::power_overwhelming::visa_instrument::name(_In_z_ const char *name) {
+    if (name == nullptr) {
+        throw std::invalid_argument("The name of the instrument must not be "
+            "null.");
+    }
+
+    auto& impl = this->check_not_disposed();
+    impl.format("SYST:NAME \"%s\"\n", name);
+    return *this;
 }
 
 

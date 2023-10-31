@@ -348,6 +348,98 @@ namespace power_overwhelming {
             _In_ const std::size_t cnt) const;
 
         /// <summary>
+        /// Gets the configured name of the instrument.
+        /// </summary>
+        /// <param name="dst">A buffer that is able to hold at least
+        /// <paramref name="cnt" /> elements. It is safe to pass <c>nullptr</c>,
+        /// in which case the method will only measure the required buffer size.
+        /// </param>
+        /// <param name="cnt">The size of <paramref name="dst" /> in number of
+        /// characters. The name of the R&S instruments we use cannot exceed 20
+        /// ASCII characters, so a buffer of 21 characters should always
+        /// suffice.</param>
+        /// <returns>The required buffer size for the name, including the
+        /// terminating zero.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        inline std::size_t instrument_name(_Out_writes_(cnt) wchar_t *dst,
+                _In_ const std::size_t cnt) const {
+            return this->_instrument.name(dst, cnt);
+        }
+
+        /// <summary>
+        /// Gets the configured name of the instrument.
+        /// </summary>
+        /// <param name="dst">A buffer that is able to hold at least
+        /// <paramref name="cnt" /> elements. It is safe to pass <c>nullptr</c>,
+        /// in which case the method will only measure the required buffer size.
+        /// </param>
+        /// <param name="cnt">The size of <paramref name="dst" /> in number of
+        /// characters. The name of the R&S instruments we use cannot exceed 20
+        /// ASCII characters, so a buffer of 21 characters should always
+        /// suffice.</param>
+        /// <returns>The required buffer size for the name, including the
+        /// terminating zero.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        inline std::size_t instrument_name(_Out_writes_(cnt) char *dst,
+                _In_ const std::size_t cnt) const {
+            return this->_instrument.name(dst, cnt);
+        }
+
+        /// <summary>
+        /// Measures the size of the buffer to hold the name of the instrument.
+        /// </summary>
+        /// <param name="dst"><c>nullptr</c>.</param>
+        /// <param name="cnt">This parameter is ignored.</param>
+        /// <returns>The required buffer size for the name, including the
+        /// terminating zero.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        inline std::size_t instrument_name(_In_opt_ const std::nullptr_t dst,
+                _In_ const std::size_t cnt) const {
+            return this->_instrument.name(nullptr, 0);
+        }
+
+        /// <summary>
+        /// Sets the user-defined name of the instrument.
+        /// </summary>
+        /// <param name="name">The new name of the instrument.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="name" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        hmc8015_sensor& instrument_name(_In_z_ const wchar_t *name) {
+            this->_instrument.name(name);
+            return *this;
+        }
+
+        /// <summary>
+        /// Sets the name of the instrument.
+        /// </summary>
+        /// <param name="name">The new name of the instrument.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="name" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        hmc8015_sensor& instrument_name(_In_z_ const char *name) {
+            this->_instrument.name(name);
+            return *this;
+        }
+
+        /// <summary>
         /// Gets whether logging is enabled or not.
         /// </summary>
         /// <returns><c>true</c> if the instrument is currently logging,

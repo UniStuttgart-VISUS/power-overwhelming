@@ -357,6 +357,54 @@ namespace power_overwhelming {
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
         /// <summary>
+        /// Makes the instrument beep <paramref name="cnt" /> times.
+        /// </summary>
+        /// <remarks>
+        /// This method has no effect if the library was compiled without
+        /// support for VISA.
+        /// </remarks>
+        /// <param name="cnt">The number of times the method should beep. This
+        /// defaults to one.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        visa_instrument& beep(_In_ const std::size_t cnt = 1);
+
+        /// <summary>
+        /// Answer whether the instrument beeps if it encounters an error.
+        /// </summary>
+        /// <remarks>
+        /// The answer will always be <c>false</c> if the library was compiled
+        /// without support for VISA.
+        /// </remarks>
+        /// <returns><c>true</c> if the beep is enabled, <c>false</c> otherwise.
+        /// </returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        bool beep_on_error(void);
+
+        /// <summary>
+        /// Configures the instrument to beep or not to beep if it encounters
+        /// an error.
+        /// </summary>
+        /// <remarks>
+        /// This method has no effect if the library was compiled without
+        /// support for VISA.
+        /// </remarks>
+        /// <param name="enable">Set <c>true</c> to enable beeps on errors,
+        /// <c>false</c> to disable them.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        visa_instrument& beep_on_error(_In_ const bool enable);
+
+        /// <summary>
         /// Shortcut to <see cref="viSetBuf" /> on the device session
         /// represented by <see cref="scope" />.
         /// </summary>
@@ -537,6 +585,86 @@ namespace power_overwhelming {
         /// <exception cref="visa_exception">If the operation failed.
         /// </exception>
         std::uint16_t interface_type(void) const;
+
+        /// <summary>
+        /// Gets the configured name of the instrument.
+        /// </summary>
+        /// <param name="dst">A buffer that is able to hold at least
+        /// <paramref name="cnt" /> elements. It is safe to pass <c>nullptr</c>,
+        /// in which case the method will only measure the required buffer size.
+        /// </param>
+        /// <param name="cnt">The size of <paramref name="dst" /> in number of
+        /// characters. The name of the R&S instruments we use cannot exceed 20
+        /// ASCII characters, so a buffer of 21 characters should always
+        /// suffice.</param>
+        /// <returns>The required buffer size for the name, including the
+        /// terminating zero.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        std::size_t name(_Out_writes_(cnt) wchar_t *dst,
+            _In_ const std::size_t cnt) const;
+
+        /// <summary>
+        /// Gets the configured name of the instrument.
+        /// </summary>
+        /// <param name="dst">A buffer that is able to hold at least
+        /// <paramref name="cnt" /> elements. It is safe to pass <c>nullptr</c>,
+        /// in which case the method will only measure the required buffer size.
+        /// </param>
+        /// <param name="cnt">The size of <paramref name="dst" /> in number of
+        /// characters. The name of the R&S instruments we use cannot exceed 20
+        /// ASCII characters, so a buffer of 21 characters should always
+        /// suffice.</param>
+        /// <returns>The required buffer size for the name, including the
+        /// terminating zero.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        std::size_t name(_Out_writes_(cnt) char *dst,
+            _In_ const std::size_t cnt) const;
+
+        /// <summary>
+        /// Measures the size of the buffer to hold the name of the instrument.
+        /// </summary>
+        /// <param name="dst"><c>nullptr</c>.</param>
+        /// <param name="cnt">This parameter is ignored.</param>
+        /// <returns>The required buffer size for the name, including the
+        /// terminating zero.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        std::size_t name(_In_opt_ const std::nullptr_t dst,
+            _In_ const std::size_t cnt) const;
+
+        /// <summary>
+        /// Sets the user-defined name of the instrument.
+        /// </summary>
+        /// <param name="name">The new name of the instrument.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="name" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        visa_instrument& name(_In_z_ const wchar_t *name);
+
+        /// <summary>
+        /// Sets the name of the instrument.
+        /// </summary>
+        /// <param name="name">The new name of the instrument.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::invalid_argument">If <paramref name="name" />
+        /// is <c>nullptr</c>.</exception>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        visa_instrument& name(_In_z_ const char *name);
 
         /// <summary>
         /// Installs a <paramref name="callback" /> to be invoked if an
