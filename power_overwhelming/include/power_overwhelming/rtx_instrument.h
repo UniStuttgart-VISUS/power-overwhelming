@@ -769,7 +769,7 @@ namespace power_overwhelming {
         /// <param name="channel">The one-based channel index.</param>
         /// <param name="segment">The segment index, which can either be a
         /// negative index count where the latest segment is 0 and the older
-        /// segments have a negative index, or positive index cound where the
+        /// segments have a negative index, or positive index count where the
         /// oldest segment has index 1 and the newest has index <c>n</c> where
         /// is the number of segments returned by
         /// <see cref="history_segments" />.</param>
