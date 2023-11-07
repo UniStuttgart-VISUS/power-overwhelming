@@ -1,5 +1,5 @@
 /* ***********************************************************
- * This file was automatically generated on 2022-05-11.      *
+ * This file was automatically generated on 2023-10-19.      *
  *                                                           *
  * C/C++ Bindings Version 2.1.33                             *
  *                                                           *
@@ -26,6 +26,8 @@ typedef void (*Current_CallbackFunction)(int32_t current, void *user_data);
 typedef void (*Voltage_CallbackFunction)(int32_t voltage, void *user_data);
 
 typedef void (*Power_CallbackFunction)(int32_t power, void *user_data);
+
+typedef void (*PowerTime_CallbackFunction)(int32_t power, uint32_t time, void *user_data);
 
 #if defined _MSC_VER || defined __BORLANDC__
 	#pragma pack(push)
@@ -188,6 +190,45 @@ typedef struct {
 	uint16_t current_multiplier;
 	uint16_t current_divisor;
 } ATTRIBUTE_PACKED GetCalibration_Response;
+
+typedef struct {
+	PacketHeader header;
+} ATTRIBUTE_PACKED GetPowerTime_Request;
+
+typedef struct {
+	PacketHeader header;
+	int32_t power;
+	uint32_t time;
+} ATTRIBUTE_PACKED GetPowerTime_Response;
+
+typedef struct {
+	PacketHeader header;
+	uint8_t enable;
+} ATTRIBUTE_PACKED SetPowerTimeCallbackConfiguration_Request;
+
+typedef struct {
+	PacketHeader header;
+} ATTRIBUTE_PACKED GetPowerTimeCallbackConfiguration_Request;
+
+typedef struct {
+	PacketHeader header;
+	uint8_t enable;
+} ATTRIBUTE_PACKED GetPowerTimeCallbackConfiguration_Response;
+
+typedef struct {
+	PacketHeader header;
+	int32_t power;
+	uint32_t time;
+} ATTRIBUTE_PACKED PowerTime_Callback;
+
+typedef struct {
+	PacketHeader header;
+} ATTRIBUTE_PACKED GetTime_Request;
+
+typedef struct {
+	PacketHeader header;
+	uint32_t time;
+} ATTRIBUTE_PACKED GetTime_Response;
 
 typedef struct {
 	PacketHeader header;
@@ -364,11 +405,35 @@ static void voltage_current_v2_callback_wrapper_power(DevicePrivate *device_p, P
 	callback_function(callback->power, user_data);
 }
 
+static void voltage_current_v2_callback_wrapper_power_time(DevicePrivate *device_p, Packet *packet) {
+	PowerTime_CallbackFunction callback_function;
+	void *user_data;
+	PowerTime_Callback *callback;
+
+	if (packet->header.length != sizeof(PowerTime_Callback)) {
+		return; // silently ignoring callback with wrong length
+	}
+
+	callback_function = (PowerTime_CallbackFunction)device_p->registered_callbacks[DEVICE_NUM_FUNCTION_IDS + VOLTAGE_CURRENT_V2_CALLBACK_POWER_TIME];
+	user_data = device_p->registered_callback_user_data[DEVICE_NUM_FUNCTION_IDS + VOLTAGE_CURRENT_V2_CALLBACK_POWER_TIME];
+	callback = (PowerTime_Callback *)packet;
+	(void)callback; // avoid unused variable warning
+
+	if (callback_function == NULL) {
+		return;
+	}
+
+	callback->power = leconvert_int32_from(callback->power);
+	callback->time = leconvert_uint32_from(callback->time);
+
+	callback_function(callback->power, callback->time, user_data);
+}
+
 void voltage_current_v2_create(VoltageCurrentV2 *voltage_current_v2, const char *uid, IPConnection *ipcon) {
 	IPConnectionPrivate *ipcon_p = ipcon->p;
 	DevicePrivate *device_p;
 
-	device_create(voltage_current_v2, uid, ipcon_p, 2, 0, 0, VOLTAGE_CURRENT_V2_DEVICE_IDENTIFIER);
+	device_create(voltage_current_v2, uid, ipcon_p, 2, 0, 1, VOLTAGE_CURRENT_V2_DEVICE_IDENTIFIER);
 
 	device_p = voltage_current_v2->p;
 
@@ -385,6 +450,10 @@ void voltage_current_v2_create(VoltageCurrentV2 *voltage_current_v2, const char 
 	device_p->response_expected[VOLTAGE_CURRENT_V2_FUNCTION_GET_CONFIGURATION] = DEVICE_RESPONSE_EXPECTED_ALWAYS_TRUE;
 	device_p->response_expected[VOLTAGE_CURRENT_V2_FUNCTION_SET_CALIBRATION] = DEVICE_RESPONSE_EXPECTED_FALSE;
 	device_p->response_expected[VOLTAGE_CURRENT_V2_FUNCTION_GET_CALIBRATION] = DEVICE_RESPONSE_EXPECTED_ALWAYS_TRUE;
+	device_p->response_expected[VOLTAGE_CURRENT_V2_FUNCTION_GET_POWER_TIME] = DEVICE_RESPONSE_EXPECTED_ALWAYS_TRUE;
+	device_p->response_expected[VOLTAGE_CURRENT_V2_FUNCTION_SET_POWER_TIME_CALLBACK_CONFIGURATION] = DEVICE_RESPONSE_EXPECTED_TRUE;
+	device_p->response_expected[VOLTAGE_CURRENT_V2_FUNCTION_GET_POWER_TIME_CALLBACK_CONFIGURATION] = DEVICE_RESPONSE_EXPECTED_ALWAYS_TRUE;
+	device_p->response_expected[VOLTAGE_CURRENT_V2_FUNCTION_GET_TIME] = DEVICE_RESPONSE_EXPECTED_ALWAYS_TRUE;
 	device_p->response_expected[VOLTAGE_CURRENT_V2_FUNCTION_GET_SPITFP_ERROR_COUNT] = DEVICE_RESPONSE_EXPECTED_ALWAYS_TRUE;
 	device_p->response_expected[VOLTAGE_CURRENT_V2_FUNCTION_SET_BOOTLOADER_MODE] = DEVICE_RESPONSE_EXPECTED_ALWAYS_TRUE;
 	device_p->response_expected[VOLTAGE_CURRENT_V2_FUNCTION_GET_BOOTLOADER_MODE] = DEVICE_RESPONSE_EXPECTED_ALWAYS_TRUE;
@@ -401,6 +470,7 @@ void voltage_current_v2_create(VoltageCurrentV2 *voltage_current_v2, const char 
 	device_p->callback_wrappers[VOLTAGE_CURRENT_V2_CALLBACK_CURRENT] = voltage_current_v2_callback_wrapper_current;
 	device_p->callback_wrappers[VOLTAGE_CURRENT_V2_CALLBACK_VOLTAGE] = voltage_current_v2_callback_wrapper_voltage;
 	device_p->callback_wrappers[VOLTAGE_CURRENT_V2_CALLBACK_POWER] = voltage_current_v2_callback_wrapper_power;
+	device_p->callback_wrappers[VOLTAGE_CURRENT_V2_CALLBACK_POWER_TIME] = voltage_current_v2_callback_wrapper_power_time;
 
 	ipcon_add_device(ipcon_p, device_p);
 }
@@ -811,6 +881,118 @@ int voltage_current_v2_get_calibration(VoltageCurrentV2 *voltage_current_v2, uin
 	*ret_voltage_divisor = leconvert_uint16_from(response.voltage_divisor);
 	*ret_current_multiplier = leconvert_uint16_from(response.current_multiplier);
 	*ret_current_divisor = leconvert_uint16_from(response.current_divisor);
+
+	return ret;
+}
+
+int voltage_current_v2_get_power_time(VoltageCurrentV2 *voltage_current_v2, int32_t *ret_power, uint32_t *ret_time) {
+	DevicePrivate *device_p = voltage_current_v2->p;
+	GetPowerTime_Request request;
+	GetPowerTime_Response response;
+	int ret;
+
+	ret = device_check_validity(device_p);
+
+	if (ret < 0) {
+		return ret;
+	}
+
+	ret = packet_header_create(&request.header, sizeof(request), VOLTAGE_CURRENT_V2_FUNCTION_GET_POWER_TIME, device_p->ipcon_p, device_p);
+
+	if (ret < 0) {
+		return ret;
+	}
+
+	ret = device_send_request(device_p, (Packet *)&request, (Packet *)&response, sizeof(response));
+
+	if (ret < 0) {
+		return ret;
+	}
+
+	*ret_power = leconvert_int32_from(response.power);
+	*ret_time = leconvert_uint32_from(response.time);
+
+	return ret;
+}
+
+int voltage_current_v2_set_power_time_callback_configuration(VoltageCurrentV2 *voltage_current_v2, bool enable) {
+	DevicePrivate *device_p = voltage_current_v2->p;
+	SetPowerTimeCallbackConfiguration_Request request;
+	int ret;
+
+	ret = device_check_validity(device_p);
+
+	if (ret < 0) {
+		return ret;
+	}
+
+	ret = packet_header_create(&request.header, sizeof(request), VOLTAGE_CURRENT_V2_FUNCTION_SET_POWER_TIME_CALLBACK_CONFIGURATION, device_p->ipcon_p, device_p);
+
+	if (ret < 0) {
+		return ret;
+	}
+
+	request.enable = enable ? 1 : 0;
+
+	ret = device_send_request(device_p, (Packet *)&request, NULL, 0);
+
+	return ret;
+}
+
+int voltage_current_v2_get_power_time_callback_configuration(VoltageCurrentV2 *voltage_current_v2, bool *ret_enable) {
+	DevicePrivate *device_p = voltage_current_v2->p;
+	GetPowerTimeCallbackConfiguration_Request request;
+	GetPowerTimeCallbackConfiguration_Response response;
+	int ret;
+
+	ret = device_check_validity(device_p);
+
+	if (ret < 0) {
+		return ret;
+	}
+
+	ret = packet_header_create(&request.header, sizeof(request), VOLTAGE_CURRENT_V2_FUNCTION_GET_POWER_TIME_CALLBACK_CONFIGURATION, device_p->ipcon_p, device_p);
+
+	if (ret < 0) {
+		return ret;
+	}
+
+	ret = device_send_request(device_p, (Packet *)&request, (Packet *)&response, sizeof(response));
+
+	if (ret < 0) {
+		return ret;
+	}
+
+	*ret_enable = response.enable != 0;
+
+	return ret;
+}
+
+int voltage_current_v2_get_time(VoltageCurrentV2 *voltage_current_v2, uint32_t *ret_time) {
+	DevicePrivate *device_p = voltage_current_v2->p;
+	GetTime_Request request;
+	GetTime_Response response;
+	int ret;
+
+	ret = device_check_validity(device_p);
+
+	if (ret < 0) {
+		return ret;
+	}
+
+	ret = packet_header_create(&request.header, sizeof(request), VOLTAGE_CURRENT_V2_FUNCTION_GET_TIME, device_p->ipcon_p, device_p);
+
+	if (ret < 0) {
+		return ret;
+	}
+
+	ret = device_send_request(device_p, (Packet *)&request, (Packet *)&response, sizeof(response));
+
+	if (ret < 0) {
+		return ret;
+	}
+
+	*ret_time = leconvert_uint32_from(response.time);
 
 	return ret;
 }

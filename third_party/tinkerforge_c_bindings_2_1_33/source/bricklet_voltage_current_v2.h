@@ -1,5 +1,5 @@
 /* ***********************************************************
- * This file was automatically generated on 2022-05-11.      *
+ * This file was automatically generated on 2023-10-19.      *
  *                                                           *
  * C/C++ Bindings Version 2.1.33                             *
  *                                                           *
@@ -96,6 +96,26 @@ typedef Device VoltageCurrentV2;
 /**
  * \ingroup BrickletVoltageCurrentV2
  */
+#define VOLTAGE_CURRENT_V2_FUNCTION_GET_POWER_TIME 17
+
+/**
+ * \ingroup BrickletVoltageCurrentV2
+ */
+#define VOLTAGE_CURRENT_V2_FUNCTION_SET_POWER_TIME_CALLBACK_CONFIGURATION 18
+
+/**
+ * \ingroup BrickletVoltageCurrentV2
+ */
+#define VOLTAGE_CURRENT_V2_FUNCTION_GET_POWER_TIME_CALLBACK_CONFIGURATION 19
+
+/**
+ * \ingroup BrickletVoltageCurrentV2
+ */
+#define VOLTAGE_CURRENT_V2_FUNCTION_GET_TIME 21
+
+/**
+ * \ingroup BrickletVoltageCurrentV2
+ */
 #define VOLTAGE_CURRENT_V2_FUNCTION_GET_SPITFP_ERROR_COUNT 234
 
 /**
@@ -188,6 +208,17 @@ typedef Device VoltageCurrentV2;
  * The parameter is the same as {@link voltage_current_v2_get_power}.
  */
 #define VOLTAGE_CURRENT_V2_CALLBACK_POWER 12
+
+/**
+ * \ingroup BrickletVoltageCurrentV2
+ *
+ * Signature: \code void callback(int32_t power, uint32_t time, void *user_data) \endcode
+ * 
+ * TODO.
+ * 
+ * .. versionadded:: 99.0.0$nbsp;(Plugin)
+ */
+#define VOLTAGE_CURRENT_V2_CALLBACK_POWER_TIME 20
 
 
 /**
@@ -660,6 +691,42 @@ int voltage_current_v2_set_calibration(VoltageCurrentV2 *voltage_current_v2, uin
  * Returns the calibration as set by {@link voltage_current_v2_set_calibration}.
  */
 int voltage_current_v2_get_calibration(VoltageCurrentV2 *voltage_current_v2, uint16_t *ret_voltage_multiplier, uint16_t *ret_voltage_divisor, uint16_t *ret_current_multiplier, uint16_t *ret_current_divisor);
+
+/**
+ * \ingroup BrickletVoltageCurrentV2
+ *
+ * TODO.
+ * 
+ * .. versionadded:: 99.0.0$nbsp;(Plugin)
+ */
+int voltage_current_v2_get_power_time(VoltageCurrentV2 *voltage_current_v2, int32_t *ret_power, uint32_t *ret_time);
+
+/**
+ * \ingroup BrickletVoltageCurrentV2
+ *
+ * TODO.
+ * 
+ * .. versionadded:: 99.0.0$nbsp;(Plugin)
+ */
+int voltage_current_v2_set_power_time_callback_configuration(VoltageCurrentV2 *voltage_current_v2, bool enable);
+
+/**
+ * \ingroup BrickletVoltageCurrentV2
+ *
+ * TODO.
+ * 
+ * .. versionadded:: 99.0.0$nbsp;(Plugin)
+ */
+int voltage_current_v2_get_power_time_callback_configuration(VoltageCurrentV2 *voltage_current_v2, bool *ret_enable);
+
+/**
+ * \ingroup BrickletVoltageCurrentV2
+ *
+ * TODO.
+ * 
+ * .. versionadded:: 99.0.0$nbsp;(Plugin)
+ */
+int voltage_current_v2_get_time(VoltageCurrentV2 *voltage_current_v2, uint32_t *ret_time);
 
 /**
  * \ingroup BrickletVoltageCurrentV2
