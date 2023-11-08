@@ -1,5 +1,5 @@
 // <copyright file="tinkerforge_sensor_impl.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -65,6 +65,16 @@ namespace detail {
             void *data);
 
         /// <summary>
+        /// The callback to be invoked for incoming asynchronous power
+        /// readings.
+        /// </summary>
+        /// <param name="power"></param>
+        /// <param name="time"></param>
+        /// <param name="data"></param>
+        static void CALLBACK power_time_callback(const std::int32_t power,
+            std::uint32_t time, void *data);
+
+        /// <summary>
         /// The callback to be invoked for incoming asynchronous voltage
         /// readings.
         /// </summary>
@@ -111,6 +121,16 @@ namespace detail {
         /// use.
         /// </summary>
         tinkerforge_scope scope;
+
+#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
+        /// <summary>
+        /// The offset of the system clock (in milliseconds) from the zero-point
+        /// of the time reported by the bricklet with Moritz' custom firmware.
+        /// This information is used to compute wall-clock times from hardware
+        /// timestamps and needs to be calibrated on startup.
+        /// </summary>
+        timestamp_type time_offset;
+#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 
         /// <summary>
         /// Initialises a new instance.
@@ -172,6 +192,18 @@ namespace detail {
         /// <remarks>The caller must hold <see cref="async_lock" />.</remarks>
         /// <param name="timestamp"></param>
         void invoke_callback(const timestamp_type timestamp);
+
+        /// <summary>
+        /// Find out whether the bricklet has our customised firmware, and if
+        /// so, determine the <see cref="time_offset" /> for it.
+        /// </summary>
+        /// <remarks>
+        /// This method has no effect unless <c>CUSTOM_TINKERFORGE_FIRMWARE</c>
+        /// is defined and has a positive, non-zero value.
+        /// </remarks>
+        /// <param name="iterations"></param>
+        /// <returns></returns>
+        bool init_time_offset(const std::size_t iterations = 4);
     };
 
 } /* namespace detail */

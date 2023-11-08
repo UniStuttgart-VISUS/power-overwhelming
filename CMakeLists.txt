@@ -18,6 +18,9 @@ cmake_dependent_option(PWROWG_BuildTests "Build unit tests." ON WIN32 OFF)
 cmake_dependent_option(PWROWG_BuildWeb "Build browser for benchmarking web-based visualisations" OFF WIN32 OFF)
 option(PWROWG_NoPackageRestore "Disable automatic restore of Nuget packages as pre-build step" OFF)
 mark_as_advanced(PWROWG_NoPackageRestore)
+set(PWROWG_CustomTinkerforgeFirmwareMajor "" CACHE STRING "The major firmware version that identifies our custom changes")
+set(PWROWG_CustomTinkerforgeFirmwareMinor "" CACHE STRING "The minor firmware version that identifies our custom changes")
+set(PWROWG_CustomTinkerforgeFirmwareRev "" CACHE STRING "The firmware revision that identifies our custom changes")
 
 # Dependencies
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/third_party)
