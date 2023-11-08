@@ -5,7 +5,9 @@
 
 #include "tinkerforge_sensor_impl.h"
 
+#include <algorithm>
 #include <cassert>
+#include <numeric>
 
 #include "power_overwhelming/convert_string.h"
 
@@ -13,20 +15,89 @@
 #include "timestamp.h"
 
 
-/*
- * ..::tinkerforge_sensor_impl::current_callback
- */
-void CALLBACK
-visus::power_overwhelming::detail::tinkerforge_sensor_impl::current_callback(
-        const std::int32_t current, void *data) {
-    assert(data != nullptr);
-    auto that = static_cast<tinkerforge_sensor_impl *>(data);
-    const auto timestamp = create_timestamp(that->async_sampling.resolution());
-    std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
-    that->async_data[0] = static_cast<measurement::value_type>(current)
-        / static_cast<measurement::value_type>(1000);
-    that->invoke_callback(timestamp);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
-}
+#if !defined(CALLBACK)
+#define CALLBACK
+#endif /* !defined(CALLBACK) */
+
+
+namespace visus {
+namespace power_overwhelming {
+namespace detail {
+
+    /// <summary>
+    /// The callback to be invoked for incoming asynchronous current
+    /// readings.
+    /// </summary>
+    /// <param name="current"></param>
+    /// <param name="data"></param>
+    void CALLBACK current_callback(const std::int32_t current, void *data) {
+        assert(data != nullptr);
+        auto that = static_cast<tinkerforge_sensor_impl *>(data);
+        const auto timestamp = create_timestamp(that->async_sampling.resolution());
+        std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
+        that->async_data[0] = static_cast<measurement::value_type>(current)
+            / static_cast<measurement::value_type>(1000);
+        that->invoke_callback(timestamp);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
+    }
+
+    /// <summary>
+    /// The callback to be invoked for incoming asynchronous power
+    /// readings.
+    /// </summary>
+    /// <param name="power"></param>
+    /// <param name="data"></param>
+    void CALLBACK power_callback(const std::int32_t power, void *data) {
+        assert(data != nullptr);
+        auto that = static_cast<tinkerforge_sensor_impl *>(data);
+        const auto timestamp = create_timestamp(that->async_sampling.resolution());
+        std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
+        that->async_data[1] = static_cast<measurement::value_type>(power)
+            / static_cast<measurement::value_type>(1000);
+        that->invoke_callback(timestamp);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
+    }
+
+    /// <summary>
+    /// The callback to be invoked for incoming asynchronous power
+    /// readings from our modified firmware.
+    /// </summary>
+    /// <param name="power"></param>
+    /// <param name="time"></param>
+    /// <param name="data"></param>
+    void CALLBACK power_time_callback(const std::int32_t power,
+            const std::uint32_t time, void *data) {
+#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
+        assert(data != nullptr);
+        auto that = static_cast<tinkerforge_sensor_impl *>(data);
+        const auto timestamp = that->time_offset + time;
+        // TODO: fix resolution
+        std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
+        that->async_data[1] = static_cast<measurement::value_type>(power)
+            / static_cast<measurement::value_type>(1000);
+        that->invoke_callback(timestamp);
+#else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
+        tinkerforge_sensor_impl::power_callback(power, data);
+#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
+    }
+
+    /// <summary>
+    /// The callback to be invoked for incoming asynchronous voltage
+    /// readings.
+    /// </summary>
+    /// <param name="power"></param>
+    /// <param name="data"></param>
+    void CALLBACK voltage_callback(const std::int32_t voltage, void *data) {
+        assert(data != nullptr);
+        auto that = static_cast<tinkerforge_sensor_impl *>(data);
+        const auto timestamp = create_timestamp(that->async_sampling.resolution());
+        std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
+        that->async_data[2] = static_cast<measurement::value_type>(voltage)
+            / static_cast<measurement::value_type>(1000);
+        that->invoke_callback(timestamp);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
+    }
+
+} /* namespace detail */
+} /* namespace power_overwhelming */
+} /* namespace visus */
 
 
 /*
@@ -38,60 +109,6 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::get_sensor_name(
         const std::string& uid) {
     return std::string("Tinkerforge/") + host + ":" + std::to_string(port)
         + "/" + uid;
-}
-
-
-/*
- * ...::tinkerforge_sensor_impl::power_callback
- */
-void CALLBACK
-visus::power_overwhelming::detail::tinkerforge_sensor_impl::power_callback(
-        const std::int32_t power, void *data) {
-    assert(data != nullptr);
-    auto that = static_cast<tinkerforge_sensor_impl *>(data);
-    const auto timestamp = create_timestamp(that->async_sampling.resolution());
-    std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
-    that->async_data[1] = static_cast<measurement::value_type>(power)
-        / static_cast<measurement::value_type>(1000);
-    that->invoke_callback(timestamp);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
-}
-
-
-/*
- * ...::tinkerforge_sensor_impl::power_time_callback
- */
-void CALLBACK
-visus::power_overwhelming::detail::tinkerforge_sensor_impl::power_time_callback(
-        const std::int32_t power, const std::uint32_t time, void *data) {
-#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
-    assert(data != nullptr);
-    auto that = static_cast<tinkerforge_sensor_impl *>(data);
-    const auto timestamp = that->time_offset + time;
-    // TODO: fix resolution
-    std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
-    that->async_data[1] = static_cast<measurement::value_type>(power)
-        / static_cast<measurement::value_type>(1000);
-    that->invoke_callback(timestamp);
-#else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
-    tinkerforge_sensor_impl::power_callback(power, data);
-#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
-}
-
-
-
-/*
- * ...::tinkerforge_sensor_impl::voltage_callback
- */
-void CALLBACK
-visus::power_overwhelming::detail::tinkerforge_sensor_impl::voltage_callback(
-        const std::int32_t voltage, void *data) {
-    assert(data != nullptr);
-    auto that = static_cast<tinkerforge_sensor_impl *>(data);
-    const auto timestamp = create_timestamp(that->async_sampling.resolution());
-    std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
-    that->async_data[2] = static_cast<measurement::value_type>(voltage)
-        / static_cast<measurement::value_type>(1000);
-    that->invoke_callback(timestamp);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
 }
 
 
@@ -274,6 +291,7 @@ bool
 visus::power_overwhelming::detail::tinkerforge_sensor_impl::init_time_offset(
     const std::size_t iterations) {
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
+    std::make_unsigned<timestamp_type>::type accumulator = 0;
     char connected_to_uid[8];
     std::uint16_t device_id;
     std::uint8_t firmware_version[3];
@@ -286,11 +304,13 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::init_time_offset(
 
     // Get the firmware version so that we can find out whether the bricklet
     // supports our customised callback that includes on-device time.
-    auto status = ::voltage_current_v2_get_identity(&this->bricklet, uid,
-        connected_to_uid, &position, hardware_version, firmware_version,
-        &device_id);
-    if (status < 0) {
-        return false;
+    {
+        auto status = ::voltage_current_v2_get_identity(&this->bricklet, uid,
+            connected_to_uid, &position, hardware_version, firmware_version,
+            &device_id);
+        if (status < 0) {
+            return false;
+        }
     }
 
     // Check against the configured firmware version. The build system must
@@ -302,8 +322,17 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::init_time_offset(
         return false;
     }
 
-    //::voltage_current_v2_get_time(&this->bricklet, &time);
+    for (std::size_t i = 0; i < iterations; ++i) {
+        auto timestamp = create_timestamp(timestamp_resolution::milliseconds);
+        auto status = ::voltage_current_v2_get_time(&this->bricklet, &time);
+        if (status < 0) {
+            return false;
+        }
 
+        //time_offsets[i] = timestamp - time;
+    }
+
+    //std::accumulate(time_offsets.begin(), time_offsets.end(), )
 
     return true;
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */

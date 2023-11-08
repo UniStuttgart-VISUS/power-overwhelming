@@ -22,11 +22,6 @@
 #include "tinkerforge_scope.h"
 
 
-#if !defined(CALLBACK)
-#define CALLBACK
-#endif /* !defined(CALLBACK) */
-
-
 namespace visus {
 namespace power_overwhelming {
 namespace detail {
@@ -37,15 +32,6 @@ namespace detail {
     struct tinkerforge_sensor_impl final {
 
         /// <summary>
-        /// The callback to be invoked for incoming asynchronous current
-        /// readings.
-        /// </summary>
-        /// <param name="current"></param>
-        /// <param name="data"></param>
-        static void CALLBACK current_callback(const std::int32_t current,
-            void *data);
-
-        /// <summary>
         /// Compose the sensor name from the given connection information.
         /// </summary>
         /// <param name="host"></param>
@@ -54,34 +40,6 @@ namespace detail {
         /// <returns></returns>
         static std::string get_sensor_name(const std::string& host,
             const std::uint16_t port, const std::string& uid);
-
-        /// <summary>
-        /// The callback to be invoked for incoming asynchronous power
-        /// readings.
-        /// </summary>
-        /// <param name="power"></param>
-        /// <param name="data"></param>
-        static void CALLBACK power_callback(const std::int32_t power,
-            void *data);
-
-        /// <summary>
-        /// The callback to be invoked for incoming asynchronous power
-        /// readings.
-        /// </summary>
-        /// <param name="power"></param>
-        /// <param name="time"></param>
-        /// <param name="data"></param>
-        static void CALLBACK power_time_callback(const std::int32_t power,
-            std::uint32_t time, void *data);
-
-        /// <summary>
-        /// The callback to be invoked for incoming asynchronous voltage
-        /// readings.
-        /// </summary>
-        /// <param name="power"></param>
-        /// <param name="data"></param>
-        static void CALLBACK voltage_callback(const std::int32_t voltage,
-            void *data);
 
         /// <summary>
         /// The handle for a voltage/current bricklet.
