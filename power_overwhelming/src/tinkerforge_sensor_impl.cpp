@@ -71,7 +71,8 @@ namespace detail {
         const auto timestamp = convert(timestamp_resolution::milliseconds,
             that->time_offset + time,
             that->async_sampling.resolution());
-        //auto tt = create_timestamp(that->async_sampling.resolution());
+        auto wall_time = create_timestamp(that->async_sampling.resolution());
+        ::OutputDebugStringW((that->sensor_name + L" " + std::to_wstring(wall_time - timestamp) + L"\r\n").c_str());
         std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
         that->async_data[1] = static_cast<measurement::value_type>(power)
             / static_cast<measurement::value_type>(1000);
@@ -358,13 +359,15 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::init_time_offset(
     // Compute the median offset over the requested number of iterations.
     for (std::size_t i = 1; i < time_offsets.size(); ++i) {
         typedef std::make_unsigned<timestamp_type>::type unsigned_type;
-        auto timestamp = create_timestamp(timestamp_resolution::milliseconds);
+        auto begin = create_timestamp(timestamp_resolution::milliseconds);
         auto status = ::voltage_current_v2_get_time(&this->bricklet, &time);
+        auto end = create_timestamp(timestamp_resolution::milliseconds);
         if (status < 0) {
             return false;
         }
 
-        time_offsets[i] = timestamp - time;
+        auto dt = end - begin;
+        time_offsets[i] = begin + (dt >> 1) - time;
     }
 
     std::sort(time_offsets.begin(), time_offsets.end());
