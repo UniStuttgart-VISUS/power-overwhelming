@@ -368,6 +368,9 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::init_time_offset(
 
         auto dt = end - begin;
         time_offsets[i] = begin + (dt >> 1) - time;
+
+        ::OutputDebugStringW((this->sensor_name + L"dt " + std::to_wstring(dt) + L" offset " + std::to_wstring(time_offsets[i]) + L"\r\n").c_str());
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
 
     std::sort(time_offsets.begin(), time_offsets.end());

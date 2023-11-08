@@ -164,8 +164,13 @@ void sample_tinkerforge_power_async(const unsigned int dt) {
 
         for (auto& d : descs) {
             sensors.emplace_back(d);
+            sensors.back().configure(
+                sample_averaging::average_of_4,
+                conversion_time::microseconds_588,
+                conversion_time::microseconds_588);
             sensors.back().sample(async_sampling()
                 .samples_every(5000)
+                .using_resolution(timestamp_resolution::hundred_nanoseconds)
                 .delivers_measurements_to([](const measurement& m, void *) {
                     std::wcout << m.sensor() << L":" << m.timestamp() << L": "
                         << m.voltage() << " V * " << m.current() << " A = "

@@ -176,7 +176,7 @@ namespace detail {
         /// </remarks>
         /// <param name="iterations"></param>
         /// <returns></returns>
-        bool init_time_offset(const std::size_t iterations = 4);
+        bool init_time_offset(const std::size_t iterations = 16);
     };
 
 } /* namespace detail */
