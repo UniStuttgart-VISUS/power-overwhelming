@@ -69,10 +69,12 @@ namespace detail {
         assert(data != nullptr);
         auto that = static_cast<tinkerforge_sensor_impl *>(data);
         const auto timestamp = convert(timestamp_resolution::milliseconds,
-            that->time_offset + time,
+            that->time_offset + static_cast<double>(time) * that->time_scale,
             that->async_sampling.resolution());
         auto wall_time = create_timestamp(that->async_sampling.resolution());
-        ::OutputDebugStringW((that->sensor_name + L" " + std::to_wstring(wall_time - timestamp) + L"\r\n").c_str());
+        ::OutputDebugStringW((that->sensor_name + L" " + std::to_wstring(wall_time) + L" " + std::to_wstring(time) 
+            + L" " + std::to_wstring(time * that->time_scale)
+            + L" " + std::to_wstring(wall_time - timestamp) + L"\r\n").c_str());
         std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
         that->async_data[1] = static_cast<measurement::value_type>(power)
             / static_cast<measurement::value_type>(1000);
@@ -314,18 +316,19 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl::invoke_callback
  */
 bool
 visus::power_overwhelming::detail::tinkerforge_sensor_impl::init_time_offset(
-        const std::size_t iterations) {
+        const std::size_t wait) {
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
     char connected_to_uid[8];
     std::uint16_t device_id;
     std::uint8_t firmware_version[3];
     std::uint8_t hardware_version[3];
     char position;
-    std::uint32_t time;
-    std::vector<timestamp_type> time_offsets(iterations + 1);
+    std::array<std::uint32_t, 2> times_bricklet;
+    std::array<timestamp_type, 2> times_host;
     char uid[8];
 
     this->time_offset = 0;
+    this->time_scale = 1.0f;
 
     // Get the firmware version so that we can find out whether the bricklet
     // supports our customised callback that includes on-device time.
@@ -356,25 +359,65 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::init_time_offset(
     }
 #endif /* CUSTOM_TINKERFORGE_FIRMWARE_RV */
 
+#if 0
     // Compute the median offset over the requested number of iterations.
-    for (std::size_t i = 1; i < time_offsets.size(); ++i) {
+    for (std::size_t i = 0; i < time_offsets.size(); ++i) {
         typedef std::make_unsigned<timestamp_type>::type unsigned_type;
         auto begin = create_timestamp(timestamp_resolution::milliseconds);
-        auto status = ::voltage_current_v2_get_time(&this->bricklet, &time);
+        auto status = ::voltage_current_v2_get_time(&this->bricklet,
+            times.data() + i);
         auto end = create_timestamp(timestamp_resolution::milliseconds);
         if (status < 0) {
             return false;
         }
 
         auto dt = end - begin;
-        time_offsets[i] = begin + (dt >> 1) - time;
+        time_offsets[i] = begin + (dt >> 1);// -times[i];
 
-        ::OutputDebugStringW((this->sensor_name + L"dt " + std::to_wstring(dt) + L" offset " + std::to_wstring(time_offsets[i]) + L"\r\n").c_str());
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        std::this_thread::sleep_for(std::chrono::milliseconds(wait));
     }
 
-    std::sort(time_offsets.begin(), time_offsets.end());
-    this->time_offset = time_offsets[time_offsets.size() >> 1];
+    //std::sort(time_offsets.begin(), time_offsets.end());
+    this->time_bricklet_zero = times.front();
+    this->time_offset = time_offsets.front() + times.front(); //time_offsets[time_offsets.size() >> 1];
+
+    const auto host_begin = time_offsets.front() + times.front();
+    const auto host_end = time_offsets.back() + times.back();
+    const auto dhost = static_cast<double>(host_end) - host_begin;
+
+    const auto bricklet_begin = times.front();
+    const auto bricklet_end = times.back();
+    const auto dbricklet = static_cast<double>(bricklet_end) - bricklet_begin;
+
+    this->time_scale = static_cast<float>(dbricklet / dhost);
+#endif
+
+    for (std::size_t i = 0; i < times_bricklet.size(); ++i) {
+        auto begin = create_timestamp(timestamp_resolution::milliseconds);
+        auto status = ::voltage_current_v2_get_time(&this->bricklet,
+            times_bricklet.data() + i);
+        auto end = create_timestamp(timestamp_resolution::milliseconds);
+        if (status < 0) {
+            return false;
+        }
+
+        auto dt = end - begin;
+        times_host[i] = begin + (dt >> 1);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(wait));
+    }
+
+    const auto bricklet_begin = static_cast<double>(times_bricklet.front());
+    const auto dbricklet = static_cast<double>(times_bricklet.back())
+        - bricklet_begin;
+    const auto dhost = static_cast<double>(times_host.back())
+        - static_cast<double>(times_host.front());
+
+    this->time_scale = dhost / dbricklet;
+    const auto origin_offset = static_cast<timestamp_type>(
+        this->time_scale * bricklet_begin);
+    this->time_offset = times_host.front() - origin_offset;
+
     return true;
 
 #else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */

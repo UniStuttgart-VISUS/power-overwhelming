@@ -318,6 +318,8 @@ void visus::power_overwhelming::tinkerforge_sensor::reset(void) {
     if (status < 0) {
         throw tinkerforge_exception(status);
     }
+
+    this->_impl->init_time_offset();
 }
 
 

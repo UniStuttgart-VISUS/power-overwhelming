@@ -90,6 +90,14 @@ namespace detail {
         timestamp_type time_offset;
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 
+#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
+        /// <summary>
+        /// Allows for adapting the slope of the bricklets clock to the system
+        /// clock (the dübel constant).
+        /// </summary>
+        double time_scale;
+#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
+
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
@@ -175,8 +183,9 @@ namespace detail {
         /// is defined and has a positive, non-zero value.
         /// </remarks>
         /// <param name="iterations"></param>
+        /// <param name="wait"></param>
         /// <returns></returns>
-        bool init_time_offset(const std::size_t iterations = 16);
+        bool init_time_offset(const std::size_t wait = 2000);
     };
 
 } /* namespace detail */

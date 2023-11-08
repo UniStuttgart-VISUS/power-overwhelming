@@ -95,15 +95,15 @@ int _tmain(const int argc, const TCHAR **argv) {
 
     // Tinkerforge sensors
 #if true
-#if true
+#if false
     ::sample_tinkerforge_sensor();
 #endif
 
-#if true
+#if false
     ::sample_all_tinkerforge_sensors();
 #endif
 
-#if true
+#if false
     ::sample_tinkerforge_sensor_data();
 #endif
 
@@ -115,7 +115,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     ::sample_tinkerforge_power_async(5);
 #endif
 
-#if true
+#if false
     ::print_tinkerforge_display();
 #endif
 #endif
