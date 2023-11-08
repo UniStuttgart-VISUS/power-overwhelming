@@ -49,6 +49,21 @@ if (VISA_FOUND)
     target_link_libraries(${PROJECT_NAME})
 endif ()
 
+if (PWROWG_CustomTinkerforgeFirmwareMajor)
+    if (NOT PWROWG_CustomTinkerforgeFirmwareMinor)
+        set(PWROWG_CustomTinkerforgeFirmwareMinor 0)
+    endif ()
+
+    if (NOT PWROWG_CustomTinkerforgeFirmwareRevision)
+        set(PWROWG_CustomTinkerforgeFirmwareRevision 0)
+    endif ()
+
+    target_compile_definitions(${PROJECT_NAME} PRIVATE CUSTOM_TINKERFORGE_FIRMWARE)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE CUSTOM_TINKERFORGE_FIRMWARE_MJ=${PWROWG_CustomTinkerforgeFirmwareMajor})
+    target_compile_definitions(${PROJECT_NAME} PRIVATE CUSTOM_TINKERFORGE_FIRMWARE_MN=${PWROWG_CustomTinkerforgeFirmwareMinor})
+    target_compile_definitions(${PROJECT_NAME} PRIVATE CUSTOM_TINKERFORGE_FIRMWARE_RV=${PWROWG_CustomTinkerforgeFirmwareRevision})
+endif ()
+
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
