@@ -291,7 +291,6 @@ bool
 visus::power_overwhelming::detail::tinkerforge_sensor_impl::init_time_offset(
     const std::size_t iterations) {
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
-    std::make_unsigned<timestamp_type>::type accumulator = 0;
     char connected_to_uid[8];
     std::uint16_t device_id;
     std::uint8_t firmware_version[3];
@@ -313,23 +312,58 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::init_time_offset(
         }
     }
 
-    // Check against the configured firmware version. The build system must
-    // define the three macros to hold the required version if
-    // CUSTOM_TINKERFORGE_FIRMWARE is defined.
-    if ((firmware_version[0] != CUSTOM_TINKERFORGE_FIRMWARE_MJ)
-            || (firmware_version[1] != CUSTOM_TINKERFORGE_FIRMWARE_MN)
-            || (firmware_version[0] != CUSTOM_TINKERFORGE_FIRMWARE_RV)) {
+    // Check against the configured firmware version. The major version must
+    // always be set by the build system, the remainer is only checked if set.
+    if (firmware_version[0] != CUSTOM_TINKERFORGE_FIRMWARE_MJ) {
         return false;
     }
 
-    for (std::size_t i = 0; i < iterations; ++i) {
+#if defined(CUSTOM_TINKERFORGE_FIRMWARE_MN)
+    if (firmware_version[1] != CUSTOM_TINKERFORGE_FIRMWARE_MN) {
+        return false;
+    }
+#endif /* CUSTOM_TINKERFORGE_FIRMWARE_MN */
+
+#if defined(CUSTOM_TINKERFORGE_FIRMWARE_RV)
+    if (firmware_version[2] != CUSTOM_TINKERFORGE_FIRMWARE_RV) {
+        return false;
+    }
+#endif /* CUSTOM_TINKERFORGE_FIRMWARE_RV */
+
+    // Compute the offset at least once.
+    {
         auto timestamp = create_timestamp(timestamp_resolution::milliseconds);
         auto status = ::voltage_current_v2_get_time(&this->bricklet, &time);
         if (status < 0) {
             return false;
         }
 
-        //time_offsets[i] = timestamp - time;
+        this->time_offset = timestamp - time;
+    }
+
+    // If requested, average over several iterations.
+    for (std::size_t i = 1; i < iterations; ++i) {
+        typedef std::make_unsigned<timestamp_type>::type unsigned_type;
+        auto timestamp = create_timestamp(timestamp_resolution::milliseconds);
+        auto status = ::voltage_current_v2_get_time(&this->bricklet, &time);
+        if (status < 0) {
+            return false;
+        }
+
+        auto sign = 1;
+        unsigned_type l = this->time_offset;
+        unsigned_type u = timestamp - time;
+
+        if (l > u) {
+            sign = -1;
+            std::swap(l, u);
+        }
+
+        this->time_offset = l + sign * static_cast<timestamp_type>(
+            static_cast<unsigned_type>(u - l) >> 1);
+
+        auto offset = timestamp - time;
+        int x = 5;
     }
 
     //std::accumulate(time_offsets.begin(), time_offsets.end(), )

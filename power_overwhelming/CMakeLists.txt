@@ -50,18 +50,16 @@ if (VISA_FOUND)
 endif ()
 
 if (PWROWG_CustomTinkerforgeFirmwareMajor)
-    if (NOT PWROWG_CustomTinkerforgeFirmwareMinor)
-        set(PWROWG_CustomTinkerforgeFirmwareMinor 0)
-    endif ()
-
-    if (NOT PWROWG_CustomTinkerforgeFirmwareRevision)
-        set(PWROWG_CustomTinkerforgeFirmwareRevision 0)
-    endif ()
-
     target_compile_definitions(${PROJECT_NAME} PRIVATE CUSTOM_TINKERFORGE_FIRMWARE)
     target_compile_definitions(${PROJECT_NAME} PRIVATE CUSTOM_TINKERFORGE_FIRMWARE_MJ=${PWROWG_CustomTinkerforgeFirmwareMajor})
-    target_compile_definitions(${PROJECT_NAME} PRIVATE CUSTOM_TINKERFORGE_FIRMWARE_MN=${PWROWG_CustomTinkerforgeFirmwareMinor})
-    target_compile_definitions(${PROJECT_NAME} PRIVATE CUSTOM_TINKERFORGE_FIRMWARE_RV=${PWROWG_CustomTinkerforgeFirmwareRevision})
+
+    if (PWROWG_CustomTinkerforgeFirmwareMinor)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE CUSTOM_TINKERFORGE_FIRMWARE_MN=${PWROWG_CustomTinkerforgeFirmwareMinor})
+    endif ()
+
+    if (PWROWG_CustomTinkerforgeFirmwareRevision)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE CUSTOM_TINKERFORGE_FIRMWARE_RV=${PWROWG_CustomTinkerforgeFirmwareRevision})
+    endif ()
 endif ()
 
 target_include_directories(${PROJECT_NAME}
