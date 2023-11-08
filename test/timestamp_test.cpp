@@ -58,6 +58,33 @@ namespace test {
             }
         }
 
+        TEST_METHOD(test_convert_timestamp) {
+            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::hundred_nanoseconds, 1, timestamp_resolution::hundred_nanoseconds), L"100ns to 100ns", LINE_INFO());
+            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::microseconds, 1, timestamp_resolution::microseconds), L"us to us", LINE_INFO());
+            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::milliseconds, 1, timestamp_resolution::milliseconds), L"ms to ms", LINE_INFO());
+            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::seconds, 1, timestamp_resolution::seconds), L"s to s", LINE_INFO());
+
+            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::hundred_nanoseconds, 1, timestamp_resolution::hundred_nanoseconds), L"100ns to 100ns", LINE_INFO());
+            Assert::AreEqual(std::int64_t(10), detail::convert(timestamp_resolution::microseconds, 1, timestamp_resolution::hundred_nanoseconds), L"us to 100ns", LINE_INFO());
+            Assert::AreEqual(std::int64_t(10000), detail::convert(timestamp_resolution::milliseconds, 1, timestamp_resolution::hundred_nanoseconds), L"ms to 100ns", LINE_INFO());
+            Assert::AreEqual(detail::filetime_period::den, detail::convert(timestamp_resolution::seconds, 1, timestamp_resolution::hundred_nanoseconds), L"s to 100ns", LINE_INFO());
+
+            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::hundred_nanoseconds, 10, timestamp_resolution::microseconds), L"100ns to us", LINE_INFO());
+            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::microseconds, 1, timestamp_resolution::microseconds), L"us to us", LINE_INFO());
+            Assert::AreEqual(std::int64_t(1000), detail::convert(timestamp_resolution::milliseconds, 1, timestamp_resolution::microseconds), L"ms to us", LINE_INFO());
+            Assert::AreEqual(std::int64_t(1000000), detail::convert(timestamp_resolution::seconds, 1, timestamp_resolution::microseconds), L"s to us", LINE_INFO());
+
+            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::hundred_nanoseconds, 10000, timestamp_resolution::milliseconds), L"100ns to ms", LINE_INFO());
+            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::microseconds, 1000, timestamp_resolution::milliseconds), L"us to ms", LINE_INFO());
+            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::milliseconds, 1, timestamp_resolution::milliseconds), L"ms to ms", LINE_INFO());
+            Assert::AreEqual(std::int64_t(1000), detail::convert(timestamp_resolution::seconds, 1, timestamp_resolution::milliseconds), L"s to ms", LINE_INFO());
+
+            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::hundred_nanoseconds, detail::filetime_period::den, timestamp_resolution::seconds), L"100ns to s", LINE_INFO());
+            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::microseconds, 1000000, timestamp_resolution::seconds), L"us to s", LINE_INFO());
+            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::milliseconds, 1000, timestamp_resolution::seconds), L"ms to s", LINE_INFO());
+            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::seconds, 1, timestamp_resolution::seconds), L"s to s", LINE_INFO());
+        }
+
         TEST_METHOD(test_microseconds) {
             typedef std::chrono::microseconds unit;
             static const auto resolution = timestamp_resolution::microseconds;

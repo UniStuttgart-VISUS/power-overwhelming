@@ -390,9 +390,10 @@ void visus::power_overwhelming::tinkerforge_sensor::sample_async(
         // Callback is non-null, so user wants to enable asynchronous sampling.
 
         try {
+            const auto& config = this->_impl->async_sampling;
             const auto millis = static_cast<std::int32_t>((std::max)(one,
-                this->_impl->async_sampling.interval() / thousand));
-            const auto source = sampling.tinkerforge_sensor_source();
+                config.interval() / thousand));
+            const auto source = config.tinkerforge_sensor_source();
 
             if (source == tinkerforge_sensor_source::all) {
                 // Enable all sensor readings.
@@ -442,6 +443,7 @@ visus::power_overwhelming::tinkerforge_sensor::sample_sync(
     std::int32_t current = 0;   // Current in mA.
     std::int32_t power = 0;     // Power in mW.
     std::int32_t voltage = 0;   // Voltage in mV.
+    auto timestamp = detail::create_timestamp(resolution);
 
     {
         auto status = ::voltage_current_v2_get_voltage(&this->_impl->bricklet,
@@ -459,7 +461,17 @@ visus::power_overwhelming::tinkerforge_sensor::sample_sync(
         }
     }
 
-    {
+    if (this->_impl->has_internal_time()) {
+        std::uint32_t time;
+        auto status = ::voltage_current_v2_get_power_time(
+            &this->_impl->bricklet, &power, &time);
+        if (status < 0) {
+            throw tinkerforge_exception(status);
+        }
+
+        timestamp = this->_impl->time_offset + time;
+
+    } else {
         auto status = ::voltage_current_v2_get_power(&this->_impl->bricklet,
             &power);
         if (status < 0) {
@@ -467,7 +479,7 @@ visus::power_overwhelming::tinkerforge_sensor::sample_sync(
         }
     }
 
-    return measurement_data(detail::create_timestamp(resolution),
+    return measurement_data(timestamp,
         static_cast<measurement::value_type>(voltage) / thousand,
         static_cast<measurement::value_type>(current) / thousand,
         static_cast<measurement::value_type>(power) / thousand);

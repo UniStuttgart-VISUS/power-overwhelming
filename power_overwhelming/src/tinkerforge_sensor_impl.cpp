@@ -68,8 +68,10 @@ namespace detail {
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
         assert(data != nullptr);
         auto that = static_cast<tinkerforge_sensor_impl *>(data);
-        const auto timestamp = that->time_offset + time;
-        // TODO: fix resolution
+        const auto timestamp = convert(timestamp_resolution::milliseconds,
+            that->time_offset + time,
+            that->async_sampling.resolution());
+        //auto tt = create_timestamp(that->async_sampling.resolution());
         std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
         that->async_data[1] = static_cast<measurement::value_type>(power)
             / static_cast<measurement::value_type>(1000);
@@ -194,6 +196,16 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl::disable_callbac
             throw tinkerforge_exception(status);
         }
     }
+
+#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
+    if (this->has_internal_time()) {
+        auto status = ::voltage_current_v2_set_power_time_callback_configuration(
+            &this->bricklet, false);
+        if (status < 0) {
+            throw tinkerforge_exception(status);
+        }
+    }
+#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 }
 
 
@@ -233,12 +245,24 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl
  */
 void visus::power_overwhelming::detail::tinkerforge_sensor_impl
 ::enable_power_callback(const std::int32_t period) {
-    ::voltage_current_v2_register_callback(&this->bricklet,
-        VOLTAGE_CURRENT_V2_CALLBACK_POWER,
-        reinterpret_cast<void (*)(void)>(power_callback),
-        this);
+    if (this->has_internal_time()) {
+        ::voltage_current_v2_register_callback(&this->bricklet,
+            VOLTAGE_CURRENT_V2_CALLBACK_POWER_TIME,
+            reinterpret_cast<void (*)(void)>(power_time_callback),
+            this);
 
-    {
+        auto status = ::voltage_current_v2_set_power_time_callback_configuration(
+            &this->bricklet, true);
+        if (status < 0) {
+            throw tinkerforge_exception(status);
+        }
+
+    } else {
+        ::voltage_current_v2_register_callback(&this->bricklet,
+            VOLTAGE_CURRENT_V2_CALLBACK_POWER,
+            reinterpret_cast<void (*)(void)>(power_callback),
+            this);
+
         auto status = ::voltage_current_v2_set_power_callback_configuration(
             &this->bricklet, period, false, 'x', 0, 0);
         if (status < 0) {
@@ -289,7 +313,7 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl::invoke_callback
  */
 bool
 visus::power_overwhelming::detail::tinkerforge_sensor_impl::init_time_offset(
-    const std::size_t iterations) {
+        const std::size_t iterations) {
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
     char connected_to_uid[8];
     std::uint16_t device_id;
@@ -297,6 +321,7 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::init_time_offset(
     std::uint8_t hardware_version[3];
     char position;
     std::uint32_t time;
+    std::vector<timestamp_type> time_offsets(iterations + 1);
     char uid[8];
 
     this->time_offset = 0;
@@ -330,19 +355,8 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::init_time_offset(
     }
 #endif /* CUSTOM_TINKERFORGE_FIRMWARE_RV */
 
-    // Compute the offset at least once.
-    {
-        auto timestamp = create_timestamp(timestamp_resolution::milliseconds);
-        auto status = ::voltage_current_v2_get_time(&this->bricklet, &time);
-        if (status < 0) {
-            return false;
-        }
-
-        this->time_offset = timestamp - time;
-    }
-
-    // If requested, average over several iterations.
-    for (std::size_t i = 1; i < iterations; ++i) {
+    // Compute the median offset over the requested number of iterations.
+    for (std::size_t i = 1; i < time_offsets.size(); ++i) {
         typedef std::make_unsigned<timestamp_type>::type unsigned_type;
         auto timestamp = create_timestamp(timestamp_resolution::milliseconds);
         auto status = ::voltage_current_v2_get_time(&this->bricklet, &time);
@@ -350,24 +364,14 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::init_time_offset(
             return false;
         }
 
-        auto sign = 1;
-        unsigned_type l = this->time_offset;
-        unsigned_type u = timestamp - time;
-
-        if (l > u) {
-            sign = -1;
-            std::swap(l, u);
-        }
-
-        this->time_offset = l + sign * static_cast<timestamp_type>(
-            static_cast<unsigned_type>(u - l) >> 1);
-
-        auto offset = timestamp - time;
-        int x = 5;
+        time_offsets[i] = timestamp - time;
     }
 
-    //std::accumulate(time_offsets.begin(), time_offsets.end(), )
-
+    std::sort(time_offsets.begin(), time_offsets.end());
+    this->time_offset = time_offsets[time_offsets.size() >> 1];
     return true;
+
+#else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
+    return false;
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 }

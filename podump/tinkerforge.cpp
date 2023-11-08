@@ -146,6 +146,49 @@ void sample_tinkerforge_sensor_async(const unsigned int dt) {
 
 
 /*
+ * ::sample_tinkerforge_power_async
+ */
+void sample_tinkerforge_power_async(const unsigned int dt) {
+    using namespace visus::power_overwhelming;
+
+    try {
+        std::vector<tinkerforge_sensor_definition> descs;
+        std::vector<tinkerforge_sensor> sensors;
+        descs.resize(tinkerforge_sensor::get_definitions(nullptr, 0));
+        auto cnt = tinkerforge_sensor::get_definitions(descs.data(),
+            descs.size());
+
+        if (cnt < descs.size()) {
+            descs.resize(cnt);
+        }
+
+        for (auto& d : descs) {
+            sensors.emplace_back(d);
+            sensors.back().sample(async_sampling()
+                .samples_every(5000)
+                .delivers_measurements_to([](const measurement& m, void *) {
+                    std::wcout << m.sensor() << L":" << m.timestamp() << L": "
+                        << m.voltage() << " V * " << m.current() << " A = "
+                        << m.power() << L" W"
+                        << std::endl;
+                })
+                .from_source(tinkerforge_sensor_source::power)
+                .as_rvalue());
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+
+        for (auto& s : sensors) {
+            s.sample(nullptr);
+        }
+
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+}
+
+
+/*
  * ::print_tinkerforge_display
  */
 void print_tinkerforge_display(const char *text) {

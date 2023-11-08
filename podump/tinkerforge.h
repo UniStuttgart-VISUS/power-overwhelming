@@ -29,6 +29,12 @@ void sample_tinkerforge_sensor_data(void);
 void sample_tinkerforge_sensor_async(const unsigned int dt);
 
 /// <summary>
+/// Samples all Tinkerforge bricklets attached to the machine for the specified
+/// time span.
+/// </summary>
+void sample_tinkerforge_power_async(const unsigned int dt);
+
+/// <summary>
 /// Print text on a Tinkerforge LCD.
 /// </summary>
 /// <param name="text"></param>

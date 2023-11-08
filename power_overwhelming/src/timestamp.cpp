@@ -5,8 +5,44 @@
 
 #include "timestamp.h"
 
+#include <cassert>
 #include <ctime>
 #include <system_error>
+
+
+namespace visus {
+namespace power_overwhelming {
+namespace detail {
+
+    /// <summary>
+    /// Answer how many 100ns units are in a quantity of one of the specified
+    /// <paramref name="resolution" />.
+    /// </summary>
+    static constexpr timestamp_type hundred_ns(
+            _In_ const timestamp_resolution resolution) noexcept {
+        switch (resolution) {
+            case timestamp_resolution::microseconds:
+                return 10;
+
+            case timestamp_resolution::milliseconds:
+                return (10 * 1000);
+
+            case timestamp_resolution::hundred_nanoseconds:
+                return 1;
+
+            case timestamp_resolution::seconds:
+                return (10 * 1000 * 1000);
+
+            default:
+                assert(false);
+                return 0;
+        }
+    }
+
+} /* namespace detail */
+} /* namespace power_overwhelming */
+} /* namespace visus */
+
 
 
 /*
@@ -38,6 +74,26 @@ visus::power_overwhelming::detail::convert(
 
         default:
             return file_time;
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::convert
+ */
+visus::power_overwhelming::timestamp_type
+visus::power_overwhelming::detail::convert(
+        _In_ const timestamp_resolution src_resolution,
+        _In_ const timestamp_type src,
+        _In_ const timestamp_resolution dst_resolution) {
+    using namespace std::chrono;
+
+    if (src_resolution == dst_resolution) {
+        return src;
+    } else {
+        auto sfactor = hundred_ns(src_resolution);
+        auto dfactor = hundred_ns(dst_resolution);
+        return (src * sfactor) / dfactor;
     }
 }
 

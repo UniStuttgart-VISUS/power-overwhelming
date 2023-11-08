@@ -144,6 +144,21 @@ namespace detail {
         void enable_voltage_callback(const std::int32_t period = 1);
 
         /// <summary>
+        /// Answer whether the code has access to the internal timer of the
+        /// bricklet.
+        /// </summary>
+        /// <returns></returns>
+#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
+        inline bool has_internal_time(void) const noexcept {
+            return (this->time_offset != 0);
+        }
+#else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
+        inline constexpr bool has_internal_time(void) const noexcept {
+            return false;
+        }
+#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
+
+        /// <summary>
         /// If <see cref="on_measurement" /> is set, invoke the callback with
         /// the data stored in <see cref="async_data" />.
         /// </summary>

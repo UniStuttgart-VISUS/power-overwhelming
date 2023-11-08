@@ -131,6 +131,23 @@ namespace detail {
         _In_ const timestamp_resolution resolution);
 
     /// <summary>
+    /// Convert a timestamp with the given <paramref name="src_resolution" /> to
+    /// the specified <paramref name="dst_resolution" />.
+    /// </summary>
+    /// <remarks>
+    /// This API is only exposed for unit tests and should not be accessed by
+    /// any other clients.
+    /// </remarks>
+    /// <param name="src_resolution"></param>
+    /// <param name="src"></param>
+    /// <param name="dst_resolution"></param>
+    /// <returns></returns>
+    timestamp_type POWER_OVERWHELMING_API convert(
+        _In_ const timestamp_resolution src_resolution,
+        _In_ const timestamp_type src,
+        _In_ const timestamp_resolution dst_resolution);
+
+    /// <summary>
     /// Create a new timestamp using the specified resolution per tick.
     /// </summary>
     /// <remarks>
