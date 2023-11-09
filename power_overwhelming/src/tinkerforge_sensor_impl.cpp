@@ -33,11 +33,11 @@ namespace detail {
     void CALLBACK current_callback(const std::int32_t current, void *data) {
         assert(data != nullptr);
         auto that = static_cast<tinkerforge_sensor_impl *>(data);
-        const auto timestamp = create_timestamp(that->async_sampling.resolution());
         std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
+        const auto ts = create_timestamp(that->async_sampling.resolution());
         that->async_data[0] = static_cast<measurement::value_type>(current)
             / static_cast<measurement::value_type>(1000);
-        that->invoke_callback(timestamp);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
+        that->invoke_callback(ts);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
     }
 
     /// <summary>
@@ -49,11 +49,11 @@ namespace detail {
     void CALLBACK power_callback(const std::int32_t power, void *data) {
         assert(data != nullptr);
         auto that = static_cast<tinkerforge_sensor_impl *>(data);
-        const auto timestamp = create_timestamp(that->async_sampling.resolution());
         std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
+        const auto ts = create_timestamp(that->async_sampling.resolution());
         that->async_data[1] = static_cast<measurement::value_type>(power)
             / static_cast<measurement::value_type>(1000);
-        that->invoke_callback(timestamp);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
+        that->invoke_callback(ts);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
     }
 
     /// <summary>
@@ -68,18 +68,18 @@ namespace detail {
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
         assert(data != nullptr);
         auto that = static_cast<tinkerforge_sensor_impl *>(data);
-        const auto timestamp = that->time_xlate(time,
+        std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
+        const auto ts = that->time_xlate(time,
             that->async_sampling.resolution(),
             that->bricklet);
         //auto wall_time = create_timestamp(that->async_sampling.resolution());
         //::OutputDebugStringW((that->sensor_name + L" " + std::to_wstring(wall_time)
         //    + L" " + std::to_wstring(time)
-        //    + L" " + std::to_wstring(wall_time - timestamp)
+        //    + L" " + std::to_wstring(wall_time - ts)
         //    + L"\r\n").c_str());
-        std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
         that->async_data[1] = static_cast<measurement::value_type>(power)
             / static_cast<measurement::value_type>(1000);
-        that->invoke_callback(timestamp);
+        that->invoke_callback(ts);
 #else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
         tinkerforge_sensor_impl::power_callback(power, data);
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
@@ -94,11 +94,11 @@ namespace detail {
     void CALLBACK voltage_callback(const std::int32_t voltage, void *data) {
         assert(data != nullptr);
         auto that = static_cast<tinkerforge_sensor_impl *>(data);
-        const auto timestamp = create_timestamp(that->async_sampling.resolution());
         std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
+        const auto ts = create_timestamp(that->async_sampling.resolution());
         that->async_data[2] = static_cast<measurement::value_type>(voltage)
             / static_cast<measurement::value_type>(1000);
-        that->invoke_callback(timestamp);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
+        that->invoke_callback(ts);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
     }
 
 } /* namespace detail */
@@ -150,23 +150,28 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::tinkerforge_sensor_i
     std::fill(this->async_data.begin(), this->async_data.end(),
         measurement::invalid_value);
 
-#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
-    this->time_xlate.reset(this->bricklet);
-#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
+    // TODO: this is too slow, only set timing in reset.
+//#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
+//    this->time_xlate.reset(this->bricklet);
+//#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 }
 
 
 /*
  * ...::detail::tinkerforge_sensor_impl::~tinkerforge_sensor_impl
  */
-visus::power_overwhelming::detail::tinkerforge_sensor_impl::~tinkerforge_sensor_impl(
-        void) {
+visus::power_overwhelming::detail::tinkerforge_sensor_impl
+::~tinkerforge_sensor_impl(void) {
     // Make sure to disable the callbacks in case the user forgot to do
-    // so before destroying the sensor.
+    // so before destroying the sensor. Note that we do not hold the lock at
+    // this point, which enables all callbacks that are already running to
+    // exit asap.
     this->disable_callbacks();
 
     // Make sure that we do not destroy the sensor while asnychronous data are
     // written. This will block until the writer exited.
+    // TODO: This is only semi-safe for cases where only one calback is running. We need to fix that some time, but for now, we usually only
+    // run power callbacks, so it is somewhat OK ...
     std::lock_guard<decltype(this->async_lock)> l(this->async_lock);
 
     ::voltage_current_v2_destroy(&this->bricklet);
@@ -178,6 +183,39 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::~tinkerforge_sensor_
  */
 void visus::power_overwhelming::detail::tinkerforge_sensor_impl::disable_callbacks(
         void) {
+    // First of all, disable the callbacks that run in the communication thread
+    // of the Tinkerforge device. Note that we must *not* clear the context,
+    // because the whole registration is not thread-safe. We therefore have to
+    // assume that the callback might have already been copied to a local
+    // variable whereas the context has not. In this case, we would risk
+    // invoking a valid callback with an invalid context if we set the context
+    // to nullptr, too.
+    ::voltage_current_v2_register_callback(&this->bricklet,
+        VOLTAGE_CURRENT_V2_CALLBACK_CURRENT,
+        nullptr,
+        this);
+    ::voltage_current_v2_register_callback(&this->bricklet,
+        VOLTAGE_CURRENT_V2_CALLBACK_POWER,
+        nullptr,
+        this);
+    ::voltage_current_v2_register_callback(&this->bricklet,
+        VOLTAGE_CURRENT_V2_CALLBACK_VOLTAGE,
+        nullptr,
+        this);
+
+    if (this->has_internal_time()) {
+        ::voltage_current_v2_register_callback(&this->bricklet,
+            VOLTAGE_CURRENT_V2_CALLBACK_POWER,
+            nullptr,
+            this);
+    }
+
+    // At this point, we can be sure that any callback can run only once (if it
+    // was already running). Therefore, we now prevent the hardware from pushing
+    // new data to the software. Disabling the following does not suffice to
+    // stop valid callbacks from being invoked, because these calls might have
+    // already been invoked by queued data that the bricklet has pushed to the
+    // host code.
     {
         auto status = ::voltage_current_v2_set_current_callback_configuration(
             &this->bricklet, 0, false, 'x', 0, 0);
