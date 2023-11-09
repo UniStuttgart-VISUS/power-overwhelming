@@ -330,7 +330,7 @@ void visus::power_overwhelming::adl_sensor::sample(
 #if defined(_WIN32)
     ::OutputDebugStringW(L"PWROWG DEPRECATION WARNING: This method is only "
         L"provided for backwards compatibility and might be removed in "
-        L"future versions of the library. Use async_sampling to configure"
+        L"future versions of the library. Use async_sampling to configure "
         L"asynchronous sampling.\r\n");
 #endif /* defined(_WIN32) */
     this->check_not_disposed();
