@@ -68,13 +68,14 @@ namespace detail {
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
         assert(data != nullptr);
         auto that = static_cast<tinkerforge_sensor_impl *>(data);
-        const auto timestamp = convert(timestamp_resolution::milliseconds,
-            that->time_offset + static_cast<double>(time) * that->time_scale,
-            that->async_sampling.resolution());
-        auto wall_time = create_timestamp(that->async_sampling.resolution());
-        ::OutputDebugStringW((that->sensor_name + L" " + std::to_wstring(wall_time) + L" " + std::to_wstring(time) 
-            + L" " + std::to_wstring(time * that->time_scale)
-            + L" " + std::to_wstring(wall_time - timestamp) + L"\r\n").c_str());
+        const auto timestamp = that->time_xlate(time,
+            that->async_sampling.resolution(),
+            that->bricklet);
+        //auto wall_time = create_timestamp(that->async_sampling.resolution());
+        //::OutputDebugStringW((that->sensor_name + L" " + std::to_wstring(wall_time)
+        //    + L" " + std::to_wstring(time)
+        //    + L" " + std::to_wstring(wall_time - timestamp)
+        //    + L"\r\n").c_str());
         std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
         that->async_data[1] = static_cast<measurement::value_type>(power)
             / static_cast<measurement::value_type>(1000);
@@ -149,8 +150,9 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::tinkerforge_sensor_i
     std::fill(this->async_data.begin(), this->async_data.end(),
         measurement::invalid_value);
 
-    // Compute the 'time_offset' member if available.
-    this->init_time_offset();
+#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
+    this->time_xlate.reset(this->bricklet);
+#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 }
 
 
@@ -311,6 +313,7 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl::invoke_callback
 }
 
 
+#if false
 /*
  * visus::power_overwhelming::detail::tinkerforge_sensor_impl::init_time_offset
  */
@@ -424,3 +427,4 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::init_time_offset(
     return false;
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 }
+#endif

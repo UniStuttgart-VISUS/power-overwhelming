@@ -319,7 +319,20 @@ void visus::power_overwhelming::tinkerforge_sensor::reset(void) {
         throw tinkerforge_exception(status);
     }
 
-    this->_impl->init_time_offset();
+#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
+    this->_impl->time_xlate.reset(this->_impl->bricklet);
+#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
+}
+
+
+/*
+ * visus::power_overwhelming::tinkerforge_sensor::resync_internal_clock_after
+ */
+void visus::power_overwhelming::tinkerforge_sensor::resync_internal_clock_after(
+        _In_ const std::size_t cnt) {
+#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
+    this->_impl->time_xlate.update_every(cnt);
+#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 }
 
 
@@ -471,7 +484,11 @@ visus::power_overwhelming::tinkerforge_sensor::sample_sync(
             throw tinkerforge_exception(status);
         }
 
-        timestamp = this->_impl->time_offset + time;
+#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
+        timestamp = this->_impl->time_xlate(time,
+            resolution,
+            this->_impl->bricklet);
+#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 
     } else {
         auto status = ::voltage_current_v2_get_power(&this->_impl->bricklet,

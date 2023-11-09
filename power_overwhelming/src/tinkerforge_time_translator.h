@@ -9,6 +9,7 @@
 #include <cassert>
 #include <chrono>
 #include <cinttypes>
+#include <thread>
 #include <utility>
 
 #include <bricklet_voltage_current_v2.h>
@@ -93,13 +94,13 @@ namespace detail {
             _In_ const std::chrono::duration<timestamp_type, TRep> time_span);
 
         /// <summary>
-        /// Translates the given time from the bricklet into a timestamp of
-        /// the specified resolution.
+        /// Resets the calibration for the given bricklet by estimating the
+        /// clock drift over the specified timespan.
         /// </summary>
-        /// <param name="time"></param>
-        /// <returns></returns>
-        timestamp_type translate(_In_ const bricklet_time_type time,
-            _In_ const timestamp_resolution resolution);
+        /// <param name="bricklet"></param>
+        inline void reset(_In_ bricklet_type& bricklet) {
+            this->reset(bricklet, std::chrono::milliseconds(500));
+        }
 
         /// <summary>
         /// Updates the estimate of the offset and the scaling based on the
@@ -117,6 +118,35 @@ namespace detail {
         /// <returns></returns>
         bool update(_In_ bricklet_type& bricklet) noexcept;
 
+        /// <summary>
+        /// Instructs the implementation to call <see cref="update" /> after
+        /// every <paramref name="cnt" /> translations.
+        /// </summary>
+        /// <param name="cnt"></param>
+        inline void update_every(_In_ std::size_t cnt) noexcept {
+            this->_update_every = cnt;
+        }
+
+        /// <summary>
+        /// Answe whether the translator has been initialised/reset and can be
+        /// used.
+        /// </summary>
+        inline operator bool(void) const noexcept {
+            return (this->_begin_host != 0);
+        }
+
+        /// <summary>
+        /// Translates the given time from the bricklet into a timestamp of
+        /// the specified resolution.
+        /// </summary>
+        /// <param name="time"></param>
+        /// <param name="resolution"></param>
+        /// <param name="bricklet"></param>
+        /// <returns></returns>
+        timestamp_type operator ()(_In_ const bricklet_time_type time,
+            _In_ const timestamp_resolution resolution,
+            _In_ bricklet_type& bricklet);
+
     private:
 
         /// <summary>
@@ -132,6 +162,12 @@ namespace detail {
         timestamp_type _begin_host;
 
         /// <summary>
+        /// Tracks how many translations need to be made before the next
+        /// automatic call to <see cref="update" />.
+        /// </summary>
+        std::size_t _next_update;
+
+        /// <summary>
         /// The wall-clock timestamp (in milliseconds) from the zero-point
         /// of the time reported by the bricklet with Moritz' custom firmware.
         /// </summary>
@@ -142,6 +178,15 @@ namespace detail {
         /// clock (the dübel constant).
         /// </summary>
         double _time_scale;
+
+        /// <summary>
+        /// The number of translations that will trigger an automatic
+        /// <see cref="update" />.
+        /// </summary>
+        /// <remarks>
+        /// This variable is used to reset <see cref="_next_update" />.
+        /// </remarks>
+        std::size_t _update_every;
     };
 
 } /* namespace detail */

@@ -25,6 +25,7 @@ void sample_all_tinkerforge_sensors(void) {
         }
 
         for (auto& s : sensors) {
+            s.reset();
             std::wcout << s.name() << L":" << std::endl;
             auto m = s.sample();
             std::wcout << m.timestamp() << L": "
@@ -58,6 +59,8 @@ void sample_tinkerforge_sensor(void) {
 
         for (auto& d : descs) {
             tinkerforge_sensor s(d);
+            s.reset();
+
             std::wcout << s.name() << L":" << std::endl;
             auto m = s.sample();
             std::wcout << m.timestamp() << L": "
@@ -91,6 +94,8 @@ void sample_tinkerforge_sensor_data(void) {
 
         for (auto& d : descs) {
             tinkerforge_sensor s(d);
+            s.reset();
+
             std::wcout << s.name() << L":" << std::endl;
             auto m = s.sample_data();
             std::wcout << m.timestamp() << L": "
@@ -170,8 +175,9 @@ void sample_tinkerforge_power_async(const unsigned int dt) {
                 sample_averaging::average_of_4,
                 conversion_time::microseconds_588,
                 conversion_time::microseconds_588);
+            sensors.back().resync_internal_clock_after(20);
             sensors.back().sample(async_sampling()
-                .samples_every(5000)
+                .samples_every(20000)
                 .using_resolution(timestamp_resolution::milliseconds)
                 .delivers_measurements_to([](const measurement& m, void *) {
                     std::wcout << m.sensor() << L":" << m.timestamp() << L": "

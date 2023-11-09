@@ -20,6 +20,7 @@
 
 #include "timestamp.h"
 #include "tinkerforge_scope.h"
+#include "tinkerforge_time_translator.h"
 
 
 namespace visus {
@@ -82,20 +83,9 @@ namespace detail {
 
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
         /// <summary>
-        /// The offset of the system clock (in milliseconds) from the zero-point
-        /// of the time reported by the bricklet with Moritz' custom firmware.
-        /// This information is used to compute wall-clock times from hardware
-        /// timestamps and needs to be calibrated on startup.
+        /// Utility for transforming bricklet times to timestamps
         /// </summary>
-        timestamp_type time_offset;
-#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
-
-#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
-        /// <summary>
-        /// Allows for adapting the slope of the bricklets clock to the system
-        /// clock (the dübel constant).
-        /// </summary>
-        double time_scale;
+        tinkerforge_time_translator time_xlate;
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 
         /// <summary>
@@ -158,7 +148,7 @@ namespace detail {
         /// <returns></returns>
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
         inline bool has_internal_time(void) const noexcept {
-            return (this->time_offset != 0);
+            return this->time_xlate;
         }
 #else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
         inline constexpr bool has_internal_time(void) const noexcept {
@@ -174,18 +164,6 @@ namespace detail {
         /// <param name="timestamp"></param>
         void invoke_callback(const timestamp_type timestamp);
 
-        /// <summary>
-        /// Find out whether the bricklet has our customised firmware, and if
-        /// so, determine the <see cref="time_offset" /> for it.
-        /// </summary>
-        /// <remarks>
-        /// This method has no effect unless <c>CUSTOM_TINKERFORGE_FIRMWARE</c>
-        /// is defined and has a positive, non-zero value.
-        /// </remarks>
-        /// <param name="iterations"></param>
-        /// <param name="wait"></param>
-        /// <returns></returns>
-        bool init_time_offset(const std::size_t wait = 2000);
     };
 
 } /* namespace detail */

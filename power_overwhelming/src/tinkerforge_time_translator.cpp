@@ -5,6 +5,7 @@
 
 #include "tinkerforge_time_translator.h"
 
+#include <limits>
 #include <stdexcept>
 
 
@@ -89,22 +90,12 @@ visus::power_overwhelming::detail::tinkerforge_time_translator::get_coord_times(
  */
 visus::power_overwhelming::detail::tinkerforge_time_translator
 ::tinkerforge_time_translator(void) noexcept
-        : _begin_bricklet(0), _begin_host(0), _time_offset(0),
-        _time_scale(1.0) { }
-
-
-/*
- * visus::power_overwhelming::detail::tinkerforge_time_translator::translate
- */
-visus::power_overwhelming::timestamp_type
-visus::power_overwhelming::detail::tinkerforge_time_translator::translate(
-        _In_ const bricklet_time_type time,
-        _In_ const timestamp_resolution resolution) {
-    const auto offset = static_cast<double>(time) * this->_time_scale;
-    return convert(timestamp_resolution::milliseconds,
-        this->_time_offset + static_cast<timestamp_type>(offset),
-        resolution);
-}
+        : _begin_bricklet(0),
+        _begin_host(0),
+        _next_update((std::numeric_limits<std::size_t>::max)()),
+        _time_offset(0),
+        _time_scale(1.0),
+        _update_every((std::numeric_limits<std::size_t>::max)()) { }
 
 
 /*
@@ -113,7 +104,8 @@ visus::power_overwhelming::detail::tinkerforge_time_translator::translate(
 bool visus::power_overwhelming::detail::tinkerforge_time_translator::update(
         _In_ bricklet_type& bricklet) noexcept {
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
-    assert(this->_begin_host > 0);
+    assert(this->_begin_host != 0);
+    assert(this->_time_offset != 0);
     std::uint32_t btime;
 
     // Determine the current time on the host and the bricklet.
@@ -145,8 +137,35 @@ bool visus::power_overwhelming::detail::tinkerforge_time_translator::update(
         this->_time_scale * this->_begin_bricklet);
     this->_time_offset = this->_begin_host - origin_offset;
 
+    // Reset the update counter.
+    this->_next_update = this->_update_every;
+
     return true;
 #else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
+    assert(this->_begin_host == 0);
+    assert(this->_time_offset == 0);
     return false;
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
+}
+
+
+/*
+ * visus::power_overwhelming::detail::tinkerforge_time_translator::operator ()
+ */
+visus::power_overwhelming::timestamp_type
+visus::power_overwhelming::detail::tinkerforge_time_translator::operator ()(
+        _In_ const bricklet_time_type time,
+        _In_ const timestamp_resolution resolution,
+        _In_ bricklet_type& bricklet) {
+    const auto offset = static_cast<double>(time) * this->_time_scale;
+
+    if (this->_update_every == 0) {
+        this->update(bricklet);
+    } else {
+        --this->_update_every;
+    }
+
+    return convert(timestamp_resolution::milliseconds,
+        this->_time_offset + static_cast<timestamp_type>(offset),
+        resolution);
 }
