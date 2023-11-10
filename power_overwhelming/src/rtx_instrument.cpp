@@ -956,7 +956,7 @@ visus::power_overwhelming::rtx_instrument::data(
     waveforms.reserve(channels.size() * segments);
 
     for (std::size_t s = 0; s < segments; ++s) {
-        this->history_segment(0 - s).operation_complete();
+        this->history_segment(s + 1).operation_complete();
 
         for (auto c : channels) {
             waveforms.push_back(this->data(c, points));
