@@ -956,7 +956,7 @@ visus::power_overwhelming::rtx_instrument::data(
     waveforms.reserve(channels.size() * segments);
 
     for (std::size_t s = 0; s < segments; ++s) {
-        this->history_segment(s + 1).operation_complete();
+        this->history_segment(0 - s).operation_complete();
 
         for (auto c : channels) {
             waveforms.push_back(this->data(c, points));
@@ -1463,9 +1463,9 @@ visus::power_overwhelming::rtx_instrument::trigger(
         if (trigger.input() > 0) {
             impl.format("TRIG:A:LEV%d:VAL %f%s\n", trigger.input(),
                 trigger.level().value(), trigger.level().unit());
-        } else {
-            impl.format("TRIG:A:LEV:VAL %f%s\n", trigger.level().value(),
-                trigger.level().unit());
+        //} else {
+        //    impl.format("TRIG:A:LEV:VAL %f%s\n", trigger.level().value(),
+        //        trigger.level().unit());
         }
 
         switch (trigger.coupling()) {

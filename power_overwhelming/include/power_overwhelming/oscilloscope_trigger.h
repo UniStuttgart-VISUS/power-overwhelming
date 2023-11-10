@@ -215,13 +215,13 @@ namespace power_overwhelming {
         }
 
         /// <summary>
-        /// Configures the trigger level for all channels.
+        /// Configures the trigger level for the current input.
         /// </summary>
         /// <param name="level">The trigger level.</param>
         /// <returns><c>*this</c>.</returns>
         inline oscilloscope_trigger& level(
                 _In_ const oscilloscope_quantity& level) {
-            return this->level(0, level);
+            return this->level(this->_input, level);
         }
 
         /// <summary>

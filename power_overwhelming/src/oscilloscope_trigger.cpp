@@ -6,6 +6,7 @@
 #include "power_overwhelming/oscilloscope_trigger.h"
 
 #include <cassert>
+#include <regex>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -61,8 +62,6 @@ visus::power_overwhelming::oscilloscope_trigger::oscilloscope_trigger(
 }
 
 
-
-
 /*
  * visus::power_overwhelming::oscilloscope_trigger::oscilloscope_trigger
  */
@@ -111,13 +110,13 @@ visus::power_overwhelming::oscilloscope_trigger::external(
 /*
  * visus::power_overwhelming::oscilloscope_trigger::external
  */
-
 visus::power_overwhelming::oscilloscope_trigger&
 visus::power_overwhelming::oscilloscope_trigger::external(
         _In_ const float level,
         _In_ const oscilloscope_trigger_slope slope) {
     return this->external(oscilloscope_quantity(level, "V"), slope);
 }
+
 
 /*
  * visus::power_overwhelming::oscilloscope_trigger::hold_off
@@ -173,8 +172,8 @@ visus::power_overwhelming::oscilloscope_trigger::source(
         throw std::invalid_argument("The trigger source must not be null.");
     }
 
-    detail::safe_assign(this->_source, convert_string<char>(source));
-    return *this;
+    auto s = convert_string<char>(source);
+    return this->source(s.c_str());
 }
 
 
@@ -183,12 +182,28 @@ visus::power_overwhelming::oscilloscope_trigger::source(
  */
 visus::power_overwhelming::oscilloscope_trigger&
 visus::power_overwhelming::oscilloscope_trigger::source(
-        _In_z_ const char *source) {
+    _In_z_ const char *source) {
     if (source == nullptr) {
         throw std::invalid_argument("The trigger source must not be null.");
     }
 
     detail::safe_assign(this->_source, source);
+
+    {
+        std::cmatch match;
+        std::string query;
+        std::regex rx("^ch(\\d+)$", std::regex_constants::ECMAScript
+            | std::regex_constants::icase);
+
+        if (std::regex_match(this->_source.as<char>(), match, rx)) {
+            auto c = match[1].str();
+            this->_input = ::atoi(c.c_str());
+
+        } else if (detail::equals(this->_source.as<char>(), "EXT", true)) {
+            this->_input = 5;
+        }
+    }
+
     return *this;
 }
 
@@ -219,4 +234,3 @@ visus::power_overwhelming::oscilloscope_trigger::type(_In_z_ const char *type) {
     detail::safe_assign(this->_type, type);
     return *this;
 }
-
