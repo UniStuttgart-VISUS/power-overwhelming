@@ -744,13 +744,6 @@ void visus::power_overwhelming::rtx_instrument_configuration::apply(
         ? (std::numeric_limits<float>::max)()
         : std::abs(this->_min_time_base);
 
-    instrument.time_range(this->_time_range)
-        .trigger_output(oscilloscope_trigger_output::pulse)
-        .automatic_roll(roll)
-        .automatic_roll_time(mtim)
-        .trigger(this->_trigger)
-        .acquisition(this->_acquisition, false);
-
     // If there are per-channel settings, apply them as well. Note that the
     // pointer may be non-null while there are zero channels. This is perfectly
     // legal and all data in '_channels' should be ignored in this case.
@@ -759,6 +752,16 @@ void visus::power_overwhelming::rtx_instrument_configuration::apply(
             instrument.channel(this->_channels[i]);
         }
     }
+
+    // Note that the triggers must be configured *after* the channels, because
+    // the trigger level can only be within the configured vertical range of the
+    // respective channel.
+    instrument.time_range(this->_time_range)
+        .trigger_output(oscilloscope_trigger_output::pulse)
+        .automatic_roll(roll)
+        .automatic_roll_time(mtim)
+        .trigger(this->_trigger)
+        .acquisition(this->_acquisition, false);
 
     // Wait until the instrument has applied all of the before settings.
     instrument.operation_complete();
