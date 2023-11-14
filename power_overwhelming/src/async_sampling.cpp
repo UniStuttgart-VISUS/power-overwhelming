@@ -58,7 +58,7 @@ bool visus::power_overwhelming::async_sampling::deliver(
 
     } else if (this->_on_measurement != nullptr) {
         for (std::size_t i = 0; i < cnt; ++i) {
-        this->_on_measurement(measurement(source, samples[i]), context);
+            this->_on_measurement(measurement(source, samples[i]), context);
         }
         retval = true;
     }

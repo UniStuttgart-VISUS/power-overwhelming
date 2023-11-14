@@ -103,11 +103,11 @@ int _tmain(const int argc, const TCHAR **argv) {
     ::sample_all_tinkerforge_sensors();
 #endif
 
-#if false
+#if true
     ::sample_tinkerforge_sensor_data();
 #endif
 
-#if false
+#if true
     ::sample_tinkerforge_sensor_async(5);
 #endif
 
