@@ -183,6 +183,11 @@ namespace detail {
         std::string udid;
 
         /// <summary>
+        /// The UTC offset of the local time, which is reported by ADL.
+        /// </summary>
+        timestamp_type utc_offset;
+
+        /// <summary>
         /// Initialises a new instance.
         /// </summary>
         adl_sensor_impl(void);

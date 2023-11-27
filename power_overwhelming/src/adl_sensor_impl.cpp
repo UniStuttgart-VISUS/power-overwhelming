@@ -228,7 +228,19 @@ visus::power_overwhelming::detail::adl_sensor_impl::sampler;
  */
 visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(void)
     : adapter_index(0), device(0), source(adl_sensor_source::all),
-    start_input({ 0 }), start_output({ 0 }), state(0) { }
+        start_input({ 0 }), start_output({ 0 }), state(0) {
+#if defined(_WIN32)
+    TIME_ZONE_INFORMATION tzi;
+    if (::GetTimeZoneInformation(&tzi) == TIME_ZONE_ID_INVALID) {
+        throw std::system_error(::GetLastError(), std::system_category());
+    }
+
+    this->utc_offset = static_cast<timestamp_type>(tzi.Bias) * 60LL * 1000LL
+        * 10000LL;
+#else /* defined(_WIN32) */
+    this->utc_offset = 0;
+#endif /* defined(_WIN32) */
+}
 
 
 /*
@@ -345,7 +357,7 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample(
     // least on Windows). Based on this assumption, convert to the requested
     // unit.
     auto timestamp = convert(static_cast<measurement::timestamp_type>(
-        data->ulLastUpdated), resolution);
+        data->ulLastUpdated + this->utc_offset), resolution);
 
     // MAJOR HAZARD HERE!!! WE HAVE NO IDEA WHAT UNIT IS USED FOR VOLTAGE AND
     // CURRENT. The documentation says nothing about this, but some overclocking
@@ -430,4 +442,3 @@ void visus::power_overwhelming::detail::adl_sensor_impl::stop(void) {
         }
     }
 }
-
