@@ -228,19 +228,8 @@ visus::power_overwhelming::detail::adl_sensor_impl::sampler;
  */
 visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(void)
     : adapter_index(0), device(0), source(adl_sensor_source::all),
-        start_input({ 0 }), start_output({ 0 }), state(0) {
-#if defined(_WIN32)
-    TIME_ZONE_INFORMATION tzi;
-    if (::GetTimeZoneInformation(&tzi) == TIME_ZONE_ID_INVALID) {
-        throw std::system_error(::GetLastError(), std::system_category());
-    }
-
-    this->utc_offset = static_cast<timestamp_type>(tzi.Bias) * 60LL * 1000LL
-        * 10000LL;
-#else /* defined(_WIN32) */
-    this->utc_offset = 0;
-#endif /* defined(_WIN32) */
-}
+        start_input({ 0 }), start_output({ 0 }), state(0),
+        utc_offset(detail::get_timezone_bias()) { }
 
 
 /*
@@ -250,7 +239,8 @@ visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(
         const AdapterInfo& adapterInfo)
     : adapter_index(adapterInfo.iAdapterIndex), device(0),
         source(adl_sensor_source::all), start_input({ 0 }),
-        start_output({ 0 }), state(0), udid(adapterInfo.strUDID) {
+        start_output({ 0 }), state(0), udid(adapterInfo.strUDID),
+        utc_offset(detail::get_timezone_bias()) {
     auto status = detail::amd_display_library::instance()
         .ADL2_Device_PMLog_Device_Create(this->scope, this->adapter_index,
         &this->device);

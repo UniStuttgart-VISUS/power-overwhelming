@@ -203,6 +203,12 @@ namespace detail {
         _In_ const int micros = 0,
         _In_ const int nanos = 0);
 
+    /// <summary>
+    /// Gets the timezone bias of the system in 100 ns units.
+    /// </summary>
+    /// <returns></returns>
+    timestamp_type POWER_OVERWHELMING_API get_timezone_bias(void);
+
 } /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
