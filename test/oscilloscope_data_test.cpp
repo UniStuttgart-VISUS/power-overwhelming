@@ -19,28 +19,22 @@ namespace test {
 
         TEST_METHOD(test_oscilloscope_waveform_ctor) {
             Assert::ExpectException<std::invalid_argument>([](void) {
-                oscilloscope_waveform waveform(nullptr, nullptr, nullptr, nullptr, blob());
+                oscilloscope_waveform waveform(nullptr, nullptr, nullptr, nullptr, nullptr, blob());
             }, L"Header nullptr", LINE_INFO());
 
-            Assert::ExpectException<std::invalid_argument>([](void) {
-                oscilloscope_waveform waveform("bla", "1,1,1", "2,2,2", "3", blob());
-            }, L"Invalid header", LINE_INFO());
-
-            Assert::ExpectException<std::invalid_argument>([](void) {
-                oscilloscope_waveform waveform("0.0, 1.0, 42, 1", "1,1,1", "2,2,2", "3", blob());
-            }, L"Sample size mismatch", LINE_INFO());
-
             {
-                const oscilloscope_waveform waveform("0.0, 1.0, 42, 1", "1,2,3", "3, 4, 6", "99", blob(42 * sizeof(float)));
+                const auto xinc = std::to_string(1.0f / (42 - 1));
+                const oscilloscope_waveform waveform("0.0", xinc.c_str(), "1, 2, 3", "3, 4, 6", "99", blob(42 * sizeof(float)));
                 Assert::AreEqual(0.0f, waveform.time_begin(), L"time_begin", LINE_INFO());
-                Assert::AreEqual(1.0f, waveform.time_end(), L"time_end", LINE_INFO());
+                Assert::AreEqual(1.0f, waveform.time_end(), 0.0001f, L"time_end", LINE_INFO());
                 Assert::AreEqual(99.0f, waveform.segment_offset(), L"segment_offset", LINE_INFO());
                 Assert::AreEqual(std::size_t(42), waveform.record_length(), L"record_length", LINE_INFO());
             }
 
             {
-                oscilloscope_waveform waveform("0.0, 1.0, 42, 1", "1,2,3", "3, 4, 6", "99", blob(42 * sizeof(float)));
-                const oscilloscope_waveform expected("0.0, 1.0, 42, 1", "1,2,3", "3, 4, 6", "99", blob(42 * sizeof(float)));
+                const auto xinc = std::to_string(1.0f / (42 - 1));
+                oscilloscope_waveform waveform("0.0", xinc.c_str(), "1,2,3", "3, 4, 6", "99", blob(42 * sizeof(float)));
+                const oscilloscope_waveform expected("0.0", xinc.c_str(), "1,2,3", "3, 4, 6", "99", blob(42 * sizeof(float)));
                 const oscilloscope_waveform actual(std::move(waveform));
 
                 Assert::AreEqual(expected.time_begin(), actual.time_begin(), L"time_begin", LINE_INFO());
@@ -61,9 +55,11 @@ namespace test {
                 samples.as<float>()[i] = 2.0f * i;
             }
 
-            oscilloscope_waveform waveform("0.0, 1.0, 8, 1", "1,2,3", "3, 4, 6", "99", std::move(samples));
+            const auto xinc = std::to_string(1.0f / ((samples.size() / sizeof(float)) - 1));
+
+            oscilloscope_waveform waveform("0.0", xinc.c_str(), "1,2,3", "3, 4, 6", "99", std::move(samples));
             Assert::AreEqual(0.0f, waveform.time_begin(), L"time_begin", LINE_INFO());
-            Assert::AreEqual(1.0f, waveform.time_end(), L"time_end", LINE_INFO());
+            Assert::AreEqual(1.0f, waveform.time_end(), 0.0001f, L"time_end", LINE_INFO());
             Assert::AreEqual(99.0f, waveform.segment_offset(), L"segment_offset", LINE_INFO());
             Assert::AreEqual(std::size_t(8), waveform.record_length(), L"record_length", LINE_INFO());
             Assert::AreEqual(waveform.record_length(), waveform.size(), L"size", LINE_INFO());
@@ -96,8 +92,10 @@ namespace test {
                 data.as<float>()[i] = 2.0f * i;
             }
 
+            const auto xinc = std::to_string(1.0f / ((data.size() / sizeof(float)) - 1));
+
             oscilloscope_channel::channel_type channel = 42;
-            oscilloscope_waveform waveform("0.0, 1.0, 8, 1", "1,2,3", "3, 4, 6", "99", std::move(data));
+            oscilloscope_waveform waveform("0.0", xinc.c_str(), "1,2,3", "3, 4, 6", "99", std::move(data));
             Assert::IsFalse(waveform.empty(), L"waveform not empty", LINE_INFO());
 
             oscilloscope_sample sample(&channel, &waveform, 1);
@@ -126,9 +124,12 @@ namespace test {
                 data1.as<float>()[i] = 2.0f * i;
             }
 
+            const auto xinc = std::to_string(1.0f / ((data0.size() / sizeof(float)) - 1));
+            Assert::AreEqual(data0.size(), data1.size(), L"Can reuse XINC", LINE_INFO());
+
             oscilloscope_waveform waveforms[] = {
-                oscilloscope_waveform("0.0, 1.0, 4, 1", "1,2,3", "3, 4, 6", "99", std::move(data0)),
-                oscilloscope_waveform("0.0, 1.0, 4, 1", "2023,8,9", "17, 39, 00.5", "99", std::move(data1))
+                oscilloscope_waveform("0.0", xinc.c_str(), "1,2,3", "3, 4, 6", "99", std::move(data0)),
+                oscilloscope_waveform("0.0", xinc.c_str(), "2023,8,9", "17, 39, 00.5", "99", std::move(data1))
             };
 
             oscilloscope_sample sample(channels, waveforms, 2);
@@ -157,9 +158,12 @@ namespace test {
                 data1.as<float>()[i] = 2.0f * i;
             }
 
+            const auto xinc = std::to_string(1.0f / ((data0.size() / sizeof(float)) - 1));
+            Assert::AreEqual(data0.size(), data1.size(), L"Can reuse XINC", LINE_INFO());
+
             oscilloscope_waveform waveforms[] = {
-                oscilloscope_waveform("0.0, 1.0, 4, 1", "1,2,3", "3, 4, 6", "99", std::move(data0)),
-                oscilloscope_waveform("0.0, 1.0, 4, 1", "2023,8,9", "17, 39, 00.5", "99", std::move(data1))
+                oscilloscope_waveform("0.0", xinc.c_str(), "1,2,3", "3, 4, 6", "99", std::move(data0)),
+                oscilloscope_waveform("0.0", xinc.c_str(), "2023,8,9", "17, 39, 00.5", "99", std::move(data1))
             };
 
             oscilloscope_sample sample(channels, waveforms, 1, 2);
@@ -186,7 +190,7 @@ namespace test {
                 }
 
                 auto date = std::to_string(i) + "," + std::to_string(i) + ",42";
-                waveforms.emplace_back("0.0, 1.0, 4, 1", date.c_str(), "3, 4, 6", "99", std::move(data));
+                waveforms.emplace_back("0.0", "0.33333333333333333333333333333333", date.c_str(), "3, 4, 6", "99", std::move(data));
             }
 
             oscilloscope_sample sample(channels.data(), waveforms.data(), channels.size(), segments);
@@ -208,7 +212,6 @@ namespace test {
             Assert::AreEqual(std::size_t(4), sample[3].waveform().record_length(), L"record_length #3", LINE_INFO());
             Assert::AreEqual(std::size_t(4), sample[4].waveform().record_length(), L"record_length #4", LINE_INFO());
             Assert::AreEqual(std::size_t(4), sample[5].waveform().record_length(), L"record_length #5", LINE_INFO());
-
         }
     };
 

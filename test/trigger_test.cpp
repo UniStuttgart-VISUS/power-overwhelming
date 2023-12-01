@@ -23,7 +23,7 @@ namespace test {
                 Assert::AreEqual(int(oscilloscope_trigger_coupling::direct_current), int(t.coupling()), L"Default coupling", LINE_INFO());
                 Assert::IsNull(t.hold_off(), L"Default hold_off", LINE_INFO());
                 Assert::AreEqual(int(oscilloscope_trigger_hysteresis::automatic), int(t.hysteresis()), L"Default hysteresis", LINE_INFO());
-                Assert::AreEqual(0, int(t.input()), L"Default input", LINE_INFO());
+                Assert::AreEqual(1, int(t.input()), L"Default input", LINE_INFO());
                 Assert::AreEqual("", t.level().unit(), L"Default level_unit", LINE_INFO());
                 Assert::AreEqual(0.0f, t.level().value(), L"Default level_value", LINE_INFO());
                 Assert::AreEqual(int(oscilloscope_trigger_mode::automatic), int(t.mode()), L"Default mode", LINE_INFO());

@@ -884,10 +884,17 @@ visus::power_overwhelming::rtx_instrument::data(
             break;
     }
 
-    const auto qheader = detail::format_string("CHAN%u:DATA:HEAD?\n", channel);
-    const auto rheader = this->query(qheader.c_str());
-    const auto header = rheader.as<char>();
-    _Analysis_assume_(header != nullptr);
+    const auto qxor = detail::format_string("CHAN%u:DATA:XOR?\n", channel);
+    auto rxor = this->query(qxor.c_str());
+    auto xor = rxor.as<char>();
+    _Analysis_assume_(xor != nullptr);
+    detail::trim_eol(xor);
+
+    const auto qxinc = detail::format_string("CHAN%u:DATA:XINC?\n", channel);
+    auto rxinc = this->query(qxinc.c_str());
+    auto xinc= rxinc.as<char>();
+    _Analysis_assume_(xinc != nullptr);
+    detail::trim_eol(xinc);
 
     const auto qtsr = detail::format_string("CHAN%u:HIST:TSR?\n", channel);
     auto rtsr = this->query(qtsr.c_str());
@@ -907,7 +914,7 @@ visus::power_overwhelming::rtx_instrument::data(
     _Analysis_assume_(tsab != nullptr);
     detail::trim_eol(tsab);
 
-    return oscilloscope_waveform(header, tsd, tsab, tsr,
+    return oscilloscope_waveform(xor, xinc, tsd, tsab, tsr,
         this->binary_data(channel));
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */

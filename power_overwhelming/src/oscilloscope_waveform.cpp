@@ -24,14 +24,15 @@ visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform(void)
     _segment_offset(0.0f),
     _segment_timestamp(0),
     _time_begin(0),
-    _time_end(0) { }
+    _time_increment(0) { }
 
 
 /*
  * visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform
  */
 visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform(
-        _In_z_ const char *header,
+        _In_z_ const char *xor,
+        _In_z_ const char *xinc,
         _In_z_ const char *segment_date,
         _In_z_ const char *segment_time,
         _In_z_ const char *segment_offset,
@@ -40,9 +41,12 @@ visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform(
         _segment_offset(0),
         _segment_timestamp(0),
         _time_begin(0),
-        _time_end(0) {
-    if (header == nullptr) {
-        throw std::invalid_argument("The data header must not be nullptr.");
+        _time_increment(0) {
+    if (xor == nullptr) {
+        throw std::invalid_argument("The X origin must not be nullptr.");
+    }
+    if (xinc == nullptr) {
+        throw std::invalid_argument("The X increment must not be nullptr.");
     }
     if (segment_date == nullptr) {
         throw std::invalid_argument("The segment date must not be nullptr.");
@@ -54,22 +58,8 @@ visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform(
         throw std::invalid_argument("The segment offset must not be nullptr.");
     }
 
-    {
-        const auto tokens = detail::tokenise(std::string(header), ",", true);
-        if (tokens.size() < 4) {
-            throw std::invalid_argument("The specified data header does not have "
-                "the expected format.");
-        }
-
-        this->_time_begin = std::stof(tokens[0]);
-        this->_time_end = std::stof(tokens[1]);
-        this->_record_length = std::stoul(tokens[2]);
-    }
-
-    if (this->_record_length > samples.size() / sizeof(float)) {
-        throw std::invalid_argument("The number of samples in the data header "
-            "does not match the sample data provided.");
-    }
+    assert(samples.size() % sizeof(float) == 0);
+    this->_record_length = samples.size() / sizeof(float);
 
     {
         const auto date_tokens = detail::tokenise(std::string(segment_date),
@@ -109,6 +99,8 @@ visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform(
     }
 
     this->_segment_offset = std::atof(segment_offset);
+    this->_time_begin = std::atof(xor);
+    this->_time_increment = std::atof(xinc);
 
     // Do not move samples unless everything else succeeded.
     this->_samples = std::move(samples);
@@ -125,12 +117,25 @@ visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform(
         _segment_offset(rhs._segment_offset),
         _segment_timestamp(rhs._segment_timestamp),
         _time_begin(rhs._time_begin),
-        _time_end(rhs._time_end) {
+        _time_increment(rhs._time_increment) {
     rhs._record_length = 0;
     rhs._segment_offset = 0.0f;
     rhs._segment_timestamp = 0;
     rhs._time_begin = 0.0f;
-    rhs._time_end = 0.0f;
+    rhs._time_increment = 0.0f;
+}
+
+
+/*
+ * visus::power_overwhelming::oscilloscope_waveform::time_end
+ */
+float visus::power_overwhelming::oscilloscope_waveform::time_end(
+        void) const noexcept {
+    if (this->_samples.empty()) {
+        return this->_time_begin;
+    } else {
+        return this->sample_time(this->_record_length - 1);
+    }
 }
 
 
@@ -154,24 +159,6 @@ float visus::power_overwhelming::oscilloscope_waveform::sample(
 
 
 /*
- * visus::power_overwhelming::oscilloscope_waveform::sample_distance
- */
-float visus::power_overwhelming::oscilloscope_waveform::sample_distance(
-        void) const noexcept {
-    if (this->_record_length == 0) {
-        return 0.0f;
-
-    } else {
-        // This should be the same as "CHAN:DATA:XINC?", but without an
-        // additional query.
-        const auto count = static_cast<float>(this->_record_length);
-        const auto dt = this->_time_end - this->_time_begin;
-        return (dt / count);
-    }
-}
-
-
-/*
  * visus::power_overwhelming::oscilloscope_waveform::sample_timestamp
  */
 visus::power_overwhelming::measurement_data::timestamp_type
@@ -179,10 +166,9 @@ visus::power_overwhelming::oscilloscope_waveform::sample_timestamp(
         _In_ const std::size_t i) const noexcept {
     using namespace std::chrono;
     typedef duration<timestamp_type, detail::filetime_period> target_duration;
-    const auto count = static_cast<float>(this->_record_length);
-    const duration<double> dt(this->_time_end - this->_time_begin);
+    const duration<double> dt(this->sample_time(i));
     return this->segment_timestamp()
-        + duration_cast<target_duration>((dt * i) / count).count();
+        + duration_cast<target_duration>(dt).count();
 }
 
 
@@ -202,8 +188,8 @@ visus::power_overwhelming::oscilloscope_waveform::operator =(
         rhs._segment_timestamp = 0;
         this->_time_begin = rhs._time_begin;
         rhs._time_begin = 0.0f;
-        this->_time_end = rhs._time_end;
-        rhs._time_end = 0;
+        this->_time_increment = rhs._time_increment;
+        rhs._time_increment = 0.0f;
     }
 
     return *this;
