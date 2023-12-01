@@ -31,7 +31,7 @@ visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform(void)
  * visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform
  */
 visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform(
-        _In_z_ const char *xor,
+        _In_z_ const char *xorg,
         _In_z_ const char *xinc,
         _In_z_ const char *segment_date,
         _In_z_ const char *segment_time,
@@ -42,7 +42,7 @@ visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform(
         _segment_timestamp(0),
         _time_begin(0),
         _time_increment(0) {
-    if (xor == nullptr) {
+    if (xorg == nullptr) {
         throw std::invalid_argument("The X origin must not be nullptr.");
     }
     if (xinc == nullptr) {
@@ -99,7 +99,7 @@ visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform(
     }
 
     this->_segment_offset = std::atof(segment_offset);
-    this->_time_begin = std::atof(xor);
+    this->_time_begin = std::atof(xorg);
     this->_time_increment = std::atof(xinc);
 
     // Do not move samples unless everything else succeeded.

@@ -31,11 +31,12 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <param name="header">The header string for the waveform data.
-        /// Header data are a CSV string of the time points of the begin and
-        /// the end of the waveform, the number of samples in the waveform and
-        /// the number of values per sample.
-        /// </param>
+        /// <param name="xorg">The string that has been retrieved using
+        /// <c>CHAN:DATA:XOR?</c>and that contains the origin of the waveform
+        /// in (fractional) seconds.</param>
+        /// <param name="xinc">The string that has been retrieved using
+        /// <c>CHAN:DATA:XINC?</c> and that contains the x-increment of the
+        /// waveform in (fractional) seconds.</param>
         /// <param name="segment_offset">The segment offset retrieved via
         /// <c>CHAN:HIST:TSR?</c>.</param>
         /// <param name="samples">A blob holding the <c>float</c> samples of
@@ -44,7 +45,7 @@ namespace power_overwhelming {
         /// <c>FORM:BORD LSBF</c> (assuming an Intel architecture).</param>
         /// <exception cref="std::invalid_argument">If any of the inputs is
         /// <c>nullptr</c>.</exception>
-        oscilloscope_waveform(_In_z_ const char *xor,
+        oscilloscope_waveform(_In_z_ const char *xorg,
             _In_z_ const char *xinc,
             _In_z_ const char *segment_date,
             _In_z_ const char *segment_time,

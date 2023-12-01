@@ -884,11 +884,11 @@ visus::power_overwhelming::rtx_instrument::data(
             break;
     }
 
-    const auto qxor = detail::format_string("CHAN%u:DATA:XOR?\n", channel);
-    auto rxor = this->query(qxor.c_str());
-    auto xor = rxor.as<char>();
-    _Analysis_assume_(xor != nullptr);
-    detail::trim_eol(xor);
+    const auto qxorg = detail::format_string("CHAN%u:DATA:XOR?\n", channel);
+    auto rxorg = this->query(qxorg.c_str());
+    auto xorg = rxorg.as<char>();
+    _Analysis_assume_(xorg != nullptr);
+    detail::trim_eol(xorg);
 
     const auto qxinc = detail::format_string("CHAN%u:DATA:XINC?\n", channel);
     auto rxinc = this->query(qxinc.c_str());
@@ -914,7 +914,7 @@ visus::power_overwhelming::rtx_instrument::data(
     _Analysis_assume_(tsab != nullptr);
     detail::trim_eol(tsab);
 
-    return oscilloscope_waveform(xor, xinc, tsd, tsab, tsr,
+    return oscilloscope_waveform(xorg, xinc, tsd, tsab, tsr,
         this->binary_data(channel));
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
