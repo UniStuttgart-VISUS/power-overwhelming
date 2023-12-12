@@ -288,6 +288,69 @@ std::size_t visus::power_overwhelming::hmc8015_sensor::functions(
 
 
 /*
+ * visus::power_overwhelming::hmc8015_sensor::integrator_behaviour
+ */
+visus::power_overwhelming::hmc8015_sensor&
+visus::power_overwhelming::hmc8015_sensor::integrator_behaviour(
+        _In_ const integrator_mode mode,
+        _In_ const int duration,
+        _In_ const std::int32_t year,
+        _In_ const std::int32_t month,
+        _In_ const std::int32_t day,
+        _In_ const std::int32_t hour,
+        _In_ const std::int32_t minute,
+        _In_ const std::int32_t second) {
+    typedef std::numeric_limits<decltype(duration)> dur_limits;
+    this->check_not_disposed();
+
+    // Configure the logging mode.
+    switch (mode) {
+        case integrator_mode::duration:
+            this->_instrument.write("INT:MODE DUR\n");
+            if (duration == dur_limits::lowest()) {
+                this->_instrument.write("INT:DUR MIN\n");
+            } else if (duration == (dur_limits::max)()) {
+                this->_instrument.write("INT:DUR MAX\n");
+            } else {
+                auto cmd = detail::format_string("INT:DUR %d\n", duration);
+                this->_instrument.write(cmd);
+            }
+            break;
+
+        case integrator_mode::time_span:
+            this->_instrument.write("INT:MODE SPAN\n");
+
+            {
+                auto cmd = detail::format_string(
+                    "INT:STIM %d, %d, %d, %d, %d, %d\n",
+                    year, month, day, hour, minute, second);
+                this->_instrument.write(cmd);
+            }
+
+            if (duration == dur_limits::lowest()) {
+                this->_instrument.write("INT:DUR MIN\n");
+            } else if (duration == (dur_limits::max)()) {
+                this->_instrument.write("INT:DUR MAX\n");
+            } else {
+                auto cmd = detail::format_string("INT:DUR %d\n", duration);
+                this->_instrument.write(cmd);
+            }
+            break;
+
+        case integrator_mode::manual:
+            this->_instrument.write("INT:MODE MAN\n");
+            break;
+
+        default:
+            throw std::invalid_argument("The specified integrator mode is not "
+                "supported by the instrument.");
+    }
+
+    return *this;
+}
+
+
+/*
  * visus::power_overwhelming::hmc8015_sensor::log
  */
 visus::power_overwhelming::hmc8015_sensor&
@@ -528,6 +591,39 @@ visus::power_overwhelming::hmc8015_sensor::reset(void) {
     this->_instrument.throw_on_system_error();
     this->_instrument.clear_status();
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::reset_integrator
+ */
+visus::power_overwhelming::hmc8015_sensor&
+visus::power_overwhelming::hmc8015_sensor::reset_integrator(void) {
+    this->check_not_disposed();
+    this->_instrument.write("INT:RES\n");
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::start_integrator
+ */
+visus::power_overwhelming::hmc8015_sensor&
+visus::power_overwhelming::hmc8015_sensor::start_integrator(void) {
+    this->check_not_disposed();
+    this->_instrument.write("INT:STAR\n");
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::hmc8015_sensor::stop_integrator
+ */
+visus::power_overwhelming::hmc8015_sensor&
+visus::power_overwhelming::hmc8015_sensor::stop_integrator(void) {
+    this->check_not_disposed();
+    this->_instrument.write("INT:STOP\n");
     return *this;
 }
 

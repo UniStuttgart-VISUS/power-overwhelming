@@ -13,12 +13,12 @@
 
 #include "power_overwhelming/blob.h"
 #include "power_overwhelming/hmc8015_function.h"
+#include "power_overwhelming/integrator_mode.h"
+#include "power_overwhelming/instrument_range.h"
+#include "power_overwhelming/log_mode.h"
 #include "power_overwhelming/sampler_source.h"
 #include "power_overwhelming/sensor.h"
 #include "power_overwhelming/visa_instrument.h"
-
-#include "instrument_range.h"
-#include "log_mode.h"
 
 
 namespace visus {
@@ -348,6 +348,46 @@ namespace power_overwhelming {
             _In_ const std::size_t cnt) const;
 
         /// <summary>
+        /// Configures the behaviour of the integrator.
+        /// </summary>
+        /// <param name="mode">Specifies the mode of the integrator, which
+        /// determines which of the remaining parameters are relevant. In
+        /// <see cref="integrator_mode::manual" />, all other parameters
+        /// are ignored.</param>
+        /// <param name="duration">The integration duration in seconds.</param>
+        /// <param name="year">The year when to start integration in case
+        /// the <paramref name="mode" /> is
+        ///  <see cref="integration_mode::time_span" />.</param>
+        /// <param name="month">The month when to start integration in case
+        /// the <paramref name="mode" /> is
+        ///  <see cref="integration_mode::time_span" />.</param>
+        /// <param name="day">The day when to start integration in case
+        /// the <paramref name="mode" /> is
+        ///  <see cref="integration_mode::time_span" />.</param>
+        /// <param name="hour">The hour when to start integration in case
+        /// the <paramref name="mode" /> is
+        ///  <see cref="integration_mode::time_span" />.</param>
+        /// <param name="minute">The minute when to start integration in case
+        /// the <paramref name="mode" /> is
+        ///  <see cref="integration_mode::time_span" />.</param>
+        /// <param name="second">The second when to start integration in case
+        /// the <paramref name="mode" /> is
+        ///  <see cref="integration_mode::time_span" />.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        hmc8015_sensor& integrator_behaviour(_In_ const integrator_mode mode,
+            _In_ const int duration = std::numeric_limits<int>::lowest(),
+            _In_ const std::int32_t year = 0,
+            _In_ const std::int32_t month = 0,
+            _In_ const std::int32_t day = 0,
+            _In_ const std::int32_t hour = 0,
+            _In_ const std::int32_t minute = 0,
+            _In_ const std::int32_t second = 0);
+
+        /// <summary>
         /// Gets the configured name of the instrument.
         /// </summary>
         /// <param name="dst">A buffer that is able to hold at least
@@ -607,7 +647,38 @@ namespace power_overwhelming {
         /// processed successfully.</exception>
         hmc8015_sensor& reset(void);
 
+        /// <summary>
+        /// Resets the manual integration time, which is displayed on the
+        /// display (status line).
+        /// </summary>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        hmc8015_sensor& reset_integrator(void);
+
         using sensor::sample;
+
+        /// <summary>
+        /// Starts the integrator if in manual mode.
+        /// </summary>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        hmc8015_sensor& start_integrator(void);
+
+        /// <summary>
+        /// Stops the integrator if in manual mode.
+        /// </summary>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        hmc8015_sensor& stop_integrator(void);
 
         /// <summary>
         /// Synchonises the date and time on the instrument with the system
