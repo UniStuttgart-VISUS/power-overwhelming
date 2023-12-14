@@ -557,6 +557,12 @@ visus::power_overwhelming::rtx_instrument::channel(
     }
 
     {
+        impl.format("PROB%d:SET:ADV:ZADJ?\n", channel);
+        auto value = impl.read_all();
+        retval.zero_adjust_offset(detail::parse_float(value.as<char>()));
+    }
+
+    {
         impl.format("CHAN%d:ZOFF?\n", channel);
         auto value = impl.read_all();
         retval.zero_offset(detail::parse_float(value.as<char>()));
