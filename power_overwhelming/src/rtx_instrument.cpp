@@ -654,6 +654,11 @@ visus::power_overwhelming::rtx_instrument::channel(
     impl.format("CHAN%d:STAT %s\n", channel.channel(),
         channel.state() ? "ON" : "OFF");
 
+    if (channel.zero_adjust()) {
+        impl.format("PROB%d:SET:ADV:ZADJ %f\n",
+            channel.channel(), channel.zero_adjust_offset());
+    }
+
     impl.format("CHAN%d:ZOFF %f%s\n", channel.channel(),
         channel.zero_offset().value(), channel.zero_offset().unit());
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
