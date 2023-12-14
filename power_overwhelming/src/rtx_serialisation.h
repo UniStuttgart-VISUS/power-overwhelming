@@ -123,6 +123,7 @@ namespace detail {
                 .polarity(polarity)
                 .range(range)
                 .skew(skew)
+                .state(state)
                 .zero_offset(zero_offset);
         }
 
