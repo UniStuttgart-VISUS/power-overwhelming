@@ -335,6 +335,17 @@ void visus::power_overwhelming::tinkerforge_sensor::reset(void) {
 
 
 /*
+ * visus::power_overwhelming::tinkerforge_sensor::resync_internal_clock
+ */
+void visus::power_overwhelming::tinkerforge_sensor::resync_internal_clock(
+        void) {
+#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
+    this->_impl->time_xlate.update(this->_impl->bricklet);
+#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
+}
+
+
+/*
  * visus::power_overwhelming::tinkerforge_sensor::resync_internal_clock_after
  */
 void visus::power_overwhelming::tinkerforge_sensor::resync_internal_clock_after(

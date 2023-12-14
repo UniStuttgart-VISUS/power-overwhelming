@@ -368,7 +368,25 @@ namespace power_overwhelming {
         /// <summary>
         /// Reset the bricklet.
         /// </summary>
+        /// <remarks>
+        /// If the library is using our custom firmware, this will also trigger
+        /// a resynchronisation of the internal clock with the wall clock time.
+        /// This can take some time, expecially when using many bricklets.
+        /// </remarks>
         void reset(void);
+
+        /// <summary>
+        /// Forces the implementation to resynchronise the internal clock of
+        /// the bricklet with the wall-clock of the PC.
+        /// </summary>
+        /// <remarks>
+        /// This method has no effect if the library has not been built with
+        /// support for our custom firmware or the bricklet does not run this
+        /// firmware.
+        /// </remarks>
+        /// <param name="cnt">The number of time translations (measurements)
+        /// that can be made with the same synchronisation state.</param>
+        void resync_internal_clock(void);
 
         /// <summary>
         /// Instructs the implementation to synchronise the internal clock of
