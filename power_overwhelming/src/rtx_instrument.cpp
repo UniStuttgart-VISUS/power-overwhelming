@@ -556,10 +556,15 @@ visus::power_overwhelming::rtx_instrument::channel(
         retval.state(!detail::starts_with(value.as<char>(), "0"));
     }
 
-    {
+    // ZADJ only works on RTA devices, not on RTB, so we need to guard
+    // against this.
+    try {
         impl.format("PROB%d:SET:ADV:ZADJ?\n", channel);
         auto value = impl.read_all();
         retval.zero_adjust_offset(detail::parse_float(value.as<char>()));
+    } catch (...) {
+        retval.zero_adjust(false);
+        retval.zero_adjust_offset(0.0f);
     }
 
     {
