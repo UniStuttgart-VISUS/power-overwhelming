@@ -543,10 +543,12 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _channels(nullptr),
         _cnt_channels(0),
         _min_time_base(0.0f),
+        _reference_position(oscilloscope_reference_point::middle),
         _slave(false),
         _timeout(0),
         _time_range(0.0f),
-        _trigger("EXT", "EDGE") { }
+        _trigger("EXT", "EDGE"),
+        _trigger_position(0.0f) { }
 
 
 /*
@@ -561,10 +563,12 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _channels(nullptr),
         _cnt_channels(rhs._cnt_channels),
         _min_time_base(0.0f),
+        _reference_position(rhs._reference_position),
         _slave(rhs._slave),
         _timeout(rhs._timeout),
         _time_range(rhs._time_range),
-        _trigger(rhs._trigger) {
+        _trigger(rhs._trigger),
+        _trigger_position(rhs._trigger_position) {
     typedef oscilloscope_channel chan_t;
     // Create a unique_ptr for safety reasons: If any of the assignment
     // operators of the channels fails, we must release this memory.
@@ -586,10 +590,12 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _channels(rhs._channels),
         _cnt_channels(rhs._cnt_channels),
         _min_time_base(rhs._min_time_base),
+        _reference_position(rhs._reference_position),
         _slave(rhs._slave),
         _timeout(rhs._timeout),
         _time_range(std::move(rhs._time_range)),
-        _trigger(std::move(rhs._trigger)) {
+        _trigger(std::move(rhs._trigger)),
+        _trigger_position(std::move(rhs._trigger_position)){
     rhs._channels = nullptr;
     rhs._cnt_channels = 0;
 }
@@ -608,10 +614,12 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _channels(nullptr),
         _cnt_channels(0),
         _min_time_base(0.0f),
+        _reference_position(oscilloscope_reference_point::middle),
         _slave(false),
         _timeout(0),
         _time_range(time_range),
-        _trigger("EXT", "EDGE") {
+        _trigger("EXT", "EDGE"),
+        _trigger_position(0.0f) {
     this->_acquisition.points(samples).segmented(true);
     this->_trigger.external().mode(oscilloscope_trigger_mode::automatic);
 }
@@ -624,7 +632,7 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _In_ const oscilloscope_quantity time_range,
         _In_ const oscilloscope_acquisition& acquisition,
         _In_ const oscilloscope_trigger& trigger,
-        _In_ visa_instrument::timeout_type timeout) 
+        _In_ visa_instrument::timeout_type timeout)
     : _acquisition(acquisition),
         _beep_on_apply(0),
         _beep_on_error(false),
@@ -632,10 +640,12 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _channels(nullptr),
         _cnt_channels(0),
         _min_time_base(0.0f),
+        _reference_position(oscilloscope_reference_point::middle),
         _slave(false),
         _timeout(timeout),
         _time_range(time_range),
-        _trigger(trigger) {
+        _trigger(trigger),
+        _trigger_position(0.0f) {
     this->_acquisition.state(oscilloscope_acquisition_state::unknown);
 }
 
@@ -653,10 +663,12 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _channels(nullptr),
         _cnt_channels(0),
         _min_time_base(instrument.automatic_roll_time()),
+        _reference_position(instrument.reference_position()),
         _slave(false),
         _timeout(instrument.timeout()),
         _time_range(instrument.time_range()),
-        _trigger(instrument.trigger()) {
+        _trigger(instrument.trigger()),
+        _trigger_position(instrument.trigger_position()){
     typedef oscilloscope_channel chan_t;
     std::vector<chan_t> channels;
 
@@ -938,10 +950,12 @@ visus::power_overwhelming::rtx_instrument_configuration::operator =(
 
         this->_cnt_channels = rhs._cnt_channels;
         this->_min_time_base = rhs._min_time_base;
+        this->_reference_position = rhs._reference_position;
         this->_slave = rhs._slave;
         this->_timeout = rhs._timeout;
         this->_time_range = rhs._time_range;
         this->_trigger = rhs._trigger;
+        this->_trigger_position = rhs._trigger_position;
     }
 
     return *this;
@@ -968,10 +982,12 @@ visus::power_overwhelming::rtx_instrument_configuration::operator =(
         rhs._cnt_channels = 0;
 
         this->_min_time_base = rhs._min_time_base;
+        this->_reference_position = rhs._reference_position;
         this->_slave = rhs._slave;
         this->_timeout = rhs._timeout;
         this->_time_range = std::move(rhs._time_range);
         this->_trigger = std::move(rhs._trigger);
+        this->_trigger_position = std::move(rhs._trigger_position);
     }
 
     return *this;

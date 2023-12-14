@@ -1108,41 +1108,6 @@ std::size_t visus::power_overwhelming::rtx_instrument::history_segments(
 
 
 /*
- * visus::power_overwhelming::rtx_instrument::reference_position
- */
-visus::power_overwhelming::oscilloscope_reference_point
-visus::power_overwhelming::rtx_instrument::reference_position(void) const {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    auto response = this->query("TIM:REF?\n");
-    auto position = detail::parse_float(response.as<char>()) * 100;
-    return static_cast<oscilloscope_reference_point>(position);
-
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error(detail::no_visa_error_msg);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
-}
-
-
-/*
- * visus::power_overwhelming::rtx_instrument::reset
- */
-visus::power_overwhelming::rtx_instrument&
-visus::power_overwhelming::rtx_instrument::reset(
-        _In_ const rtx_instrument_reset flags) {
-    typedef rtx_instrument_reset flags_type;
-    visa_instrument::reset(
-        (flags & flags_type::buffers) == flags_type::buffers,
-        (flags & flags_type::status) == flags_type::status);
-
-    if ((flags & flags_type::stop) == flags_type::stop) {
-        this->acquisition(oscilloscope_acquisition_state::interrupt, true);
-    }
-
-    return *this;
-}
-
-
-/*
  * visus::power_overwhelming::rtx_instrument::load_state_from_instrument
  */
 visus::power_overwhelming::rtx_instrument&
@@ -1186,6 +1151,41 @@ visus::power_overwhelming::rtx_instrument::reference_position(
         _In_ const oscilloscope_reference_point position) {
     auto& impl = this->check_not_disposed();
     impl.format("TIM:REF %f\n", static_cast<float>(position) / 100.0f);
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::reference_position
+ */
+visus::power_overwhelming::oscilloscope_reference_point
+visus::power_overwhelming::rtx_instrument::reference_position(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("TIM:REF?\n");
+    auto position = detail::parse_float(response.as<char>()) * 100;
+    return static_cast<oscilloscope_reference_point>(position);
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::reset
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::reset(
+        _In_ const rtx_instrument_reset flags) {
+    typedef rtx_instrument_reset flags_type;
+    visa_instrument::reset(
+        (flags & flags_type::buffers) == flags_type::buffers,
+        (flags & flags_type::status) == flags_type::status);
+
+    if ((flags & flags_type::stop) == flags_type::stop) {
+        this->acquisition(oscilloscope_acquisition_state::interrupt, true);
+    }
+
     return *this;
 }
 
@@ -1598,6 +1598,21 @@ visus::power_overwhelming::rtx_instrument::trigger_position(
     auto& impl = this->check_not_disposed();
     impl.format("TIM:POS %f%s\n", offset.value(), offset.unit());
     return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::trigger_position
+ */
+visus::power_overwhelming::oscilloscope_quantity
+visus::power_overwhelming::rtx_instrument::trigger_position(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("TIM:POS?\n");
+    return detail::parse_float(response.as<char>());
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
