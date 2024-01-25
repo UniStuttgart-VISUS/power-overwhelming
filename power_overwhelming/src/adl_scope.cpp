@@ -6,6 +6,7 @@
 #include "adl_scope.h"
 
 #include <cassert>
+#include <cstdint>
 
 #include "adl_exception.h"
 #include "amd_display_library.h"

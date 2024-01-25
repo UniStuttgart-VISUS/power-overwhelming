@@ -5,6 +5,8 @@
 
 #include "tinkerforge_display_impl.h"
 
+#include <stdexcept>
+
 
 /*
  * visus::power_overwhelming::detail::tinkerforge_display_impl::tinkerforge_display_impl

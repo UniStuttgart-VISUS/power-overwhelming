@@ -8,6 +8,7 @@
 #include <cassert>
 #include <condition_variable>
 #include <mutex>
+#include <system_error>
 
 #include <errno.h>
 
