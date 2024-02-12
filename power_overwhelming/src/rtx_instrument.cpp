@@ -592,10 +592,17 @@ visus::power_overwhelming::rtx_instrument::channel(
     // Note: Attenuation should be set first, because changing the attenuation
     // will also scale other values like the range.
     if (channel.attenuation().value() > 0.0f) {
-        impl.format("PROB%d:SET:ATT:UNIT %s\n", channel.channel(),
+        // Note: For some reason unbeknownst to us, using ATT does not work on
+        // the RTA family if the unit is Amperes. However, the GAIN works, so
+        // we should change that on the fly here.
+        //impl.format("PROB%d:SET:ATT:UNIT %s\n", channel.channel(),
+        //    channel.attenuation().unit());
+        //impl.format("PROB%d:SET:ATT:MAN %f\n", channel.channel(),
+        //    channel.attenuation().value());
+        impl.format("PROB%d:SET:GAIN:UNIT %s\n", channel.channel(),
             channel.attenuation().unit());
-        impl.format("PROB%d:SET:ATT:MAN %f\n", channel.channel(),
-            channel.attenuation().value());
+        impl.format("PROB%d:SET:GAIN:MAN %f\n", channel.channel(),
+            1.0f / channel.attenuation().value());
     }
 
     switch (channel.bandwidth()) {
@@ -665,13 +672,15 @@ visus::power_overwhelming::rtx_instrument::channel(
     impl.format("CHAN%d:STAT %s\n", channel.channel(),
         channel.state() ? "ON" : "OFF");
 
+    // Note: CHAN:ZOFF must be before PROB:SET:ADV:ZADJ, because setting the
+    // channel offset will reset the zero-adjust on the RTA family.
+    impl.format("CHAN%d:ZOFF %f%s\n", channel.channel(),
+        channel.zero_offset().value(), channel.zero_offset().unit());
+
     if (channel.zero_adjust()) {
         impl.format("PROB%d:SET:ADV:ZADJ %f\n",
             channel.channel(), channel.zero_adjust_offset());
     }
-
-    impl.format("CHAN%d:ZOFF %f%s\n", channel.channel(),
-        channel.zero_offset().value(), channel.zero_offset().unit());
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     return *this;
