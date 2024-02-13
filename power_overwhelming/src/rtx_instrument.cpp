@@ -650,9 +650,6 @@ visus::power_overwhelming::rtx_instrument::channel(
     impl.format("CHAN%d:LAB:STAT %s\n", channel.channel(),
         channel.label().visible() ? "ON" : "OFF");
 
-    impl.format("CHAN%d:OFFS %f%s\n", channel.channel(),
-        channel.offset().value(), channel.offset().unit());
-
     switch (channel.polarity()) {
         case oscilloscope_channel_polarity::inverted:
             impl.format("CHAN%d:POL INV\n", channel.channel());
@@ -665,6 +662,11 @@ visus::power_overwhelming::rtx_instrument::channel(
 
     impl.format("CHAN%d:RANG %f%s\n", channel.channel(),
         channel.range().value(), channel.range().unit());
+
+    // Note: CHAN:RANG influcences the behaviour of CHAN:OFFS, so it
+    // must be first.
+    impl.format("CHAN%d:OFFS %f%s\n", channel.channel(),
+        channel.offset().value(), channel.offset().unit());
 
     impl.format("CHAN%d:SKEW %f%s\n", channel.channel(),
         channel.skew().value(), channel.skew().unit());
