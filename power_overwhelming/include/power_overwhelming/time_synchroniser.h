@@ -1,5 +1,6 @@
 ﻿// <copyright file="time_synchroniser.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2022 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -17,8 +18,7 @@ namespace power_overwhelming {
     namespace detail { struct time_synchroniser_impl; }
 
     /// <summary>
-    /// A collector is a set of sensors that asynchronously collect data and
-    /// write them to a file.
+    /// 
     /// </summary>
     class POWER_OVERWHELMING_API time_synchroniser final {
 

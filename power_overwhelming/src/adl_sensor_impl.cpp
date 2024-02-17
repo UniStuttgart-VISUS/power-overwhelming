@@ -1,7 +1,7 @@
-// <copyright file="adl_sensor_impl.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+ï»¿// <copyright file="adl_sensor_impl.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2024 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
+// Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
 
 #include "adl_sensor_impl.h"
 
@@ -217,6 +217,95 @@ bool visus::power_overwhelming::detail::adl_sensor_impl::is_voltage(
 
 
 /*
+ * visus::power_overwhelming::detail::adl_sensor_impl::to_string
+ */
+std::wstring visus::power_overwhelming::detail::adl_sensor_impl::to_string(
+        const ADL_PMLOG_SENSORS id) {
+#define _TO_STRING_CASE(i) case i: return L#i
+
+    switch (id) {
+        _TO_STRING_CASE(ADL_PMLOG_CLK_GFXCLK);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_MEMCLK);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_SOCCLK);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_UVDCLK1);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_UVDCLK2);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_VCECLK);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_VCNCLK);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_EDGE);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_MEM);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRVDDC);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRMVDD);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_LIQUID);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_PLX);
+        _TO_STRING_CASE(ADL_PMLOG_FAN_RPM);
+        _TO_STRING_CASE(ADL_PMLOG_FAN_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_SOC_VOLTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_SOC_POWER);
+        _TO_STRING_CASE(ADL_PMLOG_SOC_CURRENT);
+        _TO_STRING_CASE(ADL_PMLOG_INFO_ACTIVITY_GFX);
+        _TO_STRING_CASE(ADL_PMLOG_INFO_ACTIVITY_MEM);
+        _TO_STRING_CASE(ADL_PMLOG_GFX_VOLTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_MEM_VOLTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_ASIC_POWER);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRSOC);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRMVDD0);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRMVDD1);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_HOTSPOT);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_GFX);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_SOC);
+        _TO_STRING_CASE(ADL_PMLOG_GFX_POWER);
+        _TO_STRING_CASE(ADL_PMLOG_GFX_CURRENT);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_CPU);
+        _TO_STRING_CASE(ADL_PMLOG_CPU_POWER);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_CPUCLK);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_STATUS);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_VCN1CLK1);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_VCN1CLK2);
+        _TO_STRING_CASE(ADL_PMLOG_SMART_POWERSHIFT_CPU);
+        _TO_STRING_CASE(ADL_PMLOG_SMART_POWERSHIFT_DGPU);
+        _TO_STRING_CASE(ADL_PMLOG_BUS_SPEED);
+        _TO_STRING_CASE(ADL_PMLOG_BUS_LANES);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_LIQUID0);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_LIQUID1);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_FCLK);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_STATUS_CPU);
+        _TO_STRING_CASE(ADL_PMLOG_SSPAIRED_ASICPOWER);
+        _TO_STRING_CASE(ADL_PMLOG_SSTOTAL_POWERLIMIT);
+        _TO_STRING_CASE(ADL_PMLOG_SSAPU_POWERLIMIT);
+        _TO_STRING_CASE(ADL_PMLOG_SSDGPU_POWERLIMIT);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_HOTSPOT_GCD);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_HOTSPOT_MCD);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_EDGE_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_HOTSPOT_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_HOTSPOT_GCD_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_HOTSPOT_MCD_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_MEM_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_VR_GFX_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_VR_MEM0_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_VR_MEM1_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_VR_SOC_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_LIQUID0_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_LIQUID1_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_PLX_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TDC_GFX_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TDC_SOC_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TDC_USR_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_PPT0_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_PPT1_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_PPT2_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_PPT3_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_FIT_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_GFX_APCC_PLUS_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_BOARD_POWER);
+        // Insert new sensors from adl_defines.h here.
+        default: return L"";
+    }
+
+#undef _TO_STRING_CASE
+}
+
+
+/*
  * visus::power_overwhelming::detail::adl_sensor_impl::sampler
  */
 visus::power_overwhelming::detail::sampler
@@ -329,6 +418,26 @@ void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
     for (std::size_t i = 0; i < sensorIDs.size(); ++i) {
         this->start_input.usSensors[i] = sensorIDs[i];
     }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::deliver
+ */
+bool visus::power_overwhelming::detail::adl_sensor_impl::deliver(void) const {
+    const auto name = this->sensor_name.c_str();
+    const auto resolution = this->async_sampling.resolution();
+    return this->async_sampling.deliver(name, this->sample(resolution));
+}
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::interval
+ */
+visus::power_overwhelming::detail::adl_sensor_impl::interval_type
+visus::power_overwhelming::detail::adl_sensor_impl::interval(
+        void) const noexcept {
+    return interval_type(this->async_sampling.interval());
 }
 
 

@@ -1,5 +1,6 @@
 ﻿// <copyright file="async_sampling.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -68,6 +69,14 @@ namespace power_overwhelming {
         /// </summary>
         typedef void (*on_measurement_data_callback)(_In_z_ const wchar_t *,
             _In_ const measurement_data *, _In_ const std::size_t,
+            _In_opt_ void *);
+
+        /// <summary>
+        /// The type of callback used for &quot;unsafe&quot; samples that need
+        /// to be interpreted by the sensor.
+        /// </summary>
+        typedef void (*unsafe_delivery_callback)(_In_z_ const wchar_t *,
+            _In_ const int, _In_ const void *, _In_ const std::size_t,
             _In_opt_ void *);
 
         /// <summary>
