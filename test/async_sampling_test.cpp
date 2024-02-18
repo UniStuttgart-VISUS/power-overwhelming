@@ -62,6 +62,22 @@ namespace test {
             Assert::AreEqual(int(timestamp_resolution::hundred_nanoseconds), int(as.resolution()), L"Timestamps are in 100 ns", LINE_INFO());
         }
 
+        TEST_METHOD(test_throttling_sample) {
+            const auto cb = [](const wchar_t *, const throttling_sample *, const std::size_t, void *) { };
+
+             const auto as = std::move(async_sampling()
+                 .samples_every(1000)
+                 .delivers_throttling_samples_to(cb)
+                 .passes_context((void *)42)
+                 .using_resolution(timestamp_resolution::hundred_nanoseconds));
+
+            Assert::AreEqual(intptr_t(42), intptr_t(as.context()), L"Context is 42", LINE_INFO());
+            Assert::AreEqual(std::uint64_t(1000), as.interval(), L"1 ms interval", LINE_INFO());
+            Assert::AreEqual(int(async_delivery_method::on_throttling_sample), int(as.delivery_method()), L"on_throttling_sample enabled", LINE_INFO());
+            Assert::IsTrue(bool(as), L"Is enabled", LINE_INFO());
+            Assert::AreEqual(int(timestamp_resolution::hundred_nanoseconds), int(as.resolution()), L"Timestamps are in 100 ns", LINE_INFO());
+        }
+
         TEST_METHOD(test_owned_context) {
             const auto cb = [](const wchar_t *, const measurement_data *, const std::size_t, void *) {};
 
@@ -94,6 +110,24 @@ namespace test {
             Assert::AreEqual(measurement_data::timestamp_type(1), data.timestamp(), L"timestamp assigned", LINE_INFO());
             Assert::AreEqual(2.0f, data.power(), L"power assigned", LINE_INFO());
             Assert::AreEqual(L"dummy", source.c_str(), L"source assigned", LINE_INFO());
+        }
+
+        TEST_METHOD(test_throttling_lambda) {
+            throttling_sample data;
+            std::wstring source;
+
+            const auto as = std::move(async_sampling()
+                .delivers_throttling_samples_to_functor(
+                    [&](const wchar_t *s, const throttling_sample *m, const std::size_t) {
+                data = *m;
+                source = s;
+            }));
+
+            Assert::IsNotNull(as.context(), L"Context created", LINE_INFO());
+            as.deliver(L"dummy", throttling_sample(1, throttling_state::thermal));
+           Assert::AreEqual(measurement_data::timestamp_type(1), data.timestamp(), L"timestamp assigned", LINE_INFO());
+           Assert::AreEqual(int(throttling_state::thermal), int(data.state()), L"power assigned", LINE_INFO());
+           Assert::AreEqual(L"dummy", source.c_str(), L"source assigned", LINE_INFO());
         }
     };
 

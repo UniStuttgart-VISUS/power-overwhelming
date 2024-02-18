@@ -6,7 +6,7 @@
 
 
 /*
- * ...::power_overwhelming::async_sampling::delivers_measurement_data_to_functor
+ * ...::async_sampling::delivers_measurement_data_to_functor
  */
 template<class TFunctor>
 visus::power_overwhelming::async_sampling&
@@ -18,6 +18,25 @@ visus::power_overwhelming::async_sampling::delivers_measurement_data_to_functor(
         std::forward<TFunctor>(callback)));
     this->delivers_measurement_data_to([](const wchar_t *n,
             const measurement_data *m, const size_t s, void *c) {
+        (*static_cast<function_type *>(c))(n, m, s);
+    });
+    return *this;
+}
+
+
+/*
+ * ...::async_sampling::delivers_throttling_samples_to_functor
+ */
+template<class TFunctor>
+visus::power_overwhelming::async_sampling&
+visus::power_overwhelming::async_sampling::delivers_throttling_samples_to_functor(
+        _In_ TFunctor&& callback) {
+    typedef std::function<void(const wchar_t *, const throttling_sample *,
+        const std::size_t)> function_type;
+    this->stores_and_passes_context(function_type(
+        std::forward<TFunctor>(callback)));
+    this->delivers_throttling_samples_to([](const wchar_t *n,
+            const throttling_sample *m, const size_t s, void *c) {
         (*static_cast<function_type *>(c))(n, m, s);
     });
     return *this;

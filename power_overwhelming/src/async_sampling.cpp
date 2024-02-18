@@ -71,7 +71,28 @@ bool visus::power_overwhelming::async_sampling::deliver(
             break;
 
         default:
+            // The sampling object was not created for power samples.
             retval = false;
+    }
+
+    return retval;
+}
+
+
+/*
+ * visus::power_overwhelming::async_sampling::deliver
+ */
+bool visus::power_overwhelming::async_sampling::deliver(
+        _In_ const wchar_t *source,
+        _In_reads_(cnt) const throttling_sample *samples,
+        _In_ const std::size_t cnt) const {
+    auto context = const_cast<void *>(this->_context);
+    auto retval = (this->_callback.on_throttling_samples != nullptr)
+        && (this->_delivery_method
+        == async_delivery_method::on_throttling_sample);
+
+    if (retval) {
+        this->_callback.on_throttling_samples(source, samples, cnt, context);
     }
 
     return retval;
@@ -104,6 +125,18 @@ visus::power_overwhelming::async_sampling::delivers_measurement_data_to(
         _In_opt_ const on_measurement_data_callback callback) noexcept {
     this->_callback.on_measurement_data = callback;
     this->_delivery_method = async_delivery_method::on_measurement_data;
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::async_sampling::delivers_throttling_samples_to
+ */
+visus::power_overwhelming::async_sampling&
+visus::power_overwhelming::async_sampling::delivers_throttling_samples_to(
+        _In_opt_ on_throttling_sample_callback callback) noexcept {
+    this->_callback.on_throttling_samples = callback;
+    this->_delivery_method = async_delivery_method::on_throttling_sample;
     return *this;
 }
 

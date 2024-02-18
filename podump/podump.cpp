@@ -33,7 +33,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // AMD sensors
-#if false
+#if true
 #if true
     ::sample_adl_sensor();
 #endif
@@ -46,9 +46,13 @@ int _tmain(const int argc, const TCHAR **argv) {
     ::sample_adl_sensor_async(5);
 #endif
 
-#if true
+#if false
     // Vega FE
     ::sample_adl_from_udid("PCI_VEN_1002&DEV_6863&SUBSYS_6B761002&REV_00_6&377B8C4D&0&00000019A");
+#endif
+
+#if true
+    ::sample_adl_throttling(5);
 #endif
 #endif
 

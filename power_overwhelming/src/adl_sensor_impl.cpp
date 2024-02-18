@@ -12,6 +12,7 @@
 #include "power_overwhelming/convert_string.h"
 
 #include "adl_exception.h"
+#include "adl_utils.h"
 #include "zero_memory.h"
 
 
@@ -152,12 +153,11 @@ visus::power_overwhelming::detail::adl_sensor_impl::get_sensor_ids(
         const ADLPMLogSupportInfo& supportInfo) {
     auto retval = get_sensor_ids(source);
 
+    // Erase all sensor IDs not supported according to 'supportInfo'.
     {
         auto end = std::remove_if(retval.begin(), retval.end(),
             [&supportInfo](const int id) {
-                auto found = std::find(supportInfo.usSensors,
-                    supportInfo.usSensors + ADL_PMLOG_MAX_SENSORS, id);
-                return (found == supportInfo.usSensors + ADL_PMLOG_MAX_SENSORS);
+                return !supports_sensor(supportInfo, id);
             });
         retval.erase(end, retval.end());
     }
@@ -448,7 +448,15 @@ void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
 bool visus::power_overwhelming::detail::adl_sensor_impl::deliver(void) const {
     const auto name = this->sensor_name.c_str();
     const auto resolution = this->async_sampling.resolution();
-    return this->async_sampling.deliver(name, this->sample(resolution));
+
+    switch (this->async_sampling.delivery_method()) {
+        case async_delivery_method::on_throttling_sample:
+            return this->async_sampling.deliver(name,
+                this->sample_throttling(resolution));
+
+        default:
+            return this->async_sampling.deliver(name, this->sample(resolution));
+    }
 }
 
 
@@ -472,7 +480,7 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample(
     const auto data = static_cast<ADLPMLogData *>(
         this->start_output.pLoggingAddress);
     static constexpr auto thousand = static_cast<measurement::value_type>(1000);
-    const auto timestamp = this->timestamp(resolution);
+    const auto timestamp = this->timestamp(*data, resolution);
 
     // MAJOR HAZARD HERE!!! WE HAVE NO IDEA WHAT UNIT IS USED FOR VOLTAGE AND
     // CURRENT. The documentation says nothing about this, but some overclocking
@@ -506,6 +514,40 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample(
                 "combinations are: power; voltage and current; voltage, "
                 "current and power.");
     }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::sample_throttling
+ */
+visus::power_overwhelming::throttling_sample
+visus::power_overwhelming::detail::adl_sensor_impl::sample_throttling(
+        _In_ const timestamp_resolution resolution) const {
+    assert(this->state.load() == 1);
+    const auto data = static_cast<ADLPMLogData *>(
+        this->start_output.pLoggingAddress);
+    const auto timestamp = this->timestamp(*data, resolution);
+    auto state = throttling_state::none;
+    unsigned int value = 0;
+
+    if (detail::adl_sensor_impl::filter_sensor_readings(value, *data,
+            ADL_PMLOG_THROTTLER_STATUS)) {
+        const auto notification = static_cast<ADL_THROTTLE_NOTIFICATION>(value);
+
+        if ((notification & ADL_PMLOG_THROTTLE_CURRENT) != 0) {
+            state = state | throttling_state::current;
+        }
+
+        if ((notification & ADL_PMLOG_THROTTLE_POWER) != 0) {
+            state = state | throttling_state::power;
+        }
+
+        if ((notification & ADL_PMLOG_THROTTLE_THERMAL) != 0) {
+            state = state | throttling_state::thermal;
+        }
+    }
+
+    return throttling_sample(timestamp, throttling_state::none);
 }
 
 

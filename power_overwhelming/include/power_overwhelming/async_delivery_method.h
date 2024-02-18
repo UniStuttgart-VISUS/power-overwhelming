@@ -16,10 +16,21 @@ namespace power_overwhelming {
     enum class async_delivery_method {
 
         /// <summary>
-        /// Delivers to a
+        /// Delivers to a <see cref="measurement_callback" />.
         /// </summary>
         on_measurement,
-        on_measurement_data
+
+        /// <summary>
+        /// Delivers to an
+        /// <see cref="async_sampling::on_measurement_data_callback" />.
+        /// </summary>
+        on_measurement_data,
+
+        /// <summary>
+        /// Delivers GPU throttling information to an
+        /// <see cref="async_sampling::on_throttling_sample_callback" />.
+        /// </summary>
+        on_throttling_sample,
     };
 
 } /* namespace power_overwhelming */

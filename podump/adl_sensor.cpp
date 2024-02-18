@@ -114,3 +114,43 @@ void sample_adl_from_udid(const char *udid) {
         std::cerr << ex.what() << std::endl;
     }
 }
+
+
+/*
+ * ::sample_adl_throttling
+ */
+void sample_adl_throttling(const unsigned int dt) {
+    using namespace visus::power_overwhelming;
+
+    try {
+        std::vector<adl_throttling_sensor> sensors;
+        sensors.resize(adl_throttling_sensor::for_all(nullptr, 0));
+        adl_throttling_sensor::for_all(sensors.data(), sensors.size());
+
+        // Enable asynchronous sampling.
+        for (auto &s : sensors) {
+            async_sampling config;
+            config.delivers_throttling_samples_to([](const wchar_t *n, const throttling_sample *s, const std::size_t c, void *) {
+                for (std::size_t i = 0; i < c; ++i) {
+                    std::wcout << s[i].timestamp() << L" ("
+                        << n << L"): "
+                        << static_cast<int>(s[i].state()) << L" , "
+                        << s[i].throttled() << std::endl;
+
+                }
+            });
+            s.sample(std::move(config));
+        }
+
+        // Wait for the requested number of seconds.
+        std::this_thread::sleep_for(std::chrono::seconds(dt));
+
+        // Disable asynchronous sampling.
+        for (auto &s : sensors) {
+            s.sample(async_sampling());
+        }
+
+    } catch (std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+}

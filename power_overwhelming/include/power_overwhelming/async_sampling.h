@@ -20,6 +20,7 @@
 #include "power_overwhelming/async_delivery_method.h"
 #include "power_overwhelming/measurement.h"
 #include "power_overwhelming/measurement_data_series.h"
+#include "power_overwhelming/throttling_sample.h"
 #include "power_overwhelming/timestamp_resolution.h"
 #include "power_overwhelming/tinkerforge_sensor_source.h"
 
@@ -73,11 +74,11 @@ namespace power_overwhelming {
             _In_opt_ void *);
 
         /// <summary>
-        /// The type of callback used for &quot;unsafe&quot; samples that need
-        /// to be interpreted by the sensor.
+        /// The type of callback used for delivering
+        ///  <see cref="throttling_sample" />s.
         /// </summary>
-        typedef void (*unsafe_delivery_callback)(_In_z_ const wchar_t *,
-            _In_ const int, _In_ const void *, _In_ const std::size_t,
+        typedef void (*on_throttling_sample_callback)(_In_z_ const wchar_t *,
+            _In_ const throttling_sample *, _In_ const std::size_t,
             _In_opt_ void *);
 
         /// <summary>
@@ -210,6 +211,47 @@ namespace power_overwhelming {
         }
 
         /// <summary>
+        /// Invoke the callback for a <see cref="throttling_sample" /> or for
+        /// the <see cref="samples" /> provided to the method.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method is not thread-safe. Callers must make sure that
+        /// the instance is not changed while the callback is invoked from the
+        /// sampler thread.</para>
+        /// </remarks>
+        /// <param name="source">The name of the sensor from which the
+        /// <paramref name="samples" /> originate. This must not be
+        /// <c>nullptr</c>.</param>
+        /// <param name="samples">A pointer to <paramref name="cnt" /> samples
+        /// to deliver to the registered callback.</param>
+        /// <param name="cnt">The number of samples to deliver.</param>
+        /// <returns><c>true</c> if a callback was invoked, <c>false</c> if none
+        /// has been set.</returns>
+        bool deliver(_In_ const wchar_t *source,
+            _In_reads_(cnt) const throttling_sample *samples,
+            _In_ const std::size_t cnt) const;
+
+        /// <summary>
+        /// Invoke the callback for a <see cref="throttling_sample" /> or for
+        /// the <see cref="sample" /> provided to the method.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method is not thread-safe. Callers must make sure that
+        /// the instance is not changed while the callback is invoked from the
+        /// sampler thread.</para>
+        /// </remarks>
+        /// <param name="source">The name of the sensor from which the
+        /// <paramref name="sample" /> originate. This must not be
+        /// <c>nullptr</c>.</param>
+        /// <param name="sample">The sample to deliver.</param>
+        /// <returns><c>true</c> if a callback was invoked, <c>false</c> if none
+        /// has been set.</returns>
+        inline bool deliver(_In_ const wchar_t *source,
+                const throttling_sample& sample) const {
+            return this->deliver(source, &sample, 1);
+        }
+
+        /// <summary>
         /// Configures the <see cref="sensor" /> such that it produces samples
         /// of type <see cref="measurement" />.
         /// </summary>
@@ -271,18 +313,51 @@ namespace power_overwhelming {
         /// performance reasons.</para>
         /// </remarks>
         /// <typeparam name="TFunctor">The type of the functor being called.
-        /// This must be a functional accepting a <see cref="sensor" /> and
+        /// This must be a functional accepting the sensor name and an array of
         /// <see cref="measurement_data" /> returning <c>void</c>. This type
         /// must be convertible to
-        /// <c>std::function<void(const sensor&amp;, const measurement_data *, const std::size_t)></c>.
+        /// <c>std::function<void(const wchar_t *, const measurement_data *, const std::size_t)></c>.
         /// Note that you cannot pass a context to your callback here, because
         /// the context is reserved to store the <c>std::function</c> itself. If
         /// you need contextual information, you have to use a lambda capture.
         /// </typeparam>
-        /// <param name="callback"></param>
+        /// <param name="callback">The functor to be invoked.</param>
         /// <returns><c>*this</c>.</returns>
         template<class TFunctor>
         async_sampling& delivers_measurement_data_to_functor(
+            _In_ TFunctor&& callback);
+
+        /// <summary>
+        /// Configures the <see cref="sensor" /> such that it produces samples
+        /// of type <see cref="throttling_sample" />.
+        /// </summary>
+        /// <param name="callback">The callbeck to deliver to. If this is
+        /// <c>nullptr</c>, sampling will be disabled (this is equivalent to
+        /// calling <see cref="is_disabled" />).</param>
+        /// <returns><c>*this</c>.</returns>
+        async_sampling& delivers_throttling_samples_to(
+            _In_opt_ const on_throttling_sample_callback callback) noexcept;
+
+        /// <summary>
+        /// Configures the <see cref="throttling_sensor" /> to deliver samples of
+        /// type <see cref="throttling_sample" /> to a callable like a functor
+        /// object or <see cref="std::function" />.
+        /// </summary>
+        /// <remarks>
+        /// See <see cref="delivers_measurement_data_to_functor" /> for
+        /// implementation details.
+        /// </remarks>
+        /// <typeparam name="TFunctor">The type of the functor being called.
+        /// This type must be convertible to
+        /// <c>std::function<void(const wchar_t *, const throttling_sample *, const std::size_t)></c>.
+        /// Note that you cannot pass a context to your callback here, because
+        /// the context is reserved to store the <c>std::function</c> itself. If
+        /// you need contextual information, you have to use a lambda capture.
+        /// </typeparam>
+        /// <param name="callback">The functor to be invoked.</param>
+        /// <returns><c>*this</c>.</returns>
+        template<class TFunctor>
+        async_sampling& delivers_throttling_samples_to_functor(
             _In_ TFunctor&& callback);
 
         /// <summary>
@@ -593,7 +668,20 @@ namespace power_overwhelming {
         union delivery_callback {
             on_measurement_callback on_measurement;
             on_measurement_data_callback on_measurement_data;
+            on_throttling_sample_callback on_throttling_samples;
         };
+
+        static_assert(sizeof(delivery_callback)
+            == sizeof(on_measurement_callback),
+            "Implementation assumes no padding around on_measurement.");
+        static_assert(sizeof(delivery_callback)
+            == sizeof(on_measurement_data_callback),
+            "Implementation assumes no padding around on_measurement "
+            "on_measurement_data.");
+        static_assert(sizeof(delivery_callback)
+            == sizeof(on_throttling_sample_callback),
+            "Implementation assumes no padding around on_measurement "
+            "on_throttling_samples.");
 
         delivery_callback _callback;
         void *_context;

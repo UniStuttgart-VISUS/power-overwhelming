@@ -279,6 +279,15 @@ namespace detail {
         measurement_data sample(const timestamp_resolution resolution) const;
 
         /// <summary>
+        /// Samples the throttling state of the GPU.
+        /// </summary>
+        /// <param name="resolution">The resolution of the timestamp being
+        /// returned.</param>
+        /// <returns>The latest throttling state of the sensor.</returns>
+        throttling_sample sample_throttling(
+            _In_ const timestamp_resolution resolution) const;
+
+        /// <summary>
         /// Starts the source if not yet running.
         /// </summary>
         /// <param name="samplingRate">The sampling rate at which the sensor
@@ -295,20 +304,21 @@ namespace detail {
         void stop(void);
 
         /// <summary>
-        /// Gets the latest timestamp from <see cref="start_output" />.
+        /// Gets the timestamp from <see cref="log_data" />.
         /// </summary>
+        /// <param name="log_data">The log data to get the timestamp from.
+        /// </param>
         /// <param name="resolution">The target resolution to convert the
         /// native ADL timestamp to.</param>
         /// <returns>The latest update timestamp from the sensor.</returns>
         inline measurement_data::timestamp_type timestamp(
-                _In_ const timestamp_resolution resolution) const {
+                _In_ ADLPMLogData& log_data,
+                _In_ const timestamp_resolution resolution) const noexcept {
             // We found empirically that the timestamp from ADL is in 100 ns
             // units (at least on Windows). Based on this assumption, convert
             // to the requested unit.
-            const auto data = static_cast<ADLPMLogData *>(
-                this->start_output.pLoggingAddress);
             const auto timestamp = static_cast<measurement::timestamp_type>(
-                data->ulLastUpdated + this->utc_offset);
+                log_data.ulLastUpdated + this->utc_offset);
             return convert(timestamp, resolution);
         }
     };

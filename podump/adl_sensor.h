@@ -25,3 +25,9 @@ void sample_adl_sensor_async(const unsigned int dt);
 /// Sample AMD card with specific udid.
 /// </summary>
 void sample_adl_from_udid(const char *udid);
+
+/// <summary>
+/// Sample throttling data from all supported ADL sensors for the specified
+/// number of seconds.
+/// </summary>
+void sample_adl_throttling(const unsigned int dt);
