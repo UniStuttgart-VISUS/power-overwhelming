@@ -17,6 +17,7 @@
 #define CALLBACK
 #endif /* defined(_WIN32) */
 
+#include "power_overwhelming/async_delivery_method.h"
 #include "power_overwhelming/measurement.h"
 #include "power_overwhelming/measurement_data_series.h"
 #include "power_overwhelming/timestamp_resolution.h"
@@ -285,6 +286,19 @@ namespace power_overwhelming {
             _In_ TFunctor&& callback);
 
         /// <summary>
+        /// Answer how the asynchronous samples are to be delivered.
+        /// </summary>
+        /// <remarks>
+        /// The returned the configured delivery method does not necessarily
+        /// indicate that the sampling is enabled. It merely indicates the
+        /// method that was last enabled.
+        /// </remarks>
+        /// <returns>The configured delivery method.</returns>
+        inline async_delivery_method delivery_method(void) const noexcept {
+            return this->_delivery_method;
+        }
+
+        /// <summary>
         /// If the sensor this sampling configuration is passed to is a
         /// Tinkerforge sensor, instructs the sensor to obtain data only from
         /// the specified sources.
@@ -396,14 +410,14 @@ namespace power_overwhelming {
                 std::chrono::microseconds>(interval).count());
         }
 
-        /// <summary>
-        /// Answer whether the <see cref="sensor" /> should produce samples of
-        /// type <see cref="measurement" />.
-        /// </summary>
-        /// <returns></returns>
-        inline bool on_measurement(void) const noexcept {
-            return (this->_on_measurement != nullptr);
-        }
+        ///// <summary>
+        ///// Answer whether the <see cref="sensor" /> should produce samples of
+        ///// type <see cref="measurement" />.
+        ///// </summary>
+        ///// <returns></returns>
+        //inline bool on_measurement(void) const noexcept {
+        //    return (this->_callback_type == delivery_method::on_measurement);
+        //}
 
         /// <summary>
         /// Configures the <see cref="sensor" /> such that it produces samples
@@ -418,14 +432,14 @@ namespace power_overwhelming {
             return this->delivers_measurements_to(callback);
         }
 
-        /// <summary>
-        /// Answer whether the <see cref="sensor" /> should produce samples of
-        /// type <see cref="measurement_data" />.
-        /// </summary>
-        /// <returns></returns>
-        inline bool on_measurement_data(void) const noexcept {
-            return (this->_on_measurement_data != nullptr);
-        }
+        ///// <summary>
+        ///// Answer whether the <see cref="sensor" /> should produce samples of
+        ///// type <see cref="measurement_data" />.
+        ///// </summary>
+        ///// <returns></returns>
+        //inline bool on_measurement_data(void) const noexcept {
+        //    return (this->_on_measurement_data != nullptr);
+        //}
 
         /// <summary>
         /// Configures the <see cref="sensor" /> such that it produces samples
@@ -568,17 +582,25 @@ namespace power_overwhelming {
         /// <returns><c>true</c> if asynchronous sampling is enabled,
         /// <c>false</c> otherwise.</returns>
         inline operator bool(void) const noexcept {
-            return (this->on_measurement() || this->on_measurement_data());
+            return (this->_callback.on_measurement != nullptr);
         }
 
     private:
 
+        /// <summary>
+        /// A union holding the native delivery callback.
+        /// </summary>
+        union delivery_callback {
+            on_measurement_callback on_measurement;
+            on_measurement_data_callback on_measurement_data;
+        };
+
+        delivery_callback _callback;
         void *_context;
         void (CALLBACK *_context_deleter)(void *);
+        async_delivery_method _delivery_method;
         microseconds_type _interval;
         microseconds_type _minimum_sleep;
-        on_measurement_callback _on_measurement;
-        on_measurement_data_callback _on_measurement_data;
         timestamp_resolution _timestamp_resolution;
         power_overwhelming::tinkerforge_sensor_source
             _tinkerforge_sensor_source;

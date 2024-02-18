@@ -237,24 +237,24 @@ std::size_t visus::power_overwhelming::adl_sensor::for_all(
 }
 
 
-/*
- * visus::power_overwhelming::adl_sensor::from_index
- */
-visus::power_overwhelming::adl_sensor
-visus::power_overwhelming::adl_sensor::from_index(_In_ const int index,
-        _In_ const adl_sensor_source source) {
-    adl_sensor retval;
-
-    auto status = detail::amd_display_library::instance()
-        .ADL2_Device_PMLog_Device_Create(nullptr, index, &retval._impl->device);
-    if (status != ADL_OK) {
-        throw adl_exception(status);
-    }
-
-    throw "TODO: Implement retrieval from index.";
-
-    return retval;
-}
+///*
+// * visus::power_overwhelming::adl_sensor::from_index
+// */
+//visus::power_overwhelming::adl_sensor
+//visus::power_overwhelming::adl_sensor::from_index(_In_ const int index,
+//        _In_ const adl_sensor_source source) {
+//    adl_sensor retval;
+//
+//    auto status = detail::amd_display_library::instance()
+//        .ADL2_Device_PMLog_Device_Create(nullptr, index, &retval._impl->device);
+//    if (status != ADL_OK) {
+//        throw adl_exception(status);
+//    }
+//
+//    throw "TODO: Implement retrieval from index.";
+//
+//    return retval;
+//}
 
 
 /*
@@ -396,7 +396,7 @@ _Ret_maybenull_z_ const char *visus::power_overwhelming::adl_sensor::udid(
  */
 visus::power_overwhelming::adl_sensor&
 visus::power_overwhelming::adl_sensor::operator =(
-        _In_ adl_sensor&& rhs) noexcept {
+        _Inout_ adl_sensor&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         delete this->_impl;
         this->_impl = rhs._impl;

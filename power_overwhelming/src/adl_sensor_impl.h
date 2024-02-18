@@ -50,6 +50,16 @@ namespace detail {
             const ADLPMLogData& data);
 
         /// <summary>
+        /// Retrieve the value of the requested sensor ID if in the sensor data.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="data"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        static bool filter_sensor_readings(_Out_opt_ unsigned int& value,
+            _In_ const ADLPMLogData& data, _In_ const ADL_PMLOG_SENSORS id);
+
+        /// <summary>
         /// Find the index of the first sensor in <paramref name="data" />
         /// matching the given predicate.
         /// </summary>
@@ -283,6 +293,24 @@ namespace detail {
         /// Stops the source if <see cref="state" /> is <c>1</c>.
         /// </summary>
         void stop(void);
+
+        /// <summary>
+        /// Gets the latest timestamp from <see cref="start_output" />.
+        /// </summary>
+        /// <param name="resolution">The target resolution to convert the
+        /// native ADL timestamp to.</param>
+        /// <returns>The latest update timestamp from the sensor.</returns>
+        inline measurement_data::timestamp_type timestamp(
+                _In_ const timestamp_resolution resolution) const {
+            // We found empirically that the timestamp from ADL is in 100 ns
+            // units (at least on Windows). Based on this assumption, convert
+            // to the requested unit.
+            const auto data = static_cast<ADLPMLogData *>(
+                this->start_output.pLoggingAddress);
+            const auto timestamp = static_cast<measurement::timestamp_type>(
+                data->ulLastUpdated + this->utc_offset);
+            return convert(timestamp, resolution);
+        }
     };
 
 } /* namespace detail */

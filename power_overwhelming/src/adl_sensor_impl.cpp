@@ -89,6 +89,27 @@ visus::power_overwhelming::detail::adl_sensor_impl::filter_sensor_readings(
 
 
 /*
+ * visus::power_overwhelming::detail::adl_sensor_impl::filter_sensor_readings
+ */
+bool visus::power_overwhelming::detail::adl_sensor_impl::filter_sensor_readings(
+        _Out_opt_ unsigned int& value,
+        _In_ const ADLPMLogData& data,
+        _In_ const ADL_PMLOG_SENSORS id) {
+    for (auto i = 0; (i < ADL_PMLOG_MAX_SENSORS)
+            && (data.ulValues[i][0] != ADL_SENSOR_MAXTYPES); ++i) {
+        auto s = static_cast<ADL_PMLOG_SENSORS>(data.ulValues[i][0]);
+        if (s == id) {
+            value = data.ulValues[i][1];
+            return true;
+        }
+    }
+    // 'id' not found at this point.
+
+    return false;
+}
+
+
+/*
  * visus::power_overwhelming::detail::adl_sensor_impl::get_sensor_ids
  */
 std::vector<ADL_PMLOG_SENSORS>
@@ -451,12 +472,7 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample(
     const auto data = static_cast<ADLPMLogData *>(
         this->start_output.pLoggingAddress);
     static constexpr auto thousand = static_cast<measurement::value_type>(1000);
-
-    // We found empirically that the timestamp from ADL is in 100 ns units (at
-    // least on Windows). Based on this assumption, convert to the requested
-    // unit.
-    auto timestamp = convert(static_cast<measurement::timestamp_type>(
-        data->ulLastUpdated + this->utc_offset), resolution);
+    const auto timestamp = this->timestamp(resolution);
 
     // MAJOR HAZARD HERE!!! WE HAVE NO IDEA WHAT UNIT IS USED FOR VOLTAGE AND
     // CURRENT. The documentation says nothing about this, but some overclocking

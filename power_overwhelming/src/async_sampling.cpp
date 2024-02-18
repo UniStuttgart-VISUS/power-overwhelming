@@ -24,11 +24,12 @@ visus::power_overwhelming::async_sampling::default_interval;
  * visus::power_overwhelming::async_sampling::async_sampling
  */
 visus::power_overwhelming::async_sampling::async_sampling(void)
-        : _context(nullptr),
+        : _callback({ nullptr }),
+        _context(nullptr),
         _context_deleter(nullptr),
+        _delivery_method(async_delivery_method::on_measurement_data),
         _interval(default_interval),
-        _on_measurement(nullptr),
-        _on_measurement_data(nullptr),
+        _minimum_sleep(0),
         _timestamp_resolution(timestamp_resolution::milliseconds),
         _tinkerforge_sensor_source(
             power_overwhelming::tinkerforge_sensor_source::all) { }
@@ -50,17 +51,27 @@ bool visus::power_overwhelming::async_sampling::deliver(
         _In_reads_(cnt) const measurement_data *samples,
         _In_ const std::size_t cnt) const {
     auto context = const_cast<void *>(this->_context);
-    auto retval = false;
+    auto retval = (this->_callback.on_measurement != nullptr);
 
-    if (this->_on_measurement_data != nullptr) {
-        this->_on_measurement_data(source, samples, cnt, context);
-        retval = true;
+    switch (this->_delivery_method) {
+        case async_delivery_method::on_measurement:
+            if (retval) {
+                for (std::size_t i = 0; i < cnt; ++i) {
+                    this->_callback.on_measurement(
+                        measurement(source, samples[i]), context);
+                }
+            }
+            break;
 
-    } else if (this->_on_measurement != nullptr) {
-        for (std::size_t i = 0; i < cnt; ++i) {
-            this->_on_measurement(measurement(source, samples[i]), context);
-        }
-        retval = true;
+        case async_delivery_method::on_measurement_data:
+            if (retval) {
+                this->_callback.on_measurement_data(source, samples, cnt,
+                    context);
+            }
+            break;
+
+        default:
+            retval = false;
     }
 
     return retval;
@@ -79,8 +90,8 @@ visus::power_overwhelming::async_sampling::delivers_measurements_to(
         _T("measurement_data to reduce the amount of heap allocations for ")
         _T("samples being delivered.\r\n"));
 #endif /* defined(_WIN32) */
-    this->_on_measurement = callback;
-    this->_on_measurement_data = nullptr;
+    this->_callback.on_measurement = callback;
+    this->_delivery_method = async_delivery_method::on_measurement;
     return *this;
 }
 
@@ -91,8 +102,8 @@ visus::power_overwhelming::async_sampling::delivers_measurements_to(
 visus::power_overwhelming::async_sampling&
 visus::power_overwhelming::async_sampling::delivers_measurement_data_to(
         _In_opt_ const on_measurement_data_callback callback) noexcept {
-    this->_on_measurement_data = callback;
-    this->_on_measurement = nullptr;
+    this->_callback.on_measurement_data = callback;
+    this->_delivery_method = async_delivery_method::on_measurement_data;
     return *this;
 }
 
@@ -114,8 +125,7 @@ visus::power_overwhelming::async_sampling::from_source(
  */
 visus::power_overwhelming::async_sampling&
 visus::power_overwhelming::async_sampling::is_disabled(void) noexcept {
-    this->_on_measurement = nullptr;
-    this->_on_measurement_data = nullptr;
+    this->_callback.on_measurement = nullptr;
     return *this;
 }
 
@@ -183,16 +193,15 @@ visus::power_overwhelming::async_sampling&
 visus::power_overwhelming::async_sampling::operator =(
         _Inout_ async_sampling&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
+        this->_callback = rhs._callback;
+        rhs._callback.on_measurement = nullptr;
         this->passes_context(rhs._context);  // Make sure deleter is called.
         rhs._context = nullptr;
         this->_context_deleter = rhs._context_deleter;
         rhs._context_deleter = nullptr;
+        this->_delivery_method = rhs._delivery_method;
         this->_interval = rhs._interval;
         rhs._interval = default_interval;
-        this->_on_measurement = rhs._on_measurement;
-        rhs._on_measurement = nullptr;
-        this->_on_measurement_data = rhs._on_measurement_data;
-        rhs._on_measurement_data = nullptr;
         this->_timestamp_resolution = rhs._timestamp_resolution;
         rhs._timestamp_resolution = timestamp_resolution::milliseconds;
         this->_tinkerforge_sensor_source = rhs._tinkerforge_sensor_source;

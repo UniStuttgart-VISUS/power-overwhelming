@@ -39,7 +39,7 @@ namespace test {
             Assert::AreEqual(intptr_t(42), intptr_t(as.context()), L"Context is 42", LINE_INFO());
             Assert::AreEqual(int(tinkerforge_sensor_source::power), int(as.tinkerforge_sensor_source()), L"Power only", LINE_INFO());
             Assert::AreEqual(std::uint64_t(1000), as.interval(), L"1 ms interval", LINE_INFO());
-            Assert::IsTrue(as.on_measurement(), L"on_measurement enabled", LINE_INFO());
+            Assert::AreEqual(int(async_delivery_method::on_measurement), int(as.delivery_method()), L"on_measurement enabled", LINE_INFO());
             Assert::IsTrue(bool(as), L"Is enabled", LINE_INFO());
             Assert::AreEqual(int(timestamp_resolution::microseconds), int(as.resolution()), L"Timestamps are in ns", LINE_INFO());
         }
@@ -57,7 +57,7 @@ namespace test {
             Assert::AreEqual(intptr_t(42), intptr_t(as.context()), L"Context is 42", LINE_INFO());
             Assert::AreEqual(int(tinkerforge_sensor_source::power), int(as.tinkerforge_sensor_source()), L"Power only", LINE_INFO());
             Assert::AreEqual(std::uint64_t(1000), as.interval(), L"1 ms interval", LINE_INFO());
-            Assert::IsTrue(as.on_measurement_data(), L"on_measurement_data enabled", LINE_INFO());
+            Assert::AreEqual(int(async_delivery_method::on_measurement_data), int(as.delivery_method()), L"on_measurement_data enabled", LINE_INFO());
             Assert::IsTrue(bool(as), L"Is enabled", LINE_INFO());
             Assert::AreEqual(int(timestamp_resolution::hundred_nanoseconds), int(as.resolution()), L"Timestamps are in 100 ns", LINE_INFO());
         }

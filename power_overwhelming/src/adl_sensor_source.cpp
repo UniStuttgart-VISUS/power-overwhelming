@@ -6,14 +6,15 @@
 #include "power_overwhelming/adl_sensor_source.h"
 
 #include <stdexcept>
+#include <type_traits>
 
 
 /*
  * visus::power_overwhelming::operator |
  */
 visus::power_overwhelming::adl_sensor_source
-visus::power_overwhelming::operator |(const adl_sensor_source lhs,
-        const adl_sensor_source rhs) {
+visus::power_overwhelming::operator |(_In_ const adl_sensor_source lhs,
+        _In_ const adl_sensor_source rhs) {
     typedef std::underlying_type<adl_sensor_source>::type mask_type;
     auto retval = static_cast<mask_type>(lhs) | static_cast<mask_type>(rhs);
     return static_cast<adl_sensor_source>(retval);
@@ -24,8 +25,8 @@ visus::power_overwhelming::operator |(const adl_sensor_source lhs,
  * visus::power_overwhelming::operator &
  */
 visus::power_overwhelming::adl_sensor_source
-visus::power_overwhelming::operator &(const adl_sensor_source lhs,
-        const adl_sensor_source rhs) {
+visus::power_overwhelming::operator &(_In_ const adl_sensor_source lhs,
+        _In_ const adl_sensor_source rhs) {
     typedef std::underlying_type<adl_sensor_source>::type mask_type;
     auto retval = static_cast<mask_type>(lhs) & static_cast<mask_type>(rhs);
     return static_cast<adl_sensor_source>(retval);
@@ -36,7 +37,7 @@ visus::power_overwhelming::operator &(const adl_sensor_source lhs,
  * visus::power_overwhelming::parse_adl_sensor_source
  */
 visus::power_overwhelming::adl_sensor_source
-visus::power_overwhelming::parse_adl_sensor_source(const wchar_t *str) {
+visus::power_overwhelming::parse_adl_sensor_source(_In_z_ const wchar_t *str) {
     if (str == nullptr) {
         throw std::invalid_argument("Only a valid string can be parsed into a "
             "adl_sensor_source.");
@@ -62,8 +63,8 @@ visus::power_overwhelming::parse_adl_sensor_source(const wchar_t *str) {
 /*
  * visus::power_overwhelming::to_string
  */
-const wchar_t *visus::power_overwhelming::to_string(
-        const adl_sensor_source source) {
+_Ret_z_ const wchar_t *visus::power_overwhelming::to_string(
+        _In_ const adl_sensor_source source) {
 #define _GCC_IS_SHIT(v) L##v
 #define _TO_STRING_CASE(v) case adl_sensor_source::v: return _GCC_IS_SHIT(#v)
 
