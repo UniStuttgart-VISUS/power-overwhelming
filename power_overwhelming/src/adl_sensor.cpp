@@ -134,7 +134,7 @@ std::size_t visus::power_overwhelming::adl_sensor::for_all(
         detail::adl_scope scope;
 
         // Get all active adapters.
-        const auto adapters = detail::all_adapters(scope, true);
+        const auto adapters = detail::all_adapters(scope, false);
 
         // For each adapter, get all supported sensors.
         for (auto& a : adapters) {
@@ -193,7 +193,7 @@ visus::power_overwhelming::adl_sensor::from_udid(_In_z_ const char *udid,
     auto adapters = detail::matching_adapters(scope,
         [udid](const AdapterInfo& a) {
             return (::strcmp(udid, a.strUDID) == 0);
-        }, true);
+        }, false);
     if (adapters.size() != 1) {
         throw std::invalid_argument("The unique device identifier did not "
             "match a single device.");
@@ -355,7 +355,7 @@ void visus::power_overwhelming::adl_sensor::sample_async(
     typedef duration<microseconds_type, std::micro> interval_type;
 
     if ((this->_impl->async_sampling = std::move(sampling))) {
-        auto sampler_rate = interval_type(sampling.interval());
+        auto sampler_rate = interval_type(this->_impl->async_sampling.interval());
         auto adl_rate = duration_cast<std::chrono::milliseconds>(sampler_rate);
 
         // Make sure that the sensor is running before queuing to the thread.

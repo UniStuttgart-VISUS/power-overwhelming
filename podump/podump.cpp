@@ -42,7 +42,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     ::sample_adl_sensor_data();
 #endif
 
-#if true
+#if false
     ::sample_adl_sensor_async(5);
 #endif
 
@@ -98,7 +98,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // Tinkerforge sensors
-#if true
+#if false
 #if false
     ::sample_tinkerforge_sensor();
 #endif

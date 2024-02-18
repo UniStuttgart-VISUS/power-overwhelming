@@ -21,11 +21,11 @@ std::size_t visus::power_overwhelming::adl_throttling_sensor::for_all(
         _In_ const std::size_t cnt) {
     detail::adl_scope scope;
 
-    // Get all active adapters that support throttling info.
+    // Get all adapters that support throttling info.
     auto adapters = detail::matching_adapters(scope,
             [&scope](const AdapterInfo& a) {
         return detail::supports_sensor(scope, a, ADL_PMLOG_THROTTLER_STATUS);
-    }, true);
+    }, false);
 
     // Create a sensor for each adapter, even if we cannot return it, just to
     // be sure that the instance would work.
@@ -56,11 +56,11 @@ visus::power_overwhelming::adl_throttling_sensor::from_udid(
 
     detail::adl_scope scope;
 
-    // Search all active adapters for the specified UDID.
+    // Search all adapters for the specified UDID.
     auto adapters = detail::matching_adapters(scope,
         [udid](const AdapterInfo& a) {
         return (::strcmp(udid, a.strUDID) == 0);
-    }, true);
+    }, false);
     if (adapters.size() != 1) {
         throw std::invalid_argument("The unique device identifier did not "
             "match a single device.");
@@ -92,8 +92,7 @@ visus::power_overwhelming::adl_throttling_sensor::from_udid(
  * visus::power_overwhelming::adl_throttling_sensor::adl_throttling_sensor
  */
 visus::power_overwhelming::adl_throttling_sensor::adl_throttling_sensor(
-        void) noexcept
-    : _impl(nullptr) { }
+    void) noexcept : _impl(new detail::adl_sensor_impl()) { }
 
 
 /*
@@ -126,7 +125,7 @@ void visus::power_overwhelming::adl_throttling_sensor::sample(
     typedef duration<interval_ticks, std::micro> interval_type;
 
     if ((this->_impl->async_sampling = std::move(async_sampling))) {
-        auto sampler_rate = interval_type(async_sampling.interval());
+        auto sampler_rate = interval_type(this->_impl->async_sampling.interval());
         auto adl_rate = duration_cast<std::chrono::milliseconds>(sampler_rate);
 
         // Make sure that the sensor is running before queuing to the thread.
