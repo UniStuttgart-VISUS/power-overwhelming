@@ -33,7 +33,7 @@ std::size_t visus::power_overwhelming::adl_throttling_sensor::for_all(
     const auto end = (cur != nullptr) ? cur + cnt : nullptr;
     for (auto& a : adapters) {
         if (cur < end) {
-            *cur = adl_throttling_sensor(new detail::adl_sensor_impl(a));
+            *cur++ = adl_throttling_sensor(new detail::adl_sensor_impl(a));
         } else {
             adl_throttling_sensor dummy(new detail::adl_sensor_impl(a));
         }
@@ -92,7 +92,7 @@ visus::power_overwhelming::adl_throttling_sensor::from_udid(
  * visus::power_overwhelming::adl_throttling_sensor::adl_throttling_sensor
  */
 visus::power_overwhelming::adl_throttling_sensor::adl_throttling_sensor(
-    void) noexcept : _impl(new detail::adl_sensor_impl()) { }
+    void) noexcept : _impl(nullptr) { } //_impl(new detail::adl_sensor_impl()) { }
 
 
 /*
@@ -181,4 +181,9 @@ visus::power_overwhelming::adl_throttling_sensor::operator bool(
  * visus::power_overwhelming::adl_throttling_sensor::adl_throttling_sensor
  */
 visus::power_overwhelming::adl_throttling_sensor::adl_throttling_sensor(
-    _In_ detail::adl_sensor_impl *impl) noexcept : _impl(impl) { }
+        _In_ detail::adl_sensor_impl *impl) noexcept : _impl(impl) {
+    assert(this->_impl != nullptr);
+    this->_impl->sensor_name = L"ADL/THROTTLER_STATUS/"
+        + this->_impl->device_name
+        + L"/" + std::to_wstring(this->_impl->adapter_index);
+}

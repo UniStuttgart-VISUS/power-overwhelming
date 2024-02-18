@@ -128,14 +128,15 @@ void sample_adl_throttling(const unsigned int dt) {
         adl_throttling_sensor::for_all(sensors.data(), sensors.size());
 
         // Enable asynchronous sampling.
-        for (auto &s : sensors) {
+        for (auto& s : sensors) {
             async_sampling config;
             config.delivers_throttling_samples_to([](const wchar_t *n, const throttling_sample *s, const std::size_t c, void *) {
                 for (std::size_t i = 0; i < c; ++i) {
                     std::wcout << s[i].timestamp() << L" ("
                         << n << L"): "
-                        << static_cast<int>(s[i].state()) << L" , "
-                        << s[i].throttled() << std::endl;
+                        << static_cast<int>(s[i].state()) << L", "
+                        << (s[i].throttled() ? L"" : L"not ")
+                        << L"throttled." << std::endl;
 
                 }
             });

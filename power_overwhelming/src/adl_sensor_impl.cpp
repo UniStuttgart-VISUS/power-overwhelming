@@ -449,13 +449,21 @@ bool visus::power_overwhelming::detail::adl_sensor_impl::deliver(void) const {
     const auto name = this->sensor_name.c_str();
     const auto resolution = this->async_sampling.resolution();
 
-    switch (this->async_sampling.delivery_method()) {
-        case async_delivery_method::on_throttling_sample:
-            return this->async_sampling.deliver(name,
-                this->sample_throttling(resolution));
+    if (this->async_sampling) {
+        switch (this->async_sampling.delivery_method()) {
+            case async_delivery_method::on_throttling_sample:
+                return this->async_sampling.deliver(name,
+                    this->sample_throttling(resolution));
 
-        default:
-            return this->async_sampling.deliver(name, this->sample(resolution));
+            default:
+                return this->async_sampling.deliver(name,
+                    this->sample(resolution));
+        }
+
+    } else {
+        // If asynchronous sampling is disabled, the delivery method might be
+        // bogus and this can cause an attempt to sample the wrong data.
+        return false;
     }
 }
 
@@ -547,7 +555,7 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample_throttling(
         }
     }
 
-    return throttling_sample(timestamp, throttling_state::none);
+    return throttling_sample(timestamp, state);
 }
 
 
