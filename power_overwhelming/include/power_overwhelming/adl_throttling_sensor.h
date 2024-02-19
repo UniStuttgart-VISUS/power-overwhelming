@@ -18,6 +18,12 @@ namespace power_overwhelming {
     /// <summary>
     /// Defines a sensor for obtaining the throttling state of an AMD GPU.
     /// </summary>
+    /// <remarks>
+    /// Although all cards we tested so far claim to support the sensor type, we
+    /// never received any meaningful data from it (in other word: the sensor
+    /// never reported that the GPU was throttled). Hence, the results of the
+    /// sensor might be bogus.
+    /// </remarks>
     class POWER_OVERWHELMING_API adl_throttling_sensor final
             : public throttling_sensor {
 
