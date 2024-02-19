@@ -16,6 +16,7 @@
 #endif /* defined (_WIN32) */
 
 #include "power_overwhelming/adl_sensor.h"
+#include "power_overwhelming/adl_thermal_sensor.h"
 #include "power_overwhelming/adl_throttling_sensor.h"
 #include "power_overwhelming/emi_sensor.h"
 #include "power_overwhelming/collector.h"

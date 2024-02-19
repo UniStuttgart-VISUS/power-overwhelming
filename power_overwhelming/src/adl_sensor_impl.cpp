@@ -470,6 +470,10 @@ bool visus::power_overwhelming::detail::adl_sensor_impl::deliver(void) const {
 
     if (this->async_sampling) {
         switch (this->async_sampling.delivery_method()) {
+            case async_delivery_method::on_thermal_sample:
+                return this->async_sampling.deliver(name,
+                    this->sample_thermal(resolution));
+
             case async_delivery_method::on_throttling_sample:
                 return this->async_sampling.deliver(name,
                     this->sample_throttling(resolution));
@@ -545,6 +549,24 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample(
 
 
 /*
+ * visus::power_overwhelming::detail::adl_sensor_impl::sample_thermal
+ */
+visus::power_overwhelming::thermal_sample
+visus::power_overwhelming::detail::adl_sensor_impl::sample_thermal(
+        _In_ const timestamp_resolution resolution) const {
+    assert(this->state.load() == 1);
+    const auto data = static_cast<ADLPMLogData *>(
+        this->start_output.pLoggingAddress);
+    const auto timestamp = this->timestamp(*data, resolution);
+    auto state = throttling_state::none;
+
+    assert(data->ulValues[0][0] == ADL_PMLOG_THROTTLER_STATUS);
+    const auto value = static_cast<float>(data->ulValues[0][1]);
+    return thermal_sample(timestamp, value);
+}
+
+
+/*
  * visus::power_overwhelming::detail::adl_sensor_impl::sample_throttling
  */
 visus::power_overwhelming::throttling_sample
@@ -555,23 +577,21 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample_throttling(
         this->start_output.pLoggingAddress);
     const auto timestamp = this->timestamp(*data, resolution);
     auto state = throttling_state::none;
-    unsigned int value = 0;
 
-    if (detail::adl_sensor_impl::filter_sensor_readings(value, *data,
-            ADL_PMLOG_THROTTLER_STATUS)) {
-        const auto notification = static_cast<ADL_THROTTLE_NOTIFICATION>(value);
+    assert(data->ulValues[0][0] == ADL_PMLOG_THROTTLER_STATUS);
+    const auto value = data->ulValues[0][1];
+    const auto notification = static_cast<ADL_THROTTLE_NOTIFICATION>(value);
 
-        if ((notification & ADL_PMLOG_THROTTLE_CURRENT) != 0) {
-            state = state | throttling_state::current;
-        }
+    if ((notification & ADL_PMLOG_THROTTLE_CURRENT) != 0) {
+        state = state | throttling_state::current;
+    }
 
-        if ((notification & ADL_PMLOG_THROTTLE_POWER) != 0) {
-            state = state | throttling_state::power;
-        }
+    if ((notification & ADL_PMLOG_THROTTLE_POWER) != 0) {
+        state = state | throttling_state::power;
+    }
 
-        if ((notification & ADL_PMLOG_THROTTLE_THERMAL) != 0) {
-            state = state | throttling_state::thermal;
-        }
+    if ((notification & ADL_PMLOG_THROTTLE_THERMAL) != 0) {
+        state = state | throttling_state::thermal;
     }
 
     return throttling_sample(timestamp, state);

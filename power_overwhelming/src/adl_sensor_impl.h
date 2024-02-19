@@ -12,6 +12,8 @@
 #include "power_overwhelming/adl_sensor_source.h"
 #include "power_overwhelming/measurement.h"
 #include "power_overwhelming/sampler_source.h"
+#include "power_overwhelming/thermal_sample.h"
+#include "power_overwhelming/throttling_sample.h"
 
 #include "adl_scope.h"
 #include "amd_display_library.h"
@@ -285,7 +287,18 @@ namespace detail {
         measurement_data sample(const timestamp_resolution resolution) const;
 
         /// <summary>
-        /// Samples the throttling state of the GPU.
+        /// Samples the first sensor in <see cref="start_input" /> as thermal
+        /// sensor.
+        /// </summary>
+        /// <param name="resolution">The resolution of the timestamp being
+        /// returned.</param>
+        /// <returns>The latest thermal reading of the sensor.</returns>
+        thermal_sample sample_thermal(
+            _In_ const timestamp_resolution resolution) const;
+
+        /// <summary>
+        /// Samples the first sensor in <see cref="start_input" /> as throttling
+        ///  state of the GPU.
         /// </summary>
         /// <param name="resolution">The resolution of the timestamp being
         /// returned.</param>

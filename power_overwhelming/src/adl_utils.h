@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <iterator>
 
 #include "adl_exception.h"
 #include "adl_scope.h"
@@ -24,6 +25,27 @@ namespace detail {
     /// <param name="scope">The scope holding the ADL function pointers.</param>
     /// <returns>The adapters found on the system.</returns>
     extern std::vector<AdapterInfo> get_adapters(_In_ adl_scope& scope);
+
+    /// <summary>
+    /// Gets all ADL adapters matching the given <paramref name="predicate" />
+    /// using the specified output iterator.
+    /// </summary>
+    /// <typeparam name="TPredicate"></typeparam>
+    /// <typeparam name="TIterator"></typeparam>
+    /// <param name="oit"></param>
+    /// <param name="scope"></param>
+    /// <param name="predicate"></param>
+    template<class TIterator, class TPredicate>
+    inline void get_adapters_if(_In_ TIterator oit,
+            _In_ adl_scope& scope,
+            _In_ const TPredicate& predicate) {
+        const auto adapters = get_adapters(scope);
+        std::copy_if(adapters.begin(), adapters.end(), oit,
+                [&scope, &predicate](const AdapterInfo& a) {
+            return predicate(scope, a);
+        });
+        // Counting the elements copied would require C++ 20.
+    }
 
     /// <summary>
     /// Gets all ADL adapters matching the given <paramref name="predicate" />.
@@ -71,6 +93,38 @@ namespace detail {
     extern bool supports_sensor(_In_ adl_scope& scope,
         _In_ const AdapterInfo& adapter,
         _In_ const int id);
+
+    /// <summary>
+    /// Answer wheher any of the sensor IDs within <paramref name="begin" /> and
+    /// <paramref name="end" /> are supported by the given
+    /// <paramref name="adapter" />.
+    /// </summary>
+    /// <typeparam name="TIterator"></typeparam>
+    /// <param name="scope"></param>
+    /// <param name="adapter"></param>
+    /// <param name="begin"></param>
+    /// <param name="end"></param>
+    /// <returns></returns>
+    template<class TIterator>
+    bool supports_any_sensor(_In_ adl_scope& scope,
+            _In_ const AdapterInfo& adapter,
+            _In_ TIterator&& begin,
+            _In_ TIterator&& end) {
+        ADLPMLogSupportInfo info;
+
+        {
+            auto status = detail::amd_display_library::instance()
+                .ADL2_Adapter_PMLog_Support_Get(scope, adapter.iAdapterIndex,
+                    &info);
+            if (status != ADL_OK) {
+                throw adl_exception(status);
+            }
+        }
+
+        return std::any_of(begin, end, [&info](const int id) {
+            return supports_sensor(info, id);
+        });
+    }
 
 } /* namespace detail */
 } /* namespace power_overwhelming */

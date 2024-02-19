@@ -33,7 +33,13 @@ void sample_adl_from_udid(const char *udid);
 void sample_adl_throttling(const unsigned int dt);
 
 /// <summary>
+/// Sample all thermal sensors supported by ADL for the specified number of
+/// seconds.
+/// </summary>
+void sample_adl_thermal(const unsigned int dt);
+
+/// <summary>
 /// Sample the sensor data and the throttling state at the same time.
 /// </summary>
 void sample_adl_sensor_and_throttling(const unsigned int ds,
-	const unsigned int dt);
+    const unsigned int dt);

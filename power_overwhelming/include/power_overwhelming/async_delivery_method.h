@@ -27,6 +27,12 @@ namespace power_overwhelming {
         on_measurement_data,
 
         /// <summary>
+        /// Delivers to an
+        /// <see cref="async_sampling::on_thermal_sample_callback" />.
+        /// </summary>
+        on_thermal_sample,
+
+        /// <summary>
         /// Delivers GPU throttling information to an
         /// <see cref="async_sampling::on_throttling_sample_callback" />.
         /// </summary>

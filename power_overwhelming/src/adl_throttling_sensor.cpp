@@ -24,23 +24,20 @@ std::size_t visus::power_overwhelming::adl_throttling_sensor::for_all(
 
         // Get all adapters that support throttling info.
         auto adapters = detail::get_adapters_if(scope,
-            [&scope](const detail::adl_scope&, const AdapterInfo& a) {
-                return detail::supports_sensor(scope, a,
-                    ADL_PMLOG_THROTTLER_STATUS);
+                [](detail::adl_scope& s, const AdapterInfo& a) {
+            return detail::supports_sensor(s, a, ADL_PMLOG_THROTTLER_STATUS);
         });
 
-        // Create a sensor for each adapter, even if we cannot return it, just
-        // to be sure that the instance would work.
+        // Create a sensor for each adapter we can return.
         auto cur = dst;
         const auto end = (cur != nullptr) ? cur + cnt : nullptr;
         for (auto& a : adapters) {
             if (cur < end) {
                 *cur++ = adl_throttling_sensor(new detail::adl_sensor_impl(a));
-            } else {
-                adl_throttling_sensor dummy(new detail::adl_sensor_impl(a));
             }
         }
 
+        // Always return the number of sensors we *could* return.
         return adapters.size();
     } catch (...) {
         return 0;
