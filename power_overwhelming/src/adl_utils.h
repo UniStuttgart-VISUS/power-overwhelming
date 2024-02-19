@@ -19,34 +19,32 @@ namespace power_overwhelming {
 namespace detail {
 
     /// <summary>
-    /// Answer all (active) ADL adapters.
+    /// Answer all ADL adapters.
     /// </summary>
     /// <param name="scope">The scope holding the ADL function pointers.</param>
-    /// <param name="active_only">If <c>true</c>, inactive adapters are filtered
-    /// from the result.</param>
     /// <returns>The adapters found on the system.</returns>
-    extern std::vector<AdapterInfo> all_adapters(_In_ adl_scope& scope,
-        _In_ const bool active_only);
+    extern std::vector<AdapterInfo> get_adapters(_In_ adl_scope& scope);
 
     /// <summary>
-    /// Answer all ADL adapter infos that match <paramref name="predicate" />.
+    /// Gets all ADL adapters matching the given <paramref name="predicate" />.
     /// </summary>
-    /// <typeparam name="TPredicate">A functor for checking a
-    /// <see cref="AdapterInfo" />.</typeparam>
-    /// <param name="predicate">The predicate the adapter must match in
-    /// order to be returned.</param>
-    /// <param name="active_only">If <c>true</c>, inactive adapters are filtered
-    /// from the result.</param>
-    /// <returns>The adapters matching the predicate.</returns>
+    /// <typeparam name="TPredicate"></typeparam>
+    /// <param name="scope"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
     template<class TPredicate>
-    std::vector<AdapterInfo> matching_adapters(_In_ adl_scope& scope,
-            _In_ const TPredicate& predicate, _In_ const bool active_only) {
-        auto retval = all_adapters(scope, active_only);
-        auto end = std::remove_if(retval.begin(), retval.end(),
-            [&predicate](AdapterInfo &a) { return !predicate(a); });
-        retval.erase(end, retval.end());
-        return retval;
-    }
+    std::vector<AdapterInfo> get_adapters_if(_In_ adl_scope &scope,
+        _In_ const TPredicate &predicate);
+
+    /// <summary>
+    /// Answer whether the given <paramref name="adapter" /> is active according
+    /// to <see cref="ADL2_Adapter_Active_Get" />.
+    /// </summary>
+    /// <param name="scope"></param>
+    /// <param name="adapter"></param>
+    /// <returns></returns>
+    extern bool is_active(_In_ adl_scope& scope,
+        _In_ const AdapterInfo& adapter);
 
     /// <summary>
     /// Answer whether the given sensor <paramref name="id" /> is enabled in the
@@ -77,3 +75,5 @@ namespace detail {
 } /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
+
+#include "adl_utils.inl"

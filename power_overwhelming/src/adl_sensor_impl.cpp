@@ -443,6 +443,25 @@ void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
 
 
 /*
+ * visus::power_overwhelming::detail::adl_sensor_impl::configure_source
+ */
+void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
+        _In_ const ADL_PMLOG_SENSORS sensor_id) {
+    this->source = adl_sensor_source::all;
+
+    // Set the sensor name.
+    this->sensor_name = L"ADL/" + to_string(sensor_id)
+        + L"/" + this->device_name
+        + L"/" + std::to_wstring(this->adapter_index);
+
+    // ADL_SENSOR_MAXTYPES, which is the guard for invalid sensors, is zero.
+    ::ZeroMemory(this->start_input.usSensors,
+        sizeof(this->start_input.usSensors));
+    this->start_input.usSensors[0] = sensor_id;
+}
+
+
+/*
  * visus::power_overwhelming::detail::adl_sensor_impl::deliver
  */
 bool visus::power_overwhelming::detail::adl_sensor_impl::deliver(void) const {

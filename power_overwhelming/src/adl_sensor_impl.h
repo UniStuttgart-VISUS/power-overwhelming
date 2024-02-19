@@ -236,6 +236,12 @@ namespace detail {
         void configure_source(const adl_sensor_source source,
             std::vector<ADL_PMLOG_SENSORS>&& sensorIDs);
 
+        /// <summary>
+        /// Prepares <see cref="start_input" /> for the specified sensor source.
+        /// </summary>
+        /// <param name="sensor_id"></param>
+        void configure_source(_In_ const ADL_PMLOG_SENSORS sensor_id);
+
         /// <inheritdoc />
         bool deliver(void) const override;
 

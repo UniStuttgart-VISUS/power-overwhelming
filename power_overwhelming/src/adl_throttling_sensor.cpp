@@ -19,27 +19,32 @@
 std::size_t visus::power_overwhelming::adl_throttling_sensor::for_all(
         _Out_writes_opt_(cnt) adl_throttling_sensor *dst,
         _In_ const std::size_t cnt) {
-    detail::adl_scope scope;
+    try {
+        detail::adl_scope scope;
 
-    // Get all adapters that support throttling info.
-    auto adapters = detail::matching_adapters(scope,
-            [&scope](const AdapterInfo& a) {
-        return detail::supports_sensor(scope, a, ADL_PMLOG_THROTTLER_STATUS);
-    }, false);
+        // Get all adapters that support throttling info.
+        auto adapters = detail::get_adapters_if(scope,
+            [&scope](const detail::adl_scope&, const AdapterInfo& a) {
+                return detail::supports_sensor(scope, a,
+                    ADL_PMLOG_THROTTLER_STATUS);
+        });
 
-    // Create a sensor for each adapter, even if we cannot return it, just to
-    // be sure that the instance would work.
-    auto cur = dst;
-    const auto end = (cur != nullptr) ? cur + cnt : nullptr;
-    for (auto& a : adapters) {
-        if (cur < end) {
-            *cur++ = adl_throttling_sensor(new detail::adl_sensor_impl(a));
-        } else {
-            adl_throttling_sensor dummy(new detail::adl_sensor_impl(a));
+        // Create a sensor for each adapter, even if we cannot return it, just
+        // to be sure that the instance would work.
+        auto cur = dst;
+        const auto end = (cur != nullptr) ? cur + cnt : nullptr;
+        for (auto& a : adapters) {
+            if (cur < end) {
+                *cur++ = adl_throttling_sensor(new detail::adl_sensor_impl(a));
+            } else {
+                adl_throttling_sensor dummy(new detail::adl_sensor_impl(a));
+            }
         }
-    }
 
-    return adapters.size();
+        return adapters.size();
+    } catch (...) {
+        return 0;
+    }
 }
 
 
@@ -57,10 +62,10 @@ visus::power_overwhelming::adl_throttling_sensor::from_udid(
     detail::adl_scope scope;
 
     // Search all adapters for the specified UDID.
-    auto adapters = detail::matching_adapters(scope,
-        [udid](const AdapterInfo& a) {
-        return (::strcmp(udid, a.strUDID) == 0);
-    }, false);
+    auto adapters = detail::get_adapters_if(scope,
+        [udid](const detail::adl_scope&, const AdapterInfo& a) {
+            return (::strcmp(udid, a.strUDID) == 0);
+    });
     if (adapters.size() != 1) {
         throw std::invalid_argument("The unique device identifier did not "
             "match a single device.");
@@ -183,7 +188,5 @@ visus::power_overwhelming::adl_throttling_sensor::operator bool(
 visus::power_overwhelming::adl_throttling_sensor::adl_throttling_sensor(
         _In_ detail::adl_sensor_impl *impl) noexcept : _impl(impl) {
     assert(this->_impl != nullptr);
-    this->_impl->sensor_name = L"ADL/THROTTLER_STATUS/"
-        + this->_impl->device_name
-        + L"/" + std::to_wstring(this->_impl->adapter_index);
+    this->_impl->configure_source(ADL_PMLOG_THROTTLER_STATUS);
 }

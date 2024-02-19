@@ -134,7 +134,7 @@ std::size_t visus::power_overwhelming::adl_sensor::for_all(
         detail::adl_scope scope;
 
         // Get all active adapters.
-        const auto adapters = detail::all_adapters(scope, false);
+        const auto adapters = detail::get_adapters(scope);
 
         // For each adapter, get all supported sensors.
         for (auto& a : adapters) {
@@ -190,10 +190,10 @@ visus::power_overwhelming::adl_sensor::from_udid(_In_z_ const char *udid,
 
     detail::adl_scope scope;
 
-    auto adapters = detail::matching_adapters(scope,
-        [udid](const AdapterInfo& a) {
+    auto adapters = detail::get_adapters_if(scope,
+        [udid](const detail::adl_scope&, const AdapterInfo& a) {
             return (::strcmp(udid, a.strUDID) == 0);
-        }, false);
+        });
     if (adapters.size() != 1) {
         throw std::invalid_argument("The unique device identifier did not "
             "match a single device.");
