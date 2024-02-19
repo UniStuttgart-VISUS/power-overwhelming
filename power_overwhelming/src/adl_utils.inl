@@ -38,7 +38,7 @@ visus::power_overwhelming::detail::get_adapters_if(_In_ adl_scope& scope,
 
     for (auto it = retval.begin(); it != retval.end(); ++it) {
         if (!predicate(scope, *it)) {
-            retval.erase(it);
+            it = retval.erase(it);
             continue;
         }
     }

@@ -155,3 +155,86 @@ void sample_adl_throttling(const unsigned int dt) {
         std::cerr << ex.what() << std::endl;
     }
 }
+
+
+/*
+ * ::sample_adl_sensor_and_throttling
+ */
+void sample_adl_sensor_and_throttling(const unsigned int ds,
+        const unsigned int dt) {
+    using namespace visus::power_overwhelming;
+
+    try {
+        std::vector<adl_sensor> power_sensors;
+        power_sensors.resize(adl_sensor::for_all(nullptr, 0));
+        adl_sensor::for_all(power_sensors.data(), power_sensors.size());
+
+        std::vector<adl_throttling_sensor> throttling_sensors;
+        throttling_sensors.resize(adl_throttling_sensor::for_all(nullptr, 0));
+        adl_throttling_sensor::for_all(throttling_sensors.data(), throttling_sensors.size());
+
+        // Enable asynchronous sampling.
+        for (auto& s : power_sensors) {
+            async_sampling config;
+            config.delivers_measurements_to([](const measurement& m, void*) {
+                std::wcout << m.timestamp() << L" ("
+                << m.sensor() << L"): "
+                << m.voltage() << L" V, "
+                << m.current() << L" A, "
+                << m.power() << L" W" << std::endl;
+            });
+            s.sample(std::move(config));
+        }
+
+        for (auto& s : throttling_sensors) {
+            async_sampling config;
+            config.delivers_throttling_samples_to([](const wchar_t* n, const throttling_sample* s, const std::size_t c, void*) {
+                for (std::size_t i = 0; i < c; ++i) {
+                    std::wcout << s[i].timestamp() << L" ("
+                        << n << L"): "
+                        << static_cast<int>(s[i].state()) << L", "
+                        << (s[i].throttled() ? L"" : L"not ")
+                        << L"throttled." << std::endl;
+
+                }
+            });
+            s.sample(std::move(config));
+        }
+
+
+        // Wait for the requested number of seconds.
+        const auto first_sleep = std::chrono::seconds((std::min)(ds, dt));
+        const auto second_sleep = std::chrono::seconds((std::max)(ds, dt)) - first_sleep;
+        const auto power_first = (ds < dt);
+
+        std::this_thread::sleep_for(first_sleep);
+
+        // Disable asynchronous sampling.
+        if (power_first) {
+            for (auto& s : power_sensors) {
+                s.sample(async_sampling());
+            }
+        } else {
+            for (auto& s : throttling_sensors) {
+                s.sample(async_sampling());
+            }
+        }
+
+        // Wait again
+        std::this_thread::sleep_for(second_sleep);
+
+        // Disable asynchronous sampling.
+        if (power_first) {
+            for (auto& s : throttling_sensors) {
+                s.sample(async_sampling());
+            }
+        } else {
+            for (auto& s : power_sensors) {
+                s.sample(async_sampling());
+            }
+        }
+
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+}

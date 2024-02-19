@@ -447,7 +447,7 @@ void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
  */
 void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
         _In_ const ADL_PMLOG_SENSORS sensor_id) {
-    this->source = adl_sensor_source::all;
+    this->source = static_cast<adl_sensor_source>(0);
 
     // Set the sensor name.
     this->sensor_name = L"ADL/" + to_string(sensor_id)
