@@ -59,7 +59,11 @@ namespace detail {
             ADL_MAIN_MALLOC_CALLBACK, int, ADL_CONTEXT_HANDLE *);
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Main_Control_Destroy,
             ADL_CONTEXT_HANDLE);
-
+        __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_OverdriveN_CapabilitiesX2_Get,
+            ADL_CONTEXT_HANDLE, int, ADLODNCapabilitiesX2 *);
+        __POWER_OVERWHELMING_ADL_FUNC(int,
+            ADL2_OverdriveN_ThrottleNotification_Get, ADL_CONTEXT_HANDLE,
+            int, int*, int*);
     private:
 
         /// <summary>

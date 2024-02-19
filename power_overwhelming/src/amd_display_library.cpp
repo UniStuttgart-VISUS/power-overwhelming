@@ -49,4 +49,6 @@ visus::power_overwhelming::detail::amd_display_library::amd_display_library(
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Device_PMLog_Device_Destroy);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Main_Control_Create);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Main_Control_Destroy);
+    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_OverdriveN_CapabilitiesX2_Get);
+    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_OverdriveN_ThrottleNotification_Get);
 }
