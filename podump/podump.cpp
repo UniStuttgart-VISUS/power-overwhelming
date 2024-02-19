@@ -34,11 +34,11 @@ int _tmain(const int argc, const TCHAR **argv) {
 
     // AMD sensors
 #if true
-#if true
+#if false
     ::sample_adl_sensor();
 #endif
 
-#if true
+#if false
     ::sample_adl_sensor_data();
 #endif
 
@@ -51,8 +51,12 @@ int _tmain(const int argc, const TCHAR **argv) {
     ::sample_adl_from_udid("PCI_VEN_1002&DEV_6863&SUBSYS_6B761002&REV_00_6&377B8C4D&0&00000019A");
 #endif
 
-#if true
+#if false
     ::sample_adl_throttling(5);
+#endif
+
+#if true
+    ::sample_adl_sensor_and_throttling(5, 2);
 #endif
 #endif
 
