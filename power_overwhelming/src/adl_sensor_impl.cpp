@@ -559,9 +559,14 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample_thermal(
         this->start_output.pLoggingAddress);
     const auto timestamp = this->timestamp(*data, resolution);
     auto state = throttling_state::none;
+    auto temperature = std::numeric_limits<thermal_sample::value_type>::lowest();
+    unsigned int value = 0;
 
-    assert(data->ulValues[0][0] == ADL_PMLOG_THROTTLER_STATUS);
-    const auto value = static_cast<float>(data->ulValues[0][1]);
+    if (detail::adl_sensor_impl::filter_sensor_readings(value, *data,
+            static_cast<ADL_PMLOG_SENSORS>(this->start_input.usSensors[0]))) {
+        temperature = static_cast<decltype(temperature)>(value);
+    }
+
     return thermal_sample(timestamp, value);
 }
 
@@ -577,21 +582,29 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample_throttling(
         this->start_output.pLoggingAddress);
     const auto timestamp = this->timestamp(*data, resolution);
     auto state = throttling_state::none;
+    unsigned int value = 0;
 
-    assert(data->ulValues[0][0] == ADL_PMLOG_THROTTLER_STATUS);
-    const auto value = data->ulValues[0][1];
-    const auto notification = static_cast<ADL_THROTTLE_NOTIFICATION>(value);
+    if (detail::adl_sensor_impl::filter_sensor_readings(value, *data,
+            static_cast<ADL_PMLOG_SENSORS>(this->start_input.usSensors[0]))) {
+        const auto notification = static_cast<ADL_THROTTLE_NOTIFICATION>(value);
 
-    if ((notification & ADL_PMLOG_THROTTLE_CURRENT) != 0) {
-        state = state | throttling_state::current;
-    }
+        if ((notification & ADL_PMLOG_THROTTLE_CURRENT) != 0) {
+            state = state | throttling_state::current;
+        }
 
-    if ((notification & ADL_PMLOG_THROTTLE_POWER) != 0) {
-        state = state | throttling_state::power;
-    }
+        if ((notification & ADL_PMLOG_THROTTLE_POWER) != 0) {
+            state = state | throttling_state::power;
+        }
 
-    if ((notification & ADL_PMLOG_THROTTLE_THERMAL) != 0) {
-        state = state | throttling_state::thermal;
+        if ((notification & ADL_PMLOG_THROTTLE_THERMAL) != 0) {
+            state = state | throttling_state::thermal;
+        }
+
+        if ((notification != 0) && (state == throttling_state::none)) {
+            // Card reports throttling state we do not understand, so tell the
+            // caller at least that we are throttled.
+            state = throttling_state::other;
+        }
     }
 
     return throttling_sample(timestamp, state);

@@ -63,7 +63,7 @@ std::size_t visus::power_overwhelming::adl_thermal_sensor::for_all(
                 detail::thermal_sensors.end());
         });
 
-        // Create a sensor for each adapter.
+        // Count total number of sensors and create a sensor for each adapter.
         std::size_t retval = 0;
         for (auto& a : adapters) {
             for (auto s : detail::thermal_sensors) {
@@ -82,7 +82,7 @@ std::size_t visus::power_overwhelming::adl_thermal_sensor::for_all(
             }
         }
 
-        return adapters.size();
+        return retval;
     } catch (...) {
         return 0;
     }
