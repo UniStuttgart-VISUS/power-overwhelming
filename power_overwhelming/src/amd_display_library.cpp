@@ -23,6 +23,9 @@
 #define __POWER_OVERWHELMING_GET_ADL_FUNC(n) \
     this->n = this->get_function<decltype(this->n)>(#n)
 
+#define __POWER_OVERWHELMING_GET_ADL_FUNC_FIX(n, i) \
+    this->n = this->get_function<decltype(this->n)>(#i)
+
 
 /*
  * visus::power_overwhelming::detail::amd_display_library::instance
@@ -42,6 +45,7 @@ visus::power_overwhelming::detail::amd_display_library::amd_display_library(
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_Active_Get);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_AdapterInfo_Get);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_NumberOfAdapters_Get);
+    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_PMLog_SensorLimits_Get);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_PMLog_Support_Get);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_PMLog_Start);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_PMLog_Stop);
@@ -49,6 +53,17 @@ visus::power_overwhelming::detail::amd_display_library::amd_display_library(
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Device_PMLog_Device_Destroy);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Main_Control_Create);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Main_Control_Destroy);
+    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_New_QueryPMLogData_Get);
+    __POWER_OVERWHELMING_GET_ADL_FUNC_FIX(
+        ADL2_Overdrive8_PMLogSensorRange_Caps,
+        ADL2_Overdrive8_PMLogSenorRange_Caps);
+    __POWER_OVERWHELMING_GET_ADL_FUNC_FIX(
+        ADL2_Overdrive8_PMLogSensorType_Support_Get,
+        ADL2_Overdrive8_PMLogSenorType_Support_Get);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_OverdriveN_CapabilitiesX2_Get);
+    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_OverdriveN_Capabilities_Get);
+    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_OverdriveN_PerformanceStatus_Get);
+    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_OverdriveN_PowerLimit_Get);
+    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_OverdriveN_Temperature_Get);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_OverdriveN_ThrottleNotification_Get);
 }
