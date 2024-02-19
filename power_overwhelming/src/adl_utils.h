@@ -33,8 +33,8 @@ namespace detail {
     /// <param name="predicate"></param>
     /// <returns></returns>
     template<class TPredicate>
-    std::vector<AdapterInfo> get_adapters_if(_In_ adl_scope &scope,
-        _In_ const TPredicate &predicate);
+    std::vector<AdapterInfo> get_adapters_if(_In_ adl_scope& scope,
+        _In_ const TPredicate& predicate);
 
     /// <summary>
     /// Answer whether the given <paramref name="adapter" /> is active according
