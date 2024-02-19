@@ -52,11 +52,19 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
 #if false
-    ::sample_adl_throttling(5);
+    ::sample_adl_thermal(5);
 #endif
 
 #if true
+    ::sample_adl_throttling(500000);
+#endif
+
+#if false
     ::sample_adl_sensor_and_throttling(5, 2);
+#endif
+
+#if false
+    ::sample_adl_thermal_and_throttling(5);
 #endif
 #endif
 

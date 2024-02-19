@@ -117,27 +117,25 @@ void sample_adl_from_udid(const char *udid) {
 
 
 /*
- * ::sample_adl_throttling
+ * ::sample_adl_thermal
  */
-void sample_adl_throttling(const unsigned int dt) {
+void sample_adl_thermal(const unsigned int dt) {
     using namespace visus::power_overwhelming;
 
     try {
-        std::vector<adl_throttling_sensor> sensors;
-        sensors.resize(adl_throttling_sensor::for_all(nullptr, 0));
-        adl_throttling_sensor::for_all(sensors.data(), sensors.size());
+        std::vector<adl_thermal_sensor> sensors;
+        sensors.resize(adl_thermal_sensor::for_all(nullptr, 0));
+        adl_thermal_sensor::for_all(sensors.data(), sensors.size());
 
         // Enable asynchronous sampling.
         for (auto& s : sensors) {
             async_sampling config;
-            config.delivers_throttling_samples_to([](const wchar_t *n, const throttling_sample *s, const std::size_t c, void *) {
+            config.delivers_thermal_samples_to([](const wchar_t *n, const thermal_sample *s, const std::size_t c, void *) {
                 for (std::size_t i = 0; i < c; ++i) {
                     std::wcout << s[i].timestamp() << L" ("
                         << n << L"): "
-                        << static_cast<int>(s[i].state()) << L", "
-                        << (s[i].throttled() ? L"" : L"not ")
-                        << L"throttled." << std::endl;
-
+                        << s[i].temperature() << L"°C"
+                        << std::endl;
                 }
             });
             s.sample(std::move(config));
@@ -158,25 +156,26 @@ void sample_adl_throttling(const unsigned int dt) {
 
 
 /*
- * ::sample_adl_thermal
+ * ::sample_adl_throttling
  */
-void sample_adl_thermal(const unsigned int dt) {
+void sample_adl_throttling(const unsigned int dt) {
     using namespace visus::power_overwhelming;
 
     try {
-        std::vector<adl_thermal_sensor> sensors;
-        sensors.resize(adl_thermal_sensor::for_all(nullptr, 0));
-        adl_thermal_sensor::for_all(sensors.data(), sensors.size());
+        std::vector<adl_throttling_sensor> sensors;
+        sensors.resize(adl_throttling_sensor::for_all(nullptr, 0));
+        adl_throttling_sensor::for_all(sensors.data(), sensors.size());
 
         // Enable asynchronous sampling.
         for (auto& s : sensors) {
             async_sampling config;
-            config.delivers_thermal_samples_to([](const wchar_t *n, const thermal_sample *s, const std::size_t c, void *) {
+            config.delivers_throttling_samples_to([](const wchar_t *n, const throttling_sample *s, const std::size_t c, void *) {
                 for (std::size_t i = 0; i < c; ++i) {
                     std::wcout << s[i].timestamp() << L" ("
                         << n << L"): "
-                        << s[i].temperature() << L"°C"
-                        << std::endl;
+                        << static_cast<int>(s[i].state()) << L", "
+                        << (s[i].throttled() ? L"" : L"not ")
+                        << L"throttled." << std::endl;
 
                 }
             });
@@ -277,4 +276,66 @@ void sample_adl_sensor_and_throttling(const unsigned int ds,
     } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
+}
+
+
+/*
+ * ::sample_adl_thermal_and_throttling
+ */
+void sample_adl_thermal_and_throttling(const unsigned int dt) {
+    using namespace visus::power_overwhelming;
+
+    try {
+        std::vector<adl_thermal_sensor> thermal_sensors;
+        thermal_sensors.resize(adl_thermal_sensor::for_all(nullptr, 0));
+        adl_thermal_sensor::for_all(thermal_sensors.data(), thermal_sensors.size());
+
+        std::vector<adl_throttling_sensor> throttling_sensors;
+        throttling_sensors.resize(adl_throttling_sensor::for_all(nullptr, 0));
+        adl_throttling_sensor::for_all(throttling_sensors.data(), throttling_sensors.size());
+
+        // Enable asynchronous sampling.
+        for (auto& s : thermal_sensors) {
+            async_sampling config;
+            config.delivers_thermal_samples_to([](const wchar_t* n, const thermal_sample* s, const std::size_t c, void*) {
+                for (std::size_t i = 0; i < c; ++i) {
+                    std::wcout << s[i].timestamp() << L" ("
+                        << n << L"): "
+                        << s[i].temperature() << L"°C"
+                        << std::endl;
+                }
+                });
+            s.sample(std::move(config));
+        }
+
+        for (auto& s : throttling_sensors) {
+            async_sampling config;
+            config.delivers_throttling_samples_to([](const wchar_t* n, const throttling_sample* s, const std::size_t c, void*) {
+                for (std::size_t i = 0; i < c; ++i) {
+                    std::wcout << s[i].timestamp() << L" ("
+                        << n << L"): "
+                        << static_cast<int>(s[i].state()) << L", "
+                        << (s[i].throttled() ? L"" : L"not ")
+                        << L"throttled." << std::endl;
+
+                }
+            });
+            s.sample(std::move(config));
+        }
+
+        // Wait for the requested number of seconds.
+        std::this_thread::sleep_for(std::chrono::seconds(dt));
+
+        // Disable asynchronous sampling.
+        for (auto& s : thermal_sensors) {
+            s.sample(async_sampling());
+        }
+        for (auto& s : throttling_sensors) {
+            s.sample(async_sampling());
+        }
+
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+
 }
