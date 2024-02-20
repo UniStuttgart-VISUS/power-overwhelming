@@ -66,4 +66,5 @@ visus::power_overwhelming::detail::amd_display_library::amd_display_library(
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_OverdriveN_PowerLimit_Get);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_OverdriveN_Temperature_Get);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_OverdriveN_ThrottleNotification_Get);
+    __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Overdrive_Caps);
 }

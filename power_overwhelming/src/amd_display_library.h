@@ -83,6 +83,8 @@ namespace detail {
         __POWER_OVERWHELMING_ADL_FUNC(int,
             ADL2_OverdriveN_ThrottleNotification_Get, ADL_CONTEXT_HANDLE,
             int, int*, int*);
+        __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Overdrive_Caps,
+            ADL_CONTEXT_HANDLE, int, int *, int *, int *);
 
     private:
 

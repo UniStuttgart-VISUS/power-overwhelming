@@ -9,9 +9,10 @@
 #include <system_error>
 
 #include "power_overwhelming/adl_sensor.h"
-#include "power_overwhelming/emi_sensor.h"
 #include "power_overwhelming/collector.h"
 #include "power_overwhelming/convert_string.h"
+#include "power_overwhelming/emi_sensor.h"
+#include "power_overwhelming/msr_sensor.h"
 #include "power_overwhelming/nvml_sensor.h"
 #include "power_overwhelming/hmc8015_sensor.h"
 #include "power_overwhelming/tinkerforge_sensor.h"
