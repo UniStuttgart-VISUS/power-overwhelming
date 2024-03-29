@@ -1,5 +1,6 @@
 ﻿// <copyright file="measurement_data.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -8,7 +9,7 @@
 #include <cinttypes>
 #include <utility>
 
-#include "power_overwhelming/power_overwhelming_api.h"
+#include "power_overwhelming/timestamp.h"
 
 
 namespace visus {
@@ -45,8 +46,7 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the sensor. The unit is
-        /// defined by the configuration of the sensor.</param>
+        /// <param name="timestamp">The timestamp of the sensor.</param>
         /// <param name="voltage">The measured voltage in Volts.</param>
         /// <param name="current">The measured current in Amperes.</param>
         /// <param name="power">The measured power in Watts.</param>
@@ -58,8 +58,7 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the sensor. The unit is
-        /// defined by the configuration of the sensor.</param>
+        /// <param name="timestamp">The timestamp of the sensor.</param>
         /// <param name="voltage">The measured voltage in Volts.</param>
         /// <param name="current">The measured current in Amperes.</param>
         /// <exception cref="std::invalid_argument">If any of
@@ -72,8 +71,7 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <param name="timestamp">The timestamp of the sensor. The unit is
-        /// defined by the configuration of the sensor.</param>
+        /// <param name="timestamp">The timestamp of the sensor.</param>
         /// <param name="power"></param>
         /// <param name="power">The measured power in Watts.</param>
         /// <exception cref="std::invalid_argument">If <paramref name="power" />
@@ -129,8 +127,7 @@ namespace power_overwhelming {
         /// <summary>
         /// Gets the timestamp of the measurement.
         /// </summary>
-        /// <returns>The timestamp in the unit requested from the sensor.
-        /// </returns>
+        /// <returns>The timestamp of the measurement.</returns>
         inline timestamp_type timestamp(void) const noexcept {
             return this->_timestamp;
         }

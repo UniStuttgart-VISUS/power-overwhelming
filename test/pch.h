@@ -33,13 +33,13 @@
 #include <power_overwhelming/rtx_sensor.h>
 #include <power_overwhelming/rtx_sensor_definition.h>
 #include <power_overwhelming/rapl_domain.h>
+#include <power_overwhelming/timestamp.h>
 #include <power_overwhelming/tinkerforge_sensor_definition.h>
 
 #include <adl_exception.h>
 #include <emi_device.h>
 #include <io_util.h>
 #include <on_exit.h>
-#include <timestamp.h>
 #include <msr_magic.h>
 #include <nvml_exception.h>
 #include <nvml_scope.h>

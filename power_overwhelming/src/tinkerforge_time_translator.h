@@ -16,8 +16,8 @@
 
 #include "power_overwhelming/power_overwhelming_api.h"
 #include "power_overwhelming/timestamp_resolution.h"
+#include "power_overwhelming/timestamp.h"
 
-#include "timestamp.h"
 #include "tinkerforge_exception.h"
 
 
@@ -50,7 +50,7 @@ namespace detail {
         /// The type of a coordinated time comprising the current timestamp on
         /// the host and the time retrieved from the bricklet.
         /// </summary>
-        typedef std::pair<timestamp_type, bricklet_time_type> times_type;
+        typedef std::pair<timestamp, bricklet_time_type> times_type;
 
         /// <summary>
         /// Checks whether timestamps from the bricklet are supported, which
@@ -88,10 +88,10 @@ namespace detail {
         /// </remarks>
         /// <typeparam name="TRep></typeparam>
         /// <param name="bricklet"></param>
-        /// <param name="time_span"></param>
+        /// <param name="ts"></param>
         /// <returns></returns>
         template<class TRep> void reset(_In_ bricklet_type& bricklet,
-            _In_ const std::chrono::duration<timestamp_type, TRep> time_span);
+            _In_ const std::chrono::duration<timestamp::value_type, TRep> ts);
 
         /// <summary>
         /// Resets the calibration for the given bricklet by estimating the
@@ -140,11 +140,9 @@ namespace detail {
         /// the specified resolution.
         /// </summary>
         /// <param name="time"></param>
-        /// <param name="resolution"></param>
         /// <param name="bricklet"></param>
         /// <returns></returns>
-        timestamp_type operator ()(_In_ const bricklet_time_type time,
-            _In_ const timestamp_resolution resolution,
+        timestamp operator ()(_In_ const bricklet_time_type time,
             _In_ bricklet_type& bricklet);
 
     private:
@@ -159,7 +157,7 @@ namespace detail {
         /// The timestamp on the host when the first calibration was performed
         /// in <see cref="reset " />.
         /// </summary>
-        timestamp_type _begin_host;
+        timestamp _begin_host;
 
         /// <summary>
         /// Tracks how many translations need to be made before the next
@@ -171,7 +169,7 @@ namespace detail {
         /// The wall-clock timestamp (in milliseconds) from the zero-point
         /// of the time reported by the bricklet with Moritz' custom firmware.
         /// </summary>
-        timestamp_type _time_offset;
+        timestamp::value_type _time_offset;
 
         /// <summary>
         /// Allows for adapting the slope of the bricklets clock to the system

@@ -15,9 +15,9 @@
 #endif /* defined(_WIN32) */
 
 #include "power_overwhelming/measurement_data_series.h"
+#include "power_overwhelming/timestamp.h"
 
 #include "thread_name.h"
-#include "timestamp.h"
 
 
 /*
@@ -91,9 +91,7 @@ void visus::power_overwhelming::detail::rtx_sampler::sample(
                     data.reserve(current_waveform.size());
 
                     for (std::size_t i = 0; i < current_waveform.size(); ++i) {
-                        auto timestamp = detail::convert(
-                            current_waveform.sample_timestamp(i),
-                            s->async_sampling.resolution());
+                        auto timestamp = current_waveform.sample_timestamp(i);
                         data.emplace_back(timestamp,
                             voltage->waveform().sample(i),
                             current->waveform().sample(i));

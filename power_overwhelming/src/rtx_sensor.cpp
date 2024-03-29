@@ -16,11 +16,11 @@
 #include <vector>
 
 #include "power_overwhelming/convert_string.h"
+#include "power_overwhelming/timestamp.h"
 
 #include "rtx_sampler.h"
 #include "rtx_sensor_impl.h"
 #include "string_functions.h"
-#include "timestamp.h"
 #include "tokenise.h"
 #include "visa_library.h"
 
@@ -280,7 +280,7 @@ visus::power_overwhelming::rtx_sensor::~rtx_sensor(void) noexcept {
 visus::power_overwhelming::measurement_data_series
 visus::power_overwhelming::rtx_sensor::acquire(
         _In_ const timestamp_resolution resolution) const {
-    const auto begin = detail::create_timestamp(resolution);
+    const auto begin = power_overwhelming::timestamp::now();
     auto& instrument = this->check_not_disposed();
     assert(this->_impl != nullptr);
     assert(instrument == true);
@@ -303,10 +303,11 @@ visus::power_overwhelming::rtx_sensor::acquire(
     const auto dist = std::chrono::duration<float>(current.sample_distance());
 
     for (std::size_t i = 0; i < current.record_length(); ++i) {
-        dst[i] = measurement_data(
-            begin + detail::convert(i * dist, resolution),
-            voltage.sample(i),
-            current.sample(i));
+        throw "TODO";
+        //dst[i] = measurement_data(
+        //    begin.value() + (i * dist),
+        //    voltage.sample(i),
+        //    current.sample(i));
     }
 
     return retval;

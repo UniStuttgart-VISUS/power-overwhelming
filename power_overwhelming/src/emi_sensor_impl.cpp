@@ -6,9 +6,9 @@
 #include "emi_sensor_impl.h"
 
 #include "power_overwhelming/convert_string.h"
+#include "power_overwhelming/timestamp.h"
 
 #include "filetime_period.h"
-#include "timestamp.h"
 
 
 #if defined(_WIN32)
@@ -90,7 +90,6 @@ visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
             value /= static_cast<float>(dt);
 
             auto time = data.AbsoluteTime - dt / 2 + this->time_offset;
-            time = convert(time, resolution);
 
             return measurement_data(time, value);
             }
@@ -174,7 +173,7 @@ void visus::power_overwhelming::detail::emi_sensor_impl::set(
 
             this->last_energy = m.AbsoluteEnergy;
             this->last_time = m.AbsoluteTime;
-            this->time_offset = convert(t) - this->last_time;
+            this->time_offset = timestamp::from_file_time(t) - this->last_time;
             } break;
 
         case EMI_VERSION_V2: {
@@ -194,7 +193,7 @@ void visus::power_overwhelming::detail::emi_sensor_impl::set(
             auto mm = reinterpret_cast<EMI_MEASUREMENT_DATA_V2 *>(m.data());
             this->last_energy = mm->ChannelData[this->channel].AbsoluteEnergy;
             this->last_time = mm->ChannelData[this->channel].AbsoluteTime;
-            this->time_offset = convert(t) - this->last_time;
+            this->time_offset = timestamp::from_file_time(t) - this->last_time;
 
             // Determine the name of the channel and add it to the name of the
             // sensor.

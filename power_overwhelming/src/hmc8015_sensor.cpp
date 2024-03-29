@@ -12,12 +12,12 @@
 #include <utility>
 
 #include "power_overwhelming/convert_string.h"
+#include "power_overwhelming/timestamp.h"
 
 #include "hmc8015_sensor_impl.h"
 #include "no_visa_error_msg.h"
 #include "sampler.h"
 #include "string_functions.h"
-#include "timestamp.h"
 #include "tokenise.h"
 #include "visa_instrument_impl.h"
 #include "visa_library.h"
@@ -584,7 +584,7 @@ visus::power_overwhelming::hmc8015_sensor::sample_sync(
 
     // TODO: could use CHAN1:MEAS:FORM BIN here.
     auto response = this->_instrument.query("CHAN1:MEAS:DATA?\n");
-    auto timestamp = detail::create_timestamp(resolution);
+    auto timestamp = power_overwhelming::timestamp::now();
     auto tokens = detail::tokenise(std::string(response.begin(),
         response.end()), ',', true);
 

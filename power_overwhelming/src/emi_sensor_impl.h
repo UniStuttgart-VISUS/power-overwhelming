@@ -12,11 +12,11 @@
 
 #include "power_overwhelming/emi_sensor.h"
 #include "power_overwhelming/measurement.h"
+#include "power_overwhelming/timestamp.h"
 
 #include "device_sampler_source.h"
 #include "emi_device_factory.h"
 #include "sampler.h"
-#include "timestamp.h"
 
 
 namespace visus {

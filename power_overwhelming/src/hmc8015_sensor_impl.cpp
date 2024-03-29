@@ -5,7 +5,8 @@
 
 #include "hmc8015_sensor_impl.h"
 
-#include "timestamp.h"
+#include "power_overwhelming/timestamp.h"
+
 #include "tokenise.h"
 
 
@@ -48,7 +49,7 @@ visus::power_overwhelming::measurement_data
 visus::power_overwhelming::detail::hmc8015_sensor_impl::sample(
         _In_ const timestamp_resolution resolution) const {
     auto response = this->instrument.query("CHAN1:MEAS:DATA?\n");
-    auto timestamp = detail::create_timestamp(resolution);
+    auto timestamp = power_overwhelming::timestamp::now();
     auto tokens = detail::tokenise(std::string(response.begin(),
         response.end()), ',', true);
 

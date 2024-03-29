@@ -11,12 +11,12 @@
 
 #include "power_overwhelming/adl_sensor_source.h"
 #include "power_overwhelming/measurement.h"
+#include "power_overwhelming/timestamp.h"
 
 #include "adl_scope.h"
 #include "amd_display_library.h"
 #include "basic_sampler_source.h"
 #include "sampler.h"
-#include "timestamp.h"
 
 
 namespace visus {

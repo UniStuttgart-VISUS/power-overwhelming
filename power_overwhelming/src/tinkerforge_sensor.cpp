@@ -13,7 +13,6 @@
 #include <bricklet_voltage_current_v2.h>
 
 #include "sampler.h"
-#include "timestamp.h"
 #include "tinkerforge_exception.h"
 #include "tinkerforge_sensor_impl.h"
 #include "zero_memory.h"
@@ -458,7 +457,7 @@ visus::power_overwhelming::tinkerforge_sensor::sample_sync(
     std::int32_t current = 0;   // Current in mA.
     std::int32_t power = 0;     // Power in mW.
     std::int32_t voltage = 0;   // Voltage in mV.
-    auto timestamp = detail::create_timestamp(resolution);
+    auto timestamp = power_overwhelming::timestamp::now();
 
     {
         auto status = ::voltage_current_v2_get_voltage(&this->_impl->bricklet,
@@ -485,9 +484,7 @@ visus::power_overwhelming::tinkerforge_sensor::sample_sync(
         }
 
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
-        timestamp = this->_impl->time_xlate(time,
-            resolution,
-            this->_impl->bricklet);
+        timestamp = this->_impl->time_xlate(time, this->_impl->bricklet);
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 
     } else {

@@ -10,13 +10,13 @@
 template<class TRep>
 void visus::power_overwhelming::detail::tinkerforge_time_translator::reset(
         _In_ bricklet_type& bricklet,
-        _In_ const std::chrono::duration<timestamp_type, TRep> time_span) {
+        _In_ const std::chrono::duration<timestamp::value_type, TRep> ts) {
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
     if (check_support(bricklet)) {
         // Get the times on the host and the bricklet, wait for the user-defined
         // time span and do it again.
         const auto begin = get_coord_times(bricklet);
-        std::this_thread::sleep_for(time_span);
+        std::this_thread::sleep_for(ts);
         const auto end = get_coord_times(bricklet);
 
         // Compute the times elapsed on the host and on the bricklet.
@@ -35,7 +35,7 @@ void visus::power_overwhelming::detail::tinkerforge_time_translator::reset(
         // bricklet was zero. We need to scale the offset, because the result
         // should be in the units of the clock on the host, but the offset we
         // have is in ticks on the bricklet.
-        const auto origin_offset = static_cast<timestamp_type>(
+        const auto origin_offset = static_cast<timestamp::value_type>(
             this->_time_scale * this->_begin_bricklet);
         this->_time_offset = this->_begin_host - origin_offset;
 

@@ -39,140 +39,91 @@ namespace test {
         }
 
         TEST_METHOD(test_convert_reference) {
-            auto a = detail::convert(std::chrono::system_clock::from_time_t(0), timestamp_resolution::hundred_nanoseconds);
-            Assert::AreEqual(this->_filetime_zero, a, L"Unix epoch as FILETIME", LINE_INFO());
+            const auto a = timestamp(std::chrono::system_clock::from_time_t(0));
+            Assert::AreEqual(this->_filetime_zero, a.value(), L"Unix epoch as FILETIME", LINE_INFO());
         }
 
-        TEST_METHOD(test_convert_duration) {
-            {
-                const std::chrono::seconds duration(1);
-                Assert::AreEqual(std::int64_t(1), detail::convert(duration, timestamp_resolution::seconds), L"s to s", LINE_INFO());
-                Assert::AreEqual(std::int64_t(1000), detail::convert(duration, timestamp_resolution::milliseconds), L"s to ms", LINE_INFO());
-                Assert::AreEqual(std::int64_t(1000000), detail::convert(duration, timestamp_resolution::microseconds), L"s to us", LINE_INFO());
-                Assert::AreEqual(std::int64_t(10000000), detail::convert(duration, timestamp_resolution::hundred_nanoseconds), L"s to 100 ns", LINE_INFO());
-            }
+        TEST_METHOD(test_from_system_clock) {
+            typedef std::chrono::duration<timestamp::value_type, std::ratio<1, 10000000>> dur;
+            const auto max_dt = std::chrono::duration_cast<dur>(std::chrono::milliseconds(100)).count();
 
-            {
-                const std::chrono::microseconds duration(1);
-                Assert::AreEqual(std::int64_t(1), detail::convert(duration, timestamp_resolution::microseconds), L"us to us", LINE_INFO());
-            }
+            const auto f = timestamp::now();
+            const auto s = timestamp::from_system_clock();
+            Assert::IsTrue(s.value() - f.value() < max_dt, L"FILETIME from STL", LINE_INFO());
         }
 
-        TEST_METHOD(test_convert_timestamp) {
-            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::hundred_nanoseconds, 1, timestamp_resolution::hundred_nanoseconds), L"100ns to 100ns", LINE_INFO());
-            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::microseconds, 1, timestamp_resolution::microseconds), L"us to us", LINE_INFO());
-            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::milliseconds, 1, timestamp_resolution::milliseconds), L"ms to ms", LINE_INFO());
-            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::seconds, 1, timestamp_resolution::seconds), L"s to s", LINE_INFO());
+        TEST_METHOD(test_now) {
+            typedef std::chrono::duration<timestamp::value_type, std::ratio<1, 10000000>> dur;
+            const auto max_dt = std::chrono::duration_cast<dur>(std::chrono::milliseconds(100)).count();
 
-            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::hundred_nanoseconds, 1, timestamp_resolution::hundred_nanoseconds), L"100ns to 100ns", LINE_INFO());
-            Assert::AreEqual(std::int64_t(10), detail::convert(timestamp_resolution::microseconds, 1, timestamp_resolution::hundred_nanoseconds), L"us to 100ns", LINE_INFO());
-            Assert::AreEqual(std::int64_t(10000), detail::convert(timestamp_resolution::milliseconds, 1, timestamp_resolution::hundred_nanoseconds), L"ms to 100ns", LINE_INFO());
-            Assert::AreEqual(detail::filetime_period::den, detail::convert(timestamp_resolution::seconds, 1, timestamp_resolution::hundred_nanoseconds), L"s to 100ns", LINE_INFO());
-
-            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::hundred_nanoseconds, 10, timestamp_resolution::microseconds), L"100ns to us", LINE_INFO());
-            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::microseconds, 1, timestamp_resolution::microseconds), L"us to us", LINE_INFO());
-            Assert::AreEqual(std::int64_t(1000), detail::convert(timestamp_resolution::milliseconds, 1, timestamp_resolution::microseconds), L"ms to us", LINE_INFO());
-            Assert::AreEqual(std::int64_t(1000000), detail::convert(timestamp_resolution::seconds, 1, timestamp_resolution::microseconds), L"s to us", LINE_INFO());
-
-            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::hundred_nanoseconds, 10000, timestamp_resolution::milliseconds), L"100ns to ms", LINE_INFO());
-            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::microseconds, 1000, timestamp_resolution::milliseconds), L"us to ms", LINE_INFO());
-            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::milliseconds, 1, timestamp_resolution::milliseconds), L"ms to ms", LINE_INFO());
-            Assert::AreEqual(std::int64_t(1000), detail::convert(timestamp_resolution::seconds, 1, timestamp_resolution::milliseconds), L"s to ms", LINE_INFO());
-
-            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::hundred_nanoseconds, detail::filetime_period::den, timestamp_resolution::seconds), L"100ns to s", LINE_INFO());
-            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::microseconds, 1000000, timestamp_resolution::seconds), L"us to s", LINE_INFO());
-            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::milliseconds, 1000, timestamp_resolution::seconds), L"ms to s", LINE_INFO());
-            Assert::AreEqual(std::int64_t(1), detail::convert(timestamp_resolution::seconds, 1, timestamp_resolution::seconds), L"s to s", LINE_INFO());
+            const auto n = std::chrono::system_clock::now();
+            const auto t = timestamp::now();
+            const auto s = std::chrono::duration_cast<dur>(n - this->_system_zero).count();
+            Assert::IsTrue(s - this->_filetime_zero - t <= max_dt, L"timestamp near system clock", LINE_INFO());
         }
 
-        TEST_METHOD(test_microseconds) {
-            typedef std::chrono::microseconds unit;
-            static const auto resolution = timestamp_resolution::microseconds;
-            const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
+        TEST_METHOD(test_from_time_t) {
+            const auto n = ::time(nullptr);
+            const auto t = timestamp::from_time_t(n);
 
-            auto n = std::chrono::system_clock::now();
-            auto t = detail::create_timestamp(resolution);
-            auto s = std::chrono::duration_cast<unit>(n - this->_system_zero).count();
-            auto z = detail::convert(this->_filetime_zero, resolution);
-            Assert::IsTrue(s - z - t <= max_dt, L"timestamp microsecond", LINE_INFO());
-
-            auto c = detail::convert(n, resolution);
-            Assert::IsTrue(t - c <= max_dt, L"Convert microsecond", LINE_INFO());
+            const auto r = time_t_to_filetime(n);
+            LARGE_INTEGER rr;
+            rr.HighPart = r.dwHighDateTime;
+            rr.LowPart = r.dwLowDateTime;
+            Assert::AreEqual(rr.QuadPart, t.value(), L"timestamp from time_t", LINE_INFO());
         }
 
-        TEST_METHOD(test_milliseconds) {
-            typedef std::chrono::milliseconds unit;
-            static const auto resolution = timestamp_resolution::milliseconds;
-            const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
+        TEST_METHOD(file_time_roundtrip) {
+            FILETIME e;
+            e.dwLowDateTime = 42;
+            e.dwHighDateTime = 17;
 
-            auto n = std::chrono::system_clock::now();
-            auto t = detail::create_timestamp(timestamp_resolution::milliseconds);
-            auto s = std::chrono::duration_cast<std::chrono::milliseconds>(n - this->_system_zero).count();
-            auto z = detail::convert(this->_filetime_zero, timestamp_resolution::milliseconds);
-            Assert::IsTrue(t - z - s <= max_dt, L"timestamp millisecond", LINE_INFO());
+            const auto t = timestamp::from_file_time(e);
+            const auto a = static_cast<FILETIME>(t);
 
-            auto c = detail::convert(n, resolution);
-            Assert::IsTrue(t - c <= max_dt, L"Convert millisecond", LINE_INFO());
+            Assert::AreEqual(e.dwLowDateTime, a.dwLowDateTime, L"dwLowDateTime", LINE_INFO());
+            Assert::AreEqual(e.dwHighDateTime, a.dwHighDateTime, L"dwHighDateTime", LINE_INFO());
         }
 
-        TEST_METHOD(test_hundred_nanoseconds) {
-            typedef std::chrono::duration<std::chrono::system_clock::duration::rep, detail::filetime_period> unit;
-            static const auto resolution = timestamp_resolution::hundred_nanoseconds;
-            const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
-
-            auto n = std::chrono::system_clock::now();
-            auto t = detail::create_timestamp(resolution);
-            auto s = std::chrono::duration_cast<unit>(n - this->_system_zero).count();
-            auto z = detail::convert(this->_filetime_zero, resolution);
-            Assert::IsTrue(t - z - s <= max_dt, L"timestamp 100 nanoseconds", LINE_INFO());
-
-            auto c = detail::convert(n, resolution);
-            Assert::IsTrue(t - c <= max_dt, L"Convert 100 nanoseconds", LINE_INFO());
+        TEST_METHOD(system_clock_roundtrip) {
+            const auto e = std::chrono::system_clock::now();
+            const auto t = timestamp(e);
+            const auto a = static_cast<std::chrono::system_clock::time_point>(t);
+            Assert::AreEqual(e.time_since_epoch().count(), a.time_since_epoch().count(), L"system clock round trip", LINE_INFO());
         }
 
-        TEST_METHOD(test_seconds) {
-            typedef std::chrono::seconds unit;
-            static const auto resolution = timestamp_resolution::seconds;
-            const auto max_dt = std::chrono::duration_cast<unit>(std::chrono::milliseconds(100)).count();
-
-            auto n = std::chrono::system_clock::now();
-            auto t = detail::create_timestamp(resolution);
-            auto s = std::chrono::duration_cast<unit>(n - this->_system_zero).count();
-            auto z = detail::convert(this->_filetime_zero, resolution);
-            Assert::IsTrue(s - z - t <= max_dt, L"timestamp second", LINE_INFO());
-
-            auto c = detail::convert(n, resolution);
-            Assert::IsTrue(t - c <= max_dt, L"Convert nanosecond", LINE_INFO());
+        TEST_METHOD(time_point_roundtrip) {
+            const auto e = std::chrono::system_clock::now();
+            const auto t = timestamp::from_time_point(e);
+            const auto a = static_cast<std::chrono::system_clock::time_point>(t);
+            Assert::AreEqual(e.time_since_epoch().count(), a.time_since_epoch().count(), L"from_time_point round trip", LINE_INFO());
         }
 
         TEST_METHOD(test_create) {
             {
-                static const auto resolution = timestamp_resolution::hundred_nanoseconds;
-                const auto timestamp = detail::create_timestamp(resolution, 2000, 1, 2, 3, 4, 5, 6);
+                const auto timestamp = power_overwhelming::timestamp::create(2000, 1, 2, 3, 4, 5, 6);
                 const auto expected = make_filetime(2000, 1, 2, 3, 4, 5, 6);
-                Assert::AreEqual(expected, timestamp, L"Create 100ns", LINE_INFO());
+                Assert::AreEqual(expected, timestamp.value(), L"Create 100ns", LINE_INFO());
             }
 
             {
-                static const auto resolution = timestamp_resolution::hundred_nanoseconds;
-                const auto timestamp = detail::create_timestamp(resolution, 2000, 1, 2, 3, 4, 5, 6, 7, 800);
+                const auto timestamp = power_overwhelming::timestamp::create(2000, 1, 2, 3, 4, 5, 6, 7, 800);
                 const auto filetime = make_filetime(2000, 1, 2, 3, 4, 5, 6);
-                const auto expected = detail::convert(filetime, resolution) + 70 + 8;
-                Assert::AreEqual(expected, timestamp, L"Create 100ns", LINE_INFO());
+                const auto expected = filetime + 70 + 8;
+                Assert::AreEqual(expected, timestamp.value(), L"Create 100ns", LINE_INFO());
             }
 
             {
-                static const auto resolution = timestamp_resolution::microseconds;
-                const auto timestamp = detail::create_timestamp(resolution, 2000, 1, 2, 3, 4, 5, 6, 7);
+                const auto timestamp = power_overwhelming::timestamp::create(2000, 1, 2, 3, 4, 5, 6, 7);
                 const auto filetime = make_filetime(2000, 1, 2, 3, 4, 5, 6);
-                const auto expected = detail::convert(filetime + 70, resolution);
-                Assert::AreEqual(expected, timestamp, L"Create µs", LINE_INFO());
+                const auto expected = filetime + 70;
+                Assert::AreEqual(expected, timestamp.value(), L"Create µs", LINE_INFO());
             }
         }
 
     private:
 
-        static inline timestamp_type make_filetime(const std::uint16_t year,
+        static inline timestamp::value_type make_filetime(const std::uint16_t year,
                 const std::uint16_t month, const std::uint16_t day,
                 const std::uint16_t hours, const std::uint16_t minutes,
                 const std::uint16_t seconds, const std::uint16_t millis) {
@@ -194,6 +145,16 @@ namespace test {
             retval.LowPart = filetime.dwLowDateTime;
 
             return retval.QuadPart;
+        }
+
+        static inline FILETIME time_t_to_filetime(const std::time_t t) {
+            // From https://github.com/MicrosoftDocs/win32/blob/docs/desktop-src/SysInfo/converting-a-time-t-value-to-a-file-time.md
+            ULARGE_INTEGER time_value;
+            time_value.QuadPart = (t * 10000000LL) + 116444736000000000LL;
+            FILETIME retval;
+            retval.dwLowDateTime = time_value.LowPart;
+            retval.dwHighDateTime = time_value.HighPart;
+            return retval;
         }
 
         std::int64_t _filetime_zero;

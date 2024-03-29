@@ -76,7 +76,7 @@ visus::power_overwhelming::measurement_data
 visus::power_overwhelming::detail::nvml_sensor_impl::sample(
         const timestamp_resolution resolution) const {
     static constexpr auto thousand = static_cast<measurement_data::value_type>(1000);
-    const auto timestamp = create_timestamp(resolution);
+    const auto timestamp = power_overwhelming::timestamp::now();
 
     // Get the power usage in milliwatts.
     unsigned int mw = 0;

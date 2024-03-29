@@ -17,8 +17,8 @@
 
 #include "power_overwhelming/async_sampling.h"
 #include "power_overwhelming/measurement.h"
+#include "power_overwhelming/timestamp.h"
 
-#include "timestamp.h"
 #include "tinkerforge_scope.h"
 #include "tinkerforge_time_translator.h"
 
@@ -162,7 +162,7 @@ namespace detail {
         /// </summary>
         /// <remarks>The caller must hold <see cref="async_lock" />.</remarks>
         /// <param name="timestamp"></param>
-        void invoke_callback(const timestamp_type timestamp);
+        void invoke_callback(const timestamp::value_type timestamp);
 
     };
 

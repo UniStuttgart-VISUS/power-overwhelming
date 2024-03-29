@@ -69,6 +69,8 @@ visus::power_overwhelming::detail::tinkerforge_time_translator::get_coord_times(
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
     std::uint32_t time;
 
+    throw "TODO";
+#if false
     const auto begin = create_timestamp(timestamp_resolution::milliseconds);
     const auto status = ::voltage_current_v2_get_time(&bricklet, &time);
     const auto end = create_timestamp(timestamp_resolution::milliseconds);
@@ -78,6 +80,7 @@ visus::power_overwhelming::detail::tinkerforge_time_translator::get_coord_times(
 
     const auto dt = end - begin;
     return std::make_pair(begin + (dt >> 1), time);
+#endif
 #else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
     throw std::logic_error("This operation is not supported without the "
         "customised firmware to read the clock of the bricklet.");
@@ -108,6 +111,8 @@ bool visus::power_overwhelming::detail::tinkerforge_time_translator::update(
     assert(this->_time_offset != 0);
     std::uint32_t btime;
 
+    throw "TODO";
+#if false
     // Determine the current time on the host and the bricklet.
     const auto begin = create_timestamp(timestamp_resolution::milliseconds);
     const auto status = ::voltage_current_v2_get_time(&bricklet, &btime);
@@ -139,6 +144,7 @@ bool visus::power_overwhelming::detail::tinkerforge_time_translator::update(
 
     // Reset the update counter.
     this->_next_update = this->_update_every;
+#endif
 
     return true;
 #else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
@@ -152,10 +158,9 @@ bool visus::power_overwhelming::detail::tinkerforge_time_translator::update(
 /*
  * visus::power_overwhelming::detail::tinkerforge_time_translator::operator ()
  */
-visus::power_overwhelming::timestamp_type
+visus::power_overwhelming::timestamp
 visus::power_overwhelming::detail::tinkerforge_time_translator::operator ()(
         _In_ const bricklet_time_type time,
-        _In_ const timestamp_resolution resolution,
         _In_ bricklet_type& bricklet) {
     const auto offset = static_cast<double>(time) * this->_time_scale;
 
@@ -165,7 +170,8 @@ visus::power_overwhelming::detail::tinkerforge_time_translator::operator ()(
         --this->_update_every;
     }
 
-    return convert(timestamp_resolution::milliseconds,
-        this->_time_offset + static_cast<timestamp_type>(offset),
-        resolution);
+    throw "TODO";
+    //return convert(timestamp_resolution::milliseconds,
+    //    this->_time_offset + static_cast<timestamp_type>(offset),
+    //    resolution);
 }

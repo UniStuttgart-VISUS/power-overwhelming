@@ -12,7 +12,6 @@
 
 #include "filetime_period.h"
 #include "string_functions.h"
-#include "timestamp.h"
 #include "tokenise.h"
 
 
@@ -101,8 +100,7 @@ visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform(
         float micros;
         const auto nanos = std::modf(remainder, &micros) * 1000;
 
-        this->_segment_timestamp = detail::create_timestamp(
-            timestamp_resolution::hundred_nanoseconds,
+        this->_segment_timestamp = power_overwhelming::timestamp::create(
             year, month, day,
             hours, minutes, seconds,
             millis, micros, static_cast<int>(nanos));
@@ -177,12 +175,13 @@ float visus::power_overwhelming::oscilloscope_waveform::sample_distance(
 visus::power_overwhelming::measurement_data::timestamp_type
 visus::power_overwhelming::oscilloscope_waveform::sample_timestamp(
         _In_ const std::size_t i) const noexcept {
-    using namespace std::chrono;
-    typedef duration<timestamp_type, detail::filetime_period> target_duration;
-    const auto count = static_cast<float>(this->_record_length);
-    const duration<double> dt(this->_time_end - this->_time_begin);
-    return this->segment_timestamp()
-        + duration_cast<target_duration>((dt * i) / count).count();
+    throw "TODO";
+    //using namespace std::chrono;
+    //typedef duration<timestamp_type, detail::filetime_period> target_duration;
+    //const auto count = static_cast<float>(this->_record_length);
+    //const duration<double> dt(this->_time_end - this->_time_begin);
+    //return this->segment_timestamp()
+    //    + duration_cast<target_duration>((dt * i) / count).count();
 }
 
 

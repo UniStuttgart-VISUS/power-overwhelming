@@ -12,7 +12,6 @@
 #include "power_overwhelming/convert_string.h"
 
 #include "tinkerforge_exception.h"
-#include "timestamp.h"
 
 
 #if !defined(CALLBACK)
@@ -34,7 +33,7 @@ namespace detail {
         assert(data != nullptr);
         auto that = static_cast<tinkerforge_sensor_impl *>(data);
         std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
-        const auto ts = create_timestamp(that->async_sampling.resolution());
+        const auto ts = timestamp::now();
         that->async_data[0] = static_cast<measurement::value_type>(current)
             / static_cast<measurement::value_type>(1000);
         that->invoke_callback(ts);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
@@ -50,7 +49,7 @@ namespace detail {
         assert(data != nullptr);
         auto that = static_cast<tinkerforge_sensor_impl *>(data);
         std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
-        const auto ts = create_timestamp(that->async_sampling.resolution());
+        const auto ts = timestamp::now();
         that->async_data[1] = static_cast<measurement::value_type>(power)
             / static_cast<measurement::value_type>(1000);
         that->invoke_callback(ts);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
@@ -69,9 +68,7 @@ namespace detail {
         assert(data != nullptr);
         auto that = static_cast<tinkerforge_sensor_impl *>(data);
         std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
-        const auto ts = that->time_xlate(time,
-            that->async_sampling.resolution(),
-            that->bricklet);
+        const auto ts = that->time_xlate(time, that->bricklet);
         //auto wall_time = create_timestamp(that->async_sampling.resolution());
         //::OutputDebugStringW((that->sensor_name + L" " + std::to_wstring(wall_time)
         //    + L" " + std::to_wstring(time)
@@ -95,7 +92,7 @@ namespace detail {
         assert(data != nullptr);
         auto that = static_cast<tinkerforge_sensor_impl *>(data);
         std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
-        const auto ts = create_timestamp(that->async_sampling.resolution());
+        const auto ts = timestamp::now();
         that->async_data[2] = static_cast<measurement::value_type>(voltage)
             / static_cast<measurement::value_type>(1000);
         that->invoke_callback(ts);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
@@ -337,7 +334,7 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl
  * visus::power_overwhelming::detail::tinkerforge_sensor_impl::invoke_callback
  */
 void visus::power_overwhelming::detail::tinkerforge_sensor_impl::invoke_callback(
-        const timestamp_type timestamp) {
+        const timestamp::value_type timestamp) {
     auto current = this->async_data[0];
     auto power = this->async_data[1];
     auto voltage = this->async_data[2];

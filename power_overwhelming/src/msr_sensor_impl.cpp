@@ -12,7 +12,6 @@
 #include "device_sampler_source.h"
 #include "msr_magic.h"
 #include "sampler.h"
-#include "timestamp.h"
 
 
 #define ERROR_MSG_UNSUPPORTED_CPU "The MSR sensor is not supported for the "\
@@ -156,7 +155,7 @@ visus::power_overwhelming::detail::msr_sensor_impl::sample(
     // to compute the point in time for the sample in between the two calls.
     const auto dt = now - this->last_time;
     const auto sample_time = this->last_time + dt / 2;
-    const auto timestamp = convert(sample_time, resolution);
+    const auto timestamp = power_overwhelming::timestamp(sample_time);
 
     sample_value /= std::chrono::duration_cast<seconds_type>(dt).count();
 

@@ -19,7 +19,7 @@
 #include <thread>
 #include <vector>
 
-#include "timestamp.h"
+#include "power_overwhelming/timestamp.h"
 
 
 #if !defined(_WIN32)
@@ -47,25 +47,26 @@ namespace detail {
     /// Represents a request for retrieving the time from another node.
     /// </summary>
     struct tsmsg_request {
+        typedef power_overwhelming::timestamp timestamp_type;
+
         static constexpr std::uint32_t id = 0x0001;
 
         std::uint32_t msg_id;
         std::uint32_t sequence_number;
-        timestamp_resolution resolution;
         timestamp_type timestamp;
 
-        inline tsmsg_request(const timestamp_resolution resolution,
-                const std::uint32_t sequence_number)
+        inline tsmsg_request(const std::uint32_t sequence_number)
             : msg_id(id),
                 sequence_number(sequence_number),
-                resolution(resolution),
-                timestamp(create_timestamp(resolution)) { }
+                timestamp(timestamp_type::now()) { }
     };
 
     /// <summary>
     /// Represents the response to a specific request.
     /// </summary>
     struct tsmsg_response {
+        typedef power_overwhelming::timestamp timestamp_type;
+
         static constexpr std::uint32_t id = 0x0002;
 
         std::uint32_t msg_id;
@@ -75,20 +76,22 @@ namespace detail {
         inline tsmsg_response(const tsmsg_request& request)
             : msg_id(id),
             sequence_number(request.sequence_number),
-            timestamp(create_timestamp(request.resolution)) { }
+            timestamp(timestamp_type::now()) { }
     };
 
     /// <summary>
     /// Represents the state of a peer node of the time synchroniser.
     /// </summary>
     struct tsstate {
+        typedef power_overwhelming::timestamp timestamp_type;
+
         timestamp_type timestamp;
         timestamp_type roundtrip;
         double drift;
 
         inline tsstate(void)
             : timestamp(0),
-            roundtrip((std::numeric_limits<timestamp_type>::max)()),
+            roundtrip((std::numeric_limits<timestamp_type::value_type>::max)()),
             drift(0.0) { }
     };
 

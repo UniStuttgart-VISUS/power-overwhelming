@@ -344,8 +344,7 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample(
     // We found empirically that the timestamp from ADL is in 100 ns units (at
     // least on Windows). Based on this assumption, convert to the requested
     // unit.
-    auto timestamp = convert(static_cast<measurement::timestamp_type>(
-        data->ulLastUpdated), resolution);
+    auto timestamp = power_overwhelming::timestamp(data->ulLastUpdated);
 
     // MAJOR HAZARD HERE!!! WE HAVE NO IDEA WHAT UNIT IS USED FOR VOLTAGE AND
     // CURRENT. The documentation says nothing about this, but some overclocking

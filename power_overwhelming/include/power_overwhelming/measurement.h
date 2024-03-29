@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <iostream>
 #include <utility>
 
 #include "power_overwhelming/convert_string.h"
