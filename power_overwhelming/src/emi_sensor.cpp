@@ -1,5 +1,6 @@
 ﻿// <copyright file="emi_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -362,8 +363,7 @@ void visus::power_overwhelming::emi_sensor::sample_async(
  * visus::power_overwhelming::emi_sensor::sample_sync
  */
 visus::power_overwhelming::measurement_data
-visus::power_overwhelming::emi_sensor::sample_sync(
-        _In_ const timestamp_resolution resolution) const {
+visus::power_overwhelming::emi_sensor::sample_sync(void) const {
 #if defined(_WIN32)
     this->check_not_disposed();
 
@@ -371,13 +371,13 @@ visus::power_overwhelming::emi_sensor::sample_sync(
         case EMI_VERSION_V1: {
             EMI_MEASUREMENT_DATA_V1 s;
             detail::emi_sensor_impl::sample(this->_impl->device, &s, sizeof(s));
-            return this->_impl->evaluate(s, resolution);
+            return this->_impl->evaluate(s);
             }
 
         case EMI_VERSION_V2: {
             auto m = detail::emi_sensor_impl::sample(this->_impl->device);
             auto s = reinterpret_cast<EMI_MEASUREMENT_DATA_V2 *>(m.data());
-            return this->_impl->evaluate(*s, resolution);
+            return this->_impl->evaluate(*s);
             }
 
         default:

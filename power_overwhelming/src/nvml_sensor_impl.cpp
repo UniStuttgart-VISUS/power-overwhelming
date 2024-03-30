@@ -73,8 +73,7 @@ void visus::power_overwhelming::detail::nvml_sensor_impl::load_device_name(
  * visus::power_overwhelming::detail::nvml_sensor_impl::sample
  */
 visus::power_overwhelming::measurement_data
-visus::power_overwhelming::detail::nvml_sensor_impl::sample(
-        const timestamp_resolution resolution) const {
+visus::power_overwhelming::detail::nvml_sensor_impl::sample(void) const {
     static constexpr auto thousand = static_cast<measurement_data::value_type>(1000);
     const auto timestamp = power_overwhelming::timestamp::now();
 

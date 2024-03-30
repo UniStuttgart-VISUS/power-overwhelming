@@ -1,6 +1,6 @@
 ﻿// <copyright file="oscilloscope_waveform.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
-// </copyright>
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // <author>Christoph Müller</author>
 
 #include "power_overwhelming/oscilloscope_waveform.h"
@@ -10,7 +10,6 @@
 #include <ctime>
 #include <memory>
 
-#include "filetime_period.h"
 #include "string_functions.h"
 #include "tokenise.h"
 
@@ -126,7 +125,7 @@ visus::power_overwhelming::oscilloscope_waveform::oscilloscope_waveform(
         _time_end(rhs._time_end) {
     rhs._record_length = 0;
     rhs._segment_offset = 0.0f;
-    rhs._segment_timestamp = 0;
+    rhs._segment_timestamp = timestamp::zero;
     rhs._time_begin = 0.0f;
     rhs._time_end = 0.0f;
 }
@@ -175,13 +174,13 @@ float visus::power_overwhelming::oscilloscope_waveform::sample_distance(
 visus::power_overwhelming::measurement_data::timestamp_type
 visus::power_overwhelming::oscilloscope_waveform::sample_timestamp(
         _In_ const std::size_t i) const noexcept {
-    throw "TODO";
-    //using namespace std::chrono;
-    //typedef duration<timestamp_type, detail::filetime_period> target_duration;
-    //const auto count = static_cast<float>(this->_record_length);
-    //const duration<double> dt(this->_time_end - this->_time_begin);
-    //return this->segment_timestamp()
-    //    + duration_cast<target_duration>((dt * i) / count).count();
+    using namespace std::chrono;
+    typedef duration<timestamp::value_type, std::ratio<1, timestamp::tick_rate>>
+        target_duration;
+    const auto count = static_cast<float>(this->_record_length);
+    const duration<double> dt(this->_time_end - this->_time_begin);
+    return this->segment_timestamp() + duration_cast<target_duration>(
+        (dt * i) / count);
 }
 
 
@@ -198,7 +197,7 @@ visus::power_overwhelming::oscilloscope_waveform::operator =(
         this->_segment_offset = rhs._segment_offset;
         rhs._segment_offset = 0.0f;
         this->_segment_timestamp = rhs._segment_timestamp;
-        rhs._segment_timestamp = 0;
+        rhs._segment_timestamp = timestamp::zero;
         this->_time_begin = rhs._time_begin;
         rhs._time_begin = 0.0f;
         this->_time_end = rhs._time_end;

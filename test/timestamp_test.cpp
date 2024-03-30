@@ -1,5 +1,6 @@
 // <copyright file="timestamp_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -118,6 +119,38 @@ namespace test {
                 const auto filetime = make_filetime(2000, 1, 2, 3, 4, 5, 6);
                 const auto expected = filetime + 70;
                 Assert::AreEqual(expected, timestamp.value(), L"Create µs", LINE_INFO());
+            }
+        }
+
+        TEST_METHOD(test_arithmetics) {
+            {
+                const timestamp::value_type expected = 1;
+                auto actual = timestamp();
+                actual += std::chrono::nanoseconds(100);
+                Assert::AreEqual(expected, actual.value(), L"+=", LINE_INFO());
+            }
+
+            {
+                const timestamp::value_type expected = 1;
+                const auto t = timestamp();
+                const auto actual = t + std::chrono::nanoseconds(100);
+                Assert::AreEqual(timestamp::value_type(0), t.value(), L"lhs unchanged", LINE_INFO());
+                Assert::AreEqual(expected, actual.value(), L"+", LINE_INFO());
+            }
+
+            {
+                const timestamp::value_type expected = 0;
+                auto actual = timestamp(1);
+                actual -= std::chrono::nanoseconds(100);
+                Assert::AreEqual(expected, actual.value(), L"-=", LINE_INFO());
+            }
+
+            {
+                const timestamp::value_type expected = 0;
+                const auto t = timestamp(1);
+                const auto actual = t - std::chrono::nanoseconds(100);
+                Assert::AreEqual(timestamp::value_type(1), t.value(), L"lhs unchanged", LINE_INFO());
+                Assert::AreEqual(expected, actual.value(), L"-", LINE_INFO());
             }
         }
 

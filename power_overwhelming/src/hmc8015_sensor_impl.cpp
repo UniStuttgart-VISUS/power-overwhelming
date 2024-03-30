@@ -1,5 +1,6 @@
 ﻿// <copyright file="hmc8015_sensor_impl.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -46,8 +47,7 @@ void visus::power_overwhelming::detail::hmc8015_sensor_impl::initialise(void) {
  * visus::power_overwhelming::detail::hmc8015_sensor_impl::sample
  */
 visus::power_overwhelming::measurement_data
-visus::power_overwhelming::detail::hmc8015_sensor_impl::sample(
-        _In_ const timestamp_resolution resolution) const {
+visus::power_overwhelming::detail::hmc8015_sensor_impl::sample(void) const {
     auto response = this->instrument.query("CHAN1:MEAS:DATA?\n");
     auto timestamp = power_overwhelming::timestamp::now();
     auto tokens = detail::tokenise(std::string(response.begin(),

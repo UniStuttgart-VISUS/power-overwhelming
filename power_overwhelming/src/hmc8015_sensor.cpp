@@ -1,5 +1,6 @@
 ﻿// <copyright file="hmc8015_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -578,8 +579,7 @@ void visus::power_overwhelming::hmc8015_sensor::sample_async(
  * visus::power_overwhelming::hmc8015_sensor::sample_sync
  */
 visus::power_overwhelming::measurement_data
-visus::power_overwhelming::hmc8015_sensor::sample_sync(
-        _In_ const timestamp_resolution resolution) const {
+visus::power_overwhelming::hmc8015_sensor::sample_sync(void) const {
     assert(*this);
 
     // TODO: could use CHAN1:MEAS:FORM BIN here.
@@ -635,7 +635,7 @@ bool visus::power_overwhelming::hmc8015_sensor::deliver(void) const {
 
     if (retval) {
         retval = this->_async_sampling.deliver(this->name(),
-            this->sample_sync(this->_async_sampling.resolution()));
+            this->sample_sync());
     }
 
     return retval;

@@ -1,5 +1,6 @@
 // <copyright file="sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 -2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -10,12 +11,11 @@
  * visus::power_overwhelming::sensor::sample
  */
 visus::power_overwhelming::measurement
-visus::power_overwhelming::sensor::sample(
-        _In_ const timestamp_resolution resolution) const {
+visus::power_overwhelming::sensor::sample(void) const {
     this->check_not_disposed();
     auto name = this->name();
     _Analysis_assume_(name != nullptr);
-    return measurement(name, this->sample_sync(resolution));
+    return measurement(name, this->sample_sync());
 }
 
 

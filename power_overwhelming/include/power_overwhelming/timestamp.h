@@ -181,6 +181,20 @@ namespace power_overwhelming {
         }
 
         /// <summary>
+        /// A timestamp with value zero (1st January 1601 UTC).
+        /// </summary>
+        static const timestamp zero;
+
+        /// <summary>
+        /// The number of ticks per second of the timestamps.
+        /// </summary>
+        /// <remarks>
+        /// <c>std::ratio&lt;1, tick_rate&gt;</c> can be used to construct the
+        /// period of a timestamp.
+        /// </remarks>
+        static constexpr const value_type tick_rate = 10000000LL;
+
+        /// <summary>
         /// Initialises a new instance.
         /// </summary>
         /// <remarks>
@@ -207,6 +221,14 @@ namespace power_overwhelming {
         /// <param name="t">The time point to be converted.</param>
         template<class TClock, class TDuration>
         timestamp(_In_ const std::chrono::time_point<TClock, TDuration> t);
+
+        /// <summary>
+        /// Converts the timestampm into a duration since 1st January 1601.
+        /// </summary>
+        /// <typeparam name="TPeriod">The period of the duration.</typeparam>
+        /// <returns>The duration since the timestamp epoch.</returns>
+        template<class TPeriod>
+        std::chrono::duration<value_type, TPeriod> to_duration(void) const;
 
         /// <summary>
         /// Converts the timestamp into a time point of the given clock.
@@ -286,6 +308,18 @@ namespace power_overwhelming {
         }
 
         /// <summary>
+        /// Answer the difference between this timestamp and the given one.
+        /// </summary>
+        /// <param name="rhs">The right-hand side operation that is being
+        /// subtracted.</param>
+        /// <returns>The duration between the two timestamps.</returns>
+        inline std::chrono::duration<value_type, std::ratio<1, tick_rate>>
+        operator -(_In_ const timestamp rhs) const noexcept {
+            return std::chrono::duration<value_type, std::ratio<1, tick_rate>>(
+                this->_value - rhs._value);
+        }
+
+        /// <summary>
         /// Gets the value of the timestamp in 100 ns units.
         /// </summary>
         /// <returns>The value of the timestamp.</returns>
@@ -340,11 +374,6 @@ namespace power_overwhelming {
                 std::ratio<1, tick_rate>> duration_type;
             return std::chrono::duration_cast<duration_type>(d).count();
         }
-
-        /// <summary>
-        /// The number of ticks per second of the timestamps.
-        /// </summary>
-        static constexpr const value_type tick_rate = 10000000LL;
 
         /// <summary>
         /// The offset of the timestamp epoch from the UNIX epoch.

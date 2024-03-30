@@ -1,5 +1,6 @@
 // <copyright file="adl_sensor_impl.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -334,8 +335,7 @@ void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
  * visus::power_overwhelming::detail::adl_sensor_impl::sample
  */
 visus::power_overwhelming::measurement_data
-visus::power_overwhelming::detail::adl_sensor_impl::sample(
-        const timestamp_resolution resolution) const {
+visus::power_overwhelming::detail::adl_sensor_impl::sample(void) const {
     assert(this->state.load() == 1);
     const auto data = static_cast<ADLPMLogData *>(
         this->start_output.pLoggingAddress);

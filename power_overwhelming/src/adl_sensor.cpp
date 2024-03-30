@@ -1,5 +1,6 @@
 // <copyright file="adl_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -456,8 +457,7 @@ void visus::power_overwhelming::adl_sensor::sample_async(
  * visus::power_overwhelming::adl_sensor::sample_sync
  */
 visus::power_overwhelming::measurement_data
-visus::power_overwhelming::adl_sensor::sample_sync(
-        _In_ const timestamp_resolution resolution) const {
+visus::power_overwhelming::adl_sensor::sample_sync(void) const {
     this->check_not_disposed();
     const auto is_running = this->_impl->running();
 
@@ -467,7 +467,7 @@ visus::power_overwhelming::adl_sensor::sample_sync(
         this->_impl->start(0);
     }
 
-    auto retval = this->_impl->sample(resolution);
+    auto retval = this->_impl->sample();
 
     if (!is_running) {
         // If we started the sensor here, stop it.

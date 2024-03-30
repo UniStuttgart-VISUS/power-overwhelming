@@ -1,5 +1,6 @@
 ﻿// <copyright file="adl_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -238,8 +239,7 @@ namespace power_overwhelming {
         void sample_async(_Inout_ async_sampling&& sampling) override;
 
         /// <inheritdoc />
-        measurement_data sample_sync(
-            _In_ const timestamp_resolution resolution) const override;
+        measurement_data sample_sync(void) const override;
 
     private:
 

@@ -1,5 +1,6 @@
 // <copyright file="emi_sensor_impl.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -174,10 +175,8 @@ namespace detail {
         /// <see cref="emi_sensor_impl::last_time" />.
         /// </summary>
         /// <param name="data"></param>
-        /// <param name="resolution"></param>
         /// <returns></returns>
-        measurement_data evaluate(const EMI_CHANNEL_MEASUREMENT_DATA& data,
-            const timestamp_resolution resolution);
+        measurement_data evaluate(const EMI_CHANNEL_MEASUREMENT_DATA& data);
 
         /// <summary>
         /// Evaluate the channel represented by this sensor with data from the
@@ -186,13 +185,10 @@ namespace detail {
         /// <see cref="emi_sensor_impl::last_time" />.
         /// </summary>
         /// <param name="data"></param>
-        /// <param name="resolution"></param>
         /// <returns></returns>
-        inline measurement_data evaluate(const EMI_MEASUREMENT_DATA_V2& data,
-                const timestamp_resolution resolution) {
+        inline measurement_data evaluate(const EMI_MEASUREMENT_DATA_V2& data) {
             assert(this->channel < this->device->channels());
-            return this->evaluate(data.ChannelData[this->channel],
-                resolution);
+            return this->evaluate(data.ChannelData[this->channel]);
         }
 
         /// <summary>
@@ -202,10 +198,8 @@ namespace detail {
         /// <see cref="emi_sensor_impl::last_time" />.
         /// </summary>
         /// <param name="data"></param>
-        /// <param name="resolution"></param>
         /// <returns></returns>
-        measurement_data evaluate(const std::vector<std::uint8_t>& data,
-            const timestamp_resolution resolution);
+        measurement_data evaluate(const std::vector<std::uint8_t>& data);
 
         /// <summary>
         /// Evaluate the given channel data and deliver them to the registered

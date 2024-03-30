@@ -1,5 +1,6 @@
 ﻿// <copyright file="basic_sampler_source.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -12,7 +13,7 @@ bool visus::power_overwhelming::detail::basic_sampler_source<TDerived>::deliver(
         void) const {
     auto that = static_cast<const TDerived *>(this);
     return that->async_sampling.deliver(that->sensor_name.c_str(),
-        that->sample(that->async_sampling.resolution()));
+        that->sample());
 }
 
 

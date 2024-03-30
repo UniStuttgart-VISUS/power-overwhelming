@@ -81,6 +81,13 @@ visus::power_overwhelming::timestamp::from_tm(_In_ std::tm& t) {
 
 
 /*
+ * visus::power_overwhelming::timestamp::zero
+ */
+const visus::power_overwhelming::timestamp
+visus::power_overwhelming::timestamp::zero(0);
+
+
+/*
  * visus::power_overwhelming::timestamp::unix_offset
  */
 const visus::power_overwhelming::timestamp::value_type

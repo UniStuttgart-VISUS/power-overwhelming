@@ -1,5 +1,6 @@
 // <copyright file="measurement_data_series_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -42,8 +43,8 @@ namespace test {
                 Assert::AreEqual(std::size_t(1), s.size(), L"New size", LINE_INFO());
                 Assert::IsFalse(s.empty(), L"Series is not empty any more", LINE_INFO());
 
-                *d = measurement_data(42, 43.0f, 44.0f, 45.0f);
-                Assert::AreEqual(measurement_data::timestamp_type(42), s.begin()->timestamp(), L"Data assigned", LINE_INFO());
+                *d = measurement_data(timestamp(42), 43.0f, 44.0f, 45.0f);
+                Assert::AreEqual(timestamp::value_type(42), s.begin()->timestamp().value(), L"Data assigned", LINE_INFO());
             }
 
             {
@@ -51,7 +52,7 @@ namespace test {
                 Assert::IsNotNull(d, L"Data allocated", LINE_INFO());
                 Assert::AreEqual((void *) d, (void *)s.data(), L"Data returned", LINE_INFO());
                 Assert::AreEqual(std::size_t(2), s.size(), L"New size", LINE_INFO());
-                Assert::AreEqual(measurement_data::timestamp_type(42), s.begin()->timestamp(), L"Data copied", LINE_INFO());
+                Assert::AreEqual(timestamp::value_type(42), s.begin()->timestamp().value(), L"Data copied", LINE_INFO());
             }
 
             {
@@ -59,7 +60,7 @@ namespace test {
                 Assert::IsNotNull(d, L"Data allocated", LINE_INFO());
                 Assert::AreEqual((void *) d, (void *)s.data(), L"Data returned", LINE_INFO());
                 Assert::AreEqual(std::size_t(1), s.size(), L"New size", LINE_INFO());
-                Assert::AreEqual(measurement_data::timestamp_type(42), s.begin()->timestamp(), L"Data copied", LINE_INFO());
+                Assert::AreEqual(timestamp::value_type(42), s.begin()->timestamp().value(), L"Data copied", LINE_INFO());
             }
 
             {

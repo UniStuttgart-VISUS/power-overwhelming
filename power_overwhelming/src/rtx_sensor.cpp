@@ -1,5 +1,6 @@
 ﻿// <copyright file="rtx_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -278,8 +279,7 @@ visus::power_overwhelming::rtx_sensor::~rtx_sensor(void) noexcept {
  * visus::power_overwhelming::rtx_sensor::acquire
  */
 visus::power_overwhelming::measurement_data_series
-visus::power_overwhelming::rtx_sensor::acquire(
-        _In_ const timestamp_resolution resolution) const {
+visus::power_overwhelming::rtx_sensor::acquire(void) const {
     const auto begin = power_overwhelming::timestamp::now();
     auto& instrument = this->check_not_disposed();
     assert(this->_impl != nullptr);
@@ -433,10 +433,9 @@ void visus::power_overwhelming::rtx_sensor::sample_async(
  * visus::power_overwhelming::rtx_sensor::sample_sync
  */
 visus::power_overwhelming::measurement_data
-visus::power_overwhelming::rtx_sensor::sample_sync(
-        _In_ const timestamp_resolution resolution) const {
+visus::power_overwhelming::rtx_sensor::sample_sync(void) const {
     assert(*this == true);
-    return decimate(this->acquire(resolution), this->_impl->decimation_method);
+    return decimate(this->acquire(), this->_impl->decimation_method);
 }
 
 
@@ -479,7 +478,7 @@ visus::power_overwhelming::rtx_sensor::decimate(
                 v += (s.voltage() - v) / (i + 1);
             }
 
-            return measurement_data(t, v, c);
+            return measurement_data(timestamp(t.count()), v, c);
             }
 
         case waveform_decimation_method::middle:
@@ -501,7 +500,7 @@ visus::power_overwhelming::rtx_sensor::decimate(
             c = std::sqrt(c);
             v = std::sqrt(v);
 
-            return measurement_data(t, v, c);
+            return measurement_data(timestamp(t), v, c);
             }
     }
 }

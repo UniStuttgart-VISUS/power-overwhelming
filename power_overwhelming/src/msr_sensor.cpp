@@ -1,5 +1,6 @@
 ﻿// <copyright file="msr_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -173,7 +174,6 @@ const wchar_t *visus::power_overwhelming::msr_sensor::name(
 void visus::power_overwhelming::msr_sensor::sample(
         _In_opt_ const measurement_callback on_measurement,
         _In_ const microseconds_type period,
-        _In_ const timestamp_resolution timestamp_resolution,
         _In_opt_ void *context) {
 #if defined(_WIN32)
     ::OutputDebugStringW(L"PWROWG DEPRECATION WARNING: This method is only "
@@ -234,8 +234,7 @@ void visus::power_overwhelming::msr_sensor::sample_async(
  * visus::power_overwhelming::msr_sensor::sample_sync
  */
 visus::power_overwhelming::measurement_data
-visus::power_overwhelming::msr_sensor::sample_sync(
-        _In_ const timestamp_resolution resolution) const {
+visus::power_overwhelming::msr_sensor::sample_sync(void) const {
     assert(this->_impl);
-    return this->_impl->sample(resolution);
+    return this->_impl->sample();
 }

@@ -1,5 +1,6 @@
 // <copyright file="msr_sensor_impl.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -117,19 +118,11 @@ namespace detail {
         msr_device::sample_type read(_In_ const bool convert) const;
 
         /// <summary>
-        /// Read a new sample into <see cref="last_value" />.
-        /// </summary>
-        void sample(void);
-
-        /// <summary>
         /// Obtain a new sample and create a measurement from its difference to
         /// <see cref="last_value" />.
         /// </summary>
-        /// <param name="resolution">The resolution of the timestamp being
-        /// created.</param>
         /// <returns>The result of the measurement.</returns>
-        measurement_data sample(
-            _In_ const timestamp_resolution resolution) const;
+        measurement_data sample(void) const;
 
         /// <summary>
         /// Sets the initial parameters.

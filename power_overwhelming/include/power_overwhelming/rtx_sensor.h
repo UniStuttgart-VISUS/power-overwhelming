@@ -1,5 +1,6 @@
 ﻿// <copyright file="rtx_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -8,7 +9,6 @@
 #include "power_overwhelming/measurement_data_series.h"
 #include "power_overwhelming/oscilloscope_sample.h"
 #include "power_overwhelming/sensor.h"
-#include "power_overwhelming/timestamp_resolution.h"
 #include "power_overwhelming/rtx_instrument.h"
 #include "power_overwhelming/rtx_instrument_configuration.h"
 #include "power_overwhelming/rtx_sensor_definition.h"
@@ -266,14 +266,9 @@ namespace power_overwhelming {
         /// the number of sample points the underlying instrument is configured
         /// to obtain for a single acquisition.</para>
         /// </remarks>
-        /// <param name="resolution">The resolution of the timestamps generated
-        /// for the samples. This parameter defaults to
-        /// <see cref="timestamp_resolution::milliseconds" />.</param>
         /// <returns>The data series for the waveforms acquired from the
         /// instrument.</returns>
-        measurement_data_series acquire(
-            _In_ const timestamp_resolution resolution
-            = timestamp_resolution::milliseconds) const;
+        measurement_data_series acquire(void) const;
 
         /// <summary>
         /// Answer the channel on which the current is measured.
@@ -373,8 +368,7 @@ namespace power_overwhelming {
         void sample_async(_Inout_ async_sampling&& sampling) override;
 
         /// <inheritdoc />
-        measurement_data sample_sync(
-            _In_ const timestamp_resolution resolution) const override;
+        measurement_data sample_sync(void) const override;
 
     private:
 

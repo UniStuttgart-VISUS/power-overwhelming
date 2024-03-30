@@ -1,5 +1,6 @@
 ﻿// <copyright file="tinkerforge_sensor_impl.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -334,7 +335,7 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl
  * visus::power_overwhelming::detail::tinkerforge_sensor_impl::invoke_callback
  */
 void visus::power_overwhelming::detail::tinkerforge_sensor_impl::invoke_callback(
-        const timestamp::value_type timestamp) {
+        const power_overwhelming::timestamp timestamp) {
     auto current = this->async_data[0];
     auto power = this->async_data[1];
     auto voltage = this->async_data[2];

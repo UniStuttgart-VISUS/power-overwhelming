@@ -1,5 +1,6 @@
 // <copyright file="emi_sensor_impl.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -7,8 +8,6 @@
 
 #include "power_overwhelming/convert_string.h"
 #include "power_overwhelming/timestamp.h"
-
-#include "filetime_period.h"
 
 
 #if defined(_WIN32)
@@ -73,8 +72,7 @@ visus::power_overwhelming::detail::emi_sensor_impl::~emi_sensor_impl(void) {
  */
 visus::power_overwhelming::measurement_data
 visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
-        const EMI_CHANNEL_MEASUREMENT_DATA& data,
-        const timestamp_resolution resolution) {
+        const EMI_CHANNEL_MEASUREMENT_DATA& data) {
     const auto de = data.AbsoluteEnergy - this->last_energy;
     const auto dt = data.AbsoluteTime - this->last_time;
 
@@ -91,7 +89,7 @@ visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
 
             auto time = data.AbsoluteTime - dt / 2 + this->time_offset;
 
-            return measurement_data(time, value);
+            return measurement_data(timestamp(time), value);
             }
 
         default:
@@ -106,20 +104,17 @@ visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
  */
 visus::power_overwhelming::measurement_data
 visus::power_overwhelming::detail::emi_sensor_impl::evaluate(
-        const std::vector<std::uint8_t>& data,
-        const timestamp_resolution resolution) {
+        const std::vector<std::uint8_t>& data) {
     switch (this->device->version().EmiVersion) {
         case EMI_VERSION_V1:
             assert(data.size() >= sizeof(EMI_MEASUREMENT_DATA_V1));
             return this->evaluate(
-                *reinterpret_cast<const EMI_MEASUREMENT_DATA_V1 *>(data.data()),
-                resolution);
+                *reinterpret_cast<const EMI_MEASUREMENT_DATA_V1 *>(data.data()));
 
         case EMI_VERSION_V2:
             assert(data.size() >= sizeof(EMI_MEASUREMENT_DATA_V2));
             return this->evaluate(
-                *reinterpret_cast<const EMI_MEASUREMENT_DATA_V2 *>(data.data()),
-                resolution);
+                *reinterpret_cast<const EMI_MEASUREMENT_DATA_V2 *>(data.data()));
 
         default:
             throw std::logic_error("The specified version of the Energy "
@@ -135,7 +130,7 @@ bool visus::power_overwhelming::detail::emi_sensor_impl::evaluate_async(
         const std::vector<std::uint8_t>& data) {
     if (this->async_sampling) {
         return this->async_sampling.deliver(this->sensor_name.c_str(),
-            this->evaluate(data, this->async_sampling.resolution()));
+            this->evaluate(data));
     } else {
         return false;
     }

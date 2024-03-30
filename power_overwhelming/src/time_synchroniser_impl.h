@@ -86,7 +86,7 @@ namespace detail {
         typedef power_overwhelming::timestamp timestamp_type;
 
         timestamp_type timestamp;
-        timestamp_type roundtrip;
+        timestamp_type::value_type roundtrip;
         double drift;
 
         inline tsstate(void)
@@ -141,11 +141,6 @@ namespace detail {
         /// compute the clock drift between the nodes.</para>
         /// </remarks>
         std::vector<tsmsg_request> requests;
-
-        /// <summary>
-        /// The resolution of the timestamp requests made by the instance.
-        /// </summary>
-        timestamp_resolution resolution;
 
         /// <summary>
         /// The datagram socket used to exchange network packets.

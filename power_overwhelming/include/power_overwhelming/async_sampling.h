@@ -18,7 +18,6 @@
 
 #include "power_overwhelming/measurement.h"
 #include "power_overwhelming/measurement_data_series.h"
-#include "power_overwhelming/timestamp_resolution.h"
 #include "power_overwhelming/tinkerforge_sensor_source.h"
 
 
@@ -432,26 +431,6 @@ namespace power_overwhelming {
         }
 
         /// <summary>
-        /// Answer the resolution of the teimstamps to be produced.
-        /// </summary>
-        /// <returns>The resolution of the timestamps to be produced.</returns>
-        inline timestamp_resolution resolution(void) const noexcept {
-            return this->_timestamp_resolution;
-        }
-
-        /// <summary>
-        /// Configures the <see cref="sensor" /> to produce timestamps of the
-        /// specified resolution.
-        /// </summary>
-        /// <param name="resolution">The resolution of the timestamps being
-        /// produced.</param>
-        /// <returns><c>*this</c>.</returns>
-        inline async_sampling& resolution(
-                _In_ const timestamp_resolution resolution) noexcept {
-            return this->using_resolution(resolution);
-        }
-
-        /// <summary>
         /// Sets the desired sampling interval.
         /// </summary>
         /// <param name="interval">The desired sampling interval in
@@ -537,16 +516,6 @@ namespace power_overwhelming {
         }
 
         /// <summary>
-        /// Configures the <see cref="sensor" /> to produce timestamps of the
-        /// specified resolution.
-        /// </summary>
-        /// <param name="resolution">The resolution of the timestamps being
-        /// produced.</param>
-        /// <returns><c>*this</c>.</returns>
-        async_sampling& using_resolution(
-            _In_ const timestamp_resolution resolution) noexcept;
-
-        /// <summary>
         /// Move <paramref name="rhs" /> invalidating it.
         /// </summary>
         /// <param name="rhs">The object to be moved.</param>
@@ -570,7 +539,6 @@ namespace power_overwhelming {
         microseconds_type _minimum_sleep;
         on_measurement_callback _on_measurement;
         on_measurement_data_callback _on_measurement_data;
-        timestamp_resolution _timestamp_resolution;
         power_overwhelming::tinkerforge_sensor_source
             _tinkerforge_sensor_source;
     };

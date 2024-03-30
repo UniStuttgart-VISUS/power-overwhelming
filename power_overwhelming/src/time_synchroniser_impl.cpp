@@ -69,9 +69,8 @@ bool std::less<sockaddr>::operator ()(const sockaddr & lhs,
  * visus::power_overwhelming::detail::time_synchroniser_impl::time_synchroniser_impl
  */
 visus::power_overwhelming::detail::time_synchroniser_impl
-::time_synchroniser_impl(void)
-    : grace_period(2), resolution(timestamp_resolution::milliseconds),
-    socket(INVALID_SOCKET), state(0) { }
+::time_synchroniser_impl(void) : grace_period(2), socket(INVALID_SOCKET),
+    state(0) { }
 
 
 /*
@@ -109,7 +108,7 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::on_response(
         const tsmsg_response *response, const sockaddr& addr,
         const int addr_length) {
     assert(response != nullptr);
-    const auto now = create_timestamp(this->resolution);
+    const auto now = timestamp::now();
 
     // Search the corresponding request for this response. Also, clear all
     // all orphaned requests in the same pass.
@@ -123,9 +122,10 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::on_response(
             const auto roundtrip = now - it->timestamp;
             auto& peer = this->peers[addr];
 
-            if (peer.roundtrip > roundtrip) {
-                auto server_time = response->timestamp + (0.5 * roundtrip);
-                peer.roundtrip = roundtrip;
+            if (peer.roundtrip > roundtrip.count()) {
+                auto server_time = response->timestamp.value()
+                    + (0.5 * roundtrip.count());
+                peer.roundtrip = roundtrip.count();
                 peer.timestamp = now;
                 peer.drift = server_time - now;
             }

@@ -1,5 +1,6 @@
 ﻿// <copyright file="measurement.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2022 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -85,7 +86,7 @@ std::basic_ostream<TChar, TTraits>& std::operator <<(
             }
         }
 
-        lhs << rhs.timestamp() << delim;
+        lhs << rhs.timestamp().value() << delim;
         lhs << static_cast<bool>(rhs) << delim;
         lhs << rhs.voltage() << delim;
         lhs << rhs.current() << delim;

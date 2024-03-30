@@ -1,5 +1,6 @@
 // <copyright file="async_sampling.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -29,7 +30,6 @@ visus::power_overwhelming::async_sampling::async_sampling(void)
         _interval(default_interval),
         _on_measurement(nullptr),
         _on_measurement_data(nullptr),
-        _timestamp_resolution(timestamp_resolution::milliseconds),
         _tinkerforge_sensor_source(
             power_overwhelming::tinkerforge_sensor_source::all) { }
 
@@ -166,17 +166,6 @@ visus::power_overwhelming::async_sampling::stores_and_passes_context(
 
 
 /*
- * visus::power_overwhelming::async_sampling::using_resolution
- */
-visus::power_overwhelming::async_sampling&
-visus::power_overwhelming::async_sampling::using_resolution(
-        _In_ const timestamp_resolution resolution) noexcept {
-    this->_timestamp_resolution = resolution;
-    return *this;
-}
-
-
-/*
  * visus::power_overwhelming::async_sampling::operator =
  */
 visus::power_overwhelming::async_sampling&
@@ -193,8 +182,6 @@ visus::power_overwhelming::async_sampling::operator =(
         rhs._on_measurement = nullptr;
         this->_on_measurement_data = rhs._on_measurement_data;
         rhs._on_measurement_data = nullptr;
-        this->_timestamp_resolution = rhs._timestamp_resolution;
-        rhs._timestamp_resolution = timestamp_resolution::milliseconds;
         this->_tinkerforge_sensor_source = rhs._tinkerforge_sensor_source;
         rhs._tinkerforge_sensor_source
             = power_overwhelming::tinkerforge_sensor_source::all;

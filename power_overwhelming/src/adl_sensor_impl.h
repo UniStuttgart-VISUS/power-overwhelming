@@ -1,5 +1,6 @@
 // <copyright file="adl_sensor_impl.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -237,10 +238,8 @@ namespace detail {
         /// https://github.com/GPUOpen-LibrariesAndSDKs/display-library/blob/79cdb8e22b8650c861b390d5a9895032492ce8c5/Sample/PMLog/PMLog.cpp
         /// which is completely unprotected against races IMHO.</para>
         /// </remarks>
-        /// <param name="resolution">The resolution of the timestamp being
-        /// returned.</param>
         /// <returns>The current measurement from the sensor.</returns>
-        measurement_data sample(const timestamp_resolution resolution) const;
+        measurement_data sample(void) const;
 
         /// <summary>
         /// Starts the source if not yet running.

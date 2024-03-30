@@ -1,5 +1,6 @@
 // <copyright file="nvml_sensor_impl.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -72,10 +73,8 @@ namespace detail {
         /// <summary>
         /// Sample the sensor.
         /// </summary>
-        /// <param name="resolution">The resolution of the timestamp to be
-        /// generated, which defaults to milliseconds.</param>
         /// <returns>A measurement from the sensor.</returns>
-        measurement_data sample(const timestamp_resolution resolution) const;
+        measurement_data sample(void) const;
     };
 
 } /* namespace detail */

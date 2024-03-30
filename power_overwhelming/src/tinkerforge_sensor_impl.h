@@ -162,7 +162,7 @@ namespace detail {
         /// </summary>
         /// <remarks>The caller must hold <see cref="async_lock" />.</remarks>
         /// <param name="timestamp"></param>
-        void invoke_callback(const timestamp::value_type timestamp);
+        void invoke_callback(const power_overwhelming::timestamp timestamp);
 
     };
 

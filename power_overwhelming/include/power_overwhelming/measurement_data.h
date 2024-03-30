@@ -31,7 +31,7 @@ namespace power_overwhelming {
         /// <summary>
         /// The type of a timestamp associated with a measurement.
         /// </summary>
-        typedef std::int64_t timestamp_type;
+        typedef power_overwhelming::timestamp timestamp_type;
 
         /// <summary>
         /// The type of current and voltage measurements.

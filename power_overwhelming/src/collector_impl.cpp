@@ -1,5 +1,6 @@
 // <copyright file="collector_impl.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2022 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -37,8 +38,7 @@ void visus::power_overwhelming::detail::collector_impl::on_measurement(
 visus::power_overwhelming::detail::collector_impl::collector_impl(void)
         : evt_write(create_event(false, false)),
         have_marker(false), running(false), sampling_interval(0),
-        require_marker(false),
-        timestamp_resolution(default_timestamp_resolution) { }
+        require_marker(false) { }
 
 
 /*

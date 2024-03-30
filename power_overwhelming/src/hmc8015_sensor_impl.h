@@ -1,5 +1,6 @@
 ﻿// <copyright file="hmc8015_sensor_impl.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -40,8 +41,7 @@ namespace detail {
 
         void initialise(void);
 
-        measurement_data sample(
-            _In_ const timestamp_resolution resolution) const;
+        measurement_data sample(void) const;
     };
 
 } /* namespace detail */

@@ -1,5 +1,6 @@
 ﻿// <copyright file="sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -9,7 +10,6 @@
 
 #include "power_overwhelming/async_sampling.h"
 #include "power_overwhelming/measurement.h"
-#include "power_overwhelming/timestamp_resolution.h"
 
 
 namespace visus {
@@ -52,12 +52,8 @@ namespace power_overwhelming {
         virtual _Ret_maybenull_z_ const wchar_t *name(void) const noexcept = 0;
 
         /// <summary>
-        /// Sample the sensor using a timestamp with the specified resolution.
+        /// Sample the sensor.
         /// </summary>
-        /// <param name="resolution">The resolution of the timestamp to be
-        /// created. This value basically determines the unit in which the
-        /// timestamp in the return value is measured. This parameter defaults
-        /// to <see cref="timestamp_resolution::milliseconds" />.</param>
         /// <returns>A single measurement made by the sensor.</returns>
         /// <exception cref="std::runtime_error">If a sensor that has been moved
         /// (and therefore disposed) is sampled.</exception>
@@ -71,8 +67,7 @@ namespace power_overwhelming {
         /// instrument could not be sampled.</exception>
         /// <exception cref="std::system_error">If a sensor could not be sampled
         /// due to a system call failing.</exception>
-        measurement sample(_In_ const timestamp_resolution resolution
-            = timestamp_resolution::milliseconds) const;
+        measurement sample(void) const;
 
         /// <summary>
         /// Enables the specified asynchronous sampling on the sensor.
@@ -82,8 +77,8 @@ namespace power_overwhelming {
         void sample(_Inout_ async_sampling&& async_sampling);
 
         /// <summary>
-        /// Sample the sensor using a timestamp with the specified resolution,
-        /// but do not attach the sensor that produces the data to the sample.
+        /// Sample the sensor using a timestamp, but do not attach the sensor
+        /// that produces the data to the sample.
         /// </summary>
         /// <remarks>
         /// <para>This new method is an alternative to
@@ -108,10 +103,6 @@ namespace power_overwhelming {
         /// not been changed at this point in order to not break existing code
         /// relying on the library.</para>
         /// </remarks>
-        /// <param name="resolution">The resolution of the timestamp to be
-        /// created. This value basically determines the unit in which the
-        /// timestamp in the return value is measured. This parameter defaults
-        /// to <see cref="timestamp_resolution::milliseconds" />.</param>
         /// <returns>A single measurement made by the sensor.</returns>
         /// <exception cref="std::runtime_error">If a sensor that has been moved
         /// (and therefore disposed) is sampled.</exception>
@@ -125,10 +116,8 @@ namespace power_overwhelming {
         /// instrument could not be sampled.</exception>
         /// <exception cref="std::system_error">If a sensor could not be sampled
         /// due to a system call failing.</exception>
-        inline measurement_data sample_data(
-                _In_ const timestamp_resolution resolution
-                = timestamp_resolution::milliseconds) const {
-            return this->sample_sync(resolution);
+        inline measurement_data sample_data(void) const {
+            return this->sample_sync();
         }
 
         /// <summary>
@@ -174,18 +163,14 @@ namespace power_overwhelming {
         virtual void sample_async(_Inout_ async_sampling&& sampling) = 0;
 
         /// <summary>
-        /// Synchronously sample the sensor using a timestamp with the specified
-        /// resolution.
+        /// Synchronously sample the senso.
         /// </summary>
         /// <remarks>
         /// <para>Implementors can assume that the base class will call this method
         /// only if the sensor has not been disposed.</para>
         /// </remarks>
-        /// <param name="resolution">The resolution of the timestamp to be
-        /// created.</param>
         /// <returns>A single measurement made by the sensor.</returns>
-        virtual measurement_data sample_sync(
-            _In_ const timestamp_resolution resolution) const = 0;
+        virtual measurement_data sample_sync(void) const = 0;
     };
 
 } /* namespace power_overwhelming */

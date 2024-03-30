@@ -1,5 +1,6 @@
 // <copyright file="csv_iomanip_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -34,7 +35,7 @@ namespace test {
         }
 
         TEST_METHOD(test_print_stringstream) {
-            const measurement dummy(L"dummy", 9999, 1, 2, 3);
+            const measurement dummy(L"dummy", timestamp(9999), 1, 2, 3);
 
             {
                 std::stringstream stream;
@@ -70,7 +71,7 @@ namespace test {
         }
 
         TEST_METHOD(test_print_wstringstream) {
-            const measurement dummy(L"dummy", 9999, 1, 2, 3);
+            const measurement dummy(L"dummy", timestamp(9999), 1, 2, 3);
 
             {
                 std::wstringstream stream;

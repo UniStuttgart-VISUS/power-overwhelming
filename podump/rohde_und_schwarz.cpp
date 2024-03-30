@@ -72,7 +72,7 @@ void query_hmc8015(void) {
 
             std::wcout << s.name() << L":" << std::endl;
             s.default_functions();
-            auto m = s.sample(timestamp_resolution::milliseconds);
+            auto m = s.sample();
             std::wcout << m.timestamp() << L": " << m.voltage() << " V * "
                 << m.current() << " A = " << m.power() << L" W"
                 << std::endl;
@@ -186,7 +186,7 @@ void query_rtx(void) {
         }
 
         for (auto& s : sensors) {
-            auto waveform = s.acquire(timestamp_resolution::hundred_nanoseconds);
+            auto waveform = s.acquire();
             std::wcout << L"Acquired " << waveform.size()
                 << " samples from " << waveform.sensor()
                 << std::endl;
@@ -200,7 +200,7 @@ void query_rtx(void) {
                     << std::endl;
             }
 
-            auto sample = s.sample(timestamp_resolution::hundred_nanoseconds);
+            auto sample = s.sample();
             std::wcout << sample.sensor() << L"@"
                 << sample.timestamp() << L": "
                 << sample.voltage() << L"V, "
@@ -456,7 +456,7 @@ void sample_rtx(void) {
 
         for (auto& s : sensors) {
             std::wcout << s.name() << L":" << std::endl;
-            auto m = s.sample(timestamp_resolution::milliseconds);
+            auto m = s.sample();
             std::wcout << m.timestamp() << L": "
                 << m.voltage() << " V * "
                 << m.current() << " A = "
@@ -494,7 +494,6 @@ void sample_rtx_async(const unsigned int dt) {
                         << std::endl;
                 } })
                 .must_sleep_at_least(std::chrono::nanoseconds(100000))
-                .resolution(timestamp_resolution::microseconds)
                 .as_rvalue());
         }
 

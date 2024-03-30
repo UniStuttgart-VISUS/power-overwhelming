@@ -1,5 +1,6 @@
 ﻿// <copyright file="tinkerforge_time_translator.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -22,7 +23,8 @@ void visus::power_overwhelming::detail::tinkerforge_time_translator::reset(
         // Compute the times elapsed on the host and on the bricklet.
         this->_begin_bricklet = static_cast<double>(begin.second);
         this->_begin_host = begin.first;
-        const auto db = static_cast<double>(end.second) - this->_begin_bricklet;
+        const auto db = static_cast<double>(end.second)
+            - this->_begin_bricklet;
         const auto dh = static_cast<double>(end.first)
             - static_cast<double>(begin.first);
 
@@ -35,9 +37,10 @@ void visus::power_overwhelming::detail::tinkerforge_time_translator::reset(
         // bricklet was zero. We need to scale the offset, because the result
         // should be in the units of the clock on the host, but the offset we
         // have is in ticks on the bricklet.
-        const auto origin_offset = static_cast<timestamp::value_type>(
-            this->_time_scale * this->_begin_bricklet);
-        this->_time_offset = this->_begin_host - origin_offset;
+        const timestamp_millis origin_offset(static_cast<timestamp::value_type>(
+            this->_time_scale * this->_begin_bricklet));
+        this->_time_offset = (this->_begin_host - origin_offset)
+            .to_duration<std::milli>();
 
         // Reset the update counter.
         this->_next_update = this->_update_every;

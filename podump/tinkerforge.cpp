@@ -178,7 +178,6 @@ void sample_tinkerforge_power_async(const unsigned int dt) {
             sensors.back().resync_internal_clock_after(20);
             sensors.back().sample(async_sampling()
                 .samples_every(20000)
-                .using_resolution(timestamp_resolution::milliseconds)
                 .delivers_measurements_to([](const measurement& m, void *) {
                     std::wcout << m.sensor() << L":" << m.timestamp() << L": "
                         << m.power() << L" W"

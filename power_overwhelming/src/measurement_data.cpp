@@ -1,5 +1,6 @@
 ﻿// <copyright file="measurement_data.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -76,7 +77,7 @@ visus::power_overwhelming::measurement_data::operator =(
         this->_power = rhs._power;
         rhs._power = invalid_value;
         this->_timestamp = rhs._timestamp;
-        rhs._timestamp = 0;
+        rhs._timestamp = power_overwhelming::timestamp(0);
         this->_voltage = rhs._voltage;
         rhs._voltage = invalid_value;
     }

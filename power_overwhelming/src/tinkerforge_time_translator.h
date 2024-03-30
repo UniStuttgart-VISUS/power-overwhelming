@@ -1,5 +1,6 @@
 ﻿// <copyright file="tinkerforge_time_translator.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -15,7 +16,6 @@
 #include <bricklet_voltage_current_v2.h>
 
 #include "power_overwhelming/power_overwhelming_api.h"
-#include "power_overwhelming/timestamp_resolution.h"
 #include "power_overwhelming/timestamp.h"
 
 #include "tinkerforge_exception.h"
@@ -136,8 +136,7 @@ namespace detail {
         }
 
         /// <summary>
-        /// Translates the given time from the bricklet into a timestamp of
-        /// the specified resolution.
+        /// Translates the given time from the bricklet into a timestamp.
         /// </summary>
         /// <param name="time"></param>
         /// <param name="bricklet"></param>
@@ -146,6 +145,18 @@ namespace detail {
             _In_ bricklet_type& bricklet);
 
     private:
+
+        /// <summary>
+        /// The duration of native timestamp ticks.
+        /// </summary>
+        typedef std::chrono::duration<timestamp::value_type,
+            std::ratio<1, timestamp::tick_rate>> timestamp_duration;
+
+        /// <summary>
+        /// A timestamp value in milliseconds.
+        /// </summary>
+        typedef std::chrono::duration<timestamp::value_type, std::milli>
+            timestamp_millis;
 
         /// <summary>
         /// The timestamp on the bricklet when the first calibration was
@@ -169,7 +180,7 @@ namespace detail {
         /// The wall-clock timestamp (in milliseconds) from the zero-point
         /// of the time reported by the bricklet with Moritz' custom firmware.
         /// </summary>
-        timestamp::value_type _time_offset;
+        timestamp_millis _time_offset;
 
         /// <summary>
         /// Allows for adapting the slope of the bricklets clock to the system

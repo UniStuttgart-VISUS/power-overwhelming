@@ -1,5 +1,6 @@
 // <copyright file="msr_sensor_impl.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Licenced under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -125,19 +126,8 @@ visus::power_overwhelming::detail::msr_sensor_impl::read(
 /*
  * visus::power_overwhelming::detail::msr_sensor_impl::sample
  */
-void visus::power_overwhelming::detail::msr_sensor_impl::sample(void) {
-    assert(this->device != nullptr);
-    this->last_sample = this->device->read(this->offset);
-    this->last_time = std::chrono::system_clock::now();
-}
-
-
-/*
- * visus::power_overwhelming::detail::msr_sensor_impl::sample
- */
 visus::power_overwhelming::measurement_data
-visus::power_overwhelming::detail::msr_sensor_impl::sample(
-        _In_ const timestamp_resolution resolution) const {
+visus::power_overwhelming::detail::msr_sensor_impl::sample(void) const {
     assert(this->device != nullptr);
     typedef std::chrono::duration<measurement_data::value_type> seconds_type;
 
