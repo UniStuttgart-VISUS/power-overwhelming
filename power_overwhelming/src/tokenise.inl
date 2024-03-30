@@ -1,6 +1,7 @@
 // <copyright file="tokenise.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2018 - 2021 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
-// Licenced under the MIT License. See LICENCE.txt for further details.
+// Copyright © 2018 - 2021 Visualisierungsinstitut der Universität Stuttgart.
+// Licensed under the MIT licence. See LICENCE file for details.
+// Licensed under the MIT License. See LICENCE.txt for further details.
 // </copyright>
 // <author>Christoph Müller</author>
 

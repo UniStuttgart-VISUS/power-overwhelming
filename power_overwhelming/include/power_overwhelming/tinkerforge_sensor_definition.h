@@ -1,6 +1,6 @@
 ﻿// <copyright file="tinkerforge_sensor_definition.h" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart.
-// Licenced under the MIT licence. See LICENCE file for details.
+// Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
