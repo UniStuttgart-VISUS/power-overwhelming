@@ -1,8 +1,7 @@
-// <copyright file="adl_sensor_impl.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="adl_sensor_impl.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2024 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
 
 #pragma once
 
@@ -12,12 +11,15 @@
 
 #include "power_overwhelming/adl_sensor_source.h"
 #include "power_overwhelming/measurement.h"
+#include "power_overwhelming/sampler_source.h"
+#include "power_overwhelming/thermal_sample.h"
+#include "power_overwhelming/throttling_sample.h"
 #include "power_overwhelming/timestamp.h"
 
 #include "adl_scope.h"
 #include "amd_display_library.h"
-#include "basic_sampler_source.h"
 #include "sampler.h"
+#include "timezone.h"
 
 
 namespace visus {
@@ -27,8 +29,7 @@ namespace detail {
     /// <summary>
     /// Private data container for <see cref="adl_sensor" />.
     /// </summary>
-    struct adl_sensor_impl final
-            : public basic_sampler_source<adl_sensor_impl> {
+    struct adl_sensor_impl final : public sampler_source {
 
         /// <summary>
         /// Counts how many valid sensor readings are in <paramref name="data" />.
@@ -52,13 +53,23 @@ namespace detail {
             const ADLPMLogData& data);
 
         /// <summary>
+        /// Retrieve the value of the requested sensor ID if in the sensor data.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="data"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        static bool filter_sensor_readings(_Out_opt_ unsigned int& value,
+            _In_ const ADLPMLogData& data, _In_ const ADL_PMLOG_SENSORS id);
+
+        /// <summary>
         /// Find the index of the first sensor in <paramref name="data" />
         /// matching the given predicate.
         /// </summary>
         /// <typeparam name="TPredicate">The type of the predicate to be
         /// evaluated for each sensor reading. The predicate must accept an
         /// <see cref="ADL_PMLOG_SENSORS" /> enumeration member, which
-        /// identifies the sensor, and must return a <c>bool</c> indicating 
+        /// identifies the sensor, and must return a <c>bool</c> indicating
         /// whether the sensor matches.</typeparam>
         /// <param name="data"></param>
         /// <param name="predicate"></param>
@@ -115,6 +126,13 @@ namespace detail {
         static bool is_voltage(const ADL_PMLOG_SENSORS id);
 
         /// <summary>
+        /// Answer the symbolic constant for the given sensor ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        static std::wstring to_string(const ADL_PMLOG_SENSORS id);
+
+        /// <summary>
         /// The dedicated sampler for ADL sensors.
         /// </summary>
         /// <remarks>
@@ -122,6 +140,15 @@ namespace detail {
         /// sensor if all samplers have been removed.
         /// </remarks>
         static sampler sampler;
+
+        /// <summary>
+        /// Stores the asynchronous sampling configuration for the sensor.
+        /// </summary>
+        /// <remarks>
+        /// We cannot inherit the implementation of the basic sampler source,
+        /// because the ADL sensor must be able to 
+        /// </remarks>
+        async_sampling async_sampling;
 
         /// <summary>
         /// The adpater index of the device, which is required for a series of
@@ -184,6 +211,11 @@ namespace detail {
         std::string udid;
 
         /// <summary>
+        /// The UTC offset of the local time, which is reported by ADL.
+        /// </summary>
+        timestamp::value_type utc_offset;
+
+        /// <summary>
         /// Initialises a new instance.
         /// </summary>
         adl_sensor_impl(void);
@@ -206,6 +238,18 @@ namespace detail {
         /// <param name="sensorIDs"></param>
         void configure_source(const adl_sensor_source source,
             std::vector<ADL_PMLOG_SENSORS>&& sensorIDs);
+
+        /// <summary>
+        /// Prepares <see cref="start_input" /> for the specified sensor source.
+        /// </summary>
+        /// <param name="sensor_id"></param>
+        void configure_source(_In_ const ADL_PMLOG_SENSORS sensor_id);
+
+        /// <inheritdoc />
+        bool deliver(void) const override;
+
+        /// <inheritdoc />
+        interval_type interval(void) const noexcept override;
 
         /// <summary>
         /// Checks whether <see cref="state" /> represents the running
@@ -242,6 +286,20 @@ namespace detail {
         measurement_data sample(void) const;
 
         /// <summary>
+        /// Samples the first sensor in <see cref="start_input" /> as thermal
+        /// sensor.
+        /// </summary>
+        /// <returns>The latest thermal reading of the sensor.</returns>
+        thermal_sample sample_thermal(void) const;
+
+        /// <summary>
+        /// Samples the first sensor in <see cref="start_input" /> as throttling
+        ///  state of the GPU.
+        /// </summary>
+        /// <returns>The latest throttling state of the sensor.</returns>
+        throttling_sample sample_throttling(void) const;
+
+        /// <summary>
         /// Starts the source if not yet running.
         /// </summary>
         /// <param name="samplingRate">The sampling rate at which the sensor
@@ -256,6 +314,22 @@ namespace detail {
         /// Stops the source if <see cref="state" /> is <c>1</c>.
         /// </summary>
         void stop(void);
+
+        /// <summary>
+        /// Gets the timestamp from <see cref="log_data" />.
+        /// </summary>
+        /// <param name="log_data">The log data to get the timestamp from.
+        /// </param>
+        /// <returns>The latest update timestamp from the sensor.</returns>
+        inline measurement_data::timestamp_type timestamp(
+                _In_ ADLPMLogData& log_data) const noexcept {
+            // We found empirically that the timestamp from ADL is in 100 ns
+            // units (at least on Windows). Based on this assumption, convert
+            // to the requested unit.
+            const auto timestamp = static_cast<measurement::timestamp_type>(
+                log_data.ulLastUpdated + this->utc_offset);
+            return power_overwhelming::timestamp(timestamp);
+        }
     };
 
 } /* namespace detail */

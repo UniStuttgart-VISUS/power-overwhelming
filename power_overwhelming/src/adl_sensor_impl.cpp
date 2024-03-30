@@ -1,8 +1,7 @@
-// <copyright file="adl_sensor_impl.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="adl_sensor_impl.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2024 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
 
 #include "adl_sensor_impl.h"
 
@@ -13,6 +12,7 @@
 #include "power_overwhelming/convert_string.h"
 
 #include "adl_exception.h"
+#include "adl_utils.h"
 #include "zero_memory.h"
 
 
@@ -90,6 +90,27 @@ visus::power_overwhelming::detail::adl_sensor_impl::filter_sensor_readings(
 
 
 /*
+ * visus::power_overwhelming::detail::adl_sensor_impl::filter_sensor_readings
+ */
+bool visus::power_overwhelming::detail::adl_sensor_impl::filter_sensor_readings(
+        _Out_opt_ unsigned int& value,
+        _In_ const ADLPMLogData& data,
+        _In_ const ADL_PMLOG_SENSORS id) {
+    for (auto i = 0; (i < ADL_PMLOG_MAX_SENSORS)
+            && (data.ulValues[i][0] != ADL_SENSOR_MAXTYPES); ++i) {
+        auto s = static_cast<ADL_PMLOG_SENSORS>(data.ulValues[i][0]);
+        if (s == id) {
+            value = data.ulValues[i][1];
+            return true;
+        }
+    }
+    // 'id' not found at this point.
+
+    return false;
+}
+
+
+/*
  * visus::power_overwhelming::detail::adl_sensor_impl::get_sensor_ids
  */
 std::vector<ADL_PMLOG_SENSORS>
@@ -132,12 +153,11 @@ visus::power_overwhelming::detail::adl_sensor_impl::get_sensor_ids(
         const ADLPMLogSupportInfo& supportInfo) {
     auto retval = get_sensor_ids(source);
 
+    // Erase all sensor IDs not supported according to 'supportInfo'.
     {
         auto end = std::remove_if(retval.begin(), retval.end(),
             [&supportInfo](const int id) {
-                auto found = std::find(supportInfo.usSensors,
-                    supportInfo.usSensors + ADL_PMLOG_MAX_SENSORS, id);
-                return (found == supportInfo.usSensors + ADL_PMLOG_MAX_SENSORS);
+                return !supports_sensor(supportInfo, id);
             });
         retval.erase(end, retval.end());
     }
@@ -218,6 +238,95 @@ bool visus::power_overwhelming::detail::adl_sensor_impl::is_voltage(
 
 
 /*
+ * visus::power_overwhelming::detail::adl_sensor_impl::to_string
+ */
+std::wstring visus::power_overwhelming::detail::adl_sensor_impl::to_string(
+        const ADL_PMLOG_SENSORS id) {
+#define _TO_STRING_CASE(i) case i: return L#i
+
+    switch (id) {
+        _TO_STRING_CASE(ADL_PMLOG_CLK_GFXCLK);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_MEMCLK);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_SOCCLK);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_UVDCLK1);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_UVDCLK2);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_VCECLK);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_VCNCLK);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_EDGE);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_MEM);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRVDDC);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRMVDD);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_LIQUID);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_PLX);
+        _TO_STRING_CASE(ADL_PMLOG_FAN_RPM);
+        _TO_STRING_CASE(ADL_PMLOG_FAN_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_SOC_VOLTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_SOC_POWER);
+        _TO_STRING_CASE(ADL_PMLOG_SOC_CURRENT);
+        _TO_STRING_CASE(ADL_PMLOG_INFO_ACTIVITY_GFX);
+        _TO_STRING_CASE(ADL_PMLOG_INFO_ACTIVITY_MEM);
+        _TO_STRING_CASE(ADL_PMLOG_GFX_VOLTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_MEM_VOLTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_ASIC_POWER);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRSOC);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRMVDD0);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRMVDD1);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_HOTSPOT);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_GFX);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_SOC);
+        _TO_STRING_CASE(ADL_PMLOG_GFX_POWER);
+        _TO_STRING_CASE(ADL_PMLOG_GFX_CURRENT);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_CPU);
+        _TO_STRING_CASE(ADL_PMLOG_CPU_POWER);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_CPUCLK);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_STATUS);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_VCN1CLK1);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_VCN1CLK2);
+        _TO_STRING_CASE(ADL_PMLOG_SMART_POWERSHIFT_CPU);
+        _TO_STRING_CASE(ADL_PMLOG_SMART_POWERSHIFT_DGPU);
+        _TO_STRING_CASE(ADL_PMLOG_BUS_SPEED);
+        _TO_STRING_CASE(ADL_PMLOG_BUS_LANES);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_LIQUID0);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_LIQUID1);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_FCLK);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_STATUS_CPU);
+        _TO_STRING_CASE(ADL_PMLOG_SSPAIRED_ASICPOWER);
+        _TO_STRING_CASE(ADL_PMLOG_SSTOTAL_POWERLIMIT);
+        _TO_STRING_CASE(ADL_PMLOG_SSAPU_POWERLIMIT);
+        _TO_STRING_CASE(ADL_PMLOG_SSDGPU_POWERLIMIT);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_HOTSPOT_GCD);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_HOTSPOT_MCD);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_EDGE_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_HOTSPOT_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_HOTSPOT_GCD_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_HOTSPOT_MCD_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_MEM_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_VR_GFX_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_VR_MEM0_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_VR_MEM1_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_VR_SOC_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_LIQUID0_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_LIQUID1_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_PLX_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TDC_GFX_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TDC_SOC_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TDC_USR_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_PPT0_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_PPT1_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_PPT2_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_PPT3_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_FIT_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_GFX_APCC_PLUS_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_BOARD_POWER);
+        // Insert new sensors from adl_defines.h here.
+        default: return L"";
+    }
+
+#undef _TO_STRING_CASE
+}
+
+
+/*
  * visus::power_overwhelming::detail::adl_sensor_impl::sampler
  */
 visus::power_overwhelming::detail::sampler
@@ -229,7 +338,8 @@ visus::power_overwhelming::detail::adl_sensor_impl::sampler;
  */
 visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(void)
     : adapter_index(0), device(0), source(adl_sensor_source::all),
-    start_input({ 0 }), start_output({ 0 }), state(0) { }
+        start_input({ 0 }), start_output({ 0 }), state(0),
+        utc_offset(detail::get_timezone_bias()) { }
 
 
 /*
@@ -239,7 +349,8 @@ visus::power_overwhelming::detail::adl_sensor_impl::adl_sensor_impl(
         const AdapterInfo& adapterInfo)
     : adapter_index(adapterInfo.iAdapterIndex), device(0),
         source(adl_sensor_source::all), start_input({ 0 }),
-        start_output({ 0 }), state(0), udid(adapterInfo.strUDID) {
+        start_output({ 0 }), state(0), udid(adapterInfo.strUDID),
+        utc_offset(detail::get_timezone_bias()) {
     auto status = detail::amd_display_library::instance()
         .ADL2_Device_PMLog_Device_Create(this->scope, this->adapter_index,
         &this->device);
@@ -332,6 +443,64 @@ void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
 
 
 /*
+ * visus::power_overwhelming::detail::adl_sensor_impl::configure_source
+ */
+void visus::power_overwhelming::detail::adl_sensor_impl::configure_source(
+        _In_ const ADL_PMLOG_SENSORS sensor_id) {
+    this->source = static_cast<adl_sensor_source>(0);
+
+    // Set the sensor name.
+    this->sensor_name = L"ADL/" + to_string(sensor_id)
+        + L"/" + this->device_name
+        + L"/" + std::to_wstring(this->adapter_index);
+
+    // ADL_SENSOR_MAXTYPES, which is the guard for invalid sensors, is zero.
+    ::ZeroMemory(this->start_input.usSensors,
+        sizeof(this->start_input.usSensors));
+    this->start_input.usSensors[0] = sensor_id;
+}
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::deliver
+ */
+bool visus::power_overwhelming::detail::adl_sensor_impl::deliver(void) const {
+    const auto name = this->sensor_name.c_str();
+
+    if (this->async_sampling) {
+        switch (this->async_sampling.delivery_method()) {
+            case async_delivery_method::on_thermal_sample:
+                return this->async_sampling.deliver(name,
+                    this->sample_thermal());
+
+            case async_delivery_method::on_throttling_sample:
+                return this->async_sampling.deliver(name,
+                    this->sample_throttling());
+
+            default:
+                return this->async_sampling.deliver(name,
+                    this->sample());
+        }
+
+    } else {
+        // If asynchronous sampling is disabled, the delivery method might be
+        // bogus and this can cause an attempt to sample the wrong data.
+        return false;
+    }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::interval
+ */
+visus::power_overwhelming::detail::adl_sensor_impl::interval_type
+visus::power_overwhelming::detail::adl_sensor_impl::interval(
+        void) const noexcept {
+    return interval_type(this->async_sampling.interval());
+}
+
+
+/*
  * visus::power_overwhelming::detail::adl_sensor_impl::sample
  */
 visus::power_overwhelming::measurement_data
@@ -341,10 +510,7 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample(void) const {
         this->start_output.pLoggingAddress);
     static constexpr auto thousand = static_cast<measurement::value_type>(1000);
 
-    // We found empirically that the timestamp from ADL is in 100 ns units (at
-    // least on Windows). Based on this assumption, convert to the requested
-    // unit.
-    auto timestamp = power_overwhelming::timestamp(data->ulLastUpdated);
+    const auto timestamp = this->timestamp(*data);
 
     // MAJOR HAZARD HERE!!! WE HAVE NO IDEA WHAT UNIT IS USED FOR VOLTAGE AND
     // CURRENT. The documentation says nothing about this, but some overclocking
@@ -378,6 +544,68 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample(void) const {
                 "combinations are: power; voltage and current; voltage, "
                 "current and power.");
     }
+}
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::sample_thermal
+ */
+visus::power_overwhelming::thermal_sample
+visus::power_overwhelming::detail::adl_sensor_impl::sample_thermal(void) const {
+    assert(this->state.load() == 1);
+    const auto data = static_cast<ADLPMLogData *>(
+        this->start_output.pLoggingAddress);
+    const auto timestamp = this->timestamp(*data);
+    auto state = throttling_state::none;
+    auto temperature = std::numeric_limits<thermal_sample::value_type>::lowest();
+    unsigned int value = 0;
+
+    if (detail::adl_sensor_impl::filter_sensor_readings(value, *data,
+            static_cast<ADL_PMLOG_SENSORS>(this->start_input.usSensors[0]))) {
+        temperature = static_cast<decltype(temperature)>(value);
+    }
+
+    return thermal_sample(timestamp, value);
+}
+
+
+/*
+ * visus::power_overwhelming::detail::adl_sensor_impl::sample_throttling
+ */
+visus::power_overwhelming::throttling_sample
+visus::power_overwhelming::detail::adl_sensor_impl::sample_throttling(
+        void) const {
+    assert(this->state.load() == 1);
+    const auto data = static_cast<ADLPMLogData *>(
+        this->start_output.pLoggingAddress);
+    const auto timestamp = this->timestamp(*data);
+    auto state = throttling_state::none;
+    unsigned int value = 0;
+
+    if (detail::adl_sensor_impl::filter_sensor_readings(value, *data,
+            static_cast<ADL_PMLOG_SENSORS>(this->start_input.usSensors[0]))) {
+        const auto notification = static_cast<ADL_THROTTLE_NOTIFICATION>(value);
+
+        if ((notification & ADL_PMLOG_THROTTLE_CURRENT) != 0) {
+            state = state | throttling_state::current;
+        }
+
+        if ((notification & ADL_PMLOG_THROTTLE_POWER) != 0) {
+            state = state | throttling_state::power;
+        }
+
+        if ((notification & ADL_PMLOG_THROTTLE_THERMAL) != 0) {
+            state = state | throttling_state::thermal;
+        }
+
+        if ((notification != 0) && (state == throttling_state::none)) {
+            // Card reports throttling state we do not understand, so tell the
+            // caller at least that we are throttled.
+            state = throttling_state::other;
+        }
+    }
+
+    return throttling_sample(timestamp, state);
 }
 
 
@@ -429,4 +657,3 @@ void visus::power_overwhelming::detail::adl_sensor_impl::stop(void) {
         }
     }
 }
-

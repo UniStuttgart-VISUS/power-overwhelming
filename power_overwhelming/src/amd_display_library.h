@@ -1,8 +1,8 @@
-// <copyright file="amd_display_library.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="amd_display_library.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2024 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #pragma once
 
@@ -45,6 +45,8 @@ namespace detail {
             ADL_CONTEXT_HANDLE, LPAdapterInfo, int);
         __POWER_OVERWHELMING_ADL_FUNC(int,
             ADL2_Adapter_NumberOfAdapters_Get, ADL_CONTEXT_HANDLE, int *);
+        __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Adapter_PMLog_SensorLimits_Get,
+            ADL_CONTEXT_HANDLE, int, ADLPMLogSensorLimits *);
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Adapter_PMLog_Support_Get,
             ADL_CONTEXT_HANDLE, int, ADLPMLogSupportInfo *);
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Adapter_PMLog_Start,
@@ -60,6 +62,30 @@ namespace detail {
             ADL_MAIN_MALLOC_CALLBACK, int, ADL_CONTEXT_HANDLE *);
         __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Main_Control_Destroy,
             ADL_CONTEXT_HANDLE);
+        __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_New_QueryPMLogData_Get,
+            ADL_CONTEXT_HANDLE, int, ADLPMLogDataOutput *);
+        __POWER_OVERWHELMING_ADL_FUNC(int,
+            ADL2_Overdrive8_PMLogSensorRange_Caps, ADL_CONTEXT_HANDLE, int,
+            int *, ADLOD8SingleInitSetting **);
+        __POWER_OVERWHELMING_ADL_FUNC(int,
+            ADL2_Overdrive8_PMLogSensorType_Support_Get, ADL_CONTEXT_HANDLE,
+            int, int *, int **);
+        __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_OverdriveN_CapabilitiesX2_Get,
+            ADL_CONTEXT_HANDLE, int, ADLODNCapabilitiesX2 *);
+        __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_OverdriveN_Capabilities_Get,
+            ADL_CONTEXT_HANDLE, int, ADLODNCapabilities *);
+        __POWER_OVERWHELMING_ADL_FUNC(int,
+            ADL2_OverdriveN_PerformanceStatus_Get, ADL_CONTEXT_HANDLE, int,
+            ADLODNPerformanceStatus *);
+        __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_OverdriveN_PowerLimit_Get,
+            ADL_CONTEXT_HANDLE, int, ADLODNPowerLimitSetting *);
+        __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_OverdriveN_Temperature_Get,
+            ADL_CONTEXT_HANDLE, int, int, int *);
+        __POWER_OVERWHELMING_ADL_FUNC(int,
+            ADL2_OverdriveN_ThrottleNotification_Get, ADL_CONTEXT_HANDLE,
+            int, int*, int*);
+        __POWER_OVERWHELMING_ADL_FUNC(int, ADL2_Overdrive_Caps,
+            ADL_CONTEXT_HANDLE, int, int *, int *, int *);
 
     private:
 

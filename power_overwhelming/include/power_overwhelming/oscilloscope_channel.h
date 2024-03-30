@@ -1,5 +1,5 @@
 ﻿// <copyright file="oscilloscope_channel.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -282,6 +282,72 @@ namespace power_overwhelming {
         }
 
         /// <summary>
+        /// Answer whether the probe should be zero-adjusted after the channel
+        /// was configured.
+        /// </summary>
+        /// <returns><c>true</c> if zero adjust is enabled, <c>false</c>
+        /// otherwise.</returns>
+        inline bool zero_adjust(void) const noexcept {
+            return this->_zero_adjust;
+        }
+
+        /// <summary>
+        /// Enables or disables whether the probe attached to the channel should
+        /// be ajusted to <see cref="zero_adjust_offset" />.
+        /// </summary>
+        /// <remarks>
+        /// Zero adjustment has no effect unless an Rohde &amp; Schwarz RT-ZCxxB
+        /// probe is connected to the channel.
+        /// </remarks>
+        /// <param name="enabled"><c>true</c> for enabling the function,
+        /// <c>false</c> for disabling it.</param>
+        /// <returns><c>*this</c>.</returns>
+        inline oscilloscope_channel& zero_adjust(
+                _In_ const bool enabled) noexcept {
+            this->_zero_adjust = enabled;
+            return *this;
+        }
+
+        /// <summary>
+        /// Enables or disables whether the probe attached to the channel should
+        /// be ajusted to <paramref name="offset" />.
+        /// </summary>
+        /// <remarks>
+        /// Zero adjustment has no effect unless an Rohde &amp; Schwarz RT-ZCxxB
+        /// probe is connected to the channel.
+        /// </remarks>
+        /// <param name="offset">The offset in percent, which will be clamped to
+        /// [-100, 100].</param>
+        /// <returns><c>*this</c>.</returns>
+        inline oscilloscope_channel& zero_adjust(
+                _In_ const float offset) noexcept {
+            this->zero_adjust(true);
+            this->zero_adjust_offset(offset);
+            return *this;
+        }
+
+        /// <summary>
+        /// Answer the zero adjustment level as positive or negative percentage.
+        /// </summary>
+        /// <returns>The zero adjustment level to be applied.</returns>
+        inline float zero_adjust_offset(void) const noexcept {
+            return this->_zero_adjust_offset;
+        }
+
+        /// <summary>
+        /// Set the zero adjustment offset.
+        /// </summary>
+        /// <remarks>
+        /// Zero adjustment has no effect unless an Rohde &amp; Schwarz RT-ZCxxB
+        /// probe is connected to the channel.
+        /// </remarks>
+        /// <param name="offset">The offset in percent, which will be clamped to
+        /// [-100, 100].</param>
+        /// <returns><c>*this</c>.</returns>
+        oscilloscope_channel& zero_adjust_offset(
+            _In_ const float offset) noexcept;
+
+        /// <summary>
         /// Gets the zero offset.
         /// </summary>
         /// <returns>The zero offset.</returns>
@@ -321,6 +387,8 @@ namespace power_overwhelming {
         oscilloscope_quantity _range;
         oscilloscope_quantity _skew;
         bool _state;
+        bool _zero_adjust;
+        float _zero_adjust_offset;
         oscilloscope_quantity _zero_offset;
     };
 

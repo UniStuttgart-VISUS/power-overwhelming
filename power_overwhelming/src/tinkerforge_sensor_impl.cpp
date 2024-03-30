@@ -122,7 +122,7 @@ visus::power_overwhelming::detail::tinkerforge_sensor_impl::get_sensor_name(
 visus::power_overwhelming::detail::tinkerforge_sensor_impl::tinkerforge_sensor_impl(
         const std::string& host, const std::uint16_t port,
         const char *uid)
-        : scope(host, port) {
+        : scope(host, port), uid(uid) {
     // Note that there is a delicate balance in what is done where and when in
     // this constructor: If we enter the body, the scope will have a valid
     // connection to a master brick. Otherwise, its constructor would have

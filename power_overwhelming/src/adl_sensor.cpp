@@ -1,22 +1,19 @@
-// <copyright file="adl_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="adl_sensor.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2024 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
 
 #include "power_overwhelming/adl_sensor.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cstring>
 #include <vector>
 
 #include "power_overwhelming/adl_sensor_source.h"
 #include "power_overwhelming/convert_string.h"
 
-#include "adl_exception.h"
-#include "adl_scope.h"
-#include "adl_sensor_impl.h"
-#include "zero_memory.h"
+#include "adl_utils.h"
 
 
 namespace visus {
@@ -38,7 +35,6 @@ namespace detail {
             const AdapterInfo& adapter, const adl_sensor_source source) {
 #define _PWROWG_ENABLED(haystack, needle) ((haystack & needle) == needle)
 
-        int isActive = 0;
         std::size_t retval = 0;
         ADLPMLogSupportInfo supportInfo;
 
@@ -47,16 +43,6 @@ namespace detail {
             auto status = detail::amd_display_library::instance()
                 .ADL2_Adapter_PMLog_Support_Get(scope, adapter.iAdapterIndex,
                 &supportInfo);
-            if (status != ADL_OK) {
-                throw adl_exception(status);
-            }
-        }
-
-        // Second, find out whether the adapter is active.
-        {
-            auto status = detail::amd_display_library::instance()
-                .ADL2_Adapter_Active_Get(scope, adapter.iAdapterIndex,
-                &isActive);
             if (status != ADL_OK) {
                 throw adl_exception(status);
             }
@@ -132,52 +118,6 @@ namespace detail {
 #undef _PWROWG_ENABLED
     }
 
-    /// <summary>
-    /// Creates sensors for all adapters matching <paramref name="predicate" />.
-    /// </summary>
-    /// <typeparam name="TPredicate"></typeparam>
-    /// <param name="predicate"></param>
-    /// <param name="source"></param>
-    /// <returns></returns>
-    template<class TPredicate>
-    static std::vector<adl_sensor> for_predicate(const TPredicate& predicate,
-            const adl_sensor_source source) {
-        std::vector<AdapterInfo> adapters;
-        std::vector<adl_sensor> retval;
-        adl_scope scope;
-
-        {
-            int cnt;
-
-            auto status = detail::amd_display_library::instance()
-                .ADL2_Adapter_NumberOfAdapters_Get(scope, &cnt);
-            if (status != ADL_OK) {
-                throw adl_exception(status);
-            }
-
-            adapters.resize(cnt);
-            retval.reserve(cnt);
-        }
-
-        ::ZeroMemory(adapters.data(), adapters.size() * sizeof(AdapterInfo));
-        {
-            auto status = detail::amd_display_library::instance()
-                .ADL2_Adapter_AdapterInfo_Get(scope, adapters.data(),
-                    static_cast<int>(adapters.size() * sizeof(AdapterInfo)));
-            if (status != ADL_OK) {
-                throw adl_exception(status);
-            }
-        }
-
-        for (auto& a : adapters) {
-            if (predicate(a)) {
-                for_adapter(std::back_inserter(retval), scope, a, source);
-            }
-        }
-
-        return retval;
-    }
-
 } /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
@@ -190,31 +130,11 @@ std::size_t visus::power_overwhelming::adl_sensor::for_all(
         _Out_writes_opt_(cntSensors) adl_sensor *outSensors,
         _In_ const std::size_t cntSensors) {
     try {
-        int cnt = 0;
         std::vector<adl_sensor> retval;
         detail::adl_scope scope;
 
-        // Find out how many adapters we know.
-        {
-            auto status = detail::amd_display_library::instance()
-                .ADL2_Adapter_NumberOfAdapters_Get(scope, &cnt);
-            if (status != ADL_OK) {
-                throw adl_exception(status);
-            }
-        }
-
-        // Get the descriptors for all the adapters.
-        std::vector<AdapterInfo> adapters(cnt);
-        ::ZeroMemory(adapters.data(), adapters.size() * sizeof(AdapterInfo));
-
-        {
-            auto status = detail::amd_display_library::instance()
-                .ADL2_Adapter_AdapterInfo_Get(scope, adapters.data(),
-                static_cast<int>(adapters.size() * sizeof(AdapterInfo)));
-            if (status != ADL_OK) {
-                throw adl_exception(status);
-            }
-        }
+        // Get all active adapters.
+        const auto adapters = detail::get_adapters(scope);
 
         // For each adapter, get all supported sensors.
         for (auto& a : adapters) {
@@ -228,7 +148,6 @@ std::size_t visus::power_overwhelming::adl_sensor::for_all(
                     ++i) {
                 outSensors[i] = std::move(retval[i]);
             }
-
         }
 
         return retval.size();
@@ -238,24 +157,24 @@ std::size_t visus::power_overwhelming::adl_sensor::for_all(
 }
 
 
-/*
- * visus::power_overwhelming::adl_sensor::from_index
- */
-visus::power_overwhelming::adl_sensor
-visus::power_overwhelming::adl_sensor::from_index(_In_ const int index,
-        _In_ const adl_sensor_source source) {
-    adl_sensor retval;
-
-    auto status = detail::amd_display_library::instance()
-        .ADL2_Device_PMLog_Device_Create(nullptr, index, &retval._impl->device);
-    if (status != ADL_OK) {
-        throw adl_exception(status);
-    }
-
-    throw "TODO: Implement retrieval from index.";
-
-    return retval;
-}
+///*
+// * visus::power_overwhelming::adl_sensor::from_index
+// */
+//visus::power_overwhelming::adl_sensor
+//visus::power_overwhelming::adl_sensor::from_index(_In_ const int index,
+//        _In_ const adl_sensor_source source) {
+//    adl_sensor retval;
+//
+//    auto status = detail::amd_display_library::instance()
+//        .ADL2_Device_PMLog_Device_Create(nullptr, index, &retval._impl->device);
+//    if (status != ADL_OK) {
+//        throw adl_exception(status);
+//    }
+//
+//    throw "TODO: Implement retrieval from index.";
+//
+//    return retval;
+//}
 
 
 /*
@@ -269,13 +188,23 @@ visus::power_overwhelming::adl_sensor::from_udid(_In_z_ const char *udid,
             "null.");
     }
 
-    auto retval = detail::for_predicate([&](const AdapterInfo &a) {
-        return (::strcmp(udid, a.strUDID) == 0);
-    }, source);
+    detail::adl_scope scope;
 
-    if (retval.size() != 1) {
+    auto adapters = detail::get_adapters_if(scope,
+        [udid](const detail::adl_scope&, const AdapterInfo& a) {
+            return (::strcmp(udid, a.strUDID) == 0);
+        });
+    if (adapters.size() != 1) {
         throw std::invalid_argument("The unique device identifier did not "
             "match a single device.");
+    }
+
+    std::vector<adl_sensor> retval;
+    auto sensors = detail::for_adapter(std::back_inserter(retval), scope,
+        adapters.front(), source);
+    if (sensors != 1) {
+        throw std::invalid_argument("A unique sensor source must be specified "
+            "when creating a single sensor.");
     }
 
     return std::move(retval.front());
@@ -397,7 +326,7 @@ _Ret_maybenull_z_ const char *visus::power_overwhelming::adl_sensor::udid(
  */
 visus::power_overwhelming::adl_sensor&
 visus::power_overwhelming::adl_sensor::operator =(
-        _In_ adl_sensor&& rhs) noexcept {
+        _Inout_ adl_sensor&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         delete this->_impl;
         this->_impl = rhs._impl;
@@ -426,7 +355,7 @@ void visus::power_overwhelming::adl_sensor::sample_async(
     typedef duration<microseconds_type, std::micro> interval_type;
 
     if ((this->_impl->async_sampling = std::move(sampling))) {
-        auto sampler_rate = interval_type(sampling.interval());
+        auto sampler_rate = interval_type(this->_impl->async_sampling.interval());
         auto adl_rate = duration_cast<std::chrono::milliseconds>(sampler_rate);
 
         // Make sure that the sensor is running before queuing to the thread.

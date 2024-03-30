@@ -1,5 +1,5 @@
 ﻿// <copyright file="adl_sensor_source.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -62,8 +62,8 @@ namespace power_overwhelming {
     /// <param name="lhs">The left-hand side operand.</param>
     /// <param name="rhs">The right-hand side operand.</param>
     /// <returns>The bitwise &quot;or&quot; of the two operands.</returns>
-    POWER_OVERWHELMING_API adl_sensor_source operator |(
-        const adl_sensor_source lhs, const adl_sensor_source rhs);
+    extern POWER_OVERWHELMING_API adl_sensor_source operator |(
+        _In_ const adl_sensor_source lhs, _In_ const adl_sensor_source rhs);
 
     /// <summary>
     /// Test two <see cref="adl_sensor_source" />s.
@@ -71,8 +71,8 @@ namespace power_overwhelming {
     /// <param name="lhs">The left-hand side operand.</param>
     /// <param name="rhs">The right-hand side operand.</param>
     /// <returns>The bitwise &quot;and&quot; of the two operands.</returns>
-    POWER_OVERWHELMING_API adl_sensor_source operator &(
-        const adl_sensor_source lhs, const adl_sensor_source rhs);
+    extern POWER_OVERWHELMING_API adl_sensor_source operator &(
+        _In_ const adl_sensor_source lhs, _In_ const adl_sensor_source rhs);
 
     /// <summary>
     /// Parse a sensor source from a string.
@@ -80,7 +80,7 @@ namespace power_overwhelming {
     /// <param name="str">The string to be parsed.</param>
     /// <returns>The sensor source represented by the string.</returns>
     extern POWER_OVERWHELMING_API adl_sensor_source parse_adl_sensor_source(
-        const wchar_t *str);
+        _In_z_ const wchar_t *str);
 
     /// <summary>
     /// Convert the given sensor source to a human-readable string
@@ -88,8 +88,8 @@ namespace power_overwhelming {
     /// </summary>
     /// <param name="source">The source to be converted.</param>
     /// <returns>The name of the source.</returns>
-    extern POWER_OVERWHELMING_API const wchar_t *to_string(
-        const adl_sensor_source source);
+    extern POWER_OVERWHELMING_API _Ret_z_ const wchar_t *to_string(
+        _In_ const adl_sensor_source source);
 
 } /* namespace power_overwhelming */
 } /* namespace visus */

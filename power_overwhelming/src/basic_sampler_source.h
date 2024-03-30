@@ -1,5 +1,5 @@
 ﻿// <copyright file="basic_sampler_source.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -36,7 +36,7 @@ namespace detail {
         bool deliver(void) const override;
 
         /// <inheritdoc />
-        interval_type interval(void) const noexcept;
+        interval_type interval(void) const noexcept override;
     };
 
 } /* namespace detail */

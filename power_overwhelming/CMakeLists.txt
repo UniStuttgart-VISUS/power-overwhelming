@@ -1,5 +1,5 @@
-# CMakeLists.txt
-# Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+﻿# CMakeLists.txt
+# Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
 # Licensed under the MIT licence. See LICENCE file for details.
 
 # User-configurable options

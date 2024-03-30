@@ -314,13 +314,33 @@ void visus::power_overwhelming::tinkerforge_sensor::reset(void) {
             "cannot be reset.");
     }
 
-    auto status = ::voltage_current_v2_reset(&this->_impl->bricklet);
-    if (status < 0) {
-        throw tinkerforge_exception(status);
+    {
+        auto status = ::voltage_current_v2_reset(&this->_impl->bricklet);
+        if (status < 0) {
+            throw tinkerforge_exception(status);
+        }
     }
+
+    // As per
+    // https://www.tinkerforge.com/en/doc/Software/Bricklets/VoltageCurrentV2_Bricklet_C.html,
+    // we need to recreate the device object after a reset.
+    ::voltage_current_v2_destroy(&this->_impl->bricklet);
+    ::voltage_current_v2_create(&this->_impl->bricklet,
+        this->_impl->uid.c_str(), this->_impl->scope);
 
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
     this->_impl->time_xlate.reset(this->_impl->bricklet);
+#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
+}
+
+
+/*
+ * visus::power_overwhelming::tinkerforge_sensor::resync_internal_clock
+ */
+void visus::power_overwhelming::tinkerforge_sensor::resync_internal_clock(
+        void) {
+#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
+    this->_impl->time_xlate.update(this->_impl->bricklet);
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 }
 

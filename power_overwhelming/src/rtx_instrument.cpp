@@ -557,6 +557,17 @@ visus::power_overwhelming::rtx_instrument::channel(
         retval.state(!detail::starts_with(value.as<char>(), "0"));
     }
 
+    // ZADJ only works on RTA devices, not on RTB, so we need to guard
+    // against this.
+    try {
+        impl.format("PROB%d:SET:ADV:ZADJ?\n", channel);
+        auto value = impl.read_all();
+        retval.zero_adjust_offset(detail::parse_float(value.as<char>()));
+    } catch (...) {
+        retval.zero_adjust(false);
+        retval.zero_adjust_offset(0.0f);
+    }
+
     {
         impl.format("CHAN%d:ZOFF?\n", channel);
         auto value = impl.read_all();
@@ -582,10 +593,17 @@ visus::power_overwhelming::rtx_instrument::channel(
     // Note: Attenuation should be set first, because changing the attenuation
     // will also scale other values like the range.
     if (channel.attenuation().value() > 0.0f) {
-        impl.format("PROB%d:SET:ATT:UNIT %s\n", channel.channel(),
+        // Note: For some reason unbeknownst to us, using ATT does not work on
+        // the RTA family if the unit is Amperes. However, the GAIN works, so
+        // we should change that on the fly here.
+        //impl.format("PROB%d:SET:ATT:UNIT %s\n", channel.channel(),
+        //    channel.attenuation().unit());
+        //impl.format("PROB%d:SET:ATT:MAN %f\n", channel.channel(),
+        //    channel.attenuation().value());
+        impl.format("PROB%d:SET:GAIN:UNIT %s\n", channel.channel(),
             channel.attenuation().unit());
-        impl.format("PROB%d:SET:ATT:MAN %f\n", channel.channel(),
-            channel.attenuation().value());
+        impl.format("PROB%d:SET:GAIN:MAN %f\n", channel.channel(),
+            1.0f / channel.attenuation().value());
     }
 
     switch (channel.bandwidth()) {
@@ -633,9 +651,6 @@ visus::power_overwhelming::rtx_instrument::channel(
     impl.format("CHAN%d:LAB:STAT %s\n", channel.channel(),
         channel.label().visible() ? "ON" : "OFF");
 
-    impl.format("CHAN%d:OFFS %f%s\n", channel.channel(),
-        channel.offset().value(), channel.offset().unit());
-
     switch (channel.polarity()) {
         case oscilloscope_channel_polarity::inverted:
             impl.format("CHAN%d:POL INV\n", channel.channel());
@@ -649,14 +664,26 @@ visus::power_overwhelming::rtx_instrument::channel(
     impl.format("CHAN%d:RANG %f%s\n", channel.channel(),
         channel.range().value(), channel.range().unit());
 
+    // Note: CHAN:RANG influcences the behaviour of CHAN:OFFS, so it
+    // must be first.
+    impl.format("CHAN%d:OFFS %f%s\n", channel.channel(),
+        channel.offset().value(), channel.offset().unit());
+
     impl.format("CHAN%d:SKEW %f%s\n", channel.channel(),
         channel.skew().value(), channel.skew().unit());
 
     impl.format("CHAN%d:STAT %s\n", channel.channel(),
         channel.state() ? "ON" : "OFF");
 
+    // Note: CHAN:ZOFF must be before PROB:SET:ADV:ZADJ, because setting the
+    // channel offset will reset the zero-adjust on the RTA family.
     impl.format("CHAN%d:ZOFF %f%s\n", channel.channel(),
         channel.zero_offset().value(), channel.zero_offset().unit());
+
+    if (channel.zero_adjust()) {
+        impl.format("PROB%d:SET:ADV:ZADJ %f\n",
+            channel.channel(), channel.zero_adjust_offset());
+    }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     return *this;
@@ -885,10 +912,17 @@ visus::power_overwhelming::rtx_instrument::data(
             break;
     }
 
-    const auto qheader = detail::format_string("CHAN%u:DATA:HEAD?\n", channel);
-    const auto rheader = this->query(qheader.c_str());
-    const auto header = rheader.as<char>();
-    _Analysis_assume_(header != nullptr);
+    const auto qxorg = detail::format_string("CHAN%u:DATA:XOR?\n", channel);
+    auto rxorg = this->query(qxorg.c_str());
+    auto xorg = rxorg.as<char>();
+    _Analysis_assume_(xorg != nullptr);
+    detail::trim_eol(xorg);
+
+    const auto qxinc = detail::format_string("CHAN%u:DATA:XINC?\n", channel);
+    auto rxinc = this->query(qxinc.c_str());
+    auto xinc= rxinc.as<char>();
+    _Analysis_assume_(xinc != nullptr);
+    detail::trim_eol(xinc);
 
     const auto qtsr = detail::format_string("CHAN%u:HIST:TSR?\n", channel);
     auto rtsr = this->query(qtsr.c_str());
@@ -908,7 +942,7 @@ visus::power_overwhelming::rtx_instrument::data(
     _Analysis_assume_(tsab != nullptr);
     detail::trim_eol(tsab);
 
-    return oscilloscope_waveform(header, tsd, tsab, tsr,
+    return oscilloscope_waveform(xorg, xinc, tsd, tsab, tsr,
         this->binary_data(channel));
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -1102,41 +1136,6 @@ std::size_t visus::power_overwhelming::rtx_instrument::history_segments(
 
 
 /*
- * visus::power_overwhelming::rtx_instrument::reference_position
- */
-visus::power_overwhelming::oscilloscope_reference_point
-visus::power_overwhelming::rtx_instrument::reference_position(void) const {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    auto response = this->query("TIM:REF?\n");
-    auto position = detail::parse_float(response.as<char>()) * 100;
-    return static_cast<oscilloscope_reference_point>(position);
-
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error(detail::no_visa_error_msg);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
-}
-
-
-/*
- * visus::power_overwhelming::rtx_instrument::reset
- */
-visus::power_overwhelming::rtx_instrument&
-visus::power_overwhelming::rtx_instrument::reset(
-        _In_ const rtx_instrument_reset flags) {
-    typedef rtx_instrument_reset flags_type;
-    visa_instrument::reset(
-        (flags & flags_type::buffers) == flags_type::buffers,
-        (flags & flags_type::status) == flags_type::status);
-
-    if ((flags & flags_type::stop) == flags_type::stop) {
-        this->acquisition(oscilloscope_acquisition_state::interrupt, true);
-    }
-
-    return *this;
-}
-
-
-/*
  * visus::power_overwhelming::rtx_instrument::load_state_from_instrument
  */
 visus::power_overwhelming::rtx_instrument&
@@ -1180,6 +1179,41 @@ visus::power_overwhelming::rtx_instrument::reference_position(
         _In_ const oscilloscope_reference_point position) {
     auto& impl = this->check_not_disposed();
     impl.format("TIM:REF %f\n", static_cast<float>(position) / 100.0f);
+    return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::reference_position
+ */
+visus::power_overwhelming::oscilloscope_reference_point
+visus::power_overwhelming::rtx_instrument::reference_position(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("TIM:REF?\n");
+    auto position = detail::parse_float(response.as<char>()) * 100;
+    return static_cast<oscilloscope_reference_point>(position);
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::reset
+ */
+visus::power_overwhelming::rtx_instrument&
+visus::power_overwhelming::rtx_instrument::reset(
+        _In_ const rtx_instrument_reset flags) {
+    typedef rtx_instrument_reset flags_type;
+    visa_instrument::reset(
+        (flags & flags_type::buffers) == flags_type::buffers,
+        (flags & flags_type::status) == flags_type::status);
+
+    if ((flags & flags_type::stop) == flags_type::stop) {
+        this->acquisition(oscilloscope_acquisition_state::interrupt, true);
+    }
+
     return *this;
 }
 
@@ -1592,6 +1626,21 @@ visus::power_overwhelming::rtx_instrument::trigger_position(
     auto& impl = this->check_not_disposed();
     impl.format("TIM:POS %f%s\n", offset.value(), offset.unit());
     return *this;
+}
+
+
+/*
+ * visus::power_overwhelming::rtx_instrument::trigger_position
+ */
+visus::power_overwhelming::oscilloscope_quantity
+visus::power_overwhelming::rtx_instrument::trigger_position(void) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto response = this->query("TIM:POS?\n");
+    return detail::parse_float(response.as<char>());
+
+#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::logic_error(detail::no_visa_error_msg);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

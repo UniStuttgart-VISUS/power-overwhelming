@@ -119,7 +119,7 @@ namespace power_overwhelming {
         /// </remarks>
         /// <returns>The electric power.</returns>
         inline value_type power(void) const noexcept {
-            return (this->_power > static_cast<value_type>(0))
+            return (this->_power >= static_cast<value_type>(0))
                 ? this->_power
                 : this->_current * this->_voltage;
         }

@@ -112,6 +112,8 @@ namespace detail {
             _PWROWG_DESERIALISE_FIELD(range);
             _PWROWG_DESERIALISE_FIELD(skew);
             _PWROWG_DESERIALISE_FIELD(state);
+            _PWROWG_DESERIALISE_FIELD(zero_adjust);
+            _PWROWG_DESERIALISE_FIELD(zero_adjust_offset);
             _PWROWG_DESERIALISE_FIELD(zero_offset);
 
             return value_type(channel)
@@ -124,6 +126,9 @@ namespace detail {
                 .polarity(polarity)
                 .range(range)
                 .skew(skew)
+                .state(state)
+                .zero_adjust(zero_adjust)
+                .zero_adjust_offset(zero_adjust_offset)
                 .zero_offset(zero_offset);
         }
 
@@ -140,6 +145,8 @@ namespace detail {
                 _PWOWG_SERIALISE_FIELD(range),
                 _PWOWG_SERIALISE_FIELD(skew),
                 _PWOWG_SERIALISE_FIELD(state),
+                _PWOWG_SERIALISE_FIELD(zero_adjust),
+                _PWOWG_SERIALISE_FIELD(zero_adjust_offset),
                 _PWOWG_SERIALISE_FIELD(zero_offset)
             });
         }
@@ -200,9 +207,11 @@ namespace detail {
             _PWROWG_DESERIALISE_FIELD(beep_on_apply);
             _PWROWG_DESERIALISE_FIELD(beep_on_error);
             _PWROWG_DESERIALISE_FIELD(beep_on_trigger);
+            _PWROWG_DESERIALISE_FIELD(reference_position);
             _PWROWG_DESERIALISE_FIELD(timeout);
             _PWROWG_DESERIALISE_FIELD(time_range);
             _PWROWG_DESERIALISE_FIELD(trigger);
+            _PWROWG_DESERIALISE_FIELD(trigger_position);
 
             value_type retval(time_range, acquisition, trigger, timeout);
 
@@ -237,9 +246,11 @@ namespace detail {
                 _PWOWG_SERIALISE_FIELD(beep_on_error),
                 _PWOWG_SERIALISE_FIELD(beep_on_trigger),
                 { "channels", channels_json },
+                _PWOWG_SERIALISE_FIELD(reference_position),
                 _PWOWG_SERIALISE_FIELD(timeout),
                 _PWOWG_SERIALISE_FIELD(time_range),
-                _PWOWG_SERIALISE_FIELD(trigger)
+                _PWOWG_SERIALISE_FIELD(trigger),
+                _PWOWG_SERIALISE_FIELD(trigger_position)
             });
         }
     };

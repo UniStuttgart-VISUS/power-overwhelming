@@ -1,5 +1,5 @@
 ﻿// <copyright file="oscilloscope_waveform.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -32,20 +32,22 @@ namespace power_overwhelming {
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
-        /// <param name="header">The header string for the waveform data.
-        /// Header data are a CSV string of the time points of the begin and
-        /// the end of the waveform, the number of samples in the waveform and
-        /// the number of values per sample.
-        /// </param>
+        /// <param name="xorg">The string that has been retrieved using
+        /// <c>CHAN:DATA:XOR?</c>and that contains the origin of the waveform
+        /// in (fractional) seconds.</param>
+        /// <param name="xinc">The string that has been retrieved using
+        /// <c>CHAN:DATA:XINC?</c> and that contains the x-increment of the
+        /// waveform in (fractional) seconds.</param>
         /// <param name="segment_offset">The segment offset retrieved via
         /// <c>CHAN:HIST:TSR?</c>.</param>
         /// <param name="samples">A blob holding the <c>float</c> samples of
-        /// the waveform.</param>
-        /// <exception cref="std::invalid_argument">If
-        /// <paramref name="header" /> is null or does not have the expected
-        /// format, or if the number of samples specified in the header does
-        /// not match the size of <paramref name="samples" />.</exception>
-        oscilloscope_waveform(_In_z_ const char *header,
+        /// the waveform. It is mandatory that the samples have been retrieved
+        /// as <c>float</c> by setting <c>FORM REAL,32</c> and
+        /// <c>FORM:BORD LSBF</c> (assuming an Intel architecture).</param>
+        /// <exception cref="std::invalid_argument">If any of the inputs is
+        /// <c>nullptr</c>.</exception>
+        oscilloscope_waveform(_In_z_ const char *xorg,
+            _In_z_ const char *xinc,
             _In_z_ const char *segment_date,
             _In_z_ const char *segment_time,
             _In_z_ const char *segment_offset,
@@ -103,10 +105,14 @@ namespace power_overwhelming {
         /// <summary>
         /// The offset of the end of the waveform in seconds.
         /// </summary>
+        /// <remarks>
+        /// The end of the wavefrom is computed from <see cref="time_begin" />
+        /// and <see cref="sample_distance" /> using the formula on p. 320 of
+        /// the RTB2004 user manual, because these numbers are more precise than
+        /// the range retrieved by <c>CHAN:DATA:HEAD</c>.
+        /// </remarks>
         /// <returns>The end of the time axis in seconds.</returns>
-        inline float time_end(void) const noexcept {
-            return this->_time_end;
-        }
+        float time_end(void) const noexcept;
 
         /// <summary>
         /// Answer the specified sample value.
@@ -131,7 +137,25 @@ namespace power_overwhelming {
         /// seconds.
         /// </summary>
         /// <returns>The distance between two samples in seconds.</returns>
-        float sample_distance(void) const noexcept;
+        inline float sample_distance(void) const noexcept {
+            return this->_time_increment;
+        }
+
+        /// <summary>
+        /// Answer the relative time (in seconds) within
+        /// [<c>time_begin</c>, <c>time_end</c>] of the given sample.
+        /// </summary>
+        /// <remarks>
+        /// The method does not perfom any range check, but will happily
+        /// extrapolate beyond the last sample.
+        /// </remarks>
+        /// <param name="i">The zero-based index of the sample to retrieve the
+        /// time for.</param>
+        /// <returns>The time of the given sample.</returns>
+        inline float sample_time(_In_ const std::size_t i) const noexcept {
+            return static_cast<float>(i) * this->_time_increment
+                + this->_time_begin;
+        }
 
         /// <summary>
         /// Answer the absolute timestamp of the <paramref name="i" />th sample
@@ -202,7 +226,7 @@ namespace power_overwhelming {
         float _segment_offset;
         measurement_data::timestamp_type _segment_timestamp;
         float _time_begin;
-        float _time_end;
+        float _time_increment;
     };
 
 } /* namespace power_overwhelming */

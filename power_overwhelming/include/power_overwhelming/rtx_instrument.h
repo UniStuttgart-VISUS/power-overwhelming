@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_instrument.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -794,45 +794,6 @@ namespace power_overwhelming {
         std::size_t history_segments(void) const;
 
         /// <summary>
-        /// Gets the current position of the reference point in the diagram.
-        /// </summary>
-        /// <returns>The location of the reference point on the horizontal
-        /// axis.</returns>
-        /// <exception cref="std::runtime_error">If the method is called on an
-        /// object that has been disposed by moving it.</exception>
-        /// <exception cref="visa_exception">If any of the API calls to the
-        /// instrument failed.</exception>
-        /// <exception cref="std::logic_error">If the method is called while
-        /// the library was compiled without support for VISA.</exception>
-        oscilloscope_reference_point reference_position(void) const;
-
-        /// <summary>
-        /// Resets the instrument to its default state by issuing the
-        /// <c>*RST</c> command and performs optionally additional cleanup
-        /// as specified by the given <see cref="rtx_instrument_reset" />
-        /// bitmask.
-        /// </summary>
-        /// <remarks>
-        /// <para>This method does nothing if the library was compiled without
-        /// support for VISA.</para>
-        /// <para>This method will issue an <c>*OPC?</c> query immediately after
-        /// the reset request in order to make sure that the calling code is
-        /// blocked until the instrument finished resetting.
-        /// </para>
-        /// <para>This method hides <see cref="visa_instrument::reset" />, which
-        /// is on purpose. The method internally calls the parent class before
-        /// performing instrument-specific cleanup.</para>
-        /// </remarks>
-        /// <param name="flags">Specifies the scope of the reset.</param>
-        /// <returns><c>*this</c>.</returns>
-        /// <exception cref="std::runtime_error">If the method is called on an
-        /// object that has been disposed by moving it.</exception>
-        /// <exception cref="visa_exception">If the VISA command was not
-        /// processed successfully.</exception>
-        rtx_instrument& reset(_In_ const rtx_instrument_reset flags
-            = rtx_instrument_reset::reset);
-
-        /// <summary>
         /// Restores the state of the instrument from a file stored on the
         /// instrument itself or on a USB mass-storage device connected to the
         /// instrument.
@@ -881,6 +842,46 @@ namespace power_overwhelming {
         /// instrument failed.</exception>
         rtx_instrument& reference_position(
             _In_ const oscilloscope_reference_point position);
+
+
+        /// <summary>
+        /// Gets the current position of the reference point in the diagram.
+        /// </summary>
+        /// <returns>The location of the reference point on the horizontal
+        /// axis.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        /// <exception cref="std::logic_error">If the method is called while
+        /// the library was compiled without support for VISA.</exception>
+        oscilloscope_reference_point reference_position(void) const;
+
+        /// <summary>
+        /// Resets the instrument to its default state by issuing the
+        /// <c>*RST</c> command and performs optionally additional cleanup
+        /// as specified by the given <see cref="rtx_instrument_reset" />
+        /// bitmask.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method does nothing if the library was compiled without
+        /// support for VISA.</para>
+        /// <para>This method will issue an <c>*OPC?</c> query immediately after
+        /// the reset request in order to make sure that the calling code is
+        /// blocked until the instrument finished resetting.
+        /// </para>
+        /// <para>This method hides <see cref="visa_instrument::reset" />, which
+        /// is on purpose. The method internally calls the parent class before
+        /// performing instrument-specific cleanup.</para>
+        /// </remarks>
+        /// <param name="flags">Specifies the scope of the reset.</param>
+        /// <returns><c>*this</c>.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If the VISA command was not
+        /// processed successfully.</exception>
+        rtx_instrument& reset(_In_ const rtx_instrument_reset flags
+            = rtx_instrument_reset::reset);
 
         /// <summary>
         /// Persists the current state of the instrument to internal memory (or
@@ -1069,6 +1070,17 @@ namespace power_overwhelming {
         /// instrument failed.</exception>
         rtx_instrument& trigger_position(
             _In_ const oscilloscope_quantity& offset);
+
+        /// <summary>
+        /// Gets the trigger position, which is the time distance from the
+        /// trigger point to the reference point.
+        /// </summary>
+        /// <returns>The horizontal trigger position.</returns>
+        /// <exception cref="std::runtime_error">If the method is called on an
+        /// object that has been disposed by moving it.</exception>
+        /// <exception cref="visa_exception">If any of the API calls to the
+        /// instrument failed.</exception>
+        oscilloscope_quantity trigger_position(void) const;
 
         /// <summary>
         /// Gets the unit of the specified channel.

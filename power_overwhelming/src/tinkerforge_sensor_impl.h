@@ -90,6 +90,12 @@ namespace detail {
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 
         /// <summary>
+        /// The UID of the bricklet, which is required to recreate the object
+        /// after a reset.
+        /// </summary>
+        std::string uid;
+
+        /// <summary>
         /// Initialises a new instance.
         /// </summary>
         /// <param name="host"></param>

@@ -42,18 +42,18 @@ namespace power_overwhelming {
             _Out_writes_opt_(cntSensors) adl_sensor *outSensors,
             _In_ const std::size_t cntSensors);
 
-        /// <summary>
-        /// Create a new instance for the specified adapter index.
-        /// </summary>
-        /// <param name="index">The adapter index to create the sensor for.
-        /// </param>
-        /// <param name="source">The sensor source to retrieve. If the source
-        /// is not supported, the method will fail.</param>
-        /// <returns></returns>
-        /// <exception cref="adl_exception">If the specified device was not
-        /// found, or another error occurred in ADL.</exception>
-        static adl_sensor from_index(_In_ const int index,
-            _In_ const adl_sensor_source source);
+        ///// <summary>
+        ///// Create a new instance for the specified adapter index.
+        ///// </summary>
+        ///// <param name="index">The adapter index to create the sensor for.
+        ///// </param>
+        ///// <param name="source">The sensor source to retrieve. If the source
+        ///// is not supported, the method will fail.</param>
+        ///// <returns></returns>
+        ///// <exception cref="adl_exception">If the specified device was not
+        ///// found, or another error occurred in ADL.</exception>
+        //static adl_sensor from_index(_In_ const int index,
+        //    _In_ const adl_sensor_source source);
 
         /// <summary>
         /// Create a new instance for the unique device ID.
@@ -220,7 +220,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <param name="rhs">The right-hand side operand</param>
         /// <returns><c>*this</c></returns>
-        adl_sensor& operator =(_In_ adl_sensor&& rhs) noexcept;
+        adl_sensor& operator =(_Inout_ adl_sensor&& rhs) noexcept;
 
         /// <summary>
         /// Determines whether the sensor is valid.
@@ -244,7 +244,6 @@ namespace power_overwhelming {
     private:
 
         detail::adl_sensor_impl *_impl;
-
     };
 
 } /* namespace power_overwhelming */

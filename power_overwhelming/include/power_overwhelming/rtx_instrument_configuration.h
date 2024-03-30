@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_instrument_configuration.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -752,6 +752,28 @@ namespace power_overwhelming {
         }
 
         /// <summary>
+        /// Gets the horizontal reference point to be configured on the
+        /// instrument.
+        /// </summary>
+        /// <returns>The horizontal reference point.</returns>
+        inline oscilloscope_reference_point reference_position(
+                void) const noexcept {
+            return this->_reference_position;
+        }
+
+        /// <summary>
+        /// Sets the horizontal reference point to be configured on the
+        /// instrument.
+        /// </summary>
+        /// <param name="position">The new reference position.</param>
+        /// <returns><c>*this</c>.</returns>
+        inline rtx_instrument_configuration& reference_position(
+                const oscilloscope_reference_point position) noexcept {
+            this->_reference_position = position;
+            return *this;
+        }
+
+        /// <summary>
         /// Indicates whether this configuration is for a slave instrument that
         /// is being triggered by another instrument via the external trigger
         /// input.
@@ -789,6 +811,28 @@ namespace power_overwhelming {
         }
 
         /// <summary>
+        /// Answer the horizontal trigger position to be configured on the
+        /// instrument.
+        /// </summary>
+        /// <returns>The trigger position to be configured.</returns>
+        inline const oscilloscope_quantity& trigger_position(
+                void) const noexcept {
+            return this->_trigger_position;
+        }
+
+        /// <summary>
+        /// Set the the horizontal trigger position to configured on the
+        /// instrument.
+        /// </summary>
+        /// <param name="pos">The new trigger position.</param>
+        /// <returns><c>*this</c>.</returns>
+        inline rtx_instrument_configuration& trigger_position(
+                const oscilloscope_quantity& pos) {
+            this->_trigger_position = pos;
+            return *this;
+        }
+
+        /// <summary>
         /// Assignment.
         /// </summary>
         /// <param name="rhs">The right-hand side operand.</param>
@@ -812,11 +856,13 @@ namespace power_overwhelming {
         bool _beep_on_trigger;
         oscilloscope_channel *_channels;
         std::size_t _cnt_channels;
-        bool _slave;
         float _min_time_base;
+        oscilloscope_reference_point _reference_position;
+        bool _slave;
         visa_instrument::timeout_type _timeout;
         oscilloscope_quantity _time_range;
         oscilloscope_trigger _trigger;
+        oscilloscope_quantity _trigger_position;
     };
 
 } /* namespace power_overwhelming */
