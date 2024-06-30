@@ -664,9 +664,9 @@ void visus::power_overwhelming::hmc8015_sensor::sample_async(
     }
 
     if ((this->_async_sampling = std::move(sampling))) {
-        detail::sampler::default += this;
+        detail::sampler::default_sampler += this;
     } else {
-        detail::sampler::default -= this;
+        detail::sampler::default_sampler -= this;
     }
 }
 

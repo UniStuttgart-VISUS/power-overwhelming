@@ -148,7 +148,7 @@ bool visus::power_overwhelming::detail::tinkerforge_time_translator::update(
     return true;
 #else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
     assert(this->_begin_host == 0);
-    assert(this->_time_offset == 0);
+    assert(this->_time_offset.count() == 0);
     return false;
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 }

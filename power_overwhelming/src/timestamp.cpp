@@ -6,6 +6,8 @@
 
 #include "power_overwhelming/timestamp.h"
 
+#include "zero_memory.h"
+
 
 /*
  * visus::power_overwhelming::detail::create

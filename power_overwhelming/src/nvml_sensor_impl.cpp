@@ -21,7 +21,7 @@
 visus::power_overwhelming::detail::nvml_sensor_impl::~nvml_sensor_impl(void) {
     // Make sure that a sensor that is being destroyed is removed from all
     // asynchronous sampling threads.
-    sampler::default -= this;
+    sampler::default_sampler -= this;
 }
 
 

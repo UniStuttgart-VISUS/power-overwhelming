@@ -59,7 +59,7 @@ namespace detail {
         /// <summary>
         /// The default sampler instance.
         /// </summary>
-        static custom_sampler_base default;
+        static custom_sampler_base default_sampler;
 
         /// <summary>
         /// Finalises the instance.

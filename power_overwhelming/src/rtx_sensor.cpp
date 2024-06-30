@@ -421,9 +421,9 @@ void visus::power_overwhelming::rtx_sensor::sample_async(
     this->_impl->async_sampling = std::move(sampling);
 
     if (this->_impl->async_sampling) {
-        detail::rtx_sampler::default.add(this->path(), this->_impl);
+        detail::rtx_sampler::default_sampler.add(this->path(), this->_impl);
     } else {
-        detail::rtx_sampler::default.remove(this->_impl);
+        detail::rtx_sampler::default_sampler.remove(this->_impl);
     }
 }
 

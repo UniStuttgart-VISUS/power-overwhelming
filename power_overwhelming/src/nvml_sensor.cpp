@@ -259,9 +259,9 @@ void visus::power_overwhelming::nvml_sensor::sample_async(
     this->_impl->async_sampling = std::move(sampling);
 
     if (this->_impl->async_sampling) {
-        detail::sampler::default += this->_impl;
+        detail::sampler::default_sampler += this->_impl;
     } else {
-        detail::sampler::default -= this->_impl;
+        detail::sampler::default_sampler -= this->_impl;
     }
 }
 

@@ -30,7 +30,7 @@ namespace detail {
         /// Stores the asynchronous sampling configuration for the source
         /// derived from this class.
         /// </summary>
-        async_sampling async_sampling;
+        power_overwhelming::async_sampling async_sampling;
 
         /// <inheritdoc />
         bool deliver(void) const override;

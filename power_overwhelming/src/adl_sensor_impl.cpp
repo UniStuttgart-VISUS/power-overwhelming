@@ -242,7 +242,8 @@ bool visus::power_overwhelming::detail::adl_sensor_impl::is_voltage(
  */
 std::wstring visus::power_overwhelming::detail::adl_sensor_impl::to_string(
         const ADL_PMLOG_SENSORS id) {
-#define _TO_STRING_CASE(i) case i: return L#i
+#define _TO_STRING(i) L##i
+#define _TO_STRING_CASE(i) case i: return _TO_STRING(#i)
 
     switch (id) {
         _TO_STRING_CASE(ADL_PMLOG_CLK_GFXCLK);
@@ -322,6 +323,7 @@ std::wstring visus::power_overwhelming::detail::adl_sensor_impl::to_string(
         default: return L"";
     }
 
+#undef _TO_STRING
 #undef _TO_STRING_CASE
 }
 

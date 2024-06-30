@@ -1,5 +1,5 @@
 ﻿// <copyright file="sampler.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -39,7 +39,7 @@ namespace detail {
         /// The default sampler that runs a thread for every configured sampling
         /// interval.
         /// </summary>
-        static sampler default;
+        static sampler default_sampler;
 
         /// <summary>
         /// Finalises the instance.

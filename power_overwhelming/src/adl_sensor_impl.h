@@ -139,7 +139,7 @@ namespace detail {
         /// We need to hold a dedicated sampler for ADL as we want to stop the
         /// sensor if all samplers have been removed.
         /// </remarks>
-        static sampler sampler;
+        static power_overwhelming::detail::sampler sampler;
 
         /// <summary>
         /// Stores the asynchronous sampling configuration for the sensor.
@@ -148,7 +148,7 @@ namespace detail {
         /// We cannot inherit the implementation of the basic sampler source,
         /// because the ADL sensor must be able to 
         /// </remarks>
-        async_sampling async_sampling;
+        power_overwhelming::async_sampling async_sampling;
 
         /// <summary>
         /// The adpater index of the device, which is required for a series of
@@ -213,7 +213,7 @@ namespace detail {
         /// <summary>
         /// The UTC offset of the local time, which is reported by ADL.
         /// </summary>
-        timestamp::value_type utc_offset;
+        power_overwhelming::timestamp::value_type utc_offset;
 
         /// <summary>
         /// Initialises a new instance.
