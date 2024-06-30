@@ -29,7 +29,7 @@ mark_as_advanced(FORCE
 
 # JSON library
 FetchContent_Declare(nlohmann_json
-    URL "https://github.com/nlohmann/json/archive/v3.11.2.tar.gz"
+    URL "https://github.com/nlohmann/json/archive/v3.11.3.tar.gz"
 )
 FetchContent_MakeAvailable(nlohmann_json)
 mark_as_advanced(FORCE
