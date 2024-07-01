@@ -347,7 +347,7 @@ void visus::power_overwhelming::emi_sensor::sample_async(
     if ((this->_impl->async_sampling = std::move(sampling))) {
         auto source = detail::emi_sensor_impl::sampler_source_type::create(
             this->_impl);
-        detail::sampler::default += source;
+        detail::sampler::default_sampler += source;
 
     } else {
         detail::emi_sensor_impl::sampler_source_type::release(this->_impl);

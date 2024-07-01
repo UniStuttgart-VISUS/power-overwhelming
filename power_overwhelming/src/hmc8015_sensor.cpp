@@ -96,7 +96,7 @@ visus::power_overwhelming::hmc8015_sensor::hmc8015_sensor(
 visus::power_overwhelming::hmc8015_sensor::~hmc8015_sensor(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     // Make sure that we are not registered any more for asynchronous sampling.
-    detail::sampler::default -= this;
+    detail::sampler::default_sampler -= this;
 
     if (this->_instrument) {
         // Reset the system state to local operations, but make sure that we
