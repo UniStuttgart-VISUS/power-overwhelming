@@ -7,7 +7,7 @@ This project provides a library for measuring the power consumption of GPUs (and
 > If you are here for the [instructions for building a bench table for measuring GPU power consumption](docs/HARDWARE.md), look in the `docs` folder. Over there, you also find some [lessons we learned about measuring power with Tinkerforge bricklets.](docs/TINKERFORGE.md)
 
 > **Note**
-> The paper "Power Overwhelming: Quantifying the Energy Cost of Visualisation", for which this software was written, can be found on [IEEEXplore](https://doi.org/10.1109/BELIV57783.2022.00009).
+> The papers "Power Overwhelming: Quantifying the Energy Cost of Visualisation" and "Power overwhelming: The One With the Oscilloscopes", for which this software was written, can be found on [IEEEXplore](https://doi.org/10.1109/BELIV57783.2022.00009) and on [Springer Link](https://dx.doi.org/10.1007/s12650-024-01001-0) respectively.
 
 
 ## Building the library
