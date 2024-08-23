@@ -74,7 +74,7 @@ if (WIN32)
 endif ()
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE adl nlohmann_json nvml tinkerforge)
+    PRIVATE adl nlohmann_json::nlohmann_json nvml tinkerforge)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PUBLIC Ws2_32)

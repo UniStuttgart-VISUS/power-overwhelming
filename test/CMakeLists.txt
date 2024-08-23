@@ -37,7 +37,7 @@ target_link_directories(${PROJECT_NAME} PRIVATE "${VcInstallDir}/Auxiliary/VS/Un
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Microsoft.VisualStudio.TestTools.CppUnitTestFramework.lib
     SetupApi.lib
-    nlohmann_json
+    nlohmann_json::nlohmann_json
     adl
     nvml
     tinkerforge
