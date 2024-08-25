@@ -57,7 +57,7 @@ endif (${EffectivePlatform} STREQUAL "Win32")
 
 target_link_libraries(${PROJECT_NAME}
     power_overwhelming
-    nlohmann_json
+    nlohmann_json::nlohmann_json
     WIL
     # I can't believe that actually worked ...
     ${WebView2Dir}/Microsoft.Windows.ImplementationLibrary.targets
