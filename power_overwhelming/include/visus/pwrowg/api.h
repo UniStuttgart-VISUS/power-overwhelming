@@ -77,8 +77,7 @@ _PWROWG_NAMESPACE_BEGIN(PWROWG_ABI_NAMESPACE(PWROWG_ABI_MAJOR, PWROWG_ABI_MINOR)
 /// Marks the begin of the namespace for implementation details.
 /// </summary>
 #define PWROWG_DETAIL_NAMESPACE_BEGIN \
-PWROWG_NAMESPACE_BEGIN\
-_PWROWG_NAMESPACE_BEGIN(detail)
+PWROWG_NAMESPACE_BEGIN _PWROWG_NAMESPACE_BEGIN(detail)
 
 /// <summary>
 /// Marks the end of the namespace for implementation details.
