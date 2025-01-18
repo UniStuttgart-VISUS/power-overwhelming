@@ -1,5 +1,5 @@
 ﻿# CMakeLists.txt
-# Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+# Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 # Licensed under the MIT licence. See LICENCE file for details.
 
 # Search optional dependencies
@@ -7,7 +7,9 @@ find_package(VISA QUIET)
 
 # User-configurable options
 option(PWROWG_WithAdl "Build support for the AMD Display Library" ON)
+option(PWROWG_WithBenchlab "Build support for the Benchlab telemetry system" ON)
 option(PWROWG_WithNvml "Build support for the NVIDIA Management Library" ON)
+option(PWROWG_WithPowenetics "Build support for Powenetics" ON)
 option(PWROWG_WithTimeSynchronisation "Build support for Cristian's algorithm" OFF)
 option(PWROWG_WithVisa "Build support for the VISA-based instruments" ${VISA_FOUND})
 cmake_dependent_option(PWROWG_ForceDirect3D11 "Force GPU enumeration via Direct3D 11" OFF WIN32 OFF)
