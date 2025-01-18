@@ -1,15 +1,15 @@
-// <copyright file="tokenise.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2018 - 2021 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="tokenise.inl" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2018 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licenced under the MIT License. See LICENCE.txt for further details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 
 /*
- * visus::power_overwhelming::detail::tokenise_if
+ * PWROWG_DETAIL_NAMESPACE::tokenise_if
  */
 template<class C, class P>
-std::vector<std::basic_string<C>> visus::power_overwhelming::detail::tokenise_if(
+std::vector<std::basic_string<C>> PWROWG_DETAIL_NAMESPACE::tokenise_if(
         const std::basic_string<C>& str, const P predicate,
         const bool omitEmpty) {
     typedef typename std::decay<decltype(str)>::type StringType;
@@ -34,10 +34,10 @@ std::vector<std::basic_string<C>> visus::power_overwhelming::detail::tokenise_if
 
 
 /*
- * visus::power_overwhelming::detail::tokenise
+ * PWROWG_DETAIL_NAMESPACE::tokenise
  */
 template<class C>
-std::vector<std::basic_string<C>> visus::power_overwhelming::detail::tokenise(
+std::vector<std::basic_string<C>> PWROWG_DETAIL_NAMESPACE::tokenise(
         const std::basic_string<C>& str, const std::basic_string<C>& delim,
         const bool omitEmpty) {
     typedef typename std::decay<decltype(str)>::type StringType;
@@ -61,10 +61,10 @@ std::vector<std::basic_string<C>> visus::power_overwhelming::detail::tokenise(
 
 
 /*
- * visus::power_overwhelming::detail::tokenise
+ * PWROWG_DETAIL_NAMESPACE::tokenise
  */
 template<class C>
-std::vector<std::basic_string<C>> visus::power_overwhelming::detail::tokenise(
+std::vector<std::basic_string<C>> PWROWG_DETAIL_NAMESPACE::tokenise(
         const std::basic_string<C>& str, const C *delim, const bool omitEmpty) {
     if (delim != nullptr) {
         return tokenise(str, std::basic_string<C>(delim), omitEmpty);
