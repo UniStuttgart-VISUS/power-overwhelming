@@ -1,15 +1,15 @@
-// <copyright file="timestamp.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="timestamp.inl" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2024 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 
 /*
- * visus::power_overwhelming::timestamp::timestamp
+ * PWROWG_NAMESPACE::timestamp::timestamp
  */
 template<class TClock, class TDuration>
-visus::power_overwhelming::timestamp::timestamp(
+PWROWG_NAMESPACE::timestamp::timestamp(
         _In_ const std::chrono::time_point<TClock, TDuration> t) {
     using namespace std::chrono;
     typedef duration<value_type, std::ratio<1, tick_rate>> duration_type;
@@ -30,11 +30,11 @@ visus::power_overwhelming::timestamp::timestamp(
 
 
 /*
- * visus::power_overwhelming::timestamp::to_duration
+ * PWROWG_NAMESPACE::timestamp::to_duration
  */
 template<class TPeriod>
-std::chrono::duration<visus::power_overwhelming::timestamp::value_type, TPeriod>
-visus::power_overwhelming::timestamp::to_duration(void) const {
+std::chrono::duration<PWROWG_NAMESPACE::timestamp::value_type, TPeriod>
+PWROWG_NAMESPACE::timestamp::to_duration(void) const {
     using namespace std::chrono;
     typedef duration<value_type, std::ratio<1, tick_rate>> duration_type;
     duration_type retval(this->_value);
@@ -43,10 +43,10 @@ visus::power_overwhelming::timestamp::to_duration(void) const {
 
 
 /*
- * visus::power_overwhelming::timestamp::to_time_point
+ * PWROWG_NAMESPACE::timestamp::to_time_point
  */
 template<class TClock>
-typename TClock::time_point visus::power_overwhelming::timestamp::to_time_point(
+typename TClock::time_point PWROWG_NAMESPACE::timestamp::to_time_point(
         void) const {
     using namespace std::chrono;
     typedef duration<value_type, std::ratio<1, tick_rate>> duration_type;
@@ -67,11 +67,11 @@ typename TClock::time_point visus::power_overwhelming::timestamp::to_time_point(
 
 #if false
 /*
- * visus::power_overwhelming::detail::convert
+ * PWROWG_NAMESPACE::detail::convert
  */
 template<class TRep, class TPeriod>
-visus::power_overwhelming::timestamp_type
-visus::power_overwhelming::detail::convert(
+PWROWG_NAMESPACE::timestamp_type
+PWROWG_NAMESPACE::detail::convert(
         _In_ const std::chrono::duration<TRep, TPeriod> dur,
         _In_ const timestamp_resolution resolution) {
     using namespace std::chrono;
@@ -102,11 +102,11 @@ visus::power_overwhelming::detail::convert(
 
 
 /*
- * visus::power_overwhelming::detail::convert
+ * PWROWG_NAMESPACE::detail::convert
  */
 template<class TDuration>
-visus::power_overwhelming::timestamp_type
-visus::power_overwhelming::detail::convert(
+PWROWG_NAMESPACE::timestamp_type
+PWROWG_NAMESPACE::detail::convert(
         _In_ const std::chrono::time_point<std::chrono::system_clock,
             TDuration>& timestamp,
         _In_ const timestamp_resolution resolution) {

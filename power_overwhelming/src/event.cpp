@@ -1,5 +1,5 @@
 ﻿// <copyright file="event.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2018 - 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2018 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -14,27 +14,26 @@
 #include <errno.h>
 
 
-namespace visus {
-namespace power_overwhelming {
-namespace detail {
+PWROWG_DETAIL_NAMESPACE_BEGIN
 
-    struct event_impl {
-        std::condition_variable condition;
-        std::mutex mutex;
-        bool manual_reset;
-        bool signalled;
-    };
+/// <summary>
+/// Holds the data required to emulate an event.
+/// </summary>
+struct event_impl {
+    std::condition_variable condition;
+    std::mutex mutex;
+    bool manual_reset;
+    bool signalled;
+};
 
-} /* namespace detail */
-} /* namespace power_overwhelming */
-} /* namespace visus */
+PWROWG_DETAIL_NAMESPACE_END
 
 
 /*
- * visus::power_overwhelming::create_event
+ * PWROWG_NAMESPACE::create_event
  */
-_Ret_valid_ visus::power_overwhelming::event_type
-visus::power_overwhelming::create_event(_In_ const bool manual_reset,
+_Ret_valid_ PWROWG_NAMESPACE::event_type PWROWG_NAMESPACE::create_event(
+        _In_ const bool manual_reset,
         _In_ const bool initially_signalled) {
 #if defined(POWER_OVERWHELMING_EVENT_EMULATION)
     auto retval = new detail::event_impl;
@@ -62,9 +61,9 @@ visus::power_overwhelming::create_event(_In_ const bool manual_reset,
 
 
 /*
- * visus::power_overwhelming::destroy_event
+ * PWROWG_NAMESPACE::destroy_event
  */
-void visus::power_overwhelming::destroy_event(_Inout_opt_ event_type& event) {
+void PWROWG_NAMESPACE::destroy_event(_Inout_opt_ event_type& event) {
 #if defined(POWER_OVERWHELMING_EVENT_EMULATION)
     delete event;
     event = nullptr;
@@ -77,9 +76,9 @@ void visus::power_overwhelming::destroy_event(_Inout_opt_ event_type& event) {
 
 
 /*
- * visus::power_overwhelming::reset_event
+ * PWROWG_NAMESPACE::reset_event
  */
-void visus::power_overwhelming::reset_event(_In_ event_type event) {
+void PWROWG_NAMESPACE::reset_event(_In_ event_type event) {
 #if defined(POWER_OVERWHELMING_EVENT_EMULATION)
     if (event == nullptr) {
         throw std::system_error(EINVAL, std::system_category());
@@ -98,9 +97,9 @@ void visus::power_overwhelming::reset_event(_In_ event_type event) {
 
 
 /*
- * visus::power_overwhelming::set_event
+ * PWROWG_NAMESPACE::set_event
  */
-void visus::power_overwhelming::set_event(_In_ event_type event) {
+void PWROWG_NAMESPACE::set_event(_In_ event_type event) {
 #if defined(POWER_OVERWHELMING_EVENT_EMULATION)
     if (event == nullptr) {
         throw std::system_error(EINVAL, std::system_category());
@@ -127,9 +126,9 @@ void visus::power_overwhelming::set_event(_In_ event_type event) {
 
 
 /*
- * visus::power_overwhelming::wait_event
+ * PWROWG_NAMESPACE::wait_event
  */
-void visus::power_overwhelming::wait_event(_In_ event_type event) {
+void PWROWG_NAMESPACE::wait_event(_In_ event_type event) {
 #if defined(POWER_OVERWHELMING_EVENT_EMULATION)
     if (event == nullptr) {
         throw std::system_error(EINVAL, std::system_category());
@@ -161,9 +160,9 @@ void visus::power_overwhelming::wait_event(_In_ event_type event) {
 
 
 /*
- * visus::power_overwhelming::wait_event
+ * PWROWG_NAMESPACE::wait_event
  */
-bool visus::power_overwhelming::wait_event(_In_ event_type event,
+bool PWROWG_NAMESPACE::wait_event(_In_ event_type event,
         _In_ const unsigned int timeout) {
 #if defined(POWER_OVERWHELMING_EVENT_EMULATION)
     if (event == nullptr) {

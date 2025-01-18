@@ -1,5 +1,5 @@
 ﻿// <copyright file="parallel_port_trigger.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -26,90 +26,86 @@
 #include "visus/pwrowg/convert_string.h"
 
 
-namespace visus {
-namespace power_overwhelming {
-namespace detail {
+PWROWG_DETAIL_NAMESPACE_BEGIN
 
-    /// <summary>
-    /// The ITU Morse code table.
-    /// </summary>
-    static const struct {
-        wchar_t symbol;
-        const wchar_t *code;
-    } morse_table[] = {
-        { L'a', L".-" },
-        { L'ä', L".-.-" },
-        { L'b', L"-..." },
-        { L'c', L"-.-." },
-        { L'd', L"-.." },
-        { L'e', L"." },
-        { L'f', L"..-." },
-        { L'g', L"--." },
-        { L'h', L"...." },
-        { L'i', L".." },
-        { L'j', L".---" },
-        { L'k', L"-.-" },
-        { L'l', L".-.." },
-        { L'm', L"--" },
-        { L'n', L"-." },
-        { L'o', L"---" },
-        { L'ö', L"---." },
-        { L'p', L".--." },
-        { L'q', L"--.-" },
-        { L'r', L".-." },
-        { L's', L"..." },
-        { L't', L"-" },
-        { L'u', L"..-" },
-        { L'ü', L"..--" },
-        { L'v', L"...-" },
-        { L'w', L".--" },
-        { L'x', L"-..-" },
-        { L'y', L"-.--" },
-        { L'z', L"--.." },
-        { L'0', L"-----" },
-        { L'1', L".----" },
-        { L'2', L"..---" },
-        { L'3', L"...--" },
-        { L'4', L"....-" },
-        { L'5', L"....." },
-        { L'6', L"-...." },
-        { L'7', L"--..." },
-        { L'8', L"---.." },
-        { L'9', L"----." },
-        { L',', L"--..--" },
-        { L'!', L"-.-.--" },
-        { L'?', L"..--.." },
-        { L'.', L".-.-.-" },
+/// <summary>
+/// The ITU Morse code table.
+/// </summary>
+static const struct {
+    wchar_t symbol;
+    const wchar_t *code;
+} morse_table[] = {
+    { L'a', L".-" },
+    { L'ä', L".-.-" },
+    { L'b', L"-..." },
+    { L'c', L"-.-." },
+    { L'd', L"-.." },
+    { L'e', L"." },
+    { L'f', L"..-." },
+    { L'g', L"--." },
+    { L'h', L"...." },
+    { L'i', L".." },
+    { L'j', L".---" },
+    { L'k', L"-.-" },
+    { L'l', L".-.." },
+    { L'm', L"--" },
+    { L'n', L"-." },
+    { L'o', L"---" },
+    { L'ö', L"---." },
+    { L'p', L".--." },
+    { L'q', L"--.-" },
+    { L'r', L".-." },
+    { L's', L"..." },
+    { L't', L"-" },
+    { L'u', L"..-" },
+    { L'ü', L"..--" },
+    { L'v', L"...-" },
+    { L'w', L".--" },
+    { L'x', L"-..-" },
+    { L'y', L"-.--" },
+    { L'z', L"--.." },
+    { L'0', L"-----" },
+    { L'1', L".----" },
+    { L'2', L"..---" },
+    { L'3', L"...--" },
+    { L'4', L"....-" },
+    { L'5', L"....." },
+    { L'6', L"-...." },
+    { L'7', L"--..." },
+    { L'8', L"---.." },
+    { L'9', L"----." },
+    { L',', L"--..--" },
+    { L'!', L"-.-.--" },
+    { L'?', L"..--.." },
+    { L'.', L".-.-.-" },
 
-        { L'è', L".-..-" },
-        { L'é', L"..-.." },
-        { L'ß', L"...--.." },
-        { L':', L"---..." },
-        { L';', L"-.-.-." },
-        { L'-', L"-....-" },
-        { L'_', L"..--.-" },
-        { L'(', L"-.--." },
-        { L')', L"-.--.-" },
-        { L'\'', L".----." },
-        { L'=', L"-...-" },
-        { L'+', L".-.-." },
-        { L'/', L"-..-." },
-        { L'@', L".--.-." },
-        { L'"', L".-..-." },
+    { L'è', L".-..-" },
+    { L'é', L"..-.." },
+    { L'ß', L"...--.." },
+    { L':', L"---..." },
+    { L';', L"-.-.-." },
+    { L'-', L"-....-" },
+    { L'_', L"..--.-" },
+    { L'(', L"-.--." },
+    { L')', L"-.--.-" },
+    { L'\'', L".----." },
+    { L'=', L"-...-" },
+    { L'+', L".-.-." },
+    { L'/', L"-..-." },
+    { L'@', L".--.-." },
+    { L'"', L".-..-." },
 
-        { L' ', L"/" },
-        { 0, nullptr }
-    };
+    { L' ', L"/" },
+    { 0, nullptr }
+};
 
-} /* namespace detail */
-} /* power_overwhelming */
-} /* visus */
+PWROWG_DETAIL_NAMESPACE_END
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::to_morse
+ * PWROWG_NAMESPACE::parallel_port_trigger::to_morse
  */
-std::size_t visus::power_overwhelming::parallel_port_trigger::to_morse(
+std::size_t PWROWG_NAMESPACE::parallel_port_trigger::to_morse(
         _Out_writes_opt_z_(cnt) wchar_t *dst,
         _In_ const std::size_t cnt,
         _In_z_ const wchar_t *message) {
@@ -172,51 +168,51 @@ std::size_t visus::power_overwhelming::parallel_port_trigger::to_morse(
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::parallel_port_trigger
+ * PWROWG_NAMESPACE::parallel_port_trigger::parallel_port_trigger
  */
-visus::power_overwhelming::parallel_port_trigger::parallel_port_trigger(void)
+PWROWG_NAMESPACE::parallel_port_trigger::parallel_port_trigger(void)
     : _handle(invalid_handle) { }
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::parallel_port_trigger
+ * PWROWG_NAMESPACE::parallel_port_trigger::parallel_port_trigger
  */
-visus::power_overwhelming::parallel_port_trigger::parallel_port_trigger(
+PWROWG_NAMESPACE::parallel_port_trigger::parallel_port_trigger(
         _In_z_ const wchar_t *path) : _handle(invalid_handle) {
     this->open(path);
 }
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::parallel_port_trigger
+ * PWROWG_NAMESPACE::parallel_port_trigger::parallel_port_trigger
  */
-visus::power_overwhelming::parallel_port_trigger::parallel_port_trigger(
+PWROWG_NAMESPACE::parallel_port_trigger::parallel_port_trigger(
         _In_z_ const char *path) : _handle(invalid_handle) {
     this->open(path);
 }
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::parallel_port_trigger
+ * PWROWG_NAMESPACE::parallel_port_trigger::parallel_port_trigger
  */
-visus::power_overwhelming::parallel_port_trigger::parallel_port_trigger(
+PWROWG_NAMESPACE::parallel_port_trigger::parallel_port_trigger(
         _Inout_ parallel_port_trigger&& rhs) noexcept : _handle(rhs._handle) {
     rhs._handle = invalid_handle;
 }
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::~parallel_port_trigger
+ * PWROWG_NAMESPACE::parallel_port_trigger::~parallel_port_trigger
  */
-visus::power_overwhelming::parallel_port_trigger::~parallel_port_trigger(void) {
+PWROWG_NAMESPACE::parallel_port_trigger::~parallel_port_trigger(void) {
     this->close();
 }
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::close
+ * PWROWG_NAMESPACE::parallel_port_trigger::close
  */
-void visus::power_overwhelming::parallel_port_trigger::close(void) noexcept {
+void PWROWG_NAMESPACE::parallel_port_trigger::close(void) noexcept {
     if (this->_handle != invalid_handle) {
 #if defined(_WIN32)
         ::CloseHandle(this->_handle);
@@ -230,9 +226,9 @@ void visus::power_overwhelming::parallel_port_trigger::close(void) noexcept {
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::morse
+ * PWROWG_NAMESPACE::parallel_port_trigger::morse
  */
-void visus::power_overwhelming::parallel_port_trigger::morse(
+void PWROWG_NAMESPACE::parallel_port_trigger::morse(
         _In_opt_z_ const wchar_t *code,
         _In_ const milliseconds_type base_time,
         _In_ const parallel_port_pin on,
@@ -278,9 +274,9 @@ void visus::power_overwhelming::parallel_port_trigger::morse(
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::open
+ * PWROWG_NAMESPACE::parallel_port_trigger::open
  */
-void visus::power_overwhelming::parallel_port_trigger::open(
+void PWROWG_NAMESPACE::parallel_port_trigger::open(
         _In_z_ const wchar_t *path) {
     if (path == nullptr) {
         throw std::invalid_argument("The specified path is invalid.");
@@ -303,9 +299,9 @@ void visus::power_overwhelming::parallel_port_trigger::open(
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::open
+ * PWROWG_NAMESPACE::parallel_port_trigger::open
  */
-void visus::power_overwhelming::parallel_port_trigger::open(
+void PWROWG_NAMESPACE::parallel_port_trigger::open(
         _In_z_ const char *path) {
     if (path == nullptr) {
         throw std::invalid_argument("The specified path is invalid.");
@@ -336,9 +332,9 @@ void visus::power_overwhelming::parallel_port_trigger::open(
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::write
+ * PWROWG_NAMESPACE::parallel_port_trigger::write
  */
-void visus::power_overwhelming::parallel_port_trigger::write(
+void PWROWG_NAMESPACE::parallel_port_trigger::write(
         _In_ const value_type data) const {
 #if defined(_WIN32)
     DWORD written = 0;
@@ -354,9 +350,9 @@ void visus::power_overwhelming::parallel_port_trigger::write(
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::pulse
+ * PWROWG_NAMESPACE::parallel_port_trigger::pulse
  */
-void visus::power_overwhelming::parallel_port_trigger::pulse(
+void PWROWG_NAMESPACE::parallel_port_trigger::pulse(
         _In_ const value_type data,
         _In_ const milliseconds_type period) const {
     this->write(data);
@@ -366,9 +362,9 @@ void visus::power_overwhelming::parallel_port_trigger::pulse(
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::pulse
+ * PWROWG_NAMESPACE::parallel_port_trigger::pulse
  */
-void visus::power_overwhelming::parallel_port_trigger::pulse(
+void PWROWG_NAMESPACE::parallel_port_trigger::pulse(
         _In_ const parallel_port_pin pins,
         _In_ const milliseconds_type period) const {
     this->pulse(to_value(pins), period);
@@ -376,19 +372,19 @@ void visus::power_overwhelming::parallel_port_trigger::pulse(
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::write
+ * PWROWG_NAMESPACE::parallel_port_trigger::write
  */
-void visus::power_overwhelming::parallel_port_trigger::write(
+void PWROWG_NAMESPACE::parallel_port_trigger::write(
         _In_ const parallel_port_pin pins) const {
     this->write(to_value(pins));
 }
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::operator =
+ * PWROWG_NAMESPACE::parallel_port_trigger::operator =
  */
-visus::power_overwhelming::parallel_port_trigger&
-visus::power_overwhelming::parallel_port_trigger::operator =(
+PWROWG_NAMESPACE::parallel_port_trigger&
+PWROWG_NAMESPACE::parallel_port_trigger::operator =(
         _Inout_ parallel_port_trigger&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         this->_handle = rhs._handle;
@@ -400,16 +396,16 @@ visus::power_overwhelming::parallel_port_trigger::operator =(
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::operator bool
+ * PWROWG_NAMESPACE::parallel_port_trigger::operator bool
  */
-visus::power_overwhelming::parallel_port_trigger::operator bool(
+PWROWG_NAMESPACE::parallel_port_trigger::operator bool(
         void) const noexcept {
     return (this->_handle != invalid_handle);
 }
 
 
 /*
- * visus::power_overwhelming::parallel_port_trigger::invalid_handle
+ * PWROWG_NAMESPACE::parallel_port_trigger::invalid_handle
  */
-constexpr const visus::power_overwhelming::parallel_port_trigger::handle_type
-visus::power_overwhelming::parallel_port_trigger::invalid_handle;
+constexpr const PWROWG_NAMESPACE::parallel_port_trigger::handle_type
+PWROWG_NAMESPACE::parallel_port_trigger::invalid_handle;

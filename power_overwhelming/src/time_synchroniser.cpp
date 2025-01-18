@@ -1,5 +1,5 @@
 ﻿// <copyright file="time_synchroniser.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2022 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -10,10 +10,10 @@
 
 
 /*
- * visus::power_overwhelming::time_synchroniser::create
+ * PWROWG_NAMESPACE::time_synchroniser::create
  */
-visus::power_overwhelming::time_synchroniser
-visus::power_overwhelming::time_synchroniser::create(
+PWROWG_NAMESPACE::time_synchroniser
+PWROWG_NAMESPACE::time_synchroniser::create(
         _In_ const int address_family,
         _In_ const std::uint16_t port) {
     time_synchroniser retval;
@@ -33,18 +33,18 @@ visus::power_overwhelming::time_synchroniser::create(
 
 
 /*
- * visus::power_overwhelming::time_synchroniser::~time_synchroniser
+ * PWROWG_NAMESPACE::time_synchroniser::~time_synchroniser
  */
-visus::power_overwhelming::time_synchroniser::~time_synchroniser(void) {
+PWROWG_NAMESPACE::time_synchroniser::~time_synchroniser(void) {
     delete this->_impl;
 }
 
 
 /*
- * visus::power_overwhelming::time_synchroniser::operator =
+ * PWROWG_NAMESPACE::time_synchroniser::operator =
  */
-visus::power_overwhelming::time_synchroniser&
-visus::power_overwhelming::time_synchroniser::operator =(
+PWROWG_NAMESPACE::time_synchroniser&
+PWROWG_NAMESPACE::time_synchroniser::operator =(
         _In_ time_synchroniser&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         this->_impl = rhs._impl;
@@ -56,9 +56,9 @@ visus::power_overwhelming::time_synchroniser::operator =(
 
 
 /*
- * visus::power_overwhelming::time_synchroniser::operator bool
+ * PWROWG_NAMESPACE::time_synchroniser::operator bool
  */
-visus::power_overwhelming::time_synchroniser::operator bool(
+PWROWG_NAMESPACE::time_synchroniser::operator bool(
         void) const noexcept {
     return (this->_impl != nullptr);
 }

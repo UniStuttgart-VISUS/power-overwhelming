@@ -1,5 +1,5 @@
 ﻿// <copyright file="cpu_info.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -21,10 +21,10 @@
 
 
 /*
- * visus::power_overwhelming::extract_cpu_model
+ * PWROWG_NAMESPACE::extract_cpu_model
  */
-visus::power_overwhelming::cpu_model
-visus::power_overwhelming::extract_cpu_model(
+PWROWG_NAMESPACE::cpu_model
+PWROWG_NAMESPACE::extract_cpu_model(
         _In_reads_(2) const cpu_info info[2]) noexcept {
     // https://www.amd.com/system/files/TechDocs/25481.pdf
     // https://en.wikichip.org/wiki/amd/cpuid
@@ -42,10 +42,10 @@ visus::power_overwhelming::extract_cpu_model(
 
 
 /*
- * visus::power_overwhelming::extract_cpu_vendor
+ * PWROWG_NAMESPACE::extract_cpu_vendor
  */
-visus::power_overwhelming::cpu_vendor
-visus::power_overwhelming::extract_cpu_vendor(_In_ const cpu_info& info) noexcept {
+PWROWG_NAMESPACE::cpu_vendor
+PWROWG_NAMESPACE::extract_cpu_vendor(_In_ const cpu_info& info) noexcept {
 #define _RET_MATCH(v, r) if (::strncmp(vendor, (v), sizeof(vendor)) == 0) \
     return cpu_vendor::r
 
@@ -94,9 +94,9 @@ visus::power_overwhelming::extract_cpu_vendor(_In_ const cpu_info& info) noexcep
 }
 
 /*
- * visus::power_overwhelming::get_cpu_info
+ * PWROWG_NAMESPACE::get_cpu_info
  */
-std::uint32_t visus::power_overwhelming::get_cpu_info(
+std::uint32_t PWROWG_NAMESPACE::get_cpu_info(
         _Out_writes_opt_(cnt) cpu_info *infos,
         _In_ std::uint32_t cnt) {
     cpu_info info;
@@ -132,9 +132,9 @@ std::uint32_t visus::power_overwhelming::get_cpu_info(
 
 
 /*
- * visus::power_overwhelming::get_cpu_vendor
+ * PWROWG_NAMESPACE::get_cpu_vendor
  */
-visus::power_overwhelming::cpu_vendor visus::power_overwhelming::get_cpu_vendor(
+PWROWG_NAMESPACE::cpu_vendor PWROWG_NAMESPACE::get_cpu_vendor(
         void) noexcept {
     cpu_info info;
     if (get_cpu_info(&info, 1) > 0) {

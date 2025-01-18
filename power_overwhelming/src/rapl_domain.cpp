@@ -1,5 +1,5 @@
 ﻿// <copyright file="rapl_domain.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -12,9 +12,9 @@
 
 
 /*
- * visus::power_overwhelming::for_each_rapl_domain
+ * PWROWG_NAMESPACE::for_each_rapl_domain
  */
-std::size_t visus::power_overwhelming::for_each_rapl_domain(
+std::size_t PWROWG_NAMESPACE::for_each_rapl_domain(
         _In_ bool (*func)(const rapl_domain, void *),
         _In_opt_ void *context) {
     if (func == nullptr) {
@@ -29,10 +29,10 @@ std::size_t visus::power_overwhelming::for_each_rapl_domain(
 
 
 /*
- * visus::power_overwhelming::parse_rapl_domain
+ * PWROWG_NAMESPACE::parse_rapl_domain
  */
-visus::power_overwhelming::rapl_domain
-visus::power_overwhelming::parse_rapl_domain(_In_z_ const wchar_t *str) {
+PWROWG_NAMESPACE::rapl_domain
+PWROWG_NAMESPACE::parse_rapl_domain(_In_z_ const wchar_t *str) {
     if (str == nullptr) {
         throw std::invalid_argument("Only a valid string can be parsed into a "
             "rapl_domain.");
@@ -55,9 +55,9 @@ visus::power_overwhelming::parse_rapl_domain(_In_z_ const wchar_t *str) {
 
 
 /*
- * visus::power_overwhelming::to_string
+ * PWROWG_NAMESPACE::to_string
  */
-_Ret_z_ const wchar_t *visus::power_overwhelming::to_string(
+_Ret_z_ const wchar_t *PWROWG_NAMESPACE::to_string(
         _In_ const rapl_domain domain) {
 #define _GCC_IS_SHIT(v) L##v
 #define _TO_STRING_CASE(v) case rapl_domain::v: return _GCC_IS_SHIT(#v)
