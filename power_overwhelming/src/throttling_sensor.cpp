@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/throttling_sensor.h"
+#include "visus/pwrowg/throttling_sensor.h"
 
 
 /*

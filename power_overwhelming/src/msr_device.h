@@ -15,7 +15,7 @@
 #include <Windows.h>
 #endif /* defined(_WIN32) */
 
-#include "power_overwhelming/msr_sensor.h"
+#include "visus/pwrowg/msr_sensor.h"
 
 
 namespace visus {

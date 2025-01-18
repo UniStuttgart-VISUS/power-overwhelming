@@ -9,7 +9,7 @@
 #include <memory>
 #include <stdexcept>
 
-#include "power_overwhelming/sampler_source.h"
+#include "visus/pwrowg/sampler_source.h"
 
 
 namespace visus {

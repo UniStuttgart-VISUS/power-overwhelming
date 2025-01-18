@@ -4,8 +4,8 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/convert_string.h"
-#include "power_overwhelming/rtx_instrument_configuration.h"
+#include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/rtx_instrument_configuration.h"
 
 #include <algorithm>
 #include <iostream>

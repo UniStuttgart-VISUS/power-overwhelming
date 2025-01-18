@@ -4,13 +4,13 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/rtx_sensor_definition.h"
+#include "visus/pwrowg/rtx_sensor_definition.h"
 
 #include <algorithm>
 #include <stdexcept>
 
-#include "power_overwhelming/convert_string.h"
-#include "power_overwhelming/rtx_instrument.h"
+#include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/rtx_instrument.h"
 
 #include "string_functions.h"
 

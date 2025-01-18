@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/event.h"
+#include "visus/pwrowg/event.h"
 
 #include <cassert>
 #include <condition_variable>

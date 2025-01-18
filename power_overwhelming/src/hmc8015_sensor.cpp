@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/hmc8015_sensor.h"
+#include "visus/pwrowg/hmc8015_sensor.h"
 
 #include <algorithm>
 #include <cassert>
@@ -12,8 +12,8 @@
 #include <stdexcept>
 #include <utility>
 
-#include "power_overwhelming/convert_string.h"
-#include "power_overwhelming/timestamp.h"
+#include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/timestamp.h"
 
 #include "hmc8015_sensor_impl.h"
 #include "no_visa_error_msg.h"

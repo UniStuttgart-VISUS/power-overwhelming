@@ -6,8 +6,8 @@
 
 #include "msr_magic.h"
 
-#include "power_overwhelming/cpu_affinity.h"
-#include "power_overwhelming/cpu_info.h"
+#include "visus/pwrowg/cpu_affinity.h"
+#include "visus/pwrowg/cpu_info.h"
 
 
 /*

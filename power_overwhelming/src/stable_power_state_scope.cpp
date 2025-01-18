@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/stable_power_state_scope.h"
+#include "visus/pwrowg/stable_power_state_scope.h"
 
 #include <cassert>
 #include <stdexcept>

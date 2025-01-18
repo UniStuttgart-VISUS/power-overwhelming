@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "power_overwhelming/oscilloscope_acquisition.h"
-#include "power_overwhelming/oscilloscope_channel.h"
-#include "power_overwhelming/oscilloscope_quantity.h"
-#include "power_overwhelming/oscilloscope_trigger.h"
-#include "power_overwhelming/rtx_instrument.h"
+#include "visus/pwrowg/oscilloscope_acquisition.h"
+#include "visus/pwrowg/oscilloscope_channel.h"
+#include "visus/pwrowg/oscilloscope_quantity.h"
+#include "visus/pwrowg/oscilloscope_trigger.h"
+#include "visus/pwrowg/rtx_instrument.h"
 
 
 namespace visus {

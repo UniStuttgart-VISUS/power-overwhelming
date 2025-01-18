@@ -9,10 +9,10 @@
 #include <iostream>
 #include <utility>
 
-#include "power_overwhelming/convert_string.h"
-#include "power_overwhelming/csv_iomanip.h"
-#include "power_overwhelming/measurement_data.h"
-#include "power_overwhelming/quote.h"
+#include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/csv_iomanip.h"
+#include "visus/pwrowg/measurement_data.h"
+#include "visus/pwrowg/quote.h"
 
 
 namespace visus {
@@ -241,4 +241,4 @@ namespace std {
 
 }
 
-#include "power_overwhelming/measurement.inl"
+#include "visus/pwrowg/measurement.inl"

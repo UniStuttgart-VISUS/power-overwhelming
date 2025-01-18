@@ -54,7 +54,7 @@
 
 #endif /* defined(_WIN32) */
 
-#include "power_overwhelming_api.h"
+#include "api.h"
 
 
 namespace visus {

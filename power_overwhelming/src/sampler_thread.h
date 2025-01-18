@@ -13,7 +13,7 @@
 #include <thread>
 #include <vector>
 
-#include "power_overwhelming/sampler_source.h"
+#include "visus/pwrowg/sampler_source.h"
 
 #include "thread_name.h"
 

@@ -15,8 +15,8 @@
 
 #include <bricklet_voltage_current_v2.h>
 
-#include "power_overwhelming/power_overwhelming_api.h"
-#include "power_overwhelming/timestamp.h"
+#include "visus/pwrowg/api.h"
+#include "visus/pwrowg/timestamp.h"
 
 #include "tinkerforge_exception.h"
 

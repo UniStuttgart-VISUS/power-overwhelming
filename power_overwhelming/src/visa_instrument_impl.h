@@ -14,9 +14,9 @@
 #include <mutex>
 #include <string>
 
-#include "power_overwhelming/blob.h"
-#include "power_overwhelming/convert_string.h"
-#include "power_overwhelming/visa_instrument.h"
+#include "visus/pwrowg/blob.h"
+#include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/visa_instrument.h"
 
 #include "string_functions.h"
 #include "visa_event_handler.h"

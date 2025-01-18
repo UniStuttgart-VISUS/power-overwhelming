@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/cpu_info.h"
+#include "visus/pwrowg/cpu_info.h"
 
 #include <array>
 #include <cstring>

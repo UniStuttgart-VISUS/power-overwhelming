@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/measurement_data.h"
+#include "visus/pwrowg/measurement_data.h"
 
 #include <limits>
 #include <stdexcept>

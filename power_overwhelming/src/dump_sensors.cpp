@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/dump_sensors.h"
+#include "visus/pwrowg/dump_sensors.h"
 
 #include "sensor_utilities.h"
 

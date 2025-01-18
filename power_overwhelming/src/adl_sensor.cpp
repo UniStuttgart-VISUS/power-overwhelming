@@ -3,15 +3,15 @@
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 
-#include "power_overwhelming/adl_sensor.h"
+#include "visus/pwrowg/adl_sensor.h"
 
 #include <algorithm>
 #include <cassert>
 #include <cstring>
 #include <vector>
 
-#include "power_overwhelming/adl_sensor_source.h"
-#include "power_overwhelming/convert_string.h"
+#include "visus/pwrowg/adl_sensor_source.h"
+#include "visus/pwrowg/convert_string.h"
 
 #include "adl_utils.h"
 

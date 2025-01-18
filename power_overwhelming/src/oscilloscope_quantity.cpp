@@ -4,11 +4,11 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/oscilloscope_quantity.h"
+#include "visus/pwrowg/oscilloscope_quantity.h"
 
 #include <memory>
 
-#include "power_overwhelming/convert_string.h"
+#include "visus/pwrowg/convert_string.h"
 
 #include "string_functions.h"
 

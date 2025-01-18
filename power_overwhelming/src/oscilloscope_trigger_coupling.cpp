@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/oscilloscope_trigger_coupling.h"
+#include "visus/pwrowg/oscilloscope_trigger_coupling.h"
 
 #include <stdexcept>
 

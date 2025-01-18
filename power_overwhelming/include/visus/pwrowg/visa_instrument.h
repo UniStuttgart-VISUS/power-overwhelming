@@ -15,9 +15,9 @@
 #include <visa.h>
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
-#include "power_overwhelming/blob.h"
-#include "power_overwhelming/visa_event_status.h"
-#include "power_overwhelming/visa_status_byte.h"
+#include "visus/pwrowg/blob.h"
+#include "visus/pwrowg/visa_event_status.h"
+#include "visus/pwrowg/visa_status_byte.h"
 
 
 namespace visus {
@@ -1245,4 +1245,4 @@ namespace power_overwhelming {
 } /* namespace power_overwhelming */
 } /* namespace visus */
 
-#include "power_overwhelming/visa_instrument.inl"
+#include "visus/pwrowg/visa_instrument.inl"

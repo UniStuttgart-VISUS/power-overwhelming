@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/emi_sensor.h"
+#include "visus/pwrowg/emi_sensor.h"
 
 #include <cinttypes>
 #include <memory>

@@ -8,8 +8,8 @@
 
 #include <iostream>
 
-#include "power_overwhelming/literal.h"
-#include "power_overwhelming/power_overwhelming_api.h"
+#include "visus/pwrowg/literal.h"
+#include "visus/pwrowg/api.h"
 
 
 namespace visus {

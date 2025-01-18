@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/hmc8015_function.h"
+#include "visus/pwrowg/hmc8015_function.h"
 
 #include <stdexcept>
 

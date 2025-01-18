@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "power_overwhelming/measurement_data.h"
+#include "visus/pwrowg/measurement_data.h"
 
 
 namespace visus {

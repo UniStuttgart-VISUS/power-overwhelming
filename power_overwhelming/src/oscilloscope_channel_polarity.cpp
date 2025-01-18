@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/oscilloscope_channel_polarity.h"
+#include "visus/pwrowg/oscilloscope_channel_polarity.h"
 
 #include <stdexcept>
 

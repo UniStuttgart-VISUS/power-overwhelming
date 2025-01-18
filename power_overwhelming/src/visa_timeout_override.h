@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "power_overwhelming/visa_instrument.h"
+#include "visus/pwrowg/visa_instrument.h"
 
 #include "visa_exception.h"
 #include "visa_library.h"

@@ -6,8 +6,8 @@
 
 #include "emi_sensor_impl.h"
 
-#include "power_overwhelming/convert_string.h"
-#include "power_overwhelming/timestamp.h"
+#include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/timestamp.h"
 
 
 #if defined(_WIN32)

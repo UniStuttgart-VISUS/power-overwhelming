@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/parallel_port_trigger.h"
+#include "visus/pwrowg/parallel_port_trigger.h"
 
 #include <cassert>
 #include <cerrno>
@@ -23,7 +23,7 @@
 #include <sys/ioctl.h>
 #endif /* !defined(_WIN32) */
 
-#include "power_overwhelming/convert_string.h"
+#include "visus/pwrowg/convert_string.h"
 
 
 namespace visus {

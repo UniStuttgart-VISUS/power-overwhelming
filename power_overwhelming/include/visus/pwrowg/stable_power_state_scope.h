@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "power_overwhelming/graphics_device.h"
+#include "visus/pwrowg/graphics_device.h"
 
 
 namespace visus {

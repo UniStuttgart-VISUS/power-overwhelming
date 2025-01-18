@@ -3,7 +3,7 @@
 // Licensed under the MIT licence. See LICENCE file for details.
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/oscilloscope_waveform.h"
+#include "visus/pwrowg/oscilloscope_waveform.h"
 
 #include <chrono>
 #include <cmath>

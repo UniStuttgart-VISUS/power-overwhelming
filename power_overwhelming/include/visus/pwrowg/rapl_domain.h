@@ -8,7 +8,7 @@
 
 #include <cstddef>
 
-#include "power_overwhelming/power_overwhelming_api.h"
+#include "visus/pwrowg/api.h"
 
 
 namespace visus {

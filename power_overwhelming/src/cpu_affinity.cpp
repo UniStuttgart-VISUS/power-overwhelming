@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/cpu_affinity.h"
+#include "visus/pwrowg/cpu_affinity.h"
 
 #include <limits>
 #include <stdexcept>

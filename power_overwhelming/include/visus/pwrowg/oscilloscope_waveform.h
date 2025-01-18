@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "power_overwhelming/blob.h"
-#include "power_overwhelming/measurement_data.h"
+#include "visus/pwrowg/blob.h"
+#include "visus/pwrowg/measurement_data.h"
 
 
 namespace visus {

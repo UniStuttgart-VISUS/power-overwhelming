@@ -8,7 +8,7 @@
 
 #include <conio.h>
 
-#include "power_overwhelming/stable_power_state_scope.h"
+#include "visus/pwrowg/stable_power_state_scope.h"
 
 
 /// <summary>

@@ -8,7 +8,7 @@
 
 #include <vector>
 
-#include "power_overwhelming/convert_string.h"
+#include "visus/pwrowg/convert_string.h"
 
 #include "nvidia_management_library.h"
 #include "nvml_exception.h"

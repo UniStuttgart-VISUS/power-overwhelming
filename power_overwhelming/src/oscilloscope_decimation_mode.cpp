@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/oscilloscope_decimation_mode.h"
+#include "visus/pwrowg/oscilloscope_decimation_mode.h"
 
 #include <stdexcept>
 

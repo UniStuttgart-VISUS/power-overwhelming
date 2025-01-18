@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/nvml_sensor.h"
+#include "visus/pwrowg/nvml_sensor.h"
 
 #include <cassert>
 #include <stdexcept>

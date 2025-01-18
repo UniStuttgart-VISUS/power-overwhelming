@@ -9,11 +9,11 @@
 #include <functional>
 #include <utility>
 
-#include "power_overwhelming/cpu_info.h"
-#include "power_overwhelming/msr_sensor.h"
-#include "power_overwhelming/power_overwhelming_api.h"
-#include "power_overwhelming/rapl_domain.h"
-#include "power_overwhelming/rapl_quantity.h"
+#include "visus/pwrowg/cpu_info.h"
+#include "visus/pwrowg/msr_sensor.h"
+#include "visus/pwrowg/api.h"
+#include "visus/pwrowg/rapl_domain.h"
+#include "visus/pwrowg/rapl_quantity.h"
 
 #include "msr_magic.h"
 

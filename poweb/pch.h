@@ -33,5 +33,5 @@
 #include <WebView2.h>
 #include <WebView2EnvironmentOptions.h>
 
-#include "power_overwhelming/collector.h"
-#include "power_overwhelming/convert_string.h"
+#include "visus/pwrowg/collector.h"
+#include "visus/pwrowg/convert_string.h"

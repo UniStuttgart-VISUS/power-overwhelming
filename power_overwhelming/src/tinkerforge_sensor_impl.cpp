@@ -10,7 +10,7 @@
 #include <cassert>
 #include <numeric>
 
-#include "power_overwhelming/convert_string.h"
+#include "visus/pwrowg/convert_string.h"
 
 #include "tinkerforge_exception.h"
 

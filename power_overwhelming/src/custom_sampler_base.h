@@ -14,7 +14,7 @@
 #include <thread>
 #include <vector>
 
-#include "power_overwhelming/async_sampling.h"
+#include "visus/pwrowg/async_sampling.h"
 
 
 namespace visus {

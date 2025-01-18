@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/throttling_state.h"
+#include "visus/pwrowg/throttling_state.h"
 
 #include <type_traits>
 

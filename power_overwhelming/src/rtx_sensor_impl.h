@@ -8,10 +8,10 @@
 
 #include <string>
 
-#include "power_overwhelming/async_sampling.h"
-#include "power_overwhelming/rtx_instrument.h"
-#include "power_overwhelming/rtx_instrument_configuration.h"
-#include "power_overwhelming/waveform_decimation_method.h"
+#include "visus/pwrowg/async_sampling.h"
+#include "visus/pwrowg/rtx_instrument.h"
+#include "visus/pwrowg/rtx_instrument_configuration.h"
+#include "visus/pwrowg/waveform_decimation_method.h"
 
 
 namespace visus {

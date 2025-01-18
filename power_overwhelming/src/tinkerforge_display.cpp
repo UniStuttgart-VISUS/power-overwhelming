@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/tinkerforge_display.h"
+#include "visus/pwrowg/tinkerforge_display.h"
 
 #include <stdexcept>
 #include <vector>

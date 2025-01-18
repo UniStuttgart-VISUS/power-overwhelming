@@ -10,14 +10,14 @@
 
 #include "nlohmann/json.hpp"
 
-#include "power_overwhelming/adl_sensor.h"
-#include "power_overwhelming/emi_sensor.h"
-#include "power_overwhelming/hmc8015_sensor.h"
-#include "power_overwhelming/msr_sensor.h"
-#include "power_overwhelming/nvml_sensor.h"
-#include "power_overwhelming/regex_escape.h"
-#include "power_overwhelming/rtx_sensor.h"
-#include "power_overwhelming/tinkerforge_sensor.h"
+#include "visus/pwrowg/adl_sensor.h"
+#include "visus/pwrowg/emi_sensor.h"
+#include "visus/pwrowg/hmc8015_sensor.h"
+#include "visus/pwrowg/msr_sensor.h"
+#include "visus/pwrowg/nvml_sensor.h"
+#include "visus/pwrowg/regex_escape.h"
+#include "visus/pwrowg/rtx_sensor.h"
+#include "visus/pwrowg/tinkerforge_sensor.h"
 
 #include "described_sensor_type.h"
 #include "msr_sensor_impl.h"

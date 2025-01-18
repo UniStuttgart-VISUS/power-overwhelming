@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/graphics_device.h"
+#include "visus/pwrowg/graphics_device.h"
 
 #include <memory>
 

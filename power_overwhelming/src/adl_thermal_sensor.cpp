@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/adl_thermal_sensor.h"
+#include "visus/pwrowg/adl_thermal_sensor.h"
 
 #include <cassert>
 

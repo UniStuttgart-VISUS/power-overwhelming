@@ -3,7 +3,7 @@
 // Licensed under the MIT licence. See LICENCE file for details.
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/sensor.h"
+#include "visus/pwrowg/sensor.h"
 
 #include <atomic>
 #include <chrono>
@@ -18,8 +18,8 @@
 #include <Windows.h>
 #endif /* defined(_WIN32) */
 
-#include "power_overwhelming/collector_settings.h"
-#include "power_overwhelming/event.h"
+#include "visus/pwrowg/collector_settings.h"
+#include "visus/pwrowg/event.h"
 
 
 namespace visus {

@@ -23,7 +23,7 @@
 #include <sys/types.h>
 #endif /* defined(_WIN32) */
 
-#include "power_overwhelming/power_overwhelming_api.h"
+#include "visus/pwrowg/api.h"
 
 
 namespace visus {

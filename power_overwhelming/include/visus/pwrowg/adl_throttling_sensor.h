@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "power_overwhelming/throttling_sensor.h"
+#include "visus/pwrowg/throttling_sensor.h"
 
 
 namespace visus {

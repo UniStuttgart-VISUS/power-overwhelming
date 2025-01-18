@@ -12,14 +12,14 @@
 #include <cstdint>
 #include <cinttypes>
 
-#include "power_overwhelming/blob.h"
-#include "power_overwhelming/hmc8015_function.h"
-#include "power_overwhelming/integrator_mode.h"
-#include "power_overwhelming/instrument_range.h"
-#include "power_overwhelming/log_mode.h"
-#include "power_overwhelming/sampler_source.h"
-#include "power_overwhelming/sensor.h"
-#include "power_overwhelming/visa_instrument.h"
+#include "visus/pwrowg/blob.h"
+#include "visus/pwrowg/hmc8015_function.h"
+#include "visus/pwrowg/integrator_mode.h"
+#include "visus/pwrowg/instrument_range.h"
+#include "visus/pwrowg/log_mode.h"
+#include "visus/pwrowg/sampler_source.h"
+#include "visus/pwrowg/sensor.h"
+#include "visus/pwrowg/visa_instrument.h"
 
 
 namespace visus {

@@ -10,7 +10,7 @@
 #include <functional>
 #include <stdexcept>
 
-#include "power_overwhelming/rapl_domain.h"
+#include "visus/pwrowg/rapl_domain.h"
 
 
 namespace visus {

@@ -8,7 +8,7 @@
 
 #include <map>
 
-#include "power_overwhelming/sampler_source.h"
+#include "visus/pwrowg/sampler_source.h"
 
 #include "sampler_thread.h"
 

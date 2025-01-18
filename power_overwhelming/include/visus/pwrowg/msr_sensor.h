@@ -8,9 +8,9 @@
 
 #include <ios>
 
-#include "power_overwhelming/rapl_domain.h"
-#include "power_overwhelming/rapl_quantity.h"
-#include "power_overwhelming/sensor.h"
+#include "visus/pwrowg/rapl_domain.h"
+#include "visus/pwrowg/rapl_quantity.h"
+#include "visus/pwrowg/sensor.h"
 
 
 namespace visus {

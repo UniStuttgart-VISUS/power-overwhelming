@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/computer_name.h"
+#include "visus/pwrowg/computer_name.h"
 
 #include <system_error>
 
@@ -19,7 +19,7 @@
 #include <errno.h>
 #endif /* defined(_WIN32) */
 
-#include "power_overwhelming/convert_string.h"
+#include "visus/pwrowg/convert_string.h"
 
 
 namespace visus {

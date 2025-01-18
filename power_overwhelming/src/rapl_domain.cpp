@@ -4,11 +4,11 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/rapl_domain.h"
+#include "visus/pwrowg/rapl_domain.h"
 
 #include <stdexcept>
 
-#include "power_overwhelming/for_each_rapl_domain.h"
+#include "visus/pwrowg/for_each_rapl_domain.h"
 
 
 /*

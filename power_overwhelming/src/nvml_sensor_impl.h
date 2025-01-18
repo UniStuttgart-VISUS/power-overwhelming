@@ -10,7 +10,7 @@
 
 #include <nvml.h>
 
-#include "power_overwhelming/timestamp.h"
+#include "visus/pwrowg/timestamp.h"
 
 #include "basic_sampler_source.h"
 #include "nvml_scope.h"

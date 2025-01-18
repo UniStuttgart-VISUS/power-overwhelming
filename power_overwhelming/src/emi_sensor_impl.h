@@ -11,9 +11,9 @@
 #include <memory>
 #include <mutex>
 
-#include "power_overwhelming/emi_sensor.h"
-#include "power_overwhelming/measurement.h"
-#include "power_overwhelming/timestamp.h"
+#include "visus/pwrowg/emi_sensor.h"
+#include "visus/pwrowg/measurement.h"
+#include "visus/pwrowg/timestamp.h"
 
 #include "device_sampler_source.h"
 #include "emi_device_factory.h"

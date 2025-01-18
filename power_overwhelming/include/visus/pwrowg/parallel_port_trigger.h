@@ -14,7 +14,7 @@
 #include <Windows.h>
 #endif /* defined(_WIN32) */
 
-#include "power_overwhelming/parallel_port_pin.h"
+#include "visus/pwrowg/parallel_port_pin.h"
 
 
 namespace visus {

@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/rtx_sensor.h"
+#include "visus/pwrowg/rtx_sensor.h"
 
 #include <algorithm>
 #include <cassert>
@@ -16,8 +16,8 @@
 #include <utility>
 #include <vector>
 
-#include "power_overwhelming/convert_string.h"
-#include "power_overwhelming/timestamp.h"
+#include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/timestamp.h"
 
 #include "rtx_sampler.h"
 #include "rtx_sensor_impl.h"

@@ -21,8 +21,8 @@
 #include <type_traits>
 #include <vector>
 
-#include "power_overwhelming/blob.h"
-#include "power_overwhelming/literal.h"
+#include "visus/pwrowg/blob.h"
+#include "visus/pwrowg/literal.h"
 
 
 namespace visus {

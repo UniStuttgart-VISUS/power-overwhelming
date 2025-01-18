@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/rtx_instrument_configuration.h"
+#include "visus/pwrowg/rtx_instrument_configuration.h"
 
 #include <cstring>
 #include <fstream>
@@ -14,7 +14,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include "power_overwhelming/convert_string.h"
+#include "visus/pwrowg/convert_string.h"
 
 #include "rtx_serialisation.h"
 #include "string_functions.h"

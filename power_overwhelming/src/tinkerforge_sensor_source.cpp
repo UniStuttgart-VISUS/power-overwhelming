@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/tinkerforge_sensor_source.h"
+#include "visus/pwrowg/tinkerforge_sensor_source.h"
 
 #include <stdexcept>
 #include <type_traits>

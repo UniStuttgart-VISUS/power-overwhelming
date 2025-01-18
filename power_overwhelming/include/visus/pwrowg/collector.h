@@ -14,7 +14,7 @@
 #include <type_traits>
 #include <vector>
 
-#include "power_overwhelming/collector_settings.h"
+#include "visus/pwrowg/collector_settings.h"
 
 
 namespace visus {
@@ -241,4 +241,4 @@ namespace power_overwhelming {
 } /* namespace power_overwhelming */
 } /* namespace visus */
 
-#include "power_overwhelming/collector.inl"
+#include "visus/pwrowg/collector.inl"

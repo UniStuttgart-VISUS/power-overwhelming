@@ -17,7 +17,7 @@
 #include <Windows.h>
 #endif /* defined(_WIN32) */
 
-#include "power_overwhelming/power_overwhelming_api.h"
+#include "visus/pwrowg/api.h"
 
 
 namespace visus {
@@ -390,4 +390,4 @@ namespace power_overwhelming {
 } /* namespace power_overwhelming */
 } /* namespace visus */
 
-#include "power_overwhelming/timestamp.inl"
+#include "visus/pwrowg/timestamp.inl"

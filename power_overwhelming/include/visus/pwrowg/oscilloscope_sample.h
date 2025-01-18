@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "power_overwhelming/oscilloscope_channel.h"
-#include "power_overwhelming/oscilloscope_waveform.h"
+#include "visus/pwrowg/oscilloscope_channel.h"
+#include "visus/pwrowg/oscilloscope_waveform.h"
 
 
 namespace visus {

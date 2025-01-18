@@ -15,8 +15,8 @@
 #include <tchar.h>
 #endif /* defined(_WIN32) */
 
-#include "power_overwhelming/measurement_data_series.h"
-#include "power_overwhelming/timestamp.h"
+#include "visus/pwrowg/measurement_data_series.h"
+#include "visus/pwrowg/timestamp.h"
 
 #include "thread_name.h"
 

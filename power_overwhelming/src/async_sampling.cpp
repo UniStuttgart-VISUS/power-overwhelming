@@ -3,14 +3,14 @@
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 
-#include "power_overwhelming/async_sampling.h"
+#include "visus/pwrowg/async_sampling.h"
 
 #if defined(_WIN32)
 #include <Windows.h>
 #include <tchar.h>
 #endif /* defined(_WIN32) */
 
-#include "power_overwhelming/sensor.h"
+#include "visus/pwrowg/sensor.h"
 
 
 /*

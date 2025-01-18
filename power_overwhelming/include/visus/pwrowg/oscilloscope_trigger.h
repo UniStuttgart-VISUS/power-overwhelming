@@ -8,12 +8,12 @@
 
 #include <cinttypes>
 
-#include "power_overwhelming/blob.h"
-#include "power_overwhelming/oscilloscope_quantity.h"
-#include "power_overwhelming/oscilloscope_trigger_coupling.h"
-#include "power_overwhelming/oscilloscope_trigger_hysteresis.h"
-#include "power_overwhelming/oscilloscope_trigger_mode.h"
-#include "power_overwhelming/oscilloscope_trigger_slope.h"
+#include "visus/pwrowg/blob.h"
+#include "visus/pwrowg/oscilloscope_quantity.h"
+#include "visus/pwrowg/oscilloscope_trigger_coupling.h"
+#include "visus/pwrowg/oscilloscope_trigger_hysteresis.h"
+#include "visus/pwrowg/oscilloscope_trigger_mode.h"
+#include "visus/pwrowg/oscilloscope_trigger_slope.h"
 
 
 namespace visus {

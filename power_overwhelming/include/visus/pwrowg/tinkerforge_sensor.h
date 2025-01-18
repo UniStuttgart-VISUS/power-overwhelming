@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "power_overwhelming/conversion_time.h"
-#include "power_overwhelming/sample_averaging.h"
-#include "power_overwhelming/sensor.h"
-#include "power_overwhelming/tinkerforge_error_count.h"
-#include "power_overwhelming/tinkerforge_sensor_definition.h"
-#include "power_overwhelming/tinkerforge_sensor_source.h"
+#include "visus/pwrowg/conversion_time.h"
+#include "visus/pwrowg/sample_averaging.h"
+#include "visus/pwrowg/sensor.h"
+#include "visus/pwrowg/tinkerforge_error_count.h"
+#include "visus/pwrowg/tinkerforge_sensor_definition.h"
+#include "visus/pwrowg/tinkerforge_sensor_source.h"
 
 
 namespace visus {

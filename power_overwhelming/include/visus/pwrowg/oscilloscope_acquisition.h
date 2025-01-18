@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "power_overwhelming/oscilloscope_acquisition_state.h"
-#include "power_overwhelming/power_overwhelming_api.h"
+#include "visus/pwrowg/oscilloscope_acquisition_state.h"
+#include "visus/pwrowg/api.h"
 
 
 namespace visus {

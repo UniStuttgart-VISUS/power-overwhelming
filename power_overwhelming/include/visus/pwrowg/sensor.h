@@ -8,8 +8,8 @@
 
 #include <cinttypes>
 
-#include "power_overwhelming/async_sampling.h"
-#include "power_overwhelming/measurement.h"
+#include "visus/pwrowg/async_sampling.h"
+#include "visus/pwrowg/measurement.h"
 
 
 namespace visus {

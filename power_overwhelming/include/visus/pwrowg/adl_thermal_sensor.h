@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "power_overwhelming/thermal_sensor.h"
+#include "visus/pwrowg/thermal_sensor.h"
 
 
 namespace visus {

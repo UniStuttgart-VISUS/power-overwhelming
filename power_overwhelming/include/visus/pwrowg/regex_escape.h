@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <regex>
 
-#include "power_overwhelming/literal.h"
+#include "visus/pwrowg/literal.h"
 
 
 namespace visus {

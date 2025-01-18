@@ -9,12 +9,12 @@
 #include <functional>
 #include <vector>
 
-#include "power_overwhelming/adl_sensor_source.h"
-#include "power_overwhelming/measurement.h"
-#include "power_overwhelming/sampler_source.h"
-#include "power_overwhelming/thermal_sample.h"
-#include "power_overwhelming/throttling_sample.h"
-#include "power_overwhelming/timestamp.h"
+#include "visus/pwrowg/adl_sensor_source.h"
+#include "visus/pwrowg/measurement.h"
+#include "visus/pwrowg/sampler_source.h"
+#include "visus/pwrowg/thermal_sample.h"
+#include "visus/pwrowg/throttling_sample.h"
+#include "visus/pwrowg/timestamp.h"
 
 #include "adl_scope.h"
 #include "amd_display_library.h"

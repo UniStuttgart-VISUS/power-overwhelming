@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/visa_instrument.h"
+#include "visus/pwrowg/visa_instrument.h"
 
 #include <algorithm>
 #include <cassert>
@@ -17,7 +17,7 @@
 #include <sys/time.h>
 #endif /* !defined(_WIN32) */
 
-#include "power_overwhelming/convert_string.h"
+#include "visus/pwrowg/convert_string.h"
 
 #include "no_visa_error_msg.h"
 #include "visa_exception.h"

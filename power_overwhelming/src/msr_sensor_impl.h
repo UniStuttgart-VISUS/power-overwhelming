@@ -9,12 +9,12 @@
 #include <chrono>
 #include <vector>
 
-#include "power_overwhelming/async_sampling.h"
-#include "power_overwhelming/cpu_affinity.h"
-#include "power_overwhelming/cpu_info.h"
-#include "power_overwhelming/msr_sensor.h"
-#include "power_overwhelming/rapl_domain.h"
-#include "power_overwhelming/measurement.h"
+#include "visus/pwrowg/async_sampling.h"
+#include "visus/pwrowg/cpu_affinity.h"
+#include "visus/pwrowg/cpu_info.h"
+#include "visus/pwrowg/msr_sensor.h"
+#include "visus/pwrowg/rapl_domain.h"
+#include "visus/pwrowg/measurement.h"
 
 #include "basic_sampler_source.h"
 #include "msr_device_factory.h"

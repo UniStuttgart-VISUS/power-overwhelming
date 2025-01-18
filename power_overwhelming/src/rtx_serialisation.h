@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "power_overwhelming/rtx_sensor.h"
+#include "visus/pwrowg/rtx_sensor.h"
 
 #include "json_serialiser.h"
 

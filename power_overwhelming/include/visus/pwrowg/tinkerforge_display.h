@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "power_overwhelming/tinkerforge_sensor.h"
+#include "visus/pwrowg/tinkerforge_sensor.h"
 
 
 namespace visus {

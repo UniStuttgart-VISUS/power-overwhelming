@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/oscilloscope_acquisition.h"
+#include "visus/pwrowg/oscilloscope_acquisition.h"
 
 
 /*

@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/time_synchroniser.h"
+#include "visus/pwrowg/time_synchroniser.h"
 
 #include "time_synchroniser_impl.h"
 

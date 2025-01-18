@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "power_overwhelming/power_overwhelming_api.h"
+#include "visus/pwrowg/api.h"
 
 
 namespace visus {
@@ -80,4 +80,4 @@ namespace detail {
 } /* namespace power_overwhelming */
 } /* namespace visus */
 
-#include "power_overwhelming/convert_string.inl"
+#include "visus/pwrowg/convert_string.inl"

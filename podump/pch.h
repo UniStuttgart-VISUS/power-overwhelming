@@ -16,20 +16,20 @@
 #include <Windows.h>
 #endif /* defined (_WIN32) */
 
-#include "power_overwhelming/adl_sensor.h"
-#include "power_overwhelming/adl_thermal_sensor.h"
-#include "power_overwhelming/adl_throttling_sensor.h"
-#include "power_overwhelming/emi_sensor.h"
-#include "power_overwhelming/collector.h"
-#include "power_overwhelming/graphics_device.h"
-#include "power_overwhelming/hmc8015_sensor.h"
-#include "power_overwhelming/measurement.h"
-#include "power_overwhelming/msr_sensor.h"
-#include "power_overwhelming/nvml_sensor.h"
-#include "power_overwhelming/rtx_sensor.h"
-#include "power_overwhelming/stable_power_state_scope.h"
-#include "power_overwhelming/tinkerforge_display.h"
-#include "power_overwhelming/tinkerforge_sensor.h"
+#include "visus/pwrowg/adl_sensor.h"
+#include "visus/pwrowg/adl_thermal_sensor.h"
+#include "visus/pwrowg/adl_throttling_sensor.h"
+#include "visus/pwrowg/emi_sensor.h"
+#include "visus/pwrowg/collector.h"
+#include "visus/pwrowg/graphics_device.h"
+#include "visus/pwrowg/hmc8015_sensor.h"
+#include "visus/pwrowg/measurement.h"
+#include "visus/pwrowg/msr_sensor.h"
+#include "visus/pwrowg/nvml_sensor.h"
+#include "visus/pwrowg/rtx_sensor.h"
+#include "visus/pwrowg/stable_power_state_scope.h"
+#include "visus/pwrowg/tinkerforge_display.h"
+#include "visus/pwrowg/tinkerforge_sensor.h"
 
 
 #if !defined(_WIN32)

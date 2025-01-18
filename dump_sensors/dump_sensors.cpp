@@ -4,8 +4,8 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/collector.h"
-#include "power_overwhelming/dump_sensors.h"
+#include "visus/pwrowg/collector.h"
+#include "visus/pwrowg/dump_sensors.h"
 
 #include <algorithm>
 #include <iostream>

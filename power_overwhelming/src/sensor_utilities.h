@@ -11,8 +11,8 @@
 
 #include <nlohmann/json.hpp>
 
-#include "power_overwhelming/convert_string.h"
-#include "power_overwhelming/sensor.h"
+#include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/sensor.h"
 
 
 namespace visus {

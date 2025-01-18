@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/thermal_sensor.h"
+#include "visus/pwrowg/thermal_sensor.h"
 
 
 /*

@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/oscilloscope_trigger.h"
+#include "visus/pwrowg/oscilloscope_trigger.h"
 
 #include <cassert>
 #include <regex>
@@ -12,7 +12,7 @@
 #include <string>
 #include <utility>
 
-#include "power_overwhelming/convert_string.h"
+#include "visus/pwrowg/convert_string.h"
 
 #include "string_functions.h"
 

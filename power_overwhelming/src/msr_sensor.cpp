@@ -4,11 +4,11 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/msr_sensor.h"
+#include "visus/pwrowg/msr_sensor.h"
 
 #include <cassert>
 
-#include "power_overwhelming/for_each_rapl_domain.h"
+#include "visus/pwrowg/for_each_rapl_domain.h"
 
 #include "msr_magic.h"
 #include "msr_sensor_impl.h"

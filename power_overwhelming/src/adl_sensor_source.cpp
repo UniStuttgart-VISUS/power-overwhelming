@@ -3,7 +3,7 @@
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 
-#include "power_overwhelming/adl_sensor_source.h"
+#include "visus/pwrowg/adl_sensor_source.h"
 
 #include <stdexcept>
 #include <type_traits>

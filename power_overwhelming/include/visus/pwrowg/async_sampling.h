@@ -17,12 +17,12 @@
 #define CALLBACK
 #endif /* defined(_WIN32) */
 
-#include "power_overwhelming/async_delivery_method.h"
-#include "power_overwhelming/measurement.h"
-#include "power_overwhelming/measurement_data_series.h"
-#include "power_overwhelming/thermal_sample.h"
-#include "power_overwhelming/throttling_sample.h"
-#include "power_overwhelming/tinkerforge_sensor_source.h"
+#include "visus/pwrowg/async_delivery_method.h"
+#include "visus/pwrowg/measurement.h"
+#include "visus/pwrowg/measurement_data_series.h"
+#include "visus/pwrowg/thermal_sample.h"
+#include "visus/pwrowg/throttling_sample.h"
+#include "visus/pwrowg/tinkerforge_sensor_source.h"
 
 
 namespace visus {
@@ -755,4 +755,4 @@ namespace power_overwhelming {
 } /* namespace power_overwhelming */
 } /* namespace visus */
 
-#include "power_overwhelming/async_sampling.inl"
+#include "visus/pwrowg/async_sampling.inl"

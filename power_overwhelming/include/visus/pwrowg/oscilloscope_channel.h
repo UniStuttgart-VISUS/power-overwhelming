@@ -8,13 +8,13 @@
 
 #include <cinttypes>
 
-#include "power_overwhelming/oscilloscope_channel_bandwidth.h"
-#include "power_overwhelming/oscilloscope_channel_coupling.h"
-#include "power_overwhelming/oscilloscope_channel_polarity.h"
-#include "power_overwhelming/oscilloscope_channel_unit.h"
-#include "power_overwhelming/oscilloscope_decimation_mode.h"
-#include "power_overwhelming/oscilloscope_label.h"
-#include "power_overwhelming/oscilloscope_quantity.h"
+#include "visus/pwrowg/oscilloscope_channel_bandwidth.h"
+#include "visus/pwrowg/oscilloscope_channel_coupling.h"
+#include "visus/pwrowg/oscilloscope_channel_polarity.h"
+#include "visus/pwrowg/oscilloscope_channel_unit.h"
+#include "visus/pwrowg/oscilloscope_decimation_mode.h"
+#include "visus/pwrowg/oscilloscope_label.h"
+#include "visus/pwrowg/oscilloscope_quantity.h"
 
 
 namespace visus {

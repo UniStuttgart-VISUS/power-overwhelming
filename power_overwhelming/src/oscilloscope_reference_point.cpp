@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/oscilloscope_reference_point.h"
+#include "visus/pwrowg/oscilloscope_reference_point.h"
 
 #include <stdexcept>
 

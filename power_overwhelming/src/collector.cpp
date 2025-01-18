@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/collector.h"
+#include "visus/pwrowg/collector.h"
 
 #include <memory>
 #include <stdexcept>
@@ -12,8 +12,8 @@
 
 #include <nlohmann/json.hpp>
 
-#include "power_overwhelming/computer_name.h"
-#include "power_overwhelming/convert_string.h"
+#include "visus/pwrowg/computer_name.h"
+#include "visus/pwrowg/convert_string.h"
 
 #include "collector_impl.h"
 #include "sensor_desc.h"

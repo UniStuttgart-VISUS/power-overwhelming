@@ -16,9 +16,9 @@
 #include <Windows.h>
 #endif /* defined(_WIN32) */
 
-#include "power_overwhelming/async_sampling.h"
-#include "power_overwhelming/measurement.h"
-#include "power_overwhelming/timestamp.h"
+#include "visus/pwrowg/async_sampling.h"
+#include "visus/pwrowg/measurement.h"
+#include "visus/pwrowg/timestamp.h"
 
 #include "tinkerforge_scope.h"
 #include "tinkerforge_time_translator.h"

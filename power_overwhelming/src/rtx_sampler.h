@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "power_overwhelming/rtx_instrument.h"
+#include "visus/pwrowg/rtx_instrument.h"
 
 #include <string>
 

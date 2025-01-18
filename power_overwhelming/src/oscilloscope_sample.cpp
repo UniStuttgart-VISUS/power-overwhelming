@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/oscilloscope_sample.h"
+#include "visus/pwrowg/oscilloscope_sample.h"
 
 #include <memory>
 #include <new>

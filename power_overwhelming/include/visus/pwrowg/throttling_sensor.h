@@ -8,9 +8,9 @@
 
 #include <cinttypes>
 
-#include "power_overwhelming/async_sampling.h"
-#include "power_overwhelming/throttling_sample.h"
-#include "power_overwhelming/timestamp.h"
+#include "visus/pwrowg/async_sampling.h"
+#include "visus/pwrowg/throttling_sample.h"
+#include "visus/pwrowg/timestamp.h"
 
 
 namespace visus {

@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include "power_overwhelming/measurement_data_series.h"
-#include "power_overwhelming/oscilloscope_sample.h"
-#include "power_overwhelming/sensor.h"
-#include "power_overwhelming/rtx_instrument.h"
-#include "power_overwhelming/rtx_instrument_configuration.h"
-#include "power_overwhelming/rtx_sensor_definition.h"
-#include "power_overwhelming/waveform_decimation_method.h"
+#include "visus/pwrowg/measurement_data_series.h"
+#include "visus/pwrowg/oscilloscope_sample.h"
+#include "visus/pwrowg/sensor.h"
+#include "visus/pwrowg/rtx_instrument.h"
+#include "visus/pwrowg/rtx_instrument_configuration.h"
+#include "visus/pwrowg/rtx_sensor_definition.h"
+#include "visus/pwrowg/waveform_decimation_method.h"
 
 
 namespace visus {

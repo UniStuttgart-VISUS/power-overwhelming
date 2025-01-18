@@ -6,17 +6,17 @@
 
 #pragma once
 
-#include "power_overwhelming/oscilloscope_acquisition.h"
-#include "power_overwhelming/oscilloscope_channel.h"
-#include "power_overwhelming/oscilloscope_quantity.h"
-#include "power_overwhelming/oscilloscope_reference_point.h"
-#include "power_overwhelming/oscilloscope_sample.h"
-#include "power_overwhelming/oscilloscope_trigger.h"
-#include "power_overwhelming/oscilloscope_trigger_output.h"
-#include "power_overwhelming/oscilloscope_waveform.h"
-#include "power_overwhelming/oscilloscope_waveform_points.h"
-#include "power_overwhelming/rtx_instrument_reset.h"
-#include "power_overwhelming/visa_instrument.h"
+#include "visus/pwrowg/oscilloscope_acquisition.h"
+#include "visus/pwrowg/oscilloscope_channel.h"
+#include "visus/pwrowg/oscilloscope_quantity.h"
+#include "visus/pwrowg/oscilloscope_reference_point.h"
+#include "visus/pwrowg/oscilloscope_sample.h"
+#include "visus/pwrowg/oscilloscope_trigger.h"
+#include "visus/pwrowg/oscilloscope_trigger_output.h"
+#include "visus/pwrowg/oscilloscope_waveform.h"
+#include "visus/pwrowg/oscilloscope_waveform_points.h"
+#include "visus/pwrowg/rtx_instrument_reset.h"
+#include "visus/pwrowg/visa_instrument.h"
 
 
 namespace visus {
