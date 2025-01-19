@@ -1,8 +1,8 @@
-// <copyright file="io_util.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="io_util.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "io_util.h"
 
@@ -25,9 +25,9 @@
 
 #if defined(_WIN32)
 /*
- * visus::power_overwhelming::detail::open
+ * PWROWG_DETAIL_NAMESPACE::open
  */
-HANDLE visus::power_overwhelming::detail::open(_In_z_ const wchar_t *path,
+HANDLE PWROWG_DETAIL_NAMESPACE::open(_In_z_ const wchar_t *path,
         _In_ const DWORD desired_access, _In_ const DWORD share_mode,
         _In_ const DWORD create_disposition, _In_ const DWORD flags) {
     auto retval = ::CreateFileW(path, desired_access, share_mode, nullptr,
@@ -41,9 +41,9 @@ HANDLE visus::power_overwhelming::detail::open(_In_z_ const wchar_t *path,
 
 
 /*
- * visus::power_overwhelming::detail::open
+ * PWROWG_DETAIL_NAMESPACE::open
  */
-POWER_OVERWHELMING_API int visus::power_overwhelming::detail::open(
+POWER_OVERWHELMING_API int PWROWG_DETAIL_NAMESPACE::open(
         _In_z_ const char *path, _In_ const int flags, _In_ const int mode) {
     if (path == nullptr) {
         throw std::invalid_argument("The path must be a valid string.");
@@ -60,9 +60,9 @@ POWER_OVERWHELMING_API int visus::power_overwhelming::detail::open(
 
 #if defined(_WIN32)
 /*
- * visus::power_overwhelming::detail::read_all_bytes
+ * PWROWG_DETAIL_NAMESPACE::read_all_bytes
  */
-std::vector<std::uint8_t> visus::power_overwhelming::detail::read_all_bytes(
+std::vector<std::uint8_t> PWROWG_DETAIL_NAMESPACE::read_all_bytes(
         _In_ const HANDLE handle) {
     std::vector<std::uint8_t> retval;
 
@@ -111,9 +111,9 @@ std::vector<std::uint8_t> visus::power_overwhelming::detail::read_all_bytes(
 
 
 /*
- * visus::power_overwhelming::detail::read_all_bytes
+ * PWROWG_DETAIL_NAMESPACE::read_all_bytes
  */
-std::vector<std::uint8_t> visus::power_overwhelming::detail::read_all_bytes(
+std::vector<std::uint8_t> PWROWG_DETAIL_NAMESPACE::read_all_bytes(
         _In_ const int fd) {
     std::vector<std::uint8_t> retval;
 
@@ -158,9 +158,9 @@ std::vector<std::uint8_t> visus::power_overwhelming::detail::read_all_bytes(
 
 #if defined(_WIN32)
 /*
- * visus::power_overwhelming::detail::read_bytes
+ * PWROWG_DETAIL_NAMESPACE::read_bytes
  */
-void visus::power_overwhelming::detail::read_bytes(_In_ const HANDLE handle,
+void PWROWG_DETAIL_NAMESPACE::read_bytes(_In_ const HANDLE handle,
         _Out_writes_bytes_(cnt) void *dst, _In_ const std::size_t cnt) {
     auto d = static_cast<std::uint8_t *>(dst);
     auto rem = static_cast<int>(cnt);
@@ -185,9 +185,9 @@ void visus::power_overwhelming::detail::read_bytes(_In_ const HANDLE handle,
 
 
 /*
- * visus::power_overwhelming::detail::read_bytes
+ * PWROWG_DETAIL_NAMESPACE::read_bytes
  */
-void visus::power_overwhelming::detail::read_bytes(_In_ const int fd,
+void PWROWG_DETAIL_NAMESPACE::read_bytes(_In_ const int fd,
         _Out_writes_bytes_(cnt) void *dst, _In_ const std::size_t cnt) {
     auto c = 0;
     auto d = static_cast<std::uint8_t *>(dst);
@@ -214,9 +214,9 @@ void visus::power_overwhelming::detail::read_bytes(_In_ const int fd,
 
 #if defined(_WIN32)
 /*
- * visus::power_overwhelming::detail::seek
+ * PWROWG_DETAIL_NAMESPACE::seek
  */
-std::streamoff visus::power_overwhelming::detail::seek(_In_ const HANDLE handle,
+std::streamoff PWROWG_DETAIL_NAMESPACE::seek(_In_ const HANDLE handle,
         _In_ const std::streamoff offset, _In_ const win32_seek_origin origin) {
     LARGE_INTEGER dist;
     LARGE_INTEGER retval;
@@ -234,9 +234,9 @@ std::streamoff visus::power_overwhelming::detail::seek(_In_ const HANDLE handle,
 
 
 /*
- * visus::power_overwhelming::detail::seek
+ * PWROWG_DETAIL_NAMESPACE::seek
  */
-std::streamoff visus::power_overwhelming::detail::seek(_In_ const int fd,
+std::streamoff PWROWG_DETAIL_NAMESPACE::seek(_In_ const int fd,
         _In_ const std::streamoff offset,
         _In_ const posix_seek_origin origin) {
 #if defined(_WIN32)

@@ -1,15 +1,15 @@
-// <copyright file="on_exit.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="on_exit.inl" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 
 /*
- * visus::power_overwhelming::detail::OnExitGuard<TExitHandler>::Invoke
+ * PWROWG_DETAIL_NAMESPACE::OnExitGuard<TExitHandler>::Invoke
  */
 template<class TExitHandler>
-void visus::power_overwhelming::detail::on_exit_guard<TExitHandler>::invoke(
+void PWROWG_DETAIL_NAMESPACE::on_exit_guard<TExitHandler>::invoke(
         void) noexcept {
     if (*this) {
         this->_exitHandler();
@@ -19,11 +19,11 @@ void visus::power_overwhelming::detail::on_exit_guard<TExitHandler>::invoke(
 
 
 /*
- * visus::power_overwhelming::detail::OnExitGuard<T>::operator =
+ * PWROWG_DETAIL_NAMESPACE::OnExitGuard<T>::operator =
  */
 template<class TExitHandler>
-visus::power_overwhelming::detail::on_exit_guard<TExitHandler>&
-visus::power_overwhelming::detail::on_exit_guard<TExitHandler>::operator =(
+PWROWG_DETAIL_NAMESPACE::on_exit_guard<TExitHandler>&
+PWROWG_DETAIL_NAMESPACE::on_exit_guard<TExitHandler>::operator =(
         on_exit_guard&& rhs) {
     if (this != std::addressof(rhs)) {
         this->_exitHandler = std::move(rhs._exitHandler);

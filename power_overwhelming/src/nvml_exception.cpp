@@ -1,19 +1,19 @@
-// <copyright file="nvml_exception.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="nvml_exception.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "nvml_exception.h"
 
 #include "nvidia_management_library.h"
 
-using visus::power_overwhelming::detail::nvidia_management_library;
+using PWROWG_DETAIL_NAMESPACE::nvidia_management_library;
 
 
 /*
  * visus::power_overwhelming::nvml_exception::nvml_exception
  */
-visus::power_overwhelming::nvml_exception::nvml_exception(const value_type code)
+PWROWG_NAMESPACE::nvml_exception::nvml_exception(const value_type code)
     : std::runtime_error(nvidia_management_library::instance().nvmlErrorString(
     code)), _code(code) { }

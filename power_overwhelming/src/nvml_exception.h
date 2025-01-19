@@ -1,9 +1,11 @@
 // <copyright file="nvml_exception.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
+#if !defined(_PWROWG_NVML_EXCEPTION_H)
+#define _PWROWG_NVML_EXCEPTION_H
 #pragma once
 
 #include <stdexcept>
@@ -11,49 +13,51 @@
 
 #include <nvml.h>
 
+#include "visus/pwrowg/api.h"
 
-namespace visus {
-namespace power_overwhelming {
+
+PWROWG_NAMESPACE_BEGIN
+
+/// <summary>
+/// An exception caused by a failure in the NVIDIA Management Library.
+/// </summary>
+class nvml_exception : public std::runtime_error {
+
+public:
 
     /// <summary>
-    /// An exception caused by a failure in the NVIDIA Management Library.
+    /// The native error type.
     /// </summary>
-    class nvml_exception : public std::runtime_error {
+    typedef ::nvmlReturn_t value_type;
 
-    public:
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="code">The error code, which also determines the error
+    /// message.</param>
+    nvml_exception(const value_type code);
 
-        /// <summary>
-        /// The native error type.
-        /// </summary>
-        typedef ::nvmlReturn_t value_type;
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="code">The error code.</param>
+    /// <param name="message">A custom error message.</param>
+    nvml_exception(const value_type code, const char *message)
+        : std::runtime_error(message), _code(code) { }
 
-        /// <summary>
-        /// Initialises a new instance.
-        /// </summary>
-        /// <param name="code">The error code, which also determines the error
-        /// message.</param>
-        nvml_exception(const value_type code);
+    /// <summary>
+    /// Answer the native error code associated with the exception.
+    /// </summary>
+    /// <returns></returns>
+    value_type code(void) const noexcept {
+        return this->_code;
+    }
 
-        /// <summary>
-        /// Initialises a new instance.
-        /// </summary>
-        /// <param name="code">The error code.</param>
-        /// <param name="message">A custom error message.</param>
-        nvml_exception(const value_type code, const char *message)
-            : std::runtime_error(message), _code(code) { }
+private:
 
-        /// <summary>
-        /// Answer the native error code associated with the exception.
-        /// </summary>
-        /// <returns></returns>
-        value_type code(void) const noexcept {
-            return this->_code;
-        }
+    value_type _code;
+};
 
-    private:
+PWROWG_NAMESPACE_END
 
-        value_type _code;
-    };
-
-} /* namespace power_overwhelming */
-} /* namespace visus */
+#endif /* !defined(_PWROWG_NVML_EXCEPTION_H) */

@@ -1,20 +1,22 @@
-// <copyright file="no_visa_error_msg.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="no_visa_error_msg.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2023 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
+#if !defined(_PWROWG_NO_VISA_ERROR_MSG_H)
+#define _PWROWG_NO_VISA_ERROR_MSG_H
 #pragma once
 
+#include "visus/pwrowg/api.h"
 
-namespace visus {
-namespace power_overwhelming {
-namespace detail {
 
-    static constexpr const char *no_visa_error_msg = "The Power Overwhelming "
-        "library was compiled without support for the Virtual Instrument Software "
-        "Architecture.";
+PWROWG_DETAIL_NAMESPACE_BEGIN
 
-} /* namespace detail */
-} /* namespace power_overwhelming */
-} /* namespace visus */
+static constexpr const char *no_visa_error_msg = "The Power Overwhelming "
+    "library was compiled without support for the Virtual Instrument Software "
+    "Architecture.";
+
+PWROWG_DETAIL_NAMESPACE_END
+
+#endif /* !defined(_PWROWG_NO_VISA_ERROR_MSG_H) */

@@ -1,5 +1,5 @@
 ﻿// <copyright file="adl_exception.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 
@@ -83,7 +83,7 @@ static std::string adl_to_string(const int code) {
 
 
 /*
- * visus::power_overwhelming::adl_exception::adl_exception
+ * PWROWG_NAMESPACE::adl_exception::adl_exception
  */
-visus::power_overwhelming::adl_exception::adl_exception(const value_type code)
+PWROWG_NAMESPACE::adl_exception::adl_exception(const value_type code)
     : std::runtime_error(adl_to_string(code).c_str()), _code(code) { }

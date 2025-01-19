@@ -1,5 +1,5 @@
 // <copyright file="string_functions.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -12,10 +12,11 @@
 
 
 /*
- * visus::power_overwhelming::detail::equals
+ * PWROWG_DETAIL_NAMESPACE::equals
  */
-bool visus::power_overwhelming::detail::equals(_In_opt_z_ const char *lhs,
-        _In_opt_z_ const char *rhs, _In_ const bool ignore_case) {
+bool PWROWG_DETAIL_NAMESPACE::equals(_In_opt_z_ const char *lhs,
+        _In_opt_z_ const char *rhs,
+        _In_ const bool ignore_case) {
     if (lhs == rhs) {
         // Trivial equality.
         return true;
@@ -39,10 +40,11 @@ bool visus::power_overwhelming::detail::equals(_In_opt_z_ const char *lhs,
 
 
 /*
- * visus::power_overwhelming::detail::equals
+ * PWROWG_DETAIL_NAMESPACE::equals
  */
-bool visus::power_overwhelming::detail::equals(_In_opt_z_ const wchar_t *lhs,
-        _In_opt_z_ const wchar_t *rhs, _In_ const bool ignore_case) {
+bool PWROWG_DETAIL_NAMESPACE::equals(_In_opt_z_ const wchar_t *lhs,
+        _In_opt_z_ const wchar_t *rhs,
+        _In_ const bool ignore_case) {
     if (lhs == rhs) {
         // Trivial equality.
         return true;
@@ -66,35 +68,34 @@ bool visus::power_overwhelming::detail::equals(_In_opt_z_ const wchar_t *lhs,
 
 
 /*
- * visus::power_overwhelming::detail::parse_float
+ * PWROWG_DETAIL_NAMESPACE::parse_float
  */
-float visus::power_overwhelming::detail::parse_float(
-        _In_opt_z_ const char *str) {
+float PWROWG_DETAIL_NAMESPACE::parse_float(_In_opt_z_ const char *str) {
     return (str != nullptr) ? std::atof(str) : 0.0f;
 }
 
 
 /*
- * visus::power_overwhelming::detail::parse_int
+ * PWROWG_DETAIL_NAMESPACE::parse_int
  */
-int visus::power_overwhelming::detail::parse_int(_In_opt_z_ const char *str) {
+int PWROWG_DETAIL_NAMESPACE::parse_int(_In_opt_z_ const char *str) {
     return (str != nullptr) ? std::atoi(str) : 0;
 }
 
 
 /*
- * visus::power_overwhelming::detail::parse_uint
+ * PWROWG_DETAIL_NAMESPACE::parse_uint
  */
-unsigned int visus::power_overwhelming::detail::parse_uint(
+unsigned int PWROWG_DETAIL_NAMESPACE::parse_uint(
         _In_opt_z_ const char *str) {
     return (str != nullptr) ? static_cast<unsigned int>(std::atoll(str)) : 0;
 }
 
 
 /*
- * visus::power_overwhelming::detail::safe_duplicate
+ * PWROWG_DETAIL_NAMESPACE::safe_duplicate
  */
-_Ret_maybenull_z_ wchar_t *visus::power_overwhelming::detail::safe_duplicate(
+_Ret_maybenull_z_ wchar_t *PWROWG_DETAIL_NAMESPACE::safe_duplicate(
         _In_opt_z_ const wchar_t *src) {
     if (src != nullptr) {
         auto retval = ::wcsdup(src);
@@ -111,9 +112,9 @@ _Ret_maybenull_z_ wchar_t *visus::power_overwhelming::detail::safe_duplicate(
 
 
 /*
- * visus::power_overwhelming::detail::safe_duplicate
+ * PWROWG_DETAIL_NAMESPACE::safe_duplicate
  */
-_Ret_maybenull_z_ char *visus::power_overwhelming::detail::safe_duplicate(
+_Ret_maybenull_z_ char *PWROWG_DETAIL_NAMESPACE::safe_duplicate(
         _In_opt_z_ const char *src) {
     if (src != nullptr) {
         auto retval = ::strdup(src);
@@ -130,9 +131,9 @@ _Ret_maybenull_z_ char *visus::power_overwhelming::detail::safe_duplicate(
 
 
 /*
- * visus::power_overwhelming::detail::starts_with
+ * PWROWG_DETAIL_NAMESPACE::starts_with
  */
-bool visus::power_overwhelming::detail::starts_with(_In_opt_z_ const char *str,
+bool PWROWG_DETAIL_NAMESPACE::starts_with(_In_opt_z_ const char *str,
         _In_opt_z_ const char *start, _In_ const bool ignore_case) {
     if ((start == nullptr) || (*start == 0)) {
         // Trivial accept of empty prefix.
@@ -164,9 +165,9 @@ bool visus::power_overwhelming::detail::starts_with(_In_opt_z_ const char *str,
 
 
 /*
- * visus::power_overwhelming::detail::starts_with
+ * PWROWG_DETAIL_NAMESPACE::starts_with
  */
-bool visus::power_overwhelming::detail::starts_with(_In_opt_z_ const wchar_t *str,
+bool PWROWG_DETAIL_NAMESPACE::starts_with(_In_opt_z_ const wchar_t *str,
         _In_opt_z_ const wchar_t *start, _In_ const bool ignore_case) {
     if ((start == nullptr) || (*start == 0)) {
         // Trivial accept of empty prefix.

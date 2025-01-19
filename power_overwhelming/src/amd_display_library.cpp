@@ -1,5 +1,5 @@
 ﻿// <copyright file="amd_display_library.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -29,19 +29,19 @@
 
 
 /*
- * visus::power_overwhelming::detail::amd_display_library::instance
+ * PWROWG_DETAIL_NAMESPACE::amd_display_library::instance
  */
-const visus::power_overwhelming::detail::amd_display_library&
-visus::power_overwhelming::detail::amd_display_library::instance(void) {
+const PWROWG_DETAIL_NAMESPACE::amd_display_library&
+PWROWG_DETAIL_NAMESPACE::amd_display_library::instance(void) {
     static const amd_display_library instance;
     return instance;
 }
 
 
 /*
- * visus::power_overwhelming::detail::amd_display_library::amd_display_library
+ * PWROWG_DETAIL_NAMESPACE::amd_display_library::amd_display_library
  */
-visus::power_overwhelming::detail::amd_display_library::amd_display_library(
+PWROWG_DETAIL_NAMESPACE::amd_display_library::amd_display_library(
         void) : library_base(TEXT("atiadlxx.dll"), TEXT("atiadlxy.dll")) {
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_Active_Get);
     __POWER_OVERWHELMING_GET_ADL_FUNC(ADL2_Adapter_AdapterInfo_Get);

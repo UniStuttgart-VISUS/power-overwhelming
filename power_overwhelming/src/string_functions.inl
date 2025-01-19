@@ -1,8 +1,8 @@
-// <copyright file="string_functions.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="string_functions.inl" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2023 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 /*
  * the/text/format.cpp
  *
@@ -41,10 +41,10 @@
 
 
 /*
- * visus::power_overwhelming::detail::copy_string
+ * PWROWG_DETAIL_NAMESPACE::copy_string
  */
 template<class TChar, class TTraits, class TAlloc>
-bool visus::power_overwhelming::detail::copy_string(
+bool PWROWG_DETAIL_NAMESPACE::copy_string(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) TChar *dst,
         _In_ const std::size_t cnt,
         _In_ const std::basic_string<TChar, TTraits, TAlloc>& string) {
@@ -65,10 +65,10 @@ bool visus::power_overwhelming::detail::copy_string(
 
 
 /*
- * visus::power_overwhelming::detail::format_string
+ * PWROWG_DETAIL_NAMESPACE::format_string
  */
 template<class ...TArgs>
-std::wstring visus::power_overwhelming::detail::format_string(
+std::wstring PWROWG_DETAIL_NAMESPACE::format_string(
         _In_z_ const wchar_t *format, TArgs&&... args) {
     if (format == nullptr) {
         throw std::invalid_argument("The format string must not be null.");
@@ -114,10 +114,10 @@ std::wstring visus::power_overwhelming::detail::format_string(
 
 
 /*
- * visus::power_overwhelming::detail::format_string
+ * PWROWG_DETAIL_NAMESPACE::format_string
  */
 template<class ...TArgs>
-std::string visus::power_overwhelming::detail::format_string(
+std::string PWROWG_DETAIL_NAMESPACE::format_string(
         _In_z_ const char *format, TArgs&&... args) {
     if (format == nullptr) {
         throw std::invalid_argument("The format string must not be null.");
@@ -162,10 +162,10 @@ std::string visus::power_overwhelming::detail::format_string(
 
 
 /*
- * visus::power_overwhelming::detail::remove_spaces
+ * PWROWG_DETAIL_NAMESPACE::remove_spaces
  */
 template<class TChar, class TTraits, class TAlloc>
-std::basic_string<TChar> visus::power_overwhelming::detail::remove_spaces(
+std::basic_string<TChar> PWROWG_DETAIL_NAMESPACE::remove_spaces(
         _In_ const std::basic_string<TChar, TTraits, TAlloc>& str) {
     std::vector<TChar> retval(str.begin(), str.end());
     auto end = std::remove_if(retval.begin(), retval.end(),
@@ -175,10 +175,10 @@ std::basic_string<TChar> visus::power_overwhelming::detail::remove_spaces(
 
 
 /*
- * visus::power_overwhelming::detail::safe_assign
+ * PWROWG_DETAIL_NAMESPACE::safe_assign
  */
 template<class TChar>
-void visus::power_overwhelming::detail::safe_assign(
+void PWROWG_DETAIL_NAMESPACE::safe_assign(
         _Inout_opt_z_ TChar *& dst,
         _In_opt_z_ const TChar *src) {
     if (dst != src) {
@@ -190,10 +190,10 @@ void visus::power_overwhelming::detail::safe_assign(
 
 
 /*
- * visus::power_overwhelming::detail::safe_assign
+ * PWROWG_DETAIL_NAMESPACE::safe_assign
  */
 template<class TChar>
-void visus::power_overwhelming::detail::safe_assign(
+void PWROWG_DETAIL_NAMESPACE::safe_assign(
         _Inout_opt_z_ TChar *& dst,
         _Inout_opt_z_ TChar *&& src) noexcept {
     if (src != dst) {
@@ -206,11 +206,10 @@ void visus::power_overwhelming::detail::safe_assign(
 
 
 /*
- * visus::power_overwhelming::detail::safe_assign
+ * PWROWG_DETAIL_NAMESPACE::safe_assign
  */
 template<class TChar>
-visus::power_overwhelming::blob&
-visus::power_overwhelming::detail::safe_assign(
+PWROWG_NAMESPACE::blob& PWROWG_DETAIL_NAMESPACE::safe_assign(
         _Inout_ blob& dst, _In_opt_z_ const TChar *src) {
     if (dst.as<TChar>() != src) {
         if (src != nullptr) {
@@ -230,10 +229,10 @@ visus::power_overwhelming::detail::safe_assign(
 
 
 /*
- * visus::power_overwhelming::detail::safe_assign
+ * PWROWG_DETAIL_NAMESPACE::safe_assign
  */
 template<class TChar>
-visus::power_overwhelming::blob visus::power_overwhelming::detail::safe_assign(
+PWROWG_NAMESPACE::blob PWROWG_DETAIL_NAMESPACE::safe_assign(
         _Inout_ blob&& dst, _In_opt_z_ const TChar *src) {
     auto retval = std::move(dst);
     safe_assign(retval, src);
@@ -242,11 +241,11 @@ visus::power_overwhelming::blob visus::power_overwhelming::detail::safe_assign(
 
 
 /*
- * visus::power_overwhelming::detail::safe_assign
+ * PWROWG_DETAIL_NAMESPACE::safe_assign
  */
 template<class TChar>
-void visus::power_overwhelming::detail::safe_assign(
-        _Inout_opt_z_ TChar *& dst, _In_ const std::nullptr_t) noexcept {
+void PWROWG_DETAIL_NAMESPACE::safe_assign(_Inout_opt_z_ TChar *& dst,
+        _In_ const std::nullptr_t) noexcept {
     if (dst != nullptr) {
         ::free(dst);
         dst = nullptr;
@@ -255,11 +254,11 @@ void visus::power_overwhelming::detail::safe_assign(
 
 
 /*
- * visus::power_overwhelming::detail::trim_begin_if
+ * PWROWG_DETAIL_NAMESPACE::trim_begin_if
  */
 template<class TChar, class TPredicate>
 _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
-TChar *visus::power_overwhelming::detail::trim_begin_if(_In_opt_z_ TChar *str,
+TChar *PWROWG_DETAIL_NAMESPACE::trim_begin_if(_In_opt_z_ TChar *str,
         _In_ const TPredicate& predicate) {
     auto retval = str;
 
@@ -276,11 +275,11 @@ TChar *visus::power_overwhelming::detail::trim_begin_if(_In_opt_z_ TChar *str,
 
 
 /*
- * visus::power_overwhelming::detail::trim_end_if
+ * PWROWG_DETAIL_NAMESPACE::trim_end_if
  */
 template<class TChar, class TPredicate>
 _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
-TChar *visus::power_overwhelming::detail::trim_end_if(_In_opt_z_ TChar *str,
+TChar *PWROWG_DETAIL_NAMESPACE::trim_end_if(_In_opt_z_ TChar *str,
         _In_ const TPredicate& predicate) {
     if (str == nullptr) {
         return nullptr;
@@ -303,10 +302,10 @@ TChar *visus::power_overwhelming::detail::trim_end_if(_In_opt_z_ TChar *str,
 
 
 /*
- * visus::power_overwhelming::detail::trim_eol
+ * PWROWG_DETAIL_NAMESPACE::trim_eol
  */
 template<class TChar>
-void visus::power_overwhelming::detail::trim_eol(_In_opt_z_ TChar *str) {
+void PWROWG_DETAIL_NAMESPACE::trim_eol(_In_opt_z_ TChar *str) {
     static constexpr auto cr = POWER_OVERWHELMING_TPL_LITERAL(TChar, '\r');
     static constexpr auto eos = static_cast<TChar>(0);
     static constexpr auto lf = POWER_OVERWHELMING_TPL_LITERAL(TChar, '\n');
@@ -322,11 +321,11 @@ void visus::power_overwhelming::detail::trim_eol(_In_opt_z_ TChar *str) {
 
 
 /*
- * visus::power_overwhelming::detail::trim_if
+ * PWROWG_DETAIL_NAMESPACE::trim_if
  */
 template<class TChar, class TPredicate>
 _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
-TChar *visus::power_overwhelming::detail::trim_if(_In_opt_z_ TChar *str,
+TChar *PWROWG_DETAIL_NAMESPACE::trim_if(_In_opt_z_ TChar *str,
         _In_ const TPredicate& predicate) {
     auto retval = trim_begin_if(str, predicate);
     auto end = trim_end_if(retval, predicate);

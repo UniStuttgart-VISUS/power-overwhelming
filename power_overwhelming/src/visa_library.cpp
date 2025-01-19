@@ -1,8 +1,8 @@
-// <copyright file="visa_library.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="visa_library.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "visa_library.h"
 
@@ -19,19 +19,19 @@
 
 
 /*
- * visus::power_overwhelming::detail::visa_library::instance
+ * PWROWG_DETAIL_NAMESPACE::visa_library::instance
  */
-const visus::power_overwhelming::detail::visa_library&
-visus::power_overwhelming::detail::visa_library::instance(void) {
+const PWROWG_DETAIL_NAMESPACE::visa_library&
+PWROWG_DETAIL_NAMESPACE::visa_library::instance(void) {
     static const visa_library instance;
     return instance;
 }
 
 
 /*
- * visus::power_overwhelming::detail::visa_library::visa_library
+ * PWROWG_DETAIL_NAMESPACE::visa_library::visa_library
  */
-visus::power_overwhelming::detail::visa_library::visa_library(void)
+PWROWG_DETAIL_NAMESPACE::visa_library::visa_library(void)
 #if defined(_WIN32)
         : library_base(TEXT("visa64.dll"), TEXT("visa32.dll")) {
 #else /* defined(_WIN32) */
@@ -61,10 +61,10 @@ visus::power_overwhelming::detail::visa_library::visa_library(void)
 
 
 /*
- * visus::power_overwhelming::detail::visa_library::find_resource
+ * PWROWG_DETAIL_NAMESPACE::visa_library::find_resource
  */
 std::vector<std::string>
-visus::power_overwhelming::detail::visa_library::find_resource(
+PWROWG_DETAIL_NAMESPACE::visa_library::find_resource(
         const char *expression) const {
     if (expression == nullptr) {
         throw std::invalid_argument("The search expression cannot be null.");

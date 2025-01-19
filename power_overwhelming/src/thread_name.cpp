@@ -1,8 +1,8 @@
-// <copyright file="set_thread_name.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="set_thread_name.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2022 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "thread_name.h"
 
@@ -24,10 +24,11 @@ typedef struct tagTHREADNAME_INFO {
 
 
 /*
- * visus::power_overwhelming::detail::set_thread_name
+ * PWROWG_DETAIL_NAMESPACE::set_thread_name
  */
-void visus::power_overwhelming::detail::set_thread_name(
-		const native_thread_id thread_id, const char* thread_name) {
+void PWROWG_DETAIL_NAMESPACE::set_thread_name(
+    _In_ const native_thread_id thread_id,
+    _In_z_ const char* thread_name) {
 #if defined(_WIN32)
     if (thread_name != nullptr) {
         THREADNAME_INFO info;
@@ -50,10 +51,9 @@ void visus::power_overwhelming::detail::set_thread_name(
 
 
 /*
- * visus::power_overwhelming::detail::set_thread_name
+ * PWROWG_DETAIL_NAMESPACE::set_thread_name
  */
-void visus::power_overwhelming::detail::set_thread_name(
-        const char* thread_name) {
+void PWROWG_DETAIL_NAMESPACE::set_thread_name(_In_z_ const char* thread_name) {
 #if defined(_WIN32)
     set_thread_name(::GetCurrentThreadId(), thread_name);
 #endif /* defined(_WIN32) */
