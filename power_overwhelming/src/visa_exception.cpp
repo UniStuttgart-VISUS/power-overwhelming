@@ -43,9 +43,10 @@ PWROWG_DETAIL_NAMESPACE_END
 
 
 /*
- * PWROWG_NAMESPACE::visa_exception::throw_on_error
+ * PWROWG_DETAIL_NAMESPACE::visa_exception::throw_on_error
  */
-void PWROWG_NAMESPACE::visa_exception::throw_on_error(const value_type status) {
+void PWROWG_DETAIL_NAMESPACE::visa_exception::throw_on_error(
+        const value_type status) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     if (status < VI_SUCCESS) {
         throw visa_exception(status);
@@ -55,9 +56,9 @@ void PWROWG_NAMESPACE::visa_exception::throw_on_error(const value_type status) {
 
 
 /*
- * PWROWG_NAMESPACE::visa_exception::throw_unless_succeeded
+ * PWROWG_DETAIL_NAMESPACE::visa_exception::throw_unless_succeeded
  */
-void PWROWG_NAMESPACE::visa_exception::throw_unless_succeeded(
+void PWROWG_DETAIL_NAMESPACE::visa_exception::throw_unless_succeeded(
         const value_type status) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     if (status != VI_SUCCESS) {
@@ -68,7 +69,7 @@ void PWROWG_NAMESPACE::visa_exception::throw_unless_succeeded(
 
 
 /*
- * PWROWG_NAMESPACE::visa_exception::visa_exception
+ * PWROWG_DETAIL_NAMESPACE::visa_exception::visa_exception
  */
-PWROWG_NAMESPACE::visa_exception::visa_exception(const value_type code)
+PWROWG_DETAIL_NAMESPACE::visa_exception::visa_exception(const value_type code)
     : std::runtime_error(detail::visa_to_string(code).c_str()), _code(code) { }

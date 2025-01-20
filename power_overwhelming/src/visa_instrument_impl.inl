@@ -1,15 +1,15 @@
-// <copyright file="visa_instrument_impl.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="visa_instrument_impl.inl" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 
 /*
- * visus::power_overwhelming::detail::visa_instrument_impl::format
+ * PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::format
  */
 template<class ...TArgs>
-void visus::power_overwhelming::detail::visa_instrument_impl::format(
+void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::format(
         _In_z_ const char *format, TArgs&&... args) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     visa_exception::throw_on_error(detail::visa_library::instance()
