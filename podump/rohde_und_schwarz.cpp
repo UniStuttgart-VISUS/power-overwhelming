@@ -330,20 +330,20 @@ void query_rtx_instrument(void) {
                     << convert_string<wchar_t>(t.type()) << std::endl;
             }
 
-            i.reference_position(oscilloscope_reference_point::left);
-            i.time_scale(oscilloscope_quantity(10, "ms"));
+            i.reference_position(rtx_reference_point::left);
+            i.time_scale(rtx_quantity(10, "ms"));
 
-            i.channel(oscilloscope_channel(1)
-                .label(oscilloscope_label("podump#1"))
+            i.channel(rtx_channel(1)
+                .label(rtx_label("podump#1"))
                 .state(true)
-                .attenuation(oscilloscope_quantity(10, "V"))
-                .range(oscilloscope_quantity(7)));
+                .attenuation(rtx_quantity(10, "V"))
+                .range(rtx_quantity(7)));
 
-            //i.channel(oscilloscope_channel(2)
-            //    .label(oscilloscope_label("podump#2"))
+            //i.channel(rtx_channel(2)
+            //    .label(rtx_label("podump#2"))
             //    .state(true)
-            //    .attenuation(oscilloscope_quantity(1, "V"))
-            //    .range(oscilloscope_quantity(5)));
+            //    .attenuation(rtx_quantity(1, "V"))
+            //    .range(rtx_quantity(5)));
 
             std::cout << "Main " << std::this_thread::get_id() << std::endl;
             auto event = visus::power_overwhelming::create_event();
@@ -358,11 +358,11 @@ void query_rtx_instrument(void) {
             visus::power_overwhelming::wait_event(event);
             i.on_operation_complete(nullptr);
 
-            i.trigger_position(oscilloscope_quantity(0.0f, "ms"));
-            i.trigger(oscilloscope_trigger::edge("EXT")
-                .level(5, oscilloscope_quantity(2000.0f, "mV"))
-                .slope(oscilloscope_trigger_slope::rising)
-                .mode(oscilloscope_trigger_mode::automatic))
+            i.trigger_position(rtx_quantity(0.0f, "ms"));
+            i.trigger(rtx_trigger::edge("EXT")
+                .level(5, rtx_quantity(2000.0f, "mV"))
+                .slope(rtx_trigger_slope::rising)
+                .mode(rtx_trigger_mode::automatic))
                 .operation_complete();
             i.throw_on_system_error();
 
@@ -379,7 +379,7 @@ void query_rtx_instrument(void) {
                 << static_cast<int>(i.event_status())
                 << std::endl;
 
-            i.acquisition(oscilloscope_acquisition()
+            i.acquisition(rtx_acquisition()
                 .points(100000)
                 .count(2)
                 .segmented(false))
@@ -401,7 +401,7 @@ void query_rtx_instrument(void) {
                 i.copy_state_to_instrument(state);
             }
 
-            i.acquisition(oscilloscope_acquisition_state::single)
+            i.acquisition(rtx_acquisition_state::single)
                 .operation_complete()
                 .throw_on_system_error();
 
@@ -416,7 +416,7 @@ void query_rtx_instrument(void) {
                     << std::endl;
                 
                 auto b = std::chrono::high_resolution_clock::now();
-                auto segment = i.data(1, oscilloscope_waveform_points::maximum);
+                auto segment = i.data(1, rtx_waveform_points::maximum);
                 auto e = std::chrono::high_resolution_clock::now();
                 std::cout << "Download took "
                     << std::chrono::duration_cast<std::chrono::milliseconds>(e - b).count()
@@ -432,9 +432,9 @@ void query_rtx_instrument(void) {
                     << "Timestamp: " << segment.segment_timestamp() << std::endl;
             }
 
-            i.channel(oscilloscope_channel(2).state(true));
-            i.acquisition(oscilloscope_acquisition_state::single);
-            auto sample = i.data(oscilloscope_waveform_points::maximum);
+            i.channel(rtx_channel(2).state(true));
+            i.acquisition(rtx_acquisition_state::single);
+            auto sample = i.data(rtx_waveform_points::maximum);
             std::cout << "Sample size: " << sample.size() << std::endl;
         }
 
@@ -522,8 +522,8 @@ void configure_rtx_instrument(void) {
         rtx_instrument::all(devices.data(), devices.size());
 
         rtx_instrument_configuration config(12,
-            oscilloscope_acquisition().points(12000).segmented(true),
-            oscilloscope_trigger::edge("CH1"));
+            rtx_acquisition().points(12000).segmented(true),
+            rtx_trigger::edge("CH1"));
         config.prevent_automatic_roll();
 
         for (auto& i : devices) {

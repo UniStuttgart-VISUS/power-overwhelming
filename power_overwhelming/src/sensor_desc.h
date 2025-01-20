@@ -303,9 +303,9 @@ namespace detail {
         POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC(false);
 
         static inline value_type deserialise(const nlohmann::json& value) {
-            auto channel_current = json_deserialise<oscilloscope_channel>(
+            auto channel_current = json_deserialise<rtx_channel>(
                 value[json_field_channel_current]);
-            auto channel_voltage = json_deserialise<oscilloscope_channel>(
+            auto channel_voltage = json_deserialise<rtx_channel>(
                 value[json_field_channel_voltage]);
             auto decimation = json_deserialise<waveform_decimation_method>(
                 value[json_field_decimation]);

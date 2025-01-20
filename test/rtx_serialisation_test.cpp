@@ -18,21 +18,21 @@ namespace test {
 
     public:
 
-        TEST_METHOD(test_oscilloscope_channel) {
-            const auto input = oscilloscope_channel(42)
-                .attenuation(oscilloscope_quantity(12.3f, "V"))
-                .bandwidth(oscilloscope_channel_bandwidth::limit_to_20_mhz)
-                .coupling(oscilloscope_channel_coupling::alternating_current_limit)
-                .decimation_mode(oscilloscope_decimation_mode::peak_detect)
-                .label(oscilloscope_label("bla"))
+        TEST_METHOD(test_rtx_channel) {
+            const auto input = rtx_channel(42)
+                .attenuation(rtx_quantity(12.3f, "V"))
+                .bandwidth(rtx_channel_bandwidth::limit_to_20_mhz)
+                .coupling(rtx_channel_coupling::alternating_current_limit)
+                .decimation_mode(rtx_decimation_mode::peak_detect)
+                .label(rtx_label("bla"))
                 .offset(23.4f)
-                .polarity(oscilloscope_channel_polarity::inverted)
+                .polarity(rtx_channel_polarity::inverted)
                 .range(34.5f)
                 .skew(45.6f)
                 .zero_offset(56.7f);
 
             const auto json = detail::json_serialise(input);
-            const auto output = detail::json_deserialise<oscilloscope_channel>(json);
+            const auto output = detail::json_deserialise<rtx_channel>(json);
             Assert::AreEqual(input.attenuation().value(), output.attenuation().value(), L"attenuation.value", LINE_INFO());
             Assert::AreEqual(input.attenuation().unit(), output.attenuation().unit(), L"attenuation.unit", LINE_INFO());
             Assert::AreEqual(int(input.bandwidth()), int(output.bandwidth()), L"bandwidth", LINE_INFO());
@@ -51,17 +51,17 @@ namespace test {
             Assert::AreEqual(input.zero_offset().unit(), output.zero_offset().unit(), L"zero_offset.unit", LINE_INFO());
         }
 
-        TEST_METHOD(test_oscilloscope_edge_trigger) {
-            const auto input = oscilloscope_trigger::edge("CH3")
-                .coupling(oscilloscope_trigger_coupling::low_frequency_reject)
-                .hysteresis(oscilloscope_trigger_hysteresis::high)
-                .level(3, oscilloscope_quantity(42.0f, "V"))
-                .slope(oscilloscope_trigger_slope::both)
+        TEST_METHOD(test_rtx_edge_trigger) {
+            const auto input = rtx_trigger::edge("CH3")
+                .coupling(rtx_trigger_coupling::low_frequency_reject)
+                .hysteresis(rtx_trigger_hysteresis::high)
+                .level(3, rtx_quantity(42.0f, "V"))
+                .slope(rtx_trigger_slope::both)
                 .hold_off("12s")
-                .mode(oscilloscope_trigger_mode::normal);
+                .mode(rtx_trigger_mode::normal);
 
             const auto json = detail::json_serialise(input);
-            const auto output = detail::json_deserialise<oscilloscope_trigger>(json);
+            const auto output = detail::json_deserialise<rtx_trigger>(json);
             Assert::AreEqual(int(input.coupling()), int(output.coupling()), L"coupling", LINE_INFO());
             Assert::AreEqual(input.hold_off(), output.hold_off(), L"hold_off", LINE_INFO());
             Assert::AreEqual(int(input.hysteresis()), int(output.hysteresis()), L"hysteresis", LINE_INFO());
@@ -74,29 +74,29 @@ namespace test {
             Assert::AreEqual(input.type(), output.type(), L"type", LINE_INFO());
         }
 
-        TEST_METHOD(test_oscilloscope_label) {
-            const oscilloscope_label input("bla", false);
+        TEST_METHOD(test_rtx_label) {
+            const rtx_label input("bla", false);
             const auto json = detail::json_serialise(input);
-            const auto output = detail::json_deserialise<oscilloscope_label>(json);
+            const auto output = detail::json_deserialise<rtx_label>(json);
             Assert::AreEqual(input.text(), output.text(), L"text", LINE_INFO());
             Assert::AreEqual(input.visible(), output.visible(), L"visible", LINE_INFO());
         }
 
-        TEST_METHOD(test_oscilloscope_quantity) {
-            const oscilloscope_quantity input(42.0f, "GeV");
+        TEST_METHOD(test_rtx_quantity) {
+            const rtx_quantity input(42.0f, "GeV");
             const auto json = detail::json_serialise(input);
-            const auto output = detail::json_deserialise<oscilloscope_quantity>(json);
+            const auto output = detail::json_deserialise<rtx_quantity>(json);
             Assert::AreEqual(input.value(), output.value(), L"value", LINE_INFO());
             Assert::AreEqual(input.unit(), output.unit(), L"unit", LINE_INFO());
         }
 
-        TEST_METHOD(test_oscilloscope_acquisition) {
-            const auto input = oscilloscope_acquisition()
+        TEST_METHOD(test_rtx_acquisition) {
+            const auto input = rtx_acquisition()
                 .count(8)
                 .points(42)
                 .segmented(true);
             const auto json = detail::json_serialise(input);
-            const auto output = detail::json_deserialise<oscilloscope_acquisition>(json);
+            const auto output = detail::json_deserialise<rtx_acquisition>(json);
             Assert::AreEqual(input.automatic_points(), output.automatic_points(), L"automatic_points", LINE_INFO());
             Assert::AreEqual(input.count(), output.count(), L"count", LINE_INFO());
             Assert::AreEqual(input.points(), output.points(), L"points", LINE_INFO());
@@ -104,19 +104,19 @@ namespace test {
         }
 
         TEST_METHOD(test_rtx_instrument_configuration) {
-            const auto acquisition = oscilloscope_acquisition()
+            const auto acquisition = rtx_acquisition()
                 .count(8)
                 .points(42)
                 .segmented(true);
-            const auto trigger = oscilloscope_trigger::edge("CH3")
-                .coupling(oscilloscope_trigger_coupling::low_frequency_reject)
-                .hysteresis(oscilloscope_trigger_hysteresis::high)
-                .level(3, oscilloscope_quantity(42.0f, "V"))
-                .slope(oscilloscope_trigger_slope::both)
+            const auto trigger = rtx_trigger::edge("CH3")
+                .coupling(rtx_trigger_coupling::low_frequency_reject)
+                .hysteresis(rtx_trigger_hysteresis::high)
+                .level(3, rtx_quantity(42.0f, "V"))
+                .slope(rtx_trigger_slope::both)
                 .hold_off("12s")
-                .mode(oscilloscope_trigger_mode::normal);
+                .mode(rtx_trigger_mode::normal);
 
-            const auto input = rtx_instrument_configuration(oscilloscope_quantity(12.0f, "s"), acquisition, trigger, 899)
+            const auto input = rtx_instrument_configuration(rtx_quantity(12.0f, "s"), acquisition, trigger, 899)
                 .beep_on_apply(42).beep_on_error(true).beep_on_trigger(true);
             const auto json = detail::json_serialise(input);
             const auto output = detail::json_deserialise<rtx_instrument_configuration>(json);
@@ -148,16 +148,16 @@ namespace test {
 
         TEST_METHOD(test_rtx_instrument_config_with_channels) {
             const auto input = rtx_instrument_configuration(12.0f)
-                .channel(oscilloscope_channel(1))
-                .channel(oscilloscope_channel(2))
-                .channel(oscilloscope_channel(4));
+                .channel(rtx_channel(1))
+                .channel(rtx_channel(2))
+                .channel(rtx_channel(4));
             const auto json = detail::json_serialise(input);
             const auto output = detail::json_deserialise<rtx_instrument_configuration>(json);
 
-            std::vector<oscilloscope_channel> expected_channels(input.channels());
+            std::vector<rtx_channel> expected_channels(input.channels());
             input.channels(expected_channels.data(), expected_channels.size());
 
-            std::vector<oscilloscope_channel> actual_channels(input.channels());
+            std::vector<rtx_channel> actual_channels(input.channels());
             input.channels(actual_channels.data(), actual_channels.size());
 
             Assert::AreEqual(expected_channels.size(), actual_channels.size(), L"# of channels", LINE_INFO());

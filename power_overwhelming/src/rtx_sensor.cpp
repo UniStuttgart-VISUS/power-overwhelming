@@ -125,7 +125,7 @@ std::size_t visus::power_overwhelming::rtx_sensor::for_all(
         // acquisition, increase the timeout, because we want to be able to
         // safely wait for the acquisition to complete.
         rtx_instrument_configuration config(
-            oscilloscope_quantity(time_range, "ms"),
+            rtx_quantity(time_range, "ms"),
             (std::max)(timeout, 2 * time_range),
             samples);
         configure_instrument(dst, cnt, config);
@@ -141,8 +141,8 @@ std::size_t visus::power_overwhelming::rtx_sensor::for_all(
 std::size_t visus::power_overwhelming::rtx_sensor::get_definitions(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_sensor_definition *dst,
         _In_ const std::size_t cnt,
-        _In_ const oscilloscope_channel& voltage_channel,
-        _In_ const oscilloscope_channel& current_channel,
+        _In_ const rtx_channel& voltage_channel,
+        _In_ const rtx_channel& current_channel,
         _In_ const std::size_t force_channels,
         _In_ const visa_instrument::timeout_type timeout) {
     // Search the instruments using VISA.
@@ -191,8 +191,8 @@ std::size_t visus::power_overwhelming::rtx_sensor::get_definitions(
                 const auto desc = path + L" (" + std::to_wstring(cv)
                     + L"+" + std::to_wstring(cc) + L")";
                 dst[i] = rtx_sensor_definition(path.c_str(),
-                    oscilloscope_channel(cv, voltage_channel),
-                    oscilloscope_channel(cc, current_channel),
+                    rtx_channel(cv, voltage_channel),
+                    rtx_channel(cc, current_channel),
                     desc.c_str());
             }
         }
@@ -212,11 +212,11 @@ std::size_t visus::power_overwhelming::rtx_sensor::get_definitions(
         _In_ const float current_attenuation,
         _In_ const std::size_t force_channels,
         _In_ const visa_instrument::timeout_type timeout) {
-    const oscilloscope_quantity ca(current_attenuation, "A");
-    const oscilloscope_quantity va(voltage_attenuation, "V");
+    const rtx_quantity ca(current_attenuation, "A");
+    const rtx_quantity va(voltage_attenuation, "V");
     return get_definitions(dst, cnt,
-        oscilloscope_channel().attenuation(va).state(true),
-        oscilloscope_channel().attenuation(ca).state(true),
+        rtx_channel().attenuation(va).state(true),
+        rtx_channel().attenuation(ca).state(true),
         force_channels,
         timeout);
 }
@@ -225,13 +225,13 @@ std::size_t visus::power_overwhelming::rtx_sensor::get_definitions(
 /*
  * visus::power_overwhelming::rtx_sensor::sample
  */
-visus::power_overwhelming::oscilloscope_sample
+visus::power_overwhelming::rtx_sample
 visus::power_overwhelming::rtx_sensor::sample(
         _In_ const rtx_instrument& device) {
-    device.acquisition(oscilloscope_acquisition_state::single, true);
+    device.acquisition(rtx_acquisition_state::single, true);
     throw "TODO";
 
-    return oscilloscope_sample();
+    return rtx_sample();
 }
 
 
@@ -285,16 +285,16 @@ visus::power_overwhelming::rtx_sensor::acquire(void) const {
     assert(this->_impl != nullptr);
     assert(instrument == true);
 
-    instrument.acquisition(oscilloscope_acquisition_state::single, true);
+    instrument.acquisition(rtx_acquisition_state::single, true);
     // If the acquisition before succeeded, the instrument must be valid and
     // therefore the sensor should be valid as well (and have a name).
     assert(this->name() != nullptr);
 
     // Download the data from the instrument.
     const auto current = instrument.data(this->_impl->channel_current,
-        oscilloscope_waveform_points::maximum);
+        rtx_waveform_points::maximum);
     const auto voltage = instrument.data(this->_impl->channel_voltage,
-        oscilloscope_waveform_points::maximum);
+        rtx_waveform_points::maximum);
 
     // Convert the two waveforms into a data series.
     assert(current.record_length() == voltage.record_length());

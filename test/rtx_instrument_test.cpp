@@ -19,8 +19,8 @@ namespace test {
     public:
 
         TEST_METHOD(test_config_dft_ctor) {
-            const oscilloscope_acquisition expected_acquisition;
-            const auto expected_trigger = oscilloscope_trigger::edge("EXT");
+            const rtx_acquisition expected_acquisition;
+            const auto expected_trigger = rtx_trigger::edge("EXT");
 
             rtx_instrument_configuration config;
             Assert::AreEqual(expected_acquisition.automatic_points(), config.acquisition().automatic_points(), L"acquisition.automatic_points", LINE_INFO());
@@ -46,21 +46,21 @@ namespace test {
         }
 
         TEST_METHOD(test_config_copy_ctor) {
-            const auto expected_acquisition = oscilloscope_acquisition()
+            const auto expected_acquisition = rtx_acquisition()
                 .count(42)
                 .points(1024)
                 .segmented(true);
-            const auto expected_trigger = oscilloscope_trigger::edge("EXT")
-                .coupling(oscilloscope_trigger_coupling::low_frequency_reject)
+            const auto expected_trigger = rtx_trigger::edge("EXT")
+                .coupling(rtx_trigger_coupling::low_frequency_reject)
                 .level(42.0f);
-            const oscilloscope_quantity expected_time_range(42.42f, "ms");
+            const rtx_quantity expected_time_range(42.42f, "ms");
             const visa_instrument::timeout_type expected_timeout = 17;
             const std::size_t expected_beeps = 8;
 
             rtx_instrument_configuration config(expected_time_range, expected_acquisition, expected_trigger, 17);
             config.beep_on_apply(expected_beeps).beep_on_error(true).beep_on_trigger(true);
-            config.channel(oscilloscope_channel(1).label("bla"));
-            config.channel(oscilloscope_channel(3).label("blubb"));
+            config.channel(rtx_channel(1).label("bla"));
+            config.channel(rtx_channel(3).label("blubb"));
             Assert::AreEqual(expected_acquisition.automatic_points(), config.acquisition().automatic_points(), L"Initialise acquisition.automatic_points", LINE_INFO());
             Assert::AreEqual(expected_acquisition.count(), config.acquisition().count(), L"Initialise acquisition.count", LINE_INFO());
             Assert::AreEqual(expected_acquisition.points(), config.acquisition().points(), L"Initialise acquisition.points", LINE_INFO());
@@ -106,9 +106,9 @@ namespace test {
             Assert::AreEqual(int(config.trigger().slope()), int(copy.trigger().slope()), L"trigger.slope", LINE_INFO());
             Assert::AreEqual(config.trigger().type(), copy.trigger().type(), L"trigger.type", LINE_INFO());
 
-            std::vector<oscilloscope_channel> expected_channels(config.channels());
+            std::vector<rtx_channel> expected_channels(config.channels());
             config.channels(expected_channels.data(), expected_channels.size());
-            std::vector<oscilloscope_channel> actual_channels(copy.channels());
+            std::vector<rtx_channel> actual_channels(copy.channels());
             config.channels(actual_channels.data(), actual_channels.size());
 
             Assert::AreEqual(expected_channels.size(), actual_channels.size(), L"# of channels matches", LINE_INFO());
@@ -135,21 +135,21 @@ namespace test {
         }
 
         TEST_METHOD(test_config_assign) {
-            const auto expected_acquisition = oscilloscope_acquisition()
+            const auto expected_acquisition = rtx_acquisition()
                 .count(42)
                 .points(1024)
                 .segmented(true);
-            const auto expected_trigger = oscilloscope_trigger::edge("EXT")
-                .coupling(oscilloscope_trigger_coupling::low_frequency_reject)
+            const auto expected_trigger = rtx_trigger::edge("EXT")
+                .coupling(rtx_trigger_coupling::low_frequency_reject)
                 .level(42.0f);
-            const oscilloscope_quantity expected_time_range(42.42f, "ms");
+            const rtx_quantity expected_time_range(42.42f, "ms");
             const visa_instrument::timeout_type expected_timeout = 17;
             const std::size_t expected_beeps = 8;
 
             rtx_instrument_configuration config(expected_time_range, expected_acquisition, expected_trigger, 17);
             config.beep_on_apply(expected_beeps).beep_on_error(true).beep_on_trigger(true);
-            config.channel(oscilloscope_channel(1).label("bla"));
-            config.channel(oscilloscope_channel(3).label("blubb"));
+            config.channel(rtx_channel(1).label("bla"));
+            config.channel(rtx_channel(3).label("blubb"));
 
             rtx_instrument_configuration copy;
             copy = copy.as_slave();
@@ -177,9 +177,9 @@ namespace test {
             Assert::AreEqual(int(config.trigger().slope()), int(copy.trigger().slope()), L"trigger.slope", LINE_INFO());
             Assert::AreEqual(config.trigger().type(), copy.trigger().type(), L"trigger.type", LINE_INFO());
 
-            std::vector<oscilloscope_channel> expected_channels(config.channels());
+            std::vector<rtx_channel> expected_channels(config.channels());
             config.channels(expected_channels.data(), expected_channels.size());
-            std::vector<oscilloscope_channel> actual_channels(copy.channels());
+            std::vector<rtx_channel> actual_channels(copy.channels());
             config.channels(actual_channels.data(), actual_channels.size());
 
             Assert::AreEqual(expected_channels.size(), actual_channels.size(), L"# of channels matches", LINE_INFO());
@@ -207,21 +207,21 @@ namespace test {
 
 
         TEST_METHOD(test_config_move_ctor) {
-            const auto expected_acquisition = oscilloscope_acquisition()
+            const auto expected_acquisition = rtx_acquisition()
                 .count(42)
                 .points(1024)
                 .segmented(true);
-            const auto expected_trigger = oscilloscope_trigger::edge("EXT")
-                .coupling(oscilloscope_trigger_coupling::low_frequency_reject)
+            const auto expected_trigger = rtx_trigger::edge("EXT")
+                .coupling(rtx_trigger_coupling::low_frequency_reject)
                 .level(42.0f);
-            const oscilloscope_quantity expected_time_range(42.42f, "ms");
+            const rtx_quantity expected_time_range(42.42f, "ms");
             const visa_instrument::timeout_type expected_timeout = 17;
             const std::size_t expected_beeps = 8;
 
             rtx_instrument_configuration config(expected_time_range, expected_acquisition, expected_trigger, 17);
             config.beep_on_apply(expected_beeps).beep_on_error(true).beep_on_trigger(true);
-            config.channel(oscilloscope_channel(1).label("bla"));
-            config.channel(oscilloscope_channel(3).label("blubb"));
+            config.channel(rtx_channel(1).label("bla"));
+            config.channel(rtx_channel(3).label("blubb"));
             Assert::AreEqual(expected_acquisition.automatic_points(), config.acquisition().automatic_points(), L"Initialise acquisition.automatic_points", LINE_INFO());
             Assert::AreEqual(expected_acquisition.count(), config.acquisition().count(), L"Initialise acquisition.count", LINE_INFO());
             Assert::AreEqual(expected_acquisition.points(), config.acquisition().points(), L"Initialise acquisition.points", LINE_INFO());
@@ -270,21 +270,21 @@ namespace test {
         }
 
         TEST_METHOD(test_config_move_assign) {
-            const auto expected_acquisition = oscilloscope_acquisition()
+            const auto expected_acquisition = rtx_acquisition()
                 .count(42)
                 .points(1024)
                 .segmented(true);
-            const auto expected_trigger = oscilloscope_trigger::edge("EXT")
-                .coupling(oscilloscope_trigger_coupling::low_frequency_reject)
+            const auto expected_trigger = rtx_trigger::edge("EXT")
+                .coupling(rtx_trigger_coupling::low_frequency_reject)
                 .level(42.0f);
-            const oscilloscope_quantity expected_time_range(42.42f, "ms");
+            const rtx_quantity expected_time_range(42.42f, "ms");
             const visa_instrument::timeout_type expected_timeout = 17;
             const std::size_t expected_beeps = 8;
 
             rtx_instrument_configuration config(expected_time_range, expected_acquisition, expected_trigger, 17);
             config.beep_on_apply(expected_beeps).beep_on_error(true).beep_on_trigger(true);
-            config.channel(oscilloscope_channel(1).label("bla"));
-            config.channel(oscilloscope_channel(3).label("blubb"));
+            config.channel(rtx_channel(1).label("bla"));
+            config.channel(rtx_channel(3).label("blubb"));
 
             rtx_instrument_configuration copy;
             copy = copy.as_slave();
@@ -317,17 +317,17 @@ namespace test {
         TEST_METHOD(test_config_channel) {
             rtx_instrument_configuration config;
 
-            config.channel(oscilloscope_channel(1).range(17.0f));
+            config.channel(rtx_channel(1).range(17.0f));
             Assert::AreEqual(std::size_t(1), config.channels(), L"Channel added", LINE_INFO());
 
-            config.channel(oscilloscope_channel(1).range(42.0f));
+            config.channel(rtx_channel(1).range(42.0f));
             Assert::AreEqual(std::size_t(1), config.channels(), L"Channel overwritten", LINE_INFO());
 
-            config.channel(oscilloscope_channel(2).range(43.0f));
+            config.channel(rtx_channel(2).range(43.0f));
             Assert::AreEqual(std::size_t(2), config.channels(), L"Channel added", LINE_INFO());
 
             {
-                std::vector<oscilloscope_channel> channels(config.channels());
+                std::vector<rtx_channel> channels(config.channels());
                 config.channels(channels.data(), channels.size());
 
                 Assert::AreEqual(std::uint32_t(1), channels[0].channel(), L"Channel #1", LINE_INFO());
@@ -343,7 +343,7 @@ namespace test {
             Assert::AreEqual(std::size_t(1), config.channels(), L"Channel removed", LINE_INFO());
 
             {
-                std::vector<oscilloscope_channel> channels(config.channels());
+                std::vector<rtx_channel> channels(config.channels());
                 config.channels(channels.data(), channels.size());
 
                 Assert::AreEqual(std::uint32_t(2), channels[0].channel(), L"Channel #", LINE_INFO());
@@ -353,17 +353,17 @@ namespace test {
             config.ignore_channel(2);
             Assert::AreEqual(std::size_t(0), config.channels(), L"Channel removed", LINE_INFO());
 
-            config.channel(oscilloscope_channel(1));
-            config.channel(oscilloscope_channel(2));
-            config.channel(oscilloscope_channel(3));
-            config.channel(oscilloscope_channel(4));
+            config.channel(rtx_channel(1));
+            config.channel(rtx_channel(2));
+            config.channel(rtx_channel(3));
+            config.channel(rtx_channel(4));
             Assert::AreEqual(std::size_t(4), config.channels(), L"Channels added", LINE_INFO());
 
             config.ignore_channel(4);
             Assert::AreEqual(std::size_t(3), config.channels(), L"Channel removed", LINE_INFO());
 
             {
-                std::vector<oscilloscope_channel> channels(config.channels());
+                std::vector<rtx_channel> channels(config.channels());
                 config.channels(channels.data(), channels.size());
 
                 Assert::AreEqual(std::uint32_t(1), channels[0].channel(), L"Channel #1", LINE_INFO());
@@ -375,7 +375,7 @@ namespace test {
             Assert::AreEqual(std::size_t(2), config.channels(), L"Channel removed", LINE_INFO());
 
             {
-                std::vector<oscilloscope_channel> channels(config.channels());
+                std::vector<rtx_channel> channels(config.channels());
                 config.channels(channels.data(), channels.size());
 
                 Assert::AreEqual(std::uint32_t(1), channels[0].channel(), L"Channel #1", LINE_INFO());
@@ -385,14 +385,14 @@ namespace test {
 
         TEST_METHOD(test_config_save_load) {
             const auto expected_config = rtx_instrument_configuration(
-                oscilloscope_quantity(42.42f, "ms"),
-                oscilloscope_acquisition().count(42).points(1024).segmented(true),
-                oscilloscope_trigger::edge("CH2").coupling(oscilloscope_trigger_coupling::low_frequency_reject).level(42.0f), 17)
+                rtx_quantity(42.42f, "ms"),
+                rtx_acquisition().count(42).points(1024).segmented(true),
+                rtx_trigger::edge("CH2").coupling(rtx_trigger_coupling::low_frequency_reject).level(42.0f), 17)
                 .beep_on_apply(8)
                 .beep_on_error(true)
                 .beep_on_trigger(true)
-                .channel(oscilloscope_channel(1).label("bla"))
-                .channel(oscilloscope_channel(3).label("blubb"));
+                .channel(rtx_channel(1).label("bla"))
+                .channel(rtx_channel(3).label("blubb"));
             rtx_instrument_configuration::save(expected_config, L"test.json");
 
             auto actual_config = rtx_instrument_configuration::load(L"test.json");
@@ -422,15 +422,15 @@ namespace test {
         TEST_METHOD(test_config_save_load_array) {
             const std::vector<rtx_instrument_configuration> expected_configs = {
                 rtx_instrument_configuration(
-                    oscilloscope_quantity(42.42f, "ms"),
-                    oscilloscope_acquisition().count(42).points(1024).segmented(true),
-                    oscilloscope_trigger::edge("CH2").coupling(oscilloscope_trigger_coupling::low_frequency_reject).level(42.0f), 17)
+                    rtx_quantity(42.42f, "ms"),
+                    rtx_acquisition().count(42).points(1024).segmented(true),
+                    rtx_trigger::edge("CH2").coupling(rtx_trigger_coupling::low_frequency_reject).level(42.0f), 17)
                 .beep_on_apply(8)
                 .beep_on_error(true)
                 .beep_on_trigger(true)
-                .channel(oscilloscope_channel(1).label("bla"))
-                .channel(oscilloscope_channel(3).label("blubb")),
-                rtx_instrument_configuration(oscilloscope_quantity(42.42f, "s"), 99, 4242)
+                .channel(rtx_channel(1).label("bla"))
+                .channel(rtx_channel(3).label("blubb")),
+                rtx_instrument_configuration(rtx_quantity(42.42f, "s"), 99, 4242)
             };
 
             rtx_instrument_configuration::save(expected_configs.data(), expected_configs.size(), L"test.json");
@@ -493,14 +493,14 @@ namespace test {
 
         TEST_METHOD(test_config_seralise_deserialise) {
             const auto expected_config = rtx_instrument_configuration(
-                oscilloscope_quantity(42.42f, "ms"),
-                oscilloscope_acquisition().count(42).points(1024).segmented(true),
-                oscilloscope_trigger::edge("CH2").coupling(oscilloscope_trigger_coupling::low_frequency_reject).level(42.0f), 17)
+                rtx_quantity(42.42f, "ms"),
+                rtx_acquisition().count(42).points(1024).segmented(true),
+                rtx_trigger::edge("CH2").coupling(rtx_trigger_coupling::low_frequency_reject).level(42.0f), 17)
                 .beep_on_apply(8)
                 .beep_on_error(true)
                 .beep_on_trigger(true)
-                .channel(oscilloscope_channel(1).label("bla"))
-                .channel(oscilloscope_channel(3).label("blubb"));
+                .channel(rtx_channel(1).label("bla"))
+                .channel(rtx_channel(3).label("blubb"));
 
             Assert::ExpectException<std::invalid_argument>([&expected_config](void) {
                 rtx_instrument_configuration::serialise(nullptr, 1, expected_config);
@@ -543,15 +543,15 @@ namespace test {
         TEST_METHOD(test_config_seralise_deserialise_array) {
             const std::vector<rtx_instrument_configuration> expected_configs = {
                 rtx_instrument_configuration(
-                    oscilloscope_quantity(42.42f, "ms"),
-                    oscilloscope_acquisition().count(42).points(1024).segmented(true),
-                    oscilloscope_trigger::edge("CH2").coupling(oscilloscope_trigger_coupling::low_frequency_reject).level(42.0f), 17)
+                    rtx_quantity(42.42f, "ms"),
+                    rtx_acquisition().count(42).points(1024).segmented(true),
+                    rtx_trigger::edge("CH2").coupling(rtx_trigger_coupling::low_frequency_reject).level(42.0f), 17)
                 .beep_on_apply(8)
                 .beep_on_error(true)
                 .beep_on_trigger(true)
-                .channel(oscilloscope_channel(1).label("bla"))
-                .channel(oscilloscope_channel(3).label("blubb")),
-                rtx_instrument_configuration(oscilloscope_quantity(42.42f, "s"), 99, 4242)
+                .channel(rtx_channel(1).label("bla"))
+                .channel(rtx_channel(3).label("blubb")),
+                rtx_instrument_configuration(rtx_quantity(42.42f, "s"), 99, 4242)
             };
 
             auto required = rtx_instrument_configuration::serialise(nullptr, 0, expected_configs.data(), expected_configs.size());

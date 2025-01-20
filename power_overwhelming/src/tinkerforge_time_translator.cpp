@@ -1,5 +1,5 @@
 ﻿// <copyright file="tinkerforge_time_translator.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -11,9 +11,9 @@
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_time_translator::check_support
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::check_support
  */
-bool visus::power_overwhelming::detail::tinkerforge_time_translator
+bool PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator
 ::check_support(_In_ bricklet_type& bricklet) noexcept {
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
     char connected_to_uid[8];
@@ -64,8 +64,8 @@ bool visus::power_overwhelming::detail::tinkerforge_time_translator
 /*
  * ...::detail::tinkerforge_time_translator::get_coord_times
  */
-visus::power_overwhelming::detail::tinkerforge_time_translator::times_type
-visus::power_overwhelming::detail::tinkerforge_time_translator::get_coord_times(
+PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::times_type
+PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::get_coord_times(
         _In_ bricklet_type& bricklet) {
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
     using namespace std::chrono;
@@ -91,7 +91,7 @@ visus::power_overwhelming::detail::tinkerforge_time_translator::get_coord_times(
 /*
  * ...::detail::tinkerforge_time_translator::tinkerforge_time_translator
  */
-visus::power_overwhelming::detail::tinkerforge_time_translator
+PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator
 ::tinkerforge_time_translator(void) noexcept
         : _begin_bricklet(0),
         _begin_host(0),
@@ -102,9 +102,9 @@ visus::power_overwhelming::detail::tinkerforge_time_translator
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_time_translator::update
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::update
  */
-bool visus::power_overwhelming::detail::tinkerforge_time_translator::update(
+bool PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::update(
         _In_ bricklet_type& bricklet) noexcept {
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
     using namespace std::chrono;
@@ -155,10 +155,10 @@ bool visus::power_overwhelming::detail::tinkerforge_time_translator::update(
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_time_translator::operator ()
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::operator ()
  */
-visus::power_overwhelming::timestamp
-visus::power_overwhelming::detail::tinkerforge_time_translator::operator ()(
+PWROWG_NAMESPACE::timestamp
+PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::operator ()(
         _In_ const bricklet_time_type time,
         _In_ bricklet_type& bricklet) {
     using namespace std::chrono;

@@ -23,11 +23,11 @@ namespace power_overwhelming {
 namespace detail {
 
     /// <summary>
-    /// Specialisation for <see cref="oscilloscope_acquisition" />.
+    /// Specialisation for <see cref="rtx_acquisition" />.
     /// </summary>
-    template<> struct json_serialiser<oscilloscope_acquisition,
+    template<> struct json_serialiser<rtx_acquisition,
             false, false> final {
-        typedef oscilloscope_acquisition value_type;
+        typedef rtx_acquisition value_type;
 
         static inline value_type deserialise(_In_ const nlohmann::json& json) {
             _PWROWG_DESERIALISE_FIELD(count);
@@ -52,11 +52,11 @@ namespace detail {
     };
 
     /// <summary>
-    /// Specialisation for <see cref="oscilloscope_label" />.
+    /// Specialisation for <see cref="rtx_label" />.
     /// </summary>
     template<>
-    struct json_serialiser<oscilloscope_label, false, false> final {
-        typedef oscilloscope_label value_type;
+    struct json_serialiser<rtx_label, false, false> final {
+        typedef rtx_label value_type;
 
         static inline value_type deserialise(_In_ const nlohmann::json& json) {
             _PWROWG_DESERIALISE_FIELD(text);
@@ -73,11 +73,11 @@ namespace detail {
     };
 
     /// <summary>
-    /// Specialisation for <see cref="oscilloscope_quantity" />.
+    /// Specialisation for <see cref="rtx_quantity" />.
     /// </summary>
     template<>
-    struct json_serialiser<oscilloscope_quantity, false, false> final {
-        typedef oscilloscope_quantity value_type;
+    struct json_serialiser<rtx_quantity, false, false> final {
+        typedef rtx_quantity value_type;
 
         static inline value_type deserialise(_In_ const nlohmann::json& json) {
             _PWROWG_DESERIALISE_FIELD(value);
@@ -94,11 +94,11 @@ namespace detail {
     };
 
     /// <summary>
-    /// Specialisation for <see cref="oscilloscope_channel" />.
+    /// Specialisation for <see cref="rtx_channel" />.
     /// </summary>
     template<>
-    struct json_serialiser<oscilloscope_channel, false, false> final {
-        typedef oscilloscope_channel value_type;
+    struct json_serialiser<rtx_channel, false, false> final {
+        typedef rtx_channel value_type;
 
         static inline value_type deserialise(_In_ const nlohmann::json& json) {
             _PWROWG_DESERIALISE_FIELD(attenuation);
@@ -153,11 +153,11 @@ namespace detail {
     };
 
     /// <summary>
-    /// Specialisation for <see cref="oscilloscope_trigger" />.
+    /// Specialisation for <see cref="rtx_trigger" />.
     /// </summary>
     template<>
-    struct json_serialiser<oscilloscope_trigger, false, false> final {
-        typedef oscilloscope_trigger value_type;
+    struct json_serialiser<rtx_trigger, false, false> final {
+        typedef rtx_trigger value_type;
 
         static inline value_type deserialise(_In_ const nlohmann::json& json) {
             _PWROWG_DESERIALISE_FIELD(coupling);
@@ -219,7 +219,7 @@ namespace detail {
             auto channels = json["channels"];
             if (channels.type() == nlohmann::json::value_t::array) {
                 for (auto& c : channels) {
-                    retval.channel(json_deserialise<oscilloscope_channel>(c));
+                    retval.channel(json_deserialise<rtx_channel>(c));
                 }
             }
 
@@ -232,7 +232,7 @@ namespace detail {
         static inline nlohmann::json serialise(_In_ const value_type& value) {
             // Obtain the channel array manually and convert it to JSON  one by
             // one. This is too special for automating it.
-            std::vector<oscilloscope_channel> channels(value.channels());
+            std::vector<rtx_channel> channels(value.channels());
             value.channels(channels.data(), channels.size());
 
             auto channels_json = nlohmann::json::array();

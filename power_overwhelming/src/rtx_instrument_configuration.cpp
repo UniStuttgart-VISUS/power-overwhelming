@@ -265,8 +265,8 @@ void visus::power_overwhelming::rtx_instrument_configuration::apply(
         _In_ const std::size_t cnt,
         _In_ const rtx_instrument_configuration& configuration,
         _In_ const bool master_slave,
-        _In_ const oscilloscope_quantity& level,
-        _In_ const oscilloscope_trigger_slope slope) {
+        _In_ const rtx_quantity& level,
+        _In_ const rtx_trigger_slope slope) {
     if ((instruments == nullptr) || (cnt < 1)) {
         // Bail out if there is nothing to configure.
         return;
@@ -310,8 +310,8 @@ std::size_t visus::power_overwhelming::rtx_instrument_configuration::apply(
         _In_ const std::size_t cnt,
         _In_ const rtx_instrument_configuration& configuration,
         _In_z_ const wchar_t *master,
-        _In_ const oscilloscope_quantity& level,
-        _In_ const oscilloscope_trigger_slope slope) {
+        _In_ const rtx_quantity& level,
+        _In_ const rtx_trigger_slope slope) {
     if (master == nullptr) {
         throw std::invalid_argument("A valid name for the master instrument "
             "must be supplied.");
@@ -330,8 +330,8 @@ std::size_t visus::power_overwhelming::rtx_instrument_configuration::apply(
         _In_ const std::size_t cnt,
         _In_ const rtx_instrument_configuration& configuration,
         _In_z_ const char *master,
-        _In_ const oscilloscope_quantity& level,
-        _In_ const oscilloscope_trigger_slope slope) {
+        _In_ const rtx_quantity& level,
+        _In_ const rtx_trigger_slope slope) {
     auto retval = cnt;
 
     if (master == nullptr) {
@@ -544,7 +544,7 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _channels(nullptr),
         _cnt_channels(0),
         _min_time_base(0.0f),
-        _reference_position(oscilloscope_reference_point::middle),
+        _reference_position(rtx_reference_point::middle),
         _slave(false),
         _timeout(0),
         _time_range(0.0f),
@@ -570,7 +570,7 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _time_range(rhs._time_range),
         _trigger(rhs._trigger),
         _trigger_position(rhs._trigger_position) {
-    typedef oscilloscope_channel chan_t;
+    typedef rtx_channel chan_t;
     // Create a unique_ptr for safety reasons: If any of the assignment
     // operators of the channels fails, we must release this memory.
     auto channels = std::unique_ptr<chan_t[]>(new chan_t[this->_cnt_channels]);
@@ -606,7 +606,7 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
  * ...::rtx_instrument_configuration::rtx_instrument_configuration
  */
 visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configuration(
-        _In_ const oscilloscope_quantity time_range,
+        _In_ const rtx_quantity time_range,
         _In_ const unsigned int samples,
         _In_ visa_instrument::timeout_type timeout)
     : _beep_on_apply(0),
@@ -615,14 +615,14 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _channels(nullptr),
         _cnt_channels(0),
         _min_time_base(0.0f),
-        _reference_position(oscilloscope_reference_point::middle),
+        _reference_position(rtx_reference_point::middle),
         _slave(false),
         _timeout(0),
         _time_range(time_range),
         _trigger("EXT", "EDGE"),
         _trigger_position(0.0f) {
     this->_acquisition.points(samples).segmented(true);
-    this->_trigger.external().mode(oscilloscope_trigger_mode::automatic);
+    this->_trigger.external().mode(rtx_trigger_mode::automatic);
 }
 
 
@@ -630,9 +630,9 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
  * ...::rtx_instrument_configuration::rtx_instrument_configuration
  */
 visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configuration(
-        _In_ const oscilloscope_quantity time_range,
-        _In_ const oscilloscope_acquisition& acquisition,
-        _In_ const oscilloscope_trigger& trigger,
+        _In_ const rtx_quantity time_range,
+        _In_ const rtx_acquisition& acquisition,
+        _In_ const rtx_trigger& trigger,
         _In_ visa_instrument::timeout_type timeout)
     : _acquisition(acquisition),
         _beep_on_apply(0),
@@ -641,13 +641,13 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _channels(nullptr),
         _cnt_channels(0),
         _min_time_base(0.0f),
-        _reference_position(oscilloscope_reference_point::middle),
+        _reference_position(rtx_reference_point::middle),
         _slave(false),
         _timeout(timeout),
         _time_range(time_range),
         _trigger(trigger),
         _trigger_position(0.0f) {
-    this->_acquisition.state(oscilloscope_acquisition_state::unknown);
+    this->_acquisition.state(rtx_acquisition_state::unknown);
 }
 
 
@@ -670,7 +670,7 @@ visus::power_overwhelming::rtx_instrument_configuration::rtx_instrument_configur
         _time_range(instrument.time_range()),
         _trigger(instrument.trigger()),
         _trigger_position(instrument.trigger_position()){
-    typedef oscilloscope_channel chan_t;
+    typedef rtx_channel chan_t;
     std::vector<chan_t> channels;
 
     if (!instrument.automatic_roll()) {
@@ -717,7 +717,7 @@ visus::power_overwhelming::rtx_instrument_configuration::~rtx_instrument_configu
 /*
  * visus::power_overwhelming::rtx_instrument_configuration::acquisition
  */
-const visus::power_overwhelming::oscilloscope_acquisition&
+const visus::power_overwhelming::rtx_acquisition&
 visus::power_overwhelming::rtx_instrument_configuration::acquisition(
         void) const noexcept {
     return this->_acquisition;
@@ -730,8 +730,8 @@ visus::power_overwhelming::rtx_instrument_configuration::acquisition(
 visus::power_overwhelming::rtx_instrument_configuration
 visus::power_overwhelming::rtx_instrument_configuration::as_slave(
         _In_ const std::size_t beep,
-        _In_ const oscilloscope_quantity& level,
-        _In_ const oscilloscope_trigger_slope slope) const {
+        _In_ const rtx_quantity& level,
+        _In_ const rtx_trigger_slope slope) const {
     rtx_instrument_configuration retval(*this);
     retval._slave = true;
     retval._trigger.external(level, slope);
@@ -770,7 +770,7 @@ void visus::power_overwhelming::rtx_instrument_configuration::apply(
     // the trigger level can only be within the configured vertical range of the
     // respective channel.
     instrument.time_range(this->_time_range)
-        .trigger_output(oscilloscope_trigger_output::pulse)
+        .trigger_output(rtx_trigger_output::pulse)
         .automatic_roll(roll)
         .automatic_roll_time(mtim)
         .trigger(this->_trigger)
@@ -822,7 +822,7 @@ visus::power_overwhelming::rtx_instrument_configuration::beep_on_trigger(
  */
 visus::power_overwhelming::rtx_instrument_configuration&
 visus::power_overwhelming::rtx_instrument_configuration::channel(
-        _In_ const oscilloscope_channel& channel) {
+        _In_ const rtx_channel& channel) {
     // If we already have channels, make sure that each channel is configured
     // only once and overwrite any existing configuration for the same channel.
     if (this->_channels != nullptr) {
@@ -836,7 +836,7 @@ visus::power_overwhelming::rtx_instrument_configuration::channel(
     // At this point, we know that we do not know 'channel'.
 
     auto old = this->_channels;
-    this->_channels = new oscilloscope_channel[this->_cnt_channels + 1];
+    this->_channels = new rtx_channel[this->_cnt_channels + 1];
 
     // Copy the existing channels and delete them.
     std::copy(old, old + this->_cnt_channels, this->_channels);
@@ -853,7 +853,7 @@ visus::power_overwhelming::rtx_instrument_configuration::channel(
  * visus::power_overwhelming::rtx_instrument_configuration::channels
  */
 std::size_t visus::power_overwhelming::rtx_instrument_configuration::channels(
-        _When_(dst != nullptr, _Out_writes_opt_(cnt)) oscilloscope_channel *dst,
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_channel *dst,
         _In_ const std::size_t cnt) const {
     if (dst != nullptr) {
         std::copy(this->_channels,
@@ -903,7 +903,7 @@ visus::power_overwhelming::rtx_instrument_configuration::ignore_channel(
         _In_ const std::uint32_t channel) {
     auto end = this->_channels + this->_cnt_channels;
     auto it = std::remove_if(this->_channels, end,
-            [channel](const oscilloscope_channel& c) {
+            [channel](const rtx_channel& c) {
         return (c.channel() == channel);
     });
 
@@ -944,7 +944,7 @@ visus::power_overwhelming::rtx_instrument_configuration::operator =(
         this->_beep_on_trigger = rhs._beep_on_trigger;
 
         delete[] this->_channels;
-        this->_channels = new oscilloscope_channel[rhs._cnt_channels];
+        this->_channels = new rtx_channel[rhs._cnt_channels];
         std::copy(rhs._channels,
             rhs._channels + rhs._cnt_channels,
             this->_channels);

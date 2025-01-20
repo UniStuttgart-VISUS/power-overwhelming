@@ -13,7 +13,7 @@
 #include "visus/pwrowg/api.h"
 
 
-PWROWG_NAMESPACE_BEGIN
+PWROWG_DETAIL_NAMESPACE_BEGIN
 
 /// <summary>
 /// An exception caused by a failure in the AMD Display Library.
@@ -55,6 +55,6 @@ private:
     value_type _code;
 };
 
-PWROWG_NAMESPACE_END
+PWROWG_DETAIL_NAMESPACE_END
 
 #endif /* !defined(_PWROWG_ADL_EXCEPTION_H) */

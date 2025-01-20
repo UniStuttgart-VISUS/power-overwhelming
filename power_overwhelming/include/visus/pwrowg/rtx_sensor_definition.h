@@ -4,11 +4,12 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
+
 #pragma once
 
 #include "visus/pwrowg/blob.h"
-#include "visus/pwrowg/oscilloscope_channel.h"
-#include "visus/pwrowg/oscilloscope_waveform_points.h"
+#include "visus/pwrowg/rtx_channel.h"
+#include "visus/pwrowg/rtx_waveform_points.h"
 
 
 namespace visus {
@@ -59,11 +60,11 @@ namespace power_overwhelming {
         /// <exception cref="std::bad_alloc">If the memory for storing the
         /// description could not be allocated.</exception>
         rtx_sensor_definition(_In_z_ const wchar_t *path,
-            _In_ const oscilloscope_channel& voltage_channel,
-            _In_ const oscilloscope_channel& current_channel,
+            _In_ const rtx_channel& voltage_channel,
+            _In_ const rtx_channel& current_channel,
             _In_opt_z_ const wchar_t *description = nullptr,
-            _In_ const oscilloscope_waveform_points waveform_points
-            = oscilloscope_waveform_points::maximum);
+            _In_ const rtx_waveform_points waveform_points
+            = rtx_waveform_points::maximum);
 
         /// <summary>
         /// Initialises a new instance.
@@ -89,11 +90,11 @@ namespace power_overwhelming {
         /// <exception cref="std::bad_alloc">If the memory for storing the
         /// description could not be allocated.</exception>
         rtx_sensor_definition(_In_z_ const char *path,
-            _In_ const oscilloscope_channel& voltage_channel,
-            _In_ const oscilloscope_channel& current_channel,
+            _In_ const rtx_channel& voltage_channel,
+            _In_ const rtx_channel& current_channel,
             _In_opt_z_ const wchar_t *description = nullptr,
-            _In_ const oscilloscope_waveform_points waveform_points
-            = oscilloscope_waveform_points::maximum);
+            _In_ const rtx_waveform_points waveform_points
+            = rtx_waveform_points::maximum);
 
         /// <summary>
         /// Initialises a new instance.
@@ -128,8 +129,8 @@ namespace power_overwhelming {
             _In_ const std::uint32_t channel_current,
             _In_ const float attenuation_current,
             _In_z_ const wchar_t *description = nullptr,
-            _In_ const oscilloscope_waveform_points waveform_points
-            = oscilloscope_waveform_points::maximum);
+            _In_ const rtx_waveform_points waveform_points
+            = rtx_waveform_points::maximum);
 
         /// <summary>
         /// Initialises a new instance.
@@ -164,8 +165,8 @@ namespace power_overwhelming {
             _In_ const std::uint32_t channel_current,
             _In_ const float attenuation_current,
             _In_opt_z_ const wchar_t *description = nullptr,
-            _In_ const oscilloscope_waveform_points waveform_points
-            = oscilloscope_waveform_points::maximum);
+            _In_ const rtx_waveform_points waveform_points
+            = rtx_waveform_points::maximum);
 
         /// <summary>
         /// Applies the channel configurations on the given instrument.
@@ -183,7 +184,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>The attenuation of the current probe if the current probe.
         /// </returns>
-        inline const oscilloscope_quantity& attenuation_current(
+        inline const rtx_quantity& attenuation_current(
                 void) const noexcept {
             return this->_current_channel.attenuation();
         }
@@ -193,7 +194,7 @@ namespace power_overwhelming {
         /// </summary>
         /// <returns>The attenuation of the voltage probe if the current probe.
         /// </returns>
-        inline const oscilloscope_quantity& attenuation_voltage(
+        inline const rtx_quantity& attenuation_voltage(
                 void) const noexcept {
             return this->_voltage_channel.attenuation();
         }
@@ -220,7 +221,7 @@ namespace power_overwhelming {
         /// Gets the configuration of the channel measuring the current.
         /// </summary>
         /// <returns>The channel configuration object.</returns>
-        inline const oscilloscope_channel& current_channel(
+        inline const rtx_channel& current_channel(
                 void) const noexcept {
             return this->_current_channel;
         }
@@ -259,7 +260,7 @@ namespace power_overwhelming {
         /// Gets the configuration of the channel measuring the current.
         /// </summary>
         /// <returns>The channel configuration object.</returns>
-        inline const oscilloscope_channel& voltage_channel(
+        inline const rtx_channel& voltage_channel(
                 void) const noexcept {
             return this->_voltage_channel;
         }
@@ -269,7 +270,7 @@ namespace power_overwhelming {
         /// the channels of the are transferred to the computer.
         /// </summary>
         /// <returns>The waveform points to download.</returns>
-        inline oscilloscope_waveform_points waveform_points(
+        inline rtx_waveform_points waveform_points(
                 void) const noexcept {
             return this->_waveform_points;
         }
@@ -285,11 +286,11 @@ namespace power_overwhelming {
 
         void make_labels(void);
 
-        oscilloscope_channel _current_channel;
+        rtx_channel _current_channel;
         blob _description;
         blob _path;
-        oscilloscope_channel _voltage_channel;
-        oscilloscope_waveform_points _waveform_points;
+        rtx_channel _voltage_channel;
+        rtx_waveform_points _waveform_points;
     };
 
 } /* namespace power_overwhelming */

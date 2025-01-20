@@ -1,8 +1,8 @@
-// <copyright file="rtx_instrument.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// <copyright file="rtx_instrument.cpp" company="Visualisierungsinstitut der Universitï¿½t Stuttgart">
+// Copyright ï¿½ 2023 Visualisierungsinstitut der Universitï¿½t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph Mï¿½ller</author>
 
 #include "visus/pwrowg/rtx_instrument.h"
 
@@ -207,9 +207,9 @@ visus::power_overwhelming::rtx_instrument::rtx_instrument(
 /*
  * visus::power_overwhelming::rtx_instrument::acquisition
  */
-visus::power_overwhelming::oscilloscope_acquisition
+visus::power_overwhelming::rtx_acquisition
 visus::power_overwhelming::rtx_instrument::acquisition(void) const {
-    oscilloscope_acquisition retval;
+    rtx_acquisition retval;
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
@@ -230,15 +230,15 @@ visus::power_overwhelming::rtx_instrument::acquisition(void) const {
 
     auto state = this->query("ACQ:STAT?\n");
     if (detail::starts_with(state.as<char>(), "RUN")) {
-        retval.state(oscilloscope_acquisition_state::run);
+        retval.state(rtx_acquisition_state::run);
     } else if (detail::starts_with(state.as<char>(), "STOP")) {
-        retval.state(oscilloscope_acquisition_state::stop);
+        retval.state(rtx_acquisition_state::stop);
     } else if (detail::starts_with(state.as<char>(), "SING")) {
-        retval.state(oscilloscope_acquisition_state::single);
+        retval.state(rtx_acquisition_state::single);
     } else if (detail::starts_with(state.as<char>(), "BREAK")) {
-        retval.state(oscilloscope_acquisition_state::interrupt);
+        retval.state(rtx_acquisition_state::interrupt);
     } else {
-        retval.state(oscilloscope_acquisition_state::unknown);
+        retval.state(rtx_acquisition_state::unknown);
     }
 
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -252,7 +252,7 @@ visus::power_overwhelming::rtx_instrument::acquisition(void) const {
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::acquisition(
-        _In_ const oscilloscope_acquisition& acquisition,
+        _In_ const rtx_acquisition& acquisition,
         _In_ const bool wait) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
@@ -267,7 +267,7 @@ visus::power_overwhelming::rtx_instrument::acquisition(
 
     impl.format("ACQ:SEGM:STAT %s\n", acquisition.segmented() ? "ON" : "OFF");
 
-    if (acquisition.state() != oscilloscope_acquisition_state::unknown) {
+    if (acquisition.state() != rtx_acquisition_state::unknown) {
         this->acquisition(acquisition.state(), wait);
     }
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -281,14 +281,14 @@ visus::power_overwhelming::rtx_instrument::acquisition(
  */
 const visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::acquisition(
-        _In_ const oscilloscope_acquisition_state state,
+        _In_ const rtx_acquisition_state state,
         _In_ const bool wait) const {
     switch (state) {
-        case oscilloscope_acquisition_state::run:
+        case rtx_acquisition_state::run:
             this->write("ACQ:STAT RUN\n");
             break;
 
-        case oscilloscope_acquisition_state::stop:
+        case rtx_acquisition_state::stop:
             if (wait) {
                 this->query("ACQ:STAT STOP; *OPC?\n");
             } else {
@@ -296,7 +296,7 @@ visus::power_overwhelming::rtx_instrument::acquisition(
             }
             break;
 
-        case oscilloscope_acquisition_state::single:
+        case rtx_acquisition_state::single:
             if (wait) {
                 this->query("SING; *OPC?\n");
             } else {
@@ -307,7 +307,7 @@ visus::power_overwhelming::rtx_instrument::acquisition(
             //this->query("*OPC?\n");
             break;
 
-        case oscilloscope_acquisition_state::interrupt:
+        case rtx_acquisition_state::interrupt:
         default:
             this->write("ACQ:STAT BRE\n");
             break;
@@ -372,7 +372,7 @@ visus::power_overwhelming::rtx_instrument::automatic_roll(
 /*
  * visus::power_overwhelming::rtx_instrument::automatic_roll_time
  */
-visus::power_overwhelming::oscilloscope_quantity
+visus::power_overwhelming::rtx_quantity
 visus::power_overwhelming::rtx_instrument::automatic_roll_time(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto response = this->query("TIM:ROLL:MTIM?\n");
@@ -389,7 +389,7 @@ visus::power_overwhelming::rtx_instrument::automatic_roll_time(void) const {
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::automatic_roll_time(
-        _In_ const oscilloscope_quantity& min_time_base) {
+        _In_ const rtx_quantity& min_time_base) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     this->check_not_disposed().format("TIM:ROLL:MTIM %f%s\n",
         min_time_base.value(), min_time_base.unit());
@@ -451,12 +451,12 @@ visus::power_overwhelming::rtx_instrument::binary_data(
 /*
  * visus::power_overwhelming::rtx_instrument::channel
  */
-visus::power_overwhelming::oscilloscope_channel
+visus::power_overwhelming::rtx_channel
 visus::power_overwhelming::rtx_instrument::channel(
         _In_ const channel_type channel) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
-    oscilloscope_channel retval(channel);
+    rtx_channel retval(channel);
 
     {
         impl.format("PROB%d:SET:ATT:UNIT?\n", channel);
@@ -468,13 +468,13 @@ visus::power_overwhelming::rtx_instrument::channel(
         impl.format("PROB%d:SET:ATT:MAN?\n", channel);
         auto value = impl.read_all();
 
-        retval.attenuation(oscilloscope_quantity(
+        retval.attenuation(rtx_quantity(
             detail::parse_float(value.as<char>()),
             u));
     }
 
     {
-        typedef oscilloscope_channel_bandwidth enum_type;
+        typedef rtx_channel_bandwidth enum_type;
         impl.format("CHAN%d:BAND?\n", channel);
         auto value = impl.read_all();
 
@@ -486,7 +486,7 @@ visus::power_overwhelming::rtx_instrument::channel(
     }
 
     {
-        typedef oscilloscope_channel_coupling enum_type;
+        typedef rtx_channel_coupling enum_type;
         impl.format("CHAN%d:COUP?\n", channel);
         auto value = impl.read_all();
 
@@ -500,7 +500,7 @@ visus::power_overwhelming::rtx_instrument::channel(
     }
 
     {
-        typedef oscilloscope_decimation_mode enum_type;
+        typedef rtx_decimation_mode enum_type;
         impl.format("CHAN%d:TYPE?\n", channel);
         auto value = impl.read_all();
 
@@ -530,7 +530,7 @@ visus::power_overwhelming::rtx_instrument::channel(
         auto visible = impl.read_all();
         auto vis = !detail::starts_with(visible.as<char>(), "0");
 
-        retval.label(oscilloscope_label(txt, vis));
+        retval.label(rtx_label(txt, vis));
     }
 
     {
@@ -586,7 +586,7 @@ visus::power_overwhelming::rtx_instrument::channel(
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::channel(
-        _In_ const oscilloscope_channel& channel) {
+        _In_ const rtx_channel& channel) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
 
@@ -607,37 +607,37 @@ visus::power_overwhelming::rtx_instrument::channel(
     }
 
     switch (channel.bandwidth()) {
-        case oscilloscope_channel_bandwidth::limit_to_20_mhz:
+        case rtx_channel_bandwidth::limit_to_20_mhz:
             impl.format("CHAN%d:BAND B20\n", channel.channel());
             break;
 
-        case oscilloscope_channel_bandwidth::full:
+        case rtx_channel_bandwidth::full:
         default:
             impl.format("CHAN%d:BAND FULL\n", channel.channel());
             break;
     }
 
     switch (channel.coupling()) {
-        case oscilloscope_channel_coupling::alternating_current_limit:
+        case rtx_channel_coupling::alternating_current_limit:
             impl.format("CHAN%d:COUP ACL\n", channel.channel());
             break;
 
-        case oscilloscope_channel_coupling::ground:
+        case rtx_channel_coupling::ground:
             impl.format("CHAN%d:COUP GND\n", channel.channel());
             break;
 
-        case oscilloscope_channel_coupling::direct_current_limit:
+        case rtx_channel_coupling::direct_current_limit:
         default:
             impl.format("CHAN%d:COUP DCL\n", channel.channel());
             break;
     }
 
     switch (channel.decimation_mode()) {
-        case oscilloscope_decimation_mode::high_resolution:
+        case rtx_decimation_mode::high_resolution:
             impl.format("CHAN%d:TYPE HRES\n", channel.channel());
             break;
 
-        case oscilloscope_decimation_mode::peak_detect:
+        case rtx_decimation_mode::peak_detect:
             impl.format("CHAN%d:TYPE PDET\n", channel.channel());
             break;
 
@@ -652,7 +652,7 @@ visus::power_overwhelming::rtx_instrument::channel(
         channel.label().visible() ? "ON" : "OFF");
 
     switch (channel.polarity()) {
-        case oscilloscope_channel_polarity::inverted:
+        case rtx_channel_polarity::inverted:
             impl.format("CHAN%d:POL INV\n", channel.channel());
             break;
 
@@ -890,23 +890,23 @@ visus::power_overwhelming::rtx_instrument::copy_state_to_instrument(
 /*
  * visus::power_overwhelming::rtx_instrument::data
  */
-visus::power_overwhelming::oscilloscope_waveform
+visus::power_overwhelming::rtx_waveform
 visus::power_overwhelming::rtx_instrument::data(
         _In_ const channel_type channel,
-        _In_ const oscilloscope_waveform_points points) const {
+        _In_ const rtx_waveform_points points) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
 
     switch (points) {
-        case oscilloscope_waveform_points::maximum:
+        case rtx_waveform_points::maximum:
             impl.format("CHAN%u:DATA:POIN MAX\n", channel);
             break;
 
-        case oscilloscope_waveform_points::maximum_visible:
+        case rtx_waveform_points::maximum_visible:
             impl.format("CHAN%u:DATA:POIN DMAX\n", channel);
             break;
 
-        case oscilloscope_waveform_points::visible:
+        case rtx_waveform_points::visible:
         default:
             impl.format("CHAN%u:DATA:POIN DEF\n", channel);
             break;
@@ -942,7 +942,7 @@ visus::power_overwhelming::rtx_instrument::data(
     _Analysis_assume_(tsab != nullptr);
     detail::trim_eol(tsab);
 
-    return oscilloscope_waveform(xorg, xinc, tsd, tsab, tsr,
+    return rtx_waveform(xorg, xinc, tsd, tsab, tsr,
         this->binary_data(channel));
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
@@ -954,13 +954,13 @@ visus::power_overwhelming::rtx_instrument::data(
 /*
  * visus::power_overwhelming::rtx_instrument::data
  */
-visus::power_overwhelming::oscilloscope_sample
+visus::power_overwhelming::rtx_sample
 visus::power_overwhelming::rtx_instrument::data(
-        _In_ const oscilloscope_waveform_points points,
+        _In_ const rtx_waveform_points points,
         _In_ const timeout_type timeout) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     std::vector<channel_type> channels;
-    std::vector<oscilloscope_waveform> waveforms;
+    std::vector<rtx_waveform> waveforms;
 
     auto& impl = this->check_not_disposed();
 
@@ -998,7 +998,7 @@ visus::power_overwhelming::rtx_instrument::data(
         }
     }
 
-    return oscilloscope_sample(channels.data(), waveforms.data(),
+    return rtx_sample(channels.data(), waveforms.data(),
         channels.size(), segments);
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(detail::no_visa_error_msg);
@@ -1176,7 +1176,7 @@ visus::power_overwhelming::rtx_instrument::load_state_from_instrument(
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::reference_position(
-        _In_ const oscilloscope_reference_point position) {
+        _In_ const rtx_reference_point position) {
     auto& impl = this->check_not_disposed();
     impl.format("TIM:REF %f\n", static_cast<float>(position) / 100.0f);
     return *this;
@@ -1186,12 +1186,12 @@ visus::power_overwhelming::rtx_instrument::reference_position(
 /*
  * visus::power_overwhelming::rtx_instrument::reference_position
  */
-visus::power_overwhelming::oscilloscope_reference_point
+visus::power_overwhelming::rtx_reference_point
 visus::power_overwhelming::rtx_instrument::reference_position(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto response = this->query("TIM:REF?\n");
     auto position = detail::parse_float(response.as<char>()) * 100;
-    return static_cast<oscilloscope_reference_point>(position);
+    return static_cast<rtx_reference_point>(position);
 
 #else /*defined(POWER_OVERWHELMING_WITH_VISA) */
     throw std::logic_error(detail::no_visa_error_msg);
@@ -1211,7 +1211,7 @@ visus::power_overwhelming::rtx_instrument::reset(
         (flags & flags_type::status) == flags_type::status);
 
     if ((flags & flags_type::stop) == flags_type::stop) {
-        this->acquisition(oscilloscope_acquisition_state::interrupt, true);
+        this->acquisition(rtx_acquisition_state::interrupt, true);
     }
 
     return *this;
@@ -1278,7 +1278,7 @@ visus::power_overwhelming::rtx_instrument::save_state_to_instrument(
 /*
  * visus::power_overwhelming::rtx_instrument::time_range
  */
-visus::power_overwhelming::oscilloscope_quantity
+visus::power_overwhelming::rtx_quantity
 visus::power_overwhelming::rtx_instrument::time_range(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto response = this->query("TIM:RANG?\n");
@@ -1295,7 +1295,7 @@ visus::power_overwhelming::rtx_instrument::time_range(void) const {
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::time_range(
-        _In_ const oscilloscope_quantity& scale) {
+        _In_ const rtx_quantity& scale) {
     auto &impl = this->check_not_disposed();
     impl.format("TIM:RANG %f %s\n", scale.value(), scale.unit());
     return *this;
@@ -1305,7 +1305,7 @@ visus::power_overwhelming::rtx_instrument::time_range(
 /*
  * visus::power_overwhelming::rtx_instrument::time_scale
  */
-visus::power_overwhelming::oscilloscope_quantity
+visus::power_overwhelming::rtx_quantity
 visus::power_overwhelming::rtx_instrument::time_scale(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto response = this->query("TIM:SCAL?\n");
@@ -1322,7 +1322,7 @@ visus::power_overwhelming::rtx_instrument::time_scale(void) const {
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::time_scale(
-        _In_ const oscilloscope_quantity& scale) {
+        _In_ const rtx_quantity& scale) {
     auto& impl = this->check_not_disposed();
     impl.format("TIM:SCAL %f %s\n", scale.value(), scale.unit());
     return *this;
@@ -1332,7 +1332,7 @@ visus::power_overwhelming::rtx_instrument::time_scale(
 /*
  * visus::power_overwhelming::rtx_instrument::trigger
  */
-visus::power_overwhelming::oscilloscope_trigger
+visus::power_overwhelming::rtx_trigger
 visus::power_overwhelming::rtx_instrument::trigger(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
@@ -1349,10 +1349,10 @@ visus::power_overwhelming::rtx_instrument::trigger(void) const {
     _Analysis_assume_(src != nullptr);
     detail::trim_eol(src);
 
-    oscilloscope_trigger retval(src, typ);
+    rtx_trigger retval(src, typ);
 
     {
-        typedef oscilloscope_trigger_mode enum_type;
+        typedef rtx_trigger_mode enum_type;
         auto mode = this->query("TRIG:A:MODE?\n");
 
         if (detail::starts_with(mode.as<char>(), "AUTO")) {
@@ -1382,7 +1382,7 @@ visus::power_overwhelming::rtx_instrument::trigger(void) const {
     }
 
     {
-        typedef oscilloscope_trigger_slope enum_type;
+        typedef rtx_trigger_slope enum_type;
         auto edge = this->query("TRIG:A:EDGE:SLOP?\n");
 
         if (detail::starts_with(edge.as<char>(), "EITH")) {
@@ -1424,7 +1424,7 @@ visus::power_overwhelming::rtx_instrument::trigger(void) const {
     }
 
     {
-        typedef oscilloscope_trigger_coupling enum_type;
+        typedef rtx_trigger_coupling enum_type;
         auto coupling = this->query("TRIG:A:EDGE:COUP?\n");
 
         if (detail::starts_with(coupling.as<char>(), "AC")) {
@@ -1454,12 +1454,12 @@ throw std::logic_error(detail::no_visa_error_msg);
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::trigger(
-        _In_ const oscilloscope_trigger& trigger) {
+        _In_ const rtx_trigger& trigger) {
     auto& impl = this->check_not_disposed();
 
     // Apply configuration that is valid for all triggers.
     switch (trigger.mode()) {
-        case oscilloscope_trigger_mode::automatic:
+        case rtx_trigger_mode::automatic:
             impl.format("TRIG:A:MODE AUTO\n");
             break;
 
@@ -1482,15 +1482,15 @@ visus::power_overwhelming::rtx_instrument::trigger(
     // Apply special configuration if the trigger is an edge trigger.
     if (detail::equals(trigger.type(), "EDGE", true)) {
         switch (trigger.slope()) {
-            case oscilloscope_trigger_slope::both:
+            case rtx_trigger_slope::both:
                 impl.format("TRIG:A:EDGE:SLOP EITH\n");
                 break;
 
-            case oscilloscope_trigger_slope::rising:
+            case rtx_trigger_slope::rising:
                 impl.format("TRIG:A:EDGE:SLOP POS\n");
                 break;
 
-            case oscilloscope_trigger_slope::falling:
+            case rtx_trigger_slope::falling:
                 impl.format("TRIG:A:EDGE:SLOP NEG\n");
                 break;
         }
@@ -1504,15 +1504,15 @@ visus::power_overwhelming::rtx_instrument::trigger(
         }
 
         switch (trigger.coupling()) {
-            case oscilloscope_trigger_coupling::alternating_current:
+            case rtx_trigger_coupling::alternating_current:
                 impl.format("TRIG:A:EDGE:COUP AC\n");
                 break;
 
-            case oscilloscope_trigger_coupling::direct_current:
+            case rtx_trigger_coupling::direct_current:
                 impl.format("TRIG:A:EDGE:COUP DC\n");
                 break;
 
-            case oscilloscope_trigger_coupling::low_frequency_reject:
+            case rtx_trigger_coupling::low_frequency_reject:
                 impl.format("TRIG:A:EDGE:COUP LFR\n");
                 break;
         }
@@ -1520,19 +1520,19 @@ visus::power_overwhelming::rtx_instrument::trigger(
 #if 0
         // TODO: Only RTA
         switch (et->hysteresis()) {
-            case oscilloscope_trigger_hysteresis::automatic:
+            case rtx_trigger_hysteresis::automatic:
                 impl.printf("TRIG:A:HYST AUTO\n");
                 break;
 
-            case oscilloscope_trigger_hysteresis::high:
+            case rtx_trigger_hysteresis::high:
                 impl.printf("TRIG:A:HYST LARGE\n");
                 break;
 
-            case oscilloscope_trigger_hysteresis::low:
+            case rtx_trigger_hysteresis::low:
                 impl.printf("TRIG:A:HYST SMAL\n");
                 break;
 
-            case oscilloscope_trigger_hysteresis::medium:
+            case rtx_trigger_hysteresis::medium:
                 impl.printf("TRIG:A:HYST MED\n");
                 break;
         }
@@ -1547,10 +1547,10 @@ visus::power_overwhelming::rtx_instrument::trigger(
 /*
  * visus::power_overwhelming::rtx_instrument::trigger_output
  */
-visus::power_overwhelming::oscilloscope_trigger_output
+visus::power_overwhelming::rtx_trigger_output
 visus::power_overwhelming::rtx_instrument::trigger_output(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    typedef oscilloscope_trigger_output enum_type;
+    typedef rtx_trigger_output enum_type;
     auto value = this->query("TRIG:OUT:MODEL?\n");
 
     if (detail::starts_with(value.as<char>(), "MASK")) {
@@ -1593,21 +1593,21 @@ visus::power_overwhelming::rtx_instrument::trigger_manually(
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::trigger_output(
-        _In_ const oscilloscope_trigger_output output) {
+        _In_ const rtx_trigger_output output) {
     switch (output) {
-        case oscilloscope_trigger_output::mask:
+        case rtx_trigger_output::mask:
             this->check_not_disposed().write("TRIG:OUT:MODE MASK\n");
             break;
 
-        case oscilloscope_trigger_output::pulse:
+        case rtx_trigger_output::pulse:
             this->check_not_disposed().write("TRIG:OUT:MODE TRIG\n");
             break;
 
-        case oscilloscope_trigger_output::reference:
+        case rtx_trigger_output::reference:
             this->check_not_disposed().write("TRIG:OUT:MODE REF\n");
             break;
 
-        case oscilloscope_trigger_output::off:
+        case rtx_trigger_output::off:
         default:
             this->check_not_disposed().write("TRIG:OUT:MODE OFF\n");
             break;
@@ -1622,7 +1622,7 @@ visus::power_overwhelming::rtx_instrument::trigger_output(
  */
 visus::power_overwhelming::rtx_instrument&
 visus::power_overwhelming::rtx_instrument::trigger_position(
-        _In_ const oscilloscope_quantity& offset) {
+        _In_ const rtx_quantity& offset) {
     auto& impl = this->check_not_disposed();
     impl.format("TIM:POS %f%s\n", offset.value(), offset.unit());
     return *this;
@@ -1632,7 +1632,7 @@ visus::power_overwhelming::rtx_instrument::trigger_position(
 /*
  * visus::power_overwhelming::rtx_instrument::trigger_position
  */
-visus::power_overwhelming::oscilloscope_quantity
+visus::power_overwhelming::rtx_quantity
 visus::power_overwhelming::rtx_instrument::trigger_position(void) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     auto response = this->query("TIM:POS?\n");

@@ -3,7 +3,7 @@
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 
-#include "visus/pwrowg/adl_sensor.h"
+#include "adl_sensor.h"
 
 #include <algorithm>
 #include <cassert>

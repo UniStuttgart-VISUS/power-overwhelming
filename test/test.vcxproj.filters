@@ -36,7 +36,7 @@
     <ClCompile Include="tinkerforge_sensor_definition_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="oscilloscope_sensor_definition_test.cpp">
+    <ClCompile Include="rtx_sensor_definition_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="csv_iomanip_test.cpp">

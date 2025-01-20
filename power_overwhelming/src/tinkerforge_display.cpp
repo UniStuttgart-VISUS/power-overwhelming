@@ -1,11 +1,12 @@
 ﻿// <copyright file="tinkerforge_display.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #include "visus/pwrowg/tinkerforge_display.h"
 
+#include <iterator>
 #include <stdexcept>
 #include <vector>
 
@@ -15,17 +16,17 @@
 
 
 /*
- * visus::power_overwhelming::tinkerforge_display::for_all
+ * PWROWG_NAMESPACE::tinkerforge_display::for_all
  */
-std::size_t visus::power_overwhelming::tinkerforge_display::for_all(
+std::size_t PWROWG_NAMESPACE::tinkerforge_display::for_all(
         _Out_writes_opt_(cnt_displays) tinkerforge_display *out_displays,
         _In_ const std::size_t cnt_displays,
         _In_opt_z_ const char *host,
         _In_ const std::uint16_t port,
         _In_ const std::size_t timeout) {
-    std::vector<detail::tinkerforge_bricklet> bricklets;
+    std::vector<PWROWG_DETAIL_NAMESPACE::tinkerforge_bricklet> bricklets;
     const std::string safe_host = (host != nullptr) ? host : default_host;
-    detail::tinkerforge_scope scope(safe_host, port);
+    PWROWG_DETAIL_NAMESPACE::tinkerforge_scope scope(safe_host, port);
 
     auto retval = scope.copy_bricklets(std::back_inserter(bricklets),
         [](const detail::tinkerforge_bricklet& b) {
@@ -44,9 +45,9 @@ std::size_t visus::power_overwhelming::tinkerforge_display::for_all(
 
 
 /*
- * visus::power_overwhelming::tinkerforge_display::tinkerforge_display
+ * PWROWG_NAMESPACE::tinkerforge_display::tinkerforge_display
  */
-visus::power_overwhelming::tinkerforge_display::tinkerforge_display(
+PWROWG_NAMESPACE::tinkerforge_display::tinkerforge_display(
         _In_z_ const char *uid,
         _In_opt_z_ const char *host,
         _In_ const std::uint16_t port)
@@ -59,9 +60,9 @@ visus::power_overwhelming::tinkerforge_display::tinkerforge_display(
 
 
 /*
- * visus::power_overwhelming::tinkerforge_display::clear
+ * PWROWG_NAMESPACE::tinkerforge_display::clear
  */
-void visus::power_overwhelming::tinkerforge_display::clear(void) {
+void PWROWG_NAMESPACE::tinkerforge_display::clear(void) {
     if (!*this) {
         throw std::runtime_error("A disposed instance of tinkerforge_display "
             "cannot be cleared.");
@@ -69,15 +70,15 @@ void visus::power_overwhelming::tinkerforge_display::clear(void) {
 
     auto status = ::lcd_128x64_clear_display(&this->_impl->bricklet);
     if (status < 0) {
-        throw tinkerforge_exception(status);
+        throw PWROWG_DETAIL_NAMESPACE::tinkerforge_exception(status);
     }
 }
 
 
 /*
- * visus::power_overwhelming::tinkerforge_display::print
+ * PWROWG_NAMESPACE::tinkerforge_display::print
  */
-void visus::power_overwhelming::tinkerforge_display::print(
+void PWROWG_NAMESPACE::tinkerforge_display::print(
         _In_z_ const char *text,
         _In_ const std::uint8_t x,
         _In_ const std::uint8_t y,
@@ -94,16 +95,16 @@ void visus::power_overwhelming::tinkerforge_display::print(
     auto status = ::lcd_128x64_draw_text(&this->_impl->bricklet, x, y, font,
         colour, text);
     if (status < 0) {
-        throw tinkerforge_exception(status);
+        throw PWROWG_DETAIL_NAMESPACE::tinkerforge_exception(status);
     }
 }
 
 
 /*
- * visus::power_overwhelming::tinkerforge_display::operator =
+ * PWROWG_NAMESPACE::tinkerforge_display::operator =
  */
-visus::power_overwhelming::tinkerforge_display& 
-visus::power_overwhelming::tinkerforge_display::operator =(
+PWROWG_NAMESPACE::tinkerforge_display& 
+PWROWG_NAMESPACE::tinkerforge_display::operator =(
         _In_ tinkerforge_display&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         this->_impl = rhs._impl;
@@ -115,9 +116,9 @@ visus::power_overwhelming::tinkerforge_display::operator =(
 
 
 /*
- * visus::power_overwhelming::tinkerforge_display::operator bool
+ * PWROWG_NAMESPACE::tinkerforge_display::operator bool
  */
-visus::power_overwhelming::tinkerforge_display::operator bool(
+PWROWG_NAMESPACE::tinkerforge_display::operator bool(
         void) const noexcept {
     return (this->_impl != nullptr);
 }

@@ -1,15 +1,15 @@
 ﻿// <copyright file="tinkerforge_time_translator.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_time_translator::reset
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::reset
  */
 template<class TRep>
-void visus::power_overwhelming::detail::tinkerforge_time_translator::reset(
+void PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::reset(
         _In_ bricklet_type& bricklet,
         _In_ const std::chrono::duration<timestamp::value_type, TRep> ts) {
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)

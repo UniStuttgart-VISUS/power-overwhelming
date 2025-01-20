@@ -83,7 +83,7 @@ static std::string adl_to_string(const int code) {
 
 
 /*
- * PWROWG_NAMESPACE::adl_exception::adl_exception
+ * PWROWG_DETAIL_NAMESPACE::adl_exception::adl_exception
  */
-PWROWG_NAMESPACE::adl_exception::adl_exception(const value_type code)
+PWROWG_DETAIL_NAMESPACE::adl_exception::adl_exception(const value_type code)
     : std::runtime_error(adl_to_string(code).c_str()), _code(code) { }

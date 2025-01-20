@@ -8,6 +8,8 @@
 #define _PWROWG_RAPL_QUANTITY_H
 #pragma once
 
+#include "visus/pwrowg/api.h"
+
 
 PWROWG_NAMESPACE_BEGIN
 

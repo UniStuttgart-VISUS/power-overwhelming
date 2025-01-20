@@ -1,5 +1,5 @@
 ﻿// <copyright file="tinkerforge_sensor_source.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2022 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -11,33 +11,9 @@
 
 
 /*
- * visus::power_overwhelming::operator |
+ * PWROWG_NAMESPACE::to_string
  */
-visus::power_overwhelming::tinkerforge_sensor_source
-visus::power_overwhelming::operator |(_In_ const tinkerforge_sensor_source lhs,
-        _In_ const tinkerforge_sensor_source rhs) {
-    typedef std::underlying_type<tinkerforge_sensor_source>::type mask_type;
-    auto retval = static_cast<mask_type>(lhs) | static_cast<mask_type>(rhs);
-    return static_cast<tinkerforge_sensor_source>(retval);
-}
-
-
-/*
- * visus::power_overwhelming::operator &
- */
-visus::power_overwhelming::tinkerforge_sensor_source
-visus::power_overwhelming::operator &(_In_ const tinkerforge_sensor_source lhs,
-        _In_ const tinkerforge_sensor_source rhs) {
-    typedef std::underlying_type<tinkerforge_sensor_source>::type mask_type;
-    auto retval = static_cast<mask_type>(lhs) & static_cast<mask_type>(rhs);
-    return static_cast<tinkerforge_sensor_source>(retval);
-}
-
-
-/*
- * visus::power_overwhelming::to_string
- */
-_Ret_valid_ const wchar_t *visus::power_overwhelming::to_string(
+_Ret_valid_ const wchar_t *PWROWG_NAMESPACE::to_string(
         _In_ const tinkerforge_sensor_source source) {
 #define _GCC_IS_SHIT(v) L##v
 #define _TO_STRING_CASE(v) case tinkerforge_sensor_source::v:\
@@ -56,4 +32,30 @@ _Ret_valid_ const wchar_t *visus::power_overwhelming::to_string(
 
 #undef _GCC_IS_SHIT
 #undef _TO_STRING_CASE
+}
+
+
+/*
+ * ::operator |
+ */
+PWROWG_NAMESPACE::tinkerforge_sensor_source
+operator |(_In_ const PWROWG_NAMESPACE::tinkerforge_sensor_source lhs,
+        _In_ const PWROWG_NAMESPACE::tinkerforge_sensor_source rhs) {
+    typedef typename std::decay<decltype(lhs)>::type enum_type;
+    typedef std::underlying_type<enum_type>::type mask_type;
+    auto retval = static_cast<mask_type>(lhs) | static_cast<mask_type>(rhs);
+    return static_cast<enum_type>(retval);
+}
+
+
+/*
+ * ::operator &
+ */
+PWROWG_NAMESPACE::tinkerforge_sensor_source
+operator &(_In_ const PWROWG_NAMESPACE::tinkerforge_sensor_source lhs,
+        _In_ const PWROWG_NAMESPACE::tinkerforge_sensor_source rhs) {
+    typedef typename std::decay<decltype(lhs)>::type enum_type;
+    typedef std::underlying_type<enum_type>::type mask_type;
+    auto retval = static_cast<mask_type>(lhs) & static_cast<mask_type>(rhs);
+    return static_cast<enum_type>(retval);
 }

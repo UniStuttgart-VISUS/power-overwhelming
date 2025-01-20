@@ -1,8 +1,8 @@
-// <copyright file="oscilloscope_label_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// <copyright file="rtx_label_test.cpp" company="Visualisierungsinstitut der Universitï¿½t Stuttgart">
+// Copyright ï¿½ 2023 Visualisierungsinstitut der Universitï¿½t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph Mï¿½ller</author>
 
 #include "pch.h"
 #include "CppUnitTest.h"
@@ -14,12 +14,12 @@ namespace visus {
 namespace power_overwhelming {
 namespace test {
 
-    TEST_CLASS(oscilloscope_label_test) {
+    TEST_CLASS(rtx_label_test) {
 
     public:
 
         TEST_METHOD(test_default_ctor) {
-            oscilloscope_label label;
+            rtx_label label;
         }
     };
 

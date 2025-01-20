@@ -59,10 +59,10 @@ void visus::power_overwhelming::detail::rtx_sampler::sample(
             // Run the acquisition. It depends on the user settings whether this
             // will auto-trigger or wait for a real trigger.
             auto& dev = group->sensors.front()->instrument;
-            dev.acquisition(oscilloscope_acquisition_state::single, true);
+            dev.acquisition(rtx_acquisition_state::single, true);
 
             // Get all the data we have.
-            auto waveforms = dev.data(oscilloscope_waveform_points::maximum);
+            auto waveforms = dev.data(rtx_waveform_points::maximum);
 
             // Construct the measurement_data from the sample data. Asynchronous
             // sampling can deliver batches of measurement_data, so we will
@@ -72,8 +72,8 @@ void visus::power_overwhelming::detail::rtx_sampler::sample(
                     min_sleep = s->async_sampling.minimum_sleep();
                 }
 
-                const oscilloscope_sample::channel_waveform *current = nullptr;
-                const oscilloscope_sample::channel_waveform *voltage = nullptr;
+                const rtx_sample::channel_waveform *current = nullptr;
+                const rtx_sample::channel_waveform *voltage = nullptr;
 
                 for (auto& w : waveforms) {
                     if (s->channel_current == w.channel()) {

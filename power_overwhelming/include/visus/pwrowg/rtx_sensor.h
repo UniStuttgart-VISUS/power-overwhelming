@@ -7,7 +7,7 @@
 #pragma once
 
 #include "visus/pwrowg/measurement_data_series.h"
-#include "visus/pwrowg/oscilloscope_sample.h"
+#include "visus/pwrowg/rtx_sample.h"
 #include "visus/pwrowg/sensor.h"
 #include "visus/pwrowg/rtx_instrument.h"
 #include "visus/pwrowg/rtx_instrument_configuration.h"
@@ -71,7 +71,7 @@ namespace power_overwhelming {
         /// channels at the end are unused.</para>
         /// <para>Aside from the channel index and the quantity (voltage or
         /// current), the default configuration of
-        /// <see cref="oscilloscope_channel" /> is applied to each channel. If
+        /// <see cref="rtx_channel" /> is applied to each channel. If
         /// you need to customise the probes, use <see cref="get_definitions" />
         /// with a custom template and create the sensors from there.</para>
         /// <para>The method will apply the default
@@ -147,8 +147,8 @@ namespace power_overwhelming {
         static std::size_t get_definitions(
             _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_sensor_definition *dst,
             _In_ const std::size_t cnt,
-            _In_ const oscilloscope_channel& voltage_channel,
-            _In_ const oscilloscope_channel& current_channel,
+            _In_ const rtx_channel& voltage_channel,
+            _In_ const rtx_channel& current_channel,
             _In_ const std::size_t force_channels = 0,
             _In_ const visa_instrument::timeout_type timeout
             = visa_instrument::default_timeout);
@@ -187,9 +187,9 @@ namespace power_overwhelming {
         /// Obtains two or more waveforms from the given instrument.
         /// </summary>
         /// <param name="device">The instrument to be sampled.</param>
-        /// <returns>The <see cref="oscilloscope_sample" /> obtained from the
+        /// <returns>The <see cref="rtx_sample" /> obtained from the
         /// instrument.</returns>
-        static oscilloscope_sample sample(_In_ const rtx_instrument& device);
+        static rtx_sample sample(_In_ const rtx_instrument& device);
 
         /// <summary>
         /// Initialises a new instance.

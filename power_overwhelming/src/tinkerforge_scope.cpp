@@ -1,8 +1,8 @@
-// <copyright file="tinkerforge_scope.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 -2023 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="tinkerforge_scope.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 -2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "tinkerforge_scope.h"
 
@@ -18,9 +18,9 @@
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_scope::tinkerforge_scope
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::tinkerforge_scope
  */
-visus::power_overwhelming::detail::tinkerforge_scope::tinkerforge_scope(
+PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::tinkerforge_scope(
     const std::string &host, const std::uint16_t port) {
     auto endpoint = to_endpoint(host, port);
 
@@ -41,9 +41,9 @@ visus::power_overwhelming::detail::tinkerforge_scope::tinkerforge_scope(
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_scope::data::data
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::data::data
  */
-visus::power_overwhelming::detail::tinkerforge_scope::data::data(
+PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::data::data(
     const std::string &host, const std::uint16_t port) {
     ::ipcon_create(&this->connection);
     //::ipcon_set_auto_reconnect(&this->connection, true);
@@ -75,17 +75,17 @@ visus::power_overwhelming::detail::tinkerforge_scope::data::data(
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_scope::data::~data
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::data::~data
  */
-visus::power_overwhelming::detail::tinkerforge_scope::data::~data(void) {
+PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::data::~data(void) {
     ::ipcon_destroy(&this->connection);
 }
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_scope::on_enumerate
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::on_enumerate
  */
-void CALLBACK visus::power_overwhelming::detail::tinkerforge_scope::on_enumerate(
+void CALLBACK PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::on_enumerate(
     const char *uid, const char *connected_uid, char position,
     std::uint8_t hardware_version[3], std::uint8_t firmware_version[3],
     std::uint16_t device_identifier, std::uint8_t enumeration_type,
@@ -111,9 +111,9 @@ void CALLBACK visus::power_overwhelming::detail::tinkerforge_scope::on_enumerate
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_scope::to_endpoint
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::to_endpoint
  */
-std::string visus::power_overwhelming::detail::tinkerforge_scope::to_endpoint(
+std::string PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::to_endpoint(
         const std::string& host, const std::uint16_t port) {
     std::string retval;
     retval.reserve(host.size() + 1 + 6);
@@ -128,15 +128,15 @@ std::string visus::power_overwhelming::detail::tinkerforge_scope::to_endpoint(
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_scope::_scopes
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::_scopes
  */
 std::map<std::string, std::weak_ptr<
-    visus::power_overwhelming::detail::tinkerforge_scope::data>>
-    visus::power_overwhelming::detail::tinkerforge_scope::_scopes;
+    PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::data>>
+    PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::_scopes;
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_scope::_lock_scopes
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::_lock_scopes
  */
 std::mutex
-visus::power_overwhelming::detail::tinkerforge_scope::_lock_scopes;
+PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::_lock_scopes;

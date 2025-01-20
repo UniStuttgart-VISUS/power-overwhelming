@@ -1,8 +1,8 @@
-// <copyright file="pch.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+// <copyright file="pch.h" company="Visualisierungsinstitut der Universitï¿½t Stuttgart">
+// Copyright ï¿½ 2021 Visualisierungsinstitut der Universitï¿½t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph Mï¿½ller</author>
 
 #pragma once
 
@@ -28,7 +28,7 @@
 #include <power_overwhelming/measurement_data.h>
 #include <power_overwhelming/measurement_data_series.h>
 #include <power_overwhelming/nvml_sensor.h>
-#include <power_overwhelming/oscilloscope_sample.h>
+#include <power_overwhelming/rtx_sample.h>
 #include <power_overwhelming/parallel_port_trigger.h>
 #include <power_overwhelming/rtx_instrument_configuration.h>
 #include <power_overwhelming/rtx_sensor.h>
@@ -48,3 +48,5 @@
 #include <sensor_desc.h>
 #include <setup_api.h>
 #include <string_functions.h>
+
+#include <CppUnitTest.h>
