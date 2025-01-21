@@ -1,12 +1,13 @@
-// <copyright file="visa_exception.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="visa_exception.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #if !defined(_PWROWG_VISA_EXCEPTION_H)
 #define _PWROWG_VISA_EXCEPTION_H
 #pragma once
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 
 #include <stdexcept>
 #include <string>
@@ -31,11 +32,7 @@ public:
     /// <summary>
     /// The native error type.
     /// </summary>
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     typedef ::ViStatus value_type;
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    typedef int value_type;
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     /// <summary>
     /// If <paramref name="status" /> indicates a VISA error, throw a
@@ -87,4 +84,5 @@ private:
 
 PWROWG_DETAIL_NAMESPACE_END
 
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 #endif /* !defined(_PWROWG_VISA_EXCEPTION_H) */

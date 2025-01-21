@@ -4,6 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 #include "visa_exception.h"
 
 #include "visa_library.h"
@@ -18,7 +19,6 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <param name="status"></param>
 /// <returns></returns>
 static std::string visa_to_string(const visa_exception::value_type status) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     ViSession rm;
     // Documentation says 256 would be OK, but most sample code uses 1K.
     ViChar retval[1024];
@@ -33,10 +33,6 @@ static std::string visa_to_string(const visa_exception::value_type status) {
     } else {
         return std::to_string(status);
     }
-
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    return std::to_string(status);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 PWROWG_DETAIL_NAMESPACE_END
@@ -47,11 +43,9 @@ PWROWG_DETAIL_NAMESPACE_END
  */
 void PWROWG_DETAIL_NAMESPACE::visa_exception::throw_on_error(
         const value_type status) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     if (status < VI_SUCCESS) {
         throw visa_exception(status);
     }
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -60,11 +54,9 @@ void PWROWG_DETAIL_NAMESPACE::visa_exception::throw_on_error(
  */
 void PWROWG_DETAIL_NAMESPACE::visa_exception::throw_unless_succeeded(
         const value_type status) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     if (status != VI_SUCCESS) {
         throw visa_exception(status);
     }
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -73,3 +65,5 @@ void PWROWG_DETAIL_NAMESPACE::visa_exception::throw_unless_succeeded(
  */
 PWROWG_DETAIL_NAMESPACE::visa_exception::visa_exception(const value_type code)
     : std::runtime_error(detail::visa_to_string(code).c_str()), _code(code) { }
+
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */

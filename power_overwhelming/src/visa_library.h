@@ -1,30 +1,25 @@
-// <copyright file="visa_library.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="visa_library.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #if !defined(_PWROWG_VISA_LIBRARY_H)
 #define _PWROWG_VISA_LIBRARY_H
 #pragma once
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 
 #include <string>
 #include <vector>
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
 #include <visa.h>
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 #include "library_base.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
 #define __POWER_OVERWHELMING_VISA_FUNC(f) decltype(&f) f = nullptr
-#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
-#define __POWER_OVERWHELMING_VISA_FUNC(f)
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
 /// <summary>
 /// A wrapper around the Virtual Instrument Software Architecture API, which
@@ -93,4 +88,5 @@ private:
 
 PWROWG_DETAIL_NAMESPACE_END
 
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 #endif  /* !defined(_PWROWG_VISA_LIBRARY_H) */

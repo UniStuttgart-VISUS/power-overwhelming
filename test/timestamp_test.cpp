@@ -1,13 +1,13 @@
-// <copyright file="timestamp_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="timestamp_test.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "pch.h"
-#include "CppUnitTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using namespace PWROWG_NAMESPACE;
 
 
 namespace visus {
@@ -102,23 +102,23 @@ namespace test {
 
         TEST_METHOD(test_create) {
             {
-                const auto timestamp = power_overwhelming::timestamp::create(2000, 1, 2, 3, 4, 5, 6);
+                const auto timestamp = PWROWG_NAMESPACE::timestamp::create(2000, 1, 2, 3, 4, 5, 6);
                 const auto expected = make_filetime(2000, 1, 2, 3, 4, 5, 6);
                 Assert::AreEqual(expected, timestamp.value(), L"Create 100ns", LINE_INFO());
             }
 
             {
-                const auto timestamp = power_overwhelming::timestamp::create(2000, 1, 2, 3, 4, 5, 6, 7, 800);
+                const auto timestamp = PWROWG_NAMESPACE::timestamp::create(2000, 1, 2, 3, 4, 5, 6, 7, 800);
                 const auto filetime = make_filetime(2000, 1, 2, 3, 4, 5, 6);
                 const auto expected = filetime + 70 + 8;
                 Assert::AreEqual(expected, timestamp.value(), L"Create 100ns", LINE_INFO());
             }
 
             {
-                const auto timestamp = power_overwhelming::timestamp::create(2000, 1, 2, 3, 4, 5, 6, 7);
+                const auto timestamp = PWROWG_NAMESPACE::timestamp::create(2000, 1, 2, 3, 4, 5, 6, 7);
                 const auto filetime = make_filetime(2000, 1, 2, 3, 4, 5, 6);
                 const auto expected = filetime + 70;
-                Assert::AreEqual(expected, timestamp.value(), L"Create µs", LINE_INFO());
+                Assert::AreEqual(expected, timestamp.value(), L"Create Âµs", LINE_INFO());
             }
         }
 

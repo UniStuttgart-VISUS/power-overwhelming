@@ -7,6 +7,7 @@
 #if !defined(_PWROWG_VISA_INSTRUMENT_IMPL_H)
 #define _PWROWG_VISA_INSTRUMENT_IMPL_H
 #pragma once
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 
 #include <atomic>
 #include <cinttypes>
@@ -115,7 +116,6 @@ public:
     static std::size_t foreach(
         _In_ const std::function<bool(visa_instrument_impl *)>& callback);
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Enables internal checks of the instrument's status.
     /// </summary>
@@ -151,7 +151,6 @@ public:
     /// Remembers whether the device is VXI-capable.
     /// </summary>
     bool vxi;
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
     /// <summary>
     /// Finalises the instance.
@@ -164,11 +163,7 @@ public:
     /// <returns><c>true</c> if a non-zero <see cref="terminal_character" />
     /// is set, <c>false</c> otherwise.</returns>
     inline bool auto_terminate(void) const noexcept {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
         return (this->terminal_character != 0);
-#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
-        return false;
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     }
 
     /// <summary>
@@ -185,7 +180,6 @@ public:
         return this->_counter.load();
     }
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Prevents events of the specified type being delivered with the
     /// specified mechanism.
@@ -194,9 +188,7 @@ public:
     /// <param name="mechanism"></param>
     void disable_event(_In_ const ViEventType event_type,
         _In_ const ViUInt16 mechanism = VI_HNDLR);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Enable delivery of events of the specified type using the specified
     /// mechanism.
@@ -207,7 +199,6 @@ public:
     void enable_event(_In_  const ViEventType event_type,
         _In_ const ViUInt16 mechanism = VI_HNDLR,
         _In_ const ViEventFilter context = VI_NULL);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     /// <summary>
     /// Reads and discards all data that are possibly in the input buffer of
@@ -244,7 +235,6 @@ public:
     /// </exception>
     std::string identify(void) const;
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Installs the given callback for the given type of event.
     /// </summary>
@@ -260,7 +250,6 @@ public:
     /// </exception>
     void install_handler(_In_ const ViEventType event_type,
         _In_ const ViHndlr handler, _In_ ViAddr context);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     /// <summary>
     /// Gets the interface type of the underlying session.
@@ -366,7 +355,6 @@ public:
     /// </remarks>
     void throw_on_system_error(void) const;
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Uninstalls the specified callback.
     /// </summary>
@@ -383,7 +371,6 @@ public:
     /// </exception>
     void uninstall_handler(_In_ const ViEventType event_type,
         _In_ const ViHndlr handler, _In_ ViAddr context);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     /// <summary>
     /// Write at most <paramref name="cnt" /> bytes of the given data to the
@@ -447,10 +434,8 @@ private:
     /// Initialises a new instance.
     /// </summary>
     inline visa_instrument_impl(void) :
-#if defined(POWER_OVERWHELMING_WITH_VISA)
         enable_system_checks(false), resource_manager(0), session(0),
         terminal_character('\n'), vxi(false),
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
         _counter(0) { }
 };
 
@@ -458,4 +443,5 @@ PWROWG_DETAIL_NAMESPACE_END
 
 #include "visa_instrument_impl.inl"
 
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 #endif /* !defined(_PWROWG_VISA_INSTRUMENT_IMPL_H) */

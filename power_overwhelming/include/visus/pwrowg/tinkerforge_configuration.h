@@ -10,7 +10,6 @@
 
 #include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/tinkerforge_sample_averaging.h"
-#include "visus/pwrowg/tinkerforge_sensor_source.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -24,56 +23,108 @@ class tinkerforge_configuration final {
 public:
 
     /// <summary>
-    /// Possible sources that can be read from Tinkerforge.
+    /// Represents the location of a Tinkerforge Brickd.
     /// </summary>
-    typedef tinkerforge_sensor_source source_type;
+    class end_point final {
+
+    public:
+
+        /// <summary>
+        /// Initialises a new instance with the default port on localhost.
+        /// </summary>
+        end_point(void);
+
+        /// <summary>
+        /// Initialises a new instance with the default port.
+        /// </summary>
+        /// <param name="host">The host name or address.</param>
+        end_point(_In_z_ const char *host);
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="host">The host name or address.</param>
+        /// <param name="port">The port number.</param>
+        end_point(_In_z_ const char *host, _In_ const std::uint16_t port);
+
+        /// <summary>
+        /// Answer the name or address of the host where Brickd is runnning.
+        /// </summary>
+        /// <returns>The host name or address.</returns>
+        inline _Ret_maybenull_z_ const char *name(void) const noexcept {
+            return this->_name.as<char>();
+        }
+
+        /// <summary>
+        /// Answer the port the Brickd is listening on.
+        /// </summary>
+        /// <returns>The port of the Brick.</returns>
+        inline std::uint16_t port(void) const noexcept {
+            return this->_port;
+        }
+
+    private:
+
+        blob _name;
+        std::uint16_t _port;
+    };
 
     /// <summary>
-    /// The default host on which brickd is assumed to run.
+    /// Initialises a new instance.
     /// </summary>
-    static constexpr const char *default_host = "localhost";
-
-    /// <summary>
-    /// The default port on which brickd is assumed to listen on.
-    /// </summary>
-    static constexpr const std::uint16_t default_port = 4223;
-
-    /// <summary>
-    /// The default source to sample.
-    /// </summary>
-    static constexpr const source_type default_source = source_type::all;
-
     tinkerforge_configuration(void);
 
     /// <summary>
-    /// Answer the host where the Tinkerforge daemon is running.
+    /// Finalises the instance.
     /// </summary>
-    /// <returns>The name of the host where the daemon is running.</returns>
-    inline _Ret_maybenull_z_ const char *host(void) const noexcept {
-        return this->_host.as<char>();
+    ~tinkerforge_configuration(void);
+
+    /// <summary>
+    /// Adds the given end point to the list of end points.
+    /// </summary>
+    /// <param name="address">The end point to be added.</param>
+    /// <returns><c>*this</c>.</returns>
+    tinkerforge_configuration& add_end_point(_In_ const end_point& address);
+
+    /// <summary>
+    /// Answer the number of registered end points.
+    /// </summary>
+    /// <returns>The number of registered end points.</returns>
+    std::size_t count_end_points(void) const noexcept;
+
+    /// <summary>
+    /// Answer the array of registered <see cref="end_point" />s.
+    /// </summary>
+    /// <remarks>
+    /// The size of the array can be obtained from
+    /// <see cref="count_end_points" />.
+    /// </remarks>
+    /// <returns>The end points of the Brickds.</returns>
+    inline _Ret_valid_ const end_point *end_points(void) const noexcept {
+        auto retval = this->_end_points.as<end_point>();
+        _Analysis_assume_(retval != nullptr);
+        return retval;
     }
 
-    tinkerforge_configuration& host(_In_z_ const char *host);
-
-    tinkerforge_configuration& host(_In_z_ const wchar_t *host);
-
-    inline std::uint16_t port(void) const noexcept {
-        return this->_port;
-    }
-
-    tinkerforge_configuration& port(_In_ const std::uint16_t port) noexcept;
-
-    inline source_type source(void) const noexcept {
-        return this->_source;
-    }
-
-    tinkerforge_configuration& source(_In_ const source_type source) noexcept;
+    /// <summary>
+    /// Sets all end points.
+    /// </summary>
+    /// <param name="addresses">An array of at least <paramref name="cnt" /> end
+    /// point addresses.</param>
+    /// <param name="cnt">The number of end points provided.</param>
+    /// <returns><c>*this</c>.</returns>
+    tinkerforge_configuration& end_points(_In_reads_(cnt) end_point *addresses,
+        _In_ const std::size_t cnt);
 
 private:
 
-    blob _host;
-    std::uint16_t _port;
-    source_type _source;
+    /// <summary>
+    /// Destruct all existing <see cref="_end_points" />, but do not free the
+    /// memory.
+    /// </summary>
+    void destroy_end_points(void);
+
+    blob _end_points;
 };
 
 PWROWG_NAMESPACE_END

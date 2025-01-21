@@ -93,13 +93,37 @@ enum class sensor_type : std::uint32_t {
 PWROWG_NAMESPACE_END
 
 
+/// <summary>
+/// Combines <paramref name="lhs" /> and <paramref name="rhs" />.
+/// </summary>
+/// <param name="lhs"></param>
+/// <param name="rhs"></param>
+/// <returns></returns>
 inline PWROWG_NAMESPACE::sensor_type operator |(
         _In_ const PWROWG_NAMESPACE::sensor_type lhs,
         _In_ const PWROWG_NAMESPACE::sensor_type rhs) {
-    typedef typename std::underlying_type<decltype(lhs)>::type type;
-    const auto l = static_cast<type>(lhs);
-    const auto r = static_cast<type>(rhs);
+    typedef typename std::decay<decltype(lhs)>::type enum_type;
+    typedef typename std::underlying_type<enum_type>::type mask_type;
+    const auto l = static_cast<mask_type>(lhs);
+    const auto r = static_cast<mask_type>(rhs);
     return static_cast<decltype(lhs)>(l | r);
+}
+
+
+/// <summary>
+/// Tests <paramref name="lhs" /> and <paramref name="rhs" /> for shared bits.
+/// </summary>
+/// <param name="lhs"></param>
+/// <param name="rhs"></param>
+/// <returns></returns>
+inline PWROWG_NAMESPACE::sensor_type operator &(
+        _In_ const PWROWG_NAMESPACE::sensor_type lhs,
+        _In_ const PWROWG_NAMESPACE::sensor_type rhs) {
+    typedef typename std::decay<decltype(lhs)>::type enum_type;
+    typedef typename std::underlying_type<enum_type>::type mask_type;
+    const auto l = static_cast<mask_type>(lhs);
+    const auto r = static_cast<mask_type>(rhs);
+    return static_cast<decltype(lhs)>(l & r);
 }
 
 #endif  /* !defined(_PWROWG_SENSOR_TYPE_H) */

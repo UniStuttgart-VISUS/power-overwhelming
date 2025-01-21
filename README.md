@@ -9,6 +9,13 @@ This project provides a library for measuring the power consumption of GPUs (and
 > **Note**
 > The papers "Power Overwhelming: Quantifying the Energy Cost of Visualisation" and "Power overwhelming: The One With the Oscilloscopes", for which this software was written, can be found on [IEEEXplore](https://doi.org/10.1109/BELIV57783.2022.00009) and on [Springer Link](https://dx.doi.org/10.1007/s12650-024-01001-0) respectively.
 
+## What's new in version 2.x?
+1. The namespace of the library has been changed from `visus::power_overwhelming` to `visus::pwrowg`. Furthermore, ABI versioning via an `inline` namespace has been added.
+1. Access to individual sensors has been removed. All sensors must be managed via the `visus::pwrowg::sensor_array`.
+1. Synchronous APIs have been removed. All sensor data must be retrieved using callbacks passed to the `visus::pwrowg::sensor_array`.
+1. All oscilloscope-related APIs have been renamed to `rtx_...` to indicate that they only support Rohde & Schwarz RTA and RTB series oscilloscopes.
+1. All HMC 8015-related APIs have been renamed to `hmc_...` to indicate that they are specifically for these devices.
+1. All Tinkerforge-related APIs have been renamed to `tinkerforge_...` to indicate that they are specifically for these devices.
 
 ## Building the library
 The library is self-contained and most optional external dependencies are in the third_party folder. External dependencies from GitHub are fetched by CMake. Once built, the external dependencies are invisible to the user of the library. However, the required DLLs must be present on the target machine. Configure the project using [CMake](https://cmake.org/) and build with Visual Studio or alike.

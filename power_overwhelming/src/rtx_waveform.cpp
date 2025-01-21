@@ -158,8 +158,7 @@ float PWROWG_NAMESPACE::rtx_waveform::sample(
 /*
  * PWROWG_NAMESPACE::rtx_waveform::sample_timestamp
  */
-PWROWG_NAMESPACE::measurement_data::timestamp_type
-PWROWG_NAMESPACE::rtx_waveform::sample_timestamp(
+PWROWG_NAMESPACE::timestamp PWROWG_NAMESPACE::rtx_waveform::sample_timestamp(
         _In_ const std::size_t i) const noexcept {
     using namespace std::chrono;
     typedef duration<timestamp::value_type, std::ratio<1, timestamp::tick_rate>>

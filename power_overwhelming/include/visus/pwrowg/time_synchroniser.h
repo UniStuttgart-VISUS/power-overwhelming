@@ -22,12 +22,19 @@ PWROWG_DETAIL_NAMESPACE_END
 PWROWG_NAMESPACE_BEGIN
 
 /// <summary>
-/// TODO
+/// An implementation of Cristian's algorithm.
 /// </summary>
 class POWER_OVERWHELMING_API time_synchroniser final {
 
 public:
 
+    /// <summary>
+    /// Create a new instance binding to the given port using any address of the
+    /// given address family.
+    /// </summary>
+    /// <param name="address_family"></param>
+    /// <param name="port"></param>
+    /// <returns></returns>
     static time_synchroniser create(_In_ const int address_family,
         _In_ const std::uint16_t port);
 

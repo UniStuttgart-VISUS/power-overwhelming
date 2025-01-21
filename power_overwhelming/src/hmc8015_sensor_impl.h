@@ -4,6 +4,10 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
+#if !defined(_HMC8015_SENSOR_IMPL_H)
+#define _HMC8015_SENSOR_IMPL_H
+#pragma once
+
 #include "visus/pwrowg/visa_instrument.h"
 
 #include <string>
@@ -47,3 +51,5 @@ namespace detail {
 } /* namespace detail */
 } /* namespace power_overwhelming */
 } /* namespace visus */
+
+#endif /* !defined(_HMC8015_SENSOR_IMPL_H) */

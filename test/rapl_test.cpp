@@ -1,13 +1,14 @@
-// <copyright file="rapl_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="rapl_test.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2023 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "pch.h"
 #include "CppUnitTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using namespace PWROWG_NAMESPACE;
 
 
 namespace visus {
@@ -52,7 +53,7 @@ namespace test {
                     ++expected;
                     return false;
                 });
-                Assert::AreEqual(std::size_t(1), actual, L"Enumeration aborded", LINE_INFO());
+                Assert::AreEqual(std::size_t(1), actual, L"Enumeration aborted", LINE_INFO());
                 Assert::AreEqual(expected, actual, L"Callback invoked once", LINE_INFO());
             }
         }

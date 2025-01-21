@@ -7,15 +7,14 @@
 #if !defined(_PWROWG_VISA_INSTRUMENT_H)
 #define _PWROWG_VISA_INSTRUMENT_H
 #pragma once
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 
 #include <cassert>
 #include <functional>
 #include <memory>
 #include <string>
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
 #include <visa.h>
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 #include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/visa_event_status.h"
@@ -330,7 +329,6 @@ public:
     /// <c>false</c> otherwise.</returns>
     bool alias_of(_In_ const visa_instrument& instrument) const noexcept;
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Read an attribute value from the instrument.
     /// </summary>
@@ -344,9 +342,7 @@ public:
     /// processed successfully.</exception>
     const visa_instrument& attribute(_Out_ void *dst,
         _In_ ViAttr name) const;
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Set an attribute of the instrument.
     /// </summary>
@@ -359,7 +355,6 @@ public:
     /// processed successfully.</exception>
     visa_instrument& attribute(_In_ ViAttr name,
         _In_ ViAttrState value);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     /// <summary>
     /// Makes the instrument beep <paramref name="cnt" /> times.
@@ -1238,10 +1233,8 @@ protected:
 
 private:
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     static ViStatus _VI_FUNCH on_event(ViSession session,
         ViEventType event_type, ViEvent event, ViAddr context);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     PWROWG_DETAIL_NAMESPACE::visa_instrument_impl *_impl;
 };
@@ -1250,4 +1243,5 @@ PWROWG_NAMESPACE_END
 
 #include "visus/pwrowg/visa_instrument.inl"
 
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 #endif /* !defined(_PWROWG_VISA_INSTRUMENT_H) */

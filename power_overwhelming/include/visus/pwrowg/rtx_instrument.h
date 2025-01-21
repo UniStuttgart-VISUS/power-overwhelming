@@ -7,6 +7,7 @@
 #if !defined(_PWROWG_RTX_INSTRUMENT_H)
 #define _PWROWG_RTX_INSTRUMENT_H
 #pragma once
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 
 #include "visus/pwrowg/rtx_acquisition.h"
 #include "visus/pwrowg/rtx_channel.h"
@@ -1186,4 +1187,5 @@ public:
 
 PWROWG_NAMESPACE_END
 
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 #endif /* !defined(_PWROWG_RTX_INSTRUMENT_H) */

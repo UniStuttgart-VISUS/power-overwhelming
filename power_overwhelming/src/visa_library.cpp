@@ -4,18 +4,14 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 #include "visa_library.h"
 
 #include "on_exit.h"
 #include "visa_exception.h"
 
-
-#if defined(POWER_OVERWHELMING_WITH_VISA)
 #define __POWER_OVERWHELMING_GET_VISA_FUNC(n) \
     this->n = this->get_function<decltype(this->n)>(#n)
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-#define __POWER_OVERWHELMING_GET_VISA_FUNC(n)
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
 /*
@@ -72,7 +68,6 @@ PWROWG_DETAIL_NAMESPACE::visa_library::find_resource(
 
     std::vector<std::string> retval;
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     ViUInt32 cnt = 0;
     ViChar desc[1024];
     ViFindList hFind;
@@ -104,7 +99,8 @@ PWROWG_DETAIL_NAMESPACE::visa_library::find_resource(
             retval.push_back(desc);
         }
     }
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     return retval;
 }
+
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */

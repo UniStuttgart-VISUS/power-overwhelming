@@ -1,9 +1,10 @@
-// <copyright file="visa_instrument.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="visa_instrument.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 #include "visus/pwrowg/visa_instrument.h"
 
 #include <algorithm>
@@ -35,7 +36,6 @@ PWROWG_NAMESPACE::blob PWROWG_NAMESPACE::visa_instrument::find_resources(
         throw std::invalid_argument("The instrument query cannot be null.");
     }
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto q = convert_string<char>(query);
     auto devices = detail::visa_library::instance().find_resource(q.c_str());
 
@@ -60,10 +60,6 @@ PWROWG_NAMESPACE::blob PWROWG_NAMESPACE::visa_instrument::find_resources(
 
     *cur = 0;
 
-#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
-    blob retval;
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
-
     return retval;
 }
 
@@ -78,7 +74,6 @@ PWROWG_NAMESPACE::blob PWROWG_NAMESPACE::visa_instrument::find_resources(
         throw std::invalid_argument("The instrument query cannot be null.");
     }
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto devices = detail::visa_library::instance().find_resource(query);
 
     const auto len = std::accumulate(devices.begin(), devices.end(),
@@ -98,10 +93,6 @@ PWROWG_NAMESPACE::blob PWROWG_NAMESPACE::visa_instrument::find_resources(
     }
 
     *cur = 0;
-
-#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
-    blob retval;
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
     return retval;
 }
@@ -273,7 +264,6 @@ bool PWROWG_NAMESPACE::visa_instrument::alias_of(
 }
 
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * PWROWG_NAMESPACE::visa_instrument::attribute
  */
@@ -285,10 +275,8 @@ PWROWG_NAMESPACE::visa_instrument::attribute(
             this->check_not_disposed().session, name, dst));
     return *this;
 }
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * PWROWG_NAMESPACE::visa_instrument::attribute
  */
@@ -300,18 +288,15 @@ PWROWG_NAMESPACE::visa_instrument::attribute(_In_ ViAttr name,
             this->check_not_disposed().session, name, value));
     return *this;
 }
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 /*
  * PWROWG_NAMESPACE::visa_instrument::beep
  */
 PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::beep(_In_ const std::size_t cnt) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     for (std::size_t i = 0; i < cnt; ++i) {
         this->write("SYST:BEEP:IMM\n");
     }
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 
@@ -320,13 +305,9 @@ PWROWG_NAMESPACE::visa_instrument::beep(_In_ const std::size_t cnt) {
  * PWROWG_NAMESPACE::visa_instrument::beep_on_error
  */
 bool PWROWG_NAMESPACE::visa_instrument::beep_on_error(void) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto response = this->query("SYST:BEEP:ERR:STAT?\n");
     auto status = std::atoi(response.as<char>());
     return (status != 0);
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    return false;
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -336,10 +317,8 @@ bool PWROWG_NAMESPACE::visa_instrument::beep_on_error(void) {
 PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::beep_on_error(
         _In_ const bool enable) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
     impl.format("SYST:BEEP:ERR:STAT %s\n", enable ? "ON" : "OFF");
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 
@@ -350,11 +329,9 @@ PWROWG_NAMESPACE::visa_instrument::beep_on_error(
 PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::buffer(
         _In_ const std::uint16_t mask, _In_ const std::uint32_t size) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     PWROWG_DETAIL_NAMESPACE::visa_exception::throw_on_error(
         detail::visa_library::instance().viSetBuf(
             this->check_not_disposed().session, mask, size));
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 
@@ -364,11 +341,9 @@ PWROWG_NAMESPACE::visa_instrument::buffer(
  */
 PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::clear(void) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     PWROWG_DETAIL_NAMESPACE::visa_exception::throw_on_error(
         detail::visa_library::instance().viClear(
             this->check_not_disposed().session));
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 
@@ -389,9 +364,7 @@ PWROWG_NAMESPACE::visa_instrument::clear_status(void) {
 PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::enable_system_checks(
         _In_ const bool enable) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     this->check_not_disposed().enable_system_checks = enable;
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 
@@ -401,13 +374,9 @@ PWROWG_NAMESPACE::visa_instrument::enable_system_checks(
  */
 PWROWG_NAMESPACE::visa_event_status
 PWROWG_NAMESPACE::visa_instrument::event_status(void) const {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto response = this->query("*ESR?\n");
     auto status = std::atoi(response.as<char>());
     return static_cast<visa_event_status>(status);
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error(detail::no_visa_error_msg);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -417,11 +386,9 @@ PWROWG_NAMESPACE::visa_instrument::event_status(void) const {
 PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::event_status(
         _In_ const visa_event_status status) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto s = static_cast<int>(status);
     this->check_not_disposed().format("*ESE %u; *OPC?\n", s);
     this->read_all();
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 
@@ -488,7 +455,6 @@ std::uint16_t PWROWG_NAMESPACE::visa_instrument::interface_type(
 std::size_t PWROWG_NAMESPACE::visa_instrument::name(
         _Out_writes_(cnt) wchar_t *dst,
         _In_ const std::size_t cnt) const {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto retval = this->name(nullptr, 0);
 
     if ((dst != nullptr) && (cnt >= retval)) {
@@ -504,10 +470,6 @@ std::size_t PWROWG_NAMESPACE::visa_instrument::name(
     }
 
     return retval;
-
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    return 0;
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -517,7 +479,6 @@ std::size_t PWROWG_NAMESPACE::visa_instrument::name(
 std::size_t PWROWG_NAMESPACE::visa_instrument::name(
         _Out_writes_(cnt) char *dst,
         _In_ const std::size_t cnt) const {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto name = this->query("SYST:NAME?\n");
     auto n = name.as<char>();
     _Analysis_assume_(n != nullptr);
@@ -535,10 +496,6 @@ std::size_t PWROWG_NAMESPACE::visa_instrument::name(
     }
 
     return retval;
-
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    return 0;
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -591,7 +548,6 @@ PWROWG_NAMESPACE::visa_instrument::on_operation_complete(
         _In_opt_ void(*callback)(visa_instrument&, void *),
         _In_opt_ void *context,
         _In_opt_ void (*context_deleter)(void *)) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
 
     // Remember whether a callback was set before, which we need to know in
@@ -623,7 +579,7 @@ PWROWG_NAMESPACE::visa_instrument::on_operation_complete(
         // something else. The caller must do that on his own if this is
         // desired.
     }
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+
     return *this;
 }
 
@@ -635,9 +591,7 @@ const PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::operation_complete(
         void) const {
     // Cf. https://www.rohde-schwarz.com/at/driver-pages/fernsteuerung/measurements-synchronization_231248.html
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     this->query("*OPC?\n");
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 
@@ -649,9 +603,7 @@ const PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::operation_complete_async(
         void) const {
     // Cf. https://www.rohde-schwarz.com/at/driver-pages/fernsteuerung/measurements-synchronization_231248.html
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     this->write("*OPC\n");
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 
@@ -757,7 +709,6 @@ PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::reset(
         _In_ const bool flush_buffers,
         _In_ const bool clear_status) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     if (flush_buffers) {
         // First, do the R&S flush ...
         this->check_not_disposed();
@@ -774,7 +725,6 @@ PWROWG_NAMESPACE::visa_instrument::reset(
     }
 
     this->query("*RST;*OPC?\n");
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 
@@ -785,11 +735,9 @@ PWROWG_NAMESPACE::visa_instrument::reset(
 PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::service_request_status(
         _In_ const visa_status_byte status) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto s = static_cast<int>(status);
     this->check_not_disposed().format("*SRE %u; *OPC?\n", s);
     this->read_all();
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 
@@ -799,13 +747,9 @@ PWROWG_NAMESPACE::visa_instrument::service_request_status(
  */
 PWROWG_NAMESPACE::visa_status_byte
 PWROWG_NAMESPACE::visa_instrument::service_request_status(void) const {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto response = this->query("*SRE?\n");
     auto status = std::atoi(response.as<char>());
     return static_cast<visa_status_byte>(status);
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error(detail::no_visa_error_msg);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -815,7 +759,6 @@ PWROWG_NAMESPACE::visa_instrument::service_request_status(void) const {
 PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::synchronise_clock(
         _In_ const bool utc) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
 #if defined(_WIN32)
     SYSTEMTIME time;
     if (utc) {
@@ -848,7 +791,6 @@ PWROWG_NAMESPACE::visa_instrument::synchronise_clock(
     this->check_not_disposed().format("SYST:DATE %d, %d, %d\n",
         time->tm_year + 1900, time->tm_mon + 1, time->tm_mday);
 #endif /* defined(_WIN32) */
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     return *this;
 }
@@ -859,7 +801,6 @@ PWROWG_NAMESPACE::visa_instrument::synchronise_clock(
  */
 PWROWG_NAMESPACE::visa_status_byte
 PWROWG_NAMESPACE::visa_instrument::status(void) const {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     ViUInt16 retval;
     PWROWG_DETAIL_NAMESPACE::visa_exception::throw_on_error(
         detail::visa_library::instance().viReadSTB(
@@ -882,9 +823,6 @@ PWROWG_NAMESPACE::visa_instrument::status(void) const {
     //    *response.rend() = 0;
     //    return std::atoi(response.as<char>());
     //}
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error(detail::no_visa_error_msg);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -892,7 +830,6 @@ PWROWG_NAMESPACE::visa_instrument::status(void) const {
  * PWROWG_NAMESPACE::visa_instrument::system_error
  */
 int PWROWG_NAMESPACE::visa_instrument::system_error(void) const {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto status = this->query(":SYST:ERR?\n");
 
     if (!status.empty()) {
@@ -910,9 +847,6 @@ int PWROWG_NAMESPACE::visa_instrument::system_error(void) const {
 
     throw std::runtime_error("The instrument responded unexpectedly when "
         "retrieving its error status.");
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
-    return 0;
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -934,13 +868,9 @@ void PWROWG_NAMESPACE::visa_instrument::throw_on_system_error(
  */
 PWROWG_NAMESPACE::visa_instrument::timeout_type
 PWROWG_NAMESPACE::visa_instrument::timeout(void) const {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     ViUInt32 retval;
     this->attribute(&retval, VI_ATTR_TMO_VALUE);
     return static_cast<timeout_type>(retval);
-#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::logic_error(detail::no_visa_error_msg);
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -950,11 +880,7 @@ PWROWG_NAMESPACE::visa_instrument::timeout(void) const {
 PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::timeout(
         _In_ const timeout_type timeout) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     return this->attribute(VI_ATTR_TMO_VALUE, timeout);
-#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
-    return *this;
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -963,9 +889,7 @@ PWROWG_NAMESPACE::visa_instrument::timeout(
  */
 PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::wait(void) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     this->query("*WAI\n");
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 
@@ -1017,7 +941,6 @@ PWROWG_NAMESPACE::visa_instrument::write(
             "not be null.");
     }
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto& impl = this->check_not_disposed();
     auto s = convert_string<char>(str);
 
@@ -1027,7 +950,6 @@ PWROWG_NAMESPACE::visa_instrument::write(
 
     impl.write_all(reinterpret_cast<const byte_type *>(s.data()), s.size());
     impl.check_system_error();
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     return *this;
 }
 
@@ -1105,7 +1027,6 @@ PWROWG_NAMESPACE::visa_instrument::check_not_disposed(void) const {
 }
 
 
-#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * PWROWG_NAMESPACE::visa_instrument::on_event
  */
@@ -1140,4 +1061,5 @@ ViStatus _VI_FUNCH PWROWG_NAMESPACE::visa_instrument::on_event(
 
     return VI_SUCCESS;
 }
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */

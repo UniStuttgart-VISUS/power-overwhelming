@@ -14,9 +14,9 @@
 
 #include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/hmc8015_function.h"
-#include "visus/pwrowg/integrator_mode.h"
-#include "visus/pwrowg/instrument_range.h"
-#include "visus/pwrowg/log_mode.h"
+#include "visus/pwrowg/hmc8015_integrator_mode.h"
+#include "visus/pwrowg/hmc8015_instrument_range.h"
+#include "visus/pwrowg/hmc8015_log_mode.h"
 #include "visus/pwrowg/sampler_source.h"
 #include "visus/pwrowg/sensor.h"
 #include "visus/pwrowg/visa_instrument.h"

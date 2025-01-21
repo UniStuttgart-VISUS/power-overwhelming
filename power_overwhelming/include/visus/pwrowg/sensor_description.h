@@ -8,6 +8,7 @@
 #define _PWROWG_SENSOR_DESCRIPTION_H
 #pragma once
 
+#include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/sensor_type.h"
 
 
@@ -22,11 +23,33 @@ class sensor_description final {
 public:
 
     /// <summary>
+    /// Gets a user-defined label for the sensor.
+    /// </summary>
+    /// <returns>A pointer to the label of the sensor.</returns>
+    inline _Ret_maybenull_z_ const wchar_t *label(void) const noexcept {
+        return this->_label.as<wchar_t>();
+    }
+
+    /// <summary>
+    /// Sets a user-defined label.
+    /// </summary>
+    /// <param name="label">The label being assigned to the sensor.</param>
+    /// <returns><c>*this</c>.</returns>
+    sensor_description& label(_In_opt_z_ const wchar_t *label);
+
+    /// <summary>
+    /// Sets a user-defined label.
+    /// </summary>
+    /// <param name="label">The label being assigned to the sensor.</param>
+    /// <returns><c>*this</c>.</returns>
+    sensor_description& label(_In_opt_z_ const char *label);
+
+    /// <summary>
     /// Gets the human-readable name of the sensor.
     /// </summary>
     /// <returns>A pointer to the name of the sensor.</returns>
     inline _Ret_maybenull_z_ const wchar_t *name(void) const noexcept {
-        return this->_name;
+        return this->_name.as<wchar_t>();
     }
 
     /// <summary>
@@ -42,14 +65,15 @@ public:
     /// </summary>
     /// <returns>A pointer to the name of the vendor.</returns>
     inline _Ret_maybenull_z_ const wchar_t *vendor(void) const noexcept {
-        return this->_vendor;
+        return this->_vendor.as<wchar_t>();
     }
 
 private:
 
-    wchar_t *_name;
+    blob _label;
+    blob _name;
     sensor_type _type;
-    wchar_t *_vendor;
+    blob _vendor;
     // TODO: type/class?
     // TODO: hardware/target?
     // TODO: unique/persistent ID?

@@ -9,7 +9,7 @@
 #pragma once
 
 #include "visus/pwrowg/blob.h"
-#include "visus/pwrowg/measurement_data.h"
+#include "visus/pwrowg/timestamp.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -168,8 +168,7 @@ public:
     /// </remarks>
     /// <param name="i">The sample to retrieve the timestamp for.</param>
     /// <returns>The absolute timestamp of the sample.</returns>
-    measurement_data::timestamp_type sample_timestamp(
-        _In_ const std::size_t i) const noexcept;
+    timestamp sample_timestamp(_In_ const std::size_t i) const noexcept;
 
     /// <summary>
     /// Answer the time difference of the segment of the waveform to the
@@ -199,8 +198,7 @@ public:
     /// for subsequent timestamps.</para>
     /// </remarks>
     /// <returns>The absolute timestamp of the segment.</returns>
-    measurement_data::timestamp_type segment_timestamp(
-            void) const noexcept {
+    timestamp segment_timestamp(void) const noexcept {
         return this->_segment_timestamp;
     }
 
@@ -225,7 +223,7 @@ private:
     std::size_t _record_length;
     blob _samples;
     float _segment_offset;
-    measurement_data::timestamp_type _segment_timestamp;
+    timestamp _segment_timestamp;
     float _time_begin;
     float _time_increment;
 };

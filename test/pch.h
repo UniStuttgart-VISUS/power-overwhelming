@@ -1,8 +1,8 @@
-// <copyright file="pch.h" company="Visualisierungsinstitut der Universit�t Stuttgart">
-// Copyright � 2021 Visualisierungsinstitut der Universit�t Stuttgart.
+﻿// <copyright file="pch.h" company="Visualisierungsinstitut der Universität Stuttgart">
+// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph M�ller</author>
+// <author>Christoph Müller</author>
 
 #pragma once
 
@@ -11,31 +11,27 @@
 #include <sstream>
 #include <thread>
 
-#include <power_overwhelming/adl_sensor.h>
-#include <power_overwhelming/async_sampling.h>
-#include <power_overwhelming/blob.h>
-#include <power_overwhelming/collector.h>
-#include <power_overwhelming/convert_string.h>
-#include <power_overwhelming/computer_name.h>
-#include <power_overwhelming/cpu_affinity.h>
-#include <power_overwhelming/cpu_info.h>
-#include <power_overwhelming/csv_iomanip.h>
-#include <power_overwhelming/emi_sensor.h>
-#include <power_overwhelming/event.h>
-#include <power_overwhelming/for_each_rapl_domain.h>
-#include <power_overwhelming/hmc8015_function.h>
-#include <power_overwhelming/measurement.h>
-#include <power_overwhelming/measurement_data.h>
-#include <power_overwhelming/measurement_data_series.h>
-#include <power_overwhelming/nvml_sensor.h>
-#include <power_overwhelming/rtx_sample.h>
-#include <power_overwhelming/parallel_port_trigger.h>
-#include <power_overwhelming/rtx_instrument_configuration.h>
-#include <power_overwhelming/rtx_sensor.h>
-#include <power_overwhelming/rtx_sensor_definition.h>
-#include <power_overwhelming/rapl_domain.h>
-#include <power_overwhelming/timestamp.h>
-#include <power_overwhelming/tinkerforge_sensor_definition.h>
+#include <visus/pwrowg/blob.h>
+#include <visus/pwrowg/collector.h>
+#include <visus/pwrowg/convert_string.h>
+#include <visus/pwrowg/computer_name.h>
+#include <visus/pwrowg/cpu_affinity.h>
+#include <visus/pwrowg/cpu_info.h>
+#include <visus/pwrowg/csv_iomanip.h>
+#include <visus/pwrowg/event.h>
+#include <visus/pwrowg/for_each_rapl_domain.h>
+#include <visus/pwrowg/hmc8015_function.h>
+#include <visus/pwrowg/measurement.h>
+#include <visus/pwrowg/measurement_data.h>
+#include <visus/pwrowg/measurement_data_series.h>
+#include <visus/pwrowg/rtx_sample.h>
+#include <visus/pwrowg/parallel_port_trigger.h>
+#include <visus/pwrowg/rtx_instrument_configuration.h>
+#include <visus/pwrowg/rtx_sensor.h>
+#include <visus/pwrowg/rtx_sensor_definition.h>
+#include <visus/pwrowg/rapl_domain.h>
+#include <visus/pwrowg/timestamp.h>
+#include <visus/pwrowg/tinkerforge_sensor_definition.h>
 
 #include <adl_exception.h>
 #include <emi_device.h>
