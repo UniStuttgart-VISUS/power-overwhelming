@@ -364,6 +364,7 @@ FodyWeavers.xsd
 
 # CMAKE build folders
 _build*/
+/build
 
 # CMAKE fetch content targets
 third_party/adl/
