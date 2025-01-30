@@ -10,6 +10,7 @@
 
 #include <chrono>
 
+#include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_array_configuration.h"
 #include "visus/pwrowg/sensor_description.h"
 
@@ -109,6 +110,25 @@ public:
         _In_ std::size_t cnt);
 
     /// <summary>
+    /// Starts sampling all sensors in the array.
+    /// </summary>
+    /// <param name="callback">The callback that is to receive the
+    /// <see cref="sample" />s from all sensors.</param>
+    /// <param name="context">An optional pointer that is passed to the
+    /// <see cref="callback" /> every time.</param>
+    /// <exception cref="std::runtime_error">If the object has been invalidated
+    /// by a move operation.</exception>
+    /// <exception cref="std::logic_error">If the sensor array was already
+    /// running.</exception>
+    void start(_In_ const sensor_array_callback callback,
+        _In_opt_ void *context = nullptr);
+
+    /// <summary>
+    /// Stops all sensors and blocks until all asynchronous sampling has ended.
+    /// </summary>
+    void stop(void);
+
+    /// <summary>
     /// Answer the number of sensors in the array.
     /// </summary>
     /// <remarks>
@@ -132,6 +152,8 @@ public:
     /// <param name="idx">The zero-based index of the sensor to retrieve the
     /// description for, which must be within [0, <see cref="size" />[.</param>
     /// <returns>The descriptor of the specified sensor.</returns>
+    /// <exception cref="std::runtime_error">If the object has been invalidated
+    /// by a move operation.</exception>
     /// <exception cref="std::range_error">If <paramref name="idx" /> is
     /// invalid.</exception>
     const sensor_description& operator [](_In_ int idx) const;
@@ -149,8 +171,8 @@ public:
     /// <param name="idx">The zero-based index of the sensor to retrieve the
     /// description for, which must be within [0, <see cref="size" />[.</param>
     /// <returns>The descriptor of the specified sensor.</returns>
-    /// <exception cref="std::range_error">If <paramref name="idx" /> is
-    /// invalid.</exception>
+    /// <exception cref="std::runtime_error">If the object has been invalidated
+    /// by a move operation.</exception>
     /// <exception cref="std::range_error">If <paramref name="idx" /> is
     /// invalid.</exception>
     sensor_description& operator [](_In_ int idx);
@@ -166,7 +188,7 @@ public:
 
 private:
 
-    void check_not_disposed(void) const;
+    PWROWG_DETAIL_NAMESPACE::sensor_array_impl *check_not_disposed(void) const;
 
     PWROWG_DETAIL_NAMESPACE::sensor_array_impl *_impl;
 };

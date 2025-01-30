@@ -93,7 +93,7 @@ extern bool supports_sensor(_In_ adl_scope& scope,
     _In_ const int id);
 
 /// <summary>
-/// Answer wheher any of the sensor IDs within <paramref name="begin" /> and
+/// Answer whether any of the sensor IDs within <paramref name="begin" /> and
 /// <paramref name="end" /> are supported by the given
 /// <paramref name="adapter" />.
 /// </summary>
