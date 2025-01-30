@@ -67,7 +67,6 @@ public:
 private:
 
     ADL_CONTEXT_HANDLE _handle;
-
 };
 
 PWROWG_DETAIL_NAMESPACE_END

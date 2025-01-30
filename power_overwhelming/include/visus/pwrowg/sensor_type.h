@@ -126,4 +126,4 @@ inline PWROWG_NAMESPACE::sensor_type operator &(
     return static_cast<decltype(lhs)>(l & r);
 }
 
-#endif  /* !defined(_PWROWG_SENSOR_TYPE_H) */
+#endif /* !defined(_PWROWG_SENSOR_TYPE_H) */

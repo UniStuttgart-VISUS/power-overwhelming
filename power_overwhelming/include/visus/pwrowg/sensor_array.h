@@ -173,4 +173,4 @@ private:
 
 PWROWG_NAMESPACE_END
 
-#endif  /* !defined(_PWROWG_SENSOR_ARRAY_H) */
+#endif /* !defined(_PWROWG_SENSOR_ARRAY_H) */

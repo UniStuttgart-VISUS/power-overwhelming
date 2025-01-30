@@ -13,7 +13,7 @@
 
 #include "visus/pwrowg/sensor_description.h"
 
-#include "sensor_array_state.h"
+#include "sensor_state.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -31,14 +31,14 @@ struct sensor_array_impl final {
     /// <summary>
     /// Tracks the state of the array.
     /// </summary>
-    std::atomic<sensor_array_state> state;
+    std::atomic<sensor_state> state;
 
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    inline sensor_array_impl(void) : state(sensor_array_state::stopped) { }
+    inline sensor_array_impl(void) : state(sensor_state::stopped) { }
 };
 
 PWROWG_DETAIL_NAMESPACE_END
 
-#endif  /* !defined(_PWROWG_SENSOR_ARRAY_IMPL_H) */
+#endif /* !defined(_PWROWG_SENSOR_ARRAY_IMPL_H) */

@@ -89,4 +89,4 @@ private:
 PWROWG_DETAIL_NAMESPACE_END
 
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
-#endif  /* !defined(_PWROWG_VISA_LIBRARY_H) */
+#endif /* !defined(_PWROWG_VISA_LIBRARY_H) */
