@@ -31,24 +31,25 @@ struct sensor_array_configuration_impl final {
     /// <summary>
     /// Holds the configuration objects of all known sensors.
     /// </summary>
-    std::unordered_map<std::type_index, sensor_config> sensor_configs;
+    std::unordered_map<guid, sensor_config> sensor_configs;
 
     /// <summary>
-    /// Calls the given configuration callback on the configuration object
-    /// of the specified type if such a confiugration object is available.
+    /// Gets the sensor configuration registered with the specified ID.
     /// </summary>
-    template<class TConfig> inline bool configure(
-            _In_ void (*configure)(TConfig&, void *),
-            _In_opt_ void *context) {
-        auto it = this->sensor_configs.find(typeid(TConfig));
-
-        if (it != this->sensor_configs.end()) {
-            configure(dynamic_cast<TConfig&>(*(it->second)), context);
-            return true;
-        } else {
-            return false;
-        }
+    inline sensor_configuration_base *find_sensor_config(_In_ const guid id) {
+        auto it = this->sensor_configs.find(id);
+        return (it != this->sensor_configs.end()) ? it->second.get() : nullptr;
     }
+
+    /// <summary>
+    /// Gets the sensor configuration registered with the specified ID.
+    /// </summary>
+    inline const sensor_configuration_base *find_sensor_config(
+            _In_ const guid id) const {
+        auto it = this->sensor_configs.find(id);
+        return (it != this->sensor_configs.end()) ? it->second.get() : nullptr;
+    }
+
 };
 
 PWROWG_DETAIL_NAMESPACE_END

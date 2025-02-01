@@ -7,7 +7,6 @@
 #include "visus/pwrowg/sensor_array_configuration.h"
 
 #include <memory>
-#include <stdexcept>
 
 #include "sensor_array_configuration_impl.h"
 
@@ -44,20 +43,9 @@ PWROWG_NAMESPACE::sensor_array_configuration::operator =(
 
 
 /*
- * PWROWG_NAMESPACE::sensor_array_configuration::configure
- */
-PWROWG_NAMESPACE::sensor_array_configuration&
-PWROWG_NAMESPACE::sensor_array_configuration::configure(
-        _In_ void (*configure)(_In_ adl_configuration&, _In_opt_ void *),
-        _In_opt_ void *context) {
-    this->check_not_disposed().configure(configure, context);
-}
-
-
-/*
  * PWROWG_NAMESPACE::sensor_array_configuration::check_not_disposed
  */
-PWROWG_NAMESPACE::sensor_array_configuration::impl_type&
+_Ret_valid_ PWROWG_NAMESPACE::sensor_array_configuration::impl_type
 PWROWG_NAMESPACE::sensor_array_configuration::check_not_disposed(void) {
     volatile auto retval = this->_impl;
 
@@ -66,5 +54,15 @@ PWROWG_NAMESPACE::sensor_array_configuration::check_not_disposed(void) {
             "disposed by a move operation cannot be used anymore.");
     }
 
-    return *retval;
+    return retval;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::sensor_array_configuration::find_config
+ */
+void *PWROWG_NAMESPACE::sensor_array_configuration::find_config(
+        _In_ const guid& id) {
+    volatile auto impl = this->check_not_disposed();
+    return impl->find_sensor_config(id);
 }

@@ -113,7 +113,7 @@ public:
     /// <param name="retval">Recevies the parsed GUID.</param>
     /// <param name="str">The string to parse the GUID from.</param>
     /// <returns><paramref name="retval" />.</returns>
-    /// <exception cref="std::argument_exception">If <paramref name="str" />
+    /// <exception cref="std::invalid_argument">If <paramref name="str" />
     /// is <c>nullptr</c>.</exception>
     /// <exception cref="std::system_error">If <paramref name="str" /> does
     /// not represent a valid GUID.</exception>
@@ -125,7 +125,7 @@ public:
     /// <param name="retval">Recevies the parsed GUID.</param>
     /// <param name="str">The string to parse the GUID from.</param>
     /// <returns><paramref name="retval" />.</returns>
-    /// <exception cref="std::argument_exception">If <paramref name="str" />
+    /// <exception cref="std::invalid_argument">If <paramref name="str" />
     /// is <c>nullptr</c>.</exception>
     /// <exception cref="std::system_error">If <paramref name="str" /> does
     /// not represent a valid GUID.</exception>
@@ -136,7 +136,7 @@ public:
     /// </summary>
     /// <param name="str">The string to parse the GUID from.</param>
     /// <returns>The parsed GUID.</returns>
-    /// <exception cref="std::argument_exception">If <paramref name="str" />
+    /// <exception cref="std::invalid_argument">If <paramref name="str" />
     /// is <c>nullptr</c>.</exception>
     /// <exception cref="std::system_error">If <paramref name="str" /> does
     /// not represent a valid GUID.</exception>
@@ -150,7 +150,7 @@ public:
     /// </summary>
     /// <param name="str">The string to parse the GUID from.</param>
     /// <returns>The parsed GUID.</returns>
-    /// <exception cref="std::argument_exception">If <paramref name="str" />
+    /// <exception cref="std::invalid_argument">If <paramref name="str" />
     /// is <c>nullptr</c>.</exception>
     /// <exception cref="std::system_error">If <paramref name="str" /> does
     /// not represent a valid GUID.</exception>
@@ -214,7 +214,7 @@ public:
     /// Initialise from an array of 16 bytes.
     /// </summary>
     /// <param name="rhs">An array of 16 bytes.</param>
-    /// <exception cref="std::argument_exception">If <paramref name="rhs" />
+    /// <exception cref="std::invalid_argument">If <paramref name="rhs" />
     /// is <c>nullptr</c>.</exception>
     guid(_In_reads_(16) const std::uint8_t rhs[16]);
 
@@ -295,7 +295,7 @@ public:
     /// <param name="s1">Bytes #5 and #6.</param>
     /// <param name="s2">Bytes #7 and #8.</param>
     /// <param name="b">Bytes #9 through #16</param>
-    /// <exception cref="std::argument_exception">If <paramref name="b" />
+    /// <exception cref="std::invalid_argument">If <paramref name="b" />
     /// is <c>nullptr</c>.</exception>
     guid(_In_ const std::uint32_t i,
         _In_ const std::uint16_t s1, const std::uint16_t s2,
@@ -310,7 +310,7 @@ public:
     /// <param name="s2">Bytes #7 and #8.</param>
     /// <param name="s3">Byte #9 and #10.</param>
     /// <param name="b">Bytes #11 through #16</param>
-    /// <exception cref="std::argument_exception">If <paramref name="b" />
+    /// <exception cref="std::invalid_argument">If <paramref name="b" />
     /// is <c>nullptr</c>.</exception>
     guid(_In_ const std::uint32_t i,
         _In_ const std::uint16_t s1, const std::uint16_t s2,
@@ -383,7 +383,7 @@ public:
     /// </summary>
     /// <param name="rhs">The right-hand side operand.</param>
     /// <returns><c>*this</c>.</returns>
-    /// <exception cref="std::argument_exception">If <paramref name="rhs" /> is
+    /// <exception cref="std::invalid_argument">If <paramref name="rhs" /> is
     /// <c>nullptr</c>.</<exception>
     guid& operator =(_In_ const value_type *rhs);
 

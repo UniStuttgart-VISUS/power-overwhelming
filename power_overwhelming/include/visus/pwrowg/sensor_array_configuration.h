@@ -8,6 +8,9 @@
 #define _PWROWG_SENSOR_ARRAY_CONFIGURATION_H
 #pragma once
 
+#include <functional>
+#include <stdexcept>
+
 #include "visus/pwrowg/api.h"
 
 #include "visus/pwrowg/adl_configuration.h"
@@ -57,44 +60,59 @@ public:
     sensor_array_configuration& operator =(
         _Inout_ sensor_array_configuration&& rhs) noexcept;
 
-    sensor_array_configuration& configure(
-        _In_ void (*configure)(_In_ adl_configuration&, _In_opt_ void *),
+    /// <summary>
+    /// Invokes <paramref name="config" /> for a configuration of type
+    /// <typeparamref name="TConfig" /> if such a configuration is registered
+    /// for any of the sensors.
+    /// </summary>
+    /// <typeparam name="TConfig">The type of the sensor configuration that is to
+    /// be modified.</typeparam>
+    /// <param name="configure">A callback that modifies the sensor
+    /// configuration.</param>
+    /// <param name="context">A user-defined context pointer passed to the
+    /// <see cref="configure" /> callback if it is invoked.</param>
+    /// <returns><c>*this</c>.</returns>
+    template<class TConfig> sensor_array_configuration& configure(
+        _In_ void (*configure)(_In_ TConfig&, _In_opt_ void *),
         _In_opt_ void *context);
 
-    ///// <summary>
-    ///// Configures the ADL sensors.
-    ///// </summary>
-    ///// <param name="configure"></param>
-    ///// <returns></returns>
-    //inline sensor_array_configuration& configure(
-    //        _In_ std::function<void(adl_configuration&)> configure) {
-    //    configure(this->_adl_configuration);
-    //    return *this;
-    //}
-
-    ///// <summary>
-    ///// Configures the Tinkerforge sensors.
-    ///// </summary>
-    ///// <param name="configure"></param>
-    ///// <returns></returns>
-    //inline sensor_array_configuration& configure(
-    //        _In_ std::function<void(tinkerforge_configuration&)> configure) {
-    //    configure(this->_tinkerforge_configuration);
-    //    return *this;
-    //}
+    /// <summary>
+    /// Invokes <paramref name="config" /> for a configuration of type
+    /// <typeparamref name="TConfig" /> if such a configuration is registered
+    /// for any of the sensors.
+    /// </summary>
+    /// <typeparam name="TConfig">The type of the sensor configuration that is to
+    /// be modified.</typeparam>
+    /// <param name="configure">A callback that modifies the sensor
+    /// configuration.</param>
+    /// <returns><c>*this</c>.</returns>
+    template<class TConfig> sensor_array_configuration& configure(
+        _In_ std::function<void(_In_ TConfig&)> configure);
 
 private:
 
-    typedef PWROWG_DETAIL_NAMESPACE::sensor_array_configuration_impl impl_type;
+    typedef PWROWG_DETAIL_NAMESPACE::sensor_array_configuration_impl *impl_type;
 
-    impl_type& check_not_disposed(void);
+    /// <summary>
+    /// Check whether <see cref="_impl" /> is valid or throw
+    /// <see cref="std::runtime_error" />.
+    /// </summary>
+    _Ret_valid_ impl_type check_not_disposed(void);
 
     //const rtx_instrument &check_not_disposed(void) const;
 
-    impl_type *_impl;
+    /// <summary>
+    /// Find the configuration object registered with the given
+    /// <paramref name="id" />.
+    /// </summary>
+    void *find_config(_In_ const guid& id);
 
+    impl_type _impl;
 };
 
 PWROWG_NAMESPACE_END
 
+#include "visus/pwrowg/sensor_array_configuration.inl"
+
 #endif /* !defined(_PWROWG_SENSOR_ARRAY_CONFIGURATION_H) */
+
