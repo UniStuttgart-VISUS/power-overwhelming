@@ -9,6 +9,7 @@
 #pragma once
 
 #include "visus/pwrowg/blob.h"
+#include "visus/pwrowg/sensor_configuration_base.h"
 #include "visus/pwrowg/tinkerforge_sample_averaging.h"
 
 
@@ -18,7 +19,8 @@ PWROWG_NAMESPACE_BEGIN
 /// Provides additional configuration options for Tingerforge-based sensors when
 /// creating a <see cref="sensor_array" />.
 /// </summary>
-class tinkerforge_configuration final {
+class POWER_OVERWHELMING_API tinkerforge_configuration final
+        : public sensor_configuration_base {
 
 public:
 
@@ -68,6 +70,11 @@ public:
         blob _name;
         std::uint16_t _port;
     };
+
+    /// <summary>
+    /// A unique identifer for the <see cref="tinkerforge_configuration" /> type.
+    /// </summary>
+    static const guid id;
 
     /// <summary>
     /// Initialises a new instance.

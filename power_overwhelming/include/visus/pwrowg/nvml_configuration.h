@@ -8,7 +8,7 @@
 #define _PWROWG_NVML_CONFIGURATION_H
 #pragma once
 
-#include "visus/pwrowg/api.h"
+#include "visus/pwrowg/sensor_configuration_base.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -17,9 +17,15 @@ PWROWG_NAMESPACE_BEGIN
 /// Provides additional configuration options for NVML-based sensors when
 /// creating a <see cref="sensor_array" />.
 /// </summary>
-class nvml_configuration final {
+class POWER_OVERWHELMING_API nvml_configuration final
+        : public sensor_configuration_base {
 
 public:
+
+    /// <summary>
+    /// A unique identifer for the <see cref="nvml_configuration" /> type.
+    /// </summary>
+    static const guid id;
 
 private:
 

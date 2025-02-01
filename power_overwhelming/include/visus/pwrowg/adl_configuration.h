@@ -22,6 +22,11 @@ class POWER_OVERWHELMING_API adl_configuration final
 
 public:
 
+    /// <summary>
+    /// A unique identifer for the <see cref="adl_configuration" /> type.
+    /// </summary>
+    static const guid id;
+
 private:
 
 };

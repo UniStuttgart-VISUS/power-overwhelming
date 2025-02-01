@@ -261,11 +261,31 @@ public:
     /// <param name="b7">Byte #15.</param>
     /// <param name="b8">Byte #16.</param>
     guid(_In_ const std::uint32_t i,
-        _In_ const uint16_t s1, _In_ const uint16_t s2,
+        _In_ const std::uint16_t s1, _In_ const uint16_t s2,
         _In_ const std::uint8_t b1, _In_ const std::uint8_t b2,
         _In_ const std::uint8_t b3, _In_ const std::uint8_t b4,
         _In_ const std::uint8_t b5, _In_ const std::uint8_t b6,
         _In_ const std::uint8_t b7, _In_ const std::uint8_t b8) noexcept;
+
+    /// <summary>
+    /// Initialises a new instance from an integer, three shorts and six bytes.
+    /// </summary>
+    /// <param name="i">The first four bytes.</param>
+    /// <param name="s1">Bytes #5 and #6.</param>
+    /// <param name="s2">Bytes #7 and #8.</param>
+    /// <param name="s3">Byte #9 and #10.</param>
+    /// <param name="b1">Byte #11.</param>
+    /// <param name="b2">Byte #12.</param>
+    /// <param name="b3">Byte #13.</param>
+    /// <param name="b4">Byte #14.</param>
+    /// <param name="b5">Byte #15.</param>
+    /// <param name="b6">Byte #16.</param>
+    guid(_In_ const std::uint32_t i,
+        _In_ const std::uint16_t s1, _In_ const uint16_t s2,
+        _In_ const uint16_t s3,
+        _In_ const std::uint8_t b1, _In_ const std::uint8_t b2,
+        _In_ const std::uint8_t b3, _In_ const std::uint8_t b4,
+        _In_ const std::uint8_t b5, _In_ const std::uint8_t b6) noexcept;
 
     /// <summary>
     /// Initialises a new instance from an integer, two shorts and an array of
@@ -280,6 +300,22 @@ public:
     guid(_In_ const std::uint32_t i,
         _In_ const std::uint16_t s1, const std::uint16_t s2,
         _In_reads_(8) const std::uint8_t b[8]);
+
+    /// <summary>
+    /// Initialises a new instance from an integer, two shorts and an array of
+    /// eight bytes.
+    /// </summary>
+    /// <param name="i">The first four bytes.</param>
+    /// <param name="s1">Bytes #5 and #6.</param>
+    /// <param name="s2">Bytes #7 and #8.</param>
+    /// <param name="s3">Byte #9 and #10.</param>
+    /// <param name="b">Bytes #11 through #16</param>
+    /// <exception cref="std::argument_exception">If <paramref name="b" />
+    /// is <c>nullptr</c>.</exception>
+    guid(_In_ const std::uint32_t i,
+        _In_ const std::uint16_t s1, const std::uint16_t s2,
+        _In_ const uint16_t s3,
+        _In_reads_(6) const std::uint8_t b[6]);
 
     /// <summary>
     /// Set all bytes to zero.

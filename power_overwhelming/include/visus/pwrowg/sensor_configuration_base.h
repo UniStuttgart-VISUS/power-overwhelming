@@ -8,7 +8,7 @@
 #define _PWROWG_SENSOR_CONFIGURATION_BASE_H
 #pragma once
 
-#include "visus/pwrowg/api.h"
+#include "visus/pwrowg/guid.h"
 
 
 PWROWG_NAMESPACE_BEGIN

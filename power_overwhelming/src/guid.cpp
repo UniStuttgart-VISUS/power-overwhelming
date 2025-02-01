@@ -234,8 +234,38 @@ PWROWG_NAMESPACE::guid::guid(_In_ const std::uint32_t i,
  * PWROWG_NAMESPACE::guid::guid
  */
 PWROWG_NAMESPACE::guid::guid(_In_ const std::uint32_t i,
+        _In_ const std::uint16_t s1, _In_ const uint16_t s2,
+        _In_ const uint16_t s3,
+        _In_ const std::uint8_t b1, _In_ const std::uint8_t b2,
+        _In_ const std::uint8_t b3, _In_ const std::uint8_t b4,
+        _In_ const std::uint8_t b5, _In_ const std::uint8_t b6) noexcept {
+    auto dst = reinterpret_cast<std::uint8_t *>(std::addressof(this->_value));
+#define __ASSIGN_VALUE(v) ::memcpy(dst, &v, sizeof(v)); dst += sizeof(v)
+    __ASSIGN_VALUE(i);
+    __ASSIGN_VALUE(s1);
+    __ASSIGN_VALUE(s2);
+    __ASSIGN_VALUE(s3);
+    __ASSIGN_VALUE(b1);
+    __ASSIGN_VALUE(b2);
+    __ASSIGN_VALUE(b3);
+    __ASSIGN_VALUE(b4);
+    __ASSIGN_VALUE(b5);
+    __ASSIGN_VALUE(b6);
+#undef __ASSIGN_VALUE
+}
+
+
+/*
+ * PWROWG_NAMESPACE::guid::guid
+ */
+PWROWG_NAMESPACE::guid::guid(_In_ const std::uint32_t i,
         _In_ const std::uint16_t s1, const std::uint16_t s2,
         _In_reads_(8) const std::uint8_t b[8]) {
+    if (b == nullptr) {
+        throw std::invalid_argument("A valid pointer to the final eight bytes "
+            "of the GUID must be provided.");
+    }
+
     auto dst = reinterpret_cast<std::uint8_t *>(std::addressof(this->_value));
 #define __ASSIGN_VALUE(v) ::memcpy(dst, &v, sizeof(v)); dst += sizeof(v)
     __ASSIGN_VALUE(i);
@@ -245,6 +275,28 @@ PWROWG_NAMESPACE::guid::guid(_In_ const std::uint32_t i,
     ::memcpy(dst, b, 8);
 }
 
+
+/*
+ * PWROWG_NAMESPACE::guid::guid
+ */
+PWROWG_NAMESPACE::guid::guid(_In_ const std::uint32_t i,
+        _In_ const std::uint16_t s1, const std::uint16_t s2,
+        _In_ const uint16_t s3,
+        _In_reads_(6) const std::uint8_t b[6]) {
+    if (b == nullptr) {
+        throw std::invalid_argument("A valid pointer to the final six bytes "
+            "of the GUID must be provided.");
+    }
+
+    auto dst = reinterpret_cast<std::uint8_t *>(std::addressof(this->_value));
+#define __ASSIGN_VALUE(v) ::memcpy(dst, &v, sizeof(v)); dst += sizeof(v)
+    __ASSIGN_VALUE(i);
+    __ASSIGN_VALUE(s1);
+    __ASSIGN_VALUE(s2);
+    __ASSIGN_VALUE(s3);
+#undef __ASSIGN_VALUE
+    ::memcpy(dst, b, 6);
+}
 
 /*
  * PWROWG_NAMESPACE::guid::clear

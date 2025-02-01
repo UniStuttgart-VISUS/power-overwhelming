@@ -57,6 +57,13 @@ PWROWG_NAMESPACE::tinkerforge_configuration::end_point::end_point(
 
 
 /*
+ * PWROWG_NAMESPACE::tinkerforge_configuration::id
+ */
+const PWROWG_NAMESPACE::guid PWROWG_NAMESPACE::tinkerforge_configuration::id(
+    0x2A24F596, 0xC0C0, 0x4395, 0x81CD, 0x92, 0x42, 0xFD, 0xA9, 0xAC, 0xF1);
+
+
+/*
  * PWROWG_NAMESPACE::tinkerforge_configuration::tinkerforge_configuration
  */
 PWROWG_NAMESPACE::tinkerforge_configuration::tinkerforge_configuration(void) {
