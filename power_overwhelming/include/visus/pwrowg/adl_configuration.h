@@ -8,7 +8,7 @@
 #define _PWROWG_ADL_CONFIGURATION_H
 #pragma once
 
-#include "visus/pwrowg/api.h"
+#include "visus/pwrowg/sensor_configuration_base.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -17,7 +17,8 @@ PWROWG_NAMESPACE_BEGIN
 /// Provides additional configuration options for ADL-based sensors when
 /// creating a <see cref="sensor_array" />.
 /// </summary>
-class adl_configuration final {
+class POWER_OVERWHELMING_API adl_configuration final
+        : public sensor_configuration_base {
 
 public:
 

@@ -8,11 +8,15 @@
 #define _PWROWG_SENSOR_ARRAY_CONFIGURATION_H
 #pragma once
 
-#include <functional>
+#include "visus/pwrowg/api.h"
 
 #include "visus/pwrowg/adl_configuration.h"
-#include "visus/pwrowg/sensor_description.h"
-#include "visus/pwrowg/tinkerforge_configuration.h"
+
+
+/* Forward declarations*/
+PWROWG_DETAIL_NAMESPACE_BEGIN
+struct sensor_array_configuration_impl;
+PWROWG_DETAIL_NAMESPACE_END
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -20,79 +24,74 @@ PWROWG_NAMESPACE_BEGIN
 /// <summary>
 /// The configuration object used to contruct a <see cref="sensor_array" />.
 /// </summary>
-class sensor_array_configuration final {
+class POWER_OVERWHELMING_API sensor_array_configuration final {
 
 public:
-
-    /// <summary>
-    /// Defines the interface of a filter that can be applied when creating a
-    /// sensor array to select the sensors included in the array based on their
-    /// description.
-    /// </summary>
-    typedef bool (*filter_func)(const sensor_description&, void *);
 
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
     sensor_array_configuration(void);
 
+
     /// <summary>
-    /// Configures the ADL sensors.
+    /// Initialise a new instance from moving <paramref name="rhs" />.
     /// </summary>
-    /// <param name="configure"></param>
-    /// <returns></returns>
-    inline sensor_array_configuration& configure(
-            _In_ std::function<void(adl_configuration&)> configure) {
-        configure(this->_adl_configuration);
-        return *this;
+    /// <param name="rhs">The object to be moved.</param>
+    inline sensor_array_configuration(
+            _Inout_ sensor_array_configuration&& rhs) noexcept
+            : _impl(rhs._impl) {
+        rhs._impl = nullptr;
     }
 
     /// <summary>
-    /// Configures the Tinkerforge sensors.
+    /// Finalises the instance.
     /// </summary>
-    /// <param name="configure"></param>
-    /// <returns></returns>
-    inline sensor_array_configuration& configure(
-            _In_ std::function<void(tinkerforge_configuration&)> configure) {
-        configure(this->_tinkerforge_configuration);
-        return *this;
-    }
+    ~sensor_array_configuration(void) noexcept;
 
     /// <summary>
-    /// Gets the filter that is used to determine which sensors are included in
-    /// the array.
+    /// Move assignment.
     /// </summary>
-    /// <returns>The filter determining the active sensors.</returns>
-    inline _Ret_valid_ filter_func filter(void) const noexcept {
-        return this->_filter;
-    }
-
-    /// <summary>
-    /// Sets a new filter to determine which sensors are included in the array.
-    /// </summary>
-    /// <param name="filter">The filter function to be called for each sensor to
-    /// check whether it is included. If <c>nullptr</c>, a filter accepting all
-    /// sensors will be installed.</param>
-    /// <param name="context">An optional context pointer that is passed to the
-    /// <paramref name="filter" /> callback.
+    /// <param name="rhs">The right-hand side operand.</param>
     /// <returns><c>*this</c>.</returns>
-    sensor_array_configuration& filter(
-        _In_opt_ const filter_func filter,
-        _In_opt_ void *context) noexcept;
+    sensor_array_configuration& operator =(
+        _Inout_ sensor_array_configuration&& rhs) noexcept;
 
-    /// <summary>
-    /// Applies the filter to the given <see cref="sensor_description" />.
-    /// </summary>
-    /// <param name="desc">The sensor description to be tested.</param>
-    /// <returns>The return value of the current filter</returns>
-    bool filter(_In_ const sensor_description& desc) const;
+    sensor_array_configuration& configure(
+        _In_ void (*configure)(_In_ adl_configuration&, _In_opt_ void *),
+        _In_opt_ void *context);
+
+    ///// <summary>
+    ///// Configures the ADL sensors.
+    ///// </summary>
+    ///// <param name="configure"></param>
+    ///// <returns></returns>
+    //inline sensor_array_configuration& configure(
+    //        _In_ std::function<void(adl_configuration&)> configure) {
+    //    configure(this->_adl_configuration);
+    //    return *this;
+    //}
+
+    ///// <summary>
+    ///// Configures the Tinkerforge sensors.
+    ///// </summary>
+    ///// <param name="configure"></param>
+    ///// <returns></returns>
+    //inline sensor_array_configuration& configure(
+    //        _In_ std::function<void(tinkerforge_configuration&)> configure) {
+    //    configure(this->_tinkerforge_configuration);
+    //    return *this;
+    //}
 
 private:
 
-    adl_configuration _adl_configuration;
-    filter_func _filter;
-    void *_filter_context;
-    tinkerforge_configuration _tinkerforge_configuration;
+    typedef PWROWG_DETAIL_NAMESPACE::sensor_array_configuration_impl impl_type;
+
+    impl_type& check_not_disposed(void);
+
+    //const rtx_instrument &check_not_disposed(void) const;
+
+    impl_type *_impl;
 
 };
 

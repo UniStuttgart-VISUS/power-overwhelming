@@ -20,7 +20,7 @@ PWROWG_NAMESPACE_BEGIN
 /// Describes a single sensor that can be activated in a
 /// <see cref="sensor_array" />.
 /// </summary>
-class sensor_description final {
+class POWER_OVERWHELMING_API sensor_description final {
 
 public:
 

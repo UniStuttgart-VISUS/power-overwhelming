@@ -28,7 +28,7 @@ PWROWG_NAMESPACE_BEGIN
 /// manages a set of sensors that are sampled simultaneously. Sensors can only
 /// be created as membery of a sensor array.
 /// </summary>
-class sensor_array final {
+class POWER_OVERWHELMING_API sensor_array final {
 
 public:
 

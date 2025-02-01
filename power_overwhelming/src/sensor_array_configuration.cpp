@@ -6,45 +6,65 @@
 
 #include "visus/pwrowg/sensor_array_configuration.h"
 
-#include <cassert>
+#include <memory>
+#include <stdexcept>
+
+#include "sensor_array_configuration_impl.h"
 
 
 /*
  * PWROWG_NAMESPACE::sensor_array_configuration::sensor_array_configuration
  */
-PWROWG_NAMESPACE::sensor_array_configuration::sensor_array_configuration(void) {
-    this->filter(nullptr, nullptr);
+PWROWG_NAMESPACE::sensor_array_configuration::sensor_array_configuration(void)
+    : _impl(new PWROWG_DETAIL_NAMESPACE::sensor_array_configuration_impl()) { }
+
+
+/*
+ * PWROWG_NAMESPACE::sensor_array_configuration::~sensor_array_configuration
+ */
+PWROWG_NAMESPACE::sensor_array_configuration::~sensor_array_configuration(
+        void) noexcept {
+    delete this->_impl;
 }
 
 
 /*
- * PWROWG_NAMESPACE::sensor_array_configuration::filter
+ * PWROWG_NAMESPACE::sensor_array_configuration::operator =
  */
 PWROWG_NAMESPACE::sensor_array_configuration&
-PWROWG_NAMESPACE::sensor_array_configuration::filter(
-        _In_opt_ const filter_func filter,
-        _In_opt_ void *context) noexcept {
-    static const auto allow_all = [](const sensor_description&, void *) {
-        return true;
-    };
-
-    if (filter == nullptr) {
-        this->_filter = allow_all;
-    } else {
-        this->_filter = filter;
+PWROWG_NAMESPACE::sensor_array_configuration::operator =(
+        _Inout_ sensor_array_configuration&& rhs) noexcept {
+    if (this != std::addressof(rhs)) {
+        this->_impl = rhs._impl;
+        rhs._impl = nullptr;
     }
-
-    this->_filter_context = context;
 
     return *this;
 }
 
 
 /*
- * PWROWG_NAMESPACE::sensor_array_configuration::filter
+ * PWROWG_NAMESPACE::sensor_array_configuration::configure
  */
-bool PWROWG_NAMESPACE::sensor_array_configuration::filter(
-        _In_ const sensor_description& desc) const {
-    assert(this->_filter != nullptr);
-    return this->_filter(desc, this->_filter_context);
+PWROWG_NAMESPACE::sensor_array_configuration&
+PWROWG_NAMESPACE::sensor_array_configuration::configure(
+        _In_ void (*configure)(_In_ adl_configuration&, _In_opt_ void *),
+        _In_opt_ void *context) {
+    this->check_not_disposed().configure(configure, context);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::sensor_array_configuration::check_not_disposed
+ */
+PWROWG_NAMESPACE::sensor_array_configuration::impl_type&
+PWROWG_NAMESPACE::sensor_array_configuration::check_not_disposed(void) {
+    volatile auto retval = this->_impl;
+
+    if (retval == nullptr) {
+        throw std::runtime_error("A sensor array configuration which has been "
+            "disposed by a move operation cannot be used anymore.");
+    }
+
+    return *retval;
 }

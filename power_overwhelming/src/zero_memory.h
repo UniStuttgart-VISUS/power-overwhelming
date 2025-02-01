@@ -23,7 +23,8 @@
 /// </param>
 /// <param name="cnt">The size of the block to be filled with zeros in bytes.
 /// </param>
-inline void ZeroMemory(void *ptr, const std::size_t cnt) {
+inline void ZeroMemory(_In_reads_bytes_(cnt) void *ptr,
+        _In_ const std::size_t cnt) {
     ::memset(ptr, 0, cnt);
 }
 
