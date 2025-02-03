@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_sensor_definition.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -18,15 +18,15 @@
 static constexpr const char *error_description = "The description of an "
     "oscilloscope-based sensor must not be empty.";
 static constexpr const char *error_path = "The VISA path of an "
-"oscilloscope-based sensor must not be empty.";
+    "oscilloscope-based sensor must not be empty.";
 static constexpr const char *error_same_channel = "The channel measuring "
-"voltage cannot be the same as the one measuring current.";
+    "voltage cannot be the same as the one measuring current.";
 
 
 /*
- * visus::power_overwhelming::rtx_sensor_definition::rtx_sensor_definition
+ * PWROWG_NAMESPACE::rtx_sensor_definition::rtx_sensor_definition
  */
-visus::power_overwhelming::rtx_sensor_definition::rtx_sensor_definition(
+PWROWG_NAMESPACE::rtx_sensor_definition::rtx_sensor_definition(
         _In_z_ const wchar_t *path,
         _In_ const rtx_channel& voltage_channel,
         _In_ const rtx_channel& current_channel,
@@ -49,9 +49,9 @@ visus::power_overwhelming::rtx_sensor_definition::rtx_sensor_definition(
 
 
 /*
- * visus::power_overwhelming::rtx_sensor_definition::rtx_sensor_definition
+ * PWROWG_NAMESPACE::rtx_sensor_definition::rtx_sensor_definition
  */
-visus::power_overwhelming::rtx_sensor_definition::rtx_sensor_definition(
+PWROWG_NAMESPACE::rtx_sensor_definition::rtx_sensor_definition(
         _In_z_ const char *path,
         _In_ const rtx_channel& voltage_channel,
         _In_ const rtx_channel& current_channel,
@@ -74,9 +74,9 @@ visus::power_overwhelming::rtx_sensor_definition::rtx_sensor_definition(
 
 
 /*
- * visus::power_overwhelming::rtx_sensor_definition::rtx_sensor_definition
+ * PWROWG_NAMESPACE::rtx_sensor_definition::rtx_sensor_definition
  */
-visus::power_overwhelming::rtx_sensor_definition::rtx_sensor_definition(
+PWROWG_NAMESPACE::rtx_sensor_definition::rtx_sensor_definition(
         _In_z_ const wchar_t *path,
         _In_ const std::uint32_t channel_voltage,
         _In_ const float attenuation_voltage,
@@ -101,9 +101,9 @@ visus::power_overwhelming::rtx_sensor_definition::rtx_sensor_definition(
 
 
 /*
- * visus::power_overwhelming::rtx_sensor_definition::rtx_sensor_definition
+ * PWROWG_NAMESPACE::rtx_sensor_definition::rtx_sensor_definition
  */
-visus::power_overwhelming::rtx_sensor_definition::rtx_sensor_definition(
+PWROWG_NAMESPACE::rtx_sensor_definition::rtx_sensor_definition(
         _In_z_ const char *path,
         _In_ const std::uint32_t channel_voltage,
         _In_ const float attenuation_voltage,
@@ -128,9 +128,9 @@ visus::power_overwhelming::rtx_sensor_definition::rtx_sensor_definition(
 
 
 /*
- * visus::power_overwhelming::rtx_sensor_definition::apply
+ * PWROWG_NAMESPACE::rtx_sensor_definition::apply
  */
-void visus::power_overwhelming::rtx_sensor_definition::apply(
+void PWROWG_NAMESPACE::rtx_sensor_definition::apply(
         _Inout_ rtx_instrument& instrument) const {
     instrument.channel(this->_current_channel)
         .channel(this->_voltage_channel)
@@ -139,10 +139,10 @@ void visus::power_overwhelming::rtx_sensor_definition::apply(
 
 
 /*
- * visus::power_overwhelming::rtx_sensor_definition::description
+ * PWROWG_NAMESPACE::rtx_sensor_definition::description
  */
-visus::power_overwhelming::rtx_sensor_definition&
-visus::power_overwhelming::rtx_sensor_definition::description(
+PWROWG_NAMESPACE::rtx_sensor_definition&
+PWROWG_NAMESPACE::rtx_sensor_definition::description(
         _In_opt_z_ const wchar_t *description) {
     detail::safe_assign(this->_description, description);
     return *this;
@@ -150,9 +150,9 @@ visus::power_overwhelming::rtx_sensor_definition::description(
 
 
 /*
- * visus::power_overwhelming::rtx_sensor_definition::operator bool
+ * PWROWG_NAMESPACE::rtx_sensor_definition::operator bool
  */
-visus::power_overwhelming::rtx_sensor_definition::operator bool(
+PWROWG_NAMESPACE::rtx_sensor_definition::operator bool(
         void) const noexcept {
     const auto path = this->path();
 
@@ -163,9 +163,9 @@ visus::power_overwhelming::rtx_sensor_definition::operator bool(
 
 
 /*
- * visus::power_overwhelming::rtx_sensor_definition::make_labels
+ * PWROWG_NAMESPACE::rtx_sensor_definition::make_labels
  */
-void visus::power_overwhelming::rtx_sensor_definition::make_labels(void) {
+void PWROWG_NAMESPACE::rtx_sensor_definition::make_labels(void) {
     auto desc = PWROWG_DETAIL_NAMESPACE::remove_spaces(convert_string<char>(
         this->description()));
     if (desc.length() > 7) {
