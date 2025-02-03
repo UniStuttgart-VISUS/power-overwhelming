@@ -166,7 +166,7 @@ visus::power_overwhelming::rtx_sensor_definition::operator bool(
  * visus::power_overwhelming::rtx_sensor_definition::make_labels
  */
 void visus::power_overwhelming::rtx_sensor_definition::make_labels(void) {
-    auto desc = detail::remove_spaces(convert_string<char>(
+    auto desc = PWROWG_DETAIL_NAMESPACE::remove_spaces(convert_string<char>(
         this->description()));
     if (desc.length() > 7) {
         // RTA/RTB instruments allow only labels up to eight characters, so

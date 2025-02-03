@@ -17,11 +17,8 @@
 #define CALLBACK
 #endif /* defined(_WIN32) */
 
-#include "visus/pwrowg/async_delivery_method.h"
 #include "visus/pwrowg/measurement.h"
 #include "visus/pwrowg/measurement_data_series.h"
-#include "visus/pwrowg/thermal_sample.h"
-#include "visus/pwrowg/throttling_sample.h"
 #include "visus/pwrowg/tinkerforge_sensor_source.h"
 
 
@@ -73,21 +70,21 @@ namespace power_overwhelming {
             _In_ const measurement_data *, _In_ const std::size_t,
             _In_opt_ void *);
 
-        /// <summary>
-        /// The type of callback used for delivering
-        ///  <see cref="thermal_sample" />s.
-        /// </summary>
-        typedef void (*on_thermal_sample_callback)(_In_z_ const wchar_t *,
-            _In_ const thermal_sample *, _In_ const std::size_t,
-            _In_opt_ void *);
+        ///// <summary>
+        ///// The type of callback used for delivering
+        /////  <see cref="thermal_sample" />s.
+        ///// </summary>
+        //typedef void (*on_thermal_sample_callback)(_In_z_ const wchar_t *,
+        //    _In_ const thermal_sample *, _In_ const std::size_t,
+        //    _In_opt_ void *);
 
-        /// <summary>
-        /// The type of callback used for delivering
-        ///  <see cref="throttling_sample" />s.
-        /// </summary>
-        typedef void (*on_throttling_sample_callback)(_In_z_ const wchar_t *,
-            _In_ const throttling_sample *, _In_ const std::size_t,
-            _In_opt_ void *);
+        ///// <summary>
+        ///// The type of callback used for delivering
+        /////  <see cref="throttling_sample" />s.
+        ///// </summary>
+        //typedef void (*on_throttling_sample_callback)(_In_z_ const wchar_t *,
+        //    _In_ const throttling_sample *, _In_ const std::size_t,
+        //    _In_opt_ void *);
 
         /// <summary>
         /// The default sampling interval, which is 5000 µs or 5 ms.
@@ -219,88 +216,6 @@ namespace power_overwhelming {
         }
 
         /// <summary>
-        /// Invoke the callback for a <see cref="throttling_sample" /> for
-        /// the <see cref="samples" /> provided to the method.
-        /// </summary>
-        /// <remarks>
-        /// <para>This method is not thread-safe. Callers must make sure that
-        /// the instance is not changed while the callback is invoked from the
-        /// sampler thread.</para>
-        /// </remarks>
-        /// <param name="source">The name of the sensor from which the
-        /// <paramref name="samples" /> originate. This must not be
-        /// <c>nullptr</c>.</param>
-        /// <param name="samples">A pointer to <paramref name="cnt" /> samples
-        /// to deliver to the registered callback.</param>
-        /// <param name="cnt">The number of samples to deliver.</param>
-        /// <returns><c>true</c> if a callback was invoked, <c>false</c> if none
-        /// has been set.</returns>
-        bool deliver(_In_ const wchar_t *source,
-            _In_reads_(cnt) const throttling_sample *samples,
-            _In_ const std::size_t cnt) const;
-
-        /// <summary>
-        /// Invoke the callback for a <see cref="throttling_sample" /> for
-        /// the <see cref="sample" /> provided to the method.
-        /// </summary>
-        /// <remarks>
-        /// <para>This method is not thread-safe. Callers must make sure that
-        /// the instance is not changed while the callback is invoked from the
-        /// sampler thread.</para>
-        /// </remarks>
-        /// <param name="source">The name of the sensor from which the
-        /// <paramref name="sample" /> originate. This must not be
-        /// <c>nullptr</c>.</param>
-        /// <param name="sample">The sample to deliver.</param>
-        /// <returns><c>true</c> if a callback was invoked, <c>false</c> if none
-        /// has been set.</returns>
-        inline bool deliver(_In_ const wchar_t *source,
-                const throttling_sample& sample) const {
-            return this->deliver(source, &sample, 1);
-        }
-
-        /// <summary>
-        /// Invoke the callback for a <see cref="thermal_sample" /> for
-        /// the <see cref="samples" /> provided to the method.
-        /// </summary>
-        /// <remarks>
-        /// <para>This method is not thread-safe. Callers must make sure that
-        /// the instance is not changed while the callback is invoked from the
-        /// sampler thread.</para>
-        /// </remarks>
-        /// <param name="source">The name of the sensor from which the
-        /// <paramref name="samples" /> originate. This must not be
-        /// <c>nullptr</c>.</param>
-        /// <param name="samples">A pointer to <paramref name="cnt" /> samples
-        /// to deliver to the registered callback.</param>
-        /// <param name="cnt">The number of samples to deliver.</param>
-        /// <returns><c>true</c> if a callback was invoked, <c>false</c> if none
-        /// has been set.</returns>
-        bool deliver(_In_ const wchar_t *source,
-            _In_reads_(cnt) const thermal_sample *samples,
-            _In_ const std::size_t cnt) const;
-
-        /// <summary>
-        /// Invoke the callback for a <see cref="throttling_sample" /> for
-        /// the <see cref="sample" /> provided to the method.
-        /// </summary>
-        /// <remarks>
-        /// <para>This method is not thread-safe. Callers must make sure that
-        /// the instance is not changed while the callback is invoked from the
-        /// sampler thread.</para>
-        /// </remarks>
-        /// <param name="source">The name of the sensor from which the
-        /// <paramref name="sample" /> originate. This must not be
-        /// <c>nullptr</c>.</param>
-        /// <param name="sample">The sample to deliver.</param>
-        /// <returns><c>true</c> if a callback was invoked, <c>false</c> if none
-        /// has been set.</returns>
-        inline bool deliver(_In_ const wchar_t *source,
-                const thermal_sample& sample) const {
-            return this->deliver(source, &sample, 1);
-        }
-
-        /// <summary>
         /// Configures the <see cref="sensor" /> such that it produces samples
         /// of type <see cref="measurement" />.
         /// </summary>
@@ -377,18 +292,6 @@ namespace power_overwhelming {
             _In_ TFunctor&& callback);
 
         /// <summary>
-        /// Configures the <see cref="thermal_sensor" /> to deliver samples
-        /// of type <see cref="thermal_sample" /> to the given
-        /// <paramref name="callback" />.
-        /// </summary>
-        /// <param name="callback">The callbeck to deliver to. If this is
-        /// <c>nullptr</c>, sampling will be disabled (this is equivalent to
-        /// calling <see cref="is_disabled" />).</param>
-        /// <returns><c>*this</c>.</returns>
-        async_sampling& delivers_thermal_samples_to(
-            _In_opt_ const on_thermal_sample_callback callback) noexcept;
-
-        /// <summary>
         /// Configures the <see cref="thermal_sensor" /> to deliver samples of
         /// type <see cref="thermal_sample" /> to a callable like a functor
         /// object or <see cref="std::function" />.
@@ -411,18 +314,6 @@ namespace power_overwhelming {
             _In_ TFunctor&& callback);
 
         /// <summary>
-        /// Configures the <see cref="throttling_sensor" /> to deliver samples
-        /// of type <see cref="throttling_sample" /> to the given
-        /// <paramref name="callback" />.
-        /// </summary>
-        /// <param name="callback">The callbeck to deliver to. If this is
-        /// <c>nullptr</c>, sampling will be disabled (this is equivalent to
-        /// calling <see cref="is_disabled" />).</param>
-        /// <returns><c>*this</c>.</returns>
-        async_sampling& delivers_throttling_samples_to(
-            _In_opt_ const on_throttling_sample_callback callback) noexcept;
-
-        /// <summary>
         /// Configures the <see cref="throttling_sensor" /> to deliver samples of
         /// type <see cref="throttling_sample" /> to a callable like a functor
         /// object or <see cref="std::function" />.
@@ -443,34 +334,6 @@ namespace power_overwhelming {
         template<class TFunctor>
         async_sampling& delivers_throttling_samples_to_functor(
             _In_ TFunctor&& callback);
-
-        /// <summary>
-        /// Answer how the asynchronous samples are to be delivered.
-        /// </summary>
-        /// <remarks>
-        /// The returned the configured delivery method does not necessarily
-        /// indicate that the sampling is enabled. It merely indicates the
-        /// method that was last enabled.
-        /// </remarks>
-        /// <returns>The configured delivery method.</returns>
-        inline async_delivery_method delivery_method(void) const noexcept {
-            return this->_delivery_method;
-        }
-
-        /// <summary>
-        /// If the sensor this sampling configuration is passed to is a
-        /// Tinkerforge sensor, instructs the sensor to obtain data only from
-        /// the specified sources.
-        /// </summary>
-        /// <remarks>
-        /// If the sensor is not a Tinkerforge sensor, this setting has no
-        /// effect.
-        /// </remarks>
-        /// <param name="source">A bitmask of the sources that should be
-        /// returned.</param>
-        /// <returns><c>*this</c>.</returns>
-        async_sampling& from_source(
-            _In_ const tinkerforge_sensor_source source) noexcept;
 
         /// <summary>
         /// Answer the requested sampling interval in microseconds.
@@ -722,8 +585,6 @@ namespace power_overwhelming {
         union delivery_callback {
             on_measurement_callback on_measurement;
             on_measurement_data_callback on_measurement_data;
-            on_thermal_sample_callback on_thermal_samples;
-            on_throttling_sample_callback on_throttling_samples;
         };
 
         static_assert(sizeof(delivery_callback)
@@ -733,14 +594,6 @@ namespace power_overwhelming {
             == sizeof(on_measurement_data_callback),
             "Implementation assumes no padding around on_measurement "
             "on_measurement_data.");
-        static_assert(sizeof(delivery_callback)
-            == sizeof(on_thermal_sample_callback),
-            "Implementation assumes no padding around on_measurement "
-            "on_thermal_samples.");
-        static_assert(sizeof(delivery_callback)
-            == sizeof(on_throttling_sample_callback),
-            "Implementation assumes no padding around on_measurement "
-            "on_throttling_samples.");
 
         delivery_callback _callback;
         void *_context;

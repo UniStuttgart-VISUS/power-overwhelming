@@ -12,6 +12,13 @@
 #include "visus/pwrowg/reading_type.h"
 #include "visus/pwrowg/reading_unit.h"
 #include "visus/pwrowg/sensor_type.h"
+#include "visus/pwrowg/type_erased_storage.h"
+
+
+// Forward declarations.
+PWROWG_DETAIL_NAMESPACE_BEGIN
+class sensor_description_builder;
+PWROWG_DETAIL_NAMESPACE_END
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -20,6 +27,20 @@ PWROWG_NAMESPACE_BEGIN
 /// Describes a single sensor that can be activated in a
 /// <see cref="sensor_array" />.
 /// </summary>
+/// <remarks>
+/// <para>Note to implementors: Use the privte
+/// <see cref="detail::sensor_description_builder" /> class to construct a
+/// description for your sensor type.</para>
+/// <para>Note to implementors: A sensor type must be able to create descriptors
+/// of this type for all data sources it supports. Furthermore, the sensor
+/// implementation must be able to instantiate a sensor from a descriptor of this
+/// type. If this is not possible using the public data in this class, sensor
+/// implementations can use the <see cref="_reserved" /> member of this class to
+/// store arbitraty data. We use a <see cref="blob" /> to erase any
+/// sensor-specific tyoe information from the descriptor. Implementors need to
+/// provide a <see cref="detail::rule_of_five_eraser" /> if the data they store
+/// in <see cref="_reserved" /> is not trivially copyable.</para>
+/// </remarks>
 class POWER_OVERWHELMING_API sensor_description final {
 
 public:
@@ -144,9 +165,11 @@ private:
     blob _path;
     PWROWG_NAMESPACE::reading_type _reading_type;
     PWROWG_NAMESPACE::reading_unit _reading_unit;
-    blob _reserved;
+    PWROWG_NAMESPACE::type_erased_storage _reserved;
     sensor_type _type;
     blob _vendor;
+
+    friend class PWROWG_DETAIL_NAMESPACE::sensor_description_builder;
 };
 
 PWROWG_NAMESPACE_END

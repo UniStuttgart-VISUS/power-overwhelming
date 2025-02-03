@@ -33,7 +33,6 @@ enum class rtx_waveform_points {
     /// visible range.
     /// </summary>
     maximum_visible
-
 };
 
 PWROWG_NAMESPACE_END
