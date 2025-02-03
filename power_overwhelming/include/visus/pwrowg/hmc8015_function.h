@@ -146,7 +146,8 @@ enum class hmc8015_function {
 /// Convert the given measurement function to a string.
 /// </summary>
 /// <param name="function">The function to be converted.</param>
-/// <returns>The string representation of the source.</returns>
+/// <returns>The string representation of the source. The callee remains owner
+/// of the memory returned, which has static life time.</returns>
 /// <exception cref="std::invalid_argument">If the source is not valid and
 /// therefore could not be converted.</exception>
 extern POWER_OVERWHELMING_API _Ret_valid_ const wchar_t *to_string(

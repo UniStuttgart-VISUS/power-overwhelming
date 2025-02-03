@@ -30,13 +30,13 @@ PWROWG_DETAIL_NAMESPACE_END
 PWROWG_NAMESPACE_BEGIN
 
 /// <summary>
-/// Implementation of a VISA instrument, which can be used to implement a
-/// sensor or control an instrument like an oscilloscope manually.
+/// Implementation of a VISA instrument, which can be used to implement a sensor
+/// or control an instrument like an oscilloscope manually.
 /// </summary>
 /// <remarks>
-/// <para>The <see cref="visa_instrument" /> manages a
-/// <see cref="ViSession" /> on a single device, which might be used by
-/// multiple <see cref="sensor" />s.</para>
+/// <para>The <see cref="visa_instrument" /> manages a <see cref="ViSession" />
+/// on a single device, which might be used by multiple <see cref="sensor" />s.
+/// </para>
 /// </remarks>
 class POWER_OVERWHELMING_API visa_instrument {
 
