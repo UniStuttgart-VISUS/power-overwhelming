@@ -90,8 +90,6 @@ enum class sensor_type : std::uint32_t {
     hardware = 0x2000000
 };
 
-PWROWG_NAMESPACE_END
-
 
 /// <summary>
 /// Combines <paramref name="lhs" /> and <paramref name="rhs" />.
@@ -99,9 +97,8 @@ PWROWG_NAMESPACE_END
 /// <param name="lhs"></param>
 /// <param name="rhs"></param>
 /// <returns></returns>
-inline PWROWG_NAMESPACE::sensor_type operator |(
-        _In_ const PWROWG_NAMESPACE::sensor_type lhs,
-        _In_ const PWROWG_NAMESPACE::sensor_type rhs) {
+inline sensor_type operator |(_In_ const sensor_type lhs,
+        _In_ const sensor_type rhs) {
     typedef typename std::decay<decltype(lhs)>::type enum_type;
     typedef typename std::underlying_type<enum_type>::type mask_type;
     const auto l = static_cast<mask_type>(lhs);
@@ -116,14 +113,15 @@ inline PWROWG_NAMESPACE::sensor_type operator |(
 /// <param name="lhs"></param>
 /// <param name="rhs"></param>
 /// <returns></returns>
-inline PWROWG_NAMESPACE::sensor_type operator &(
-        _In_ const PWROWG_NAMESPACE::sensor_type lhs,
-        _In_ const PWROWG_NAMESPACE::sensor_type rhs) {
+inline sensor_type operator &(_In_ const sensor_type lhs,
+        _In_ const sensor_type rhs) {
     typedef typename std::decay<decltype(lhs)>::type enum_type;
     typedef typename std::underlying_type<enum_type>::type mask_type;
     const auto l = static_cast<mask_type>(lhs);
     const auto r = static_cast<mask_type>(rhs);
     return static_cast<decltype(lhs)>(l & r);
 }
+
+PWROWG_NAMESPACE_END
 
 #endif /* !defined(_PWROWG_SENSOR_TYPE_H) */

@@ -1,17 +1,17 @@
-// <copyright file="msr_device_factory.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="msr_device_factory.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2023 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "msr_device_factory.h"
 
 
 /*
- * visus::power_overwhelming::detail::msr_device_factory::create
+ * PWROWG_DETAIL_NAMESPACE::msr_device_factory::create
  */
-visus::power_overwhelming::detail::msr_device_factory::device_type
-visus::power_overwhelming::detail::msr_device_factory::create(
+PWROWG_DETAIL_NAMESPACE::msr_device_factory::device_type
+PWROWG_DETAIL_NAMESPACE::msr_device_factory::create(
         _In_ const string_type& path) {
     std::lock_guard<decltype(_lock)> _l(_lock);
     auto it = _instances.find(path);
@@ -28,34 +28,34 @@ visus::power_overwhelming::detail::msr_device_factory::create(
 
 
 /*
- * visus::power_overwhelming::detail::msr_device_factory::create
+ * PWROWG_DETAIL_NAMESPACE::msr_device_factory::create
  */
-visus::power_overwhelming::detail::msr_device_factory::device_type
-visus::power_overwhelming::detail::msr_device_factory::create(
+PWROWG_DETAIL_NAMESPACE::msr_device_factory::device_type
+PWROWG_DETAIL_NAMESPACE::msr_device_factory::create(
         _In_ const core_type core) {
     return create(msr_device::path(core));
 }
 
 
 /*
- * visus::power_overwhelming::detail::msr_device_factory::clear
+ * PWROWG_DETAIL_NAMESPACE::msr_device_factory::clear
  */
-void visus::power_overwhelming::detail::msr_device_factory::clear(void) {
+void PWROWG_DETAIL_NAMESPACE::msr_device_factory::clear(void) {
     std::lock_guard<decltype(_lock)> _l(_lock);
     _instances.clear();
 }
 
 
 /*
- * visus::power_overwhelming::detail::msr_device_factory::_instances
+ * PWROWG_DETAIL_NAMESPACE::msr_device_factory::_instances
  */
 std::unordered_map<
-    visus::power_overwhelming::detail::msr_device_factory::string_type,
-    visus::power_overwhelming::detail::msr_device_factory::device_type>
-visus::power_overwhelming::detail::msr_device_factory::_instances;
+    PWROWG_DETAIL_NAMESPACE::msr_device_factory::string_type,
+    PWROWG_DETAIL_NAMESPACE::msr_device_factory::device_type>
+PWROWG_DETAIL_NAMESPACE::msr_device_factory::_instances;
 
 
 /*
- * visus::power_overwhelming::detail::msr_device_factory::_lock
+ * PWROWG_DETAIL_NAMESPACE::msr_device_factory::_lock
  */
-std::mutex visus::power_overwhelming::detail::msr_device_factory::_lock;
+std::mutex PWROWG_DETAIL_NAMESPACE::msr_device_factory::_lock;

@@ -1,20 +1,105 @@
 ﻿// <copyright file="nvml_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "visus/pwrowg/nvml_sensor.h"
+#include "nvml_sensor.h"
 
+#include <array>
 #include <cassert>
 #include <stdexcept>
 
+#include "visus/pwrowg/sample.h"
+
 #include "nvidia_management_library.h"
 #include "nvml_exception.h"
-#include "nvml_sensor_impl.h"
-#include "sampler.h"
+#include "sensor_description_builder.h"
+#include "string_functions.h"
 
 
+/*
+ * PWROWG_DETAIL_NAMESPACE_BEGIN::nvml_sensor::descriptions
+ */
+std::vector<PWROWG_NAMESPACE::sensor_description>
+PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
+        _In_ configuration_type& config) {
+    auto builder = sensor_description_builder::create()
+        .with_vendor(L"NVIDIA")
+        .with_type(sensor_type::gpu | sensor_type::power | sensor_type::software)
+        .produces(reading_type::floating_point)
+        .measured_in(reading_unit::watt);
+    std::vector<sensor_description> retval;
+
+    try {
+        unsigned int cnt_devices = 0;
+        nvml_scope scope;
+
+        // Find out the number of NVIDIA devices on the machine.
+        {
+            auto status = nvidia_management_library::instance()
+                .nvmlDeviceGetCount(&cnt_devices);
+            if (status != NVML_SUCCESS) {
+                throw nvml_exception(status);
+            }
+        }
+
+        // Create descriptors for each device.
+        for (unsigned int i = 0; (i < cnt_devices); ++i) {
+            nvmlDevice_t device;
+            std::array<char, NVML_DEVICE_UUID_BUFFER_SIZE> guid;
+            std::array<char, NVML_DEVICE_NAME_BUFFER_SIZE> name;
+            nvmlPciInfo_t pci_info;
+
+            {
+                auto status = nvidia_management_library::instance()
+                    .nvmlDeviceGetHandleByIndex(i, &device);
+                if (status != NVML_SUCCESS) {
+                    throw nvml_exception(status);
+                }
+            }
+
+            {
+                auto status = nvidia_management_library::instance()
+                    .nvmlDeviceGetName(device, name.data(),
+                        static_cast<unsigned int>(name.size()));
+                if (status != NVML_SUCCESS) {
+                    throw nvml_exception(status);
+                }
+            }
+
+            {
+                auto status = nvidia_management_library::instance()
+                    .nvmlDeviceGetUUID(device, guid.data(),
+                        static_cast<unsigned int>(guid.size()));
+                if (status != NVML_SUCCESS) {
+                    throw nvml_exception(status);
+                }
+
+                builder.with_id(guid.data());
+            }
+
+            {
+                auto status = nvidia_management_library::instance()
+                    .nvmlDeviceGetPciInfo(device, &pci_info);
+                if (status != NVML_SUCCESS) {
+                    throw nvml_exception(status);
+                }
+
+                builder.with_path(pci_info.busId);
+            }
+
+            builder.with_name("NVML/%s/%s", name.data(), pci_info.busId);
+        }
+
+        retval.push_back(builder.build());
+    } catch (...) { /* Probably no NVIDIA GPU, ignore it.*/ }
+
+    return retval;
+}
+
+
+#if false
 /*
  * visus::power_overwhelming::nvml_sensor::for_all
  */
@@ -164,6 +249,7 @@ visus::power_overwhelming::nvml_sensor::from_serial(
 }
 
 
+
 /*
  * visus::power_overwhelming::nvml_sensor::nvml_sensor
  */
@@ -275,3 +361,4 @@ visus::power_overwhelming::nvml_sensor::sample_sync(void) const {
     assert(this->_impl != nullptr);
     return this->_impl->sample();
 }
+#endif

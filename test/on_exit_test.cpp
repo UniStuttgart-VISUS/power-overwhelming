@@ -7,47 +7,43 @@
 #include "pch.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-using namespace PWROWG_NAMESPACE;
 
 
-namespace visus {
-namespace power_overwhelming {
-namespace test {
+PWROWG_TEST_NAMESPACE_BEGIN
 
-    TEST_CLASS(on_exit_test) {
+TEST_CLASS(on_exit_test) {
 
-    public:
+public:
 
-        TEST_METHOD(test_normal_exit) {
+    TEST_METHOD(test_normal_exit) {
+        {
+            auto i = 0;
+            Assert::AreEqual(0, i, L"Initialisation", LINE_INFO());
+
             {
-                auto i = 0;
-                Assert::AreEqual(0, i, L"Initialisation", LINE_INFO());
-
-                {
-                    auto g = on_exit([&i](void) { i = 10; });
-                    Assert::AreEqual(0, i, L"Unchanged", LINE_INFO());
-                }
-
-                Assert::AreEqual(10, i, L"Exit handler called", LINE_INFO());
+                auto g = on_exit([&i](void) { i = 10; });
+                Assert::AreEqual(0, i, L"Unchanged", LINE_INFO());
             }
-        }
 
-        TEST_METHOD(test_cancellation) {
+            Assert::AreEqual(10, i, L"Exit handler called", LINE_INFO());
+        }
+    }
+
+    TEST_METHOD(test_cancellation) {
+        {
+            auto i = 0;
+            Assert::AreEqual(0, i, L"Initialisation", LINE_INFO());
+
             {
-                auto i = 0;
-                Assert::AreEqual(0, i, L"Initialisation", LINE_INFO());
-
-                {
-                    auto g = on_exit([&i](void) { i = 10; });
-                    Assert::AreEqual(0, i, L"Unchanged", LINE_INFO());
-                    g.cancel();
-                }
-
-                Assert::AreEqual(0, i, L"Exit handler not called", LINE_INFO());
+                auto g = on_exit([&i](void) { i = 10; });
+                Assert::AreEqual(0, i, L"Unchanged", LINE_INFO());
+                g.cancel();
             }
-        }
 
-    };
-} /* namespace test */
-} /* namespace power_overwhelming */
-} /* namespace visus */
+            Assert::AreEqual(0, i, L"Exit handler not called", LINE_INFO());
+        }
+    }
+
+};
+
+PWROWG_TEST_NAMESPACE_END

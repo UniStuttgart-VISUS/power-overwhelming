@@ -9,7 +9,7 @@
 #pragma once
 
 #include "visus/pwrowg/blob.h"
-#include "visus/pwrowg/sensor_configuration_base.h"
+#include "visus/pwrowg/sensor_configuration.h"
 #include "visus/pwrowg/tinkerforge_sample_averaging.h"
 
 
@@ -20,7 +20,7 @@ PWROWG_NAMESPACE_BEGIN
 /// creating a <see cref="sensor_array" />.
 /// </summary>
 class POWER_OVERWHELMING_API tinkerforge_configuration final
-        : public sensor_configuration_base {
+        : public sensor_configuration {
 
 public:
 

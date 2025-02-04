@@ -35,11 +35,11 @@ PWROWG_NAMESPACE_BEGIN
 /// of this type for all data sources it supports. Furthermore, the sensor
 /// implementation must be able to instantiate a sensor from a descriptor of this
 /// type. If this is not possible using the public data in this class, sensor
-/// implementations can use the <see cref="_reserved" /> member of this class to
+/// implementations can use the <see cref="_private" /> member of this class to
 /// store arbitraty data. We use a <see cref="blob" /> to erase any
 /// sensor-specific tyoe information from the descriptor. Implementors need to
 /// provide a <see cref="detail::rule_of_five_eraser" /> if the data they store
-/// in <see cref="_reserved" /> is not trivially copyable.</para>
+/// in <see cref="_private" /> is not trivially copyable.</para>
 /// </remarks>
 class POWER_OVERWHELMING_API sensor_description final {
 
@@ -129,8 +129,8 @@ public:
     /// Gets the type of the sensor.
     /// </summary>
     /// <returns>A bitmask describing the type of the sensor.</returns>
-    inline sensor_type type(void) const noexcept {
-        return this->_type;
+    inline PWROWG_NAMESPACE::sensor_type sensor_type(void) const noexcept {
+        return this->_sensor_type;
     }
 
     /// <summary>
@@ -146,7 +146,8 @@ public:
     /// <param name="type">The type to be set. Note that only bits that have been
     /// marked editable by the sensor can be changed.</param>
     /// <returns><c>*this</c>.</returns>
-    sensor_description& type(_In_ const sensor_type type) noexcept;
+    sensor_description& sensor_type(
+        _In_ const PWROWG_NAMESPACE::sensor_type type) noexcept;
 
     /// <summary>
     /// Gets the human-readable name of the vendor providing the sensor data.
@@ -158,15 +159,15 @@ public:
 
 private:
 
-    sensor_type _editable_type;
+    PWROWG_NAMESPACE::sensor_type _editable_type;
     blob _id;
     blob _label;
     blob _name;
     blob _path;
+    PWROWG_NAMESPACE::type_erased_storage _private;
     PWROWG_NAMESPACE::reading_type _reading_type;
     PWROWG_NAMESPACE::reading_unit _reading_unit;
-    PWROWG_NAMESPACE::type_erased_storage _reserved;
-    sensor_type _type;
+    PWROWG_NAMESPACE::sensor_type _sensor_type;
     blob _vendor;
 
     friend class PWROWG_DETAIL_NAMESPACE::sensor_description_builder;

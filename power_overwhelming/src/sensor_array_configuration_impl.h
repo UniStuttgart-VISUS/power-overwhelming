@@ -12,7 +12,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include "visus/pwrowg/sensor_configuration_base.h"
+#include "visus/pwrowg/sensor_configuration.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -26,7 +26,7 @@ struct sensor_array_configuration_impl final {
     /// <summary>
     /// The type used to store a sensor configuration object.
     /// </summary>
-    typedef std::unique_ptr<sensor_configuration_base> sensor_config;
+    typedef std::unique_ptr<sensor_configuration> sensor_config;
 
     /// <summary>
     /// Holds the configuration objects of all known sensors.
@@ -36,7 +36,7 @@ struct sensor_array_configuration_impl final {
     /// <summary>
     /// Gets the sensor configuration registered with the specified ID.
     /// </summary>
-    inline sensor_configuration_base *find_sensor_config(_In_ const guid id) {
+    inline sensor_configuration *find_sensor_config(_In_ const guid id) {
         auto it = this->sensor_configs.find(id);
         return (it != this->sensor_configs.end()) ? it->second.get() : nullptr;
     }
@@ -44,7 +44,7 @@ struct sensor_array_configuration_impl final {
     /// <summary>
     /// Gets the sensor configuration registered with the specified ID.
     /// </summary>
-    inline const sensor_configuration_base *find_sensor_config(
+    inline const sensor_configuration *find_sensor_config(
             _In_ const guid id) const {
         auto it = this->sensor_configs.find(id);
         return (it != this->sensor_configs.end()) ? it->second.get() : nullptr;

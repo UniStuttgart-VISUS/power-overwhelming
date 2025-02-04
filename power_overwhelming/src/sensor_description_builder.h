@@ -10,6 +10,8 @@
 
 #include "visus/pwrowg/sensor_description.h"
 
+#include "string_functions.h"
+
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
@@ -34,7 +36,7 @@ public:
     /// <returns>A pointer to the private data if anything has been stored in
     /// <paramref name="desc" />.</returns>
     template<class TType> TType *private_data(_In_ sensor_description& desc) {
-        return desc._reserved.get<TType>();
+        return desc._private.get<TType>();
     }
 
     /// <summary>
@@ -52,7 +54,15 @@ public:
     /// <paramref name="desc" />.</returns>
     template<class TType>
     const TType *private_data(_In_ const sensor_description& desc) {
-        return desc._reserved.get<TType>();
+        return desc._private.get<TType>();
+    }
+
+    /// <summary>
+    /// Create a new builder.
+    /// </summary>
+    /// <returns>A new builder.</returns>
+    static inline sensor_description_builder create(void) {
+        return sensor_description_builder();
     }
 
     /// <summary>
@@ -92,6 +102,15 @@ public:
     sensor_description_builder& with_id(_In_z_ const wchar_t *id);
 
     /// <summary>
+    /// Configure the description with the given unique sensor ID.
+    /// </summary>
+    /// <param name="id">A unique ID for the sensor in the description.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="id" /> is
+    /// <c>nullptr</c>.</exception>
+    sensor_description_builder& with_id(_In_z_ const char *id);
+
+    /// <summary>
     /// Configure the user-defined label for the sensor.
     /// </summary>
     /// <param name="label">An optional label for the sensor.</param>
@@ -99,13 +118,56 @@ public:
     sensor_description_builder& with_label(_In_opt_z_ const wchar_t *label);
 
     /// <summary>
-    /// Configure the description with the given human-readabe sensor name.
+    /// Configure the description with the given human-readable sensor name.
     /// </summary>
     /// <param name="name">A name for the sensor in the description.</param>
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::invalid_argument">If <paramref name="name" /> is
     /// <c>nullptr</c>.</exception>
     sensor_description_builder& with_name(_In_z_ const wchar_t *name);
+
+    /// <summary>
+    /// Configure the description with the given human-readable sensor name.
+    /// </summary>
+    /// <param name="name">A name for the sensor in the description.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="name" /> is
+    /// <c>nullptr</c>.</exception>
+    sensor_description_builder& with_name(_In_z_ const char *name);
+
+    /// <summary>
+    /// Format the humand-readable sensor name in the description.
+    /// </summary>
+    /// <typeparam name="TArgs">The types of the arguments to be formatted.
+    /// </typeparam>
+    /// <param name="format">The printf-style format string.</param>
+    /// <param name="args">The arguments to be formatted.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="format" /> is
+    /// <c>nullptr</c>.</exception>
+    template<class... TArgs> sensor_description_builder& with_name(
+            _In_z_ const wchar_t *format,
+            _In_ TArgs&&... args) {
+        const auto name = format_string(format, std::forward<TArgs>(args)...);
+        return this->with_name(name.c_str());
+    }
+
+    /// <summary>
+    /// Format the humand-readable sensor name in the description.
+    /// </summary>
+    /// <typeparam name="TArgs">The types of the arguments to be formatted.
+    /// </typeparam>
+    /// <param name="format">The printf-style format string.</param>
+    /// <param name="args">The arguments to be formatted.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="format" /> is
+    /// <c>nullptr</c>.</exception>
+    template<class... TArgs> sensor_description_builder& with_name(
+            _In_z_ const char *format,
+            _In_ TArgs&&... args) {
+        const auto name = format_string(format, std::forward<TArgs>(args)...);
+        return this->with_name(name.c_str());
+    }
 
     /// <summary>
     /// Configure the device path of the sensor in the description.
@@ -115,6 +177,15 @@ public:
     /// <exception cref="std::invalid_argument">If <paramref name="path" /> is
     /// <c>nullptr</c>.</exception>
     sensor_description_builder& with_path(_In_z_ const wchar_t *path);
+
+    /// <summary>
+    /// Configure the device path of the sensor in the description.
+    /// </summary>
+    /// <param name="path">The unique sensor path.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="path" /> is
+    /// <c>nullptr</c>.</exception>
+    sensor_description_builder& with_path(_In_z_ const char *path);
 
     /// <summary>
     /// Add the given <paramref name="data" /> as private data to be used by the
@@ -132,7 +203,7 @@ public:
     /// <returns><c>*this</c>.</returns>
     template<class TType>
     sensor_description_builder& with_private_data(_In_ const TType& data) {
-        this->_desc._reserved = type_erased_storage(data);
+        this->_desc._private = type_erased_storage(data);
         return *this;
     }
 

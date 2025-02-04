@@ -4,7 +4,8 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "visus/pwrowg/rtx_sensor.h"
+#if false
+#include "rtx_sensor.h"
 
 #include <algorithm>
 #include <cassert>
@@ -573,3 +574,4 @@ void visus::power_overwhelming::rtx_sensor::initialise(
     this->_impl->channel_current = definition.channel_current();
     this->_impl->channel_voltage = definition.channel_voltage();
 }
+#endif

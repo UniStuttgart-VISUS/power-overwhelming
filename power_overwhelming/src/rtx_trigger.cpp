@@ -207,7 +207,7 @@ PWROWG_NAMESPACE::rtx_trigger& PWROWG_NAMESPACE::rtx_trigger::type(
         throw std::invalid_argument("The trigger type must not be null.");
     }
 
-    detail::safe_assign(this->_type, convert_string<char>(type));
+    detail::safe_assign(this->_sensor_type, convert_string<char>(type));
     return *this;
 }
 
@@ -221,6 +221,6 @@ PWROWG_NAMESPACE::rtx_trigger& PWROWG_NAMESPACE::rtx_trigger::type(
         throw std::invalid_argument("The trigger type must not be null.");
     }
 
-    detail::safe_assign(this->_type, type);
+    detail::safe_assign(this->_sensor_type, type);
     return *this;
 }

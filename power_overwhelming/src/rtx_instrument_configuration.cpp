@@ -88,7 +88,7 @@ static rtx_instrument_configuration parse_rtx_instrument_conf(
 /// <summary>
 /// Deserialises one or more configurations.
 /// </summary>
-std::size_t parse_rtx_instrument_confs(
+static std::size_t parse_rtx_instrument_confs(
         _When_(dst != nullptr, _Out_writes_opt_(cnt))
         rtx_instrument_configuration *dst,
         _In_ std::size_t cnt,
@@ -130,6 +130,7 @@ std::size_t parse_rtx_instrument_confs(
     return retval;
 }
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 /// <summary>
 /// Apply the configurations from the given JSON array to the given
 /// instruments if they can be matched by path or name. If there is no
@@ -198,6 +199,7 @@ static void apply(_In_reads_(cnt) rtx_instrument *instruments,
         configs.front().apply(instrument);
     }
 }
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
 /// <summary>
 /// Convert the given array of instrument configuration into an array of
@@ -220,6 +222,7 @@ static nlohmann::json to_json(
     return retval;
 }
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 /// <summary>
 /// Convert the given instruments into an array of JSON configuration
 /// objects.
@@ -251,9 +254,12 @@ static nlohmann::json to_json(
 
     return retval;
 }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
 PWROWG_DETAIL_NAMESPACE_END
 
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * PWROWG_NAMESPACE::rtx_instrument_configuration::apply
  */
@@ -297,8 +303,10 @@ void PWROWG_NAMESPACE::rtx_instrument_configuration::apply(
         }
     }
 }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * PWROWG_NAMESPACE::rtx_instrument_configuration::apply
  */
@@ -317,8 +325,10 @@ std::size_t PWROWG_NAMESPACE::rtx_instrument_configuration::apply(
     auto m = convert_string<char>(master);
     return apply(instruments, cnt, configuration, m.c_str(), level, slope);
 }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * PWROWG_NAMESPACE::rtx_instrument_configuration::apply
  */
@@ -362,8 +372,10 @@ std::size_t PWROWG_NAMESPACE::rtx_instrument_configuration::apply(
 
     return retval;
 }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * PWROWG_NAMESPACE::rtx_instrument_configuration::apply
  */
@@ -374,8 +386,10 @@ void PWROWG_NAMESPACE::rtx_instrument_configuration::apply(
     auto json = detail::load_json(path);
     detail::apply(instruments, cnt, json);
 }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * PWROWG_NAMESPACE::rtx_instrument_configuration::apply_from_json
  */
@@ -391,6 +405,7 @@ void PWROWG_NAMESPACE::rtx_instrument_configuration::apply_from_json(
     const auto json = nlohmann::json::parse(str);
     detail::apply(instruments, cnt, json);
 }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
 /*
@@ -515,6 +530,7 @@ std::size_t PWROWG_NAMESPACE::rtx_instrument_configuration::serialise(
 }
 
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * PWROWG_NAMESPACE::rtx_instrument_configuration::serialise
  */
@@ -529,6 +545,7 @@ std::size_t PWROWG_NAMESPACE::rtx_instrument_configuration::serialise(
     detail::copy_string(dst, cnt_dst, str);
     return retval;
 }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
 /*
@@ -606,7 +623,7 @@ PWROWG_NAMESPACE::rtx_instrument_configuration::rtx_instrument_configuration(
 PWROWG_NAMESPACE::rtx_instrument_configuration::rtx_instrument_configuration(
         _In_ const rtx_quantity time_range,
         _In_ const unsigned int samples,
-        _In_ visa_instrument::timeout_type timeout)
+        _In_ timeout_type timeout)
     : _beep_on_apply(0),
         _beep_on_error(false),
         _beep_on_trigger(false),
@@ -631,7 +648,7 @@ PWROWG_NAMESPACE::rtx_instrument_configuration::rtx_instrument_configuration(
         _In_ const rtx_quantity time_range,
         _In_ const rtx_acquisition& acquisition,
         _In_ const rtx_trigger& trigger,
-        _In_ visa_instrument::timeout_type timeout)
+        _In_ timeout_type timeout)
     : _acquisition(acquisition),
         _beep_on_apply(0),
         _beep_on_error(false),
@@ -649,6 +666,7 @@ PWROWG_NAMESPACE::rtx_instrument_configuration::rtx_instrument_configuration(
 }
 
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * ...::rtx_instrument_configuration::rtx_instrument_configuration
  */
@@ -701,6 +719,7 @@ PWROWG_NAMESPACE::rtx_instrument_configuration::rtx_instrument_configuration(
         this->_cnt_channels = channels.size();
     }
 }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
 /*
@@ -738,6 +757,7 @@ PWROWG_NAMESPACE::rtx_instrument_configuration::as_slave(
 }
 
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * PWROWG_NAMESPACE::rtx_instrument_configuration::apply
  */
@@ -780,6 +800,7 @@ void PWROWG_NAMESPACE::rtx_instrument_configuration::apply(
     // Note: Beep will do nothing if the count is zero.
     instrument.beep(this->_beep_on_apply);
 }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
 /*

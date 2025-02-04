@@ -8,68 +8,63 @@
 #include "CppUnitTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-using namespace PWROWG_NAMESPACE;
 
 
-namespace visus {
-namespace power_overwhelming {
-namespace test {
+PWROWG_TEST_NAMESPACE_BEGIN
 
-    TEST_CLASS(rapl_test) {
+TEST_CLASS(rapl_test) {
 
-        TEST_METHOD(test_parse_rapl_domain) {
-            Assert::AreEqual(int(rapl_domain::package), int(parse_rapl_domain(L"package")), L"Parse package", LINE_INFO());
-            Assert::AreEqual(int(rapl_domain::pp0), int(parse_rapl_domain(L"pp0")), L"Parse pp0", LINE_INFO());
-            Assert::AreEqual(int(rapl_domain::pp1), int(parse_rapl_domain(L"pp1")), L"Parse pp1", LINE_INFO());
-            Assert::AreEqual(int(rapl_domain::dram), int(parse_rapl_domain(L"dram")), L"Parse dram", LINE_INFO());
-            Assert::ExpectException<std::invalid_argument>([]() {
-                parse_rapl_domain(nullptr);
-            }, L"Parse nullptr", LINE_INFO());
-            Assert::ExpectException<std::invalid_argument>([]() {
-                parse_rapl_domain(L"Bla, bla, bla, Mr Freeman");
-            }, L"Parse inexistent string", LINE_INFO());
-        }
+    TEST_METHOD(test_parse_rapl_domain) {
+        Assert::AreEqual(int(rapl_domain::package), int(parse_rapl_domain(L"package")), L"Parse package", LINE_INFO());
+        Assert::AreEqual(int(rapl_domain::pp0), int(parse_rapl_domain(L"pp0")), L"Parse pp0", LINE_INFO());
+        Assert::AreEqual(int(rapl_domain::pp1), int(parse_rapl_domain(L"pp1")), L"Parse pp1", LINE_INFO());
+        Assert::AreEqual(int(rapl_domain::dram), int(parse_rapl_domain(L"dram")), L"Parse dram", LINE_INFO());
+        Assert::ExpectException<std::invalid_argument>([]() {
+            parse_rapl_domain(nullptr);
+        }, L"Parse nullptr", LINE_INFO());
+        Assert::ExpectException<std::invalid_argument>([]() {
+            parse_rapl_domain(L"Bla, bla, bla, Mr Freeman");
+        }, L"Parse inexistent string", LINE_INFO());
+    }
 
-        TEST_METHOD(test_to_string) {
-            Assert::AreEqual(L"package", to_string(rapl_domain::package), L"Stringise package", LINE_INFO());
-            Assert::AreEqual(L"pp0", to_string(rapl_domain::pp0), L"Stringise pp0", LINE_INFO());
-            Assert::AreEqual(L"pp1", to_string(rapl_domain::pp1), L"Stringise pp1", LINE_INFO());
-            Assert::AreEqual(L"dram", to_string(rapl_domain::dram), L"Stringise dram", LINE_INFO());
-        }
+    TEST_METHOD(test_to_string) {
+        Assert::AreEqual(L"package", to_string(rapl_domain::package), L"Stringise package", LINE_INFO());
+        Assert::AreEqual(L"pp0", to_string(rapl_domain::pp0), L"Stringise pp0", LINE_INFO());
+        Assert::AreEqual(L"pp1", to_string(rapl_domain::pp1), L"Stringise pp1", LINE_INFO());
+        Assert::AreEqual(L"dram", to_string(rapl_domain::dram), L"Stringise dram", LINE_INFO());
+    }
 
-        TEST_METHOD(test_foreach_template) {
-            {
-                std::size_t expected = 0;
-                const auto actual = for_each_rapl_domain([&expected](const rapl_domain) {
-                    ++expected;
-                    return true;
-                });
-                Assert::AreEqual(expected, actual, L"All callbacks invoked", LINE_INFO());
-            }
-
-            {
-                std::size_t expected = 0;
-                const auto actual = for_each_rapl_domain([&expected](const rapl_domain) {
-                    ++expected;
-                    return false;
-                });
-                Assert::AreEqual(std::size_t(1), actual, L"Enumeration aborted", LINE_INFO());
-                Assert::AreEqual(expected, actual, L"Callback invoked once", LINE_INFO());
-            }
-        }
-
-        TEST_METHOD(test_foreach_pointer) {
+    TEST_METHOD(test_foreach_template) {
+        {
             std::size_t expected = 0;
-            const auto actual = for_each_rapl_domain(rapl_domain_counter, &expected);
+            const auto actual = for_each_rapl_domain([&expected](const rapl_domain) {
+                ++expected;
+                return true;
+            });
             Assert::AreEqual(expected, actual, L"All callbacks invoked", LINE_INFO());
         }
 
-        static bool rapl_domain_counter(const rapl_domain, void *counter) {
-            ++(*reinterpret_cast<std::size_t *>(counter));
-            return true;
+        {
+            std::size_t expected = 0;
+            const auto actual = for_each_rapl_domain([&expected](const rapl_domain) {
+                ++expected;
+                return false;
+            });
+            Assert::AreEqual(std::size_t(1), actual, L"Enumeration aborted", LINE_INFO());
+            Assert::AreEqual(expected, actual, L"Callback invoked once", LINE_INFO());
         }
-    };
+    }
 
-} /* namespace test */
-} /* namespace power_overwhelming */
-} /* namespace visus */
+    TEST_METHOD(test_foreach_pointer) {
+        std::size_t expected = 0;
+        const auto actual = for_each_rapl_domain(rapl_domain_counter, &expected);
+        Assert::AreEqual(expected, actual, L"All callbacks invoked", LINE_INFO());
+    }
+
+    static bool rapl_domain_counter(const rapl_domain, void *counter) {
+        ++(*reinterpret_cast<std::size_t *>(counter));
+        return true;
+    }
+};
+
+PWROWG_TEST_NAMESPACE_END

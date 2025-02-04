@@ -11,6 +11,7 @@
 #include "visus/pwrowg/rtx_acquisition.h"
 #include "visus/pwrowg/rtx_channel.h"
 #include "visus/pwrowg/rtx_quantity.h"
+#include "visus/pwrowg/rtx_reference_point.h"
 #include "visus/pwrowg/rtx_trigger.h"
 #include "visus/pwrowg/rtx_instrument.h"
 
@@ -56,6 +57,12 @@ class POWER_OVERWHELMING_API rtx_instrument_configuration final {
 public:
 
     /// <summary>
+    /// The type used to express device timeouts in milliseconds.
+    /// </summary>
+    typedef std::uint32_t timeout_type;
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    /// <summary>
     /// Applies the given <paramref name="configuration" /> to all
     /// given <paramref name="instruments" />.
     /// </summary>
@@ -95,7 +102,9 @@ public:
         = rtx_quantity(2.5f, "V"),
         _In_ const rtx_trigger_slope slope
         = rtx_trigger_slope::rising);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Applies a master/slave configuration to the given insturments where
     /// the instrument with the specified device name receives the master
@@ -138,7 +147,9 @@ public:
         = rtx_quantity(2.5f, "V"),
         _In_ const rtx_trigger_slope slope
         = rtx_trigger_slope::rising);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Applies a master/slave configuration to the given insturments where
     /// the instrument with the specified device name receives the master
@@ -181,7 +192,9 @@ public:
         = rtx_quantity(2.5f, "V"),
         _In_ const rtx_trigger_slope slope
         = rtx_trigger_slope::rising);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Loads the instruments configurations from the given file and applies
     /// them based on the device path to the given instruments.
@@ -202,7 +215,9 @@ public:
     /// applied to one or more of the instruments.</exception>
     static void apply(_In_reads_(cnt) rtx_instrument *instruments,
         _In_ const std::size_t cnt, _In_z_ const wchar_t *path);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Deserialises the JSON-encoded instrument configuration from the
     /// given string and applies them based on the device path to the given
@@ -228,6 +243,7 @@ public:
     /// applied to one or more of the instruments.</exception>
     static void apply_from_json(_In_reads_(cnt) rtx_instrument *instruments,
         _In_ const std::size_t cnt, _In_z_ const char *str);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
     /// <summary>
     /// Loads a single configuration from the given JSON string.
@@ -323,6 +339,7 @@ public:
         _In_reads_(cnt) const rtx_instrument_configuration *configs,
         _In_ const std::size_t cnt, _In_z_ const wchar_t *path);
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Saves the given instrument configurations in a JSON file.
     /// </summary>
@@ -347,6 +364,7 @@ public:
     /// failed.</exception>
     static void save(_In_reads_(cnt) const rtx_instrument *instruments,
         _In_ const std::size_t cnt, _In_z_ const wchar_t *path);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
     /// <summary>
     /// Saves the given configuration as a JSON file.
@@ -407,6 +425,7 @@ public:
         _In_reads_(cnt_configs) const rtx_instrument_configuration *configs,
         _In_ const std::size_t cnt_configs);
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Serialises the configurations of the given instruments as a JSON
     /// string.
@@ -434,6 +453,7 @@ public:
         _In_ const std::size_t cnt_dst,
         _In_reads_(cnt_instruments) const rtx_instrument *instruments,
         _In_ const std::size_t cnt_instruments);
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     /// <summary>
     /// Initialises a new instance.
@@ -497,7 +517,7 @@ public:
     explicit rtx_instrument_configuration(
         _In_ const rtx_quantity time_range,
         _In_ const unsigned int samples = 0,
-        _In_ visa_instrument::timeout_type timeout = 0);
+        _In_ timeout_type timeout = 0);
 
     /// <summary>
     /// Initialises a new instance.
@@ -518,8 +538,9 @@ public:
         _In_ const rtx_quantity time_range,
         _In_ const rtx_acquisition& acquisition,
         _In_ const rtx_trigger& trigger,
-        _In_ visa_instrument::timeout_type timeout = 0);
+        _In_ timeout_type timeout = 0);
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Extracts the configuration from the given instrument.
     /// </summary>
@@ -537,6 +558,7 @@ public:
     explicit rtx_instrument_configuration(
         _In_ const rtx_instrument& instrument,
         _In_ const bool ignore_channels = false);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
     /// <summary>
     /// Finalises the instance.
@@ -570,6 +592,7 @@ public:
         _In_ const rtx_trigger_slope slope
         = rtx_trigger_slope::rising) const;
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Applies the configuration on the given instrument.
     /// </summary>
@@ -585,6 +608,7 @@ public:
     /// <exception cref="visa_exception">If any of the API calls to the
     /// instrument failed.</exception>
     void apply(_Inout_ rtx_instrument& instrument) const;
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
     /// <summary>
     /// Answer how often the instrument should beep once
@@ -790,7 +814,7 @@ public:
     /// </summary>
     /// <returns>The timeout of the instrument, or zero if the timeout
     /// should not be modified.</returns>
-    inline visa_instrument::timeout_type timeout(void) const noexcept {
+    inline timeout_type timeout(void) const noexcept {
         return this->_timeout;
     }
 
@@ -860,7 +884,7 @@ private:
     float _min_time_base;
     rtx_reference_point _reference_position;
     bool _slave;
-    visa_instrument::timeout_type _timeout;
+    timeout_type _timeout;
     rtx_quantity _time_range;
     rtx_trigger _trigger;
     rtx_quantity _trigger_position;

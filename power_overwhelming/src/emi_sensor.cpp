@@ -1,10 +1,11 @@
 ﻿// <copyright file="emi_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "visus/pwrowg/emi_sensor.h"
+#if false
+#include "emi_sensor.h"
 
 #include <cinttypes>
 #include <memory>
@@ -22,9 +23,9 @@
 
 
 /*
- * visus::power_overwhelming::emi_sensor::for_all
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::for_all
  */
-std::size_t visus::power_overwhelming::emi_sensor::for_all(
+std::size_t PWROWG_DETAIL_NAMESPACE::emi_sensor::for_all(
         _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
         _In_ const std::size_t cnt_sensors) {
 #if defined(_WIN32)
@@ -40,9 +41,9 @@ std::size_t visus::power_overwhelming::emi_sensor::for_all(
 
 
 /*
- * visus::power_overwhelming::emi_sensor::for_channel
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::for_channel
  */
-std::size_t visus::power_overwhelming::emi_sensor::for_channel(
+std::size_t PWROWG_DETAIL_NAMESPACE::emi_sensor::for_channel(
         _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
         _In_ const std::size_t cnt_sensors,
         _In_z_ const wchar_t *channel) {
@@ -66,9 +67,9 @@ std::size_t visus::power_overwhelming::emi_sensor::for_channel(
 
 
 /*
- * visus::power_overwhelming::emi_sensor::for_device
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::for_device
  */
-std::size_t visus::power_overwhelming::emi_sensor::for_device(
+std::size_t PWROWG_DETAIL_NAMESPACE::emi_sensor::for_device(
         _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
         _In_ const std::size_t cnt_sensors,
         _In_z_ const char_type *device) {
@@ -92,9 +93,9 @@ std::size_t visus::power_overwhelming::emi_sensor::for_device(
 
 
 /*
- * visus::power_overwhelming::emi_sensor::for_device_and_channel
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::for_device_and_channel
  */
-std::size_t visus::power_overwhelming::emi_sensor::for_device_and_channel(
+std::size_t PWROWG_DETAIL_NAMESPACE::emi_sensor::for_device_and_channel(
         _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
         _In_ const std::size_t cnt_sensors,
         _In_z_ const char_type *device,
@@ -125,9 +126,9 @@ std::size_t visus::power_overwhelming::emi_sensor::for_device_and_channel(
 
 
 /*
- * visus::power_overwhelming::emi_sensor::for_device_and_channel
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::for_device_and_channel
  */
-std::size_t visus::power_overwhelming::emi_sensor::for_device_and_channel(
+std::size_t PWROWG_DETAIL_NAMESPACE::emi_sensor::for_device_and_channel(
         _Out_writes_opt_(cnt_sensors) emi_sensor *out_sensors,
         _In_ const std::size_t cnt_sensors,
         _In_z_ const char_type *device,
@@ -152,9 +153,9 @@ std::size_t visus::power_overwhelming::emi_sensor::for_device_and_channel(
 
 
 /*
- * visus::power_overwhelming::emi_sensor::emi_sensor
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::emi_sensor
  */
-visus::power_overwhelming::emi_sensor::emi_sensor(void)
+PWROWG_DETAIL_NAMESPACE::emi_sensor::emi_sensor(void)
         : _impl(new detail::emi_sensor_impl()) {
     // Note: EMI sensor must initialise here in order to allow for the sensor
     // implementation create the instances in-place.
@@ -162,18 +163,18 @@ visus::power_overwhelming::emi_sensor::emi_sensor(void)
 
 
 /*
- * visus::power_overwhelming::emi_sensor::~emi_sensor
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::~emi_sensor
  */
-visus::power_overwhelming::emi_sensor::~emi_sensor(void) {
+PWROWG_DETAIL_NAMESPACE::emi_sensor::~emi_sensor(void) {
     delete this->_impl;
 }
 
 
 /*
- * visus::power_overwhelming::emi_sensor::channel
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::channel
  */
-visus::power_overwhelming::emi_sensor::channel_type
-visus::power_overwhelming::emi_sensor::channel(void) const {
+PWROWG_DETAIL_NAMESPACE::emi_sensor::channel_type
+PWROWG_DETAIL_NAMESPACE::emi_sensor::channel(void) const {
 #if defined(_WIN32)
     return (*this)
         ? this->_impl->channel
@@ -185,10 +186,10 @@ visus::power_overwhelming::emi_sensor::channel(void) const {
 
 
 /*
- * visus::power_overwhelming::emi_sensor::channels
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::channels
  */
-visus::power_overwhelming::emi_sensor::channel_type
-visus::power_overwhelming::emi_sensor::channels(void) const {
+PWROWG_DETAIL_NAMESPACE::emi_sensor::channel_type
+PWROWG_DETAIL_NAMESPACE::emi_sensor::channels(void) const {
 #if defined(_WIN32)
     return (*this)
         ? this->_impl->device->channels()
@@ -200,9 +201,9 @@ visus::power_overwhelming::emi_sensor::channels(void) const {
 
 
 /*
- * visus::power_overwhelming::emi_sensor::name
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::name
  */
-_Ret_maybenull_z_ const wchar_t *visus::power_overwhelming::emi_sensor::name(
+_Ret_maybenull_z_ const wchar_t *PWROWG_DETAIL_NAMESPACE::emi_sensor::name(
         void) const noexcept {
 #if defined(_WIN32)
     return (this->_impl != nullptr)
@@ -215,10 +216,10 @@ _Ret_maybenull_z_ const wchar_t *visus::power_overwhelming::emi_sensor::name(
 
 
 /*
- * visus::power_overwhelming::emi_sensor::path
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::path
  */
-_Ret_maybenull_z_ const visus::power_overwhelming::emi_sensor::char_type *
-visus::power_overwhelming::emi_sensor::path(void) const noexcept {
+_Ret_maybenull_z_ const PWROWG_DETAIL_NAMESPACE::emi_sensor::char_type *
+PWROWG_DETAIL_NAMESPACE::emi_sensor::path(void) const noexcept {
 #if defined(_WIN32)
     return (this->_impl != nullptr)
         ? this->_impl->path.c_str()
@@ -230,9 +231,9 @@ visus::power_overwhelming::emi_sensor::path(void) const noexcept {
 
 
 /*
- * visus::power_overwhelming::emi_sensor::sample
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::sample
  */
-void visus::power_overwhelming::emi_sensor::sample(
+void PWROWG_DETAIL_NAMESPACE::emi_sensor::sample(
         _In_opt_ const measurement_callback on_measurement,
         _In_ const microseconds_type period,
         _In_opt_ void *context) {
@@ -252,9 +253,9 @@ void visus::power_overwhelming::emi_sensor::sample(
 
 #if defined(_WIN32)
 /*
- * visus::power_overwhelming::emi_sensor::sample
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::sample
  */
-_Ret_ EMI_MEASUREMENT_DATA_V1 *visus::power_overwhelming::emi_sensor::sample(
+_Ret_ EMI_MEASUREMENT_DATA_V1 *PWROWG_DETAIL_NAMESPACE::emi_sensor::sample(
         _In_ EMI_MEASUREMENT_DATA_V1& measurement) const {
     this->check_not_disposed();
 
@@ -272,9 +273,9 @@ _Ret_ EMI_MEASUREMENT_DATA_V1 *visus::power_overwhelming::emi_sensor::sample(
 
 #if defined(_WIN32)
 /*
- * visus::power_overwhelming::emi_sensor::sample
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::sample
  */
-_Ret_ EMI_MEASUREMENT_DATA_V2 *visus::power_overwhelming::emi_sensor::sample(
+_Ret_ EMI_MEASUREMENT_DATA_V2 *PWROWG_DETAIL_NAMESPACE::emi_sensor::sample(
         _Inout_updates_bytes_(size) EMI_MEASUREMENT_DATA_V2 *measurement,
         _In_ const std::size_t size) const {
     this->check_not_disposed();
@@ -295,10 +296,10 @@ _Ret_ EMI_MEASUREMENT_DATA_V2 *visus::power_overwhelming::emi_sensor::sample(
 
 
 /*
- * visus::power_overwhelming::emi_sensor::version
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::version
  */
-visus::power_overwhelming::emi_sensor::version_type
-visus::power_overwhelming::emi_sensor::version(void) const noexcept {
+PWROWG_DETAIL_NAMESPACE::emi_sensor::version_type
+PWROWG_DETAIL_NAMESPACE::emi_sensor::version(void) const noexcept {
 #if defined(_WIN32)
     return (*this)
         ? this->_impl->device->version().EmiVersion
@@ -309,10 +310,10 @@ visus::power_overwhelming::emi_sensor::version(void) const noexcept {
 }
 
 /*
- * visus::power_overwhelming::emi_sensor::operator =
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::operator =
  */
-visus::power_overwhelming::emi_sensor&
-visus::power_overwhelming::emi_sensor::operator =(
+PWROWG_DETAIL_NAMESPACE::emi_sensor&
+PWROWG_DETAIL_NAMESPACE::emi_sensor::operator =(
         _In_ emi_sensor&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         delete this->_impl;
@@ -325,9 +326,9 @@ visus::power_overwhelming::emi_sensor::operator =(
 
 
 /*
- * visus::power_overwhelming::emi_sensor::operator bool
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::operator bool
  */
-visus::power_overwhelming::emi_sensor::operator bool(void) const noexcept {
+PWROWG_DETAIL_NAMESPACE::emi_sensor::operator bool(void) const noexcept {
 #if defined(_WIN32)
     return ((this->_impl != nullptr) && (this->_impl->device != nullptr));
 #else /* defined(_WIN32) */
@@ -337,9 +338,9 @@ visus::power_overwhelming::emi_sensor::operator bool(void) const noexcept {
 
 
 /*
- * visus::power_overwhelming::emi_sensor::sample_async
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::sample_async
  */
-void visus::power_overwhelming::emi_sensor::sample_async(
+void PWROWG_DETAIL_NAMESPACE::emi_sensor::sample_async(
         _Inout_ async_sampling&& sampling) {
 #if defined(_WIN32)
     assert(this->_impl != nullptr);
@@ -360,10 +361,10 @@ void visus::power_overwhelming::emi_sensor::sample_async(
 
 
 /*
- * visus::power_overwhelming::emi_sensor::sample_sync
+ * PWROWG_DETAIL_NAMESPACE::emi_sensor::sample_sync
  */
-visus::power_overwhelming::measurement_data
-visus::power_overwhelming::emi_sensor::sample_sync(void) const {
+PWROWG_DETAIL_NAMESPACE::measurement_data
+PWROWG_DETAIL_NAMESPACE::emi_sensor::sample_sync(void) const {
 #if defined(_WIN32)
     this->check_not_disposed();
 
@@ -388,3 +389,5 @@ visus::power_overwhelming::emi_sensor::sample_sync(void) const {
     throw std::logic_error(ERROR_MSG_NOT_SUPPORTED);
 #endif /* defined(_WIN32) */
 }
+
+#endif

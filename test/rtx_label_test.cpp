@@ -1,8 +1,8 @@
-// <copyright file="rtx_label_test.cpp" company="Visualisierungsinstitut der Universit�t Stuttgart">
-// Copyright � 2023 Visualisierungsinstitut der Universit�t Stuttgart.
+﻿// <copyright file="rtx_label_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph M�ller</author>
+// <author>Christoph Müller</author>
 
 #include "pch.h"
 #include "CppUnitTest.h"
@@ -10,19 +10,17 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 
-namespace visus {
-namespace power_overwhelming {
-namespace test {
+PWROWG_TEST_NAMESPACE_BEGIN
 
-    TEST_CLASS(rtx_label_test) {
+TEST_CLASS(rtx_label_test) {
 
-    public:
+public:
 
-        TEST_METHOD(test_default_ctor) {
-            rtx_label label;
-        }
-    };
+    TEST_METHOD(test_default_ctor) {
+        rtx_label label;
+        Assert::AreEqual("", label.text(), L"Empty label", LINE_INFO());
+        Assert::IsFalse(label.visible(), L"Initially invisible", LINE_INFO());
+    }
+};
 
-} /* namespace test */
-} /* namespace power_overwhelming */
-} /* namespace visus */
+PWROWG_TEST_NAMESPACE_END

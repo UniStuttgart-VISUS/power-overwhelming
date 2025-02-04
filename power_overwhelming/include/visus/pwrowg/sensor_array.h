@@ -47,11 +47,14 @@ public:
     /// still computed.</param>
     /// <param name="cnt">The number of sensors that can be stored in
     /// <paramref name="cnt" />.</param>
+    /// <param name="config">The array configuration detailing the behaviour of
+    /// the sensors that are retrieved.</param>
     /// <returns>The number of sensors available, regardless of how
     /// many have been returned to <paramref name="dst" />.</returns>
     static std::size_t all_descriptions(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
-        _In_ std::size_t cnt);
+        _In_ std::size_t cnt,
+        _In_ const sensor_array_configuration& config);
 
     /// <summary>
     /// Initialises a new, but invalid instance.

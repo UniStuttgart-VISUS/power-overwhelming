@@ -5,53 +5,62 @@
 // <author>Christoph Müller</author>
 
 #include "pch.h"
-#include "CppUnitTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 
-namespace visus {
-namespace power_overwhelming {
-namespace test {
+PWROWG_TEST_NAMESPACE_BEGIN
 
-#if false&& defined(POWER_OVERWHELMING_WITH_NVML)
-    TEST_CLASS(nvml_test) {
 
-    public:
+TEST_CLASS(nvml_test) {
 
-        TEST_METHOD(test_scope) {
-            nvml_scope scope;
+public:
+
+    TEST_METHOD(test_scope) {
+        detail::nvml_scope scope;
+        Assert::IsTrue(true, L"Not crashed in scope ctor.", LINE_INFO());
+    }
+
+    TEST_METHOD(test_descriptions) {
+        detail::nvml_sensor::configuration_type config;
+        auto descs = detail::nvml_sensor::descriptions(config);
+
+        for (auto& d : descs) {
+            Assert::AreEqual(int(reading_unit::watt), int(d.reading_unit()), L"produces watts", LINE_INFO());
+            Assert::AreEqual(int(reading_type::floating_point), int(d.reading_type()), L"produces floats", LINE_INFO());
+            Assert::AreEqual(L"NVIDIA", d.vendor(), L"Vendor name", LINE_INFO());
+            Assert::IsTrue((d.sensor_type() & sensor_type::gpu) == sensor_type::gpu, L"GPU sensor", LINE_INFO());
+            Assert::IsTrue((d.sensor_type() & sensor_type::software) == sensor_type::software, L"Software sensor", LINE_INFO());
+            Assert::IsTrue((d.sensor_type() & sensor_type::power) == sensor_type::power, L"Power sensor", LINE_INFO());
         }
+    }
 
-        TEST_METHOD(test_sensor) {
-            {
-                auto sensors = nvml_sensor<measurement<>>::for_all();
-            }
+    //TEST_METHOD(test_sensor) {
+    //    {
+    //        auto sensors = nvml_sensor<measurement<>>::for_all();
+    //    }
 
-            Assert::ExpectException<nvml_exception>([](void) {
-                auto sensor = nvml_sensor<measurement<>>::from_bus_id(nullptr);
-            });
+    //    Assert::ExpectException<nvml_exception>([](void) {
+    //        auto sensor = nvml_sensor<measurement<>>::from_bus_id(nullptr);
+    //    });
 
-            Assert::ExpectException<nvml_exception>([](void) {
-                auto sensor = nvml_sensor<measurement<>>::from_guid(nullptr);
-            });
+    //    Assert::ExpectException<nvml_exception>([](void) {
+    //        auto sensor = nvml_sensor<measurement<>>::from_guid(nullptr);
+    //    });
 
-            Assert::ExpectException<nvml_exception>([](void) {
-                auto sensor = nvml_sensor<measurement<>>::from_index(UINT_MAX);
-            });
+    //    Assert::ExpectException<nvml_exception>([](void) {
+    //        auto sensor = nvml_sensor<measurement<>>::from_index(UINT_MAX);
+    //    });
 
-            Assert::ExpectException<nvml_exception>([](void) {
-                auto sensor = nvml_sensor<measurement<>>::from_serial(nullptr);
-            });
+    //    Assert::ExpectException<nvml_exception>([](void) {
+    //        auto sensor = nvml_sensor<measurement<>>::from_serial(nullptr);
+    //    });
 
-            {
-                auto sensor = nvml_sensor<measurement<>>::from_index(0);
-                auto measurement = sensor.sample();
-            }
-        }
-    };
-#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */
+    //    {
+    //        auto sensor = nvml_sensor<measurement<>>::from_index(0);
+    //        auto measurement = sensor.sample();
+    //    }
+    //}
+};
 
-} /* namespace test */
-} /* namespace power_overwhelming */
-} /* namespace visus */
+PWROWG_TEST_NAMESPACE_END

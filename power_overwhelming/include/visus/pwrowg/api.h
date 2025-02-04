@@ -100,6 +100,12 @@ PWROWG_NAMESPACE_BEGIN _PWROWG_NAMESPACE_BEGIN(detail)
 #endif /* defined(WIN32) */
 
 
+/// <summary>
+/// Marks an API as exported for testing only.
+/// <summary>
+#define PWROWG_TEST_API POWER_OVERWHELMING_API
+
+
 #if defined(_WIN32)
 #include <sal.h>
 

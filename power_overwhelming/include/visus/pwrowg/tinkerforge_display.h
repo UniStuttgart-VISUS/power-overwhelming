@@ -30,17 +30,6 @@ class POWER_OVERWHELMING_API tinkerforge_display final {
 
 public:
 
-    /// <summary>
-    /// The default host on which brickd is assumed to run.
-    /// </summary>
-    static constexpr const char *default_host
-        = tinkerforge_configuration::default_host;
-
-    /// <summary>
-    /// The default port on which brickd is assumed to listen on.
-    /// </summary>
-    static constexpr const std::uint16_t default_port
-        = tinkerforge_configuration::default_port;
 
     /// <summary>
     /// Creates wrappers for all LCD bricklets attached to the specified
@@ -55,8 +44,8 @@ public:
     static std::size_t for_all(
         _Out_writes_opt_(cnt_displays) tinkerforge_display *out_displays,
         _In_ const std::size_t cnt_displays,
-        _In_opt_z_ const char *host = default_host,
-        _In_ const std::uint16_t port = default_port,
+        _In_opt_z_ const char *host,
+        _In_ const std::uint16_t port,
         _In_ const std::size_t timeout = 1000);
 
     /// <summary>
@@ -70,9 +59,9 @@ public:
     /// <param name="uid">The unique identifier of the LCD bricklet
     /// addressed by the object.</param>
     /// <param name="host">The host on which the Brick daemon is running.
-    /// This parameter defaults to &quot;localhost&quot;.</param>
+    /// Usually, you would connect to &quot;localhost&quot;.</param>
     /// <param name="port">The port on which the Brick daemon is listening.
-    /// This parameter defaults to 4223.</param>
+    /// Usually, you would connect to 4223.</param>
     /// <exception cref="std::invalid_argument">If <paramref name="uid" />
     /// is <c>nullptr</c>.</exceptions>
     /// <exception cref="std::bad_alloc">If the required resources could not
@@ -80,8 +69,8 @@ public:
     /// <exception cref="tinkerforge_exception">If the connection to the
     /// master brick could not be established.</exception>
     tinkerforge_display(_In_z_ const char *uid,
-        _In_opt_z_ const char *host = default_host,
-        _In_ const std::uint16_t port = default_port);
+        _In_opt_z_ const char *host,
+        _In_ const std::uint16_t port);
 
     /// <summary>
     /// Move <paramref name="rhs" /> into a new instance.

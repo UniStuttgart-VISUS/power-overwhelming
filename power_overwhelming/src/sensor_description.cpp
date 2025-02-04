@@ -20,7 +20,7 @@ PWROWG_NAMESPACE::sensor_description::sensor_description(void) noexcept
     : _editable_type(sensor_type::unknown),
     _reading_type(reading_type::floating_point),
     _reading_unit(reading_unit::unknown),
-    _type(sensor_type::unknown) { }
+    _sensor_type(sensor_type::unknown) { }
 
 
 /*
@@ -45,11 +45,11 @@ PWROWG_NAMESPACE::sensor_description::label(_In_opt_z_ const char *label) {
 
 
 /*
- * PWROWG_NAMESPACE::sensor_description::type
+ * PWROWG_NAMESPACE::sensor_description::sensor_type
  */
 PWROWG_NAMESPACE::sensor_description&
-PWROWG_NAMESPACE::sensor_description::type(
-        _In_ const sensor_type type) noexcept {
+PWROWG_NAMESPACE::sensor_description::sensor_type(
+        _In_ const PWROWG_NAMESPACE::sensor_type type) noexcept {
     typedef typename std::decay<decltype(type)>::type enum_type;
     typedef typename std::underlying_type<enum_type>::type mask_type;
 
@@ -58,11 +58,11 @@ PWROWG_NAMESPACE::sensor_description::type(
         & static_cast<mask_type>(this->_editable_type);
 
     // Erase all editable bits in the type.
-    auto t = static_cast<mask_type>(this->_type);
+    auto t = static_cast<mask_type>(this->_sensor_type);
     t &= ~static_cast<mask_type>(this->_editable_type);
 
     // Replace the editable bits with the input.
-    this->_type = static_cast<enum_type>(t | i);
+    this->_sensor_type = static_cast<enum_type>(t | i);
 
     return *this;
 }

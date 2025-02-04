@@ -8,7 +8,7 @@
 #define _PWROWG_NVML_CONFIGURATION_H
 #pragma once
 
-#include "visus/pwrowg/sensor_configuration_base.h"
+#include "visus/pwrowg/sensor_configuration.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -18,7 +18,7 @@ PWROWG_NAMESPACE_BEGIN
 /// creating a <see cref="sensor_array" />.
 /// </summary>
 class POWER_OVERWHELMING_API nvml_configuration final
-        : public sensor_configuration_base {
+        : public sensor_configuration {
 
 public:
 

@@ -8,6 +8,8 @@
 
 #include <stdexcept>
 
+#include "visus/pwrowg/convert_string.h"
+
 #include "string_functions.h"
 
 
@@ -34,7 +36,7 @@ PWROWG_DETAIL_NAMESPACE::sensor_description_builder::produces(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::rule_of_five_eraser::copy
+ * PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_id
  */
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder&
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_id(
@@ -44,6 +46,21 @@ PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_id(
     }
 
     safe_assign(this->_desc._id, id);
+    return *this;
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_id
+ */
+PWROWG_DETAIL_NAMESPACE::sensor_description_builder&
+PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_id(
+        _In_z_ const char *id) {
+    if (id == nullptr) {
+        throw std::invalid_argument("A valid sensor ID must be provided.");
+    }
+
+    safe_assign(this->_desc._id, PWROWG_NAMESPACE::convert_string<wchar_t>(id));
     return *this;
 }
 
@@ -75,6 +92,21 @@ PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_name(
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_name
+ */
+PWROWG_DETAIL_NAMESPACE::sensor_description_builder&
+PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_name(
+        _In_z_ const char *name) {
+    if (name == nullptr) {
+        throw std::invalid_argument("A valid sensor name must be provided.");
+    }
+
+    safe_assign(this->_desc._name,
+        PWROWG_NAMESPACE::convert_string<wchar_t>(name));
+    return *this;
+}
+
+/*
  * PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_path
  */
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder&
@@ -90,6 +122,22 @@ PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_path(
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_path
+ */
+PWROWG_DETAIL_NAMESPACE::sensor_description_builder&
+PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_path(
+        _In_z_ const char *path) {
+    if (path == nullptr) {
+        throw std::invalid_argument("A valid sensor path must be provided.");
+    }
+
+    safe_assign(this->_desc._path,
+        PWROWG_NAMESPACE::convert_string<wchar_t>(path));
+    return *this;
+}
+
+
+/*
  * PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_type
  */
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder&
@@ -97,7 +145,7 @@ PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_type(
         _In_ const sensor_type type,
         _In_ const sensor_type editable) {
     this->_desc._editable_type = editable;
-    this->_desc._type = type;
+    this->_desc._sensor_type = type;
     return *this;
 }
 

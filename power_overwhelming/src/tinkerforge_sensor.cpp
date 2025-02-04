@@ -1,11 +1,12 @@
 ﻿// <copyright file="tinkerforge_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "visus/pwrowg/tinkerforge_sensor.h"
+#include "tinkerforge_sensor.h"
 
+#if false
 #include <cassert>
 #include <chrono>
 #include <thread>
@@ -13,7 +14,6 @@
 
 #include <bricklet_voltage_current_v2.h>
 
-#include "sampler.h"
 #include "tinkerforge_exception.h"
 #include "tinkerforge_sensor_impl.h"
 #include "zero_memory.h"
@@ -520,3 +520,4 @@ visus::power_overwhelming::tinkerforge_sensor::sample_sync(void) const {
         static_cast<measurement::value_type>(current) / thousand,
         static_cast<measurement::value_type>(power) / thousand);
 }
+#endif

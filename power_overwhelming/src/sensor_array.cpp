@@ -10,6 +10,7 @@
 #include <stdexcept>
 
 #include "sensor_array_impl.h"
+#include "sensor_registry.h"
 
 
 /*
@@ -17,7 +18,9 @@
  */
 std::size_t PWROWG_NAMESPACE::sensor_array::all_descriptions(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
-        _In_ std::size_t cnt) {
+        _In_ std::size_t cnt,
+        _In_ const sensor_array_configuration& config) {
+    //detail::sensor_registry::
     throw "TODO";
 }
 

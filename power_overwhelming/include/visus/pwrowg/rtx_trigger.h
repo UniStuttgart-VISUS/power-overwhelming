@@ -301,7 +301,7 @@ public:
     /// <returns>The string representation of the type of the trigger.
     /// </returns>
     inline _Ret_maybenull_z_ const char *type(void) const noexcept {
-        return this->_type.as<char>();
+        return this->_sensor_type.as<char>();
     }
 
     /// <summary>
@@ -328,8 +328,7 @@ private:
     rtx_trigger_mode _mode;
     rtx_trigger_slope _slope;
     blob _source;
-    blob _type;
-
+    blob _sensor_type;
 };
 
 PWROWG_NAMESPACE_END

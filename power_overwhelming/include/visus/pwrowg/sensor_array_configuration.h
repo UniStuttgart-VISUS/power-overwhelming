@@ -18,6 +18,7 @@
 
 /* Forward declarations*/
 PWROWG_DETAIL_NAMESPACE_BEGIN
+template<class...> class basic_sensor_registry;
 struct sensor_array_configuration_impl;
 PWROWG_DETAIL_NAMESPACE_END
 
@@ -35,7 +36,6 @@ public:
     /// Initialises a new instance.
     /// </summary>
     sensor_array_configuration(void);
-
 
     /// <summary>
     /// Initialise a new instance from moving <paramref name="rhs" />.
@@ -89,6 +89,18 @@ public:
     template<class TConfig> sensor_array_configuration& configure(
         _In_ std::function<void(_In_ TConfig&)> configure);
 
+    /// <summary>
+    /// Gets, if available, the configuration of the specified type.
+    /// </summary>
+    /// <typeparam name="TConfig">The type of the sensor configuration to
+    /// retrieve.</typeparam>
+    /// <returns>The requested sensor configuration or <c>nullptr</c> if such a
+    /// configuration is not registered.</returns>
+    template<class TConfig>
+    _Ret_maybenull_ const TConfig *configuration(void) const noexcept {
+        return static_cast<const TConfig *>(this->find_config(TConfig::id));
+    }
+
 private:
 
     typedef PWROWG_DETAIL_NAMESPACE::sensor_array_configuration_impl *impl_type;
@@ -99,7 +111,11 @@ private:
     /// </summary>
     _Ret_valid_ impl_type check_not_disposed(void);
 
-    //const rtx_instrument &check_not_disposed(void) const;
+    /// <summary>
+    /// Check whether <see cref="_impl" /> is valid or throw
+    /// <see cref="std::runtime_error" />.
+    /// </summary>
+    _Ret_valid_ const impl_type check_not_disposed(void) const;
 
     /// <summary>
     /// Find the configuration object registered with the given
@@ -107,7 +123,15 @@ private:
     /// </summary>
     void *find_config(_In_ const guid& id);
 
+    /// <summary>
+    /// Find the configuration object registered with the given
+    /// <paramref name="id" />.
+    /// </summary>
+    const void *find_config(_In_ const guid& id) const;
+
     impl_type _impl;
+
+    template<class...> friend class basic_sensor_registry;
 };
 
 PWROWG_NAMESPACE_END

@@ -25,7 +25,7 @@ std::size_t PWROWG_NAMESPACE::tinkerforge_display::for_all(
         _In_ const std::uint16_t port,
         _In_ const std::size_t timeout) {
     std::vector<PWROWG_DETAIL_NAMESPACE::tinkerforge_bricklet> bricklets;
-    const std::string safe_host = (host != nullptr) ? host : default_host;
+    const std::string safe_host = (host != nullptr) ? host : "localhost";
     PWROWG_DETAIL_NAMESPACE::tinkerforge_scope scope(safe_host, port);
 
     auto retval = scope.copy_bricklets(std::back_inserter(bricklets),
@@ -52,10 +52,7 @@ PWROWG_NAMESPACE::tinkerforge_display::tinkerforge_display(
         _In_opt_z_ const char *host,
         _In_ const std::uint16_t port)
         : _impl(nullptr) {
-    this->_impl = new detail::tinkerforge_display_impl(
-        (host != nullptr) ? host : default_host,
-        port,
-        uid);
+    this->_impl = new detail::tinkerforge_display_impl(host, port, uid);
 }
 
 

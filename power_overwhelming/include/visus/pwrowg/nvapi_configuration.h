@@ -8,7 +8,7 @@
 #define _PWROWG_NVAPI_CONFIGURATION_H
 #pragma once
 
-#include "visus/pwrowg/api.h"
+#include "visus/pwrowg/sensor_configuration.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -17,9 +17,15 @@ PWROWG_NAMESPACE_BEGIN
 /// Provides additional configuration options for NVAPI-based sensors when
 /// creating a <see cref="sensor_array" />.
 /// </summary>
-class nvapi_configuration final {
+class POWER_OVERWHELMING_API nvapi_configuration final
+        : public sensor_configuration {
 
 public:
+
+    /// <summary>
+    /// A unique identifer for the <see cref="nvapi_configuration" /> type.
+    /// </summary>
+    static const guid id;
 
 private:
 

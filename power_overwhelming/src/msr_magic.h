@@ -12,12 +12,12 @@
 #include <utility>
 
 #include "visus/pwrowg/cpu_info.h"
-#include "visus/pwrowg/msr_sensor.h"
 #include "visus/pwrowg/api.h"
 #include "visus/pwrowg/rapl_domain.h"
 #include "visus/pwrowg/rapl_quantity.h"
 
 #include "msr_magic.h"
+#include "msr_sensor.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN

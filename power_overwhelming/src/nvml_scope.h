@@ -1,5 +1,5 @@
 ﻿// <copyright file="nvml_scope.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -21,7 +21,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// by an application. NVML will not be unloaded unless the last scope was
 /// destroyed.
 /// </remarks>
-class nvml_scope final {
+class PWROWG_TEST_API nvml_scope final {
 
 public:
 
