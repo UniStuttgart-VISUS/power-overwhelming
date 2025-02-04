@@ -26,6 +26,7 @@
 #include <visus/pwrowg/rtx_instrument_configuration.h>
 #include <visus/pwrowg/rtx_sensor_definition.h>
 #include <visus/pwrowg/rapl_domain.h>
+#include <visus/pwrowg/sample.h>
 #include <visus/pwrowg/timestamp.h>
 
 #include <adl_exception.h>

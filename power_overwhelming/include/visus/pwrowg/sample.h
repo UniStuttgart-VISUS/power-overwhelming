@@ -28,6 +28,139 @@ struct sample final {
     /// The actual sensor reading.
     /// </summary>
     PWROWG_NAMESPACE::reading reading;
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="reading">The value of the <see cref="reading" /> member.
+    /// </param>
+    inline sample(_In_ const double reading = 0.0f)
+            : timestamp(PWROWG_NAMESPACE::timestamp::now()) {
+        this->reading.floating_point = reading;
+    }
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="reading">The value of the <see cref="reading" /> member.
+    /// </param>
+    inline sample(_In_ const float reading)
+            : timestamp(PWROWG_NAMESPACE::timestamp::now()) {
+        this->reading.floating_point = reading;
+    }
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="reading">The value of the <see cref="reading" /> member.
+    /// </param>
+    inline sample(_In_ const std::int64_t reading)
+            : timestamp(PWROWG_NAMESPACE::timestamp::now()) {
+        this->reading.signed_integer = reading;
+    }
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="reading">The value of the <see cref="reading" /> member.
+    /// </param>
+    inline sample(_In_ const std::int32_t reading)
+        : timestamp(PWROWG_NAMESPACE::timestamp::now()) {
+        this->reading.signed_integer = reading;
+    }
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="reading">The value of the <see cref="reading" /> member.
+    /// </param>
+    inline sample(_In_ const std::uint64_t reading)
+            : timestamp(PWROWG_NAMESPACE::timestamp::now()) {
+        this->reading.unsigned_integer = reading;
+    }
+
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="reading">The value of the <see cref="reading" /> member.
+    /// </param>
+    inline sample(_In_ const std::uint32_t reading)
+        : timestamp(PWROWG_NAMESPACE::timestamp::now()) {
+        this->reading.signed_integer = reading;
+    }
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="timestamp">The timestamp of the sample.</param>
+    /// <param name="reading">The value of the <see cref="reading" /> member.
+    /// </param>
+    inline sample(_In_ const PWROWG_NAMESPACE::timestamp timestamp,
+            _In_ const double reading = 0.0f)
+            : timestamp(timestamp) {
+        this->reading.floating_point = reading;
+    }
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="timestamp">The timestamp of the sample.</param>
+    /// <param name="reading">The value of the <see cref="reading" /> member.
+    /// </param>
+    inline sample(_In_ const PWROWG_NAMESPACE::timestamp timestamp,
+            _In_ const float reading)
+            : timestamp(timestamp) {
+        this->reading.floating_point = reading;
+    }
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="timestamp">The timestamp of the sample.</param>
+    /// <param name="reading">The value of the <see cref="reading" /> member.
+    /// </param>
+    inline sample(_In_ const PWROWG_NAMESPACE::timestamp timestamp,
+            _In_ const std::int64_t reading)
+            : timestamp(timestamp) {
+        this->reading.signed_integer = reading;
+    }
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="timestamp">The timestamp of the sample.</param>
+    /// <param name="reading">The value of the <see cref="reading" /> member.
+    /// </param>
+    inline sample(_In_ const PWROWG_NAMESPACE::timestamp timestamp,
+            _In_ const std::int32_t reading)
+            : timestamp(timestamp) {
+        this->reading.signed_integer = reading;
+    }
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// /// <param name="timestamp">The timestamp of the sample.</param>
+    /// <param name="reading">The value of the <see cref="reading" /> member.
+    /// </param>
+    inline sample(_In_ const PWROWG_NAMESPACE::timestamp timestamp,
+            _In_ const std::uint64_t reading)
+            : timestamp(timestamp) {
+        this->reading.unsigned_integer = reading;
+    }
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// /// <param name="timestamp">The timestamp of the sample.</param>
+    /// <param name="reading">The value of the <see cref="reading" /> member.
+    /// </param>
+    inline sample(_In_ const PWROWG_NAMESPACE::timestamp timestamp,
+            _In_ const std::uint32_t reading)
+            : timestamp(timestamp) {
+        this->reading.unsigned_integer = reading;
+    }
 };
 
 static_assert(sizeof(sample) == 16, "The sensor sample should use exactly "
