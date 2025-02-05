@@ -20,7 +20,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <summary>
 /// Wrapper for lazily loading NVML.
 /// </summary>
-class nvidia_management_library final : library_base {
+class PWROWG_TEST_API nvidia_management_library final : library_base {
 
 public:
 

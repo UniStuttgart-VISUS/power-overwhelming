@@ -21,7 +21,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// The implementation represents an ADL2 scope with a separate execution
 /// context. APIs using the same scope should not be called concurrently.
 /// </remarks>
-class adl_scope final {
+class PWROWG_TEST_API adl_scope final {
 
 public:
 

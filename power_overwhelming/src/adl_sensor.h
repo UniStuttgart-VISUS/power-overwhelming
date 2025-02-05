@@ -39,15 +39,49 @@ public:
     typedef adl_configuration configuration_type;
 
     /// <summary>
-    /// Create descriptions for all supported AMD sensors in the system.
+    /// Create descriptions for all supported ADL sensors in the system.
     /// </summary>
     /// <remarks>
     /// <para>It is safe to call this method on systems without AMD GPU.
     /// No descriptions are returned in this case.</para>
     /// </remarks>
+    /// <param name="config">The global sensor configuration which might affect
+    /// which sensors can be enumerated.</param>
     /// <returns>A list of sensor descriptors that can be used to instantiate a
     /// specific sensor.</returns>
-    static std::vector<sensor_description> descriptions(void);
+    template<class TOutput> static void descriptions(_In_ TOutput oit,
+        _In_ const configuration_type& config);
+
+    /// <summary>
+    /// Generate sensors for all matching configurations within
+    /// <paramref name="begin" /> and <paramref name="end" />.
+    /// </summary>
+    /// <remarks>
+    /// <para>The method will go through all sensor descriptions provided and
+    /// created sensors for each description that is recognised as one of its
+    /// own. All of these matching descriptions are sorted to the begin of the
+    /// range. All other descriptions, which could not be used to create a
+    /// sensor of this type, are move to the end of the range and the returned
+    /// iterator points to the first of those descriptions.</para>
+    /// </remarks>
+    /// <typeparam name="TOutput">An output iterator for shared pointers of
+    /// sensors that is able to receive at least a sensor for every element
+    /// <paramref name="begin" /> and <paramref name="end" />.</typeparam>
+    /// <typeparam name="TInput">The type of the input iterator over the
+    /// <see cref="sensor_description" />s.</typeparam>
+    /// <param name="oit">The output iterator receiving the sensors.</param>
+    /// <param name="index">The index to be used for the first sensor created.
+    /// </param>
+    /// <param name="begin">The begin of the range of sensor descriptions.
+    /// </param>
+    /// <param name="end">The end of the range of sensor descriptions.</param>
+    /// <returns>The iterator to the first sensor description within
+    /// <paramref name="begin" /> and <paramref name="end" /> that has not been
+    /// used for creating a sensor.</returns>
+    template<class TOutput, class TInput>
+    static TInput from_descriptions(_In_ TOutput oit, _In_ std::size_t index,
+        _In_ const TInput begin, _In_ const TInput end);
+
 
 #if false
     ///// <summary>
@@ -270,6 +304,8 @@ private:
 };
 
 PWROWG_DETAIL_NAMESPACE_END
+
+#include "adl_sensor.inl"
 
 #endif /* defined(_PWROWG_ADL_SENSOR_H) */
 

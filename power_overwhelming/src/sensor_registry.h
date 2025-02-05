@@ -23,6 +23,7 @@
 #include "sensor_array_configuration_impl.h"
 #include "string_functions.h"
 #include "tinkerforge_sensor.h"
+#include "type_list.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -57,16 +58,63 @@ public:
     /// conflicting ID values. Furthermore, it could be caused by adding the
     /// same sensor multiple times in the instantiation of the
     /// <see cref="basic_sensor_registry" />.</exception>
-    static void configure(sensor_array_configuration_impl& config);
+    static void configure(_In_ sensor_array_configuration_impl& config);
+
+    template<class TOutput, class TInput> static TInput create(
+        _In_ TOutput oit, _In_ const TInput begin, _In_ const TInput end);
+
+    /// <summary>
+    /// Adds sensor descriptions for all registered sensors to
+    /// <paramref name="oit" />.
+    /// </summary>
+    /// <typeparam name="TOutput"></typeparam>
+    /// <param name="oit"></param>
+    template<class TOutput> static void descriptions(_In_ TOutput oit,
+        _In_ const sensor_array_configuration_impl& config);
+
+    /// <summary>
+    /// Answer the number of sensors in the registry.
+    /// </summary>
+    /// <returns>The number of sensors in the registry.</returns>
+    static inline constexpr std::size_t size(void) noexcept {
+        return sizeof...(TSensors);
+    }
 
     basic_sensor_registry(void) = delete;
 
 private:
 
     template<class T, class... Ts>
-    static void configure0(_In_ sensor_array_configuration_impl& config);
+    static void configure0(_In_ type_list<T, Ts...>,
+        _In_ sensor_array_configuration_impl& config);
 
-    inline static void configure0(_In_ sensor_array_configuration_impl&) { }
+    inline static void configure0(_In_ type_list<>,
+        _In_ sensor_array_configuration_impl &) { }
+
+    template<class TOutput, class TInput, class T, class... Ts>
+    static TInput create0(_In_ TOutput oit,
+        _In_ type_list<T, Ts...>,
+        _In_ const std::size_t index,
+        _In_ const TInput begin,
+        _In_ const TInput end);
+
+    template<class TOutput, class TInput>
+    static TInput create0(_In_ TOutput oit,
+            _In_ type_list<>,
+            _In_ const std::size_t index,
+            _In_ const TInput begin,
+            _In_ const TInput end) {
+        return begin;
+    }
+
+    template<class TOutput, class T, class... Ts>
+    static void descriptions0(_In_ TOutput oit,
+        _In_ type_list<T, Ts...>,
+        _In_ const sensor_array_configuration_impl& config);
+
+    template<class TOutput> inline static void descriptions0(_In_ TOutput,
+        _In_ type_list<>,
+        _In_ const sensor_array_configuration_impl&) { }
 
 };
 

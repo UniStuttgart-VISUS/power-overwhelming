@@ -7,6 +7,7 @@
 #pragma once
 
 #include <chrono>
+#include <iterator>
 #include <regex>
 #include <sstream>
 #include <thread>
@@ -40,6 +41,7 @@
 #include <nvml_sensor.h>
 #include <rtx_serialisation.h>
 #include <sensor_description_builder.h>
+#include <sensor_registry.h>
 #include <sensor_utilities.h>
 #include <setup_api.h>
 #include <string_functions.h>

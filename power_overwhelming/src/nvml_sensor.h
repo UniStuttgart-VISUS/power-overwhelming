@@ -18,12 +18,13 @@
 #include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_description.h"
 
+#include "nvidia_management_library.h"
+#include "nvml_exception.h"
 #include "nvml_scope.h"
 #include "sensor.h"
 #include "sensor_description_builder.h"
 #include "string_functions.h"
 #include "sensor_utilities.h"
-
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -52,8 +53,8 @@ public:
     /// which sensors can be enumerated.</param>
     /// <returns>A list of sensor descriptors that can be used to instantiate a
     /// specific sensor.</returns>
-    static std::vector<sensor_description> descriptions(
-        _In_ configuration_type& config);
+    template<class TOutput> static void descriptions(_In_ TOutput oit,
+        _In_ const configuration_type& config);
 
     /// <summary>
     /// Create a new instance for the device with the specified PCI bus ID.
@@ -92,22 +93,8 @@ public:
     /// <paramref name="begin" /> and <paramref name="end" /> that has not been
     /// used for creating a sensor.</returns>
     template<class TOutput, class TInput>
-    static TInput from_descriptions(_In_ TOutput oit,
-            _In_ std::size_t index,
-            _In_ const TInput begin,
-            _In_ const TInput end) {
-        auto retval = move_front_if(begin, end, [](const sensor_description& d) {
-            return starts_with(d.name(), L"NVML/");
-        });
-
-        for (auto it = begin; it != retval; ++it) {
-            *oit++ = std::make_shared<nvml_sensor>(
-                *sensor_description_builder::private_data<nvmlDevice_t>(*it),
-                index++);
-        }
-
-        return retval;
-    }
+    static TInput from_descriptions(_In_ TOutput oit, _In_ std::size_t index,
+        _In_ const TInput begin, _In_ const TInput end);
 
     /// <summary>
     /// Create a new instance for the device with the specified unique ID.
@@ -186,5 +173,7 @@ private:
 };
 
 PWROWG_DETAIL_NAMESPACE_END
+
+#include "nvml_sensor.inl"
 
 #endif /* defined(_PWROWG_NVML_SENSOR_H) */

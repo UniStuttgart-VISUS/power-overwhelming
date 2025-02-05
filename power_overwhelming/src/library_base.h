@@ -33,7 +33,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// highly unlikely. Explicitly loading the libraries on demand solves this
 /// issue.
 /// </remarks>
-class library_base {
+class PWROWG_TEST_API library_base {
 
 public:
 

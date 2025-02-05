@@ -18,7 +18,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <summary>
 /// An exception caused by a failure in the AMD Display Library.
 /// </summary>
-class adl_exception : public std::runtime_error {
+class PWROWG_TEST_API adl_exception : public std::runtime_error {
 
 public:
 

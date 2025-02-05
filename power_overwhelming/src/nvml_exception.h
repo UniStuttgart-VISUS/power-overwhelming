@@ -21,7 +21,7 @@ PWROWG_NAMESPACE_BEGIN
 /// <summary>
 /// An exception caused by a failure in the NVIDIA Management Library.
 /// </summary>
-class nvml_exception : public std::runtime_error {
+class PWROWG_TEST_API nvml_exception : public std::runtime_error {
 
 public:
 

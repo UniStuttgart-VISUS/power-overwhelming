@@ -25,7 +25,8 @@ public:
         typedef detail::nvml_sensor type;
 
         type::configuration_type config;
-        auto descs = type::descriptions(config);
+        std::vector<sensor_description> descs;
+        type::descriptions(std::back_inserter(descs), config);
 
         for (auto& d : descs) {
             Assert::AreEqual(int(reading_unit::watt), int(d.reading_unit()), L"produces watts", LINE_INFO());
@@ -44,7 +45,8 @@ public:
         typedef detail::nvml_sensor type;
 
         type::configuration_type config;
-        auto descs = type::descriptions(config);
+        std::vector<sensor_description> descs;
+        type::descriptions(std::back_inserter(descs), config);
 
         std::vector<std::shared_ptr<type>> sensors;
         const auto unused = type::from_descriptions(std::back_inserter(sensors), 0, descs.begin(), descs.end());

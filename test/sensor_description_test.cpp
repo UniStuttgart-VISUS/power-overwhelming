@@ -53,6 +53,18 @@ public:
         d.sensor_type(sensor_type::gpu);
         Assert::AreEqual(int(sensor_type::cpu), int(d.sensor_type()), L"erase everything, keep non-editable", LINE_INFO());
     }
+
+    TEST_METHOD(test_sensor_registry) {
+        Assert::IsTrue(detail::sensor_registry::size() > 0, L"Any sensor in registry", LINE_INFO());
+
+        detail::sensor_array_configuration_impl config;
+        std::vector<sensor_description> descs;
+        detail::sensor_registry::configure(config);
+        detail::sensor_registry::descriptions(std::back_inserter(descs), config);
+
+        std::vector<std::shared_ptr<detail::sensor>> sensors;
+        detail::sensor_registry::create(std::back_inserter(sensors), descs.begin(), descs.end());
+    }
 };
 
 PWROWG_TEST_NAMESPACE_END
