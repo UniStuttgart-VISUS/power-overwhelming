@@ -60,6 +60,23 @@ public:
     /// <see cref="basic_sensor_registry" />.</exception>
     static void configure(_In_ sensor_array_configuration_impl& config);
 
+    /// <summary>
+    /// Creates shared instances of all sensors configured in the range
+    /// <paramref name="begin" /> to <paramref name="end" />.
+    /// </summary>
+    /// <typeparam name="TOutput">An output iterator over <c>shared_ptr</c> of
+    /// <see cref="sensor"/>. The caller must not make any assumption on how
+    /// many items will be written based on the input, so this must be
+    /// something like a <c>back_insert_iterator</c>.</typeparam>
+    /// <typeparam name="TInput">An iterator over
+    /// <see cref="sensor_description" />s.</typeparam>
+    /// <param name="oit">An output iterator to receive the sensors.</param>
+    /// <param name="begin">The start of the range of sensor descriptions to
+    /// create sensors for.</param>
+    /// <param name="end">The end of the range of sensor descriptions.</param>
+    /// <returns>The position of the first configuration that has not been used
+    /// to create a sensor. If this is equal to <paramref name="end" />, all
+    /// sensors have been successfully created.</returns>
     template<class TOutput, class TInput> static TInput create(
         _In_ TOutput oit, _In_ const TInput begin, _In_ const TInput end);
 
