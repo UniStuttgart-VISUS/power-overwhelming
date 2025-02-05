@@ -22,6 +22,7 @@
 #include "sensor.h"
 #include "sensor_description_builder.h"
 #include "string_functions.h"
+#include "sensor_utilities.h"
 
 
 
@@ -81,15 +82,19 @@ public:
             _In_ std::size_t index,
             _In_ const TInput begin,
             _In_ const TInput end) {
-        for (auto it = begin; it != end; ++it) {
-            if (starts_with(it->name(), L"NVML/")) {
-                *oit++ = std::make_shared<nvml_sensor>(
-                    *sensor_description_builder::private_data<nvmlDevice_t>(*it),
-                    index++);
-            }
+        auto e = move_front_if(begin, end, [](const sensor_description& d) {
+            return starts_with(d.name(), L"NVML/");
+        });
+
+        std::size_t retval = 0;
+
+        for (auto it = begin; it != e; ++it, ++retval) {
+            *oit++ = std::make_shared<nvml_sensor>(
+                *sensor_description_builder::private_data<nvmlDevice_t>(*it),
+                index++);
         }
 
-        return index;
+        return retval;
     }
 
     /// <summary>
@@ -132,7 +137,9 @@ public:
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    nvml_sensor(_In_ const nvmlDevice_t device, _In_ const std::size_t index);
+    inline nvml_sensor(_In_ const nvmlDevice_t device,
+            _In_ const std::size_t index)
+        : _device(device), _index(index) { }
 
     nvml_sensor(const nvml_sensor& rhs) = delete;
 

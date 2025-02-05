@@ -175,23 +175,6 @@ PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_serial(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::nvml_sensor
- */
-PWROWG_DETAIL_NAMESPACE::nvml_sensor::nvml_sensor(
-        _In_ const nvmlDevice_t device,
-        _In_ const std::size_t index) 
-        : sensor(index), _device(device) {
-    //if (!starts_with(desc.name(), L"NVML/")) {
-    //    throw std::invalid_argument("An NVML sensor can only be created from "
-    //        "the description of an NVML sensor.");
-    //}
-
-    //this->_device = *sensor_description_builder::private_data< nvmlDevice_t>(
-    //    desc);
-}
-
-
-/*
  * PWROWG_DETAIL_NAMESPACE::nvml_sensor::sample
  */
 void PWROWG_DETAIL_NAMESPACE::nvml_sensor::sample(

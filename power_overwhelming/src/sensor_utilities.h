@@ -91,9 +91,9 @@ inline std::vector<std::unique_ptr<sensor>>& move_sensors(
 /// <paramref name="predicate" /> to the front of the range.
 /// </summary>
 /// <remarks>
-/// The order of the elements matching the predicate is not changed among each
-/// other, however the elements not matching the predicate may be reordered by
-/// the operation.
+/// The relative order of the elements matching the predicate is not changed,
+/// however the elements not matching the predicate may be reordered by the
+/// operation.
 /// </remarks>
 /// <typeparam name="TIterator"></typeparam>
 /// <typeparam name="TPredicate"></typeparam>

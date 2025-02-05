@@ -47,11 +47,16 @@ public:
         auto descs = type::descriptions(config);
 
         std::vector<std::shared_ptr<type>> sensors;
-        const auto next = type::from_descriptions(std::back_inserter(sensors), 0, descs.begin(), descs.end());
+        auto created = type::from_descriptions(std::back_inserter(sensors), 0, descs.begin(), descs.end());
         Assert::AreEqual(descs.size(), sensors.size(), L"Sensors created", LINE_INFO());
-        Assert::AreEqual(std::size_t(descs.size()), next, L"Sensor ID incremented", LINE_INFO());
+        Assert::AreEqual(std::size_t(descs.size()), created, L"# of sensors created", LINE_INFO());
 
-
+        for (auto s : sensors) {
+            s->sample([](const std::size_t source, const sample *samples, const std::size_t cnt, void *context) {
+                Assert::IsTrue(source < *static_cast<int *>(context), L"valid ID", LINE_INFO());
+                Assert::AreEqual(std::size_t(1), cnt, L"NVML creates single samples", LINE_INFO());
+            }, &created);
+        }
     }
 
     //TEST_METHOD(test_sensor) {
