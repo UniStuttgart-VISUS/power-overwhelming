@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cinttypes>
+#include <cstdlib>
 
 #include "visus/pwrowg/api.h"
 
@@ -27,8 +28,22 @@ protected:
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    inline sensor(void) { }
+    /// <param name="index">The zero-based index of the sensor in the sensor
+    /// array owning it.</param>
+    inline sensor(_In_ const std::size_t index) : _index(index) { }
 
+    /// <summary>
+    /// Answer the zero-based index of the sensor, which must be used for the
+    /// samples it generates.
+    /// </summary>
+    /// <returns>The zero-based index of the sensor.</returns>
+    inline std::size_t index(void) const noexcept {
+        return this->_index;
+    }
+
+private:
+
+    std::size_t _index;
 };
 
 PWROWG_DETAIL_NAMESPACE_END

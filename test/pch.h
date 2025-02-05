@@ -20,13 +20,14 @@
 #include <visus/pwrowg/event.h>
 #include <visus/pwrowg/for_each_rapl_domain.h>
 #include <visus/pwrowg/hmc8015_function.h>
+#include <visus/pwrowg/rapl_domain.h>
 #include <visus/pwrowg/rtx_sample.h>
 #include <visus/pwrowg/parallel_port_trigger.h>
 #include <visus/pwrowg/rtx_instrument.h>
 #include <visus/pwrowg/rtx_instrument_configuration.h>
 #include <visus/pwrowg/rtx_sensor_definition.h>
-#include <visus/pwrowg/rapl_domain.h>
 #include <visus/pwrowg/sample.h>
+#include <visus/pwrowg/sensor_description.h>
 #include <visus/pwrowg/timestamp.h>
 
 #include <adl_exception.h>
@@ -38,7 +39,8 @@
 #include <nvml_scope.h>
 #include <nvml_sensor.h>
 #include <rtx_serialisation.h>
-#include <sensor_desc.h>
+#include <sensor_description_builder.h>
+#include <sensor_utilities.h>
 #include <setup_api.h>
 #include <string_functions.h>
 

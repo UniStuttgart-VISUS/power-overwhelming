@@ -30,7 +30,7 @@ struct sample final {
     PWROWG_NAMESPACE::reading reading;
 
     /// <summary>
-    /// Initialises a new instance.
+    /// Initialises a new instance with the current timestamp.
     /// </summary>
     /// <param name="reading">The value of the <see cref="reading" /> member.
     /// </param>
@@ -40,7 +40,7 @@ struct sample final {
     }
 
     /// <summary>
-    /// Initialises a new instance.
+    /// Initialises a new instance with the current timestamp.
     /// </summary>
     /// <param name="reading">The value of the <see cref="reading" /> member.
     /// </param>
@@ -50,7 +50,7 @@ struct sample final {
     }
 
     /// <summary>
-    /// Initialises a new instance.
+    /// Initialises a new instance with the current timestamp.
     /// </summary>
     /// <param name="reading">The value of the <see cref="reading" /> member.
     /// </param>
@@ -60,7 +60,7 @@ struct sample final {
     }
 
     /// <summary>
-    /// Initialises a new instance.
+    /// Initialises a new instance with the current timestamp.
     /// </summary>
     /// <param name="reading">The value of the <see cref="reading" /> member.
     /// </param>
@@ -70,7 +70,7 @@ struct sample final {
     }
 
     /// <summary>
-    /// Initialises a new instance.
+    /// Initialises a new instance with the current timestamp.
     /// </summary>
     /// <param name="reading">The value of the <see cref="reading" /> member.
     /// </param>
@@ -81,7 +81,7 @@ struct sample final {
 
 
     /// <summary>
-    /// Initialises a new instance.
+    /// Initialises a new instance with the current timestamp.
     /// </summary>
     /// <param name="reading">The value of the <see cref="reading" /> member.
     /// </param>

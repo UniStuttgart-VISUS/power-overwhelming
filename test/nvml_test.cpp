@@ -22,8 +22,10 @@ public:
     }
 
     TEST_METHOD(test_descriptions) {
-        detail::nvml_sensor::configuration_type config;
-        auto descs = detail::nvml_sensor::descriptions(config);
+        typedef detail::nvml_sensor type;
+
+        type::configuration_type config;
+        auto descs = type::descriptions(config);
 
         for (auto& d : descs) {
             Assert::AreEqual(int(reading_unit::watt), int(d.reading_unit()), L"produces watts", LINE_INFO());
@@ -36,6 +38,20 @@ public:
             Assert::AreNotEqual(std::size_t(0), ::wcslen(d.name()), L"Name not empty", LINE_INFO());
             Assert::AreNotEqual(std::size_t(0), ::wcslen(d.path()), L"Path not empty", LINE_INFO());
         }
+    }
+
+    TEST_METHOD(test_sensor_creation) {
+        typedef detail::nvml_sensor type;
+
+        type::configuration_type config;
+        auto descs = type::descriptions(config);
+
+        std::vector<std::shared_ptr<type>> sensors;
+        const auto next = type::from_descriptions(std::back_inserter(sensors), 0, descs.begin(), descs.end());
+        Assert::AreEqual(descs.size(), sensors.size(), L"Sensors created", LINE_INFO());
+        Assert::AreEqual(std::size_t(descs.size()), next, L"Sensor ID incremented", LINE_INFO());
+
+
     }
 
     //TEST_METHOD(test_sensor) {

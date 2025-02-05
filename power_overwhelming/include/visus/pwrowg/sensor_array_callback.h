@@ -31,7 +31,7 @@ PWROWG_NAMESPACE_BEGIN
 /// starting the sensor array.</param>
 typedef void (*sensor_array_callback)(_In_ const std::size_t source,
     _In_reads_(cnt) const sample *samples, _In_ const std::size_t cnt,
-    _In_ void *context);
+    _In_opt_ void *context);
 
 PWROWG_NAMESPACE_END
 

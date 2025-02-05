@@ -8,6 +8,7 @@
 #define _PWROWG_SENSOR_UTILITIES_H
 #pragma once
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -84,42 +85,66 @@ inline std::vector<std::unique_ptr<sensor>>& move_sensors(
     return dst;
 }
 
+
+/// <summary>
+/// Move the sensors in <see cref="begin" /> to <see cref="end" /> that match
+/// <paramref name="predicate" /> to the front of the range.
+/// </summary>
+/// <remarks>
+/// The order of the elements matching the predicate is not changed among each
+/// other, however the elements not matching the predicate may be reordered by
+/// the operation.
+/// </remarks>
+/// <typeparam name="TIterator"></typeparam>
+/// <typeparam name="TPredicate"></typeparam>
+/// <param name="begin"></param>
+/// <param name="end"></param>
+/// <param name="predicate"></param>
+/// <returns></returns>
+template<class TIterator, class TPredicate>
+TIterator move_front_if(_In_ const TIterator begin, _In_ const TIterator end,
+    _In_ const TPredicate predicate);
+
 /// <summary>
 /// Parse sensor instances from a JSON-based configuration.
 /// </summary>
 /// <param name="descs"></param>
 /// <returns></returns>
 std::vector<std::unique_ptr<sensor>> parse_sensors(
-    const nlohmann::json& descs);
+    _In_ const nlohmann::json& descs);
 
 /// <summary>
 /// Read a JSON configuration file.
 /// </summary>
 /// <param name="path">The path to the JSON file.</param>
 /// <returns>The contents of the JSON file.</returns>
-nlohmann::json read_json(_In_z_ const char *path);
+extern nlohmann::json PWROWG_TEST_API read_json(_In_z_ const char *path);
 
 /// <summary>
 /// Read a JSON configuration file.
 /// </summary>
 /// <param name="path">The path to the JSON file.</param>
 /// <returns>The contents of the JSON file.</returns>
-nlohmann::json read_json(_In_z_ const wchar_t *path);
+extern nlohmann::json PWROWG_TEST_API read_json(_In_z_ const wchar_t *path);
 
 /// <summary>
 /// Write JSON configuration to a file.
 /// </summary>
 /// <param name="path">The path to the JSON file.</param>
 /// <param name="json">The JSON content to write</param>
-void write_json(_In_z_ const char *path, _In_ const nlohmann::json& json);
+extern void PWROWG_TEST_API write_json(_In_z_ const char *path,
+    _In_ const nlohmann::json& json);
 
 /// <summary>
 /// Write JSON configuration to a file.
 /// </summary>
 /// <param name="path">The path to the JSON file.</param>
 /// <param name="json">The JSON content to write</param>
-void write_json(_In_z_ const wchar_t *path, _In_ const nlohmann::json& json);
+extern void PWROWG_TEST_API write_json(_In_z_ const wchar_t *path,
+    _In_ const nlohmann::json& json);
 
 PWROWG_DETAIL_NAMESPACE_END
+
+#include "sensor_utilities.inl"
 
 #endif /* !defined(_PWROWG_SENSOR_UTILITIES_H) */

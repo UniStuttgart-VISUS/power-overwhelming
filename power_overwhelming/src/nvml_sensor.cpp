@@ -14,8 +14,6 @@
 
 #include "nvidia_management_library.h"
 #include "nvml_exception.h"
-#include "sensor_description_builder.h"
-#include "string_functions.h"
 
 
 /*
@@ -57,6 +55,8 @@ PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
                 if (status != NVML_SUCCESS) {
                     throw nvml_exception(status);
                 }
+
+                builder.with_private_data(device);
             }
 
             {
@@ -99,266 +99,121 @@ PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
 }
 
 
-#if false
 /*
- * visus::power_overwhelming::nvml_sensor::for_all
+ * PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_bus_id
  */
-std::size_t visus::power_overwhelming::nvml_sensor::for_all(
-        _Out_writes_opt_(cntSensors) nvml_sensor *outSensors,
-        _In_ const std::size_t cntSensors) {
-    try {
-        unsigned int retval = 0;
-        detail::nvml_scope scope;
+std::shared_ptr<PWROWG_DETAIL_NAMESPACE::nvml_sensor>
+PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_bus_id(
+        _In_z_ const char *pciBusId,
+        _In_ const std::size_t index) {
+    nvmlDevice_t device;
 
-        {
-            auto status = detail::nvidia_management_library::instance()
-                .nvmlDeviceGetCount(&retval);
-            if (status != NVML_SUCCESS) {
-                throw nvml_exception(status);
-            }
-        }
-
-        for (unsigned int i = 0; (outSensors != nullptr) && (i < retval)
-                && (i < cntSensors); ++i) {
-            auto& sensor = outSensors[i]._impl;
-
-            auto status = detail::nvidia_management_library::instance()
-                .nvmlDeviceGetHandleByIndex(i, &sensor->device);
-            if (status != NVML_SUCCESS) {
-                throw nvml_exception(status);
-            }
-
-            sensor->load_device_name();
-        }
-
-        return retval;
-    } catch (...) {
-        return 0;
-    }
-}
-
-
-/*
- * visus::power_overwhelming::nvml_sensor::from_bus_id
- */
-visus::power_overwhelming::nvml_sensor
-visus::power_overwhelming::nvml_sensor::from_bus_id(
-        _In_z_ const char *pciBusId) {
-    nvml_sensor retval;
-
-    auto status = detail::nvidia_management_library::instance()
-        .nvmlDeviceGetHandleByPciBusId(pciBusId, &retval._impl->device);
+    auto status = nvidia_management_library::instance()
+        .nvmlDeviceGetHandleByPciBusId(pciBusId, &device);
     if (status != NVML_SUCCESS) {
         throw nvml_exception(status);
     }
 
-    retval._impl->load_device_name();
-
-    return retval;
+    return std::make_shared<nvml_sensor>(device, index);
 }
 
 
 /*
- * visus::power_overwhelming::nvml_sensor::from_bus_id
+ * PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_guid
  */
-visus::power_overwhelming::nvml_sensor
-visus::power_overwhelming::nvml_sensor::from_bus_id(
-        _In_z_ const wchar_t *pciBusId) {
-    auto b = convert_string<char>(pciBusId);
-    return from_bus_id(b.c_str());
-}
+std::shared_ptr<PWROWG_DETAIL_NAMESPACE::nvml_sensor>
+PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_guid(_In_z_ const char *guid,
+        _In_ const std::size_t index) {
+    nvmlDevice_t device;
 
-
-/*
- * visus::power_overwhelming::nvml_sensor::from_guid
- */
-visus::power_overwhelming::nvml_sensor
-visus::power_overwhelming::nvml_sensor::from_guid(_In_z_ const char *guid) {
-    nvml_sensor retval;
-
-    auto status = detail::nvidia_management_library::instance()
-        .nvmlDeviceGetHandleByUUID(guid, &retval._impl->device);
+    auto status = nvidia_management_library::instance()
+        .nvmlDeviceGetHandleByUUID(guid, &device);
     if (status != NVML_SUCCESS) {
         throw nvml_exception(status);
     }
 
-    retval._impl->load_device_name();
-
-    return retval;
+    return std::make_shared<nvml_sensor>(device, index);
 }
 
 
 /*
- * visus::power_overwhelming::nvml_sensor::from_guid
+ * PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_index
  */
-visus::power_overwhelming::nvml_sensor
-visus::power_overwhelming::nvml_sensor::from_guid(_In_z_ const wchar_t *guid) {
-    auto g = convert_string<char>(guid);
-    return from_guid(g.c_str());
-}
+std::shared_ptr<PWROWG_DETAIL_NAMESPACE::nvml_sensor>
+PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_index(
+        _In_ const unsigned int idx,
+        _In_ const std::size_t index) {
+    nvmlDevice_t device;
 
-
-/*
- * visus::power_overwhelming::nvml_sensor::from_index
- */
-visus::power_overwhelming::nvml_sensor
-visus::power_overwhelming::nvml_sensor::from_index(
-        _In_ const unsigned int index) {
-    nvml_sensor retval;
-
-    auto status = detail::nvidia_management_library::instance()
-        .nvmlDeviceGetHandleByIndex(index, &retval._impl->device);
+    auto status = nvidia_management_library::instance()
+        .nvmlDeviceGetHandleByIndex(idx, &device);
     if (status != NVML_SUCCESS) {
         throw nvml_exception(status);
     }
 
-    retval._impl->load_device_name();
-
-    return retval;
+    return std::make_shared<nvml_sensor>(device, index);
 }
 
 
 /*
- * visus::power_overwhelming::nvml_sensor::from_serial
+ * PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_serial
  */
-visus::power_overwhelming::nvml_sensor
-visus::power_overwhelming::nvml_sensor::from_serial(
-        _In_z_ const char *serial) {
-    nvml_sensor retval;
+std::shared_ptr<PWROWG_DETAIL_NAMESPACE::nvml_sensor>
+PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_serial(
+        _In_z_ const char *serial,
+        _In_ const std::size_t index) {
+    nvmlDevice_t device;
 
-    auto status = detail::nvidia_management_library::instance()
-        .nvmlDeviceGetHandleBySerial(serial, &retval._impl->device);
+    auto status = nvidia_management_library::instance()
+        .nvmlDeviceGetHandleBySerial(serial, &device);
     if (status != NVML_SUCCESS) {
         throw nvml_exception(status);
     }
 
-    retval._impl->load_device_name();
-
-    return retval;
+    return std::make_shared<nvml_sensor>(device, index);
 }
 
 
 /*
- * visus::power_overwhelming::nvml_sensor::from_serial
+ * PWROWG_DETAIL_NAMESPACE::nvml_sensor
  */
-visus::power_overwhelming::nvml_sensor
-visus::power_overwhelming::nvml_sensor::from_serial(
-        const _In_z_ wchar_t *serial) {
-    auto s = convert_string<char>(serial);
-    return from_serial(s.c_str());
-}
+PWROWG_DETAIL_NAMESPACE::nvml_sensor::nvml_sensor(
+        _In_ const nvmlDevice_t device,
+        _In_ const std::size_t index) 
+        : sensor(index), _device(device) {
+    //if (!starts_with(desc.name(), L"NVML/")) {
+    //    throw std::invalid_argument("An NVML sensor can only be created from "
+    //        "the description of an NVML sensor.");
+    //}
 
-
-
-/*
- * visus::power_overwhelming::nvml_sensor::nvml_sensor
- */
-visus::power_overwhelming::nvml_sensor::nvml_sensor(void)
-    : _impl(new detail::nvml_sensor_impl()) { }
-
-
-/*
- * visus::power_overwhelming::nvml_sensor::~nvml_sensor
- */
-visus::power_overwhelming::nvml_sensor::~nvml_sensor(void) {
-    delete this->_impl;
+    //this->_device = *sensor_description_builder::private_data< nvmlDevice_t>(
+    //    desc);
 }
 
 
 /*
- * visus::power_overwhelming::nvml_sensor::device_guid
+ * PWROWG_DETAIL_NAMESPACE::nvml_sensor::sample
  */
-_Ret_maybenull_z_ const char *
-visus::power_overwhelming::nvml_sensor::device_guid(void) const noexcept {
-    if (this->_impl == nullptr) {
-        return nullptr;
-    } else {
-        return this->_impl->device_guid.c_str();
-    }
-}
-
-
-/*
- * visus::power_overwhelming::nvml_sensor::name
- */
-_Ret_maybenull_z_ const wchar_t *visus::power_overwhelming::nvml_sensor::name(
-        void) const noexcept {
-    if (this->_impl == nullptr) {
-        return nullptr;
-    } else {
-        return this->_impl->sensor_name.c_str();
-    }
-}
-
-
-/*
- * visus::power_overwhelming::nvml_sensor::sample
- */
-void visus::power_overwhelming::nvml_sensor::sample(
-        _In_opt_ const measurement_callback on_measurement,
-        _In_ const microseconds_type period,
+void PWROWG_DETAIL_NAMESPACE::nvml_sensor::sample(
+        _In_ const sensor_array_callback callback,
         _In_opt_ void *context) {
-#if defined(_WIN32)
-    ::OutputDebugStringW(L"PWROWG DEPRECATION WARNING: This method is only "
-        L"provided for backwards compatibility and might be removed in "
-        L"future versions of the library. Use async_sampling to configure "
-        L"asynchronous sampling.\r\n");
-#endif /* defined(_WIN32) */
-    this->check_not_disposed();
-    this->sample_async(std::move(async_sampling()
-        .samples_every(period)
-        .delivers_measurements_to(on_measurement)
-        .passes_context(context)));
-}
+    typedef decltype(reading::floating_point) value_type;
+    static constexpr auto thousand = static_cast<value_type>(1000);
+    assert(callback != nullptr);
 
+    // Create the sample with the current timestamp.
+    PWROWG_NAMESPACE::sample s;
 
-/*
- * visus::power_overwhelming::nvml_sensor::operator =
- */
-visus::power_overwhelming::nvml_sensor&
-visus::power_overwhelming::nvml_sensor::operator =(
-        _In_ nvml_sensor&& rhs) noexcept {
-    if (this != std::addressof(rhs)) {
-        delete this->_impl;
-        this->_impl = rhs._impl;
-        rhs._impl = nullptr;
+    // Get the power usage in milliwatts.
+    unsigned int mw = 0;
+    auto status = nvidia_management_library::instance()
+        .nvmlDeviceGetPowerUsage(this->_device, &mw);
+    if (status != NVML_SUCCESS) {
+        throw nvml_exception(status);
     }
 
-    return *this;
+    // Convert to Watts.
+    s.reading.floating_point = static_cast<value_type>(mw) / thousand;
+
+    callback(this->_index, &s, 1, context);
 }
-
-
-/*
- * visus::power_overwhelming::nvml_sensor::operator bool
- */
-visus::power_overwhelming::nvml_sensor::operator bool(void) const noexcept {
-    return (this->_impl != nullptr);
-}
-
-
-/*
- * visus::power_overwhelming::nvml_sensor::sample_async
- */
-void visus::power_overwhelming::nvml_sensor::sample_async(
-        _Inout_ async_sampling&& sampling) {
-    assert(this->_impl != nullptr);
-    this->_impl->async_sampling = std::move(sampling);
-
-    if (this->_impl->async_sampling) {
-        detail::sampler::default_sampler += this->_impl;
-    } else {
-        detail::sampler::default_sampler -= this->_impl;
-    }
-}
-
-
-
-/*
- * visus::power_overwhelming::nvml_sensor::sample_sync
- */
-visus::power_overwhelming::measurement_data
-visus::power_overwhelming::nvml_sensor::sample_sync(void) const {
-    assert(this->_impl != nullptr);
-    return this->_impl->sample();
-}
-#endif

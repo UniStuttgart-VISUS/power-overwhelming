@@ -35,7 +35,8 @@ public:
     /// from.</param>
     /// <returns>A pointer to the private data if anything has been stored in
     /// <paramref name="desc" />.</returns>
-    template<class TType> TType *private_data(_In_ sensor_description& desc) {
+    template<class TType>
+    static TType *private_data(_In_ sensor_description& desc) {
         return desc._private.get<TType>();
     }
 
@@ -53,7 +54,7 @@ public:
     /// <returns>A pointer to the private data if anything has been stored in
     /// <paramref name="desc" />.</returns>
     template<class TType>
-    const TType *private_data(_In_ const sensor_description& desc) {
+    static const TType *private_data(_In_ const sensor_description& desc) {
         return desc._private.get<TType>();
     }
 
