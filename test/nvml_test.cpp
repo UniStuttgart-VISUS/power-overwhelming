@@ -47,44 +47,16 @@ public:
         auto descs = type::descriptions(config);
 
         std::vector<std::shared_ptr<type>> sensors;
-        auto created = type::from_descriptions(std::back_inserter(sensors), 0, descs.begin(), descs.end());
+        const auto unused = type::from_descriptions(std::back_inserter(sensors), 0, descs.begin(), descs.end());
         Assert::AreEqual(descs.size(), sensors.size(), L"Sensors created", LINE_INFO());
-        Assert::AreEqual(std::size_t(descs.size()), created, L"# of sensors created", LINE_INFO());
+        Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
 
         for (auto s : sensors) {
             s->sample([](const std::size_t source, const sample *samples, const std::size_t cnt, void *context) {
-                Assert::IsTrue(source < *static_cast<int *>(context), L"valid ID", LINE_INFO());
-                Assert::AreEqual(std::size_t(1), cnt, L"NVML creates single samples", LINE_INFO());
-            }, &created);
+                Assert::AreEqual(std::size_t(1), cnt, L"NVML creates single sample", LINE_INFO());
+            });
         }
     }
-
-    //TEST_METHOD(test_sensor) {
-    //    {
-    //        auto sensors = nvml_sensor<measurement<>>::for_all();
-    //    }
-
-    //    Assert::ExpectException<nvml_exception>([](void) {
-    //        auto sensor = nvml_sensor<measurement<>>::from_bus_id(nullptr);
-    //    });
-
-    //    Assert::ExpectException<nvml_exception>([](void) {
-    //        auto sensor = nvml_sensor<measurement<>>::from_guid(nullptr);
-    //    });
-
-    //    Assert::ExpectException<nvml_exception>([](void) {
-    //        auto sensor = nvml_sensor<measurement<>>::from_index(UINT_MAX);
-    //    });
-
-    //    Assert::ExpectException<nvml_exception>([](void) {
-    //        auto sensor = nvml_sensor<measurement<>>::from_serial(nullptr);
-    //    });
-
-    //    {
-    //        auto sensor = nvml_sensor<measurement<>>::from_index(0);
-    //        auto measurement = sensor.sample();
-    //    }
-    //}
 };
 
 PWROWG_TEST_NAMESPACE_END

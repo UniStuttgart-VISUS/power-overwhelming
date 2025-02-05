@@ -16,17 +16,6 @@ void PWROWG_NAMESPACE::detail::basic_sensor_registry<TSensors...>::configure(
 
 
 /*
- * PWROWG_NAMESPACE::detail::basic_sensor_registry<TSensors...>::descriptions
- */
-template<class ...TSensors>
-std::vector<PWROWG_NAMESPACE::sensor_description>
-PWROWG_NAMESPACE::detail::basic_sensor_registry<TSensors...>::descriptions(
-        _In_ const sensor_array_configuration& config) {
-    return std::vector<sensor_description>();
-}
-
-
-/*
  * PWROWG_NAMESPACE::detail::basic_sensor_registry<TSensors...>::configure0
  */
 template<class ...TSensors>

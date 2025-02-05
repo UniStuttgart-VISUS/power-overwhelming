@@ -69,26 +69,38 @@ public:
     /// Generate sensors for all matching configurations within
     /// <paramref name="begin" /> and <paramref name="end" />.
     /// </summary>
-    /// <typeparam name="TOutput"></typeparam>
-    /// <typeparam name="TInput"></typeparam>
-    /// <param name="oit"></param>
-    /// <param name="index"></param>
-    /// <param name="begin"></param>
-    /// <param name="end"></param>
-    /// <returns>The next free sensor index (once the new sensors have been
-    /// added starting at <paramref name="index" />.</returns>
+    /// <remarks>
+    /// <para>The method will go through all sensor descriptions provided and
+    /// created sensors for each description that is recognised as one of its
+    /// own. All of these matching descriptions are sorted to the begin of the
+    /// range. All other descriptions, which could not be used to create a
+    /// sensor of this type, are move to the end of the range and the returned
+    /// iterator points to the first of those descriptions.</para>
+    /// </remarks>
+    /// <typeparam name="TOutput">An output iterator for shared pointers of
+    /// sensors that is able to receive at least a sensor for every element
+    /// <paramref name="begin" /> and <paramref name="end" />.</typeparam>
+    /// <typeparam name="TInput">The type of the input iterator over the
+    /// <see cref="sensor_description" />s.</typeparam>
+    /// <param name="oit">The output iterator receiving the sensors.</param>
+    /// <param name="index">The index to be used for the first sensor created.
+    /// </param>
+    /// <param name="begin">The begin of the range of sensor descriptions.
+    /// </param>
+    /// <param name="end">The end of the range of sensor descriptions.</param>
+    /// <returns>The iterator to the first sensor description within
+    /// <paramref name="begin" /> and <paramref name="end" /> that has not been
+    /// used for creating a sensor.</returns>
     template<class TOutput, class TInput>
-    static std::size_t from_descriptions(_In_ TOutput oit,
+    static TInput from_descriptions(_In_ TOutput oit,
             _In_ std::size_t index,
             _In_ const TInput begin,
             _In_ const TInput end) {
-        auto e = move_front_if(begin, end, [](const sensor_description& d) {
+        auto retval = move_front_if(begin, end, [](const sensor_description& d) {
             return starts_with(d.name(), L"NVML/");
         });
 
-        std::size_t retval = 0;
-
-        for (auto it = begin; it != e; ++it, ++retval) {
+        for (auto it = begin; it != retval; ++it) {
             *oit++ = std::make_shared<nvml_sensor>(
                 *sensor_description_builder::private_data<nvmlDevice_t>(*it),
                 index++);
@@ -150,7 +162,7 @@ public:
     /// <param name="context">An optional context pointer passed to the
     /// <paramref name="callback" />.</param>
     void sample(_In_ const sensor_array_callback callback,
-        _In_opt_ void *context);
+        _In_opt_ void *context = nullptr);
 
     nvml_sensor& operator =(const nvml_sensor& rhs) = delete;
 

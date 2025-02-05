@@ -47,11 +47,17 @@ public:
     /// Adds the default configurations for all of
     /// <typeparamref name="TSensors" /> to the given <paramref name="config" />.
     /// </summary>
-    /// <param name="config"></param>
+    /// <param name="config">An array configuration that should receive the
+    /// sensor configuration instances. Not configurations must have been added
+    /// to the array configuration before as it is a fatal error if a
+    /// configuration ID is used multiple times.</param>
+    /// <exception cref="std::logic_error">If a duplicate configuration ID was
+    /// found. This can either be caused by passing a <paramref name="config" />
+    /// that has already been configured, or by having sensor descriptions with
+    /// conflicting ID values. Furthermore, it could be caused by adding the
+    /// same sensor multiple times in the instantiation of the
+    /// <see cref="basic_sensor_registry" />.</exception>
     static void configure(sensor_array_configuration_impl& config);
-
-    static std::vector<sensor_description> descriptions(
-        _In_ const sensor_array_configuration& config);
 
     basic_sensor_registry(void) = delete;
 
