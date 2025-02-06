@@ -32,6 +32,7 @@
 #include <visus/pwrowg/timestamp.h>
 
 #include <adl_exception.h>
+#include <detector.h>
 #include <emi_device.h>
 #include <io_util.h>
 #include <on_exit.h>
@@ -40,6 +41,7 @@
 #include <nvml_scope.h>
 #include <nvml_sensor.h>
 #include <rtx_serialisation.h>
+#include <sensor_array_impl.h>
 #include <sensor_description_builder.h>
 #include <sensor_registry.h>
 #include <sensor_utilities.h>

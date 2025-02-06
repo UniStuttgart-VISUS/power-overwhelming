@@ -130,8 +130,10 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
         auto voltage = active(sensor_type::voltage) ? index++ : invalid_index;
         auto current = active(sensor_type::current) ? index++ : invalid_index;
 
-        *oit++ = std::make_shared<tinkerforge_sensor>(scope, uid, power,
-            voltage, current);
+        auto sensor = std::make_shared<tinkerforge_sensor>(scope, uid,
+            power, voltage, current);
+        // TODO: sensor->configure!
+        *oit++ = sensor;
     }
 
     return retval;

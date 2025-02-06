@@ -66,6 +66,13 @@ public:
         std::vector<std::shared_ptr<detail::sensor>> sensors;
         detail::sensor_registry::create(std::back_inserter(sensors), descs.begin(), descs.end());
     }
+
+    TEST_METHOD(test_sampler_detection) {
+        Assert::IsTrue(detail::sensor_array_impl::has_sync_sample<detail::nvml_sensor>::type::value, L"NVML is synchronous", LINE_INFO());
+        Assert::IsFalse(detail::sensor_array_impl::has_async_sample<detail::nvml_sensor>::type::value, L"NVML is not asynchronous", LINE_INFO());
+        Assert::IsTrue(detail::sensor_array_impl::has_async_sample<detail::tinkerforge_sensor>::type::value, L"NVML is asynchronous", LINE_INFO());
+        Assert::IsFalse(detail::sensor_array_impl::has_sync_sample<detail::tinkerforge_sensor>::type::value, L"NVML is not synchronous", LINE_INFO());
+    }
 };
 
 PWROWG_TEST_NAMESPACE_END

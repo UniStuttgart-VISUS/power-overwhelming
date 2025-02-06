@@ -144,9 +144,15 @@ private:
 /// <see cref="sensor_array" />.
 /// </remarks>
 typedef basic_sensor_registry<
-    adl_sensor,
+    //adl_sensor,
+    //emi_sensor
+    //hmc8015_sensor,
+    //msr_sensor,
+    //nvapi_sensor,
     nvml_sensor,
+    //rtx_sensor,
     tinkerforge_sensor>
+    //usb_pd_sensor>
     sensor_registry;
 
 PWROWG_DETAIL_NAMESPACE_END

@@ -19,7 +19,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// </summary>
 /// <typeparam name="TFunc"></typeparam>
 /// <typeparam name="TVoid"></typeparam>
-/// <typeparam nameTArgs"></typeparam>
+/// <typeparam name="TArgs"></typeparam>
 template<template<class...> class TFunc, class TVoid, class... TArgs>
 struct detector : std::false_type { };
 
