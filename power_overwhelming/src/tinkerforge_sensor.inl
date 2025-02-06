@@ -97,12 +97,6 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
             retval = compare(lhs.id(), rhs.id());
         }
 
-        //// If this is the same bricklet, make sure that the order of the sensors
-        //// is always power, voltage and then current.
-        //if (retval == 0) {
-        //    retval = sensor_mask(lhs) - sensor_mask(rhs);
-        //}
-
         return (retval < 0);
     });
 

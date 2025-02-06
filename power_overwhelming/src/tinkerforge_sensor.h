@@ -18,7 +18,6 @@
 #include "visus/pwrowg/tinkerforge_configuration.h"
 #include "visus/pwrowg/tinkerforge_error_count.h"
 #include "visus/pwrowg/tinkerforge_sample_averaging.h"
-#include "visus/pwrowg/tinkerforge_sensor_source.h"
 
 #include "sensor.h"
 #include "sensor_description_builder.h"
