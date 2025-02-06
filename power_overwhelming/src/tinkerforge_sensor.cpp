@@ -7,68 +7,93 @@
 #include "tinkerforge_sensor.h"
 
 
-PWROWG_DETAIL_NAMESPACE_BEGIN
+/*
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::invalid_index
+ */
+constexpr std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::invalid_index;
 
-///// <summary>
-///// The callback to be invoked for incoming asynchronous current
-///// readings.
-///// </summary>
-///// <param name="current"></param>
-///// <param name="data"></param>
-//void CALLBACK current_callback(const std::int32_t current, void *data) {
-//    assert(data != nullptr);
-//    auto that = static_cast<tinkerforge_sensor_impl *>(data);
-//    std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
-//    const auto ts = timestamp::now();
-//    that->async_data[0] = static_cast<measurement::value_type>(current)
-//        / static_cast<measurement::value_type>(1000);
-//    that->invoke_callback(ts);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
-//}
-//
-///// <summary>
-///// The callback to be invoked for incoming asynchronous power
-///// readings.
-///// </summary>
-///// <param name="power"></param>
-///// <param name="data"></param>
-//void CALLBACK power_callback(const std::int32_t power, void *data) {
-//    assert(data != nullptr);
-//    auto that = static_cast<tinkerforge_sensor_impl *>(data);
-//    std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
-//    const auto ts = timestamp::now();
-//    that->async_data[1] = static_cast<measurement::value_type>(power)
-//        / static_cast<measurement::value_type>(1000);
-//    that->invoke_callback(ts);   // TODO: Do we really want to invoke directly? How do we detect a consistent state?
-//}
-//
-///// <summary>
-///// The callback to be invoked for incoming asynchronous power
-///// readings from our modified firmware.
-///// </summary>
-///// <param name="power"></param>
-///// <param name="time"></param>
-///// <param name="data"></param>
-//void CALLBACK power_time_callback(const std::int32_t power,
-//        const std::uint32_t time, void *data) {
-//#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
-//    assert(data != nullptr);
-//    auto that = static_cast<tinkerforge_sensor_impl *>(data);
-//    std::lock_guard<decltype(that->async_lock)> l(that->async_lock);
-//    const auto ts = that->time_xlate(time, that->bricklet);
-//    //auto wall_time = create_timestamp(that->async_sampling.resolution());
-//    //::OutputDebugStringW((that->sensor_name + L" " + std::to_wstring(wall_time)
-//    //    + L" " + std::to_wstring(time)
-//    //    + L" " + std::to_wstring(wall_time - ts)
-//    //    + L"\r\n").c_str());
-//    that->async_data[1] = static_cast<measurement::value_type>(power)
-//        / static_cast<measurement::value_type>(1000);
-//    that->invoke_callback(ts);
-//#else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
-//    power_callback(power, data);
-//#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
-//}
 
-PWROWG_DETAIL_NAMESPACE_END
+/*
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::current_callback
+ */
+void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::current_callback(
+        _In_ const std::int32_t value,
+        _In_ void *data) {
+    typedef decltype(reading::floating_point) value_type;
+    assert(data != nullptr);
+    auto that = static_cast<tinkerforge_sensor *>(data);
+    PWROWG_NAMESPACE::sample sample(static_cast<value_type>(value)
+        / static_cast<value_type>(1000));
+    that->_callback(that->_index_current, &sample, 1, that->_context);
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::power_callback
+ */
+void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::power_callback(
+        _In_ const std::int32_t value,
+        _In_ void *data) {
+    typedef decltype(reading::floating_point) value_type;
+    assert(data != nullptr);
+    auto that = static_cast<tinkerforge_sensor *>(data);
+    PWROWG_NAMESPACE::sample sample(static_cast<value_type>(value)
+        / static_cast<value_type>(1000));
+    that->_callback(that->_index_power, &sample, 1, that->_context);
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::power_time_callback
+ */
+void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::power_time_callback(
+        _In_ const std::int32_t value,
+        _In_ const std::uint32_t time,
+        _In_ void *data) {
+#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
+    typedef decltype(reading::floating_point) value_type;
+    assert(data != nullptr);
+    auto that = static_cast<tinkerforge_sensor *>(data);
+    PWROWG_NAMESPACE::sample sample(static_cast<value_type>(value)
+        / static_cast<value_type>(1000));
+    const auto ts = that->_time_xlate(time, that->_bricklet);
+    //auto wall_time = create_timestamp(that->async_sampling.resolution());
+    //::OutputDebugStringW((that->sensor_name + L" " + std::to_wstring(wall_time)
+    //    + L" " + std::to_wstring(time)
+    //    + L" " + std::to_wstring(wall_time - ts)
+    //    + L"\r\n").c_str());
+    PWROWG_NAMESPACE::sample sample(ts, static_cast<value_type>(value)
+        / static_cast<value_type>(1000));
+    that->_callback(that->_index_power, &sample, 1, that->_context);
+#else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
+    power_callback(value, data);
+#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::same_bricklet
+ */
+bool PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::same_bricklet(
+        _In_ const sensor_description& lhs,
+        _In_ const sensor_description& rhs) {
+    auto pdl = sensor_description_builder::private_data<tinkerforge_scope>(lhs);
+    auto pdr = sensor_description_builder::private_data<tinkerforge_scope>(lhs);
+    return ((*pdl == *pdr) && equals(lhs.id(), rhs.id()));
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::sensor_mask
+ */
+PWROWG_NAMESPACE::sensor_type
+PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::sensor_mask(
+        _In_ const sensor_description& desc) {
+    const auto mask = sensor_type::power
+        | sensor_type::voltage
+        | sensor_type::current;
+    return (desc.sensor_type() & mask);
+}
 
 
 /*
@@ -77,25 +102,121 @@ PWROWG_DETAIL_NAMESPACE_END
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder&
 PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::specialise(
         _In_ sensor_description_builder& builder,
+        _In_ const tinkerforge_scope& scope,
         _In_ const tinkerforge_configuration::end_point& end_point,
         _In_ const tinkerforge_bricklet& bricklet,
-        _In_ const tinkerforge_sensor_source source,
-        _In_ const sensor_type type,
+        _In_ const PWROWG_NAMESPACE::sensor_type type,
         _In_ const reading_unit unit) {
+    const char *source = "unknown";
+
+    if ((type | sensor_type::current) != sensor_type::unknown) {
+        source = "current";
+    } else if ((type | sensor_type::power) != sensor_type::unknown) {
+        source = "power";
+    } else if ((type | sensor_type::voltage) != sensor_type::unknown) {
+        source = "voltage";
+    }
+
     return builder.with_id(bricklet.uid())
         .with_type(type | sensor_type::hardware)
-        .with_path("%s:%hu/%s/%ls",
+        .with_path("%s:%hu/%s/%s",
             end_point.name(),
             end_point.port(),
             bricklet.uid().c_str(),
-            to_string(source))
-        .with_name("Tinkerforge/%s:%hu/%s/%ls",
+            source)
+        .with_name("Tinkerforge/%s:%hu/%s/%s",
             end_point.name(),
             end_point.port(),
             bricklet.uid().c_str(),
-            to_string(source))
+            source)
         .measured_in(reading_unit::ampere)
-        .with_new_private_data<private_data>(end_point, source);
+        .with_private_data<tinkerforge_scope>(scope);
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::voltage_callback
+ */
+void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::voltage_callback(
+        _In_ const std::int32_t value,
+        _In_ void *data) {
+    typedef decltype(reading::floating_point) value_type;
+    assert(data != nullptr);
+    auto that = static_cast<tinkerforge_sensor *>(data);
+    PWROWG_NAMESPACE::sample sample(static_cast<value_type>(value)
+        / static_cast<value_type>(1000));
+    that->_callback(that->_index_voltage, &sample, 1, that->_context);
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::disable_callbacks
+ */
+void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::disable_callbacks(void) {
+    // First of all, disable the callbacks that run in the communication thread
+    // of the Tinkerforge device. Note that we must *not* clear the context,
+    // because the whole registration is not thread-safe. We therefore have to
+    // assume that the callback might have already been copied to a local
+    // variable whereas the context has not. In this case, we would risk
+    // invoking a valid callback with an invalid context if we set the context
+    // to nullptr, too.
+    ::voltage_current_v2_register_callback(&this->_bricklet,
+        VOLTAGE_CURRENT_V2_CALLBACK_CURRENT,
+        nullptr,
+        this);
+    ::voltage_current_v2_register_callback(&this->_bricklet,
+        VOLTAGE_CURRENT_V2_CALLBACK_POWER,
+        nullptr,
+        this);
+    ::voltage_current_v2_register_callback(&this->_bricklet,
+        VOLTAGE_CURRENT_V2_CALLBACK_VOLTAGE,
+        nullptr,
+        this);
+
+    if (this->has_internal_time()) {
+        ::voltage_current_v2_register_callback(&this->_bricklet,
+            VOLTAGE_CURRENT_V2_CALLBACK_POWER,
+            nullptr,
+            this);
+    }
+
+    // At this point, we can be sure that any callback can run only once (if it
+    // was already running). Therefore, we now prevent the hardware from pushing
+    // new data to the software. Disabling the following does not suffice to
+    // stop valid callbacks from being invoked, because these calls might have
+    // already been invoked by queued data that the bricklet has pushed to the
+    // host code.
+    {
+        auto status = ::voltage_current_v2_set_current_callback_configuration(
+            &this->_bricklet, 0, false, 'x', 0, 0);
+        if (status < 0) {
+            throw tinkerforge_exception(status);
+        }
+    }
+
+    {
+        auto status = ::voltage_current_v2_set_power_callback_configuration(
+            &this->_bricklet, 0, false, 'x', 0, 0);
+        if (status < 0) {
+            throw tinkerforge_exception(status);
+        }
+    }
+
+    {
+        auto status = ::voltage_current_v2_set_voltage_callback_configuration(
+            &this->_bricklet, 0, false, 'x', 0, 0);
+        if (status < 0) {
+            throw tinkerforge_exception(status);
+        }
+    }
+
+    if (this->has_internal_time()) {
+        auto status = ::voltage_current_v2_set_power_time_callback_configuration(
+            &this->_bricklet, false);
+        if (status < 0) {
+            throw tinkerforge_exception(status);
+        }
+    }
 }
 
 
@@ -104,15 +225,22 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::specialise(
  */
 PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::tinkerforge_sensor(
         _In_ tinkerforge_scope scope,
-        _In_z_ const char *uid,
-        _In_ const tinkerforge_sensor_source source)
-        : _scope(scope), _source(source) {
+        _In_z_ const wchar_t *uid,
+        _In_ const std::size_t index_power,
+        _In_ const std::size_t index_voltage,
+        _In_ const std::size_t index_current)
+    : _callback(nullptr),
+        _context(nullptr),
+        _index_current(index_current),
+        _index_power(index_power),
+        _index_voltage(index_voltage),
+        _scope(scope) {
     if (uid == nullptr) {
         throw std::invalid_argument("The UID of the voltage/current bricklet "
             "must not be null.");
     }
 
-    this->_uid = uid;
+    this->_uid = PWROWG_NAMESPACE::convert_string<char>(uid);
     ::voltage_current_v2_create(&this->_bricklet, this->_uid.c_str(),
         this->_scope);
 
@@ -272,347 +400,123 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::resync_internal_clock_after(
 }
 
 
-#if false
-#include <cassert>
-#include <chrono>
-#include <thread>
-#include <vector>
-
-#include <bricklet_voltage_current_v2.h>
-
-#include "tinkerforge_exception.h"
-#include "tinkerforge_sensor_impl.h"
-#include "zero_memory.h"
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::for_all
- */
-std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::for_all(
-        _Out_writes_opt_(cnt_sensors) tinkerforge_sensor *out_sensors,
-        _In_ const std::size_t cnt_sensors,
-        _In_ const std::size_t timeout,
-        _In_opt_z_ const char *host,
-        _In_ const std::uint16_t port) {
-    if ((out_sensors == nullptr) || (cnt_sensors == 0)) {
-        return tinkerforge_sensor::get_definitions(nullptr, 0, timeout, host,
-            port);
-
-    } else {
-        std::vector<tinkerforge_sensor_definition> descs(cnt_sensors);
-        auto retval = tinkerforge_sensor::get_definitions(descs.data(),
-            descs.size(), timeout, host, port);
-
-        // Handle potential attachment of sensors between measurment call and
-        // actual instantiation call.
-        if (retval < cnt_sensors) {
-            retval = cnt_sensors;
-        }
-
-        for (std::size_t i = 0; i < retval; ++i) {
-            out_sensors[i] = tinkerforge_sensor(descs[i]);
-        }
-
-        return retval;
-    }
-}
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::for_all
- */
-std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::for_all(
-        _Out_writes_opt_(cnt_sensors) tinkerforge_sensor *out_sensors,
-        _In_ const std::size_t cnt_sensors,
-        _In_opt_z_ const wchar_t *host,
-        _In_ const std::uint16_t port,
-        _In_ const std::size_t timeout) {
-    auto h = convert_string<char>(host);
-    return for_all(out_sensors, cnt_sensors, timeout, h.c_str(), port);
-}
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::get_definitions
- */
-std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::get_definitions(
-        _When_(dst != nullptr, _Out_writes_opt_(cnt))
-        tinkerforge_sensor_definition *dst,
-        _In_ const std::size_t cnt,
-        _In_ const std::size_t timeout,
-        _In_opt_z_ const char *host,
-        _In_ const std::uint16_t port) {
-    typedef detail::tinkerforge_bricklet bricklet_type;
-
-    try {
-        std::vector<bricklet_type> bricklets;
-        const auto h = (host != nullptr) ? host : default_host;
-        detail::tinkerforge_scope scope(h, port);
-
-        auto retval = scope.copy_bricklets(
-            std::back_inserter(bricklets),
-            [](const bricklet_type& b) { return (b.device_type()
-                == VOLTAGE_CURRENT_V2_DEVICE_IDENTIFIER); },
-            std::chrono::milliseconds(timeout),
-            cnt);
-
-        if (dst != nullptr) {
-            for (std::size_t i = 0; (i < cnt) && (i < retval); ++i) {
-                dst[i] = tinkerforge_sensor_definition(
-                    bricklets[i].uid().c_str());
-            }
-        }
-
-        return retval;
-    } catch (tinkerforge_exception) {
-        // If the connection failed in the scope, we do not have any bricklets.
-        // This is typically caused by brickd not running on 'host'.
-        return 0;
-    }
-}
-
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::tinkerforge_sensor
- */
-PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::tinkerforge_sensor(
-        _In_z_ const char *uid,
-        _In_opt_z_ const wchar_t *description,
-        _In_opt_z_ const char *host,
-        _In_ const std::uint16_t port) : _impl(nullptr) {
-    this->_impl = new detail::tinkerforge_sensor_impl(
-        (host != nullptr) ? host : default_host,
-        port,
-        uid);
-
-    if (description != nullptr) {
-        this->_impl->description = description;
-    }
-}
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::tinkerforge_sensor
- */
-PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::tinkerforge_sensor(
-        _In_ const tinkerforge_sensor_definition& definition,
-        _In_opt_z_ const char *host,
-        _In_ const std::uint16_t port) : _impl(nullptr) {
-    this->_impl = new detail::tinkerforge_sensor_impl(
-        (host != nullptr) ? host : default_host,
-        port,
-        definition.uid());
-
-    if (definition.description() != nullptr) {
-        this->_impl->description = definition.description();
-    }
-}
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::~tinkerforge_sensor
- */
-PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::~tinkerforge_sensor(
-        void) {
-    delete this->_impl;
-}
-
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::description
- */
-_Ret_maybenull_z_ const wchar_t *
-PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::description(
-        void) const noexcept {
-    if (this->_impl != nullptr) {
-        return this->_impl->description.c_str();
-    } else {
-        return nullptr;
-    }
-}
-
-
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::name
- */
-_Ret_maybenull_z_ const wchar_t *
-PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::name(void) const noexcept {
-    if (this->_impl != nullptr) {
-        return this->_impl->sensor_name.c_str();
-    } else {
-        return nullptr;
-    }
-}
-
-
-
-
 /*
  * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::sample
  */
 void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::sample(
-        _In_opt_ const measurement_callback on_measurement,
-        _In_ const tinkerforge_sensor_source source,
-        _In_ const microseconds_type period,
+        _In_opt_ const sensor_array_callback callback,
+        _In_ const std::chrono::milliseconds interval,
         _In_opt_ void *context) {
-#if defined(_WIN32)
-    ::OutputDebugStringW(L"PWROWG DEPRECATION WARNING: This method is only "
-        L"provided for backwards compatibility and might be removed in "
-        L"future versions of the library. Use async_sampling to configure "
-        L"asynchronous sampling.\r\n");
-#endif /* defined(_WIN32) */
-    this->check_not_disposed();
-    this->sample_async(std::move(async_sampling()
-        .samples_every(period)
-        .delivers_measurements_to(on_measurement)
-        .passes_context(context)));
-}
+    if (callback != nullptr) {
+        // If a valid callback is provided, enable the sensor.
+        this->_state.begin_start();
 
+        this->_callback = callback;
+        this->_context = context;
 
-/*
- * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::operator =
- */
-PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor&
-PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::operator =(
-        _In_ tinkerforge_sensor&& rhs) noexcept {
-    if (this != std::addressof(rhs)) {
-        delete this->_impl;
-        this->_impl = rhs._impl;
-        rhs._impl = nullptr;
+        if (this->_index_current < invalid_index) {
+            this->enable_current_callback(interval);
+        }
+
+        if (this->_index_power < invalid_index) {
+            this->enable_power_callback(interval);
+        }
+
+        if (this->_index_voltage < invalid_index) {
+            this->enable_voltage_callback(interval);
+        }
+
+        this->_state.end_start();
+
+    } else {
+        // Disable asynchronous sampling if there is no callback.
+        this->_state.begin_stop();
+        this->disable_callbacks();
+        this->_context = context;
+        this->_state.end_stop();
     }
-
-    return *this;
 }
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::operator bool
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::enable_current_callback
  */
-PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::operator bool(
-        void) const noexcept {
-    return (this->_impl != nullptr);
-}
+void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::enable_current_callback(
+        _In_ const std::chrono::milliseconds interval) {
+    ::voltage_current_v2_register_callback(&this->_bricklet,
+        VOLTAGE_CURRENT_V2_CALLBACK_CURRENT,
+        reinterpret_cast<void (*)(void)>(current_callback),
+        this);
 
-
-/*
- * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::sample_async
- */
-void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::sample_async(
-        _Inout_ async_sampling&& sampling) {
-    static constexpr auto one = static_cast<microseconds_type>(1);
-    static constexpr auto thousand = static_cast<microseconds_type>(1000);
-
-    this->check_not_disposed();
-
-    std::lock_guard<decltype(this->_impl->async_lock)> l(
-        this->_impl->async_lock);
-    const auto enabled = static_cast<bool>(this->_impl->async_sampling);
-    if (enabled && sampling) {
-        throw std::logic_error("Asynchronous sampling cannot be started while "
-            "it is already running.");
+    auto status = ::voltage_current_v2_set_current_callback_configuration(
+        &this->_bricklet,
+        static_cast<std::int32_t>(interval.count()),
+        false,
+        'x',
+        0,
+        0);
+    if (status < 0) {
+        throw tinkerforge_exception(status);
     }
+}
 
-    if ((this->_impl->async_sampling = std::move(sampling))) {
-        // Callback is non-null, so user wants to enable asynchronous sampling.
 
-        try {
-            const auto& config = this->_impl->async_sampling;
-            const auto millis = static_cast<std::int32_t>((std::max)(one,
-                config.interval() / thousand));
-            const auto source = config.tinkerforge_sensor_source();
+/*
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::enable_power_callback
+ */
+void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::enable_power_callback(
+        _In_ const std::chrono::milliseconds interval) {
+    if (this->has_internal_time()) {
+        ::voltage_current_v2_register_callback(&this->_bricklet,
+            VOLTAGE_CURRENT_V2_CALLBACK_POWER_TIME,
+            reinterpret_cast<void (*)(void)>(power_time_callback),
+            this);
 
-            if (source == tinkerforge_sensor_source::all) {
-                // Enable all sensor readings.
-                this->_impl->enable_callbacks(millis);
-
-            } else {
-                // Enable individual sensor readings.
-                if ((source & tinkerforge_sensor_source::current)
-                        == tinkerforge_sensor_source::current) {
-                    this->_impl->enable_current_callback(millis);
-                }
-                if ((source & tinkerforge_sensor_source::power)
-                        == tinkerforge_sensor_source::power) {
-                    this->_impl->enable_power_callback(millis);
-                }
-                if ((source & tinkerforge_sensor_source::voltage)
-                        == tinkerforge_sensor_source::voltage) {
-                    this->_impl->enable_voltage_callback(millis);
-                }
-            }
-
-        } catch (...) {
-            // Clear the guard in case the operation failed.
-            this->_impl->async_sampling.is_disabled();
-            throw;
+        auto status = ::voltage_current_v2_set_power_time_callback_configuration(
+            &this->_bricklet,
+            true);
+        if (status < 0) {
+            throw tinkerforge_exception(status);
         }
 
     } else {
-        // If sampling was enabled, disable it.
-        if (enabled) {
-            this->_impl->disable_callbacks();
+        ::voltage_current_v2_register_callback(&this->_bricklet,
+            VOLTAGE_CURRENT_V2_CALLBACK_POWER,
+            reinterpret_cast<void (*)(void)>(power_callback),
+            this);
+
+        auto status = ::voltage_current_v2_set_power_callback_configuration(
+            &this->_bricklet,
+            static_cast<std::int32_t>(interval.count()),
+            false,
+            'x',
+            0,
+            0);
+        if (status < 0) {
+            throw tinkerforge_exception(status);
         }
     }
 }
-
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::sample_sync
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::enable_voltage_callback
  */
-PWROWG_DETAIL_NAMESPACE::measurement_data
-PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::sample_sync(void) const {
-    this->check_not_disposed();
+void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::enable_voltage_callback(
+        _In_ const std::chrono::milliseconds interval) {
+    ::voltage_current_v2_register_callback(&this->_bricklet,
+        VOLTAGE_CURRENT_V2_CALLBACK_VOLTAGE,
+        reinterpret_cast<void (*)(void)>(voltage_callback),
+        this);
 
-    static const auto thousand = static_cast<measurement::value_type>(1000);
-    std::int32_t current = 0;   // Current in mA.
-    std::int32_t power = 0;     // Power in mW.
-    std::int32_t voltage = 0;   // Voltage in mV.
-    auto timestamp = power_overwhelming::timestamp::now();
-
-    {
-        auto status = ::voltage_current_v2_get_voltage(&this->_impl->bricklet,
-            &voltage);
-        if (status < 0) {
-            throw tinkerforge_exception(status);
-        }
+    auto status = ::voltage_current_v2_set_voltage_callback_configuration(
+        &this->_bricklet,
+        static_cast<std::int32_t>(interval.count()),
+        false,
+        'x',
+        0,
+        0);
+    if (status < 0) {
+        throw tinkerforge_exception(status);
     }
-
-    {
-        auto status = ::voltage_current_v2_get_current(&this->_impl->bricklet,
-            &voltage);
-        if (status < 0) {
-            throw tinkerforge_exception(status);
-        }
-    }
-
-    if (this->_impl->has_internal_time()) {
-        std::uint32_t time;
-        auto status = ::voltage_current_v2_get_power_time(
-            &this->_impl->bricklet, &power, &time);
-        if (status < 0) {
-            throw tinkerforge_exception(status);
-        }
-
-#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
-        timestamp = this->_impl->time_xlate(time, this->_impl->bricklet);
-#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
-
-    } else {
-        auto status = ::voltage_current_v2_get_power(&this->_impl->bricklet,
-            &power);
-        if (status < 0) {
-            throw tinkerforge_exception(status);
-        }
-    }
-
-    return measurement_data(timestamp,
-        static_cast<measurement::value_type>(voltage) / thousand,
-        static_cast<measurement::value_type>(current) / thousand,
-        static_cast<measurement::value_type>(power) / thousand);
 }
-#endif

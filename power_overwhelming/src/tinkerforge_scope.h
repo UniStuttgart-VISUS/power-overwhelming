@@ -131,7 +131,21 @@ public:
     /// </remarks>
     /// <returns>The IP connection, which is guaranteed to be valid and
     /// connected for any valid instance of the scope.</returns>
-    inline operator IPConnection *(void) {
+    inline operator IPConnection *(void) noexcept {
+        return std::addressof(this->_scope->connection);
+    }
+
+    /// <summary>
+    /// Converts the scope into the embedded <see cref="IPConnection" />.
+    /// </summary>
+    /// <remarks>
+    /// Callers must not destroy the connection returned under any
+    /// circumstance. Callers must also not keep local copies of the
+    /// value returned.
+    /// </remarks>
+    /// <returns>The IP connection, which is guaranteed to be valid and
+    /// connected for any valid instance of the scope.</returns>
+    inline operator const IPConnection *(void) const noexcept {
         return std::addressof(this->_scope->connection);
     }
 

@@ -40,53 +40,53 @@ enum class sensor_type : std::uint32_t {
 
     /// <summary>
     /// The sensor measures the whole system power draw.
-    /// /<summary>
+    /// </summary>
     system = 0x00000002,
 
     /// <summary>
     /// The sensor measures the CPU power draw.
-    /// /<summary>
+    /// </summary>
     cpu = 0x00000004,
 
     /// <summary>
     /// The sensor measures the GPU power draw.
-    /// /<summary>
+    /// </summary>
     gpu = 0x00000008,
 
     /// <summary>
     /// The sensor provides power readings.
-    /// /<summary>
+    /// </summary>
     power = 0x00010000,
 
     /// <summary>
     /// The sensor provides voltage readings.
-    /// /<summary>
+    /// </summary>
     voltage = 0x00020000,
 
     /// <summary>
     /// The sensor provides current readings.
-    /// /<summary>
+    /// </summary>
     current = 0x00040000,
 
     /// <summary>
     /// The sensor provides temperature readings.
-    /// /<summary>
+    /// </summary>
     temperature = 0x00080000,
 
     /// <summary>
     /// The sensor indicates the throttling state of the device.
-    /// /<summary>
+    /// </summary>
     throttling = 0x00100000,
 
     /// <summary>
     /// The sensor is a software sensor which obtains its data from the driver
     /// or operating system.
-    /// /<summary>
+    /// </summary>
     software = 0x10000000,
 
     /// <summary>
     /// The sensor uses dedicated hardware.
-    /// /<summary>
+    /// </summary>
     hardware = 0x2000000
 };
 

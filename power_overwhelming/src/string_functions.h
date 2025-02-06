@@ -30,6 +30,44 @@
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
 /// <summary>
+/// Compare two strings.
+/// </summary>
+/// <remarks>
+/// This function is only exported from the library for testing purposes.
+/// </remarks>
+/// <param name="lhs">The left-hand side string. It is safe to
+/// pass <c>nullptr</c>, in which case it is assumed to be smaller.</param>
+/// <param name="rhs">The right-hand side string. It is safe to
+/// pass <c>nullptr</c>, in which case it is assumed to be smaller.</param>
+/// <param name="ignore_case">If <c>true</c>, consider both strings equal if
+/// they only differ in case. If <c>false</c>, which is the default, both
+/// strings must match exactly.</param>
+/// <returns>A negative number, if <paramref name="lhs" /> is smaller, a
+/// positive number if it is larger and zero if both strings are the same.
+/// </returns>
+extern PWROWG_TEST_API int compare(_In_opt_z_ const char *lhs,
+    _In_opt_z_ const char *rhs, _In_ const bool ignore_case = false);
+
+/// <summary>
+/// Compare two strings.
+/// </summary>
+/// <remarks>
+/// This function is only exported from the library for testing purposes.
+/// </remarks>
+/// <param name="lhs">The left-hand side string. It is safe to
+/// pass <c>nullptr</c>, in which case it is assumed to be smaller.</param>
+/// <param name="rhs">The right-hand side string. It is safe to
+/// pass <c>nullptr</c>, in which case it is assumed to be smaller.</param>
+/// <param name="ignore_case">If <c>true</c>, consider both strings equal if
+/// they only differ in case. If <c>false</c>, which is the default, both
+/// strings must match exactly.</param>
+/// <returns>A negative number, if <paramref name="lhs" /> is smaller, a
+/// positive number if it is larger and zero if both strings are the same.
+/// </returns>
+extern PWROWG_TEST_API int compare(_In_opt_z_ const wchar_t *lhs,
+    _In_opt_z_ const wchar_t *rhs, _In_ const bool ignore_case = false);
+
+/// <summary>
 /// Copies an STL string into a character buffer provided the destination
 /// buffer is sufficiently large.
 /// </summary>
@@ -52,7 +90,7 @@ bool copy_string(_When_(dst != nullptr, _Out_writes_opt_(cnt)) TChar *dst,
 /// <summary>
 /// Tests two strings for equality.
 /// </summary>
-    /// <remarks>
+/// <remarks>
 /// This function is only exported from the library for testing purposes.
 /// </remarks>
 /// <param name="lhs">The left-hand side string. It is safe to
@@ -68,13 +106,16 @@ bool copy_string(_When_(dst != nullptr, _Out_writes_opt_(cnt)) TChar *dst,
 /// strings must match exactly.</param>
 /// <returns><c>true</c> if both strings are equal, <c>false</c> otherwise.
 /// </returns>
-POWER_OVERWHELMING_API bool equals(_In_opt_z_ const char *lhs,
-    _In_opt_z_ const char *rhs, _In_ const bool ignore_case = false);
+inline PWROWG_TEST_API bool equals(_In_opt_z_ const char *lhs,
+        _In_opt_z_ const char *rhs,
+        _In_ const bool ignore_case = false) {
+    return (compare(lhs, rhs, ignore_case) == 0);
+}
 
 /// <summary>
 /// Tests two strings for equality.
 /// </summary>
-    /// <remarks>
+/// <remarks>
 /// This function is only exported from the library for testing purposes.
 /// </remarks>
 /// <param name="lhs">The left-hand side string. It is safe to
@@ -90,9 +131,11 @@ POWER_OVERWHELMING_API bool equals(_In_opt_z_ const char *lhs,
 /// strings must match exactly.</param>
 /// <returns><c>true</c> if both strings are equal, <c>false</c> otherwise.
 /// </returns>
-POWER_OVERWHELMING_API bool equals(_In_opt_z_ const wchar_t *lhs,
-    _In_opt_z_ const wchar_t *rhs, _In_ const bool ignore_case = false);
-
+inline PWROWG_TEST_API bool equals(_In_opt_z_ const wchar_t *lhs,
+        _In_opt_z_ const wchar_t *rhs,
+        _In_ const bool ignore_case = false) {
+    return (compare(lhs, rhs, ignore_case) == 0);
+}
 
 /// <summary>
 /// Tests two strings for equality.
@@ -199,7 +242,7 @@ std::string format_string(_In_z_ const char *format, TArgs&&... args);
 /// <param name="str">The string to be parsed.</param>
 /// <returns>The number represented by the given string or zero in case
 /// the string does not represent a number.</returns>
-POWER_OVERWHELMING_API float parse_float(_In_opt_z_ const char *str);
+extern PWROWG_TEST_API float parse_float(_In_opt_z_ const char *str);
 
 /// <summary>
 /// Parse the given text as signed integer number.
@@ -210,7 +253,7 @@ POWER_OVERWHELMING_API float parse_float(_In_opt_z_ const char *str);
 /// <param name="str">The string to be parsed.</param>
 /// <returns>The number represented by the given string or zero in case
 /// the string does not represent a number.</returns>
-POWER_OVERWHELMING_API int parse_int(_In_opt_z_ const char *str);
+extern PWROWG_TEST_API  int parse_int(_In_opt_z_ const char *str);
 
 /// <summary>
 /// Parse the given text as unsigned integer number.
@@ -221,7 +264,7 @@ POWER_OVERWHELMING_API int parse_int(_In_opt_z_ const char *str);
 /// <param name="str">The string to be parsed.</param>
 /// <returns>The number represented by the given string or zero in case
 /// the string does not represent a number.</returns>
-POWER_OVERWHELMING_API unsigned int parse_uint(_In_opt_z_ const char *str);
+extern PWROWG_TEST_API  unsigned int parse_uint(_In_opt_z_ const char *str);
 
 /// <summary>
 /// Remove all white-space characters from <paramref name="str" />.
@@ -501,74 +544,74 @@ inline TChar *trim_begin(_In_opt_z_ TChar *str) {
 
 /// <summary>
 /// Determine the last character from the end of the given string for which
-    /// <paramref name="predicate" /> does still hold. If this pointer is used
-    /// as the new end of the string, all characters at the end for which the
-    /// <paramref name="predicate" /> holds are trimmed away.
-    /// </summary>
-    /// <typeparam name="TChar">The type of the character in the string.
-    /// </typeparam>
-    /// <typeparam name="TPredicate">The type of the predicate functor, which
-    /// must take a character of type <typeparamref name="TChar" /> and return a
-    /// <c>bool</c>.</typeparam>
-    /// <param name="str">The string to be trimmed. It is safe to pass
-    /// <c>nullptr</c>, in which case the result will be <c>nullptr</c>, too.
-    /// </param>
-    /// <param name="predicate">The predicate that all characters that are to be
-    /// removed must fulfil.</param>
-    /// <returns>A pointer to the last character from the end for which the
-    /// <paramref name="predicate" /> still holds.</returns>
-    template<class TChar, class TPredicate>
-    _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
-    TChar *trim_end_if(_In_opt_z_ TChar *str, _In_ const TPredicate& predicate);
+/// <paramref name="predicate" /> does still hold. If this pointer is used
+/// as the new end of the string, all characters at the end for which the
+/// <paramref name="predicate" /> holds are trimmed away.
+/// </summary>
+/// <typeparam name="TChar">The type of the character in the string.
+/// </typeparam>
+/// <typeparam name="TPredicate">The type of the predicate functor, which
+/// must take a character of type <typeparamref name="TChar" /> and return a
+/// <c>bool</c>.</typeparam>
+/// <param name="str">The string to be trimmed. It is safe to pass
+/// <c>nullptr</c>, in which case the result will be <c>nullptr</c>, too.
+/// </param>
+/// <param name="predicate">The predicate that all characters that are to be
+/// removed must fulfil.</param>
+/// <returns>A pointer to the last character from the end for which the
+/// <paramref name="predicate" /> still holds.</returns>
+template<class TChar, class TPredicate>
+_When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
+TChar *trim_end_if(_In_opt_z_ TChar *str, _In_ const TPredicate& predicate);
 
-    /// <summary>
-    /// Determine the last whitespace character from the end of the given
-    /// string. If this pointer is used as the end of the new string, all spaces
-    /// have been trimmed from the end.
-    /// </summary>
-    /// <typeparam name="TChar">The type of the character in the string.
-    /// </typeparam>
-    /// <param name="str">The string to be trimmed. It is safe to pass
-    /// <c>nullptr</c>, in which case the result will be <c>nullptr</c>, too.
-    /// </param>
-    /// <returns>A pointer to the last character from the end of the string that
-    /// is a white space character.</returns>
-    template<class TChar>
-    _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
-    inline TChar *trim_end(_In_opt_z_ TChar *str) {
-        return trim_end_if(str, [](const TChar c) { return std::isspace(c); });
-    }
+/// <summary>
+/// Determine the last whitespace character from the end of the given
+/// string. If this pointer is used as the end of the new string, all spaces
+/// have been trimmed from the end.
+/// </summary>
+/// <typeparam name="TChar">The type of the character in the string.
+/// </typeparam>
+/// <param name="str">The string to be trimmed. It is safe to pass
+/// <c>nullptr</c>, in which case the result will be <c>nullptr</c>, too.
+/// </param>
+/// <returns>A pointer to the last character from the end of the string that
+/// is a white space character.</returns>
+template<class TChar>
+_When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
+inline TChar *trim_end(_In_opt_z_ TChar *str) {
+    return trim_end_if(str, [](const TChar c) { return std::isspace(c); });
+}
 
-    /// <summary>
-    /// Terminates the given string at the first occurrence of a new line.
-    /// </summary>
-    /// <typeparam name="TChar">The type of the character in the string.
-    /// </typeparam>
-    /// <param name="str">The string to be trimmed. It is safe to pass
-    /// <c>nullptr</c>, in which case nothing will be done.</param>
-    template<class TChar> void trim_eol(_In_opt_z_ TChar *str);
+/// <summary>
+/// Terminates the given string at the first occurrence of a new line.
+/// </summary>
+/// <typeparam name="TChar">The type of the character in the string.
+/// </typeparam>
+/// <param name="str">The string to be trimmed. It is safe to pass
+/// <c>nullptr</c>, in which case nothing will be done.</param>
+template<class TChar> void trim_eol(_In_opt_z_ TChar *str);
 
-    /// <summary>
-    /// Removes all characters matching the given predicate from the begin and
-    /// end of the given string.
-    /// </summary>
-    /// <typeparam name="TChar">The type of the character in the string.
-    /// </typeparam>
-    /// <typeparam name="TPredicate">The type of the predicate functor, which
-    /// must take a character of type <typeparamref name="TChar" /> and return a
-    /// <c>bool</c>.</typeparam>
-    /// <param name="str">The string to be trimmed. It is safe to pass
-    /// <c>nullptr</c>, in which case the result will be <c>nullptr</c>, too.
-    /// </param>
-    /// <param name="predicate">The predicate that all characters to be removed
-    /// must fulfil.</param>
-    /// <returns>A pointer to the first character in <paramref name="str" /> for
-    /// which <paramref name="predicate" /> does not hold any more. The
-    /// characters at the end will be trimmed by setting the null-terminating
-    /// character accordingly.</returns>
-    template<class TChar, class TPredicate>
-    _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
-    TChar *trim_if(_In_opt_z_ TChar *str, _In_ const TPredicate& predicate);
+/// <summary>
+/// Removes all characters matching the given predicate from the begin and
+/// end of the given string.
+/// </summary>
+/// <typeparam name="TChar">The type of the character in the string.
+/// </typeparam>
+/// <typeparam name="TPredicate">The type of the predicate functor, which
+/// must take a character of type <typeparamref name="TChar" /> and return a
+/// <c>bool</c>.</typeparam>
+/// <param name="str">The string to be trimmed. It is safe to pass
+/// <c>nullptr</c>, in which case the result will be <c>nullptr</c>, too.
+/// </param>
+/// <param name="predicate">The predicate that all characters to be removed
+/// must fulfil.</param>
+/// <returns>A pointer to the first character in <paramref name="str" /> for
+/// which <paramref name="predicate" /> does not hold any more. The
+/// characters at the end will be trimmed by setting the null-terminating
+/// character accordingly.</returns>
+template<class TChar, class TPredicate>
+_When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
+TChar *trim_if(_In_opt_z_ TChar *str, _In_ const TPredicate& predicate);
 
 PWROWG_DETAIL_NAMESPACE_END
 

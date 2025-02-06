@@ -207,7 +207,7 @@ public:
     /// <param name="args"></param>
     /// <returns></returns>
     template<class TType, class... TArgs>
-    sensor_description_builder& with_new_private_data(_In_ TArgs&&... args) {
+    sensor_description_builder& with_new_private_data(TArgs&&... args) {
         this->_desc._private = type_erased_storage(
             TType(std::forward<TArgs>(args)...));
         return *this;

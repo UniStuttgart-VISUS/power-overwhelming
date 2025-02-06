@@ -28,6 +28,11 @@ PWROWG_NAMESPACE_BEGIN
 /// Provides additional configuration options for Tingerforge-based sensors when
 /// creating a <see cref="sensor_array" />.
 /// </summary>
+/// <remarks>
+/// <para>Note that the configuration object will keep the connection with the
+/// bricks alive. Releasing all sensors is not sufficient to close all
+/// connections.</para>
+/// </remarks>
 class POWER_OVERWHELMING_API tinkerforge_configuration final
         : public sensor_configuration {
 

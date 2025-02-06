@@ -65,6 +65,17 @@ public:
     }
 
     /// <summary>
+    /// Answer whether all bits of <paramref name="test" /> are set in the
+    /// sensor type.
+    /// </summary>
+    /// <param name="test">The bits to be tested.</param>
+    /// <returns><c>true</c> if all bits are set, <c>false</c> otherwise.
+    /// </returns>
+    inline bool is_sensor_type(_In_ sensor_type test) const noexcept {
+        return ((this->_sensor_type & test) == test);
+    }
+
+    /// <summary>
     /// Gets a user-defined label for the sensor.
     /// </summary>
     /// <returns>A pointer to the label of the sensor.</returns>

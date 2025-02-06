@@ -12,57 +12,57 @@
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::equals
+ * PWROWG_DETAIL_NAMESPACE::compare
  */
-bool PWROWG_DETAIL_NAMESPACE::equals(_In_opt_z_ const char *lhs,
+int PWROWG_DETAIL_NAMESPACE::compare(_In_opt_z_ const char *lhs,
         _In_opt_z_ const char *rhs,
         _In_ const bool ignore_case) {
     if (lhs == rhs) {
         // Trivial equality.
-        return true;
+        return 0;
     }
 
     if ((lhs == nullptr) || (rhs == nullptr)) {
         // Trivial inequality after test of pointer equality.
-        return false;
+        return 0;
     }
 
     if (ignore_case) {
 #if defined(_WIN32)
-        return (::stricmp(lhs, rhs) == 0);
+        return ::stricmp(lhs, rhs);
 #else /* defined(_WIN32) */
-        return (::strcasecmp(lhs, rhs) == 0);
+        return ::strcasecmp(lhs, rhs);
 #endif /* defined(_WIN32) */
     } else {
-        return (::strcmp(lhs, rhs) == 0);
+        return ::strcmp(lhs, rhs);
     }
 }
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::equals
+ * PWROWG_DETAIL_NAMESPACE::compare
  */
-bool PWROWG_DETAIL_NAMESPACE::equals(_In_opt_z_ const wchar_t *lhs,
+int PWROWG_DETAIL_NAMESPACE::compare(_In_opt_z_ const wchar_t *lhs,
         _In_opt_z_ const wchar_t *rhs,
         _In_ const bool ignore_case) {
     if (lhs == rhs) {
         // Trivial equality.
-        return true;
+        return 0;
     }
 
     if ((lhs == nullptr) || (rhs == nullptr)) {
         // Trivial inequality after test of pointer equality.
-        return false;
+        return 0;
     }
 
     if (ignore_case) {
 #if defined(_WIN32)
-        return (::wcsicmp(lhs, rhs) == 0);
+        return ::wcsicmp(lhs, rhs);
 #else /* defined(_WIN32) */
-        return (::wcscasecmp(lhs, rhs) == 0);
+        return ::wcscasecmp(lhs, rhs);
 #endif /* defined(_WIN32) */
     } else {
-        return (::wcscmp(lhs, rhs) == 0);
+        return ::wcscmp(lhs, rhs);
     }
 }
 
