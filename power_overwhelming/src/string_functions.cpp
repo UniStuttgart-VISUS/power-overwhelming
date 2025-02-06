@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <cwchar>
+#include <limits>
 #include <stdexcept>
 
 
@@ -22,9 +23,12 @@ int PWROWG_DETAIL_NAMESPACE::compare(_In_opt_z_ const char *lhs,
         return 0;
     }
 
-    if ((lhs == nullptr) || (rhs == nullptr)) {
-        // Trivial inequality after test of pointer equality.
-        return 0;
+    if (lhs == nullptr) {
+        return std::numeric_limits<int>::lowest();
+    }
+
+    if (rhs == nullptr) {
+        return (std::numeric_limits<int>::max)();
     }
 
     if (ignore_case) {
@@ -50,9 +54,12 @@ int PWROWG_DETAIL_NAMESPACE::compare(_In_opt_z_ const wchar_t *lhs,
         return 0;
     }
 
-    if ((lhs == nullptr) || (rhs == nullptr)) {
-        // Trivial inequality after test of pointer equality.
-        return 0;
+    if (lhs == nullptr) {
+        return std::numeric_limits<int>::lowest();
+    }
+
+    if (rhs == nullptr) {
+        return (std::numeric_limits<int>::max)();
     }
 
     if (ignore_case) {
