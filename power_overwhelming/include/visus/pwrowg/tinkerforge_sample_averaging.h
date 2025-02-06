@@ -22,7 +22,7 @@ PWROWG_NAMESPACE_BEGIN
 /// Constants are taken from
 /// https://www.tinkerforge.com/de/doc/Software/Bricklets/VoltageCurrentV2_Bricklet_C.html#voltage-current-v2-bricklet-c-api
 /// </remarks>
-enum class sample_averaging : std::uint8_t {
+enum class tinkerforge_sample_averaging : std::uint8_t {
 
     /// <summary>
     /// Return the latest sample.

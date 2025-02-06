@@ -29,7 +29,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// device in a sensor array which samples all ADL data. The reason for that is
 /// that ADL returns everything in one batch from the device.</para>
 /// </remarks>
-class adl_sensor final : public sensor {
+class PWROWG_TEST_API adl_sensor final : public sensor {
 
 public:
 
@@ -295,7 +295,7 @@ private:
     /// Remembers whether the sensor is running and sampling asynchronously
     /// to <see cref="start_output" />.
     /// </summary>
-    std::atomic<sensor_state> _state;
+    sensor_state _state;
 
     /// <summary>
     /// The UTC offset of the local time, which is reported by ADL.

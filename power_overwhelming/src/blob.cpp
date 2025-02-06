@@ -114,8 +114,9 @@ bool PWROWG_NAMESPACE::blob::grow(_In_ const std::size_t size) {
         if (existing != nullptr) {
             ::memcpy(this->_data, existing, this->_size);
             delete[] existing;
-            this->_size = size;
         }
+
+        this->_size = size;
     }
 
     return retval;

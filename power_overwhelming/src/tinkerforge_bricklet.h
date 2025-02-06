@@ -22,7 +22,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <summary>
 /// Container for information about the connected bricklets.
 /// </summary>
-class tinkerforge_bricklet final {
+class PWROWG_TEST_API tinkerforge_bricklet final {
 
 public:
 

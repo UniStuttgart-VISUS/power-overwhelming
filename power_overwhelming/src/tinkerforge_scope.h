@@ -40,7 +40,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// scope. The creation of new scopes and their destruction is, however,
 /// thread-safe.</para>
 /// </remarks>
-class tinkerforge_scope final {
+class PWROWG_TEST_API tinkerforge_scope final {
 
 public:
 

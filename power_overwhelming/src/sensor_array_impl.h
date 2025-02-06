@@ -31,12 +31,12 @@ struct sensor_array_impl final {
     /// <summary>
     /// Tracks the state of the array.
     /// </summary>
-    std::atomic<sensor_state> state;
+    sensor_state state;
 
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    inline sensor_array_impl(void) : state(sensor_state::stopped) { }
+    inline sensor_array_impl(void) = default;
 };
 
 PWROWG_DETAIL_NAMESPACE_END

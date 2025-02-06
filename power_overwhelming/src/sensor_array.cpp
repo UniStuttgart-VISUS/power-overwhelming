@@ -77,27 +77,11 @@ void PWROWG_NAMESPACE::sensor_array::start(
 
     volatile auto impl = this->check_not_disposed();
 
-    {
-        auto expected = sensor_state::stopped;
-        auto desired = sensor_state::starting;
-
-        if (!impl->state.compare_exchange_strong(expected, desired)) {
-            throw std::logic_error("The sensor array is already running or in "
-                "a transitional state.");
-        }
-    }
+    impl->state.begin_start();
 
     // TODO: start the stuff.
 
-    {
-        auto expected = sensor_state::starting;
-        auto desired = sensor_state::running;
-
-        if (!impl->state.compare_exchange_strong(expected, desired)) {
-            throw std::logic_error("The state of the sensor array has been "
-                "manipulated concurrently in an unsafe way.");
-        }
-    }
+    impl->state.end_start();
 }
 
 
@@ -109,27 +93,12 @@ void PWROWG_NAMESPACE::sensor_array::sensor_array::stop(void) {
 
     volatile auto impl = this->check_not_disposed();
 
-    {
-        auto expected = sensor_state::stopping;
-        auto desired = sensor_state::running;
-
-        if (!impl->state.compare_exchange_strong(expected, desired)) {
-            throw std::logic_error("The sensor array is not running.");
-        }
-    }
+    impl->state.begin_stop();
 
     // TODO: terminate all threads
     // TODO: join all threads
 
-    {
-        auto expected = sensor_state::stopping;
-        auto desired = sensor_state::stopped;
-
-        if (!impl->state.compare_exchange_strong(expected, desired)) {
-            throw std::logic_error("The state of the sensor array has been "
-                "manipulated concurrently in an unsafe way.");
-        }
-    }
+    impl->state.end_stop();
 }
 
 

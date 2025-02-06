@@ -21,7 +21,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <summary>
 /// An error category for HRESULTs obtained from calls to COM APIs.
 /// </summary>
-class com_error_category final : public std::error_category {
+class PWROWG_TEST_API com_error_category final : public std::error_category {
 
 public:
 

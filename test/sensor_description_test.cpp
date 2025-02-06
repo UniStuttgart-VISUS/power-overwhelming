@@ -42,7 +42,8 @@ public:
 
     TEST_METHOD(test_editable_type) {
         auto d = detail::sensor_description_builder::create()
-            .with_type(sensor_type::cpu, sensor_type::hardware | sensor_type::software)
+            .with_editable_type(sensor_type::hardware | sensor_type::software)
+            .with_type(sensor_type::cpu)
             .build();
 
         Assert::AreEqual(int(sensor_type::cpu), int(d.sensor_type()), L"sensor_type", LINE_INFO());

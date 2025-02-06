@@ -20,7 +20,8 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <summary>
 /// An exception representing an error in the Tinkerforge API.
 /// </summary>
-class tinkerforge_exception final : public std::runtime_error {
+class PWROWG_TEST_API tinkerforge_exception final
+        : public std::runtime_error {
 
 public:
 

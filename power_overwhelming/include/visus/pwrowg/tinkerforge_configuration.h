@@ -8,9 +8,18 @@
 #define _PWROWG_TINKERFORGE_CONFIGURATION_H
 #pragma once
 
+#include <chrono>
+#include <cmath>
+
 #include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/sensor_configuration.h"
+#include "visus/pwrowg/tinkerforge_conversion_time.h"
+#include "visus/pwrowg/tinkerforge_error_count.h"
 #include "visus/pwrowg/tinkerforge_sample_averaging.h"
+
+#include "tinkerforge_bricklet.h"
+#include "tinkerforge_exception.h"
+#include "tinkerforge_scope.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -123,6 +132,29 @@ public:
     tinkerforge_configuration& end_points(_In_reads_(cnt) end_point *addresses,
         _In_ const std::size_t cnt);
 
+    /// <summary>
+    /// Answer the timeout for connecting to the brickd, in milliseconds.
+    /// </summary>
+    /// <returns>The timeout in milliseconds.</returns>
+    inline std::uint32_t timeout(void) const noexcept {
+        return this->_timeout;
+    }
+
+    /// <summary>
+    /// Sets the timeout for connecting to the brickd.
+    /// </summary>
+    /// <typeparam name="TType"></typeparam>
+    /// <typeparam name="TPeriod"></typeparam>
+    /// <param name="timeout"></param>
+    /// <returns></returns>
+    template<class TType, class TPeriod>
+    inline tinkerforge_configuration& timeout(
+            _In_ const std::chrono::duration<TType, TPeriod> timeout) {
+        auto m= std::chrono::duration_cast<std::chrono::milliseconds>(timeout);
+        this->_timeout = std::abs(m.count());
+        return *this;
+    }
+
 private:
 
     /// <summary>
@@ -132,6 +164,7 @@ private:
     void destroy_end_points(void);
 
     blob _end_points;
+    std::uint64_t _timeout;
 };
 
 PWROWG_NAMESPACE_END

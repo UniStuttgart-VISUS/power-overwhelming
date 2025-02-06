@@ -25,7 +25,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <summary>
 /// Wrapper for dynamically loading the AMD Display Library.
 /// </summary>
-class amd_display_library final : public library_base {
+class PWROWG_TEST_API amd_display_library final : public library_base {
 
 public:
 

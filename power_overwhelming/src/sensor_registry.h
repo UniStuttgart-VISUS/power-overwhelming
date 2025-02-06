@@ -139,7 +139,15 @@ private:
 /// <summary>
 /// The one and only sensor registry where all known sensors are registered.
 /// </summary>
-typedef basic_sensor_registry<adl_sensor, nvml_sensor> sensor_registry;
+/// <remarks>
+/// New sensor types must be added here in order to be supported by the
+/// <see cref="sensor_array" />.
+/// </remarks>
+typedef basic_sensor_registry<
+    adl_sensor,
+    nvml_sensor,
+    tinkerforge_sensor>
+    sensor_registry;
 
 PWROWG_DETAIL_NAMESPACE_END
 

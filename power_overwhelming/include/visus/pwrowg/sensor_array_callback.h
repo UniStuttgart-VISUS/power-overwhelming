@@ -19,6 +19,18 @@ PWROWG_NAMESPACE_BEGIN
 /// The type of callback that is invoked by the <see cref="sensor_array" /> for
 /// all samples.
 /// </summary>
+/// <remarks>
+/// <para>Implementations must make sure that the callback is reentrant
+/// (multiple sensors may call it at the same time). Furthermore,
+/// implementations must assume that they are a called in an arbitraty thread
+/// context. No assumption must be made about specific sensors being delivered
+/// by specific threads.</para>
+/// <para>Implementations must not perform excessive work. The callback may be
+/// running in context of a sensor-specific thread. Excessive work in the
+/// callback may, therefore, negatively impact the sampling rate and can cause
+/// samples to be dropped. Processing data and receiving samples should be
+/// decoupled to avoid this.</para>
+/// </remarks>
 /// <param name="source">The zero-based index of the sensor that has created
 /// the samples. The <see cref="sensor_description" /> of this sensor can be
 /// used to obtain information about how to interpret the sensor readings.

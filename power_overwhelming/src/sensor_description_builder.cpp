@@ -18,7 +18,7 @@
  */
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder&
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder::measured_in(
-        _In_ const reading_unit unit) {
+        _In_ const reading_unit unit) noexcept {
     this->_desc._reading_unit = unit;
     return *this;
 }
@@ -29,8 +29,19 @@ PWROWG_DETAIL_NAMESPACE::sensor_description_builder::measured_in(
  */
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder&
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder::produces(
-        _In_ const reading_type type) {
+        _In_ const reading_type type) noexcept {
     this->_desc._reading_type = type;
+    return *this;
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_editable_type
+ */
+PWROWG_DETAIL_NAMESPACE::sensor_description_builder&
+PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_editable_type(
+        _In_ const sensor_type type) noexcept {
+    this->_desc._editable_type = type;
     return *this;
 }
 
@@ -142,9 +153,7 @@ PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_path(
  */
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder&
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_type(
-        _In_ const sensor_type type,
-        _In_ const sensor_type editable) {
-    this->_desc._editable_type = editable;
+        _In_ const sensor_type type) noexcept {
     this->_desc._sensor_type = type;
     return *this;
 }

@@ -16,7 +16,6 @@ void PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(_In_ TOutput oit,
         .with_type(sensor_type::gpu | sensor_type::power | sensor_type::software)
         .produces(reading_type::floating_point)
         .measured_in(reading_unit::watt);
-    std::vector<sensor_description> retval;
 
     try {
         unsigned int cnt_devices = 0;

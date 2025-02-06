@@ -84,14 +84,25 @@ public:
     /// </summary>
     /// <param name="unit">The unit produced by the sensor.</param>
     /// <returns><c>*this</c>.</returns>
-    sensor_description_builder& measured_in(_In_ const reading_unit unit);
+    sensor_description_builder& measured_in(
+        _In_ const reading_unit unit) noexcept;
 
     /// <summary>
     /// Configures the type of data produced by the sensor.
     /// </summary>
     /// <param name="type">The type of data produced by the sensor.</param>
     /// <returns><c>*this</c>.</returns>
-    sensor_description_builder& produces(_In_ const reading_type type);
+    sensor_description_builder& produces(_In_ const reading_type type) noexcept;
+
+    /// <summary>
+    /// Configures which parts of the <see cref="sensor_type" /> can be edited
+    /// afterwards.
+    /// </summary>
+    /// <param name="type">The parts of of the sensor type that the user is
+    /// allowed to edit</param>
+    /// <returns><c>*this</c>.</returns>
+    sensor_description_builder& with_editable_type(
+        _In_ const sensor_type type) noexcept;
 
     /// <summary>
     /// Configure the description with the given unique sensor ID.
@@ -110,6 +121,23 @@ public:
     /// <exception cref="std::invalid_argument">If <paramref name="id" /> is
     /// <c>nullptr</c>.</exception>
     sensor_description_builder& with_id(_In_z_ const char *id);
+
+    /// <summary>
+    /// Configure the description with the given unique sensor ID.
+    /// </summary>
+    /// <typeparam name="TChar">The type of the character in the ID.</typeparam>
+    /// <typeparam name="TTraits">The traits for <typeparamref name="TChar" />.
+    /// </typeparam>
+    /// <typeparam name="TAlloc">The allocator of the string.</typeparam>
+    /// <param name="id">A unique ID for the sensor in the description.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="id" /> is
+    /// <c>nullptr</c>.</exception>
+    template<class TChar, class TTraits, class TAlloc>
+    inline sensor_description_builder& with_id(
+            _In_ const std::basic_string<TChar, TTraits, TAlloc>& id) {
+        return this->with_id(id.c_str());
+    }
 
     /// <summary>
     /// Configure the user-defined label for the sensor.
@@ -171,6 +199,21 @@ public:
     }
 
     /// <summary>
+    /// Construct a new instance of <typeparamref name="TType" /> and add is as
+    /// the private data to be used by the sensor.
+    /// </summary>
+    /// <typeparam name="TType"></typeparam>
+    /// <typeparam name="TArgs"></typeparam>
+    /// <param name="args"></param>
+    /// <returns></returns>
+    template<class TType, class... TArgs>
+    sensor_description_builder& with_new_private_data(_In_ TArgs&&... args) {
+        this->_desc._private = type_erased_storage(
+            TType(std::forward<TArgs>(args)...));
+        return *this;
+    }
+
+    /// <summary>
     /// Configure the device path of the sensor in the description.
     /// </summary>
     /// <param name="path">The unique sensor path.</param>
@@ -187,6 +230,40 @@ public:
     /// <exception cref="std::invalid_argument">If <paramref name="path" /> is
     /// <c>nullptr</c>.</exception>
     sensor_description_builder& with_path(_In_z_ const char *path);
+
+    /// <summary>
+    /// Format the device path of the sensor in the description.
+    /// </summary>
+    /// <typeparam name="TArgs">The types of the arguments to be formatted.
+    /// </typeparam>
+    /// <param name="format">The printf-style format string.</param>
+    /// <param name="args">The arguments to be formatted.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="format" /> is
+    /// <c>nullptr</c>.</exception>
+    template<class... TArgs> sensor_description_builder& with_path(
+            _In_z_ const wchar_t *format,
+            _In_ TArgs&&... args) {
+        const auto name = format_string(format, std::forward<TArgs>(args)...);
+        return this->with_path(name.c_str());
+    }
+
+    /// <summary>
+    /// Format the device path of the sensor in the description.
+    /// </summary>
+    /// <typeparam name="TArgs">The types of the arguments to be formatted.
+    /// </typeparam>
+    /// <param name="format">The printf-style format string.</param>
+    /// <param name="args">The arguments to be formatted.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="format" /> is
+    /// <c>nullptr</c>.</exception>
+    template<class... TArgs> sensor_description_builder& with_path(
+            _In_z_ const char *format,
+            _In_ TArgs&&... args) {
+        const auto name = format_string(format, std::forward<TArgs>(args)...);
+        return this->with_path(name.c_str());
+    }
 
     /// <summary>
     /// Add the given <paramref name="data" /> as private data to be used by the
@@ -212,11 +289,8 @@ public:
     /// Sets the type of sensor described here.
     /// </summary>
     /// <param name="type">The type of the sensor.</param>
-    /// <param name="editable">The parts of <paramref name="type" /> that the
-    /// user is allowed to edit. This defaults to nothing.</param>
     /// <returns><c>*this</c>.</returns>
-    inline sensor_description_builder& with_type(_In_ const sensor_type type,
-        _In_ const sensor_type editable = sensor_type::unknown);
+    sensor_description_builder& with_type(_In_ const sensor_type type) noexcept;
 
     /// <summary>
     /// Configure the device vendor.

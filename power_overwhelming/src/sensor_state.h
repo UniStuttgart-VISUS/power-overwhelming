@@ -8,46 +8,104 @@
 #define _PWROWG_SENSOR_STATE_H
 #pragma once
 
-#include "visus/pwrowg/api.h"
+#include "atomic_utilities.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
 /// <summary>
-/// Possible states any of the sensors and the the
-/// <see cref="sensor_array" /> as a whole can be in.
+/// Atomically tracks the state of a sensor or the sensor array as a whole.
 /// </summary>
-enum class sensor_state {
+class PWROWG_TEST_API sensor_state final {
+
+public:
 
     /// <summary>
-    /// The sensors or the array are stopped and can be started.
+    /// Possible states of the sensor or sensor array.
     /// </summary>
-    stopped,
+    enum class value_type {
+
+        /// <summary>
+        /// The sensors or the array are stopped and can be started.
+        /// </summary>
+        stopped,
+
+        /// <summary>
+        /// The sensor is starting and in a state where it cannot be modified,
+        /// or the array is in the process of starting the sensors.
+        /// </summary>
+        /// <remarks>
+        /// The following states can be <see cref="running" /> if the startup has
+        /// succeeded, or <see cref="stopped" /> in case of an error.
+        /// </remarks>
+        starting,
+
+        /// <summary>
+        /// The sensor or the array are running and delivering data to the
+        /// callbacks.
+        /// </summary>
+        running,
+
+        /// <summary>
+        /// The sensors are being stopped, but some are still running, or a single
+        /// sensor is in a transitional state where it cannot be modified.
+        /// </summary>
+        /// <remarks>
+        /// The next state after this must be <see cref="stopped" />.
+        /// </remarks>
+        stopping
+    };
 
     /// <summary>
-    /// The sensor is starting and in a state where it cannot be modified,
-    /// or the array is in the process of starting the sensors.
+    /// Initialises a new instance.
     /// </summary>
-    /// <remarks>
-    /// The following states can be <see cref="running" /> if the startup has
-    /// succeeded, or <see cref="stopped" /> in case of an error.
-    /// </remarks>
-    starting,
+    inline sensor_state(void) : _value(value_type::stopped) { }
 
     /// <summary>
-    /// The sensor or the array are running and delivering data to the
-    /// callbacks.
+    /// Change the state to <see cref="value_type::starting" />.
     /// </summary>
-    running,
+    /// <exception cref="std::logic_error">If the sensor is already running or
+    /// in a transitional state.</exception>
+    void begin_start(void);
 
     /// <summary>
-    /// The sensors are being stopped, but some are still running, or a single
-    /// sensor is in a transitional state where it cannot be modified.
+    /// Change the state to <see cref="value_type::stopping" />.
     /// </summary>
-    /// <remarks>
-    /// The next state after this must be <see cref="stopped" />.
-    /// </remarks>
-    stopping
+    /// <exception cref="std::logic_error">If the sensor is not running or
+    /// in a transitional state.</exception>
+    void begin_stop(void);
+
+    /// <summary>
+    /// Change the state to <see cref="value_type::running" />.
+    /// </summary>
+    /// <exception cref="std::logic_error">If the sensor is not in state
+    /// <see cref="value_type::starting" />.</exception>
+    void end_start(void);
+
+    /// <summary>
+    /// Change the state to <see cref="value_type::stopped" />.
+    /// </summary>
+    /// <exception cref="std::logic_error">If the sensor is not in state
+    /// <see cref="value_type::stopping" />.</exception>
+    void end_stop(void);
+
+    /// <summary>
+    /// Forcefully change the state to <see cref="value_type::stopped" />.
+    /// </summary>
+    void stop(void);
+
+    /// <summary>
+    /// Gets a momentary snapshot of the <see cref="value_type" /> the sensor
+    /// is in.
+    /// </summary>
+    /// <returns>The current state of the sensor.</returns>
+    inline operator value_type(void) const noexcept {
+        return this->_value.load(std::memory_order_acquire);
+    }
+
+private:
+
+    alignas(false_sharing_range) std::atomic<value_type> _value;
 };
 
 PWROWG_DETAIL_NAMESPACE_END

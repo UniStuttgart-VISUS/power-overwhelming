@@ -87,7 +87,7 @@ PWROWG_NAMESPACE::tinkerforge_configuration::add_end_point(
         _In_ const end_point&address) {
     const auto offset = this->_end_points.size();
 
-    this->_end_points.grow(sizeof(end_point));
+    this->_end_points.grow(this->_end_points.size() + sizeof(end_point));
     new (this->_end_points.as<end_point>(offset)) end_point(address);
 
     return *this;
