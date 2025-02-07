@@ -108,10 +108,51 @@ public:
     tinkerforge_configuration& add_end_point(_In_ const end_point& address);
 
     /// <summary>
+    /// Answer how many samples from the sensor will be averaged for an output
+    /// sample.
+    /// </summary>
+    /// <returns>The sample averaging.</returns>
+    inline tinkerforge_sample_averaging averaging(void) const noexcept {
+        return this->_averaging;
+    }
+
+    /// <summary>
+    /// Configure how many samples from the sensor will be averaged for an output
+    /// sample.
+    /// </summary>
+    /// <param name="averaging">The new averaging method.</param>
+    /// <returns><c>*this</c>.</returns>
+    inline tinkerforge_configuration& averaging(
+            _In_ const tinkerforge_sample_averaging averaging) noexcept {
+        this->_averaging = averaging;
+        return *this;
+    }
+
+    /// <summary>
     /// Answer the number of registered end points.
     /// </summary>
     /// <returns>The number of registered end points.</returns>
     std::size_t count_end_points(void) const noexcept;
+
+    /// <summary>
+    /// Answer the conversio time of teh current sensor.
+    /// </summary>
+    /// <returns>The configured conversion time.</returns>
+    inline tinkerforge_conversion_time current_conversion_time(
+            void) const noexcept {
+        return this->_current_conversion_time;
+    }
+
+    /// <summary>
+    /// Configure the conversion time of the current sensor.
+    /// </summary>
+    /// <param name="conversion_time">The new conversion time.</param>
+    /// <returns><c>*this</c>.</returns>
+    inline tinkerforge_configuration& current_conversion_time(
+            _In_ const tinkerforge_conversion_time conversion_time) noexcept {
+        this->_current_conversion_time = conversion_time;
+        return *this;
+    }
 
     /// <summary>
     /// Answer the array of registered <see cref="end_point" />s.
@@ -160,6 +201,26 @@ public:
         return *this;
     }
 
+    /// <summary>
+    /// Answer the conversio time of teh voltage sensor.
+    /// </summary>
+    /// <returns>The configured conversion time.</returns>
+    inline tinkerforge_conversion_time voltage_conversion_time(
+            void) const noexcept {
+        return this->_voltage_conversion_time;
+    }
+
+    /// <summary>
+    /// Configure the conversion time of the voltage sensor.
+    /// </summary>
+    /// <param name="conversion_time">The new conversion time.</param>
+    /// <returns><c>*this</c>.</returns>
+    inline tinkerforge_configuration& voltage_conversion_time(
+            _In_ const tinkerforge_conversion_time conversion_time) noexcept {
+        this->_voltage_conversion_time = conversion_time;
+        return *this;
+    }
+
 private:
 
     /// <summary>
@@ -168,8 +229,12 @@ private:
     /// </summary>
     void destroy_end_points(void);
 
+    tinkerforge_sample_averaging _averaging;
+    tinkerforge_conversion_time _current_conversion_time;
     blob _end_points;
     std::uint64_t _timeout;
+    tinkerforge_conversion_time _voltage_conversion_time;
+
 };
 
 PWROWG_NAMESPACE_END

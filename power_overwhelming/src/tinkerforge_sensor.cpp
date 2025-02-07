@@ -103,6 +103,7 @@ PWROWG_DETAIL_NAMESPACE::sensor_description_builder&
 PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::specialise(
         _In_ sensor_description_builder& builder,
         _In_ const tinkerforge_scope& scope,
+        _In_ const configuration_type& config,
         _In_ const tinkerforge_configuration::end_point& end_point,
         _In_ const tinkerforge_bricklet& bricklet,
         _In_ const PWROWG_NAMESPACE::sensor_type type,
@@ -130,7 +131,7 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::specialise(
             bricklet.uid().c_str(),
             source)
         .measured_in(reading_unit::ampere)
-        .with_private_data<tinkerforge_scope>(scope);
+        .with_new_private_data<private_data>(scope, config);
 }
 
 
@@ -226,23 +227,28 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::disable_callbacks(void) {
 PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::tinkerforge_sensor(
         _In_ tinkerforge_scope scope,
         _In_z_ const wchar_t *uid,
+        _In_ std::shared_ptr<tinkerforge_configuration> config,
         _In_ const std::size_t index_power,
         _In_ const std::size_t index_voltage,
         _In_ const std::size_t index_current)
     : _callback(nullptr),
+        _config(config),
         _context(nullptr),
         _index_current(index_current),
         _index_power(index_power),
         _index_voltage(index_voltage),
         _scope(scope) {
+    if (config == nullptr) {
+        throw std::invalid_argument("The general Tinkerforge sensor "
+            "configuration must not be null.");
+    }
     if (uid == nullptr) {
         throw std::invalid_argument("The UID of the voltage/current bricklet "
             "must not be null.");
     }
 
-    this->_uid = PWROWG_NAMESPACE::convert_string<char>(uid);
-    ::voltage_current_v2_create(&this->_bricklet, this->_uid.c_str(),
-        this->_scope);
+    auto u = PWROWG_NAMESPACE::convert_string<char>(uid);
+    ::voltage_current_v2_create(&this->_bricklet, u.c_str(), this->_scope);
 
     //// Initialise the asynchronous measurement buffer with in valid data.
     //std::fill(this->async_data.begin(), this->async_data.end(),
@@ -358,6 +364,10 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::identify(
  * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::reset
  */
 void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::reset(void) {
+    // Preserve the UID.
+    char uid[8];
+    this->identify(uid);
+
     {
         auto status = ::voltage_current_v2_reset(&this->_bricklet);
         if (status < 0) {
@@ -369,12 +379,15 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::reset(void) {
     // https://www.tinkerforge.com/en/doc/Software/Bricklets/VoltageCurrentV2_Bricklet_C.html,
     // we need to recreate the device object after a reset.
     ::voltage_current_v2_destroy(&this->_bricklet);
-    ::voltage_current_v2_create(&this->_bricklet, this->_uid.c_str(),
-        this->_scope);
+    ::voltage_current_v2_create(&this->_bricklet, uid, this->_scope);
 
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
     this->_time_xlate.reset(this->_bricklet);
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
+
+    this->configuration(this->_config->averaging(),
+        this->_config->voltage_conversion_time(),
+        this->_config->current_conversion_time());
 }
 
 

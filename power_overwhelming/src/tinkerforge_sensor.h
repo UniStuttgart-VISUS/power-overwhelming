@@ -10,6 +10,7 @@
 
 #include <array>
 #include <limits>
+#include <memory>
 
 #include <bricklet_voltage_current_v2.h>
 
@@ -112,6 +113,7 @@ public:
     /// opened.</exception>
     tinkerforge_sensor(_In_ tinkerforge_scope scope,
         _In_z_ const wchar_t *uid,
+        _In_ std::shared_ptr<tinkerforge_configuration> config,
         _In_ const std::size_t index_power,
         _In_ const std::size_t index_voltage = invalid_index,
         _In_ const std::size_t index_current = invalid_index);
@@ -265,6 +267,20 @@ public:
 private:
 
     /// <summary>
+    /// The private data passed from the description enumerator to the actual
+    /// sensors.
+    /// </summary>
+    struct private_data {
+        std::shared_ptr<tinkerforge_configuration> config;
+        tinkerforge_scope scope;
+
+        inline private_data(_In_ const tinkerforge_scope& scope,
+                _In_ const tinkerforge_configuration& config)
+            : config(std::make_shared<tinkerforge_configuration>(config)),
+                scope(scope) { }
+    };
+
+    /// <summary>
     /// Dispatches a sensor reading to <see cref="_callback" />.
     /// </summary>
     static void CALLBACK current_callback(_In_ const std::int32_t current,
@@ -300,6 +316,7 @@ private:
     static sensor_description_builder& specialise(
         _In_ sensor_description_builder& builder,
         _In_ const tinkerforge_scope& scope,
+        _In_ const configuration_type& config,
         _In_ const tinkerforge_configuration::end_point& end_point,
         _In_ const tinkerforge_bricklet& bricklet,
         _In_ const sensor_type type,
@@ -332,6 +349,7 @@ private:
     void enable_voltage_callback(_In_ const std::chrono::milliseconds interval);
 
     sensor_array_callback _callback;
+    std::shared_ptr<tinkerforge_configuration> _config;
     void *_context;
     mutable VoltageCurrentV2 _bricklet;
     std::size_t _index_current;
@@ -342,7 +360,6 @@ private:
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
     tinkerforge_time_translator _time_xlate;
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
-    std::string _uid;
 };
 
 PWROWG_DETAIL_NAMESPACE_END

@@ -38,18 +38,21 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::descriptions(
             for (auto& b : bricklets) {
                 *oit++ = specialise(builder,
                     scope,
+                    config,
                     end_point,
                     b,
                     sensor_type::current,
                     reading_unit::ampere).build();
                 *oit++ = specialise(builder,
                     scope,
+                    config,
                     end_point,
                     b,
                     sensor_type::voltage,
                     reading_unit::volt).build();
                 *oit++ = specialise(builder,
                     scope,
+                    config,
                     end_point,
                     b,
                     sensor_type::power,
@@ -85,12 +88,12 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
     // bricklet are sorted to match the order in the constructor.
     std::sort(begin, retval,
             [](const sensor_description& lhs, const sensor_description& rhs) {
-        auto pdl = builder_type::private_data<tinkerforge_scope>(lhs);
-        auto pdr = builder_type::private_data<tinkerforge_scope>(rhs);
+        auto pdl = builder_type::private_data<private_data>(lhs);
+        auto pdr = builder_type::private_data<private_data>(rhs);
 
         // First of all, group by the brick daemon.
-        auto retval = static_cast<const IPConnection *>(*pdl)
-            - static_cast<const IPConnection *>(*pdr);
+        auto retval = static_cast<const IPConnection *>(pdl->scope)
+            - static_cast<const IPConnection *>(pdr->scope);
 
         // If on the same daemon, group by bricklet.
         if (retval == 0) {
@@ -103,7 +106,7 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
     for (auto it = begin; it != retval; ++it) {
         // At this point, there are always up to three sensors that come from the
         // same bricklet. We group these into a single sensor instance.
-        auto scope = *builder_type::private_data<tinkerforge_scope>(*it);
+        auto pd = builder_type::private_data<private_data>(*it);
         std::array<sensor_type, 3> types {
             sensor_mask(*it),
             sensor_type::unknown,
@@ -130,9 +133,11 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
         auto voltage = active(sensor_type::voltage) ? index++ : invalid_index;
         auto current = active(sensor_type::current) ? index++ : invalid_index;
 
-        auto sensor = std::make_shared<tinkerforge_sensor>(scope, uid,
-            power, voltage, current);
-        // TODO: sensor->configure!
+        auto sensor = std::make_shared<tinkerforge_sensor>(pd->scope, uid,
+            pd->config, power, voltage, current);
+        sensor->configuration(pd->config->averaging(),
+            pd->config->voltage_conversion_time(),
+            pd->config->current_conversion_time());
         *oit++ = sensor;
     }
 
