@@ -9,9 +9,9 @@
  * PWROWG_NAMESPACE::type_erased_storage::emplace
  */
 template<class TType, class... TArgs>
-TType *PWROWG_NAMESPACE::type_erased_storage::emplace(TArgs&&... args) {
+TType& PWROWG_NAMESPACE::type_erased_storage::emplace(TArgs&&... args) {
     // We do not know what is already stored, so we must destruct it.
-    this->clear();
+    this->reset();
 
     // Construct the new object in place.
     this->_data.resize(sizeof(TType));
@@ -22,7 +22,7 @@ TType *PWROWG_NAMESPACE::type_erased_storage::emplace(TArgs&&... args) {
     this->reg_cp_ctor<TType>();
     this->reg_dtor<TType>();
 
-    return this->_data.as<TType>();
+    return *(this->_data.as<TType>());
 }
 
 

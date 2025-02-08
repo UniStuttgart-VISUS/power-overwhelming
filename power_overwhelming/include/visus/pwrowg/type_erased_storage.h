@@ -54,7 +54,19 @@ public:
     /// </remarks>
     ~type_erased_storage(void) noexcept;
 
-    template<class TType, class... TArgs> TType *emplace(TArgs&&... args);
+    /// <summary>
+    /// Emplaces an object of type <typeparamref name="TType" />.
+    /// </summary>
+    /// <remarks>
+    /// It is safe to call the method on a valid object, in which case this
+    /// object will be destroyed before emplacing a new one.
+    /// </remarks>
+    /// <typeparam name="TType">The type of the new object.</typeparam>
+    /// <typeparam name="TArgs">The type of the arguments passed to the
+    /// constructor.</typeparam>
+    /// <param name="args">The arguments passed to the constuctor.</param>
+    /// <returns>A reference for the newly created object.</returns>
+    template<class TType, class... TArgs> TType& emplace(TArgs&&... args);
 
     /// <summary>
     /// Gets the data in form of a pointer to <typeparamref name="TType" />.
@@ -84,6 +96,17 @@ public:
     }
 
     /// <summary>
+    /// Destructs the contained object if any.
+    /// </summary>
+    /// <remarks>
+    /// It is safe to call this method if no destructor has been registered or
+    /// or the object has been already reset. The method will erase all
+    /// operations once the contained object was destroyed to prevent them being
+    /// invoked on invalid data.
+    /// </remarks>
+    void reset(void) noexcept;
+
+    /// <summary>
     /// Copy assignment.
     /// </summary>
     /// <param name="rhs">The right-hand side operand.</param>
@@ -103,14 +126,6 @@ private:
     /// The type of a destructor function.
     /// </summary>
     typedef void (*destruct_type)(_In_ blob& obj);
-
-    /// <summary>
-    /// Invokes <see cref="_dtor" /> on <see cref="_data" /> if possible. It is
-    /// safe to call this method if no destructor has been registered. The method
-    /// will erase all operations once the contained object was destroyed to
-    /// prevent them being invoked on invalid data.
-    /// </summary>
-    void clear(void) noexcept;
 
     /// <summary>
     /// Registers the assignment operator of <typeparamref name="TType" /> as

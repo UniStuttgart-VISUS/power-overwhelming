@@ -37,7 +37,20 @@ PWROWG_NAMESPACE::type_erased_storage::type_erased_storage(
  * PWROWG_NAMESPACE::type_erased_storage::~type_erased_storage
  */
 PWROWG_NAMESPACE::type_erased_storage::~type_erased_storage(void) noexcept {
-    this->clear();
+    this->reset();
+}
+
+
+/*
+ * PWROWG_NAMESPACE::type_erased_storage::reset
+ */
+void PWROWG_NAMESPACE::type_erased_storage::reset(void) noexcept {
+    if (this->_dtor != nullptr) {
+        this->_dtor(this->_data);
+        this->_cp = nullptr;
+        this->_cp_ctor = nullptr;
+        this->_dtor = nullptr;
+    }
 }
 
 
@@ -51,7 +64,7 @@ PWROWG_NAMESPACE::type_erased_storage::operator =(
         // As we do not know whether the type stored here and the type we are
         // going to assign are the same, we first need to destruct any existing
         // data before we can assign the input.
-        this->clear();
+        this->reset();
 
         // Copy the operations next, which will ensure that we only copy stuff
         // that is copyable.
@@ -72,17 +85,4 @@ PWROWG_NAMESPACE::type_erased_storage::operator =(
     }
 
     return *this;
-}
-
-
-/*
- * PWROWG_NAMESPACE::type_erased_storage::clear
- */
-void PWROWG_NAMESPACE::type_erased_storage::clear(void) noexcept {
-    if (this->_dtor != nullptr) {
-        this->_dtor(this->_data);
-        this->_cp = nullptr;
-        this->_cp_ctor = nullptr;
-        this->_dtor = nullptr;
-    }
 }
