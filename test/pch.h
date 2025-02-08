@@ -32,7 +32,7 @@
 #include <visus/pwrowg/timestamp.h>
 
 #include <adl_exception.h>
-#include <detector.h>
+#include <detect_sample.h>
 #include <emi_device.h>
 #include <io_util.h>
 #include <on_exit.h>

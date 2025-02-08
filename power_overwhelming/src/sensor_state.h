@@ -16,7 +16,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <summary>
 /// Atomically tracks the state of a sensor or the sensor array as a whole.
 /// </summary>
-class PWROWG_TEST_API sensor_state final {
+class PWROWG_TEST_API alignas(false_sharing_range) sensor_state final {
 
 public:
 
@@ -55,6 +55,26 @@ public:
         /// </remarks>
         stopping
     };
+
+    /// <summary>
+    /// Performs an aligned allocation for a new sensor.
+    /// </summary>
+    /// <param name="size">The size of the allocation in bytes.</param>
+    /// <returns>A pointer to the memory, which must be freed using
+    /// <see cref="free_for_atomic" />.</returns>
+    /// <exception cref="std::bad_alloc">If the allocation failed.</exception>
+    static inline void *operator new(_In_ const std::size_t size) {
+        return allocate_for_atomic(size);
+    }
+
+    /// <summary>
+    /// Frees the aligned allocation of a sensor.
+    /// </summary>
+    /// <param name="ptr">The pointer to be freed. It is safe to pass
+    /// <c>nullptr</c>.</param>
+    static inline void operator delete(_In_opt_ void *ptr) noexcept {
+        free_for_atomic(ptr);
+    }
 
     /// <summary>
     /// Initialises a new instance.

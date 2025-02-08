@@ -6,6 +6,8 @@
 
 #include "tinkerforge_sensor.h"
 
+#include <stdexcept>
+
 
 /*
  * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::invalid_index
@@ -385,6 +387,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::reset(void) {
     this->_time_xlate.reset(this->_bricklet);
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 
+    // As we have reset everything, apply the configuration again.
     this->configuration(this->_config->averaging(),
         this->_config->voltage_conversion_time(),
         this->_config->current_conversion_time());

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <atomic>
+#include <cstdlib>
 #include <new>
 
 #include "visus/pwrowg/api.h"
@@ -29,6 +30,27 @@ constexpr std::size_t false_sharing_range
 /// </summary>
 constexpr std::size_t false_sharing_range = 64;
 #endif /* defined(__cpp_lib_hardware_interference_size) */
+
+
+/// <summary>
+/// Performs an allocation aligned to the
+/// <see cref="false_sharing_range" /> such that an atomic value stored
+/// within does not interfere with other memory accesses.
+/// </summary>
+/// <param name="size">The size of the allocation in bytes.</param>
+/// <returns>A pointer to the memory, which must be freed using
+/// <see cref="free_for_atomic" />.</returns>
+/// <exception cref="std::bad_alloc">If the allocation failed.</exception>
+extern PWROWG_TEST_API _Ret_valid_ void *allocate_for_atomic(
+    _In_ const std::size_t size);
+
+/// <summary>
+/// Frees a block of memory previously allocated by
+/// <see cref="allocate_for_atomic" />.
+/// </summary>
+/// <param name="ptr">The pointer to be freed. It is safe to pass
+/// <c>nullptr</c>.</param>
+extern PWROWG_TEST_API void free_for_atomic(_In_opt_ void *ptr) noexcept;
 
 PWROWG_DETAIL_NAMESPACE_END
 

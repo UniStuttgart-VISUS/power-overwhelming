@@ -69,6 +69,7 @@ const PWROWG_NAMESPACE::guid PWROWG_NAMESPACE::tinkerforge_configuration::id(
 PWROWG_NAMESPACE::tinkerforge_configuration::tinkerforge_configuration(void)
         : _averaging(tinkerforge_sample_averaging::average_of_4),
         _current_conversion_time(tinkerforge_conversion_time::microseconds_588),
+        _timeout(5000),
         _voltage_conversion_time(tinkerforge_conversion_time::microseconds_588) {
     this->add_end_point(end_point());
 }

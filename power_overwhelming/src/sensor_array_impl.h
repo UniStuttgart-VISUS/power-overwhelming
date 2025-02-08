@@ -10,12 +10,14 @@
 
 #include <atomic>
 #include <chrono>
+#include <memory>
 #include <vector>
 
 #include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_description.h"
 
 #include "detector.h"
+#include "sensor.h"
 #include "sensor_state.h"
 
 
@@ -27,43 +29,26 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 struct sensor_array_impl final {
 
     /// <summary>
-    /// The detector type for the asynchronous sample method.
-    /// </summary>
-    /// <typeparam name="TType"></typeparam>
-    template<class TType>
-    using async_sample = decltype(std::declval<TType &>().sample(
-        std::declval<sensor_array_callback>(),
-        std::declval<std::chrono::milliseconds>(),
-        std::declval<void *>()));
-
-    /// <summary>
-    /// The detector type for the synchronous sample method.
-    /// </summary>
-    /// <typeparam name="TType"></typeparam>
-    template<class TType>
-    using sync_sample = decltype(std::declval<TType&>().sample(
-        std::declval<sensor_array_callback>(),
-        std::declval<void *>()));
-
-    /// <summary>
-    /// Detects whether <typeparamref name="TType" /> uses asynchronous
-    /// sampling.
-    /// </summary>
-    /// <typeparam name="TType"></typeparam>
-    template<class TType>
-    using has_async_sample = typename detector<async_sample, void, TType>::type;
-
-    /// <summary>
-    /// Detects whether <typeparamref name="TType" /> uses synchronous sampling.
-    /// </summary>
-    /// <typeparam name="TType"></typeparam>
-    template<class TType>
-    using has_sync_sample = typename detector<sync_sample, void, TType>::type;
-
-    /// <summary>
     /// Holds the descriptions of all sensors in the array.
     /// </summary>
     std::vector<sensor_description> descriptions;
+
+    /// <summary>
+    /// Holds references to all sensors in the array.
+    /// </summary>
+    /// <remarks>
+    /// Note that one sensor stored here might appear as multiple sensors towards
+    /// the user of the sensor array, i.e. there is not direct match of the
+    /// <see cref="descriptions" /> and the <see cref="sensors" />.
+    /// </remarks>
+    std::vector<std::shared_ptr<sensor>> sensors;
+
+    //std::vector<void (*)(std::shared_ptr<sensor>)> start_samplers;
+
+    /// <summary>
+    /// The user-defined context pointer to be passed to the sample callback.
+    /// </summary>
+    void *context;
 
     /// <summary>
     /// Tracks the state of the array.
@@ -73,7 +58,7 @@ struct sensor_array_impl final {
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    inline sensor_array_impl(void) = default;
+    inline sensor_array_impl(void) : context(nullptr) { }
 };
 
 PWROWG_DETAIL_NAMESPACE_END
