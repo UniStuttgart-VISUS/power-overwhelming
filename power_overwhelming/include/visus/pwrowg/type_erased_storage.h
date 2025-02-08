@@ -19,10 +19,16 @@
 PWROWG_NAMESPACE_BEGIN
 
 /// <summary>
-/// 
+/// A container for potentially any runtime type.
 /// </summary>
+/// <remarks>
+/// <para>This type allows for sensors to store any data in the
+/// <see cref="sensor_description" />.</para>
+/// <para>The type-erased storage does not support move, because we would need to
+/// generate an exception for non-movable types, which violates the contract of
+/// a move operation.</para>
+/// </remarks>
 class POWER_OVERWHELMING_API type_erased_storage final {
-
 
 public:
 
