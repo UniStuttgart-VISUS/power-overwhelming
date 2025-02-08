@@ -33,7 +33,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <summary>
 /// A power sensor based on the Tinkerforge current/voltage bricklet v2.
 /// </summary>
-class PWROWG_TEST_API alignas(false_sharing_range) tinkerforge_sensor final
+class PWROWG_TEST_API tinkerforge_sensor final
         : public sensor {
 
 public:
@@ -87,25 +87,25 @@ public:
     static TInput from_descriptions(_In_ TOutput oit, _In_ std::size_t index,
         _In_ const TInput begin, _In_ const TInput end);
 
-    /// <summary>
-    /// Performs an aligned allocation for a new sensor.
-    /// </summary>
-    /// <param name="size">The size of the allocation in bytes.</param>
-    /// <returns>A pointer to the memory, which must be freed using
-    /// <see cref="free_for_atomic" />.</returns>
-    /// <exception cref="std::bad_alloc">If the allocation failed.</exception>
-    static inline void *operator new(_In_ const std::size_t size) {
-        return allocate_for_atomic(size);
-    }
+    ///// <summary>
+    ///// Performs an aligned allocation for a new sensor.
+    ///// </summary>
+    ///// <param name="size">The size of the allocation in bytes.</param>
+    ///// <returns>A pointer to the memory, which must be freed using
+    ///// <see cref="free_for_atomic" />.</returns>
+    ///// <exception cref="std::bad_alloc">If the allocation failed.</exception>
+    //static inline void *operator new(_In_ const std::size_t size) {
+    //    return allocate_for_atomic(size);
+    //}
 
-    /// <summary>
-    /// Frees the aligned allocation of a sensor.
-    /// </summary>
-    /// <param name="ptr">The pointer to be freed. It is safe to pass
-    /// <c>nullptr</c>.</param>
-    static inline void operator delete(_In_opt_ void *ptr) noexcept {
-        free_for_atomic(ptr);
-    }
+    ///// <summary>
+    ///// Frees the aligned allocation of a sensor.
+    ///// </summary>
+    ///// <param name="ptr">The pointer to be freed. It is safe to pass
+    ///// <c>nullptr</c>.</param>
+    //static inline void operator delete(_In_opt_ void *ptr) noexcept {
+    //    free_for_atomic(ptr);
+    //}
 
     /// <summary>
     /// Indicates that a sensor source is to be disabled.
@@ -377,7 +377,7 @@ private:
     std::size_t _index_power;
     std::size_t _index_voltage;
     tinkerforge_scope _scope;
-    alignas(false_sharing_range) sensor_state _state;
+    sensor_state _state;
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
     tinkerforge_time_translator _time_xlate;
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */

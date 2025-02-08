@@ -6,17 +6,23 @@
 
 
 /*
- * PWROWG_NAMESPACE::type_erased_storage::type_erased_storage
+ * PWROWG_NAMESPACE::type_erased_storage::emplace
  */
-template<class TType>
-PWROWG_NAMESPACE::type_erased_storage::type_erased_storage(
-        _In_ const TType& data) : _data(sizeof(data)) {
+template<class TType, class... TArgs>
+TType *PWROWG_NAMESPACE::type_erased_storage::emplace(TArgs&&... args) {
+    // We do not know what is already stored, so we must destruct it.
+    this->clear();
+
+    // Construct the new object in place.
+    this->_data.resize(sizeof(TType));
+    new (this->_data.as<TType>()) TType(std::forward<TArgs>(args)...);
+
+    // Register the operations for the new type.
     this->reg_cp<TType>();
     this->reg_cp_ctor<TType>();
     this->reg_dtor<TType>();
-    this->reg_mv<TType>();
-    this->reg_mv_ctor<TType>();
-    this->_cp_ctor(this->_data, &data);
+
+    return this->_data.as<TType>();
 }
 
 
@@ -24,37 +30,24 @@ PWROWG_NAMESPACE::type_erased_storage::type_erased_storage(
  * PWROWG_NAMESPACE::type_erased_storage::reg_cp
  */
 template<class TType>
-std::enable_if_t<std::is_copy_assignable_v<TType>>
-PWROWG_NAMESPACE::type_erased_storage::reg_cp(void) noexcept {
-    this->_cp = [](void *dst, const void *src) {
-        auto d = static_cast<TType *>(dst);
-        auto s = static_cast<const TType *>(src);
-        *d = *s;
-    };
-}
+void PWROWG_NAMESPACE::type_erased_storage::reg_cp(void) noexcept {
+    if (std::is_trivially_copyable_v<TType>) {
+        // If the type is trivally copyable, we trivally copy the blob.
+        this->_cp = [](blob& dst, const blob& src) {
+            dst = src;
+        };
 
+    } else if (std::is_copy_constructible_v<TType>) {
+        // Note: we always must copy *construct*, because we cannot know whether
+        // 'dst' was the same type as 'src' before the operation.
+        this->_cp = [](blob& dst, const blob& src) {
+            dst.resize(src.size());
+            new (dst.as<TType>()) TType(*src.as<TType>());
+        };
 
-/*
- * PWROWG_NAMESPACE::type_erased_storage::reg_cp
- */
-template<class TType>
-std::enable_if_t<!std::is_copy_assignable_v<TType>>
-PWROWG_NAMESPACE::type_erased_storage::reg_cp(void) noexcept {
-    this->_cp = nullptr;
-}
-
-
-/*
- * PWROWG_NAMESPACE::type_erased_storage::reg_cp_ctor
- */
-template<class TType>
-std::enable_if_t<std::is_copy_constructible_v<TType>>
-PWROWG_NAMESPACE::type_erased_storage::reg_cp_ctor(void) noexcept {
-    this->_cp_ctor = [](void *dst, const void *src) {
-        auto d = static_cast<TType *>(dst);
-        auto s = static_cast<const TType *>(src);
-        new (d) TType(*s);
-    };
+    } else {
+        this->_cp = nullptr;
+    }
 }
 
 
@@ -62,9 +55,17 @@ PWROWG_NAMESPACE::type_erased_storage::reg_cp_ctor(void) noexcept {
  * PWROWG_NAMESPACE::type_erased_storage::reg_cp_ctor
  */
 template<class TType>
-std::enable_if_t<!std::is_copy_constructible_v<TType>>
-PWROWG_NAMESPACE::type_erased_storage::reg_cp_ctor(void) noexcept {
-    this->_cp_ctor = nullptr;
+void PWROWG_NAMESPACE::type_erased_storage::reg_cp_ctor(void) noexcept {
+    if (std::is_copy_constructible_v<TType>) {
+        this->_cp_ctor = [](blob& dst, const blob& src) {
+            assert(dst.empty());
+            dst.resize(src.size());
+            new (dst.as<TType>()) TType(*src.as<TType>());
+        };
+
+    } else {
+        this->_cp_ctor = nullptr;
+    }
 }
 
 
@@ -73,56 +74,7 @@ PWROWG_NAMESPACE::type_erased_storage::reg_cp_ctor(void) noexcept {
  */
 template<class TType>
 void PWROWG_NAMESPACE::type_erased_storage::reg_dtor(void) noexcept {
-    this->_dtor = [](void *obj) {
-        auto o = static_cast<TType *>(obj);
-        o->~TType();
+    this->_dtor = [](blob& obj) {
+        obj.as<TType>()->~TType();
     };
-}
-
-
-/*
- * PWROWG_NAMESPACE::type_erased_storage::reg_mv
- */
-template<class TType>
-std::enable_if_t<std::is_move_assignable_v<TType>>
-PWROWG_NAMESPACE::type_erased_storage::reg_mv(void) noexcept {
-    this->_mv = [](void *dst, const void *src) {
-        auto d = static_cast<TType *>(dst);
-        auto s = static_cast<const TType *>(src);
-        *d = std::move(*s);
-    };
-}
-
-
-/*
- * PWROWG_NAMESPACE::type_erased_storage::reg_mv
- */
-template<class TType>
-std::enable_if_t<!std::is_move_assignable_v<TType>>
-PWROWG_NAMESPACE::type_erased_storage::reg_mv(void) noexcept {
-    this->_mv = nullptr;
-}
-
-
-/*
- * PWROWG_NAMESPACE::type_erased_storage::reg_mv_ctor
- */
-template<class TType>
-std::enable_if_t<std::is_move_constructible_v<TType>>
-PWROWG_NAMESPACE::type_erased_storage::reg_mv_ctor(void) noexcept {
-    this->_mv_ctor = [](void *dst, const void *src) {
-        auto d = static_cast<TType *>(dst);
-        auto s = static_cast<const TType *>(src);
-        new (d) TType(std::move(*s));
-    };
-}
-
-
-/*
- * PWROWG_NAMESPACE::type_erased_storage::reg_mv_ctor
- */
-template<class TType>
-std::enable_if_t<!std::is_move_constructible_v<TType>>
-PWROWG_NAMESPACE::type_erased_storage::reg_mv_ctor(void) noexcept {
-    this->_mv_ctor = nullptr;
 }

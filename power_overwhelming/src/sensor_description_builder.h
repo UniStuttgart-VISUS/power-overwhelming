@@ -208,8 +208,7 @@ public:
     /// <returns></returns>
     template<class TType, class... TArgs>
     sensor_description_builder& with_new_private_data(TArgs&&... args) {
-        this->_desc._private = type_erased_storage(
-            TType(std::forward<TArgs>(args)...));
+        this->_desc._private.emplace<TType>(std::forward<TArgs>(args)...);
         return *this;
     }
 
@@ -280,8 +279,9 @@ public:
     /// <param name="data">The data to be stored.</param>
     /// <returns><c>*this</c>.</returns>
     template<class TType>
-    sensor_description_builder& with_private_data(_In_ const TType& data) {
-        this->_desc._private = type_erased_storage(data);
+    sensor_description_builder& with_private_data(_In_ TType&& data) {
+        this->_desc._private.emplace<std::decay_t<TType>>(
+            std::forward<TType>(data));
         return *this;
     }
 
