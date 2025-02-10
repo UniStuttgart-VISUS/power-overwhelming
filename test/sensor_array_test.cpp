@@ -44,6 +44,10 @@ public:
     TEST_METHOD(test_for_matches) {
         sensor_array_configuration config;
 
+        config.configure<tinkerforge_configuration>([](tinkerforge_configuration &c) {
+            c.averaging(tinkerforge_sample_averaging::average_of_4);
+        });
+
         {
             auto sensors = sensor_array::for_matches(config, is_current_sensor);
             for (std::size_t i = 0; i < sensors.size(); ++i) {
