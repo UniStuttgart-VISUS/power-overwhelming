@@ -96,6 +96,12 @@ public:
     tinkerforge_configuration(void);
 
     /// <summary>
+    /// Initialise a copy of <paramref name="rhs" />.
+    /// </summary>
+    /// <param name="rhs">The object to be cloned.</param>
+    tinkerforge_configuration(_In_ const tinkerforge_configuration& rhs);
+
+    /// <summary>
     /// Finalises the instance.
     /// </summary>
     ~tinkerforge_configuration(void);
@@ -106,6 +112,14 @@ public:
     /// <param name="address">The end point to be added.</param>
     /// <returns><c>*this</c>.</returns>
     tinkerforge_configuration& add_end_point(_In_ const end_point& address);
+
+    /// <summary>
+    /// Adds the end points of the given configuration to the list of end points.
+    /// </summary>
+    /// <param name="config">The configuration to copy the end points from.</param>
+    /// <returns><c>*this</c>.</returns>
+    tinkerforge_configuration& add_end_points(
+        _In_ const tinkerforge_configuration& config);
 
     /// <summary>
     /// Answer how many samples from the sensor will be averaged for an output
@@ -220,6 +234,14 @@ public:
         this->_voltage_conversion_time = conversion_time;
         return *this;
     }
+
+    /// <summary>
+    /// Assignment.
+    /// </summary>
+    /// <param name="rhs">The object to be cloned.</param>
+    /// <returns><c>*this</c>.</returns>
+    tinkerforge_configuration& operator =(
+        _In_ const tinkerforge_configuration& rhs);
 
 private:
 

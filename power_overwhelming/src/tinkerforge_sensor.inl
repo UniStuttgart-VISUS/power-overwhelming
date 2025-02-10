@@ -8,9 +8,9 @@
 /*
  * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions
  */
-template<class TOutput, class TInput>
+template<class TInput>
 TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
-        _In_ TOutput oit,
+        _In_ list_type& dst,
         _In_ std::size_t index,
         _In_ const TInput begin,
         _In_ const TInput end) {
@@ -70,12 +70,11 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
         auto voltage = active(sensor_type::voltage) ? index++ : invalid_index;
         auto current = active(sensor_type::current) ? index++ : invalid_index;
 
-        auto sensor = std::make_shared<tinkerforge_sensor>(pd->scope, uid,
-            pd->config, power, voltage, current);
-        sensor->configuration(pd->config->averaging(),
+        dst.sensors.emplace_back(pd->scope, uid, pd->config,
+            power, voltage, current);
+        dst.sensors.back().configuration(pd->config->averaging(),
             pd->config->voltage_conversion_time(),
             pd->config->current_conversion_time());
-        *oit++ = sensor;
     }
 
     return retval;

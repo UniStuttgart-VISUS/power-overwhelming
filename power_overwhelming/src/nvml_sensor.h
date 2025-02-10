@@ -21,8 +21,8 @@
 #include "nvidia_management_library.h"
 #include "nvml_exception.h"
 #include "nvml_scope.h"
-#include "sensor.h"
 #include "sensor_description_builder.h"
+#include "sensor_list.h"
 #include "string_functions.h"
 #include "sensor_utilities.h"
 
@@ -33,7 +33,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// Implementation of a power sensor using the NVIDIA management library to
 /// read the internal sensors of the GPU.
 /// </summary>
-class PWROWG_TEST_API nvml_sensor final : public sensor {
+class PWROWG_TEST_API nvml_sensor final {
 
 public:
 
@@ -41,6 +41,11 @@ public:
     /// The type of sensor class configuration used by this sensor.
     /// </summary>
     typedef nvml_configuration configuration_type;
+
+    /// <summary>
+    /// The type of a list of sensors of this type.
+    /// </summary>
+    typedef sensor_list<nvml_sensor> list_type;
 
     /// <summary>
     /// Create descriptions for all supported NVIDIA sensors in the system.
@@ -80,12 +85,10 @@ public:
     /// sensor of this type, are move to the end of the range and the returned
     /// iterator points to the first of those descriptions.</para>
     /// </remarks>
-    /// <typeparam name="TOutput">An output iterator for shared pointers of
-    /// sensors that is able to receive at least a sensor for every element
-    /// <paramref name="begin" /> and <paramref name="end" />.</typeparam>
     /// <typeparam name="TInput">The type of the input iterator over the
     /// <see cref="sensor_description" />s.</typeparam>
-    /// <param name="oit">The output iterator receiving the sensors.</param>
+    /// <param name="dst">The output list, which will receive the sensors and the
+    /// sampler callbacks.</param>
     /// <param name="index">The index to be used for the first sensor created.
     /// </param>
     /// <param name="begin">The begin of the range of sensor descriptions.
@@ -94,8 +97,8 @@ public:
     /// <returns>The iterator to the first sensor description within
     /// <paramref name="begin" /> and <paramref name="end" /> that has not been
     /// used for creating a sensor.</returns>
-    template<class TOutput, class TInput>
-    static TInput from_descriptions(_In_ TOutput oit, _In_ std::size_t index,
+    template<class TInput>
+    static TInput from_descriptions(_In_ list_type& dst, _In_ std::size_t index,
         _In_ const TInput begin, _In_ const TInput end);
 
     /// <summary>

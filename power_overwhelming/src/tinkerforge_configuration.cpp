@@ -76,6 +76,19 @@ PWROWG_NAMESPACE::tinkerforge_configuration::tinkerforge_configuration(void)
 
 
 /*
+ * PWROWG_NAMESPACE::tinkerforge_configuration::tinkerforge_configuration
+ */
+PWROWG_NAMESPACE::tinkerforge_configuration::tinkerforge_configuration(
+        _In_ const tinkerforge_configuration& rhs)
+    : _averaging(rhs._averaging),
+        _current_conversion_time(rhs._current_conversion_time),
+        _timeout(rhs._timeout),
+        _voltage_conversion_time(rhs._voltage_conversion_time) {
+    this->add_end_points(rhs);
+}
+
+
+/*
  * PWROWG_NAMESPACE::tinkerforge_configuration::~tinkerforge_configuration
  */
 PWROWG_NAMESPACE::tinkerforge_configuration::~tinkerforge_configuration(void) {
@@ -93,6 +106,21 @@ PWROWG_NAMESPACE::tinkerforge_configuration::add_end_point(
 
     this->_end_points.grow(this->_end_points.size() + sizeof(end_point));
     new (this->_end_points.as<end_point>(offset)) end_point(address);
+
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::tinkerforge_configuration::add_end_points
+ */
+PWROWG_NAMESPACE::tinkerforge_configuration&
+PWROWG_NAMESPACE::tinkerforge_configuration::add_end_points(
+        _In_ const tinkerforge_configuration& config) {
+    // TODO: perf could be optimised here by allocating everything at once.
+    for (std::size_t i = 0; i < config.count_end_points(); ++i) {
+        this->add_end_point(config.end_points()[i]);
+    }
 
     return *this;
 }
@@ -130,6 +158,25 @@ PWROWG_NAMESPACE::tinkerforge_configuration::end_points(
     for (std::size_t i = 0; i < cnt; ++i) {
         const auto offset = i * sizeof(end_point);
         new (this->_end_points.as<end_point>(offset)) end_point(addresses[i]);
+    }
+
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::tinkerforge_configuration::operator =
+ */
+PWROWG_NAMESPACE::tinkerforge_configuration&
+PWROWG_NAMESPACE::tinkerforge_configuration::operator =(
+        _In_ const tinkerforge_configuration& rhs) {
+    if (this != std::addressof(rhs)) {
+        this->_averaging = rhs._averaging;
+        this->_current_conversion_time = rhs._current_conversion_time;
+        this->destroy_end_points();
+        this->add_end_points(rhs);
+        this->_timeout = rhs._timeout;
+        this->_voltage_conversion_time = rhs._voltage_conversion_time;
     }
 
     return *this;

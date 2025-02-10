@@ -49,7 +49,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::descriptions(
 
             for (auto& b : bricklets) {
                 if (cnt > 0) {
-                    dst[retval++] = specialise(builder,
+                    dst[retval] = specialise(builder,
                         scope,
                         config,
                         end_point,
@@ -58,8 +58,10 @@ std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::descriptions(
                         reading_unit::ampere).build();
                     --cnt;
                 }
+                ++retval;
+
                 if (cnt > 0) {
-                    dst[retval++] = specialise(builder,
+                    dst[retval] = specialise(builder,
                         scope,
                         config,
                         end_point,
@@ -68,8 +70,10 @@ std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::descriptions(
                         reading_unit::volt).build();
                     --cnt;
                 }
+                ++retval;
+
                 if (cnt > 0) {
-                    dst[retval++] = specialise(builder,
+                    dst[retval] = specialise(builder,
                         scope,
                         config,
                         end_point,
@@ -78,6 +82,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::descriptions(
                         reading_unit::watt).build();
                     --cnt;
                 }
+                ++retval;
             }
         } catch (tinkerforge_exception) {
             // If the connection failed in the scope, we do not have any
@@ -106,6 +111,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::current_callback(
     typedef decltype(reading::floating_point) value_type;
     assert(data != nullptr);
     auto that = static_cast<tinkerforge_sensor *>(data);
+    std::lock_guard<decltype(that->_lock)> l(that->_lock);
     PWROWG_NAMESPACE::sample sample(static_cast<value_type>(value)
         / static_cast<value_type>(1000));
     that->_callback(that->_index_current, &sample, 1, that->_context);
@@ -121,6 +127,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::power_callback(
     typedef decltype(reading::floating_point) value_type;
     assert(data != nullptr);
     auto that = static_cast<tinkerforge_sensor *>(data);
+    std::lock_guard<decltype(that->_lock)> l(that->_lock);
     PWROWG_NAMESPACE::sample sample(static_cast<value_type>(value)
         / static_cast<value_type>(1000));
     that->_callback(that->_index_power, &sample, 1, that->_context);
@@ -138,6 +145,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::power_time_callback(
     typedef decltype(reading::floating_point) value_type;
     assert(data != nullptr);
     auto that = static_cast<tinkerforge_sensor *>(data);
+    std::lock_guard<decltype(that->_lock)> l(that->_lock);
     PWROWG_NAMESPACE::sample sample(static_cast<value_type>(value)
         / static_cast<value_type>(1000));
     const auto ts = that->_time_xlate(time, that->_bricklet);
@@ -228,6 +236,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::voltage_callback(
     typedef decltype(reading::floating_point) value_type;
     assert(data != nullptr);
     auto that = static_cast<tinkerforge_sensor *>(data);
+    std::lock_guard<decltype(that->_lock)> l(that->_lock);
     PWROWG_NAMESPACE::sample sample(static_cast<value_type>(value)
         / static_cast<value_type>(1000));
     that->_callback(that->_index_voltage, &sample, 1, that->_context);
@@ -342,6 +351,27 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::tinkerforge_sensor(
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
     this->_time_xlate.reset(this->_bricklet);
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::~tinkerforge_sensor
+ */
+PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::~tinkerforge_sensor(
+        void) noexcept {
+    // Make sure to disable the callbacks in case the user forgot to do
+    // so before destroying the sensor. Note that we do not hold the lock at
+    // this point, which enables all callbacks that are already running to
+    // exit asap.
+    this->disable_callbacks();
+
+    // Make sure that we do not destroy the sensor while asnychronous data are
+    // written. This will block until the writer exited.
+    // TODO: This is only semi-safe for cases where only one calback is running. We need to fix that some time, but for now, we usually only
+    // run power callbacks, so it is somewhat OK ...
+    std::lock_guard<decltype(this->_lock)> l(this->_lock);
+
+    ::voltage_current_v2_destroy(&this->_bricklet);
 }
 
 

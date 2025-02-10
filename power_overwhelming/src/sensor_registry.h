@@ -11,16 +11,20 @@
 #include <cassert>
 #include <memory>
 #include <stdexcept>
+#include <tuple>
+#include <utility>
 #include <vector>
 
 #include "visus/pwrowg/sensor_array_configuration.h"
 #include "visus/pwrowg/sensor_description.h"
 
 #include "adl_sensor.h"
+#include "detect_sample.h"
 #include "emi_sensor.h"
 #include "msr_sensor.h"
 #include "nvml_sensor.h"
 #include "sensor_array_configuration_impl.h"
+#include "sensor_list.h"
 #include "string_functions.h"
 #include "tinkerforge_sensor.h"
 #include "type_list.h"
@@ -43,6 +47,11 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 template<class... TSensors> class basic_sensor_registry final {
 
 public:
+
+    /// <summary>
+    /// The type of sensors created by the registry.
+    /// </summary>
+    typedef std::tuple<sensor_list<TSensors>...> sensor_list_type;
 
     /// <summary>
     /// Adds the default configurations for all of
@@ -77,8 +86,8 @@ public:
     /// <returns>The position of the first configuration that has not been used
     /// to create a sensor. If this is equal to <paramref name="end" />, all
     /// sensors have been successfully created.</returns>
-    template<class TOutput, class TInput> static TInput create(
-        _In_ TOutput oit, _In_ const TInput begin, _In_ const TInput end);
+    template<class TInput> static TInput create(_In_ sensor_list_type& dst,
+        _In_ const TInput begin, _In_ const TInput end);
 
     /// <summary>
     /// Adds sensor descriptions for all registered sensors to
@@ -110,15 +119,15 @@ private:
     inline static void configure0(_In_ type_list<>,
         _In_ sensor_array_configuration_impl &) { }
 
-    template<class TOutput, class TInput, class T, class... Ts>
-    static TInput create0(_In_ TOutput oit,
+    template<std::size_t I, class TInput, class T, class... Ts>
+    static TInput create0(_In_ sensor_list_type& dst,
         _In_ type_list<T, Ts...>,
         _In_ const std::size_t index,
         _In_ const TInput begin,
         _In_ const TInput end);
 
-    template<class TOutput, class TInput>
-    static TInput create0(_In_ TOutput oit,
+    template<std::size_t I, class TInput>
+    static TInput create0(_In_ sensor_list_type& dst,
             _In_ type_list<>,
             _In_ const std::size_t index,
             _In_ const TInput begin,
@@ -139,6 +148,17 @@ private:
         _In_ type_list<>,
         _In_ const sensor_array_configuration_impl&);
 
+    template<class T>
+    static inline std::enable_if_t<detail::has_async_sample<T>::type::value>
+    sample(_In_ sensor_list<T>& sensors) {
+        sensors.sample_async = &T::sample;
+    }
+
+    template<class T>
+    static inline std::enable_if_t<detail::has_sync_sample<T>::type::value>
+    sample(_In_ sensor_list<T>& sensors) {
+        sensors.sample = &T::sample;
+    }
 };
 
 

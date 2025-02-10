@@ -8,9 +8,9 @@
 /*
  * PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_descriptions
  */
-template<class TOutput, class TInput>
+template<class TInput>
 TInput PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_descriptions(
-        _In_ TOutput oit,
+        _In_ list_type& dst,
         _In_ std::size_t index,
         _In_ const TInput begin,
         _In_ const TInput end) {
@@ -19,7 +19,7 @@ TInput PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_descriptions(
     });
 
     for (auto it = begin; it != retval; ++it) {
-        *oit++ = std::make_shared<nvml_sensor>(
+        dst.sensors.emplace_back(
             *sensor_description_builder::private_data<nvmlDevice_t>(*it),
             index++);
     }

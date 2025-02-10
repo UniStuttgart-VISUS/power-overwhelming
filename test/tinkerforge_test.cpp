@@ -41,15 +41,15 @@ public:
         descs.resize(type::descriptions(nullptr, 0, config));
         type::descriptions(descs.data(), descs.size(), config);
 
-        std::vector<std::shared_ptr<type>> sensors;
-        const auto unused = type::from_descriptions(std::back_inserter(sensors), 0, descs.begin(), descs.end());
-        Assert::AreEqual(descs.size() / 3, sensors.size(), L"Created in groups of three", LINE_INFO());
+        detail::sensor_list<type> sensors;
+        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end());
+        Assert::AreEqual(descs.size() / 3, sensors.sensors.size(), L"Created in groups of three", LINE_INFO());
         Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
 
-        for (auto s : sensors) {
+        for (auto& s : sensors.sensors) {
             auto evt = create_event();
 
-            s->sample([](const std::size_t source, const sample *samples, const std::size_t cnt, void *context) {
+            s.sample([](const std::size_t source, const sample *samples, const std::size_t cnt, void *context) {
                 auto evt = static_cast<event_type *>(context);
                 set_event(*evt);
                 Assert::AreEqual(std::size_t(1), cnt, L"Tinkerforge creates single sample", LINE_INFO());
@@ -74,8 +74,8 @@ public:
             descs.erase(end, descs.end());
         }
 
-        std::vector<std::shared_ptr<type>> sensors;
-        const auto unused = type::from_descriptions(std::back_inserter(sensors), 0, descs.begin(), descs.end());
+        detail::sensor_list<type> sensors;
+        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end());
         Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
     }
 
@@ -94,8 +94,8 @@ public:
             descs.erase(end, descs.end());
         }
 
-        std::vector<std::shared_ptr<type>> sensors;
-        const auto unused = type::from_descriptions(std::back_inserter(sensors), 0, descs.begin(), descs.end());
+        detail::sensor_list<type> sensors;
+        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end());
         Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
     }
 
@@ -114,8 +114,8 @@ public:
             descs.erase(end, descs.end());
         }
 
-        std::vector<std::shared_ptr<type>> sensors;
-        const auto unused = type::from_descriptions(std::back_inserter(sensors), 0, descs.begin(), descs.end());
+        detail::sensor_list<type> sensors;
+        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end());
         Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
     }
 };

@@ -25,7 +25,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <typeparam name="TType">The type to be check for an asynchronous sampling
 /// method.</typeparam>
 template<class TType>
-using _async_sample= decltype(std::declval<TType &>().sample(
+using _async_sample = decltype(std::declval<TType &>().sample(
     std::declval<sensor_array_callback>(),
     std::declval<std::chrono::milliseconds>(),
     std::declval<void *>()));

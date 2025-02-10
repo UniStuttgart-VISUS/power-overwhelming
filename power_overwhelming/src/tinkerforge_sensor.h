@@ -11,6 +11,7 @@
 #include <array>
 #include <limits>
 #include <memory>
+#include <mutex>
 
 #include <bricklet_voltage_current_v2.h>
 
@@ -20,8 +21,8 @@
 #include "visus/pwrowg/tinkerforge_error_count.h"
 #include "visus/pwrowg/tinkerforge_sample_averaging.h"
 
-#include "sensor.h"
 #include "sensor_description_builder.h"
+#include "sensor_list.h"
 #include "sensor_utilities.h"
 #include "sensor_state.h"
 #include "string_functions.h"
@@ -33,8 +34,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <summary>
 /// A power sensor based on the Tinkerforge current/voltage bricklet v2.
 /// </summary>
-class PWROWG_TEST_API tinkerforge_sensor final
-        : public sensor {
+class PWROWG_TEST_API tinkerforge_sensor final {
 
 public:
 
@@ -42,6 +42,11 @@ public:
     /// The type of sensor class configuration used by this sensor.
     /// </summary>
     typedef tinkerforge_configuration configuration_type;
+
+    /// <summary>
+    /// The type of a list of sensors of this type.
+    /// </summary>
+    typedef sensor_list<tinkerforge_sensor> list_type;
 
     /// <summary>
     /// Create descriptions for all supported Tinkerforge sensors in the system.
@@ -71,12 +76,10 @@ public:
     /// sensor of this type, are move to the end of the range and the returned
     /// iterator points to the first of those descriptions.</para>
     /// </remarks>
-    /// <typeparam name="TOutput">An output iterator for shared pointers of
-    /// sensors that is able to receive at least a sensor for every element
-    /// <paramref name="begin" /> and <paramref name="end" />.</typeparam>
     /// <typeparam name="TInput">The type of the input iterator over the
     /// <see cref="sensor_description" />s.</typeparam>
-    /// <param name="oit">The output iterator receiving the sensors.</param>
+    /// <param name="dst">The output list, which will receive the sensors and the
+    /// sampler callbacks.</param>
     /// <param name="index">The index to be used for the first sensor created.
     /// </param>
     /// <param name="begin">The begin of the range of sensor descriptions.
@@ -85,8 +88,8 @@ public:
     /// <returns>The iterator to the first sensor description within
     /// <paramref name="begin" /> and <paramref name="end" /> that has not been
     /// used for creating a sensor.</returns>
-    template<class TOutput, class TInput>
-    static TInput from_descriptions(_In_ TOutput oit, _In_ std::size_t index,
+    template<class TInput>
+    static TInput from_descriptions(_In_ list_type& dst, _In_ std::size_t index,
         _In_ const TInput begin, _In_ const TInput end);
 
     ///// <summary>
@@ -140,6 +143,11 @@ public:
         _In_ const std::size_t index_power,
         _In_ const std::size_t index_voltage = invalid_index,
         _In_ const std::size_t index_current = invalid_index);
+
+    /// <summary>
+    /// Finalises the instance.
+    /// </summary>
+    ~tinkerforge_sensor(void) noexcept;
 
     /// <summary>
     /// Retrieves the current configuration of the bricklet.
@@ -378,6 +386,7 @@ private:
     std::size_t _index_current;
     std::size_t _index_power;
     std::size_t _index_voltage;
+    std::mutex _lock;
     tinkerforge_scope _scope;
     sensor_state _state;
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)

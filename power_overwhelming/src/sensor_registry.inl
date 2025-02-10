@@ -19,10 +19,12 @@ void PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::configure(
  * PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::create
  */
 template<class ...TSensors>
-template<class TOutput, class TInput>
-static TInput PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::create(
-        _In_ TOutput oit, _In_ const TInput begin, _In_ const TInput end) {
-    return create0(oit, type_list<TSensors...>(), 0, begin, end);
+template<class TInput>
+TInput PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::create(
+        _In_ sensor_list_type& dst,
+        _In_ const TInput begin,
+        _In_ const TInput end) {
+    return create0<0>(dst, type_list<TSensors...>(), 0, begin, end);
 }
 
 
@@ -36,7 +38,6 @@ std::size_t PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::descrip
         _In_ const sensor_array_configuration_impl& config) {
     return descriptions0(dst, cnt, type_list<TSensors...>(), config);
 }
-
 
 
 /*
@@ -74,19 +75,22 @@ void PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::configure0(
  * PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::create0
  */
 template<class ...TSensors>
-template<class TOutput, class TInput, class T, class... Ts>
+template<std::size_t I, class TInput, class T, class... Ts>
 TInput PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::create0(
-        _In_ TOutput oit,
+        _In_ sensor_list_type& dst,
         _In_ type_list<T, Ts...>,
         _In_ const std::size_t index,
         _In_ const TInput begin,
         _In_ const TInput end) {
     typedef T sensor_type;
 
-    const auto it = sensor_type::from_descriptions(oit, index, begin, end);
+    auto& sensors = std::get<I>(dst);
+    const auto it = sensor_type::from_descriptions(sensors, index, begin, end);
     const auto i = std::distance(begin, it);
 
-    return create0(oit, type_list<Ts...>(), index + i, it, end);
+    sample(sensors);
+
+    return create0<I + 1>(dst, type_list<Ts...>(), index + i, it, end);
 }
 
 
@@ -134,6 +138,6 @@ std::size_t PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::descrip
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
         _In_ std::size_t cnt,
         _In_ type_list<>,
-        _In_ const sensor_array_configuration_impl &config) {
+        _In_ const sensor_array_configuration_impl& config) {
     return 0;
 }

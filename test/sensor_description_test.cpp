@@ -63,8 +63,8 @@ public:
         descs.resize(detail::sensor_registry::descriptions(nullptr, 0, config));
         detail::sensor_registry::descriptions(descs.data(), descs.size(), config);
 
-        std::vector<std::shared_ptr<detail::sensor>> sensors;
-        detail::sensor_registry::create(std::back_inserter(sensors), descs.begin(), descs.end());
+        detail::sensor_registry::sensor_list_type sensors;
+        detail::sensor_registry::create(sensors, descs.begin(), descs.end());
     }
 
     TEST_METHOD(test_sampler_detection) {

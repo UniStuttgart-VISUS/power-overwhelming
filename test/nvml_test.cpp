@@ -50,13 +50,13 @@ public:
         descs.resize(type::descriptions(nullptr, 0, config));
         type::descriptions(descs.data(), descs.size(), config);
 
-        std::vector<std::shared_ptr<type>> sensors;
-        const auto unused = type::from_descriptions(std::back_inserter(sensors), 0, descs.begin(), descs.end());
-        Assert::AreEqual(descs.size(), sensors.size(), L"Sensors created", LINE_INFO());
+        detail::sensor_list<type> sensors;
+        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end());
+        Assert::AreEqual(descs.size(), sensors.sensors.size(), L"Sensors created", LINE_INFO());
         Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
 
-        for (auto s : sensors) {
-            s->sample([](const std::size_t source, const sample *samples, const std::size_t cnt, void *context) {
+        for (auto& s : sensors.sensors) {
+            s.sample([](const std::size_t source, const sample *samples, const std::size_t cnt, void *context) {
                 Assert::AreEqual(std::size_t(1), cnt, L"NVML creates single sample", LINE_INFO());
             });
         }
