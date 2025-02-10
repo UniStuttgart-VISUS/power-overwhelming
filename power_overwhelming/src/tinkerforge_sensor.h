@@ -52,9 +52,11 @@ public:
     /// </remarks>
     /// <param name="config">The global sensor configuration which might affect
     /// which sensors can be enumerated.</param>
-    /// <returns>A list of sensor descriptors that can be used to instantiate a
-    /// specific sensor.</returns>
-    template<class TOutput> static void descriptions(_In_ TOutput oit,
+    /// <returns>The number of available sensors, independently from the fact
+    /// whether all of them have been returned.</returns>
+    static std::size_t descriptions(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
+        _In_ std::size_t cnt,
         _In_ const configuration_type& config);
 
     /// <summary>

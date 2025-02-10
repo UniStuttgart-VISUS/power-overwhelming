@@ -21,7 +21,8 @@ public:
 
         type::configuration_type config;
         std::vector<sensor_description> descs;
-        type::descriptions(std::back_inserter(descs), config);
+        descs.resize(type::descriptions(nullptr, 0, config));
+        type::descriptions(descs.data(), descs.size(), config);
 
         for (auto& d : descs) {
             Assert::AreEqual(int(reading_type::floating_point), int(d.reading_type()), L"produces floats", LINE_INFO());
@@ -37,7 +38,8 @@ public:
 
         type::configuration_type config;
         std::vector<sensor_description> descs;
-        type::descriptions(std::back_inserter(descs), config);
+        descs.resize(type::descriptions(nullptr, 0, config));
+        type::descriptions(descs.data(), descs.size(), config);
 
         std::vector<std::shared_ptr<type>> sensors;
         const auto unused = type::from_descriptions(std::back_inserter(sensors), 0, descs.begin(), descs.end());
@@ -62,7 +64,8 @@ public:
 
         type::configuration_type config;
         std::vector<sensor_description> descs;
-        type::descriptions(std::back_inserter(descs), config);
+        descs.resize(type::descriptions(nullptr, 0, config));
+        type::descriptions(descs.data(), descs.size(), config);
 
         {
             auto end = std::remove_if(descs.begin(), descs.end(), [](const sensor_description &d) {
@@ -81,7 +84,8 @@ public:
 
         type::configuration_type config;
         std::vector<sensor_description> descs;
-        type::descriptions(std::back_inserter(descs), config);
+        descs.resize(type::descriptions(nullptr, 0, config));
+        type::descriptions(descs.data(), descs.size(), config);
 
         {
             auto end = std::remove_if(descs.begin(), descs.end(), [](const sensor_description &d) {
@@ -100,7 +104,8 @@ public:
 
         type::configuration_type config;
         std::vector<sensor_description> descs;
-        type::descriptions(std::back_inserter(descs), config);
+        descs.resize(type::descriptions(nullptr, 0, config));
+        type::descriptions(descs.data(), descs.size(), config);
 
         {
             auto end = std::remove_if(descs.begin(), descs.end(), [](const sensor_description &d) {

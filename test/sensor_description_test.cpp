@@ -60,7 +60,8 @@ public:
         detail::sensor_array_configuration_impl config;
         std::vector<sensor_description> descs;
         detail::sensor_registry::configure(config);
-        detail::sensor_registry::descriptions(std::back_inserter(descs), config);
+        descs.resize(detail::sensor_registry::descriptions(nullptr, 0, config));
+        detail::sensor_registry::descriptions(descs.data(), descs.size(), config);
 
         std::vector<std::shared_ptr<detail::sensor>> sensors;
         detail::sensor_registry::create(std::back_inserter(sensors), descs.begin(), descs.end());

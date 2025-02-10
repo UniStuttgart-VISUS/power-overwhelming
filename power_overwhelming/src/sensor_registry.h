@@ -86,7 +86,9 @@ public:
     /// </summary>
     /// <typeparam name="TOutput"></typeparam>
     /// <param name="oit"></param>
-    template<class TOutput> static void descriptions(_In_ TOutput oit,
+    static std::size_t descriptions(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
+        _In_ std::size_t cnt,
         _In_ const sensor_array_configuration_impl& config);
 
     /// <summary>
@@ -124,14 +126,18 @@ private:
         return begin;
     }
 
-    template<class TOutput, class T, class... Ts>
-    static void descriptions0(_In_ TOutput oit,
+    template<class T, class... Ts>
+    static std::size_t descriptions0(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
+        _In_ std::size_t cnt,
         _In_ type_list<T, Ts...>,
         _In_ const sensor_array_configuration_impl& config);
 
-    template<class TOutput> inline static void descriptions0(_In_ TOutput,
+    static std::size_t descriptions0(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
+        _In_ std::size_t cnt,
         _In_ type_list<>,
-        _In_ const sensor_array_configuration_impl&) { }
+        _In_ const sensor_array_configuration_impl&);
 
 };
 

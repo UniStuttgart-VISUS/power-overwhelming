@@ -30,10 +30,11 @@ static TInput PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::creat
  * PWROWG_NAMESPACE::basic_sensor_registry<TSensors...>::descriptions
  */
 template<class... TSensors>
-template<class TOutput>
-void PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::descriptions(
-        _In_ TOutput oit, _In_ const sensor_array_configuration_impl& config) {
-    descriptions0(oit, type_list<TSensors...>(), config);
+std::size_t PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::descriptions(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
+        _In_ std::size_t cnt,
+        _In_ const sensor_array_configuration_impl& config) {
+    return descriptions0(dst, cnt, type_list<TSensors...>(), config);
 }
 
 
@@ -93,21 +94,46 @@ TInput PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::create0(
  * PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::descriptions0
  */
 template<class ...TSensors>
-template<class TOutput, class T, class... Ts>
-void PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::descriptions0(
-        _In_ TOutput oit,
+template<class T, class... Ts>
+std::size_t PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>
+::descriptions0(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
+        _In_ std::size_t cnt,
         _In_ type_list<T, Ts...>,
         _In_ const sensor_array_configuration_impl& config) {
     typedef T sensor_type;
     typedef typename sensor_type::configuration_type config_type;
+    std::size_t retval = 0;
 
     // If we have the configuration, create the descriptions for 'T'.
     auto it = config.sensor_configs.find(config_type::id);
     if (it != config.sensor_configs.end()) {
         auto c = static_cast<const config_type *>(it->second.get());
-        sensor_type::descriptions(oit, *c);
+        retval = sensor_type::descriptions(dst, cnt, *c);
+
+        if (retval < cnt) {
+            dst += retval;
+            cnt -= retval;
+        } else {
+            cnt = 0;
+        }
     }
 
     // Create the descriptions for the rest.
-    descriptions0<TOutput, Ts...>(oit, type_list<Ts...>(), config);
+    retval += descriptions0(dst, cnt, type_list<Ts...>(), config);
+
+    return retval;
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::descriptions0
+ */
+template<class... TSensors>
+std::size_t PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::descriptions0(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
+        _In_ std::size_t cnt,
+        _In_ type_list<>,
+        _In_ const sensor_array_configuration_impl &config) {
+    return 0;
 }

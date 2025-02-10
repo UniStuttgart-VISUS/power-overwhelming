@@ -12,6 +12,95 @@
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE_BEGIN::nvml_sensor::descriptions
+ */
+std::size_t PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
+        _In_ std::size_t cnt,
+        _In_ const configuration_type& config) {
+    auto builder = sensor_description_builder::create()
+        .with_vendor(L"NVIDIA")
+        .with_type(sensor_type::gpu | sensor_type::power | sensor_type::software)
+        .produces(reading_type::floating_point)
+        .measured_in(reading_unit::watt);
+
+    try {
+        unsigned int cnt_devices = 0;
+        unsigned int retval = 0;
+        nvml_scope scope;
+
+        // Find out the number of NVIDIA devices on the machine.
+        {
+            auto status = nvidia_management_library::instance()
+                .nvmlDeviceGetCount(&cnt_devices);
+            if (status != NVML_SUCCESS) {
+                throw nvml_exception(status);
+            }
+        }
+
+        // Create descriptors for each device.
+        for (retval = 0; (retval < cnt_devices); ++retval) {
+            nvmlDevice_t device;
+            std::array<char, NVML_DEVICE_UUID_BUFFER_SIZE> guid;
+            std::array<char, NVML_DEVICE_NAME_BUFFER_SIZE> name;
+            nvmlPciInfo_t pci_info;
+
+            {
+                auto status = nvidia_management_library::instance()
+                    .nvmlDeviceGetHandleByIndex(retval, &device);
+                if (status != NVML_SUCCESS) {
+                    throw nvml_exception(status);
+                }
+
+                builder.with_private_data(device);
+            }
+
+            {
+                auto status = nvidia_management_library::instance()
+                    .nvmlDeviceGetName(device, name.data(),
+                        static_cast<unsigned int>(name.size()));
+                if (status != NVML_SUCCESS) {
+                    throw nvml_exception(status);
+                }
+            }
+
+            {
+                auto status = nvidia_management_library::instance()
+                    .nvmlDeviceGetUUID(device, guid.data(),
+                        static_cast<unsigned int>(guid.size()));
+                if (status != NVML_SUCCESS) {
+                    throw nvml_exception(status);
+                }
+
+                builder.with_id(guid.data());
+            }
+
+            {
+                auto status = nvidia_management_library::instance()
+                    .nvmlDeviceGetPciInfo(device, &pci_info);
+                if (status != NVML_SUCCESS) {
+                    throw nvml_exception(status);
+                }
+
+                builder.with_path(pci_info.busId);
+            }
+
+            builder.with_name("NVML/%s/%s", name.data(), pci_info.busId);
+
+            if ((dst != nullptr) && (cnt > 0)) {
+                dst[retval] = builder.build();
+            }
+        }
+
+        return retval;
+    } catch (...) {
+        /* Probably no NVIDIA GPU, ignore it.*/
+        return 0;
+    }
+}
+
+
+/*
  * PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_bus_id
  */
 std::shared_ptr<PWROWG_DETAIL_NAMESPACE::nvml_sensor>

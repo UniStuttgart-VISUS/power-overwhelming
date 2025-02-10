@@ -10,6 +10,88 @@
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::descriptions
+ */
+std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::descriptions(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
+        _In_ std::size_t cnt,
+        _In_ const configuration_type& config) {
+    typedef tinkerforge_bricklet bricklet_type;
+
+    std::vector<bricklet_type> bricklets;
+    auto builder = sensor_description_builder::create()
+        .with_vendor(L"Tinkerforge")
+        .with_editable_type(sensor_type::cpu
+            | sensor_type::external
+            | sensor_type::gpu
+            | sensor_type::system)
+        .produces(reading_type::floating_point);
+    std::size_t retval = 0;
+
+    if (dst == nullptr) {
+        // Subsequently, we only check 'cnt', so make it reflect an invalid
+        // buffer.
+        cnt = 0;
+    }
+
+    for (std::size_t i = 0; i < config.count_end_points(); ++i) {
+        auto& end_point = config.end_points()[i];
+
+        try {
+            tinkerforge_scope scope(end_point.name(), end_point.port());
+
+            bricklets.clear();
+            scope.copy_bricklets(
+                std::back_inserter(bricklets),
+                [](const bricklet_type& b) { return (b.device_type()
+                    == VOLTAGE_CURRENT_V2_DEVICE_IDENTIFIER); },
+                std::chrono::milliseconds(config.timeout()));
+
+            for (auto& b : bricklets) {
+                if (cnt > 0) {
+                    dst[retval++] = specialise(builder,
+                        scope,
+                        config,
+                        end_point,
+                        b,
+                        sensor_type::current,
+                        reading_unit::ampere).build();
+                    --cnt;
+                }
+                if (cnt > 0) {
+                    dst[retval++] = specialise(builder,
+                        scope,
+                        config,
+                        end_point,
+                        b,
+                        sensor_type::voltage,
+                        reading_unit::volt).build();
+                    --cnt;
+                }
+                if (cnt > 0) {
+                    dst[retval++] = specialise(builder,
+                        scope,
+                        config,
+                        end_point,
+                        b,
+                        sensor_type::power,
+                        reading_unit::watt).build();
+                    --cnt;
+                }
+            }
+        } catch (tinkerforge_exception) {
+            // If the connection failed in the scope, we do not have any
+            // bricklets from the specific host. This is typically caused
+            // by brickd not running on 'end_point'. At this point, the
+            // resolution is to just ignore the end point.
+        }
+    }
+
+    return retval;
+}
+
+
+/*
  * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::invalid_index
  */
 constexpr std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::invalid_index;
