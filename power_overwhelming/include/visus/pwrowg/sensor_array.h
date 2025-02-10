@@ -8,7 +8,9 @@
 #define _PWROWG_SENSOR_ARRAY_H
 #pragma once
 
+#include <algorithm>
 #include <chrono>
+#include <vector>
 
 #include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_array_configuration.h"
@@ -55,6 +57,21 @@ public:
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
         _In_ std::size_t cnt,
         _In_ const sensor_array_configuration& config);
+
+    /// <summary>
+    /// Create a sensor array for all <see cref="sensor_description" /> matching
+    /// the given predicate.
+    /// </summary>
+    /// <typeparam name="TPredicate">An unary predicate for
+    /// <see cref="sensor_description" />.</typeparam>
+    /// <param name="config">The array configuration detailing the behaviour of
+    /// the sensors that are retrieved.</param>
+    /// <param name="predicate">The predicate selecting the sensors that are
+    /// included in the array.</param>
+    /// <returns>A new sensor array.</returns>
+    template<class TPredicate> static sensor_array for_matches(
+        _In_ const sensor_array_configuration& config,
+        _In_ const TPredicate predicate);
 
     /// <summary>
     /// Initialises a new, but invalid instance.
@@ -197,5 +214,7 @@ private:
 };
 
 PWROWG_NAMESPACE_END
+
+#include "visus/pwrowg/sensor_array.inl"
 
 #endif /* !defined(_PWROWG_SENSOR_ARRAY_H) */

@@ -13,7 +13,7 @@
 #include "visus/pwrowg/rapl_domain.h"
 #include "visus/pwrowg/rapl_quantity.h"
 
-#include "sensor.h"
+#include "sensor_list.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -22,7 +22,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// Implementation of a power sensor using the device files for the RAPL
 /// machine-specific registers (MSRs).
 /// </summary>
-class msr_sensor final : public sensor {
+class msr_sensor final {
 
 public:
 

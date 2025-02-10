@@ -55,7 +55,6 @@ PWROWG_NAMESPACE::tinkerforge_configuration::end_point::end_point(
     PWROWG_DETAIL_NAMESPACE::safe_assign(this->_name, host);
 }
 
-
 /*
  * PWROWG_NAMESPACE::tinkerforge_configuration::id
  */

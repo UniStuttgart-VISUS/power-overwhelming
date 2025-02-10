@@ -28,6 +28,7 @@
 #include <visus/pwrowg/rtx_instrument_configuration.h>
 #include <visus/pwrowg/rtx_sensor_definition.h>
 #include <visus/pwrowg/sample.h>
+#include <visus/pwrowg/sensor_array.h>
 #include <visus/pwrowg/sensor_description.h>
 #include <visus/pwrowg/timestamp.h>
 

@@ -13,9 +13,8 @@
 #include <Windows.h>
 #include <emi.h>
 #include <tchar.h>
-#endif /* defined(_WIN32) */
 
-#include "sensor.h"
+#include "sensor_list.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -24,38 +23,26 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// Implementation of a power sensor using the Energy Meter Interface
 /// available in Windows 10 and above.
 /// </summary>
-class emi_sensor final : public sensor {
+class emi_sensor final {
 
 public:
 
-#if false
     /// <summary>
     /// The type used to identify a channel in EMIv2.
     /// </summary>
-#if defined(_WIN32)
     typedef decltype(EMI_METADATA_V2::ChannelCount) channel_type;
-#else /* defined(_WIN32) */
-    typedef int channel_type;
-#endif /* defined(_WIN32) */
 
     /// <summary>
     /// The type used for strings that are passed to the OS API.
     /// </summary>
-#if defined(_WIN32)
     typedef wchar_t char_type;
-#else /* defined(_WIN32) */
-    typedef char char_type;
-#endif /* defined(_WIN32) */
 
     /// <summary>
     /// The type used to store the version of the EMI.
     /// </summary>
-#if defined(_WIN32)
     typedef decltype(EMI_VERSION::EmiVersion) version_type;
-#else /* defined(_WIN32) */
-    typedef int version_type;
-#endif /* defined(_WIN32) */
 
+#if false
     /// <summary>
     /// Create sensors for all devices that support the Energy Meter
     /// Interface.
@@ -336,5 +323,6 @@ private:
 
 PWROWG_DETAIL_NAMESPACE_END
 
+#endif /* defined(_WIN32) */
 #endif /* defined(_PWROWG_EMI_SENSOR_H) */
 

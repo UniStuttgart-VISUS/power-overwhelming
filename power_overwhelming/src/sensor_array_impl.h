@@ -17,7 +17,7 @@
 #include "visus/pwrowg/sensor_description.h"
 
 #include "detector.h"
-#include "sensor.h"
+#include "sensor_registry.h"
 #include "sensor_state.h"
 
 
@@ -41,9 +41,7 @@ struct sensor_array_impl final {
     /// the user of the sensor array, i.e. there is not direct match of the
     /// <see cref="descriptions" /> and the <see cref="sensors" />.
     /// </remarks>
-    std::vector<std::shared_ptr<sensor>> sensors;
-
-    //std::vector<void (*)(std::shared_ptr<sensor>)> start_samplers;
+    sensor_registry::sensor_list_type sensors;
 
     /// <summary>
     /// The user-defined context pointer to be passed to the sample callback.

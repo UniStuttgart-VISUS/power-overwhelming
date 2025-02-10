@@ -9,6 +9,7 @@
 #include <memory>
 #include <stdexcept>
 
+#include "sensor_array_configuration_impl.h"
 #include "sensor_array_impl.h"
 #include "sensor_registry.h"
 
@@ -20,8 +21,12 @@ std::size_t PWROWG_NAMESPACE::sensor_array::all_descriptions(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
         _In_ std::size_t cnt,
         _In_ const sensor_array_configuration& config) {
-    //detail::sensor_registry::
-    throw "TODO";
+    if (!config) {
+        throw std::invalid_argument("A valid array configuration object must "
+            "be provided.");
+    }
+
+    return detail::sensor_registry::descriptions(dst, cnt, *config._impl);
 }
 
 
@@ -32,7 +37,15 @@ PWROWG_NAMESPACE::sensor_array::sensor_array(
         _In_reads_(cnt) const sensor_description *descs,
         _In_ const std::size_t cnt)
         : _impl(new PWROWG_DETAIL_NAMESPACE::sensor_array_impl()) {
-    throw "TODO";
+    if (descs != nullptr) {
+        std::copy(descs,
+            descs + cnt,
+            std::back_inserter(this->_impl->descriptions));
+        auto end = detail::sensor_registry::create(this->_impl->sensors,
+            this->_impl->descriptions.begin(),
+            this->_impl->descriptions.end());
+        this->_impl->descriptions.erase(end, this->_impl->descriptions.end());
+    }
 }
 
 

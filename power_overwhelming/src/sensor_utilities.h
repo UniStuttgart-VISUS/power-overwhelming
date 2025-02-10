@@ -16,7 +16,7 @@
 
 #include "visus/pwrowg/convert_string.h"
 
-#include "sensor.h"
+#include "sensor_state.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -27,12 +27,6 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// </summary>
 /// <returns>A JSON array holding all the descriptors.</returns>
 nlohmann::json get_all_sensor_descs(void);
-
-/// <summary>
-/// Gets all sensors available on the current machine.
-/// </summary>
-/// <returns>A list of all sensors we know on this system.</returns>
-extern std::vector<std::unique_ptr<sensor>> get_all_sensors(void);
 
 /// <summary>
 /// Gets all sensors of the specified type.
@@ -46,43 +40,6 @@ template<class TSensor> inline std::vector<TSensor> get_all_sensors_of(void) {
     retval.resize(TSensor::for_all(nullptr, 0));
     TSensor::for_all(retval.data(), retval.size());
     return retval;
-}
-
-/// <summary>
-/// Move the given sensor to the given polymorphic sensor list
-/// <paramref name="dst" />.
-/// </summary>
-/// <typeparam name="TSensor"></typeparam>
-/// <param name="dst"></param>
-/// <param name="sensor"></param>
-/// <returns></returns>
-template<class TSensor>
-inline std::vector<std::unique_ptr<sensor>>& move_sensor(
-        std::vector<std::unique_ptr<sensor>>& dst,
-        TSensor&& sensor) {
-    dst.emplace_back(new TSensor(std::move(sensor)));
-    return dst;
-}
-
-/// <summary>
-/// Adds the given list of sensors to the polymorphic sensor list
-/// <paramref name="dst" />.
-/// </summary>
-/// <typeparam name="TSensor"></typeparam>
-/// <param name="dst"></param>
-/// <param name="sensors"></param>
-/// <returns><paramref name="dst" /></returns>
-template<class TSensor>
-inline std::vector<std::unique_ptr<sensor>>& move_sensors(
-        std::vector<std::unique_ptr<sensor>>& dst,
-        std::vector<TSensor>&& sensors) {
-    dst.reserve(dst.size() + sensors.size());
-
-    for (auto& s : sensors) {
-        dst.emplace_back(new TSensor(std::move(s)));
-    }
-
-    return dst;
 }
 
 
@@ -105,13 +62,13 @@ template<class TIterator, class TPredicate>
 TIterator move_front_if(_In_ const TIterator begin, _In_ const TIterator end,
     _In_ const TPredicate predicate);
 
-/// <summary>
-/// Parse sensor instances from a JSON-based configuration.
-/// </summary>
-/// <param name="descs"></param>
-/// <returns></returns>
-std::vector<std::unique_ptr<sensor>> parse_sensors(
-    _In_ const nlohmann::json& descs);
+///// <summary>
+///// Parse sensor instances from a JSON-based configuration.
+///// </summary>
+///// <param name="descs"></param>
+///// <returns></returns>
+//std::vector<std::unique_ptr<sensor>> parse_sensors(
+//    _In_ const nlohmann::json& descs);
 
 /// <summary>
 /// Read a JSON configuration file.

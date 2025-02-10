@@ -101,6 +101,15 @@ public:
         return static_cast<const TConfig *>(this->find_config(TConfig::id));
     }
 
+    /// <summary>
+    /// Answer whether the configuration is valid.
+    /// </summary>
+    /// <returns><c>true</c> if the configuration is valid, <c>false</c> if it
+    /// has been moved.</returns>
+    inline operator bool(void) const noexcept {
+        return (this->_impl != nullptr);
+    }
+
 private:
 
     typedef PWROWG_DETAIL_NAMESPACE::sensor_array_configuration_impl *impl_type;
@@ -132,6 +141,7 @@ private:
     impl_type _impl;
 
     template<class...> friend class basic_sensor_registry;
+    friend class sensor_array;
 };
 
 PWROWG_NAMESPACE_END

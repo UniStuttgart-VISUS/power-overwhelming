@@ -17,13 +17,13 @@
 #include "visus/pwrowg/nvml_configuration.h"
 #include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_description.h"
+#include "visus/pwrowg/sensor_filters.h"
 
 #include "nvidia_management_library.h"
 #include "nvml_exception.h"
 #include "nvml_scope.h"
 #include "sensor_description_builder.h"
 #include "sensor_list.h"
-#include "string_functions.h"
 #include "sensor_utilities.h"
 
 

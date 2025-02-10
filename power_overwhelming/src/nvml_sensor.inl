@@ -14,9 +14,7 @@ TInput PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_descriptions(
         _In_ std::size_t index,
         _In_ const TInput begin,
         _In_ const TInput end) {
-    auto retval = move_front_if(begin, end, [](const sensor_description& d) {
-        return starts_with(d.name(), L"NVML/");
-    });
+    auto retval = move_front_if(begin, end, is_nvml_sensor);
 
     for (auto it = begin; it != retval; ++it) {
         dst.sensors.emplace_back(

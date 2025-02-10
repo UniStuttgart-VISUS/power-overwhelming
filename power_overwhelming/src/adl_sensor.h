@@ -15,7 +15,8 @@
 
 #include "adl_scope.h"
 #include "adl_sensor_source.h"
-#include "sensor.h"
+#include "sensor_list.h"
+#include "sensor_state.h"
 #include "timezone.h"
 
 
@@ -29,7 +30,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// device in a sensor array which samples all ADL data. The reason for that is
 /// that ADL returns everything in one batch from the device.</para>
 /// </remarks>
-class PWROWG_TEST_API adl_sensor final : public sensor {
+class PWROWG_TEST_API adl_sensor final {
 
 public:
 
@@ -37,6 +38,11 @@ public:
     /// The type of sensor class configuration used by this sensor.
     /// </summary>
     typedef adl_configuration configuration_type;
+
+    /// <summary>
+    /// The type of a list of sensors of this type.
+    /// </summary>
+    typedef sensor_list<adl_sensor> list_type;
 
     /// <summary>
     /// Create descriptions for all supported ADL sensors in the system.

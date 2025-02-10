@@ -17,6 +17,7 @@
 
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/sensor_array_callback.h"
+#include "visus/pwrowg/sensor_filters.h"
 #include "visus/pwrowg/tinkerforge_configuration.h"
 #include "visus/pwrowg/tinkerforge_error_count.h"
 #include "visus/pwrowg/tinkerforge_sample_averaging.h"
@@ -25,7 +26,6 @@
 #include "sensor_list.h"
 #include "sensor_utilities.h"
 #include "sensor_state.h"
-#include "string_functions.h"
 #include "tinkerforge_bricklet.h"
 
 

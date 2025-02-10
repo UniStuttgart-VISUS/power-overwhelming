@@ -17,9 +17,7 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
     typedef sensor_description_builder builder_type;
 
     // Find out which are the TF sensors.
-    auto retval = move_front_if(begin, end, [](const sensor_description& d) {
-        return starts_with(d.name(), L"Tinkerforge/");
-    });
+    auto retval = move_front_if(begin, end, is_tinkerforge_sensor);
 
     // Group the sensors by their brick daemon and bricklet. Sensors on the same
     // bricklet are sorted to match the order in the constructor.
