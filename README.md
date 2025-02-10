@@ -12,7 +12,7 @@ This project provides a library for measuring the power consumption of GPUs (and
 ## What's new in version 2.x?
 1. The namespace of the library has been changed from `visus::power_overwhelming` to `visus::pwrowg`. Furthermore, ABI versioning via an `inline` namespace has been added.
 1. Access to individual sensors has been removed. All sensors must be managed via the `visus::pwrowg::sensor_array`.
-1. Synchronous APIs have been removed. All sensor data must be retrieved using callbacks passed to the `visus::pwrowg::sensor_array`.
+1. Synchronous APIs have been removed in favour of a "Don't call us, we call you" approach. All sensor data must be retrieved using callbacks passed to the `visus::pwrowg::sensor_array`.
 1. All oscilloscope-related APIs have been renamed to `rtx_...` to indicate that they only support Rohde & Schwarz RTA and RTB series oscilloscopes.
 1. All HMC 8015-related APIs have been renamed to `hmc_...` to indicate that they are specifically for these devices.
 1. All Tinkerforge-related APIs have been renamed to `tinkerforge_...` to indicate that they are specifically for these devices.
@@ -29,45 +29,45 @@ The library supports reading Rohde & Schwarz oscilloscopes of the RTB 2000 famil
 Only the power analyser is currently ready to use, **support for automating oscilloscopes is work in progress.**
 
 ## Using the library
-The `podump` demo application is a good starting point to familiarise oneself with the library. It contains a sample for each sensor available. Unfortunately, the way sensors are identified and instantiates is dependent on the underlying technology. For instance, ADL allows for creating sensors for the PCI device ID show in Windows task manager whereas NVML uses a custom GUID or the PCI bus ID. Whenever possible, the sensors provide a static factory method `for_all(sensor_type *dst, const std::size_t cnt)` that creates all available sensors of this type. The usage pattern for this API is:
+In order to sample current, voltage and power samples, create a `sensor_array` for the sensors you are interested in. You can retrieve `sensor_description`s for all available sensors as follows:
 ```c++
-using namespace visus::power_overwhelming;
+using namespace visus::pwrowg;
 
-std::vector<adl_sensor> sensors;
-// Call 'for_all' to determine the required buffer size.
-sensors.resize(adl_sensor::for_all(nullptr, 0));
-// Call 'for_all' to actually get the sensors.
-adl_sensor::for_all(sensors.data(), sensors.size());
+// Create a configuration object to adjust the overall behaviour of the sensor
+// families and potentially adjust specific ones. In this example, we modify
+// how the Tinkerforge bricklets behave, but you can adjust the configuration
+// object for each available sensor in a similar way.
+sensor_array_configuration config;
+
+config.configure<tinkerforge_configuration>([](tinkerforge_configuration& c) {
+    c.averaging(tinkerforge_sample_averaging::average_of_4);
+});
+
+std::vector<sensor_description> descs;
+// Call 'all_descriptions' to determine the required buffer size.
+sensors.resize(sensor_array::all_descriptions(nullptr, 0, config));
+// Call 'all_descriptions' to actually get the descriptions.
+sensor_array::all_descriptions(descs.data(), descs.size());
+
+// Create a sensor array for all sensors described in 'descs'. Note that the
+// following is unsafe if you detach dynamically discovered sensors like the
+// ones connected via USB in the meantime. In order to account for that, you can
+// truncate 'descs' to the size returned by the second call.
+sensor_array sensors(descs.data(), descs.size());
 ```
 
-Some sensors have a slightly different API. For instance, sensors using *Tinkerforge Voltage/Current Bricklets* are not directly created, but require enumerating a descriptor object that in turn can be used to make the sensor:
+If you want to limit the sensors in your sensor array, you can filter 'descs' before creating the array. Alternatively, there is a convenience method that does this for you:
 ```c++
-using namespace visus::power_overwhelming;
+using namespace visus::pwrowg;
 
-std::vector<tinkerforge_sensor_definition> descs;
-// Call 'get_definitions' to find out how many definitions there are.
-descs.resize(tinkerforge_sensor::get_definitions(nullptr, 0));
-// Call 'get_definitions' to get the actual descriptors.
-auto cnt = tinkerforge_sensor::get_definitions(descs.data(), descs.size());
-// As Tinkerforge sensors can be hot-plugged, it might occur that there are now
-// less sensors than initially reported. In this case, we need to truncate the
-// array.
-if (cnt < descs.size()) {
-    descs.resize(cnt);
-}
+sensor_array_configuration config;
 
-// Create a sensor for each of the descriptors.
-std::vector<tinkerforge_sensor> sensors;
-sensors.reserve(descs.size());
-
-for (auto& d : descs) {
-    // Add a description to the sensors in order to identify them later.
-    // Typically, you would have map from the unique UID to a description
-    // of what is attached to the bricklet.
-    d.description(L"One of my great sensors");
-    sensors.emplace_back(d);
-}
+auto sensors = sensor_array::for_matches(config, is_power_sensor);
 ```
+The `is_power_sensor` predicate is a built-in one selecting only sensors of type `sensor_type::power`, but you can provide any unary predicate on `sensor_description` to select the sensors you are interested in.
+
+
+**TODO**
 
 The sensors returned are objects based on the PIMPL pattern. While they cannot be copied, the can be moved around. If the sensor object is destroyed while holding a valid implementation pointer, the sensor itself is freed.
 
