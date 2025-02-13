@@ -225,7 +225,7 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::specialise(
             bricklet.uid().c_str(),
             source)
         .measured_in(reading_unit::ampere)
-        .with_new_private_data<private_data>(scope, config);
+        .with_private_data(scope);
 }
 
 

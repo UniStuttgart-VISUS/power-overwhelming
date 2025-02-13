@@ -304,20 +304,6 @@ public:
 private:
 
     /// <summary>
-    /// The private data passed from the description enumerator to the actual
-    /// sensors.
-    /// </summary>
-    struct private_data {
-        std::shared_ptr<tinkerforge_configuration> config;
-        tinkerforge_scope scope;
-
-        inline private_data(_In_ const tinkerforge_scope& scope,
-                _In_ const tinkerforge_configuration& config)
-            : config(std::make_shared<tinkerforge_configuration>(config)),
-                scope(scope) { }
-    };
-
-    /// <summary>
     /// Dispatches a sensor reading to <see cref="_callback" />.
     /// </summary>
     static void CALLBACK current_callback(_In_ const std::int32_t current,

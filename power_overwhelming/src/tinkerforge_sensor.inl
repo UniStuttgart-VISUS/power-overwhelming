@@ -24,12 +24,12 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
     // bricklet are sorted to match the order in the constructor.
     std::sort(begin, retval,
             [](const sensor_description& lhs, const sensor_description& rhs) {
-        auto pdl = builder_type::private_data<private_data>(lhs);
-        auto pdr = builder_type::private_data<private_data>(rhs);
+        auto pdl = *builder_type::private_data<tinkerforge_scope>(lhs);
+        auto pdr = *builder_type::private_data<tinkerforge_scope>(rhs);
 
         // First of all, group by the brick daemon.
-        auto retval = static_cast<const IPConnection *>(pdl->scope)
-            - static_cast<const IPConnection *>(pdr->scope);
+        auto retval = static_cast<const IPConnection *>(pdl)
+            - static_cast<const IPConnection *>(pdr);
 
         // If on the same daemon, group by bricklet.
         if (retval == 0) {
@@ -39,10 +39,13 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
         return (retval < 0);
     });
 
+    // Generate a shared configuration object to prevent a copy for each sensor.
+    auto shared_config = std::make_shared<configuration_type>(config);
+
     for (auto it = begin; it != retval; ++it) {
         // At this point, there are always up to three sensors that come from the
         // same bricklet. We group these into a single sensor instance.
-        auto pd = builder_type::private_data<private_data>(*it);
+        auto scope = builder_type::private_data<tinkerforge_scope>(*it);
         std::array<sensor_type, 3> types {
             sensor_mask(*it),
             sensor_type::unknown,
@@ -69,8 +72,7 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
         auto voltage = active(sensor_type::voltage) ? index++ : invalid_index;
         auto current = active(sensor_type::current) ? index++ : invalid_index;
 
-        dst.emplace_back(pd->scope, uid, pd->config,
-            power, voltage, current);
+        dst.emplace_back(*scope, uid, shared_config, power, voltage, current);
         dst.back().configuration(config.averaging(),
             config.voltage_conversion_time(),
             config.current_conversion_time());
