@@ -70,7 +70,9 @@ const PWROWG_NAMESPACE::guid PWROWG_NAMESPACE::tinkerforge_configuration::id(
  */
 PWROWG_NAMESPACE::tinkerforge_configuration::tinkerforge_configuration(void)
         : _averaging(tinkerforge_sample_averaging::average_of_4),
+        _cnt_end_points(0),
         _current_conversion_time(tinkerforge_conversion_time::microseconds_588),
+        _end_points(nullptr),
         _timeout(5000),
         _voltage_conversion_time(tinkerforge_conversion_time::microseconds_588) {
     this->add_end_point(end_point());
@@ -83,10 +85,12 @@ PWROWG_NAMESPACE::tinkerforge_configuration::tinkerforge_configuration(void)
 PWROWG_NAMESPACE::tinkerforge_configuration::tinkerforge_configuration(
         _In_ const tinkerforge_configuration& rhs)
     : _averaging(rhs._averaging),
+        _cnt_end_points(0),
         _current_conversion_time(rhs._current_conversion_time),
+        _end_points(nullptr),
         _timeout(rhs._timeout),
         _voltage_conversion_time(rhs._voltage_conversion_time) {
-    this->add_end_points(rhs);
+    this->end_points(rhs._end_points, rhs._cnt_end_points);
 }
 
 
@@ -94,7 +98,7 @@ PWROWG_NAMESPACE::tinkerforge_configuration::tinkerforge_configuration(
  * PWROWG_NAMESPACE::tinkerforge_configuration::~tinkerforge_configuration
  */
 PWROWG_NAMESPACE::tinkerforge_configuration::~tinkerforge_configuration(void) {
-    this->destroy_end_points();
+    delete[] this->_end_points;
 }
 
 
@@ -103,37 +107,20 @@ PWROWG_NAMESPACE::tinkerforge_configuration::~tinkerforge_configuration(void) {
  */
 PWROWG_NAMESPACE::tinkerforge_configuration&
 PWROWG_NAMESPACE::tinkerforge_configuration::add_end_point(
-        _In_ const end_point&address) {
-    const auto offset = this->_end_points.size();
+        _In_ const end_point& address) {
+    assert((this->_cnt_end_points == 0) || (this->_end_points != nullptr));
+    const auto begin = this->_end_points;
+    const auto end = this->_end_points + this->_cnt_end_points;
 
-    this->_end_points.grow(this->_end_points.size() + sizeof(end_point));
-    new (this->_end_points.as<end_point>(offset)) end_point(address);
+    // Reallocate and copy existing end points.
+    this->_end_points = new end_point[++this->_cnt_end_points];
+    std::copy(begin, end, this->_end_points);
+    delete[] begin;
 
-    return *this;
-}
-
-
-/*
- * PWROWG_NAMESPACE::tinkerforge_configuration::add_end_points
- */
-PWROWG_NAMESPACE::tinkerforge_configuration&
-PWROWG_NAMESPACE::tinkerforge_configuration::add_end_points(
-        _In_ const tinkerforge_configuration& config) {
-    // TODO: perf could be optimised here by allocating everything at once.
-    for (std::size_t i = 0; i < config.count_end_points(); ++i) {
-        this->add_end_point(config.end_points()[i]);
-    }
+    // Add the new end point.
+    this->_end_points[this->_cnt_end_points - 1] = address;
 
     return *this;
-}
-
-
-/*
- * PWROWG_NAMESPACE::tinkerforge_configuration::count_end_points
- */
-std::size_t PWROWG_NAMESPACE::tinkerforge_configuration::count_end_points(
-        void) const noexcept {
-    return this->_end_points.size() / sizeof(end_point);
 }
 
 
@@ -153,14 +140,13 @@ PWROWG_NAMESPACE::tinkerforge_configuration::end_points(
             "provided.");
     }
 
-    this->destroy_end_points();
-
-    this->_end_points.resize(cnt * sizeof(end_point));
-
-    for (std::size_t i = 0; i < cnt; ++i) {
-        const auto offset = i * sizeof(end_point);
-        new (this->_end_points.as<end_point>(offset)) end_point(addresses[i]);
+    if (this->_cnt_end_points != cnt) {
+        delete[] this->_end_points;
+        this->_cnt_end_points = cnt;
+        this->_end_points = new end_point[this->_cnt_end_points];
     }
+
+    std::copy(addresses, addresses + cnt, this->_end_points);
 
     return *this;
 }
@@ -175,22 +161,10 @@ PWROWG_NAMESPACE::tinkerforge_configuration::operator =(
     if (this != std::addressof(rhs)) {
         this->_averaging = rhs._averaging;
         this->_current_conversion_time = rhs._current_conversion_time;
-        this->destroy_end_points();
-        this->add_end_points(rhs);
+        this->end_points(rhs._end_points, rhs._cnt_end_points);
         this->_timeout = rhs._timeout;
         this->_voltage_conversion_time = rhs._voltage_conversion_time;
     }
 
     return *this;
-}
-
-
-/*
- * PWROWG_NAMESPACE::tinkerforge_configuration::destroy_end_points
- */
-void PWROWG_NAMESPACE::tinkerforge_configuration::destroy_end_points(void) {
-    for (std::size_t i = 0; i < this->count_end_points(); ++i) {
-        const auto offset = i * sizeof(end_point);
-        this->_end_points.as<end_point>(offset)->~end_point();
-    }
 }

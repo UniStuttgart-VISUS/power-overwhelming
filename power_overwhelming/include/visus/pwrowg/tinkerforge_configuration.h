@@ -110,14 +110,6 @@ public:
     tinkerforge_configuration& add_end_point(_In_ const end_point& address);
 
     /// <summary>
-    /// Adds the end points of the given configuration to the list of end points.
-    /// </summary>
-    /// <param name="config">The configuration to copy the end points from.</param>
-    /// <returns><c>*this</c>.</returns>
-    tinkerforge_configuration& add_end_points(
-        _In_ const tinkerforge_configuration& config);
-
-    /// <summary>
     /// Answer how many samples from the sensor will be averaged for an output
     /// sample.
     /// </summary>
@@ -142,7 +134,9 @@ public:
     /// Answer the number of registered end points.
     /// </summary>
     /// <returns>The number of registered end points.</returns>
-    std::size_t count_end_points(void) const noexcept;
+    inline std::size_t count_end_points(void) const noexcept {
+        return this->_cnt_end_points;
+    }
 
     /// <summary>
     /// Answer the conversio time of teh current sensor.
@@ -173,9 +167,7 @@ public:
     /// </remarks>
     /// <returns>The end points of the Brickds.</returns>
     inline _Ret_valid_ const end_point *end_points(void) const noexcept {
-        auto retval = this->_end_points.as<end_point>();
-        _Analysis_assume_(retval != nullptr);
-        return retval;
+        return this->_end_points;
     }
 
     /// <summary>
@@ -241,15 +233,10 @@ public:
 
 private:
 
-    /// <summary>
-    /// Destruct all existing <see cref="_end_points" />, but do not free the
-    /// memory.
-    /// </summary>
-    void destroy_end_points(void);
-
     tinkerforge_sample_averaging _averaging;
+    std::size_t _cnt_end_points;
     tinkerforge_conversion_time _current_conversion_time;
-    blob _end_points;
+    end_point *_end_points;
     std::uint64_t _timeout;
     tinkerforge_conversion_time _voltage_conversion_time;
 

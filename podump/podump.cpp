@@ -1,5 +1,5 @@
 ﻿// <copyright file="podump.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -26,7 +26,7 @@
 int _tmain(const int argc, const TCHAR **argv) {
 #if (defined(DEBUG) || defined(_DEBUG))
     ::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    //::_CrtSetBreakAlloc(893);
+    //::_CrtSetBreakAlloc(376);
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
 
 #if true
@@ -70,7 +70,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 
         auto sensors = visus::pwrowg::sensor_array::for_all(std::move(config));
         sensors.start();
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         sensors.stop();
     }
 

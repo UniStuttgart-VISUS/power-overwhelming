@@ -22,6 +22,13 @@ PWROWG_NAMESPACE_BEGIN
 /// </remarks>>
 class POWER_OVERWHELMING_API sensor_configuration {
 
+public:
+
+    /// <summary>
+    /// Finalises the instance.
+    /// </summary>
+    virtual ~sensor_configuration(void) = default;
+
 protected:
 
     /// <summary>
