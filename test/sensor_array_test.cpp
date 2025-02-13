@@ -38,32 +38,44 @@ public:
         descs.resize(sensor_array::all_descriptions(nullptr, 0, config));
         sensor_array::all_descriptions(descs.data(), descs.size(), config);
 
-        sensor_array sensors(descs.data(), descs.size());
+        sensor_array sensors(std::move(config), descs.data(), descs.size());
     }
 
     TEST_METHOD(test_for_matches) {
-        sensor_array_configuration config;
-
-        config.configure<tinkerforge_configuration>([](tinkerforge_configuration &c) {
-            c.averaging(tinkerforge_sample_averaging::average_of_4);
-        });
-
         {
-            auto sensors = sensor_array::for_matches(config, is_current_sensor);
+            sensor_array_configuration config;
+
+            config.configure<tinkerforge_configuration>([](tinkerforge_configuration &c) {
+                c.current_conversion_time(tinkerforge_conversion_time::microseconds_140);
+            });
+
+            auto sensors = sensor_array::for_matches(std::move(config), is_current_sensor);
             for (std::size_t i = 0; i < sensors.size(); ++i) {
                 Assert::IsTrue(sensors[i].is_sensor_type(sensor_type::current), L"Is correct type", LINE_INFO());
             }
         }
 
         {
-            auto sensors = sensor_array::for_matches(config, is_power_sensor);
+            sensor_array_configuration config;
+
+            config.configure<tinkerforge_configuration>([](tinkerforge_configuration &c) {
+                c.averaging(tinkerforge_sample_averaging::average_of_4);
+            });
+
+            auto sensors = sensor_array::for_matches(std::move(config), is_power_sensor);
             for (std::size_t i = 0; i < sensors.size(); ++i) {
                 Assert::IsTrue(sensors[i].is_sensor_type(sensor_type::power), L"Is correct type", LINE_INFO());
             }
         }
 
         {
-            auto sensors = sensor_array::for_matches(config, is_voltage_sensor);
+            sensor_array_configuration config;
+
+            config.configure<tinkerforge_configuration>([](tinkerforge_configuration &c) {
+                c.voltage_conversion_time(tinkerforge_conversion_time::microseconds_140);
+            });
+
+            auto sensors = sensor_array::for_matches(std::move(config), is_voltage_sensor);
             for (std::size_t i = 0; i < sensors.size(); ++i) {
                 Assert::IsTrue(sensors[i].is_sensor_type(sensor_type::voltage), L"Is correct type", LINE_INFO());
             }

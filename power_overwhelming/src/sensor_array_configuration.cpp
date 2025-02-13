@@ -7,6 +7,7 @@
 #include "visus/pwrowg/sensor_array_configuration.h"
 
 #include <cassert>
+#include <cmath>
 #include <memory>
 
 #include "sensor_array_configuration_impl.h"
@@ -33,6 +34,44 @@ PWROWG_NAMESPACE::sensor_array_configuration::~sensor_array_configuration(
 
 
 /*
+ * PWROWG_NAMESPACE::sensor_array_configuration::deliver_context
+ */
+PWROWG_NAMESPACE::sensor_array_configuration &
+PWROWG_NAMESPACE::sensor_array_configuration::deliver_context(
+        _In_opt_ void *context) {
+    this->check_not_disposed()->context = context;
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::sensor_array_configuration::deliver_to
+ */
+PWROWG_NAMESPACE::sensor_array_configuration&
+PWROWG_NAMESPACE::sensor_array_configuration::deliver_to(
+        _In_ const sensor_array_callback callback) {
+    if (callback == nullptr) {
+        throw std::invalid_argument("A valid callback must be provided.");
+    }
+
+    this->check_not_disposed()->callback = callback;
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::sensor_array_configuration::sample_every
+ */
+PWROWG_NAMESPACE::sensor_array_configuration&
+PWROWG_NAMESPACE::sensor_array_configuration::sample_every(
+        _In_ const std::int64_t millis) {
+    this->check_not_disposed()->interval = std::chrono::milliseconds(
+        std::abs(millis));
+    return *this;
+}
+
+
+/*
  * PWROWG_NAMESPACE::sensor_array_configuration::operator =
  */
 PWROWG_NAMESPACE::sensor_array_configuration&
@@ -50,7 +89,8 @@ PWROWG_NAMESPACE::sensor_array_configuration::operator =(
 /*
  * PWROWG_NAMESPACE::sensor_array_configuration::check_not_disposed
  */
-_Ret_valid_ PWROWG_NAMESPACE::sensor_array_configuration::impl_type
+_Ret_valid_
+PWROWG_NAMESPACE::sensor_array_configuration::impl_type
 PWROWG_NAMESPACE::sensor_array_configuration::check_not_disposed(void) {
     volatile auto retval = this->_impl;
 

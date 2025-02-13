@@ -12,7 +12,7 @@
  * ::enumerate_graphics_devices
  */
 void enumerate_graphics_devices(void) {
-    using namespace visus::power_overwhelming;
+    using namespace visus::pwrowg;
 
     try {
         std::vector<graphics_device> devices;

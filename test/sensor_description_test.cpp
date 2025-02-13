@@ -64,7 +64,7 @@ public:
         detail::sensor_registry::descriptions(descs.data(), descs.size(), config);
 
         detail::sensor_registry::sensor_list_type sensors;
-        detail::sensor_registry::create(sensors, descs.begin(), descs.end());
+        detail::sensor_registry::create(sensors, descs.begin(), descs.end(), config);
     }
 
     TEST_METHOD(test_sampler_detection) {

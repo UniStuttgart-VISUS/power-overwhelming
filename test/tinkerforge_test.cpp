@@ -41,12 +41,12 @@ public:
         descs.resize(type::descriptions(nullptr, 0, config));
         type::descriptions(descs.data(), descs.size(), config);
 
-        detail::sensor_list<type> sensors;
-        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end());
-        Assert::AreEqual(descs.size() / 3, sensors.sensors.size(), L"Created in groups of three", LINE_INFO());
+        type::list_type sensors;
+        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), config);
+        Assert::AreEqual(descs.size() / 3, sensors.size(), L"Created in groups of three", LINE_INFO());
         Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
 
-        for (auto& s : sensors.sensors) {
+        for (auto& s : sensors) {
             auto evt = create_event();
 
             s.sample([](const std::size_t source, const sample *samples, const std::size_t cnt, void *context) {
@@ -74,8 +74,8 @@ public:
             descs.erase(end, descs.end());
         }
 
-        detail::sensor_list<type> sensors;
-        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end());
+        type::list_type sensors;
+        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), config);
         Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
     }
 
@@ -94,8 +94,8 @@ public:
             descs.erase(end, descs.end());
         }
 
-        detail::sensor_list<type> sensors;
-        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end());
+        type::list_type sensors;
+        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), config);
         Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
     }
 
@@ -114,8 +114,8 @@ public:
             descs.erase(end, descs.end());
         }
 
-        detail::sensor_list<type> sensors;
-        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end());
+        type::list_type sensors;
+        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), config);
         Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
     }
 };

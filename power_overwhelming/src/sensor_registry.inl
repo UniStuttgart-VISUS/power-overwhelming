@@ -6,37 +6,31 @@
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::configure
- */
-template<class ...TSensors>
-void PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::configure(
-        _In_ sensor_array_configuration_impl& config) {
-    configure0(type_list<TSensors...>(), config);
-}
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::create
- */
-template<class ...TSensors>
-template<class TInput>
-TInput PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::create(
-        _In_ sensor_list_type& dst,
-        _In_ const TInput begin,
-        _In_ const TInput end) {
-    return create0<0>(dst, type_list<TSensors...>(), 0, begin, end);
-}
-
-
-/*
  * PWROWG_NAMESPACE::basic_sensor_registry<TSensors...>::descriptions
  */
 template<class... TSensors>
-std::size_t PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::descriptions(
+std::size_t
+PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::descriptions(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
         _In_ std::size_t cnt,
         _In_ const sensor_array_configuration_impl& config) {
     return descriptions0(dst, cnt, type_list<TSensors...>(), config);
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::sample
+ */
+template<class ...TSensors>
+template<class TOutput>
+void PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::sample(
+        _In_ TOutput oit,
+        _In_ sensor_list_type& sensors,
+        _In_opt_ const sensor_array_callback callback,
+        _In_ const std::chrono::milliseconds interval,
+        _In_opt_ void *context) {
+    sample0(oit, std::make_index_sequence<sizeof...(TSensors)>(),
+        sensors, callback, interval, context);
 }
 
 
@@ -81,16 +75,27 @@ TInput PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::create0(
         _In_ type_list<T, Ts...>,
         _In_ const std::size_t index,
         _In_ const TInput begin,
-        _In_ const TInput end) {
+        _In_ const TInput end,
+        _In_ const sensor_array_configuration_impl& config) {
+    typedef typename T::configuration_type config_type;
     typedef T sensor_type;
 
+    auto c = config.find_sensor_config(config_type::id);
+    if (c == nullptr) {
+        throw std::invalid_argument("The configuration for the sensor class to "
+            "create was not found. Make sure to pass the same array "
+            "configuration for all calls.");
+    }
+
     auto& sensors = std::get<I>(dst);
-    const auto it = sensor_type::from_descriptions(sensors, index, begin, end);
+    const auto it = sensor_type::from_descriptions(sensors,
+        index,
+        begin,
+        end,
+        *static_cast<const config_type *>(c));
     const auto i = std::distance(begin, it);
 
-    sample(sensors);
-
-    return create0<I + 1>(dst, type_list<Ts...>(), index + i, it, end);
+    return create0<I + 1>(dst, type_list<Ts...>(), index + i, it, end, config);
 }
 
 
@@ -99,12 +104,15 @@ TInput PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::create0(
  */
 template<class ...TSensors>
 template<class T, class... Ts>
-std::size_t PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>
-::descriptions0(
+std::size_t
+PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::descriptions0(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
         _In_ std::size_t cnt,
         _In_ type_list<T, Ts...>,
         _In_ const sensor_array_configuration_impl& config) {
+    static_assert(has_async_sample<T>::value || has_sync_sample<T>::value,
+        "A sensor must either have a synchronous or asynchronous method for "
+        "sampling.");
     typedef T sensor_type;
     typedef typename sensor_type::configuration_type config_type;
     std::size_t retval = 0;
@@ -134,10 +142,70 @@ std::size_t PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>
  * PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::descriptions0
  */
 template<class... TSensors>
-std::size_t PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::descriptions0(
+std::size_t
+PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::descriptions0(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
         _In_ std::size_t cnt,
         _In_ type_list<>,
         _In_ const sensor_array_configuration_impl& config) {
     return 0;
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::sample0
+ */
+template<class... TSensors>
+template<class TOutput, std::size_t Index, std::size_t... Indices>
+void PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::sample0(
+        _In_ TOutput oit,
+        _In_ std::index_sequence<Index, Indices...>,
+        _In_ sensor_list_type& sensor_lists,
+        _In_opt_ const sensor_array_callback callback,
+        _In_ const std::chrono::milliseconds interval,
+        _In_opt_ void *context) {
+    auto& list = std::get<Index>(sensor_lists);
+
+    // Derive which type of sensor we are processing.
+    typedef std::decay_t<decltype(list)>::value_type sensor_type;
+
+    // Try to sample the sensors of type 'sensor_type' asynchronously. If that
+    // fails, create a sampler function to 'oit'.
+    const auto is_async = sample1<sensor_type>(list.begin(),
+        list.end(),
+        callback,
+        interval,
+        context);
+
+    if (!is_async) {
+        std::transform(list.begin(),
+            list.end(),
+            oit,
+            make_sampler<sensor_type>);
+    }
+
+    // Process the remaining sensors.
+    sample0(oit, std::index_sequence<Indices...>(), sensor_lists, callback,
+        interval, context);
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::sample_async
+ */
+template<class... TSensors>
+template<class T, class TInput>
+std::enable_if_t<PWROWG_DETAIL_NAMESPACE::has_async_sample<T>::type::value,
+    bool>
+PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::sample1(
+        _In_ const TInput begin,
+        _In_ const TInput end,
+        _In_opt_ const sensor_array_callback callback,
+        _In_ const std::chrono::milliseconds interval,
+        _In_opt_ void *context) {
+    for (auto it = begin; it != end; ++it) {
+        it->sample(callback, interval, context);
+    }
+
+    return true;
 }

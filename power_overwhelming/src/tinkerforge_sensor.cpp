@@ -8,6 +8,8 @@
 
 #include <stdexcept>
 
+#include "tinkerforge_exception.h"
+
 
 /*
  * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::descriptions

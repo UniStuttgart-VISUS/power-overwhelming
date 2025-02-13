@@ -123,6 +123,16 @@ public:
         return this->_value.load(std::memory_order_acquire);
     }
 
+    /// <summary>
+    /// Indicates whether the state is starting or running.
+    /// </summary>
+    /// <returns><c>true</c> if the sensor should continue, <c>false</c> if it
+    /// should stop.</returns>
+    inline operator bool(void) const {
+        const auto v = this->_value.load(std::memory_order_acquire);
+        return ((v == value_type::starting) || (v == value_type::running));
+    }
+
 private:
 
     alignas(false_sharing_range) std::atomic<value_type> _value;

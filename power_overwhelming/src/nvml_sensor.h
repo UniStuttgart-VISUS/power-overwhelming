@@ -8,6 +8,7 @@
 #define _PWROWG_NVML_SENSOR_H
 #pragma once
 
+#include <list>
 #include <memory>
 #include <string>
 #include <vector>
@@ -45,7 +46,7 @@ public:
     /// <summary>
     /// The type of a list of sensors of this type.
     /// </summary>
-    typedef sensor_list<nvml_sensor> list_type;
+    typedef std::list<nvml_sensor> list_type;
 
     /// <summary>
     /// Create descriptions for all supported NVIDIA sensors in the system.
@@ -94,12 +95,16 @@ public:
     /// <param name="begin">The begin of the range of sensor descriptions.
     /// </param>
     /// <param name="end">The end of the range of sensor descriptions.</param>
+    /// <param name="config">The configuration for the sensor class.</param>
     /// <returns>The iterator to the first sensor description within
     /// <paramref name="begin" /> and <paramref name="end" /> that has not been
     /// used for creating a sensor.</returns>
     template<class TInput>
-    static TInput from_descriptions(_In_ list_type& dst, _In_ std::size_t index,
-        _In_ const TInput begin, _In_ const TInput end);
+    static TInput from_descriptions(_In_ list_type& dst,
+        _In_ std::size_t index,
+        _In_ const TInput begin,
+        _In_ const TInput end,
+        _In_ const configuration_type& config);
 
     /// <summary>
     /// Create a new instance for the device with the specified unique ID.

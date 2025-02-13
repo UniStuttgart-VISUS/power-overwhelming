@@ -13,7 +13,8 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
         _In_ list_type& dst,
         _In_ std::size_t index,
         _In_ const TInput begin,
-        _In_ const TInput end) {
+        _In_ const TInput end,
+        _In_ const configuration_type& config) {
     typedef sensor_description_builder builder_type;
 
     // Find out which are the TF sensors.
@@ -68,11 +69,11 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
         auto voltage = active(sensor_type::voltage) ? index++ : invalid_index;
         auto current = active(sensor_type::current) ? index++ : invalid_index;
 
-        dst.sensors.emplace_back(pd->scope, uid, pd->config,
+        dst.emplace_back(pd->scope, uid, pd->config,
             power, voltage, current);
-        dst.sensors.back().configuration(pd->config->averaging(),
-            pd->config->voltage_conversion_time(),
-            pd->config->current_conversion_time());
+        dst.back().configuration(config.averaging(),
+            config.voltage_conversion_time(),
+            config.current_conversion_time());
     }
 
     return retval;

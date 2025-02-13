@@ -12,6 +12,7 @@
 #include "sensor_array_configuration_impl.h"
 #include "sensor_array_impl.h"
 #include "sensor_registry.h"
+#include "thread_name.h"
 
 
 /*
@@ -31,19 +32,40 @@ std::size_t PWROWG_NAMESPACE::sensor_array::all_descriptions(
 
 
 /*
+ * PWROWG_NAMESPACE::sensor_array::for_all
+ */
+PWROWG_NAMESPACE::sensor_array PWROWG_NAMESPACE::sensor_array::for_all(
+        _Inout_ sensor_array_configuration&& config) {
+    std::vector<sensor_description> descs;
+    descs.resize(all_descriptions(nullptr, 0, config));
+
+    // Count sensors, but account for dynamic sensors being detached
+    // betweeen the calls.
+    auto cnt = all_descriptions(descs.data(), descs.size(), config);
+
+    return sensor_array(std::move(config), descs.data(), cnt);
+}
+
+
+/*
  * PWROWG_NAMESPACE::sensor_array::sensor_array
  */
 PWROWG_NAMESPACE::sensor_array::sensor_array(
+        _Inout_ sensor_array_configuration&& config,
         _In_reads_(cnt) const sensor_description *descs,
         _In_ const std::size_t cnt)
         : _impl(new PWROWG_DETAIL_NAMESPACE::sensor_array_impl()) {
+    this->_impl->configuration.reset(config._impl);
+    config._impl = nullptr;
+
     if (descs != nullptr) {
         std::copy(descs,
             descs + cnt,
             std::back_inserter(this->_impl->descriptions));
         auto end = detail::sensor_registry::create(this->_impl->sensors,
             this->_impl->descriptions.begin(),
-            this->_impl->descriptions.end());
+            this->_impl->descriptions.end(),
+            *this->_impl->configuration);
         this->_impl->descriptions.erase(end, this->_impl->descriptions.end());
     }
 }
@@ -83,16 +105,21 @@ std::size_t PWROWG_NAMESPACE::sensor_array::descriptions(
 /*
  * PWROWG_NAMESPACE::sensor_array::start
  */
-void PWROWG_NAMESPACE::sensor_array::start(
-        _In_ const sensor_array_callback callback,
-        _In_opt_ void *context) {
-    using PWROWG_DETAIL_NAMESPACE::sensor_state;
-
+void PWROWG_NAMESPACE::sensor_array::start(void) {
     volatile auto impl = this->check_not_disposed();
 
     impl->state.begin_start();
 
-    // TODO: start the stuff.
+    // Start the asynchronous sensors and get samples for synchronous ones.
+    impl->samplers.clear();
+    detail::sensor_registry::sample(std::back_inserter(impl->samplers),
+        impl->sensors,
+        impl->configuration->callback,
+        impl->configuration->interval,
+        impl->configuration->context);
+
+    // Start sampler threads for the synchronous sensors.
+    impl->sampler_threads.emplace_back(sensor_array::sample, impl);
 
     impl->state.end_start();
 }
@@ -102,14 +129,22 @@ void PWROWG_NAMESPACE::sensor_array::start(
  * PWROWG_NAMESPACE::sensor_array::sensor_array::stop
  */
 void PWROWG_NAMESPACE::sensor_array::sensor_array::stop(void) {
-    using PWROWG_DETAIL_NAMESPACE::sensor_state;
-
     volatile auto impl = this->check_not_disposed();
 
     impl->state.begin_stop();
 
-    // TODO: terminate all threads
-    // TODO: join all threads
+    // Stop the asynchronous sensors.
+    detail::sensor_registry::sample(std::back_inserter(impl->samplers),
+        impl->sensors,
+        nullptr,
+        impl->configuration->interval,
+        impl->configuration->context);
+
+    // Wait for the sampler threads, which should exit now as the state signals
+    // that we are stopping.
+    for (auto& t : impl->sampler_threads) {
+        t.join();
+    }
 
     impl->state.end_stop();
 }
@@ -172,6 +207,23 @@ PWROWG_NAMESPACE::sensor_array::operator [](_In_ int idx) {
  * PWROWG_NAMESPACE::sensor_array::check_not_disposed
  */
 PWROWG_DETAIL_NAMESPACE::sensor_array_impl *
+PWROWG_NAMESPACE::sensor_array::check_not_disposed(void) {
+    volatile auto retval = this->_impl;
+
+    if (retval == nullptr) {
+        throw std::runtime_error("A sensor array which has been disposed by "
+            "a move operation cannot be used anymore.");
+    }
+
+    return retval;
+}
+
+
+
+/*
+ * PWROWG_NAMESPACE::sensor_array::check_not_disposed
+ */
+const PWROWG_DETAIL_NAMESPACE::sensor_array_impl *
 PWROWG_NAMESPACE::sensor_array::check_not_disposed(void) const {
     volatile auto retval = this->_impl;
 
@@ -181,4 +233,52 @@ PWROWG_NAMESPACE::sensor_array::check_not_disposed(void) const {
     }
 
     return retval;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::sensor_array::sample
+ */
+void PWROWG_NAMESPACE::sensor_array::sample(
+        _In_ detail::sensor_array_impl *impl) {
+    detail::set_thread_name("PwrOwg Sampler Thread");
+    assert(impl != nullptr);
+
+    //auto state = impl->state.
+    while (impl->state) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(42));
+    }
+
+    ////    auto have_sources = true;
+    ////
+    ////    {
+    ////        std::stringstream stream;
+    ////        stream << "PwrOwg Sampler Thread @" << this->_interval.count() << "us";
+    ////        auto name = stream.str();
+    ////        set_thread_name(name.c_str());
+    ////    }
+    ////
+    ////    while (have_sources) {
+    ////        auto now = std::chrono::high_resolution_clock::now();
+    ////
+    ////        {
+    ////            std::lock_guard<decltype(this->_lock)> l(this->_lock);
+    ////            for (auto it = this->_sources.begin();
+    ////                    it != this->_sources.end();) {
+    ////                if ((**it).deliver()) {
+    ////                    ++it;
+    ////                } else {
+    ////                    // If the source did not deliver a sample, remove it from
+    ////                    // the thread.
+    ////                    it = this->_sources.erase(it);
+    ////                }
+    ////            }
+    ////
+    ////            have_sources = !this->_sources.empty();
+    ////        }
+    ////
+    ////        if (have_sources) {
+    ////            std::this_thread::sleep_until(now + this->_interval);
+    ////        }
+    ////    }
 }

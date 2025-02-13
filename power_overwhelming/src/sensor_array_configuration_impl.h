@@ -12,6 +12,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_configuration.h"
 
 
@@ -29,9 +30,33 @@ struct sensor_array_configuration_impl final {
     typedef std::unique_ptr<sensor_configuration> sensor_config;
 
     /// <summary>
+    /// The callback that the <see cref="sampler_threads" /> must invoke.
+    /// </summary>
+    sensor_array_callback callback;
+
+    /// <summary>
+    /// The user-defined context pointer to be passed to the sample
+    /// <see cref="callback" />.
+    /// </summary>
+    void *context;
+
+    /// <summary>
+    /// The sampling interval for the <see cref="sampler_threads" />.
+    /// </summary>
+    std::chrono::milliseconds interval;
+
+    /// <summary>
     /// Holds the configuration objects of all known sensors.
     /// </summary>
     std::unordered_map<guid, sensor_config> sensor_configs;
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    inline sensor_array_configuration_impl(void) : context(nullptr),
+            interval(1) {
+        this->callback = [](std::size_t, const sample *, std::size_t, void *) { };
+    }
 
     /// <summary>
     /// Gets the sensor configuration registered with the specified ID.

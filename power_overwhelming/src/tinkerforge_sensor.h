@@ -10,6 +10,7 @@
 
 #include <array>
 #include <limits>
+#include <list>
 #include <memory>
 #include <mutex>
 
@@ -27,6 +28,7 @@
 #include "sensor_utilities.h"
 #include "sensor_state.h"
 #include "tinkerforge_bricklet.h"
+#include "tinkerforge_scope.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -46,7 +48,7 @@ public:
     /// <summary>
     /// The type of a list of sensors of this type.
     /// </summary>
-    typedef sensor_list<tinkerforge_sensor> list_type;
+    typedef std::list<tinkerforge_sensor> list_type;
 
     /// <summary>
     /// Create descriptions for all supported Tinkerforge sensors in the system.
@@ -85,12 +87,16 @@ public:
     /// <param name="begin">The begin of the range of sensor descriptions.
     /// </param>
     /// <param name="end">The end of the range of sensor descriptions.</param>
+    /// <param name="config">The configuration for the sensor class.</param>
     /// <returns>The iterator to the first sensor description within
     /// <paramref name="begin" /> and <paramref name="end" /> that has not been
     /// used for creating a sensor.</returns>
     template<class TInput>
-    static TInput from_descriptions(_In_ list_type& dst, _In_ std::size_t index,
-        _In_ const TInput begin, _In_ const TInput end);
+    static TInput from_descriptions(_In_ list_type& dst,
+        _In_ std::size_t index,
+        _In_ const TInput begin,
+        _In_ const TInput end,
+        _In_ const configuration_type& config);
 
     ///// <summary>
     ///// Performs an aligned allocation for a new sensor.

@@ -30,7 +30,6 @@ class POWER_OVERWHELMING_API tinkerforge_display final {
 
 public:
 
-
     /// <summary>
     /// Creates wrappers for all LCD bricklets attached to the specified
     /// master brick.
@@ -44,8 +43,8 @@ public:
     static std::size_t for_all(
         _Out_writes_opt_(cnt_displays) tinkerforge_display *out_displays,
         _In_ const std::size_t cnt_displays,
-        _In_opt_z_ const char *host,
-        _In_ const std::uint16_t port,
+        _In_opt_z_ const char *host = "localhost",
+        _In_ const std::uint16_t port = 4223,
         _In_ const std::size_t timeout = 1000);
 
     /// <summary>

@@ -11,7 +11,7 @@
 template<class TPredicate>
 PWROWG_NAMESPACE::sensor_array
 PWROWG_NAMESPACE::sensor_array::for_matches(
-        _In_ const sensor_array_configuration& config,
+        _In_ sensor_array_configuration&& config,
         _In_ const TPredicate predicate) {
     std::vector<sensor_description> descs;
     descs.resize(all_descriptions(nullptr, 0, config));
@@ -25,5 +25,5 @@ PWROWG_NAMESPACE::sensor_array::for_matches(
     end = std::partition(descs.begin(), end, predicate);
     cnt = std::distance(descs.begin(), end);
 
-    return sensor_array(descs.data(), cnt);
+    return sensor_array(std::move(config), descs.data(), cnt);
 }

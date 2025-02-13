@@ -17,10 +17,6 @@
 #include "visus/pwrowg/tinkerforge_error_count.h"
 #include "visus/pwrowg/tinkerforge_sample_averaging.h"
 
-#include "tinkerforge_bricklet.h"
-#include "tinkerforge_exception.h"
-#include "tinkerforge_scope.h"
-
 
 PWROWG_NAMESPACE_BEGIN
 

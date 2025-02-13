@@ -34,14 +34,15 @@ typedef pthread_t native_thread_id;
 /// </summary>
 /// <param name="thread_id"></param>
 /// <param name="thread_name"></param>
-void set_thread_name(_In_ const native_thread_id thread_id,
+extern void PWROWG_TEST_API set_thread_name(
+    _In_ const native_thread_id thread_id,
     _In_z_ const char* thread_name);
 
 /// <summary>
 /// Set the debug name of the calling thread.
 /// </summary>
 /// <param name="thread_name"></param>
-void set_thread_name(_In_z_ const char* thread_name);
+extern void PWROWG_TEST_API set_thread_name(_In_z_ const char* thread_name);
 
 PWROWG_DETAIL_NAMESPACE_END
 

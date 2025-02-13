@@ -59,7 +59,15 @@ public:
         _In_ const sensor_array_configuration& config);
 
     /// <summary>
-    /// Create a sensor array for all <see cref="sensor_description" /> matching
+    /// Create a sensor array for all <see cref="sensor_description" />s.
+    /// </summary>
+    /// <param name="config">The array configuration detailing the behaviour of
+    /// the sensors that are retrieved.</param>
+    /// <returns>A new sensor array.</returns>
+    static sensor_array for_all(_Inout_ sensor_array_configuration&& config);
+
+    /// <summary>
+    /// Create a sensor array for all <see cref="sensor_description" />s matching
     /// the given predicate.
     /// </summary>
     /// <typeparam name="TPredicate">An unary predicate for
@@ -70,7 +78,7 @@ public:
     /// included in the array.</param>
     /// <returns>A new sensor array.</returns>
     template<class TPredicate> static sensor_array for_matches(
-        _In_ const sensor_array_configuration& config,
+        _Inout_ sensor_array_configuration&& config,
         _In_ const TPredicate predicate);
 
     /// <summary>
@@ -88,6 +96,7 @@ public:
     /// <param name="cnt">The number of descriptors in <paramref name="cnt" />.
     /// </param>
     explicit sensor_array(
+        _Inout_ sensor_array_configuration&& config,
         _In_reads_(cnt) const sensor_description *descs,
         _In_ const std::size_t cnt);
 
@@ -132,16 +141,11 @@ public:
     /// <summary>
     /// Starts sampling all sensors in the array.
     /// </summary>
-    /// <param name="callback">The callback that is to receive the
-    /// <see cref="sample" />s from all sensors.</param>
-    /// <param name="context">An optional pointer that is passed to the
-    /// <see cref="callback" /> every time.</param>
     /// <exception cref="std::runtime_error">If the object has been invalidated
     /// by a move operation.</exception>
     /// <exception cref="std::logic_error">If the sensor array was already
     /// running.</exception>
-    void start(_In_ const sensor_array_callback callback,
-        _In_opt_ void *context = nullptr);
+    void start(void);
 
     /// <summary>
     /// Stops all sensors and blocks until all asynchronous sampling has ended.
@@ -208,9 +212,16 @@ public:
 
 private:
 
-    PWROWG_DETAIL_NAMESPACE::sensor_array_impl *check_not_disposed(void) const;
+    _Ret_valid_ detail::sensor_array_impl *check_not_disposed(void);
 
-    PWROWG_DETAIL_NAMESPACE::sensor_array_impl *_impl;
+    _Ret_valid_ const detail::sensor_array_impl *check_not_disposed(void) const;
+
+    /// <summary>
+    /// Performs the work of a single sampler thread.
+    /// </summary>
+    static void sample(_In_ detail::sensor_array_impl *impl);
+
+    detail::sensor_array_impl *_impl;
 };
 
 PWROWG_NAMESPACE_END

@@ -8,12 +8,12 @@
 #define _PWROWG_SENSOR_ARRAY_CONFIGURATION_H
 #pragma once
 
+#include <chrono>
 #include <functional>
 #include <stdexcept>
 
-#include "visus/pwrowg/api.h"
-
-#include "visus/pwrowg/adl_configuration.h"
+#include "visus/pwrowg/guid.h"
+#include "visus/pwrowg/sensor_array_callback.h"
 
 
 /* Forward declarations*/
@@ -72,6 +72,8 @@ public:
     /// <param name="context">A user-defined context pointer passed to the
     /// <see cref="configure" /> callback if it is invoked.</param>
     /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::runtime_error">If the method is invoked on an
+    /// object that has been disposed by a move.</exception>
     template<class TConfig> sensor_array_configuration& configure(
         _In_ void (*configure)(_In_ TConfig&, _In_opt_ void *),
         _In_opt_ void *context);
@@ -90,15 +92,66 @@ public:
         _In_ std::function<void(_In_ TConfig&)> configure);
 
     /// <summary>
+    /// Sets the user-defined context to be delivered to the sample callback.
+    /// </summary>
+    /// <param name="context">The context pointer to pass to the callback.
+    /// </param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::runtime_error">If the method is invoked on an
+    /// object that has been disposed by a move.</exception>
+    sensor_array_configuration& deliver_context(_In_opt_ void *context);
+
+    /// <summary>
+    /// Sets the callback receiving the samples from the sensor array.
+    /// </summary>
+    /// <param name="callback">The callback receiving the data.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::runtime_error">If the method is invoked on an
+    /// object that has been disposed by a move.</exception>
+    /// <exception cref="std::invalid_argument">If <paramref name="callback" />
+    /// is <c>nullptr</c>.</exception>
+    sensor_array_configuration& deliver_to(
+        _In_ const sensor_array_callback callback);
+
+    /// <summary>
     /// Gets, if available, the configuration of the specified type.
     /// </summary>
     /// <typeparam name="TConfig">The type of the sensor configuration to
     /// retrieve.</typeparam>
     /// <returns>The requested sensor configuration or <c>nullptr</c> if such a
     /// configuration is not registered.</returns>
+    /// <exception cref="std::runtime_error">If the method is invoked on an
+    /// object that has been disposed by a move.</exception>
     template<class TConfig>
     _Ret_maybenull_ const TConfig *configuration(void) const noexcept {
         return static_cast<const TConfig *>(this->find_config(TConfig::id));
+    }
+
+    /// <summary>
+    /// Sets the sampling interval in milliseconds.
+    /// </summary>
+    /// <param name="millis">The sampling interval in milliseconds.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::runtime_error">If the method is invoked on an
+    /// object that has been disposed by a move.</exception>
+    sensor_array_configuration& sample_every(_In_ const std::int64_t millis);
+
+    /// <summary>
+    /// Sets the sampling interval.
+    /// </summary>
+    /// <typeparam name="TRep">The type used to measure the interval.
+    /// </typeparam>
+    /// <typeparam name="TPeriod">The period of the interval.</typeparam>
+    /// <param name="interval">The sampling interval.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::runtime_error">If the method is invoked on an
+    /// object that has been disposed by a move.</exception>
+    template<class TRep, class TPeriod>
+    inline sensor_array_configuration& sample_every(
+            _In_ const std::chrono::duration<TRep, TPeriod> interval) {
+        using namespace std::chrono;
+        const auto millis = duration_cast<milliseconds>(interval);
+        return this->sample_every(millis.count());
     }
 
     /// <summary>
@@ -112,7 +165,7 @@ public:
 
 private:
 
-    typedef PWROWG_DETAIL_NAMESPACE::sensor_array_configuration_impl *impl_type;
+    typedef detail::sensor_array_configuration_impl *impl_type;
 
     /// <summary>
     /// Check whether <see cref="_impl" /> is valid or throw

@@ -1,5 +1,5 @@
 ﻿// <copyright file="rohde_und_schwarz.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -10,14 +10,16 @@
 #include "visus/pwrowg/event.h"
 
 
+
 /*
  * ::query_hmc8015
  */
 void query_hmc8015(void) {
-    using namespace visus::power_overwhelming;
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    using namespace visus::pwrowg;
 
     try {
-        std::vector<hmc8015_sensor> sensors;
+        std::vector<hmc8015_instrument> sensors;
         sensors.resize(hmc8015_sensor::for_all(nullptr, 0));
         hmc8015_sensor::for_all(sensors.data(), sensors.size(), 10000);
 
@@ -88,138 +90,17 @@ void query_hmc8015(void) {
     } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
-
-/*
- * ::sample_hmc8015
- */
-void sample_hmc8015(void) {
-    using namespace visus::power_overwhelming;
-
-    try {
-        std::vector<hmc8015_sensor> sensors;
-        sensors.resize(hmc8015_sensor::for_all(nullptr, 0));
-        hmc8015_sensor::for_all(sensors.data(), sensors.size());
-
-        for (auto& s : sensors) {
-            auto m = s.sample();
-            std::wcout << m.timestamp()
-                << L" (" << m.sensor() << L"): "
-                << m.voltage() << L" V, "
-                << m.current() << L" A, "
-                << m.power() << L" W" << std::endl;
-        }
-    } catch (std::exception &ex) {
-        std::cerr << ex.what() << std::endl;
-    }
-}
-
-
-/*
- * ::sample_hmc8015_async
- */
-void sample_hmc8015_async(const unsigned int dt) {
-    using namespace visus::power_overwhelming;
-
-    try {
-        std::vector<hmc8015_sensor> sensors;
-        sensors.resize(hmc8015_sensor::for_all(nullptr, 0));
-        hmc8015_sensor::for_all(sensors.data(), sensors.size());
-
-        // Enable asynchronous sampling.
-        for (auto& s : sensors) {
-            s.sample(async_sampling()
-                .delivers_measurements_to([](const measurement& m, void *) {
-                    std::wcout << m.timestamp() << L" ("
-                        << m.sensor() << L"): "
-                        << m.power() << L" W" << std::endl;
-                })
-                .as_rvalue());
-        }
-
-        // Wait for the requested number of seconds.
-        std::this_thread::sleep_for(std::chrono::seconds(dt));
-
-        // Disable asynchronous sampling.
-        for (auto& s : sensors) {
-            s.sample(async_sampling());
-        }
-
-    } catch (std::exception& ex) {
-        std::cerr << ex.what() << std::endl;
-    }
-}
-
-
-/*
- * ::query_rtx
- */
-void query_rtx(void) {
-    using namespace visus::power_overwhelming;
-
-    try {
-        std::vector<rtx_sensor_definition> definitions;
-        definitions.resize(rtx_sensor::get_definitions(nullptr, 0));
-        definitions.resize(rtx_sensor::get_definitions(definitions.data(), definitions.size()));
-
-        std::cout << "Sensor definitions found:" << std::endl;
-        for (auto& d : definitions) {
-            std::wcout << d.description() << std::endl;
-        }
-
-        std::vector<rtx_sensor> sensors(definitions.size());
-        for (std::size_t i = 0; i < definitions.size(); ++i) {
-            sensors[i] = rtx_sensor(definitions[i]);
-            std::wcout << L"Created " << sensors[i].name() << std::endl;
-        }
-    } catch (std::exception& ex) {
-        std::cerr << ex.what() << std::endl;
-    }
-
-    try {
-        std::vector<rtx_sensor> sensors;
-        sensors.resize(rtx_sensor::for_all(nullptr, 0));
-        rtx_sensor::for_all(sensors.data(), sensors.size());
-
-        for (auto& s : sensors) {
-            std::wcout << L"Enumerated " << s.name() << std::endl;
-        }
-
-        for (auto& s : sensors) {
-            auto waveform = s.acquire();
-            std::wcout << L"Acquired " << waveform.size()
-                << " samples from " << waveform.sensor()
-                << std::endl;
-
-            for (std::size_t i = 0; (i < 8) && (i < waveform.size()); ++i) {
-                auto& s = waveform.sample(i);
-                std::wcout << s.timestamp() << L": "
-                    << s.voltage() << L"V, "
-                    << s.current() << L"A, "
-                    << s.power() << L"W"
-                    << std::endl;
-            }
-
-            auto sample = s.sample();
-            std::wcout << sample.sensor() << L"@"
-                << sample.timestamp() << L": "
-                << sample.voltage() << L"V, "
-                << sample.current() << L"A, "
-                << sample.power() << L"W"
-                << std::endl;
-        }
-    } catch (std::exception& ex) {
-        std::cerr << ex.what() << std::endl;
-    }
-}
 
 
 /*
  * ::query_rtx_instrument
  */
 void query_rtx_instrument(void) {
-    using namespace visus::power_overwhelming;
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    using namespace visus::pwrowg;
 
     try {
         std::vector<rtx_instrument> devices(rtx_instrument::all(nullptr, 0));
@@ -441,73 +322,7 @@ void query_rtx_instrument(void) {
     } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
-}
-
-
-/*
- * ::sample_rtx
- */
-void sample_rtx(void) {
-    using namespace visus::power_overwhelming;
-
-    try {
-        std::vector<rtx_sensor> sensors;
-        sensors.resize(rtx_sensor::for_all(nullptr, 0));
-        rtx_sensor::for_all(sensors.data(), sensors.size());
-
-        for (auto& s : sensors) {
-            std::wcout << s.name() << L":" << std::endl;
-            auto m = s.sample();
-            std::wcout << m.timestamp() << L": "
-                << m.voltage() << " V * "
-                << m.current() << " A = "
-                << m.power() << L" W"
-                << std::endl;
-        }
-
-    } catch (std::exception& ex) {
-        std::cerr << ex.what() << std::endl;
-    }
-}
-
-
-/*
- * ::sample_rtx_async
- */
-void sample_rtx_async(const unsigned int dt) {
-    using namespace visus::power_overwhelming;
-
-    try {
-        std::vector<rtx_sensor> sensors;
-        sensors.resize(rtx_sensor::for_all(nullptr, 0));
-        rtx_sensor::for_all(sensors.data(), sensors.size());
-
-        // Enable asynchronous sampling.
-        for (auto& s : sensors) {
-            async_sampling config;
-            s.sample(config.delivers_measurement_data_to(
-                    [](const wchar_t *s, const measurement_data *m, const std::size_t c, void *) {
-                for (std::size_t i = 0; i < c; ++i) {
-                    std::wcout << m[i].timestamp() << L" (" << s << L"): "
-                        << m[i].voltage() << " V * "
-                        << m[i].current() << " A = "
-                        << m[i].power() << L" W"
-                        << std::endl;
-                } })
-                .must_sleep_at_least(std::chrono::nanoseconds(100000))
-                .as_rvalue());
-        }
-
-        // Wait for the requested number of seconds.
-        std::this_thread::sleep_for(std::chrono::seconds(dt));
-
-        // Disable asynchronous sampling.
-        for (auto& s : sensors) {
-            s.sample(async_sampling());
-        }
-    } catch (std::exception& ex) {
-        std::cerr << ex.what() << std::endl;
-    }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -515,7 +330,8 @@ void sample_rtx_async(const unsigned int dt) {
  * ::configure_rtx_instrument
  */
 void configure_rtx_instrument(void) {
-    using namespace visus::power_overwhelming;
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    using namespace visus::pwrowg;
 
     try {
         std::vector<rtx_instrument> devices(rtx_instrument::all(nullptr, 0));
@@ -540,8 +356,8 @@ void configure_rtx_instrument(void) {
                 << "time_range: " << actual.time_range().value() << std::endl;
         }
 
-    } catch (std::exception &ex) {
+    } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
- 
