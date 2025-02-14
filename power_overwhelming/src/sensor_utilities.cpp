@@ -1,11 +1,11 @@
-//// <copyright file="sensor_utilities.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-//// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart.
-//// Licensed under the MIT licence. See LICENCE file for details.
-//// </copyright>
-//// <author>Christoph Müller</author>
-//
-//#include "sensor_utilities.h"
-//
+// <copyright file="sensor_utilities.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+// Copyright © 2022 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Licensed under the MIT licence. See LICENCE file for details.
+// </copyright>
+// <author>Christoph Müller</author>
+
+#include "sensor_utilities.h"
+
 //#include <cassert>
 //#include <fstream>
 //#include <type_traits>
@@ -227,3 +227,15 @@
 //    s << json.dump(4);
 //    s.flush();
 //}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::pwr_volt_cur_mask
+ */
+PWROWG_NAMESPACE::sensor_type PWROWG_DETAIL_NAMESPACE::pwr_volt_cur_mask(
+        _In_ const sensor_description &desc) {
+    const auto mask = sensor_type::power
+        | sensor_type::voltage
+        | sensor_type::current;
+    return (desc.sensor_type() & mask);
+}

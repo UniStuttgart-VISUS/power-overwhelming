@@ -13,8 +13,6 @@
 #include "visus/pwrowg/rapl_domain.h"
 #include "visus/pwrowg/rapl_quantity.h"
 
-#include "sensor_list.h"
-
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
 

@@ -24,7 +24,6 @@
 #include "visus/pwrowg/tinkerforge_sample_averaging.h"
 
 #include "sensor_description_builder.h"
-#include "sensor_list.h"
 #include "sensor_utilities.h"
 #include "sensor_state.h"
 #include "tinkerforge_bricklet.h"
@@ -327,11 +326,6 @@ private:
     /// </summary>
     static bool same_bricklet(_In_ const sensor_description& lhs,
         _In_ const sensor_description& rhs);
-
-    /// <summary>
-    /// Mask the relevant parts of the sensor type in <paramref name="desc" />.
-    /// </summary>
-    static sensor_type sensor_mask(_In_ const sensor_description& desc);
 
     /// <summary>
     /// Specialise the <paramref name="builder" /> for the given bricklet.

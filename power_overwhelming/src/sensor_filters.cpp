@@ -46,6 +46,15 @@ bool PWROWG_NAMESPACE::is_tinkerforge_sensor(
 
 
 /*
+ * PWROWG_NAMESPACE::is_usb_pd_sensor
+ */
+bool PWROWG_NAMESPACE::is_usb_pd_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    return detail::starts_with(desc.name(), L"USB PD/");
+}
+
+
+/*
  * PWROWG_NAMESPACE::is_voltage_sensor
  */
 bool PWROWG_NAMESPACE::is_voltage_sensor(

@@ -112,7 +112,8 @@ public:
     /// Applications typically have little use for this. The path is something
     /// that the <see cref="sensor_array" /> uses to create a sensor from its
     /// description. The path might be an actual path to a device file or another
-    /// identifier that allows the array to instantiate the sensor.
+    /// identifier that allows the array to instantiate the sensor. Note that the
+    /// path might be shared by multiple sensors.
     /// </remarks>
     /// <returns>A pointer to the path.</returns>
     inline _Ret_maybenull_z_ const wchar_t *path(void) const noexcept {

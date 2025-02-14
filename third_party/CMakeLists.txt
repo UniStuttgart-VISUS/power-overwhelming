@@ -125,3 +125,16 @@ mark_as_advanced(FORCE
     BENCHLAB_BuildTests
     BENCHLAB_BuildCclient
     BENCHLAB_BuildExcellentPowenetics)
+
+# Passmark USB PD tester
+add_library(passmark_usb_pd_tester INTERFACE IMPORTED GLOBAL)
+set_target_properties(passmark_usb_pd_tester PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/PDTesterAPI")
+
+if (CMAKE_SIZEOF_VOID_P MATCHES 8)
+    set_target_properties(passmark_usb_pd_tester PROPERTIES
+        INTERFACE_LINK_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/PDTesterAPI/amd64/PDTesterAPI.lib")
+else ()
+    set_target_properties(passmark_usb_pd_tester PROPERTIES
+        INTERFACE_LINK_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/PDTesterAPI/i368//PDTesterAPI.lib")
+endif ()

@@ -14,7 +14,7 @@
 PWROWG_NAMESPACE_BEGIN
 
 /// <summary>
-/// Answer whether the given <see cref="sensor_descriptions" /> describes a
+/// Answer whether the given <see cref="sensor_description" /> describes a
 /// sensor measuring current.
 /// </summary>
 /// <param name="desc">The sensor to check.</param>
@@ -25,7 +25,7 @@ extern POWER_OVERWHELMING_API bool is_current_sensor(
 
 
 /// <summary>
-/// Answer whether the given <see cref="sensor_descriptions" /> describes an
+/// Answer whether the given <see cref="sensor_description" /> describes an
 /// NVML-based sensor.
 /// </summary>
 /// <param name="desc">The sensor to check.</param>
@@ -35,7 +35,7 @@ extern POWER_OVERWHELMING_API bool is_nvml_sensor(
     _In_ const sensor_description& desc) noexcept;
 
 /// <summary>
-/// Answer whether the given <see cref="sensor_descriptions" /> describes a
+/// Answer whether the given <see cref="sensor_description" /> describes a
 /// sensor measuring power.
 /// </summary>
 /// <param name="desc">The sensor to check.</param>
@@ -45,7 +45,7 @@ extern POWER_OVERWHELMING_API bool is_power_sensor(
     _In_ const sensor_description& desc) noexcept;
 
 /// <summary>
-/// Answer whether the given <see cref="sensor_descriptions" /> describes a
+/// Answer whether the given <see cref="sensor_description" /> describes a
 /// Tinkerforge-based sensor.
 /// </summary>
 /// <param name="desc">The sensor to check.</param>
@@ -55,9 +55,18 @@ extern POWER_OVERWHELMING_API bool is_power_sensor(
 extern POWER_OVERWHELMING_API bool is_tinkerforge_sensor(
     _In_ const sensor_description& desc) noexcept;
 
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes a
+/// sensor for USB power delivery measurement.
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><c>true</c> if the sensor is USB PD sensor, <c>false</c>
+/// otherwise.</returns>
+extern POWER_OVERWHELMING_API bool is_usb_pd_sensor(
+    _In_ const sensor_description& desc) noexcept;
 
 /// <summary>
-/// Answer whether the given <see cref="sensor_descriptions" /> describes a
+/// Answer whether the given <see cref="sensor_description" /> describes a
 /// sensor measuring voltage.
 /// </summary>
 /// <param name="desc">The sensor to check.</param>

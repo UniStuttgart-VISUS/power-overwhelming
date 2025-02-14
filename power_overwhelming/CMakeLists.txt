@@ -79,6 +79,11 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE adl nlohmann_json::nlohmann_json nvml tinkerforge)
 
 if (WIN32)
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE passmark_usb_pd_tester)
+endif ()
+
+if (WIN32)
     target_link_libraries(${PROJECT_NAME} PUBLIC Ws2_32)
 else ()
     find_package(Threads REQUIRED)

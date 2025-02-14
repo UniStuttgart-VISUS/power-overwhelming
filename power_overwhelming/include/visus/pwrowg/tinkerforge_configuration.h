@@ -184,7 +184,7 @@ public:
     /// Answer the timeout for connecting to the brickd, in milliseconds.
     /// </summary>
     /// <returns>The timeout in milliseconds.</returns>
-    inline std::uint32_t timeout(void) const noexcept {
+    inline std::uint64_t timeout(void) const noexcept {
         return this->_timeout;
     }
 

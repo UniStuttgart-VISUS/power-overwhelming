@@ -22,14 +22,15 @@
 #include "visus/pwrowg/sensor_description.h"
 
 #include "adl_sensor.h"
+#include "detect_sample.h"
 #include "emi_sensor.h"
 #include "msr_sensor.h"
 #include "nvml_sensor.h"
 #include "sensor_array_configuration_impl.h"
-#include "sensor_list.h"
 #include "string_functions.h"
 #include "tinkerforge_sensor.h"
 #include "type_list.h"
+#include "usb_pd_sensor.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -285,15 +286,19 @@ private:
 /// <see cref="sensor_array" />.
 /// </remarks>
 typedef basic_sensor_registry<
+#if defined(_WIN32)
+    // Windows-specific sensors
+    usb_pd_sensor,
+    //nvapi_sensor,
+#endif  /* defined(_WIN32) */
+
     //adl_sensor,
     //emi_sensor
     //hmc8015_sensor,
     //msr_sensor,
-    //nvapi_sensor,
     nvml_sensor,
     //rtx_sensor,
     tinkerforge_sensor>
-    //usb_pd_sensor>
     sensor_registry;
 
 PWROWG_DETAIL_NAMESPACE_END

@@ -8,6 +8,7 @@
 #define _PWROWG_ADL_SENSOR_H
 #pragma once
 
+#include <list>
 #include <vector>
 
 #include "visus/pwrowg/adl_configuration.h"
@@ -15,7 +16,6 @@
 
 #include "adl_scope.h"
 #include "adl_sensor_source.h"
-#include "sensor_list.h"
 #include "sensor_state.h"
 #include "timezone.h"
 
@@ -42,7 +42,7 @@ public:
     /// <summary>
     /// The type of a list of sensors of this type.
     /// </summary>
-    typedef sensor_list<adl_sensor> list_type;
+    typedef std::list<adl_sensor> list_type;
 
     /// <summary>
     /// Create descriptions for all supported ADL sensors in the system.

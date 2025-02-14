@@ -178,19 +178,6 @@ bool PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::same_bricklet(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::sensor_mask
- */
-PWROWG_NAMESPACE::sensor_type
-PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::sensor_mask(
-        _In_ const sensor_description& desc) {
-    const auto mask = sensor_type::power
-        | sensor_type::voltage
-        | sensor_type::current;
-    return (desc.sensor_type() & mask);
-}
-
-
-/*
  * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::specialise
  */
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder&
@@ -212,13 +199,13 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::specialise(
         source = "voltage";
     }
 
-    return builder.with_id(bricklet.uid())
-        .with_type(type | sensor_type::hardware)
-        .with_path("%s:%hu/%s/%s",
+    return builder.with_id("%s:%hu/%s/%s",
             end_point.name(),
             end_point.port(),
             bricklet.uid().c_str(),
             source)
+        .with_type(type | sensor_type::hardware)
+        .with_path(bricklet.uid())
         .with_name("Tinkerforge/%s:%hu/%s/%s",
             end_point.name(),
             end_point.port(),

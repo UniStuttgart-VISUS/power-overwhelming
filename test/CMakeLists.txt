@@ -43,6 +43,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     tinkerforge
     power_overwhelming)
 
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE passmark_usb_pd_tester)
+endif ()
+
 # Grab the DLLs to be tested and copy them to the output directory such that
 # the Visual Studio test driver finds everything.
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

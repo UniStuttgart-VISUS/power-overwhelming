@@ -42,35 +42,32 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
     // Generate a shared configuration object to prevent a copy for each sensor.
     auto shared_config = std::make_shared<configuration_type>(config);
 
-    for (auto it = begin; it != retval; ++it) {
+    for (auto it = begin; it != retval; /* [sic] */) {
         // At this point, there are always up to three sensors that come from the
         // same bricklet. We group these into a single sensor instance.
         auto scope = builder_type::private_data<tinkerforge_scope>(*it);
-        std::array<sensor_type, 3> types {
-            sensor_mask(*it),
-            sensor_type::unknown,
-            sensor_type::unknown
-        };
-        auto active = [&types](const sensor_type type) {
-            return (std::find(types.begin(), types.end(), type) != types.end());
-        };
-        auto uid = it->id();
-
-        auto jt = it;
-        if ((++jt != retval) && same_bricklet(*it, *jt)) {
-            ++it;
-            types[1] = sensor_mask(*jt);
-
-            if ((++jt != retval) && same_bricklet(*it, *jt)) {
-                ++it;
-                types[2] = sensor_mask(*jt);
+        std::vector<sensor_type> types;
+        auto sensor_index = [&types, index](const sensor_type type) {
+            for (std::size_t i = 0; i < types.size(); ++i) {
+                if (types[i] == type) {
+                    return index + i;
+                }
             }
+            return invalid_index;
+        };
+        auto uid = it->path();
+
+        // Determine the types of all sensors on the same bricklet.
+        types.reserve(3);
+        for (auto jt = it; it != retval && same_bricklet(*it, *jt);) {
+            types.push_back(pwr_volt_cur_mask(*it++));
         }
 
         // Generate sensor IDs for the active sources.
-        auto power = active(sensor_type::power) ? index++ : invalid_index;
-        auto voltage = active(sensor_type::voltage) ? index++ : invalid_index;
-        auto current = active(sensor_type::current) ? index++ : invalid_index;
+        const auto power = sensor_index(sensor_type::power);
+        const auto voltage = sensor_index(sensor_type::voltage);
+        const auto current = sensor_index(sensor_type::current);
+        index += types.size();
 
         dst.emplace_back(*scope, uid, shared_config, power, voltage, current);
         dst.back().configuration(config.averaging(),

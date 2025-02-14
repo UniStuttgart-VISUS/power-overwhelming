@@ -6,12 +6,7 @@
 
 #include "pch.h"
 
-#include "adl_sensor.h"
-#include "collector.h"
-#include "emi_sensor.h"
 #include "graphics_devices.h"
-#include "msr_sensor.h"
-#include "nvml_sensor.h"
 #include "rohde_und_schwarz.h"
 #include "tinkerforge.h"
 
@@ -26,7 +21,7 @@
 int _tmain(const int argc, const TCHAR **argv) {
 #if (defined(DEBUG) || defined(_DEBUG))
     ::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    //::_CrtSetBreakAlloc(376);
+    //::_CrtSetBreakAlloc(558);
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
 
 #if true
@@ -61,7 +56,8 @@ int _tmain(const int argc, const TCHAR **argv) {
     // Main sensor array.
     {
         visus::pwrowg::sensor_array_configuration config;
-        config.sample_every(std::chrono::milliseconds(5))
+        config
+            .sample_every(std::chrono::milliseconds(5))
             .deliver_to([](std::size_t id, const visus::pwrowg::sample *s, std::size_t n, void *c) {
                 for (std::size_t i = 0; i < n; ++i) {
                     std::cout << id << "@" << s[i].timestamp << ": " << s->reading.floating_point << std::endl;

@@ -14,8 +14,6 @@
 #include <emi.h>
 #include <tchar.h>
 
-#include "sensor_list.h"
-
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
 

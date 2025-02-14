@@ -1,28 +1,27 @@
-﻿// <copyright file="nvml_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+﻿// <copyright file="usb_pd_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
+// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#if !defined(_PWROWG_NVML_SENSOR_H)
-#define _PWROWG_NVML_SENSOR_H
+#if !defined(_PWROWG_USB_PD_SENSOR_H)
+#define _PWROWG_USB_PD_SENSOR_H
 #pragma once
+
+#if defined(_WIN32)
 
 #include <list>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include <nvml.h>
+#include <PDTesterAPI.h>
 
-#include "visus/pwrowg/nvml_configuration.h"
 #include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_description.h"
 #include "visus/pwrowg/sensor_filters.h"
+#include "visus/pwrowg/usb_pd_configuration.h"
 
-#include "nvidia_management_library.h"
-#include "nvml_exception.h"
-#include "nvml_scope.h"
 #include "sensor_description_builder.h"
 #include "sensor_utilities.h"
 
@@ -33,19 +32,19 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// Implementation of a power sensor using the NVIDIA management library to
 /// read the internal sensors of the GPU.
 /// </summary>
-class PWROWG_TEST_API nvml_sensor final {
+class PWROWG_TEST_API usb_pd_sensor final {
 
 public:
 
     /// <summary>
     /// The type of sensor class configuration used by this sensor.
     /// </summary>
-    typedef nvml_configuration configuration_type;
+    typedef usb_pd_configuration configuration_type;
 
     /// <summary>
     /// The type of a list of sensors of this type.
     /// </summary>
-    typedef std::list<nvml_sensor> list_type;
+    typedef std::list<usb_pd_sensor> list_type;
 
     /// <summary>
     /// Create descriptions for all supported NVIDIA sensors in the system.
@@ -62,16 +61,6 @@ public:
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
         _In_ std::size_t cnt,
         _In_ const configuration_type& config);
-
-    /// <summary>
-    /// Create a new instance for the device with the specified PCI bus ID.
-    /// </summary>
-    /// <param name="bus_id"></param>
-    /// <returns></returns>
-    /// <exception cref="nvml_exception">If the specified device was not
-    /// found, is not unique or another error occurred in NVML.</exception>
-    static std::shared_ptr<nvml_sensor> from_bus_id(_In_z_ const char *bus_id,
-        _In_ const std::size_t index);
 
     /// <summary>
     /// Generate sensors for all matching configurations within
@@ -106,50 +95,24 @@ public:
         _In_ const configuration_type& config);
 
     /// <summary>
-    /// Create a new instance for the device with the specified unique ID.
+    /// Indicates that a sensor source is to be disabled.
     /// </summary>
-    /// <param name="guid"></param>
-    /// <returns></returns>
-    /// <exception cref="nvml_exception">If the specified device was not
-    /// found, is not unique or another error occurred in NVML.</exception>
-    static std::shared_ptr<nvml_sensor> from_guid(_In_z_ const char *guid,
-        _In_ const std::size_t index);
-
-    /// <summary>
-    /// Create a new instance from a device index.
-    /// </summary>
-    /// <remarks>
-    /// <para>Device indices start at zero and go up to the number of
-    /// supported NVIDIA cards minus one.</para>
-    /// <para>Please note that the indices may not match the indices of
-    /// CUDA devices and/or DXGI adapters.</para>
-    /// </remarks>
-    /// <param name="idx"></param>
-    /// <returns></returns>
-    /// <exception cref="nvml_exception">If the specified device was not
-    /// found, is not unique or another error occurred in NVML.</exception>
-    static std::shared_ptr<nvml_sensor> from_index(_In_ const unsigned int idx,
-        _In_ const std::size_t index);
-
-    /// <summary>
-    /// Create a new instance for a specific device serial number printed on
-    /// the board.
-    /// </summary>
-    /// <param name="serial"></param>
-    /// <returns></returns>
-    /// <exception cref="nvml_exception">If the specified device was not
-    /// found, is not unique or another error occurred in NVML.</exception>
-    static std::shared_ptr<nvml_sensor> from_serial(_In_z_ const char *serial,
-        _In_ const std::size_t index);
+    static constexpr std::size_t invalid_index
+        = (std::numeric_limits<std::size_t>::max)();
 
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    inline nvml_sensor(_In_ const nvmlDevice_t device,
-            _In_ const std::size_t index)
-        : _device(device), _index(index) { }
+    usb_pd_sensor(_In_z_ const wchar_t *port,
+        _In_ const std::size_t index_voltage,
+        _In_ const std::size_t index_current);
 
-    nvml_sensor(const nvml_sensor& rhs) = delete;
+    usb_pd_sensor(const usb_pd_sensor& rhs) = delete;
+
+    /// <summary>
+    /// Finalises the instance.
+    /// </summary>
+    ~usb_pd_sensor(void);
 
     /// <summary>
     /// Deliver a sample to the given <paramref name="callback" />.
@@ -160,29 +123,20 @@ public:
     void sample(_In_ const sensor_array_callback callback,
         _In_opt_ void *context = nullptr);
 
-    nvml_sensor& operator =(const nvml_sensor& rhs) = delete;
+    usb_pd_sensor& operator =(const usb_pd_sensor& rhs) = delete;
 
 private:
 
-    /// <summary>
-    /// The NVML device the sensor is reading from.
-    /// </summary>
-    nvmlDevice_t _device;
+    static void event_callback(_In_ const int event_code);
 
-    /// <summary>
-    /// The index of the sensor in the array.
-    /// </summary>
-    std::size_t _index;
-
-    /// <summary>
-    /// The NVML scope making sure the library is ready while the sensor
-    /// exists.
-    /// </summary>
-    nvml_scope _scope;
+    std::size_t _index_voltage;
+    std::size_t _index_current;
+    PDTester _tester;
 };
 
 PWROWG_DETAIL_NAMESPACE_END
 
-#include "nvml_sensor.inl"
+#include "usb_pd_sensor.inl"
 
-#endif /* defined(_PWROWG_NVML_SENSOR_H) */
+#endif /* defined(_WIN32) */
+#endif /* defined(_PWROWG_USB_PD_SENSOR_H) */

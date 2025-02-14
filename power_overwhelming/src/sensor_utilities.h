@@ -15,6 +15,7 @@
 #include <nlohmann/json.hpp>
 
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/sensor_description.h"
 
 #include "sensor_state.h"
 
@@ -69,6 +70,16 @@ TIterator move_front_if(_In_ const TIterator begin, _In_ const TIterator end,
 ///// <returns></returns>
 //std::vector<std::unique_ptr<sensor>> parse_sensors(
 //    _In_ const nlohmann::json& descs);
+
+/// <summary>
+/// Mask the power, voltage and current bits of the sensor type in
+/// <paramref name="desc" />.
+/// </summary>
+/// <param name="desc">A sensor description to get the sensor type from.</param>
+/// <returns>A mask containing whether the sensor provides power, voltage or
+/// current.</returns>
+extern sensor_type PWROWG_TEST_API pwr_volt_cur_mask(
+    _In_ const sensor_description& desc);
 
 /// <summary>
 /// Read a JSON configuration file.
