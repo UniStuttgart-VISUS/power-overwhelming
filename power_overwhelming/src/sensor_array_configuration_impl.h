@@ -15,6 +15,8 @@
 #include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_configuration.h"
 
+#include "sensor_array_context_type.h"
+
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
@@ -41,6 +43,11 @@ struct sensor_array_configuration_impl final {
     void *context;
 
     /// <summary>
+    /// The type of a potentially auto-generated <see cref="context" />.
+    /// </summary>
+    sensor_array_context_type context_type;
+
+    /// <summary>
     /// The sampling interval for the <see cref="sampler_threads" />.
     /// </summary>
     std::chrono::milliseconds interval;
@@ -54,8 +61,10 @@ struct sensor_array_configuration_impl final {
     /// Initialises a new instance.
     /// </summary>
     inline sensor_array_configuration_impl(void) : context(nullptr),
-            interval(1) {
-        this->callback = [](std::size_t, const sample *, std::size_t, void *) { };
+            context_type(sensor_array_context_type::user_defined),
+            interval(5000) {
+        this->callback = [](std::size_t, const sample *, std::size_t,
+            void *) { };
     }
 
     /// <summary>

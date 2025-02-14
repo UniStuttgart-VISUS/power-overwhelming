@@ -59,10 +59,15 @@ int _tmain(const int argc, const TCHAR **argv) {
         config
             .sample_every(std::chrono::milliseconds(5))
             .deliver_to([](std::size_t id, const visus::pwrowg::sample *s, std::size_t n, void *c) {
+                auto descs = static_cast<visus::pwrowg::sensor_description *>(c);
                 for (std::size_t i = 0; i < n; ++i) {
-                    std::cout << id << "@" << s[i].timestamp << ": " << s->reading.floating_point << std::endl;
+                    std::cout << id << "/"
+                        << visus::pwrowg::convert_string<char>(descs[id].name()) << "@"
+                        << s[i].timestamp << ": "
+                        << s->reading.floating_point << std::endl;
                 }
-            });
+            })
+            .deliver_sensors_as_context();
 
         auto sensors = visus::pwrowg::sensor_array::for_all(std::move(config));
         sensors.start();

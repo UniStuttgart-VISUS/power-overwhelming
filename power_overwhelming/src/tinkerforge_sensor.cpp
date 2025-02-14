@@ -173,7 +173,7 @@ bool PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::same_bricklet(
         _In_ const sensor_description& rhs) {
     auto pdl = sensor_description_builder::private_data<tinkerforge_scope>(lhs);
     auto pdr = sensor_description_builder::private_data<tinkerforge_scope>(lhs);
-    return ((*pdl == *pdr) && equals(lhs.id(), rhs.id()));
+    return ((*pdl == *pdr) && equals(lhs.path(), rhs.path()));
 }
 
 
@@ -191,11 +191,11 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::specialise(
         _In_ const reading_unit unit) {
     const char *source = "unknown";
 
-    if ((type | sensor_type::current) != sensor_type::unknown) {
+    if ((type & sensor_type::current) == sensor_type::current) {
         source = "current";
-    } else if ((type | sensor_type::power) != sensor_type::unknown) {
+    } else if ((type & sensor_type::power) == sensor_type::power) {
         source = "power";
-    } else if ((type | sensor_type::voltage) != sensor_type::unknown) {
+    } else if ((type & sensor_type::voltage) == sensor_type::voltage) {
         source = "voltage";
     }
 

@@ -104,10 +104,7 @@ public:
     /// Initialises a new instance.
     /// </summary>
     /// <param name="rhs">The object to be moved.</param>
-    inline sensor_array(_Inout_ sensor_array&& rhs) noexcept
-            : _impl(rhs._impl) {
-        rhs._impl = nullptr;
-    }
+    sensor_array(_Inout_ sensor_array&& rhs) noexcept;
 
     /// <summary>
     /// Finalises the instance.
@@ -212,14 +209,18 @@ public:
 
 private:
 
+    /// <summary>
+    /// Performs the work of a single sampler thread.
+    /// </summary>
+    static void sample(_In_ detail::sensor_array_impl *impl,
+        _In_ const std::size_t offset,
+        _In_ const std::size_t limit);
+
     _Ret_valid_ detail::sensor_array_impl *check_not_disposed(void);
 
     _Ret_valid_ const detail::sensor_array_impl *check_not_disposed(void) const;
 
-    /// <summary>
-    /// Performs the work of a single sampler thread.
-    /// </summary>
-    static void sample(_In_ detail::sensor_array_impl *impl);
+    void sync_context(void);
 
     detail::sensor_array_impl *_impl;
 };

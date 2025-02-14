@@ -72,6 +72,17 @@ PWROWG_NAMESPACE::sensor_array::sensor_array(
 
 
 /*
+ * PWROWG_NAMESPACE::sensor_array::sensor_array
+ */
+PWROWG_NAMESPACE::sensor_array::sensor_array(
+        _Inout_ sensor_array&& rhs) noexcept
+        : _impl(rhs._impl) {
+    rhs._impl = nullptr;
+    this->sync_context();
+}
+
+
+/*
  * PWROWG_NAMESPACE::sensor_array::~sensor_array
  */
 PWROWG_NAMESPACE::sensor_array::~sensor_array(void) noexcept {
@@ -110,6 +121,9 @@ void PWROWG_NAMESPACE::sensor_array::start(void) {
 
     impl->state.begin_start();
 
+    // Make sure that auto-context is lazily initialised.
+    this->sync_context();
+
     // Start the asynchronous sensors and get samples for synchronous ones.
     impl->samplers.clear();
     detail::sensor_registry::sample(std::back_inserter(impl->samplers),
@@ -119,7 +133,10 @@ void PWROWG_NAMESPACE::sensor_array::start(void) {
         impl->configuration->context);
 
     // Start sampler threads for the synchronous sensors.
-    impl->sampler_threads.emplace_back(sensor_array::sample, impl);
+    impl->sampler_threads.emplace_back(sensor_array::sample,
+        impl,
+        0,
+        (std::numeric_limits<std::size_t>::max)());
 
     impl->state.end_start();
 }
@@ -167,6 +184,7 @@ PWROWG_NAMESPACE::sensor_array& PWROWG_NAMESPACE::sensor_array::operator =(
     if (this != std::addressof(rhs)) {
         this->_impl = rhs._impl;
         rhs._impl = nullptr;
+        this->sync_context();
     }
 
     return *this;
@@ -203,10 +221,44 @@ PWROWG_NAMESPACE::sensor_array::operator [](_In_ int idx) {
 }
 
 
+
+/*
+ * PWROWG_NAMESPACE::sensor_array::sample
+ */
+void PWROWG_NAMESPACE::sensor_array::sample(
+        _In_ detail::sensor_array_impl *impl,
+        _In_ const std::size_t offset,
+        _In_ const std::size_t limit) {
+    assert(impl != nullptr);
+    const auto config = impl->configuration.get();
+    const auto end = (std::min)(impl->samplers.size(), limit);
+
+    {
+        std::string name = "PwrOwg Sampler Thread ";
+        name += std::to_string(offset);
+        name += " - ";
+        name += std::to_string(offset + end);
+        detail::set_thread_name(name.c_str());
+    }
+
+    //auto state = impl->state.
+    while (impl->state) {
+        const auto now = std::chrono::steady_clock::now();
+        const auto then = now + config->interval;
+
+        for (std::size_t i = offset; i < end; ++i) {
+            impl->samplers[i](config->callback, config->context);
+        }
+
+        std::this_thread::sleep_until(then);
+    }
+}
+
+
 /*
  * PWROWG_NAMESPACE::sensor_array::check_not_disposed
  */
-PWROWG_DETAIL_NAMESPACE::sensor_array_impl *
+_Ret_valid_ PWROWG_DETAIL_NAMESPACE::sensor_array_impl *
 PWROWG_NAMESPACE::sensor_array::check_not_disposed(void) {
     volatile auto retval = this->_impl;
 
@@ -223,7 +275,7 @@ PWROWG_NAMESPACE::sensor_array::check_not_disposed(void) {
 /*
  * PWROWG_NAMESPACE::sensor_array::check_not_disposed
  */
-const PWROWG_DETAIL_NAMESPACE::sensor_array_impl *
+_Ret_valid_ const PWROWG_DETAIL_NAMESPACE::sensor_array_impl *
 PWROWG_NAMESPACE::sensor_array::check_not_disposed(void) const {
     volatile auto retval = this->_impl;
 
@@ -237,48 +289,21 @@ PWROWG_NAMESPACE::sensor_array::check_not_disposed(void) const {
 
 
 /*
- * PWROWG_NAMESPACE::sensor_array::sample
+ * PWROWG_NAMESPACE::sensor_array::sync_context
  */
-void PWROWG_NAMESPACE::sensor_array::sample(
-        _In_ detail::sensor_array_impl *impl) {
-    detail::set_thread_name("PwrOwg Sampler Thread");
-    assert(impl != nullptr);
+void PWROWG_NAMESPACE::sensor_array::sync_context(void) {
+    using context_type = detail::sensor_array_context_type;
+    volatile auto impl = this->_impl;
 
-    //auto state = impl->state.
-    while (impl->state) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(42));
+    if ((impl != nullptr) && (impl->configuration != nullptr)) {
+        switch (impl->configuration->context_type) {
+            case context_type::sensor_array:
+                impl->configuration->context = this;
+                break;
+
+            case context_type::sensor_descs:
+                impl->configuration->context = impl->descriptions.data();
+                break;
+        }
     }
-
-    ////    auto have_sources = true;
-    ////
-    ////    {
-    ////        std::stringstream stream;
-    ////        stream << "PwrOwg Sampler Thread @" << this->_interval.count() << "us";
-    ////        auto name = stream.str();
-    ////        set_thread_name(name.c_str());
-    ////    }
-    ////
-    ////    while (have_sources) {
-    ////        auto now = std::chrono::high_resolution_clock::now();
-    ////
-    ////        {
-    ////            std::lock_guard<decltype(this->_lock)> l(this->_lock);
-    ////            for (auto it = this->_sources.begin();
-    ////                    it != this->_sources.end();) {
-    ////                if ((**it).deliver()) {
-    ////                    ++it;
-    ////                } else {
-    ////                    // If the source did not deliver a sample, remove it from
-    ////                    // the thread.
-    ////                    it = this->_sources.erase(it);
-    ////                }
-    ////            }
-    ////
-    ////            have_sources = !this->_sources.empty();
-    ////        }
-    ////
-    ////        if (have_sources) {
-    ////            std::this_thread::sleep_until(now + this->_interval);
-    ////        }
-    ////    }
 }

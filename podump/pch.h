@@ -16,6 +16,7 @@
 #include <Windows.h>
 #endif /* defined (_WIN32) */
 
+#include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/graphics_device.h"
 #include "visus/pwrowg/hmc8015_instrument.h"
 #include "visus/pwrowg/rtx_instrument.h"
