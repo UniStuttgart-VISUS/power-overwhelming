@@ -14,7 +14,7 @@ This project provides a library for measuring the power consumption of GPUs (and
 1. Access to individual sensors has been removed. All sensors must be managed via the `visus::pwrowg::sensor_array`.
 1. Synchronous APIs have been removed in favour of a "Don't call us, we call you" approach. All sensor data must be retrieved using callbacks passed to the `visus::pwrowg::sensor_array`.
 1. All oscilloscope-related APIs have been renamed to `rtx_...` to indicate that they only support Rohde & Schwarz RTA and RTB series oscilloscopes.
-1. All HMC 8015-related APIs have been renamed to `hmc_...` to indicate that they are specifically for these devices.
+1. All HMC 8015-related APIs have been renamed to `hmc8015_...` to indicate that they are specifically for these devices.
 1. All Tinkerforge-related APIs have been renamed to `tinkerforge_...` to indicate that they are specifically for these devices.
 
 ## Building the library
