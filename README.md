@@ -39,22 +39,35 @@ using namespace visus::pwrowg;
 // object for each available sensor in a similar way.
 sensor_array_configuration config;
 
-config.configure<tinkerforge_configuration>([](tinkerforge_configuration& c) {
-    c.averaging(tinkerforge_sample_averaging::average_of_4);
-});
+config.sample_every(std::chrono::milliseconds(5))
+    .deliver_sensors_as_context()
+    .deliver_to([](std::size_t idx, const sample *samples, std::size_t cnt, void *ctx) {
+        auto descs = static_cast<sensor_description *>(ctx);
+        // Do something with the 'samples' here.
+        // You can access the sensor meta data via 'idx' in 'descs'.
+    })
+    .configure<tinkerforge_configuration>([](tinkerforge_configuration& c) {
+        // This is only an example which sets the timeout for connecting to
+        // brickd to two seconds. Different sensor families might provide
+        // different configuration options.
+        c.timeout(std::chrono::seconds(2));
+    });
 
 std::vector<sensor_description> descs;
 // Call 'all_descriptions' to determine the required buffer size.
 sensors.resize(sensor_array::all_descriptions(nullptr, 0, config));
 // Call 'all_descriptions' to actually get the descriptions.
-sensor_array::all_descriptions(descs.data(), descs.size());
+const auto cnt = sensor_array::all_descriptions(descs.data(), descs.size());
 
-// Create a sensor array for all sensors described in 'descs'. Note that the
-// following is unsafe if you detach dynamically discovered sensors like the
-// ones connected via USB in the meantime. In order to account for that, you can
-// truncate 'descs' to the size returned by the second call.
-sensor_array sensors(descs.data(), descs.size());
+// Create a sensor array for all sensors described in 'descs'. Note that using
+// the size of 'descs' here would be unsafe in case plug-and-play sensors are
+// involved which could be disconnected between enumerating them and creating
+// the sensor array.
+sensor_array sensors(std::move(config), descs.data(), cnt);
 ```
+
+> [!NOTE]
+> Note that the `sensor_array` takes ownership of the `sensor_array_configuration`. You cannot use it anymore once the array has created from it.
 
 If you want to limit the sensors in your sensor array, you can filter `descs` before creating the array. Alternatively, there is a convenience method that does this for you by means of a unary predicate on the descriptions:
 ```c++
@@ -62,9 +75,28 @@ using namespace visus::pwrowg;
 
 sensor_array_configuration config;
 
-auto sensors = sensor_array::for_matches(config, is_power_sensor);
+// Configure behaviour of sensors here as necessary.
+
+auto sensors = sensor_array::for_matches(std::move(config), is_power_sensor);
 ```
-The `is_power_sensor` predicate is a built-in one selecting only sensors of type `sensor_type::power`, but you can provide any unary predicate on `sensor_description` to select the sensors you are interested in.
+The `is_power_sensor` predicate is a [built-in one](power_overwhelming/include/visus/pwrowg/sensor_filters.h) selecting only sensors of type `sensor_type::power`, but you can provide any unary predicate on `sensor_description` to select the sensors you are interested in. Instead of using a filter that allows all sensors, you can use the following shortcut:
+```c++
+using namespace visus::pwrowg;
+
+sensor_array_configuration config;
+
+// Configure behaviour of sensors here as necessary.
+
+auto sensors = sensor_array::for_all(std::move(config));
+```
+
+Once you have created a sensor array, you can start receving samples to the configured callback:
+```
+sensors.start();
+// Perform the work you want to benchmark and stop the sensors afterwards.
+sensors.stop();
+```
+
 
 
 **TODO**
