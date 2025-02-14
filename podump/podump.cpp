@@ -70,6 +70,16 @@ int _tmain(const int argc, const TCHAR **argv) {
             .deliver_sensors_as_context();
 
         auto sensors = visus::pwrowg::sensor_array::for_all(std::move(config));
+
+        // Print all sensors.
+        for (auto s : sensors) {
+            std::wcout << s.name() << L": " << std::endl
+                << L"\tID: " << s.id() << std::endl
+                << L"\tPath: " << s.path() << std::endl;
+        }
+        std::cout << std::endl;
+
+        // Sample the sensors for some time.
         sensors.start();
         std::this_thread::sleep_for(std::chrono::seconds(1));
         sensors.stop();

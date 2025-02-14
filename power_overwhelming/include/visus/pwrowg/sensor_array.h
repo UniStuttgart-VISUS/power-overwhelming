@@ -112,6 +112,12 @@ public:
     ~sensor_array(void) noexcept;
 
     /// <summary>
+    /// Answer a pointer to the description of the first sensor.
+    /// </summary>
+    /// <returns>The description of the first sensor.</returns>
+    _Ret_maybenull_ const sensor_description *begin(void) const noexcept;
+
+    /// <summary>
     /// Answer the descriptors for all sensors that are active in the array.
     /// </summary>
     /// <remarks>
@@ -134,6 +140,12 @@ public:
     std::size_t descriptions(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
         _In_ std::size_t cnt);
+
+    /// <summary>
+    /// Answer a pointer beyond the description of the last sensor.
+    /// </summary>
+    /// <returns>The end of the sensor descriptions.</returns>
+    _Ret_maybenull_ const sensor_description *end(void) const noexcept;
 
     /// <summary>
     /// Starts sampling all sensors in the array.
