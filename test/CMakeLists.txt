@@ -31,6 +31,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${PowerOverwhelmingTestInclud
 
 #target_precompile_headers(${PROJECT_NAME} PRIVATE pch.h)
 
+
 # Configure the linker: besides the library to test, we also need to link the
 # Visual Studio testing framework.
 target_link_directories(${PROJECT_NAME} PRIVATE "${VcInstallDir}/Auxiliary/VS/UnitTest/lib/$(LibrariesArchitecture)")
@@ -43,6 +44,14 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     tinkerforge
     power_overwhelming)
 
+# The test requires access to the VISA headers to test the instruments.
+if (PWROWG_WithVisa)
+    find_package(VISA REQUIRED)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
+    target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_WITH_VISA)
+endif ()
+
+# The test requires access to the USB PD headers to test the sensor object.
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE passmark_usb_pd_tester)
 endif ()
