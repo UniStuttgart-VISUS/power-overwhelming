@@ -98,36 +98,7 @@ sensors.stop();
 ```
 
 
-
 **TODO**
-
-The sensors returned are objects based on the PIMPL pattern. While they cannot be copied, the can be moved around. If the sensor object is destroyed while holding a valid implementation pointer, the sensor itself is freed.
-
-Sensor readings are obtained via the `sample` method. The synchronous one returns a single reading with a a timestamp:
-```c++
-auto m = sensor.sample();
-std::wcout << m.timestamp() << L": S = " << m.power() << " VA << std::endl;
-```
-
-If possible, there is also an asynchronous version that delivers samples to a user-specified callback function. When supported by the API, this method uses the asynchronicity of the API. Otherwise, the library will start a sampler thread that regularly calls the synchronous version. Sensors will be grouped into as few sampler threads as possible:
-```c++
-sensors.sample([](const measurement& m) {
-    std::wcout << m.timestamp() << L": S = " << m.power() << " VA << std::endl;
-});
-// Do something else in this thread; afterwards, stop the asynchronous sampling
-// by passing nullptr as callback.
-sensor.sample(nullptr);
-```
-
-The `collector` class is a convenient way of sampling all sensors the library can find on the system it is running:
-```c++
-auto collector = collector::for_all(L"output.csv");
-collector.start();
-// Do something else in this thread; afterwards, stop the collector again.
-collector.stop();
-```
-
-Using the Tinkerforge bricklets for measuring the power lanes of the GPU requires a custom setup. We have compiled some [instructions](docs/HARDWARE.md) for doing that.
 
 ## Extending the library
 Adding new kinds of sensors requires several steps. First, a new sensor class is required, which needs to satisfy the following requirements:
