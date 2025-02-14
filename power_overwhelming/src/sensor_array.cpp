@@ -117,6 +117,14 @@ std::size_t PWROWG_NAMESPACE::sensor_array::descriptions(
  * PWROWG_NAMESPACE::sensor_array::start
  */
 void PWROWG_NAMESPACE::sensor_array::start(void) {
+    using std::chrono::duration_cast;
+    typedef PWROWG_NAMESPACE::sample sample_type;
+
+    // A callback that does nothing which serves for detecting samplers
+    // that are inherently slow.
+    static const auto sample_nothing = [](const std::size_t,
+        const sample_type *, const std::size_t, void *) { };
+
     volatile auto impl = this->check_not_disposed();
 
     impl->state.begin_start();
@@ -133,10 +141,38 @@ void PWROWG_NAMESPACE::sensor_array::start(void) {
         impl->configuration->context);
 
     // Start sampler threads for the synchronous sensors.
-    impl->sampler_threads.emplace_back(sensor_array::sample,
-        impl,
-        0,
-        (std::numeric_limits<std::size_t>::max)());
+    {
+        std::size_t first = 0;
+        std::chrono::nanoseconds sum(0);
+
+        for (std::size_t i = 0; i < impl->samplers.size(); ++i) {
+            const auto sampler = impl->samplers[i];
+
+            // Note: it is sufficient to sample only once at this point, because
+            // if the time to call the sampler is negligible, we can safely group
+            // it with others. The purpose here is finding APIs that are blocking
+            // and would cause others to generate less samples than requested.
+            const auto b = std::chrono::steady_clock::now();
+            sampler(sample_nothing, nullptr);
+            const auto dt = std::chrono::steady_clock::now() - b;
+
+            if ((sum += dt) > impl->configuration->interval) {
+                impl->sampler_threads.emplace_back(sensor_array::sample,
+                    impl,
+                    first,
+                    i + 1 - first);
+                first = i + 1;
+                sum = decltype(sum)::zero();
+            }
+        }
+
+        if (first < impl->samplers.size()) {
+            impl->sampler_threads.emplace_back(sensor_array::sample,
+                impl,
+                first,
+                (std::numeric_limits<std::size_t>::max)());
+        }
+    }
 
     impl->state.end_start();
 }
@@ -221,7 +257,6 @@ PWROWG_NAMESPACE::sensor_array::operator [](_In_ int idx) {
 }
 
 
-
 /*
  * PWROWG_NAMESPACE::sensor_array::sample
  */
@@ -241,7 +276,6 @@ void PWROWG_NAMESPACE::sensor_array::sample(
         detail::set_thread_name(name.c_str());
     }
 
-    //auto state = impl->state.
     while (impl->state) {
         const auto now = std::chrono::steady_clock::now();
         const auto then = now + config->interval;
@@ -269,7 +303,6 @@ PWROWG_NAMESPACE::sensor_array::check_not_disposed(void) {
 
     return retval;
 }
-
 
 
 /*
