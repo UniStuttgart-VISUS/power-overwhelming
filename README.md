@@ -91,7 +91,7 @@ auto sensors = sensor_array::for_all(std::move(config));
 ```
 
 Once you have created a sensor array, you can start receving samples to the configured callback:
-```
+```c++
 sensors.start();
 // Perform the work you want to benchmark and stop the sensors afterwards.
 sensors.stop();
