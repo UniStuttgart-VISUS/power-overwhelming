@@ -32,15 +32,11 @@ extern POWER_OVERWHELMING_API bool is_adl_sensor(
 /// </summary>
 /// <typeparam name="TPredicates">The types of the predicates.</typeparam>
 /// <param name="desc">The sensor to check.</param>
-/// <param name="predicates">The list of predicates to check.</param>
 /// <returns><c>true</c> if the given sensor fulfills all of the given
 /// predicates, <c>false</c> otherwise.</returns>
-template<class... TPredicates>
-inline bool is_all_of(_In_ const sensor_description& desc,
-        _In_ TPredicates... predicates) {
-    static_assert(sizeof...(TPredicates) > 0, "At least one predicate must be "
-        "provided.");
-    std::array<bool, sizeof...(TPredicates)> results { predicates(desc)... };
+template<bool (*...TPredicates)(const sensor_description&)>
+inline bool is_all_of(_In_ const sensor_description& desc) {
+    std::array<bool, sizeof...(TPredicates)> results { TPredicates(desc)... };
     return (std::find(results.begin(), results.end(), false) == results.end());
 }
 
@@ -50,15 +46,11 @@ inline bool is_all_of(_In_ const sensor_description& desc,
 /// </summary>
 /// <typeparam name="TPredicates">The types of the predicates.</typeparam>
 /// <param name="desc">The sensor to check.</param>
-/// <param name="predicates">The list of predicates to check.</param>
 /// <returns><c>true</c> if the given sensor fulfills any of the given
 /// predicates, <c>false</c> otherwise.</returns>
-template<class... TPredicates>
-inline bool is_any_of(_In_ const sensor_description& desc,
-        _In_ TPredicates... predicates) {
-    static_assert(sizeof...(TPredicates) > 0, "At least one predicate must be "
-        "provided.");
-    std::array<bool, sizeof...(TPredicates)> results { predicates(desc)... };
+template<bool (*...TPredicates)(const sensor_description&)>
+inline bool is_any_of(_In_ const sensor_description& desc) {
+    std::array<bool, sizeof...(TPredicates)> results { TPredicates(desc)... };
     return (std::find(results.begin(), results.end(), true) != results.end());
 }
 
@@ -111,6 +103,20 @@ extern POWER_OVERWHELMING_API bool is_gpu_sensor(
 /// otherwise.</returns>
 extern POWER_OVERWHELMING_API bool is_hmc8015_sensor(
     _In_ const sensor_description &desc) noexcept;
+
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> fulfills none of
+/// the given <paramref name="predicates" />.
+/// </summary>
+/// <typeparam name="TPredicates">The types of the predicates.</typeparam>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><c>true</c> if the given sensor fulfills none of the given
+/// predicates, <c>false</c> otherwise.</returns>
+template<bool (*...TPredicates)(const sensor_description&)>
+inline bool is_none_of(_In_ const sensor_description& desc) {
+    std::array<bool, sizeof...(TPredicates)> results { TPredicates(desc)... };
+    return (std::find(results.begin(), results.end(), true) == results.end());
+}
 
 /// <summary>
 /// Answer whether the given <see cref="sensor_description" /> describes an

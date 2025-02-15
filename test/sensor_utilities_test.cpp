@@ -165,18 +165,26 @@ public:
 
     TEST_METHOD(test_all_of_filter) {
         auto desc = detail::sensor_description_builder::create().with_type(sensor_type::current | sensor_type::gpu).build();
-        Assert::IsTrue(is_all_of(desc, is_current_sensor), L"is_current_sensor", LINE_INFO());
-        Assert::IsTrue(is_all_of(desc, is_current_sensor, is_gpu_sensor), L"is_current_sensor && is_gpu_sensor", LINE_INFO());
-        Assert::IsFalse(is_all_of(desc, is_current_sensor, is_cpu_sensor), L"is_current_sensor && !is_cpu_sensor", LINE_INFO());
-        Assert::IsFalse(is_all_of(desc, is_power_sensor, is_cpu_sensor), L"!is_current_sensor && !is_cpu_sensor", LINE_INFO());
+        Assert::IsTrue(is_all_of<is_current_sensor>(desc), L"is_current_sensor", LINE_INFO());
+        Assert::IsTrue(is_all_of<is_current_sensor, is_gpu_sensor>(desc), L"is_current_sensor && is_gpu_sensor", LINE_INFO());
+        Assert::IsFalse(is_all_of<is_current_sensor, is_cpu_sensor>(desc), L"is_current_sensor && !is_cpu_sensor", LINE_INFO());
+        Assert::IsFalse(is_all_of< is_power_sensor, is_cpu_sensor>(desc), L"!is_current_sensor && !is_cpu_sensor", LINE_INFO());
     }
 
     TEST_METHOD(test_any_of_filter) {
         auto desc = detail::sensor_description_builder::create().with_type(sensor_type::current | sensor_type::gpu).build();
-        Assert::IsTrue(is_any_of(desc, is_current_sensor), L"is_current_sensor", LINE_INFO());
-        Assert::IsTrue(is_any_of(desc, is_current_sensor, is_gpu_sensor), L"is_current_sensor && is_gpu_sensor", LINE_INFO());
-        Assert::IsTrue(is_any_of(desc, is_current_sensor, is_cpu_sensor), L"is_current_sensor && !is_cpu_sensor", LINE_INFO());
-        Assert::IsFalse(is_any_of(desc, is_power_sensor, is_cpu_sensor), L"!is_current_sensor && !is_cpu_sensor", LINE_INFO());
+        Assert::IsTrue(is_any_of<is_current_sensor>(desc), L"is_current_sensor", LINE_INFO());
+        Assert::IsTrue(is_any_of<is_current_sensor, is_gpu_sensor>(desc), L"is_current_sensor && is_gpu_sensor", LINE_INFO());
+        Assert::IsTrue(is_any_of<is_current_sensor, is_cpu_sensor>(desc), L"is_current_sensor && !is_cpu_sensor", LINE_INFO());
+        Assert::IsFalse(is_any_of<is_power_sensor, is_cpu_sensor>(desc), L"!is_power_sensor && !is_cpu_sensor", LINE_INFO());
+    }
+
+    TEST_METHOD(test_none_of_filter) {
+        auto desc = detail::sensor_description_builder::create().with_type(sensor_type::current | sensor_type::gpu).build();
+        Assert::IsFalse(is_none_of<is_current_sensor>(desc), L"is_current_sensor", LINE_INFO());
+        Assert::IsFalse(is_none_of<is_current_sensor, is_gpu_sensor>(desc), L"is_current_sensor && is_gpu_sensor", LINE_INFO());
+        Assert::IsFalse(is_none_of<is_current_sensor, is_cpu_sensor>(desc), L"is_current_sensor && !is_cpu_sensor", LINE_INFO());
+        Assert::IsTrue(is_none_of<is_power_sensor, is_cpu_sensor>(desc), L"!is_power_sensor && !is_cpu_sensor", LINE_INFO());
     }
 };
 
