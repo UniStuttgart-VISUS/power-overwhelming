@@ -120,6 +120,64 @@ public:
             Assert::AreNotEqual(0, numbers[4] % 2, L"@4 odd", LINE_INFO());
         }
     }
+
+    TEST_METHOD(test_sensor_filters) {
+        {
+            auto desc = detail::sensor_description_builder::create().with_type(sensor_type::current).build();
+            Assert::IsTrue(is_current_sensor(desc), L"is_current_sensor", LINE_INFO());
+        }
+
+        {
+            auto desc = detail::sensor_description_builder::create().build();
+            Assert::IsFalse(is_current_sensor(desc), L"!is_current_sensor", LINE_INFO());
+        }
+
+        {
+            auto desc = detail::sensor_description_builder::create().with_type(sensor_type::energy).build();
+            Assert::IsTrue(is_energy_sensor(desc), L"is_energy_sensor", LINE_INFO());
+        }
+
+        {
+            auto desc = detail::sensor_description_builder::create().build();
+            Assert::IsFalse(is_energy_sensor(desc), L"!is_energy_sensor", LINE_INFO());
+        }
+
+        {
+            auto desc = detail::sensor_description_builder::create().with_type(sensor_type::power).build();
+            Assert::IsTrue(is_power_sensor(desc), L"is_power_sensor", LINE_INFO());
+        }
+
+        {
+            auto desc = detail::sensor_description_builder::create().build();
+            Assert::IsFalse(is_power_sensor(desc), L"!is_power_sensor", LINE_INFO());
+        }
+
+        {
+            auto desc = detail::sensor_description_builder::create().with_type(sensor_type::voltage).build();
+            Assert::IsTrue(is_voltage_sensor(desc), L"is_power_sensor", LINE_INFO());
+        }
+
+        {
+            auto desc = detail::sensor_description_builder::create().build();
+            Assert::IsFalse(is_voltage_sensor(desc), L"!is_power_sensor", LINE_INFO());
+        }
+    }
+
+    TEST_METHOD(test_all_of_filter) {
+        auto desc = detail::sensor_description_builder::create().with_type(sensor_type::current | sensor_type::gpu).build();
+        Assert::IsTrue(is_all_of(desc, is_current_sensor), L"is_current_sensor", LINE_INFO());
+        Assert::IsTrue(is_all_of(desc, is_current_sensor, is_gpu_sensor), L"is_current_sensor && is_gpu_sensor", LINE_INFO());
+        Assert::IsFalse(is_all_of(desc, is_current_sensor, is_cpu_sensor), L"is_current_sensor && !is_cpu_sensor", LINE_INFO());
+        Assert::IsFalse(is_all_of(desc, is_power_sensor, is_cpu_sensor), L"!is_current_sensor && !is_cpu_sensor", LINE_INFO());
+    }
+
+    TEST_METHOD(test_any_of_filter) {
+        auto desc = detail::sensor_description_builder::create().with_type(sensor_type::current | sensor_type::gpu).build();
+        Assert::IsTrue(is_any_of(desc, is_current_sensor), L"is_current_sensor", LINE_INFO());
+        Assert::IsTrue(is_any_of(desc, is_current_sensor, is_gpu_sensor), L"is_current_sensor && is_gpu_sensor", LINE_INFO());
+        Assert::IsTrue(is_any_of(desc, is_current_sensor, is_cpu_sensor), L"is_current_sensor && !is_cpu_sensor", LINE_INFO());
+        Assert::IsFalse(is_any_of(desc, is_power_sensor, is_cpu_sensor), L"!is_current_sensor && !is_cpu_sensor", LINE_INFO());
+    }
 };
 
 PWROWG_TEST_NAMESPACE_END

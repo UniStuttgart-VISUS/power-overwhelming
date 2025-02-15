@@ -22,11 +22,38 @@ bool PWROWG_NAMESPACE::is_adl_sensor(
 
 
 /*
+ * PWROWG_NAMESPACE::is_cpu_sensor
+ */
+bool PWROWG_NAMESPACE::is_cpu_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    return desc.is_sensor_type(sensor_type::cpu);
+}
+
+
+/*
  * PWROWG_NAMESPACE::is_current_sensor
  */
 bool PWROWG_NAMESPACE::is_current_sensor(
         _In_ const sensor_description& desc) noexcept {
     return desc.is_sensor_type(sensor_type::current);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::is_energy_sensor
+ */
+bool PWROWG_NAMESPACE::is_energy_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    return desc.is_sensor_type(sensor_type::energy);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::is_gpu_sensor
+ */
+bool PWROWG_NAMESPACE::is_gpu_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    return desc.is_sensor_type(sensor_type::gpu);
 }
 
 

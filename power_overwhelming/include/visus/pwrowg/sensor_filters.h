@@ -8,6 +8,9 @@
 #define _PWROWG_SENSOR_FILTERS_H
 #pragma once
 
+#include <algorithm>
+#include <array>
+
 #include "visus/pwrowg/sensor_description.h"
 
 
@@ -24,6 +27,52 @@ extern POWER_OVERWHELMING_API bool is_adl_sensor(
     _In_ const sensor_description& desc) noexcept;
 
 /// <summary>
+/// Answer whether the given <see cref="sensor_description" /> fulfills all of
+/// the given <paramref name="predicates" />.
+/// </summary>
+/// <typeparam name="TPredicates">The types of the predicates.</typeparam>
+/// <param name="desc">The sensor to check.</param>
+/// <param name="predicates">The list of predicates to check.</param>
+/// <returns><c>true</c> if the given sensor fulfills all of the given
+/// predicates, <c>false</c> otherwise.</returns>
+template<class... TPredicates>
+inline bool is_all_of(_In_ const sensor_description& desc,
+        _In_ TPredicates... predicates) {
+    static_assert(sizeof...(TPredicates) > 0, "At least one predicate must be "
+        "provided.");
+    std::array<bool, sizeof...(TPredicates)> results { predicates(desc)... };
+    return (std::find(results.begin(), results.end(), false) == results.end());
+}
+
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> fulfills any of
+/// the given <paramref name="predicates" />.
+/// </summary>
+/// <typeparam name="TPredicates">The types of the predicates.</typeparam>
+/// <param name="desc">The sensor to check.</param>
+/// <param name="predicates">The list of predicates to check.</param>
+/// <returns><c>true</c> if the given sensor fulfills any of the given
+/// predicates, <c>false</c> otherwise.</returns>
+template<class... TPredicates>
+inline bool is_any_of(_In_ const sensor_description& desc,
+        _In_ TPredicates... predicates) {
+    static_assert(sizeof...(TPredicates) > 0, "At least one predicate must be "
+        "provided.");
+    std::array<bool, sizeof...(TPredicates)> results { predicates(desc)... };
+    return (std::find(results.begin(), results.end(), true) != results.end());
+}
+
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes a
+/// sensor targetting the CPU.
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><c>true</c> if the sensor is a CPU sensor, <c>false</c> otherwise.
+/// </returns>
+extern POWER_OVERWHELMING_API bool is_cpu_sensor(
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
 /// Answer whether the given <see cref="sensor_description" /> describes a
 /// sensor measuring current.
 /// </summary>
@@ -31,6 +80,26 @@ extern POWER_OVERWHELMING_API bool is_adl_sensor(
 /// <returns><c>true</c> if the sensor is a current sensor, <c>false</c>
 /// otherwise.</returns>
 extern POWER_OVERWHELMING_API bool is_current_sensor(
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes a
+/// sensor measuring energy.
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><c>true</c> if the sensor is a energy sensor, <c>false</c>
+/// otherwise.</returns>
+extern POWER_OVERWHELMING_API bool is_energy_sensor(
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes a
+/// sensor targetting the GPU.
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><c>true</c> if the sensor is a GPU sensor, <c>false</c> otherwise.
+/// </returns>
+extern POWER_OVERWHELMING_API bool is_gpu_sensor(
     _In_ const sensor_description& desc) noexcept;
 
 /// <summary>
