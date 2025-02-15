@@ -22,6 +22,7 @@
 #include "visus/pwrowg/rtx_instrument.h"
 #include "visus/pwrowg/rtx_instrument_configuration.h"
 #include "visus/pwrowg/sensor_array.h"
+#include "visus/pwrowg/sensor_filters.h"
 #include "visus/pwrowg/stable_power_state_scope.h"
 #include "visus/pwrowg/tinkerforge_display.h"
 

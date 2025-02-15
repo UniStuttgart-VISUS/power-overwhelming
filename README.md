@@ -79,7 +79,25 @@ sensor_array_configuration config;
 
 auto sensors = sensor_array::for_matches(std::move(config), is_power_sensor);
 ```
-The `is_power_sensor` predicate is a [built-in one](power_overwhelming/include/visus/pwrowg/sensor_filters.h) selecting only sensors of type `sensor_type::power`, but you can provide any unary predicate on `sensor_description` to select the sensors you are interested in. Instead of using a filter that allows all sensors, you can use the following shortcut:
+The `is_power_sensor` predicate is a [built-in one](power_overwhelming/include/visus/pwrowg/sensor_filters.h) selecting only sensors of type `sensor_type::power`, but you can provide any unary predicate on `sensor_description` to select the sensors you are interested in. The library also supports different methods of combining filters out of the box:
+```c++
+using namespace visus::pwrowg;
+
+// Create sensors for driver-based sensors by the GPU vendors:
+{
+    sensor_array_configuration config;
+    auto sensors = sensor_array::for_matches(std::move(config), is_all_sensor_types_of<sensor_type::gpu, sensor_type::software>);
+}
+
+// Create all available current and voltage sensors:
+{
+    sensor_array_configuration config;
+    auto sensors = sensor_array::for_matches(std::move(config), is_any_of<is_current_sensor, is_voltage_sensor>);
+}
+```
+
+
+Instead of using a filter that allows all sensors, you can use the following shortcut:
 ```c++
 using namespace visus::pwrowg;
 
