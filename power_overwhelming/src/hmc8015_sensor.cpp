@@ -8,7 +8,10 @@
 
 #include <array>
 #include <cassert>
+#include <sstream>
 #include <stdexcept>
+
+#include <rapidcsv.h>
 
 
 /*
@@ -116,8 +119,7 @@ PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::hmc8015_sensor(
         _In_z_ const wchar_t *path,
         _In_ const std::size_t index,
         _In_ const configuration_type& config)
-    : _config(config),
-        _index(index) {
+    : _config(config) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     this->_instrument = hmc8015_instrument(path, config.timeout());
     this->_instrument.timeout(config.timeout());
@@ -138,6 +140,8 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(
 
     if (callback != nullptr) {
         this->_state.begin_start();
+
+        // TODO: generate file name from time.
 
         const auto i = duration_cast<duration<float>>(interval);
         this->_instrument.integrator_behaviour(hmc8015_integrator_mode::manual)
@@ -161,11 +165,21 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(
         this->_instrument.log_file(log.data(), log.size());
 
         // Download the CSV file into memory.
-        auto csv = this->_instrument.copy_file_from_instrument_or_usb(
+        auto log_data = this->_instrument.copy_file_from_instrument_or_usb(
             log.data());
 
         // Parse the samples and emit everything at once.
+        std::stringstream log_stream(log_data);
+        rapidcsv::Document csv(log_stream,
+            rapidcsv::LabelParams(),
+            rapidcsv::SeparatorParams(';', true),
+            rapidcsv::ConverterParams(),
+            rapidcsv::LineReaderParams(true, '#', true));
+
         // TODO
+        //csv.GetRowNames();
+        //URMS[V]; IRMS[A]; P[W]; FU[Hz]; EMPTY; EMPTY; S[VA]; Q[var]; LAMBDA[]; UTHD[%]; Timestamp
+        //231.27E+00;45.0E-03;6.63E+00;50.0E+00;nan;nan;10.38E+00; 7.98E+00; 639E-03; 2E+00; 04:49:33:000
 
         // If using internal memory, delete the log file. If the user selected the
         // USB thumb drive, we assume the original data should be kept for

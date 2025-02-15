@@ -138,3 +138,11 @@ else ()
     set_target_properties(passmark_usb_pd_tester PROPERTIES
         INTERFACE_LINK_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/PDTesterAPI/i368//PDTesterAPI.lib")
 endif ()
+
+# rapidcsv
+FetchContent_Declare(rapidcsv
+    URL "https://codeload.github.com/d99kris/rapidcsv/zip/refs/tags/v8.84"
+)
+FetchContent_MakeAvailable(rapidcsv)
+mark_as_advanced(FORCE
+    RAPIDCSV_BUILD_TESTS)

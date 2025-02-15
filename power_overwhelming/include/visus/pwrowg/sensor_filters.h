@@ -41,6 +41,26 @@ inline bool is_all_of(_In_ const sensor_description& desc) {
 }
 
 /// <summary>
+/// Answer whether the <see cref="sensor_type" /> of the given
+/// <paramref name="sensor_description" /> has all of the bits of the given
+/// <typeparamref name="Types" /> set.
+/// </summary>
+/// <typeparam name="Types">The sensor sensor types that must be matched.
+/// </typeparam>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><c>true</c> all of the specified <typeparamref name="Types" /> are
+/// set in the sensor type (but possible additional bits as well), <c>false</c>
+/// otherwise.</returns>
+template<sensor_type... Types>
+inline bool is_all_sensor_types_of(
+        _In_ const sensor_description& desc) noexcept {
+    std::array<bool, sizeof...(Types)> results {
+        ((desc.sensor_type() & Types) == Types)...
+    };
+    return (std::find(results.begin(), results.end(), false) == results.end());
+}
+
+/// <summary>
 /// Answer whether the given <see cref="sensor_description" /> fulfills any of
 /// the given <paramref name="predicates" />.
 /// </summary>
@@ -51,6 +71,25 @@ inline bool is_all_of(_In_ const sensor_description& desc) {
 template<bool (*...TPredicates)(const sensor_description&)>
 inline bool is_any_of(_In_ const sensor_description& desc) {
     std::array<bool, sizeof...(TPredicates)> results { TPredicates(desc)... };
+    return (std::find(results.begin(), results.end(), true) != results.end());
+}
+
+/// <summary>
+/// Answer whether the <see cref="sensor_type" /> of the given
+/// <paramref name="sensor_description" /> has any of the bits of the given
+/// <typeparamref name="Types" /> set.
+/// </summary>
+/// <typeparam name="Types">The sensor sensor types that must be matched.
+/// </typeparam>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><c>true</c> the bitwise &quot;and&quot; of the sensor type and
+/// <typeparamref name="Types" /> is not empty, <c>false</c> otherwise.</returns>
+template<sensor_type... Types>
+inline bool is_any_sensor_type_of(
+        _In_ const sensor_description& desc) noexcept {
+    std::array<bool, sizeof...(Types)> results {
+        ((desc.sensor_type() & Types) == Types)...
+    };
     return (std::find(results.begin(), results.end(), true) != results.end());
 }
 

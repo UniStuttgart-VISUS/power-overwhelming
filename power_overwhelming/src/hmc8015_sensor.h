@@ -11,6 +11,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "visus/pwrowg/hmc8015_configuration.h"
@@ -122,7 +123,7 @@ private:
         _In_ const hmc8015_function function);
 
     configuration_type _config;
-    std::size_t _index;
+    std::unordered_map<std::string, std::size_t> _indices;
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     hmc8015_instrument _instrument;
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */

@@ -186,6 +186,22 @@ public:
         Assert::IsFalse(is_none_of<is_current_sensor, is_cpu_sensor>(desc), L"is_current_sensor && !is_cpu_sensor", LINE_INFO());
         Assert::IsTrue(is_none_of<is_power_sensor, is_cpu_sensor>(desc), L"!is_power_sensor && !is_cpu_sensor", LINE_INFO());
     }
+
+    TEST_METHOD(test_sensor_type_filters) {
+        auto desc = detail::sensor_description_builder::create().with_type(sensor_type::current | sensor_type::gpu).build();
+
+        Assert::IsTrue(is_any_sensor_type_of<sensor_type::current, sensor_type::gpu, sensor_type::cpu>(desc), L"sensor_type::current, sensor_type::gpu, sensor_type::cpu", LINE_INFO());
+        Assert::IsTrue(is_any_sensor_type_of<sensor_type::current, sensor_type::gpu>(desc), L"sensor_type::current, sensor_type::gpu", LINE_INFO());
+        Assert::IsTrue(is_any_sensor_type_of<sensor_type::current>(desc), L"sensor_type::current", LINE_INFO());
+        Assert::IsTrue(is_any_sensor_type_of<sensor_type::gpu>(desc), L"sensor_type::gpu", LINE_INFO());
+        Assert::IsFalse(is_any_sensor_type_of<sensor_type::cpu>(desc), L"sensor_type::cpu", LINE_INFO());
+
+        Assert::IsFalse(is_all_sensor_types_of<sensor_type::current, sensor_type::gpu, sensor_type::cpu>(desc), L"sensor_type::current, sensor_type::gpu , sensor_type::cpu", LINE_INFO());
+        Assert::IsTrue(is_all_sensor_types_of<sensor_type::current, sensor_type::gpu>(desc), L"sensor_type::current, sensor_type::gpu", LINE_INFO());
+        Assert::IsTrue(is_all_sensor_types_of<sensor_type::current>(desc), L"sensor_type::current", LINE_INFO());
+        Assert::IsTrue(is_all_sensor_types_of<sensor_type::gpu>(desc), L"sensor_type::gpu", LINE_INFO());
+        Assert::IsFalse(is_all_sensor_types_of<sensor_type::cpu>(desc), L"sensor_type::cpu", LINE_INFO());
+    }
 };
 
 PWROWG_TEST_NAMESPACE_END
