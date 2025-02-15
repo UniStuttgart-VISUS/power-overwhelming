@@ -72,7 +72,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
                     throw nvml_exception(status);
                 }
 
-                builder.with_id(guid.data());
+                builder.with_id("NVML/%s", pci_info.busId);
             }
 
             {
@@ -85,7 +85,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
                 builder.with_path(pci_info.busId);
             }
 
-            builder.with_name("NVML/%s/%s", name.data(), pci_info.busId);
+            builder.with_name("%s (NVML)", name.data(), pci_info.busId);
 
             if ((dst != nullptr) && (cnt > 0)) {
                 dst[retval] = builder.build();

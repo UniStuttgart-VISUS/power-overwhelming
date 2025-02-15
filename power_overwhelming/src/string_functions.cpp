@@ -75,6 +75,41 @@ int PWROWG_DETAIL_NAMESPACE::compare(_In_opt_z_ const wchar_t *lhs,
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE::contains
+ */
+bool PWROWG_DETAIL_NAMESPACE::contains(_In_opt_z_ const wchar_t *haystack,
+        _In_opt_z_ const wchar_t *needle, _In_ const bool ignore_case) {
+    if (needle == nullptr) {
+        return true;
+    }
+
+    if (haystack == nullptr) {
+        return false;
+    }
+
+    if (ignore_case) {
+        std::wstring h(haystack);
+        std::transform(h.begin(), h.end(), h.begin(),
+            [](const decltype(h)::value_type c) {
+                return static_cast<decltype(h)::value_type>(::tolower(c));
+            });
+
+        std::wstring n(needle);
+        std::transform(n.begin(), n.end(), n.begin(),
+            [](const decltype(n)::value_type c) {
+            return static_cast<decltype(n)::value_type>(::tolower(c));
+        });
+
+        return (h.find(n) != std::wstring::npos);
+
+    } else {
+        return (::wcsstr(haystack, needle) != nullptr);
+    }
+}
+
+
+
+/*
  * PWROWG_DETAIL_NAMESPACE::parse_float
  */
 float PWROWG_DETAIL_NAMESPACE::parse_float(_In_opt_z_ const char *str) {

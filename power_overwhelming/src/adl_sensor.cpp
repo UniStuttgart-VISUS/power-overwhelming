@@ -5,7 +5,6 @@
 
 #include "adl_sensor.h"
 
-#if false
 #include <algorithm>
 #include <cassert>
 #include <cstring>
@@ -14,10 +13,276 @@
 #include "visus/pwrowg/convert_string.h"
 
 #include "adl_utils.h"
+#include "amd_display_library.h"
 #include "sensor_description_builder.h"
 
 
+PWROWG_DETAIL_NAMESPACE_BEGIN
 
+/// <summary>
+/// Answer whether the given sensor ID refers to a current sensor.
+/// </summary>
+static constexpr bool is_current(_In_ const ADL_PMLOG_SENSORS id) noexcept {
+    switch (id) {
+        case ADL_PMLOG_GFX_CURRENT:
+        case ADL_PMLOG_SOC_CURRENT:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+/// <summary>
+/// Answer whether the given sensor ID refers to a power sensor.
+/// </summary>
+static constexpr bool is_power(_In_ const ADL_PMLOG_SENSORS id) noexcept {
+    switch (id) {
+        case ADL_PMLOG_ASIC_POWER:
+        case ADL_PMLOG_BOARD_POWER:
+        case ADL_PMLOG_CPU_POWER:
+        case ADL_PMLOG_GFX_POWER:
+        case ADL_PMLOG_SOC_POWER:
+        case ADL_PMLOG_SSPAIRED_ASICPOWER:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+/// <summary>
+/// Answer whether the given sensor ID refers to a thermal sensor.
+/// </summary>
+static constexpr bool is_thermal(_In_ const ADL_PMLOG_SENSORS id) noexcept {
+    switch (id) {
+        case ADL_PMLOG_TEMPERATURE_EDGE:
+        case ADL_PMLOG_TEMPERATURE_MEM:
+        case ADL_PMLOG_TEMPERATURE_VRVDDC:
+        case ADL_PMLOG_TEMPERATURE_VRMVDD:
+        case ADL_PMLOG_TEMPERATURE_LIQUID:
+        case ADL_PMLOG_TEMPERATURE_PLX:
+        case ADL_PMLOG_TEMPERATURE_VRSOC:
+        case ADL_PMLOG_TEMPERATURE_VRMVDD0:
+        case ADL_PMLOG_TEMPERATURE_VRMVDD1:
+        case ADL_PMLOG_TEMPERATURE_HOTSPOT:
+        case ADL_PMLOG_TEMPERATURE_GFX:
+        case ADL_PMLOG_TEMPERATURE_SOC:
+        case ADL_PMLOG_TEMPERATURE_CPU:
+        case ADL_PMLOG_TEMPERATURE_LIQUID0:
+        case ADL_PMLOG_TEMPERATURE_LIQUID1:
+        case ADL_PMLOG_TEMPERATURE_HOTSPOT_GCD:
+        case ADL_PMLOG_TEMPERATURE_HOTSPOT_MCD:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+/// <summary>
+/// Answer whether the given sensor ID refers to a sensor reporting the
+/// throttling status of the GPU.
+/// </summary>
+static constexpr bool is_throttling(_In_ const ADL_PMLOG_SENSORS id) noexcept {
+    return (id == ADL_PMLOG_THROTTLER_STATUS);
+}
+
+/// <summary>
+/// Answer whether the given sensor ID refers to a voltage sensor.
+/// </summary>
+static constexpr bool is_voltage(_In_ const ADL_PMLOG_SENSORS id) noexcept {
+    switch (id) {
+        case ADL_PMLOG_GFX_VOLTAGE:
+        case ADL_PMLOG_SOC_VOLTAGE:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+/// <summary>
+/// Answer the symbolic constant for the given sensor ID.
+/// </summary>
+static std::wstring to_string(_In_ const ADL_PMLOG_SENSORS id) {
+#define _TO_STRING(i) L##i
+#define _TO_STRING_CASE(i) case i: return _TO_STRING(#i)
+
+    switch (id) {
+        _TO_STRING_CASE(ADL_PMLOG_CLK_GFXCLK);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_MEMCLK);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_SOCCLK);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_UVDCLK1);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_UVDCLK2);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_VCECLK);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_VCNCLK);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_EDGE);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_MEM);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRVDDC);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRMVDD);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_LIQUID);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_PLX);
+        _TO_STRING_CASE(ADL_PMLOG_FAN_RPM);
+        _TO_STRING_CASE(ADL_PMLOG_FAN_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_SOC_VOLTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_SOC_POWER);
+        _TO_STRING_CASE(ADL_PMLOG_SOC_CURRENT);
+        _TO_STRING_CASE(ADL_PMLOG_INFO_ACTIVITY_GFX);
+        _TO_STRING_CASE(ADL_PMLOG_INFO_ACTIVITY_MEM);
+        _TO_STRING_CASE(ADL_PMLOG_GFX_VOLTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_MEM_VOLTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_ASIC_POWER);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRSOC);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRMVDD0);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRMVDD1);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_HOTSPOT);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_GFX);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_SOC);
+        _TO_STRING_CASE(ADL_PMLOG_GFX_POWER);
+        _TO_STRING_CASE(ADL_PMLOG_GFX_CURRENT);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_CPU);
+        _TO_STRING_CASE(ADL_PMLOG_CPU_POWER);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_CPUCLK);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_STATUS);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_VCN1CLK1);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_VCN1CLK2);
+        _TO_STRING_CASE(ADL_PMLOG_SMART_POWERSHIFT_CPU);
+        _TO_STRING_CASE(ADL_PMLOG_SMART_POWERSHIFT_DGPU);
+        _TO_STRING_CASE(ADL_PMLOG_BUS_SPEED);
+        _TO_STRING_CASE(ADL_PMLOG_BUS_LANES);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_LIQUID0);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_LIQUID1);
+        _TO_STRING_CASE(ADL_PMLOG_CLK_FCLK);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_STATUS_CPU);
+        _TO_STRING_CASE(ADL_PMLOG_SSPAIRED_ASICPOWER);
+        _TO_STRING_CASE(ADL_PMLOG_SSTOTAL_POWERLIMIT);
+        _TO_STRING_CASE(ADL_PMLOG_SSAPU_POWERLIMIT);
+        _TO_STRING_CASE(ADL_PMLOG_SSDGPU_POWERLIMIT);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_HOTSPOT_GCD);
+        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_HOTSPOT_MCD);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_EDGE_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_HOTSPOT_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_HOTSPOT_GCD_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_HOTSPOT_MCD_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_MEM_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_VR_GFX_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_VR_MEM0_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_VR_MEM1_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_VR_SOC_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_LIQUID0_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_LIQUID1_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_PLX_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TDC_GFX_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TDC_SOC_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TDC_USR_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_PPT0_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_PPT1_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_PPT2_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_PPT3_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_FIT_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_GFX_APCC_PLUS_PERCENTAGE);
+        _TO_STRING_CASE(ADL_PMLOG_BOARD_POWER);
+        // Insert new sensors from adl_defines.h here.
+        default: return L"";
+    }
+
+#undef _TO_STRING
+#undef _TO_STRING_CASE
+}
+
+PWROWG_DETAIL_NAMESPACE_END
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::adl_sensor::descriptions
+ */
+std::size_t PWROWG_DETAIL_NAMESPACE::adl_sensor::descriptions(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
+        _In_ std::size_t cnt,
+        _In_ const configuration_type& config) {
+    try {
+        detail::adl_scope scope;
+
+        // Get all active adapters.
+        const auto adapters = get_adapters(scope);
+
+        // For each adapter, get all supported sensors.
+        auto builder = sensor_description_builder::create()
+            .with_vendor(L"AMD");
+
+        for (auto& a : adapters) {
+            ADLPMLogSupportInfo support_info;
+
+            // First, find out whether the adapter supports PMLog.
+            {
+                auto status = amd_display_library::instance()
+                    .ADL2_Adapter_PMLog_Support_Get(scope,
+                        a.iAdapterIndex,
+                        &support_info);
+                if (status != ADL_OK) {
+                    throw adl_exception(status);
+                }
+            }
+
+            // Now, process all of the supported sensor sources.
+            for (auto s : support_info.usSensors) {
+                auto sensor = static_cast<ADL_PMLOG_SENSORS>(s);
+
+                if (is_current(sensor)) {
+                } else if (is_power(sensor)) {
+                } else if (is_thermal(sensor)) {
+                } else if (is_throttling(sensor)) {
+                } else if (is_voltage(sensor)) {
+                }
+            }
+        /*case adl_sensor_source::asic:
+            this->sensor_name = L"ADL/ASIC/" + this->device_name
+                + L"/" + std::to_wstring(this->adapter_index);
+            break;
+
+        case adl_sensor_source::board:
+            this->sensor_name = L"ADL/BOARD/" + this->device_name
+                + L"/" + std::to_wstring(this->adapter_index);
+            break;
+
+        case adl_sensor_source::cpu:
+            this->sensor_name = L"ADL/CPU/" + this->device_name
+                + L"/" + std::to_wstring(this->adapter_index);
+            break;
+
+        case adl_sensor_source::graphics:
+            this->sensor_name = L"ADL/GFX/" + this->device_name
+                + L"/" + std::to_wstring(this->adapter_index);
+            break;
+
+        case adl_sensor_source::soc:
+            this->sensor_name = L"ADL/SOC/" + this->device_name
+                + L"/" + std::to_wstring(this->adapter_index);
+            break;
+
+        default:
+            throw std::invalid_argument("The specified sensor source is "
+                "unsupported.");*/
+
+
+            //for_adapter(std::back_inserter(retval),
+            //    scope,
+            //    a,
+            //    adl_sensor_source::all);
+        }
+        throw "TODO";
+        return 0;
+
+    } catch (...) {
+        // AMD is not supported, we ignore that at this point.
+        return 0;
+    }
+}
+
+
+
+#if false
 /// <summary>
 /// Counts how many valid sensor readings are in <paramref name="data" />.
 /// </summary>
@@ -314,152 +579,6 @@ static std::vector<ADL_PMLOG_SENSORS> get_sensor_ids(
 }
 
 
-/// <summary>
-/// Answer whether the given sensor ID refers to a current sensor.
-/// </summary>
-/// <param name="id"></param>
-/// <returns></returns>
-static constexpr bool is_current(_In_ const ADL_PMLOG_SENSORS id) noexcept {
-    switch (id) {
-        case ADL_PMLOG_GFX_CURRENT:
-        case ADL_PMLOG_SOC_CURRENT:
-            return true;
-
-        default:
-            return false;
-    }
-}
-
-
-/// <summary>
-/// Answer whether the given sensor ID refers to a power sensor.
-/// </summary>
-/// <param name="id"></param>
-/// <returns></returns>
-static constexpr bool is_power(_In_ const ADL_PMLOG_SENSORS id) noexcept {
-    switch (id) {
-        case ADL_PMLOG_ASIC_POWER:
-        case ADL_PMLOG_BOARD_POWER:
-        case ADL_PMLOG_CPU_POWER:
-        case ADL_PMLOG_GFX_POWER:
-        case ADL_PMLOG_SOC_POWER:
-        case ADL_PMLOG_SSPAIRED_ASICPOWER:
-            return true;
-
-        default:
-            return false;
-    }
-}
-
-
-/// <summary>
-/// Answer whether the given sensor ID refers to a voltage sensor.
-/// </summary>
-/// <param name="id"></param>
-/// <returns></returns>
-static constexpr bool is_voltage(_In_ const ADL_PMLOG_SENSORS id) noexcept {
-    switch (id) {
-        case ADL_PMLOG_GFX_VOLTAGE:
-        case ADL_PMLOG_SOC_VOLTAGE:
-            return true;
-
-        default:
-            return false;
-    }
-}
-
-
-/// <summary>
-/// Answer the symbolic constant for the given sensor ID.
-/// </summary>
-/// <param name="id"></param>
-/// <returns></returns>
-static std::wstring to_string(_In_ const ADL_PMLOG_SENSORS id) {
-#define _TO_STRING(i) L##i
-#define _TO_STRING_CASE(i) case i: return _TO_STRING(#i)
-
-    switch (id) {
-        _TO_STRING_CASE(ADL_PMLOG_CLK_GFXCLK);
-        _TO_STRING_CASE(ADL_PMLOG_CLK_MEMCLK);
-        _TO_STRING_CASE(ADL_PMLOG_CLK_SOCCLK);
-        _TO_STRING_CASE(ADL_PMLOG_CLK_UVDCLK1);
-        _TO_STRING_CASE(ADL_PMLOG_CLK_UVDCLK2);
-        _TO_STRING_CASE(ADL_PMLOG_CLK_VCECLK);
-        _TO_STRING_CASE(ADL_PMLOG_CLK_VCNCLK);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_EDGE);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_MEM);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRVDDC);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRMVDD);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_LIQUID);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_PLX);
-        _TO_STRING_CASE(ADL_PMLOG_FAN_RPM);
-        _TO_STRING_CASE(ADL_PMLOG_FAN_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_SOC_VOLTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_SOC_POWER);
-        _TO_STRING_CASE(ADL_PMLOG_SOC_CURRENT);
-        _TO_STRING_CASE(ADL_PMLOG_INFO_ACTIVITY_GFX);
-        _TO_STRING_CASE(ADL_PMLOG_INFO_ACTIVITY_MEM);
-        _TO_STRING_CASE(ADL_PMLOG_GFX_VOLTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_MEM_VOLTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_ASIC_POWER);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRSOC);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRMVDD0);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_VRMVDD1);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_HOTSPOT);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_GFX);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_SOC);
-        _TO_STRING_CASE(ADL_PMLOG_GFX_POWER);
-        _TO_STRING_CASE(ADL_PMLOG_GFX_CURRENT);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_CPU);
-        _TO_STRING_CASE(ADL_PMLOG_CPU_POWER);
-        _TO_STRING_CASE(ADL_PMLOG_CLK_CPUCLK);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_STATUS);
-        _TO_STRING_CASE(ADL_PMLOG_CLK_VCN1CLK1);
-        _TO_STRING_CASE(ADL_PMLOG_CLK_VCN1CLK2);
-        _TO_STRING_CASE(ADL_PMLOG_SMART_POWERSHIFT_CPU);
-        _TO_STRING_CASE(ADL_PMLOG_SMART_POWERSHIFT_DGPU);
-        _TO_STRING_CASE(ADL_PMLOG_BUS_SPEED);
-        _TO_STRING_CASE(ADL_PMLOG_BUS_LANES);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_LIQUID0);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_LIQUID1);
-        _TO_STRING_CASE(ADL_PMLOG_CLK_FCLK);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_STATUS_CPU);
-        _TO_STRING_CASE(ADL_PMLOG_SSPAIRED_ASICPOWER);
-        _TO_STRING_CASE(ADL_PMLOG_SSTOTAL_POWERLIMIT);
-        _TO_STRING_CASE(ADL_PMLOG_SSAPU_POWERLIMIT);
-        _TO_STRING_CASE(ADL_PMLOG_SSDGPU_POWERLIMIT);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_HOTSPOT_GCD);
-        _TO_STRING_CASE(ADL_PMLOG_TEMPERATURE_HOTSPOT_MCD);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_EDGE_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_HOTSPOT_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_HOTSPOT_GCD_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_HOTSPOT_MCD_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_MEM_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_VR_GFX_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_VR_MEM0_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_VR_MEM1_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_VR_SOC_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_LIQUID0_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_LIQUID1_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TEMP_PLX_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TDC_GFX_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TDC_SOC_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_TDC_USR_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_PPT0_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_PPT1_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_PPT2_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_PPT3_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_FIT_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_THROTTLER_GFX_APCC_PLUS_PERCENTAGE);
-        _TO_STRING_CASE(ADL_PMLOG_BOARD_POWER);
-        // Insert new sensors from adl_defines.h here.
-        default: return L"";
-    }
-
-#undef _TO_STRING
-#undef _TO_STRING_CASE
-}
-
 
 /*
  * PWROWG_DETAIL_NAMESPACE::adl_sensor::descriptions
@@ -554,6 +673,7 @@ PWROWG_DETAIL_NAMESPACE::adl_sensor::descriptions(void) {
 //    return from_udid(u.c_str(), source);
 //}
 //
+
 
 /*
  * visus::power_overwhelming::adl_sensor::adl_sensor

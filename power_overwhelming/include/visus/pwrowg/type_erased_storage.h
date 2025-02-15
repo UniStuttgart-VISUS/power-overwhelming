@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <utility>
 
-#include "visus/pwrowg/blob.h"
+#include "visus/pwrowg/api.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -24,9 +24,6 @@ PWROWG_NAMESPACE_BEGIN
 /// <remarks>
 /// <para>This type allows for sensors to store any data in the
 /// <see cref="sensor_description" />.</para>
-/// <para>The type-erased storage does not support move, because we would need to
-/// generate an exception for non-movable types, which violates the contract of
-/// a move operation.</para>
 /// </remarks>
 class POWER_OVERWHELMING_API type_erased_storage final {
 
@@ -43,7 +40,16 @@ public:
     /// <param name="rhs">The object to be cloned.</param>
     type_erased_storage(_In_ const type_erased_storage& rhs);
 
-    type_erased_storage(type_erased_storage&& rhs) = delete;
+    /// <summary>
+    /// Initialise from move.
+    /// </summary>
+    /// <param name="rhs">The object to be moved.</param>
+    inline type_erased_storage(_Inout_ type_erased_storage&& rhs) noexcept
+            : _cp(rhs._cp), _data(rhs._data), _dtor(rhs._dtor) {
+        rhs._cp = nullptr;
+        rhs._data = nullptr;
+        rhs._dtor = nullptr;
+    }
 
     /// <summary>
     /// Finalises the instance.
@@ -66,7 +72,9 @@ public:
     /// constructor.</typeparam>
     /// <param name="args">The arguments passed to the constuctor.</param>
     /// <returns>A reference for the newly created object.</returns>
-    template<class TType, class... TArgs> TType& emplace(TArgs&&... args);
+    template<class TType, class... TArgs>
+    std::enable_if_t<std::is_copy_constructible_v<TType>, TType&> emplace(
+        TArgs&&... args);
 
     /// <summary>
     /// Gets the data in form of a pointer to <typeparamref name="TType" />.
@@ -78,7 +86,7 @@ public:
     /// <typeparam name="TType">The type contained in the object.</typeparam>
     /// <returns>A pointer to the data.</returns>
     template<class TType> inline _Ret_maybenull_ TType *get(void) noexcept {
-        return this->_data.as<TType>();
+        return static_cast<TType *>(this->_data);
     }
 
     /// <summary>
@@ -92,7 +100,7 @@ public:
     /// <returns>A pointer to the data.</returns>
     template<class TType>
     inline _Ret_maybenull_ const TType *get(void) const noexcept {
-        return this->_data.as<TType>();
+        return static_cast<const TType *>(this->_data);
     }
 
     /// <summary>
@@ -113,41 +121,36 @@ public:
     /// <returns><c>*this</c>.</returns>
     type_erased_storage& operator =(_In_ const type_erased_storage& rhs);
 
-    type_erased_storage& operator =(type_erased_storage&& rhs) = delete;
+    /// <summary>
+    /// Move assignment.
+    /// </summary>
+    /// <param name="rhs">The right-hand side operand.</param>
+    /// <returns><c>*this</c>.</returns>
+    type_erased_storage& operator =(_Inout_ type_erased_storage&& rhs) noexcept;
+
+    /// <summary>
+    /// Answer whether the storage holds any data.
+    /// </summary>
+    /// <returns><c>true</c> if there are data in the object, <c>false</c> if it
+    /// is empty.</returns>
+    inline operator bool(void) const noexcept {
+        return (this->_data != nullptr);
+    }
 
 private:
 
     /// <summary>
     /// The type of a copy operation, either copy construct or assignment.
     /// </summary>
-    typedef void (*copy_type)(_In_ blob& dst, _In_ const blob& src);
+    typedef void (*copy_type)(_Out_ void *& dst, _In_ const void *src);
 
     /// <summary>
     /// The type of a destructor function.
     /// </summary>
-    typedef void (*destruct_type)(_In_ blob& obj);
-
-    /// <summary>
-    /// Registers the assignment operator of <typeparamref name="TType" /> as
-    /// <see cref="_cp" />.
-    /// </summary>
-    template<class TType> void reg_cp(void) noexcept;
-
-    /// <summary>
-    /// Registers the copy constructor of <typeparamref name="TType" /> as
-    /// <see cref="_cp_ctor" />.
-    /// </summary>
-    template<class TType> void reg_cp_ctor(void) noexcept;
-
-    /// <summary>
-    /// Registers the destructor of <typeparamref name="TType" /> as
-    /// <see cref="_dtor" />.
-    /// </summary>
-    template<class TType> void reg_dtor(void) noexcept;
+    typedef void (*destruct_type)(_In_ void *obj);
 
     copy_type _cp;
-    copy_type _cp_ctor;
-    blob _data;
+    void *_data;
     destruct_type _dtor;
 };
 

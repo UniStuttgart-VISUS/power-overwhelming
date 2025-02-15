@@ -55,6 +55,8 @@ public:
     /// not be established.</exception>
     tinkerforge_scope(const std::string& host, const std::uint16_t port);
 
+    tinkerforge_scope(const tinkerforge_scope& rhs) = default;
+
     /// <summary>
     /// Copy the the currently known <see cref="tinkerforge_bricklet" />s
     /// matching the given predicate in a thread-safe manner to the output
@@ -120,6 +122,8 @@ public:
     std::size_t copy_bricklets(TIterator oit, const TPredicate& predicate,
         const std::chrono::milliseconds timeout,
         const std::size_t expected = 0) const;
+
+    tinkerforge_scope& operator =(const tinkerforge_scope& rhs) = default;
 
     /// <summary>
     /// Converts the scope into the embedded <see cref="IPConnection" />.

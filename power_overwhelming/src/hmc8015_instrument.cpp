@@ -59,7 +59,7 @@ std::size_t PWROWG_NAMESPACE::hmc8015_instrument::for_all(
 PWROWG_NAMESPACE::hmc8015_instrument::hmc8015_instrument(
         _In_z_ const wchar_t *path,
         _In_ const visa_instrument::timeout_type timeout)
-        : _instrument(path, timeout) {
+        : visa_instrument(path, timeout) {
     this->initialise();
     this->configure();
 }
@@ -71,7 +71,7 @@ PWROWG_NAMESPACE::hmc8015_instrument::hmc8015_instrument(
 PWROWG_NAMESPACE::hmc8015_instrument::hmc8015_instrument(
         _In_z_ const char *path,
         _In_ const visa_instrument::timeout_type timeout)
-        : _instrument(path, timeout) {
+        : visa_instrument(path, timeout) {
     this->initialise();
     this->configure();
 }
@@ -82,19 +82,18 @@ PWROWG_NAMESPACE::hmc8015_instrument::hmc8015_instrument(
  */
 PWROWG_NAMESPACE::hmc8015_instrument::hmc8015_instrument(
         _Inout_ hmc8015_instrument&& rhs) noexcept
-    : _instrument(std::move(rhs._instrument)),
-        _name(std::move(rhs._name)) { }
+    : visa_instrument(std::move(rhs)) { }
 
 
 /*
  * PWROWG_NAMESPACE::hmc8015_instrument::~hmc8015_instrument
  */
 PWROWG_NAMESPACE::hmc8015_instrument::~hmc8015_instrument(void) {
-    if (this->_instrument) {
+    if (*this) {
         // Reset the system state to local operations, but make sure that we
         // do not throw in the destructor. Therefore, we use the library
         // directly instead of the wrappers checking the state of the calls.
-        this->_instrument.write("SYST:LOC\n");
+        this->write("SYST:LOC\n");
     }
 }
 
@@ -121,13 +120,37 @@ PWROWG_NAMESPACE::hmc8015_instrument::copy_file_from_instrument(
             "null or empty.");
     }
 
-    std::string query("DATA:DATA? \"");
-    query += name;
-    query += "\", ";
-    query += (use_usb ? "EXT" : "INT");
+    auto path = detail::format_string("\"%s\", %s",
+        name,
+        (use_usb ? "EXT" : "INT"));
+    return this->copy_file_from_instrument_or_usb(path.c_str());
+}
 
-    this->_instrument.write(query.c_str());
-    return this->_instrument.read_binary();
+/*
+ * PWROWG_NAMESPACE::hmc8015_instrument::copy_file_from_instrument_or_usb
+ */
+PWROWG_NAMESPACE::blob
+PWROWG_NAMESPACE::hmc8015_instrument::copy_file_from_instrument_or_usb(
+        _In_z_ const wchar_t *name) const {
+    const auto n = convert_string<char>(name);
+    return this->copy_file_from_instrument_or_usb(n.c_str());
+}
+
+
+/*
+ * PWROWG_NAMESPACE::hmc8015_instrument::copy_file_from_instrument_or_usb
+ */
+PWROWG_NAMESPACE::blob
+PWROWG_NAMESPACE::hmc8015_instrument::copy_file_from_instrument_or_usb(
+        _In_z_ const char *name) const {
+    if ((name == nullptr) || (*name == 0)) {
+        throw std::invalid_argument("The name of the file to read cannot be "
+            "null or empty.");
+    }
+
+    auto query = detail::format_string("DATA:DATA? %s", name);
+    this->write(query.c_str());
+    return this->read_binary();
 }
 
 
@@ -154,7 +177,7 @@ PWROWG_NAMESPACE::hmc8015_instrument::custom_functions(
 
     cmd += "\n";
 
-    this->_instrument.write(cmd.c_str());
+    this->write(cmd.c_str());
 
     return *this;
 }
@@ -165,8 +188,7 @@ PWROWG_NAMESPACE::hmc8015_instrument::custom_functions(
  */
 PWROWG_NAMESPACE::hmc8015_instrument&
 PWROWG_NAMESPACE::hmc8015_instrument::default_functions(void) {
-    this->_instrument.write("CHAN1:MEAS:FUNC URMS, URAN, IRMS, "
-        "IRAN, S, P\n");
+    this->write("CHAN1:MEAS:FUNC URMS, URAN, IRMS, IRAN, S, P\n");
     return *this;
 }
 
@@ -191,16 +213,41 @@ PWROWG_NAMESPACE::hmc8015_instrument::delete_file_from_instrument(
         _In_z_ const char *name,
         _In_ const bool use_usb) {
     if ((name == nullptr) || (*name == 0)) {
-        throw std::invalid_argument("The name of the file to write cannot be "
+        throw std::invalid_argument("The name of the file to delete cannot be "
             "null or empty.");
     }
 
-    std::string query("DATA:DEL \"");
-    query += name;
-    query += "\", ";
-    query += (use_usb ? "EXT" : "INT");
+    auto path = detail::format_string("\"%s\", %s",
+        name,
+        (use_usb ? "EXT" : "INT"));
+    return this->delete_file_from_instrument_or_usb(path.c_str());
+}
 
-    this->_instrument.write(query.c_str());
+
+/*
+ * PWROWG_NAMESPACE::hmc8015_instrument::delete_file_from_instrument_or_usb
+ */
+PWROWG_NAMESPACE::hmc8015_instrument&
+PWROWG_NAMESPACE::hmc8015_instrument::delete_file_from_instrument_or_usb(
+        _In_z_ const wchar_t *name) {
+    const auto n = convert_string<char>(name);
+    return this->delete_file_from_instrument_or_usb(n.c_str());
+}
+
+
+/*
+ * PWROWG_NAMESPACE::hmc8015_instrument::delete_file_from_instrument_or_usb
+ */
+PWROWG_NAMESPACE::hmc8015_instrument&
+PWROWG_NAMESPACE::hmc8015_instrument::delete_file_from_instrument_or_usb(
+        _In_z_ const char *name) {
+    if ((name == nullptr) || (*name == 0)) {
+        throw std::invalid_argument("The name of the file to delete cannot be "
+            "null or empty.");
+    }
+
+    auto query = detail::format_string("DATA:DEL %s", name);
+    this->write(query.c_str());
     return *this;
 }
 
@@ -214,9 +261,9 @@ PWROWG_NAMESPACE::hmc8015_instrument::display(
     if (text != nullptr) {
         auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
             "DISP:TEXT:DATA \"%s\"\n", text);
-        this->_instrument.write(cmd);
+        this->write(cmd);
     } else {
-        this->_instrument.write("DISP:TEXT:CLE\n");
+        this->write("DISP:TEXT:CLE\n");
     }
 
     return *this;
@@ -232,9 +279,9 @@ PWROWG_NAMESPACE::hmc8015_instrument::display(
     if (text != nullptr) {
         auto cmd = convert_string<char>(PWROWG_DETAIL_NAMESPACE::format_string(
             L"DISP:TEXT:DATA \"%s\"\n", text));
-        this->_instrument.write(cmd);
+        this->write(cmd);
     } else {
-        this->_instrument.write("DISP:TEXT:CLE\n");
+        this->write("DISP:TEXT:CLE\n");
     }
 
     return *this;
@@ -247,7 +294,7 @@ PWROWG_NAMESPACE::hmc8015_instrument::display(
 std::size_t PWROWG_NAMESPACE::hmc8015_instrument::functions(
         _Out_writes_opt_z_(cnt) char *dst,
         _In_ const std::size_t cnt) const {
-    auto value = this->_instrument.query("CHAN1:MEAS:FUNC?\n");
+    auto value = this->query("CHAN1:MEAS:FUNC?\n");
 
     // Copy as much as the output buffer can hold.
     if (dst != nullptr) {
@@ -283,41 +330,41 @@ PWROWG_NAMESPACE::hmc8015_instrument::integrator_behaviour(
     // Configure the logging mode.
     switch (mode) {
         case hmc8015_integrator_mode::duration:
-            this->_instrument.write("INT:MODE DUR\n");
+            this->write("INT:MODE DUR\n");
             if (duration == dur_limits::lowest()) {
-                this->_instrument.write("INT:DUR MIN\n");
+                this->write("INT:DUR MIN\n");
             } else if (duration == (dur_limits::max)()) {
-                this->_instrument.write("INT:DUR MAX\n");
+                this->write("INT:DUR MAX\n");
             } else {
                 auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
                     "INT:DUR %d\n", duration);
-                this->_instrument.write(cmd);
+                this->write(cmd);
             }
             break;
 
         case hmc8015_integrator_mode::time_span:
-            this->_instrument.write("INT:MODE SPAN\n");
+            this->write("INT:MODE SPAN\n");
 
             {
                 auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
                     "INT:STIM %d, %d, %d, %d, %d, %d\n",
                     year, month, day, hour, minute, second);
-                this->_instrument.write(cmd);
+                this->write(cmd);
             }
 
             if (duration == dur_limits::lowest()) {
-                this->_instrument.write("INT:DUR MIN\n");
+                this->write("INT:DUR MIN\n");
             } else if (duration == (dur_limits::max)()) {
-                this->_instrument.write("INT:DUR MAX\n");
+                this->write("INT:DUR MAX\n");
             } else {
                 auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
                     "INT:DUR %d\n", duration);
-                this->_instrument.write(cmd);
+                this->write(cmd);
             }
             break;
 
         case hmc8015_integrator_mode::manual:
-            this->_instrument.write("INT:MODE MAN\n");
+            this->write("INT:MODE MAN\n");
             break;
 
         default:
@@ -354,7 +401,7 @@ PWROWG_NAMESPACE::hmc8015_instrument::log(_In_ const bool enable) {
 
     auto cmd = PWROWG_DETAIL_NAMESPACE::format_string("LOG:STAT %s\n",
         enable ? "ON" : "OFF");
-    this->_instrument.write(cmd);
+    this->write(cmd);
 
     return *this;
 }
@@ -364,7 +411,7 @@ PWROWG_NAMESPACE::hmc8015_instrument::log(_In_ const bool enable) {
  * PWROWG_NAMESPACE::hmc8015_instrument::logging
  */
 bool PWROWG_NAMESPACE::hmc8015_instrument::logging(void) const {
-    auto response = this->_instrument.query("LOG:STATE?\n");
+    auto response = this->query("LOG:STATE?\n");
     return (!response.empty() && (*response.as<char>() != '0'));
 }
 
@@ -386,30 +433,30 @@ PWROWG_NAMESPACE::hmc8015_instrument::log_behaviour(
     // Configure the logging mode.
     switch (mode) {
         case hmc8015_log_mode::count:
-            this->_instrument.write("LOG:MODE COUN\n");
+            this->write("LOG:MODE COUN\n");
             if (value == std::numeric_limits<decltype(value)>::lowest()) {
-                this->_instrument.write("LOG:COUN MIN\n");
+                this->write("LOG:COUN MIN\n");
             } else if (value == (std::numeric_limits<decltype(value)>::max)()) {
-                this->_instrument.write("LOG:COUN MAX\n");
+                this->write("LOG:COUN MAX\n");
             } else {
                 auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
                     "LOG:COUN %d\n", value);
-                this->_instrument.write(cmd);
+                this->write(cmd);
             }
 
             //this->_impl->printf("INT:MODE MAN\n");
             break;
 
         case hmc8015_log_mode::duration:
-            this->_instrument.write("LOG:MODE DUR\n");
+            this->write("LOG:MODE DUR\n");
             if (value == std::numeric_limits<decltype(value)>::lowest()) {
-                this->_instrument.write("LOG:DUR MIN\n");
+                this->write("LOG:DUR MIN\n");
             } else if (value == (std::numeric_limits<decltype(value)>::max)()) {
-                this->_instrument.write("LOG:DUR MAX\n");
+                this->write("LOG:DUR MAX\n");
             } else {
                 auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
                     "LOG:DUR %d\n", value);
-                this->_instrument.write(cmd);
+                this->write(cmd);
             }
 
             //this->_impl->printf("INT:MODE DUR\n");
@@ -424,23 +471,23 @@ PWROWG_NAMESPACE::hmc8015_instrument::log_behaviour(
 
         case hmc8015_log_mode::time_span:
             throw std::invalid_argument("time_span does not work ...");
-            this->_instrument.write("LOG:MODE SPAN\n");
+            this->write("LOG:MODE SPAN\n");
 
             {
                 auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
                     "LOG:STIM %d, %d, %d, %d, %d, %d\n",
                     year, month, day, hour, minute, second);
-                this->_instrument.write(cmd);
+                this->write(cmd);
             }
 
             if (value == std::numeric_limits<decltype(value)>::lowest()) {
-                this->_instrument.write("LOG:DUR MIN\n");
+                this->write("LOG:DUR MIN\n");
             } else if (value == (std::numeric_limits<decltype(value)>::max)()) {
-                this->_instrument.write("LOG:DUR MAX\n");
+                this->write("LOG:DUR MAX\n");
             } else {
                 auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
                     "LOG:DUR %d\n", value);
-                this->_instrument.write(cmd.c_str());
+                this->write(cmd.c_str());
             }
 
             //this->_impl->printf("INT:MODE SPAN\n");
@@ -456,7 +503,7 @@ PWROWG_NAMESPACE::hmc8015_instrument::log_behaviour(
             break;
 
         case hmc8015_log_mode::unlimited:
-            this->_instrument.write("LOG:MODE UNL\n");
+            this->write("LOG:MODE UNL\n");
             //this->_impl->printf("INT:MODE MAN\n");
             break;
 
@@ -467,17 +514,17 @@ PWROWG_NAMESPACE::hmc8015_instrument::log_behaviour(
 
     // Configure the logging interval.
     if (interval == std::numeric_limits<decltype(interval)>::lowest()) {
-        this->_instrument.write("LOG:INT MIN\n");
+        this->write("LOG:INT MIN\n");
     } else if (interval == (std::numeric_limits<decltype(interval)>::max)()) {
-        this->_instrument.write("LOG:INT MAX\n");
+        this->write("LOG:INT MAX\n");
     } else {
         auto cmd = PWROWG_DETAIL_NAMESPACE::format_string("LOG:INT %f\n",
             interval);
-        this->_instrument.write(cmd);
+        this->write(cmd);
     }
 
     // Use the first page configured in the constructor.
-    this->_instrument.write("LOG:PAGE 1\n");
+    this->write("LOG:PAGE 1\n");
 
     return *this;
 }
@@ -488,7 +535,7 @@ PWROWG_NAMESPACE::hmc8015_instrument::log_behaviour(
  */
 std::size_t PWROWG_NAMESPACE::hmc8015_instrument::log_file(
         _Out_writes_opt_z_(cnt) char *path, _In_ const std::size_t cnt) {
-    auto value = this->_instrument.query("LOG:FNAM?\n");
+    auto value = this->query("LOG:FNAM?\n");
 
     // Copy as much as the output buffer can hold.
     if (path != nullptr) {
@@ -523,15 +570,15 @@ PWROWG_NAMESPACE::hmc8015_instrument::log_file(
     if (overwrite) {
         auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
             "DATA:DEL \"%s\", %s\n", path, location);
-        this->_instrument.write(cmd);
+        this->write(cmd);
         // Clear error in case file did not exist.
-        this->_instrument.clear_status();
+        this->clear_status();
     }
 
     {
         auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
             "LOG:FNAM \"%s\", %s\n", path, location);
-        this->_instrument.write(cmd);
+        this->write(cmd);
     }
 
     return *this;
@@ -560,10 +607,10 @@ PWROWG_NAMESPACE::hmc8015_instrument::log_file(
  */
 PWROWG_NAMESPACE::hmc8015_instrument&
 PWROWG_NAMESPACE::hmc8015_instrument::reset(void) {
-    this->_instrument.reset();
+    visa_instrument::reset();
     this->configure();
-    this->_instrument.throw_on_system_error();
-    this->_instrument.clear_status();
+    this->throw_on_system_error();
+    this->clear_status();
     return *this;
 }
 
@@ -573,7 +620,7 @@ PWROWG_NAMESPACE::hmc8015_instrument::reset(void) {
  */
 PWROWG_NAMESPACE::hmc8015_instrument&
 PWROWG_NAMESPACE::hmc8015_instrument::reset_integrator(void) {
-    this->_instrument.write("INT:RES\n");
+    this->write("INT:RES\n");
     return *this;
 }
 
@@ -583,7 +630,7 @@ PWROWG_NAMESPACE::hmc8015_instrument::reset_integrator(void) {
  */
 PWROWG_NAMESPACE::hmc8015_instrument&
 PWROWG_NAMESPACE::hmc8015_instrument::start_integrator(void) {
-    this->_instrument.write("INT:STAR\n");
+    this->write("INT:STAR\n");
     return *this;
 }
 
@@ -593,7 +640,7 @@ PWROWG_NAMESPACE::hmc8015_instrument::start_integrator(void) {
  */
 PWROWG_NAMESPACE::hmc8015_instrument&
 PWROWG_NAMESPACE::hmc8015_instrument::stop_integrator(void) {
-    this->_instrument.write("INT:STOP\n");
+    this->write("INT:STOP\n");
     return *this;
 }
 
@@ -604,20 +651,8 @@ PWROWG_NAMESPACE::hmc8015_instrument::stop_integrator(void) {
 PWROWG_NAMESPACE::hmc8015_instrument&
 PWROWG_NAMESPACE::hmc8015_instrument::operator =(
         _Inout_ hmc8015_instrument&& rhs) noexcept {
-    if (this != std::addressof(rhs)) {
-        this->_instrument = std::move(rhs._instrument);
-        this->_name = std::move(rhs._name);
-    }
-
+    visa_instrument::operator =(std::move(rhs));
     return *this;
-}
-
-
-/*
- * PWROWG_NAMESPACE::hmc8015_instrument::operator bool
- */
-PWROWG_NAMESPACE::hmc8015_instrument::operator bool(void) const noexcept {
-    return static_cast<bool>(this->_instrument);
 }
 
 //
@@ -650,26 +685,26 @@ void PWROWG_NAMESPACE::hmc8015_instrument::configure(void) {
 
     // Configure the display to show always the same stuff.
     // Default: URMS,IRMS,P,FPLL,URAN,IRAN,S,Q,LAMB,PHI
-    this->_instrument.write("VIEW:NUM:SHOW 1\n");
-    this->_instrument.write("VIEW:NUM:PAGE1:SIZE 10\n");
-    this->_instrument.write("VIEW:NUM:PAGE1:CELL1:FUNC URMS\n");
-    this->_instrument.write("VIEW:NUM:PAGE1:CELL2:FUNC IRMS\n");
-    this->_instrument.write("VIEW:NUM:PAGE1:CELL3:FUNC URAN\n");
-    this->_instrument.write("VIEW:NUM:PAGE1:CELL4:FUNC IRAN\n");
+    this->write("VIEW:NUM:SHOW 1\n");
+    this->write("VIEW:NUM:PAGE1:SIZE 10\n");
+    this->write("VIEW:NUM:PAGE1:CELL1:FUNC URMS\n");
+    this->write("VIEW:NUM:PAGE1:CELL2:FUNC IRMS\n");
+    this->write("VIEW:NUM:PAGE1:CELL3:FUNC URAN\n");
+    this->write("VIEW:NUM:PAGE1:CELL4:FUNC IRAN\n");
     //this->_impl->printf("VIEW:NUM:PAGE1:CELL3:FUNC UAVG\n");
     //this->_impl->printf("VIEW:NUM:PAGE1:CELL4:FUNC IAVG\n");
-    this->_instrument.write("VIEW:NUM:PAGE1:CELL5:FUNC P\n");
-    this->_instrument.write("VIEW:NUM:PAGE1:CELL6:FUNC S\n");
-    this->_instrument.write("VIEW:NUM:PAGE1:CELL7:FUNC Q\n");
-    this->_instrument.write("VIEW:NUM:PAGE1:CELL8:FUNC TIME\n");
-    this->_instrument.write("VIEW:NUM:PAGE1:CELL9:FUNC WH\n");
-    this->_instrument.write("VIEW:NUM:PAGE1:CELL10:FUNC AH\n");
+    this->write("VIEW:NUM:PAGE1:CELL5:FUNC P\n");
+    this->write("VIEW:NUM:PAGE1:CELL6:FUNC S\n");
+    this->write("VIEW:NUM:PAGE1:CELL7:FUNC Q\n");
+    this->write("VIEW:NUM:PAGE1:CELL8:FUNC TIME\n");
+    this->write("VIEW:NUM:PAGE1:CELL9:FUNC WH\n");
+    this->write("VIEW:NUM:PAGE1:CELL10:FUNC AH\n");
 
     // Configure the stuff we want to measure.
     // Default: URMS,IRMS,P,FPLL,URAN,IRAN,S,Q,LAMB,PHI
     this->default_functions();
 
-    this->_instrument.write("CHAN1:ACQ:MODE AUTO\n");
+    this->write("CHAN1:ACQ:MODE AUTO\n");
 }
 
 
@@ -679,29 +714,22 @@ void PWROWG_NAMESPACE::hmc8015_instrument::configure(void) {
 void PWROWG_NAMESPACE::hmc8015_instrument::initialise(void) {
     assert(*this);
 
-    // Query the instrument name for use a sensor name.
-    {
-        auto l = this->_instrument.identify(static_cast<wchar_t *>(nullptr), 0);
-        this->_name.reserve(l * sizeof(wchar_t));
-        this->_instrument.identify(this->_name.as<wchar_t>(), l);
-    }
-
     // Reset the device to default state.
-    this->_instrument.reset();
+    this->reset();
 
     // Configure the device as in the R&S instrument driver.
-    this->_instrument.attribute(VI_ATTR_TMO_VALUE, 5000);
-    this->_instrument.buffer((VI_READ_BUF | VI_WRITE_BUF), 4096);
-    this->_instrument.attribute(VI_ATTR_WR_BUF_OPER_MODE, VI_FLUSH_ON_ACCESS);
-    this->_instrument.attribute(VI_ATTR_RD_BUF_OPER_MODE, VI_FLUSH_ON_ACCESS);
+    this->attribute(VI_ATTR_TMO_VALUE, 5000);
+    this->buffer((VI_READ_BUF | VI_WRITE_BUF), 4096);
+    this->attribute(VI_ATTR_WR_BUF_OPER_MODE, VI_FLUSH_ON_ACCESS);
+    this->attribute(VI_ATTR_RD_BUF_OPER_MODE, VI_FLUSH_ON_ACCESS);
 
     // Lock the system to indicate that it is controlled by the software. As
     // locking the system is not critical, do not check for system errors here.
-    this->_instrument.write("SYST:REM\n");
+    this->write("SYST:REM\n");
 
     // Clear any error that might have been caused by our setup. We do not want
     // to abort just because the display does not look as expected.
-    this->_instrument.clear_status();
+    this->clear_status();
 }
 
 
@@ -718,26 +746,26 @@ void PWROWG_NAMESPACE::hmc8015_instrument::set_range(
         case hmc8015_instrument_range::automatically: {
             auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
                 "CHAN%d:ACQ:%s:RANG:AUTO ON\n", channel, quantity);
-            this->_instrument.write(cmd);
+            this->write(cmd);
             } break;
 
         case hmc8015_instrument_range::maximum: {
             auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
                 "CHAN%d:ACQ:%s:RANG MAX\n", channel, quantity);
-            this->_instrument.write(cmd);
+            this->write(cmd);
             } break;
 
         case hmc8015_instrument_range::minimum: {
             auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
                 "CHAN%d:ACQ:%s:RANG MIN\n", channel, quantity);
-            this->_instrument.write(cmd);
+            this->write(cmd);
             } break;
 
         case hmc8015_instrument_range::explicitly:
         default: {
             auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
                 "CHAN%d:ACQ:%s:RANG %f\n", channel, quantity, value);
-            this->_instrument.write(cmd);
+            this->write(cmd);
             } break;
     }
 }

@@ -11,7 +11,9 @@
  * PWROWG_NAMESPACE::type_erased_storage::type_erased_storage
  */
 PWROWG_NAMESPACE::type_erased_storage::type_erased_storage(void) noexcept
-    : _cp(nullptr), _cp_ctor(nullptr), _dtor(nullptr) { }
+    : _cp(nullptr), _data(nullptr), _dtor(nullptr) {
+    assert(!*this);
+}
 
 
 /*
@@ -19,14 +21,11 @@ PWROWG_NAMESPACE::type_erased_storage::type_erased_storage(void) noexcept
  */
 PWROWG_NAMESPACE::type_erased_storage::type_erased_storage(
         _In_ const type_erased_storage& rhs)
-        : _cp(rhs._cp), _cp_ctor(rhs._cp_ctor), _dtor(rhs._dtor) {
-    if (this->_cp_ctor != nullptr) {
-        this->_cp_ctor(this->_data, rhs._data);
+        : _cp(rhs._cp), _data(nullptr), _dtor(rhs._dtor) {
+    if (this->_cp != nullptr) {
+        this->_cp(this->_data, rhs._data);
 
-    } else if (!rhs._data.empty()) {
-        this->_cp = nullptr;
-        this->_cp_ctor = nullptr;
-        this->_dtor = nullptr;
+    } else if (rhs._data != nullptr) {
         throw std::logic_error("The object contained in a type-erased storage "
             "block is not copyable.");
     }
@@ -48,9 +47,10 @@ void PWROWG_NAMESPACE::type_erased_storage::reset(void) noexcept {
     if (this->_dtor != nullptr) {
         this->_dtor(this->_data);
         this->_cp = nullptr;
-        this->_cp_ctor = nullptr;
+        this->_data = nullptr;
         this->_dtor = nullptr;
     }
+    assert(!*this);
 }
 
 
@@ -69,19 +69,37 @@ PWROWG_NAMESPACE::type_erased_storage::operator =(
         // Copy the operations next, which will ensure that we only copy stuff
         // that is copyable.
         this->_cp = rhs._cp;
-        this->_cp_ctor = rhs._cp_ctor;
         this->_dtor = rhs._dtor;
 
         if (this->_cp != nullptr) {
             this->_cp(this->_data, rhs._data);
 
-        } else if (!rhs._data.empty()) {
+        } else if (rhs._data != nullptr) {
             this->_cp = nullptr;
-            this->_cp_ctor = nullptr;
             this->_dtor = nullptr;
             throw std::logic_error("The object contained in a type-erased "
                 "storage block is not copyable.");
         }
+    }
+
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::type_erased_storage::operator =
+ */
+PWROWG_NAMESPACE::type_erased_storage &
+PWROWG_NAMESPACE::type_erased_storage::operator =(
+        _Inout_ type_erased_storage&& rhs) noexcept {
+    if (this != std::addressof(rhs)) {
+        this->reset();
+        this->_cp = rhs._cp;
+        rhs._cp = nullptr;
+        this->_data = rhs._data;
+        rhs._data = nullptr;
+        this->_dtor = rhs._dtor;
+        rhs._dtor = nullptr;
     }
 
     return *this;

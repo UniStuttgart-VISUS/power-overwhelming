@@ -44,6 +44,63 @@ public:
             to_string((hmc8015_function)UINT_MAX);
         }, L"Illegal function", LINE_INFO());
     }
+
+        TEST_METHOD(test_parse_hmcfunction) {
+        Assert::AreEqual(int(hmc8015_function::empty), int(parse_hmc8015_function(L"EMPT")), L"empty", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::active_power), int(parse_hmc8015_function(L"P")), L"active_power", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::apparent_power), int(parse_hmc8015_function(L"S")), L"apparent_power", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::reactive_power), int(parse_hmc8015_function(L"Q")), L"reactive_power", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::power_factor), int(parse_hmc8015_function(L"LAMB")), L"power_factor", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::phase_difference), int(parse_hmc8015_function(L"PHI")), L"phase_difference", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::voltage_frequency), int(parse_hmc8015_function(L"FU")), L"voltage_frequency", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::current_frequency), int(parse_hmc8015_function(L"FI")), L"current_frequency", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::rms_voltage), int(parse_hmc8015_function(L"URMS")), L"rms_voltage", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::average_voltage), int(parse_hmc8015_function(L"UAVG")), L"average_voltage", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::rms_current), int(parse_hmc8015_function(L"IRMS")), L"rms_current", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::current_average), int(parse_hmc8015_function(L"IAVG")), L"current_average", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::voltage_distortion), int(parse_hmc8015_function(L"UTHD")), L"voltage_distortion", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::current_distortion), int(parse_hmc8015_function(L"ITHD")), L"current_distortion", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::phase_locked_loop_frequency), int(parse_hmc8015_function(L"FPLL")), L"phase_locked_loop_frequency", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::integration_time), int(parse_hmc8015_function(L"TIME")), L"integration_time", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::watt_hour), int(parse_hmc8015_function(L"WH")), L"watt_hour", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::positive_watt_hour), int(parse_hmc8015_function(L"WHP")), L"positive_watt_hour", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::negative_watt_hour), int(parse_hmc8015_function(L"WHM")), L"negative_watt_hour", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::ampere_hour),int(parse_hmc8015_function(L"AH")), L"ampere_hour",  LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::positive_ampere_hour), int(parse_hmc8015_function(L"AHP")), L"positive_ampere_hour", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::negative_ampere_hour), int(parse_hmc8015_function(L"AHM")), L"negative_ampere_hour", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::voltage_range), int(parse_hmc8015_function(L"URAN")), L"voltage_range", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::current_range), int(parse_hmc8015_function(L"IRAN")), L"current_range", LINE_INFO());
+        Assert::ExpectException<std::invalid_argument>([]() {
+            parse_hmc8015_function(L"horst");
+        }, L"Illegal function", LINE_INFO());
+    }
+
+    TEST_METHOD(test_config) {
+        hmc8015_configuration config;
+        Assert::IsNull(config.functions(), L"No functions", LINE_INFO());
+        Assert::AreEqual(std::size_t(0), config.count_functions(), L"No functions", LINE_INFO());
+
+        config.functions(hmc8015_function::active_power);
+        Assert::IsNotNull(config.functions(), L"Have functions", LINE_INFO());
+        Assert::AreEqual(std::size_t(1), config.count_functions(), L"Function added", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::active_power), int(*config.functions()), L"Correct function", LINE_INFO());
+
+        config.functions(hmc8015_function::apparent_power);
+        Assert::AreEqual(std::size_t(2), config.count_functions(), L"Function added", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::active_power), int(*config.functions()), L"Correct function copied", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::apparent_power), int(*(config.functions() + 1)), L"Correct function added", LINE_INFO());
+
+        std::array<hmc8015_function, 3> functions{
+            hmc8015_function::average_voltage,
+            hmc8015_function::current_average,
+            hmc8015_function::integration_time
+        };
+        config.functions(functions.data(), functions.size());
+        Assert::AreEqual(std::size_t(3), config.count_functions(), L"Functions replaced", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::average_voltage), int(*config.functions()), L"Correct function copied", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::current_average), int(*(config.functions() + 1)), L"Correct function added", LINE_INFO());
+        Assert::AreEqual(int(hmc8015_function::integration_time), int(*(config.functions() + 2)), L"Correct function added", LINE_INFO());
+    }
 };
 
 PWROWG_TEST_NAMESPACE_END

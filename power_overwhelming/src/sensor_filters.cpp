@@ -6,7 +6,19 @@
 
 #include "visus/pwrowg/sensor_filters.h"
 
+#include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/hmc8015_instrument.h"
+
 #include "string_functions.h"
+
+
+/*
+ * PWROWG_NAMESPACE::is_adl_sensor
+ */
+bool PWROWG_NAMESPACE::is_adl_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    return detail::starts_with(desc.path(), L"ADL/");
+}
 
 
 /*
@@ -19,11 +31,29 @@ bool PWROWG_NAMESPACE::is_current_sensor(
 
 
 /*
+ * PWROWG_NAMESPACE::is_hmc8015_sensor
+ */
+bool PWROWG_NAMESPACE::is_hmc8015_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    auto product = convert_string<wchar_t>(hmc8015_instrument::product_id);
+    auto vendor = convert_string<wchar_t>(visa_instrument::rohde_und_schwarz);
+
+    product.insert(0, L"::");
+    product.append(L"::");
+    vendor.insert(0, L"::");
+    vendor.append(L"::");
+
+    return detail::contains(desc.path(), product.c_str(), true)
+        && detail::contains(desc.path(), vendor.c_str(), true);
+}
+
+
+/*
  * PWROWG_NAMESPACE::is_nvml_sensor
  */
 bool PWROWG_NAMESPACE::is_nvml_sensor(
         _In_ const sensor_description& desc) noexcept {
-    return detail::starts_with(desc.name(), L"NVML/");
+    return detail::starts_with(desc.id(), L"NVML/");
 }
 
 
@@ -41,7 +71,7 @@ bool PWROWG_NAMESPACE::is_power_sensor(
  */
 bool PWROWG_NAMESPACE::is_tinkerforge_sensor(
         _In_ const sensor_description& desc) noexcept {
-    return detail::starts_with(desc.name(), L"Tinkerforge/");
+    return detail::starts_with(desc.id(), L"Tinkerforge/");
 }
 
 

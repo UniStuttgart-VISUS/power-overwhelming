@@ -491,6 +491,22 @@ public:
         }
     }
 
+    TEST_METHOD(test_contains) {
+        typedef wchar_t char_type;
+
+        {
+            char_type str[] = L"bla bla bla, mr freeman";
+            Assert::IsTrue(detail::contains(str, nullptr, true), L"contains nullptr", LINE_INFO());
+            Assert::IsTrue(detail::contains(str, nullptr, false), L"contains nullptr", LINE_INFO());
+            Assert::IsTrue(detail::contains(str, L"bla", false), L"contains bla", LINE_INFO());
+            Assert::IsFalse(detail::contains(str, L"BLA", false), L"contains BLA", LINE_INFO());
+            Assert::IsTrue(detail::contains(str, L"BLA", true), L"contains BLA", LINE_INFO());
+        }
+
+        Assert::IsTrue(detail::contains(nullptr, nullptr, true), L"contains nullptr", LINE_INFO());
+        Assert::IsFalse(detail::contains(nullptr, L"bla", true), L"contains bla", LINE_INFO());
+    }
+
 };
 
 PWROWG_TEST_NAMESPACE_END

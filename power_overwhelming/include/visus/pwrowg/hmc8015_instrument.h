@@ -28,7 +28,7 @@ PWROWG_NAMESPACE_BEGIN
 /// <summary>
 /// Allows for controlling a Rohde &amp; Schwarz HMC8015 power analyser.
 /// </summary>
-class POWER_OVERWHELMING_API hmc8015_instrument final {
+class POWER_OVERWHELMING_API hmc8015_instrument final : public visa_instrument {
 
 public:
 
@@ -162,48 +162,48 @@ public:
         _In_ const bool use_usb = false) const;
 
     /// <summary>
-    /// Deletes the specified file from the instrument.
+    /// Reads a file from the device into memory.
     /// </summary>
     /// <remarks>
-    /// This method can be called if the library has been compiled without
-    /// support for VISA. It has no effect in this case.
+    /// The specified file is downloaded in binary mode, ie if the file
+    /// contained text, the data received is not necessarily
+    /// null-terminated. If you expect a text file, copy the whole range of
+    /// the <see cref="blob" /> into a string object.
     /// </remarks>
-    /// <param name="name">The name of the file to be deleted.</param>
-    /// <param name="use_usb">If <c>true</c>, the file is on a USB thumb
-    /// drive attached to the device rather than into the internal memory
-    /// of the device. This parameter defaults to <c>false</c>, ie to the
-    ///  internal memory.</param>
-    /// <returns><c>*this</c>.</returns>
+    /// <param name="name">The name of the file to retrieve. This must include
+    /// the suffix &quot;,INT&quot; or &quot;,EXT&quot; to indicate whether the
+    /// file is in internal memory or on a USB thumb drive.</param>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="std::invalid_argument">If any of the parameters
+    /// <exception cref="std::invalid_argument">If <paramref name="name" />
     /// is <c>nullptr</c>.</exception>
     /// <exception cref="visa_exception">If any of the API calls to the
     /// instrument failed.</exception>
-    hmc8015_instrument& delete_file_from_instrument(_In_z_ const wchar_t *name,
-        _In_ const bool use_usb = false);
+    /// <exception cref="std::logic_error">If the method is called while
+    /// the library was compiled without support for VISA.</exception>
+    blob copy_file_from_instrument_or_usb(_In_z_ const wchar_t *name) const;
 
     /// <summary>
-    /// Deletes the specified file from the instrument.
+    /// Reads a file from the device into memory.
     /// </summary>
     /// <remarks>
-    /// This method can be called if the library has been compiled without
-    /// support for VISA. It has no effect in this case.
+    /// The specified file is downloaded in binary mode, ie if the file
+    /// contained text, the data received is not necessarily
+    /// null-terminated. If you expect a text file, copy the whole range of
+    /// the <see cref="blob" /> into a string object.
     /// </remarks>
-    /// <param name="name">The name of the file to be deleted.</param>
-    /// <param name="use_usb">If <c>true</c>, the file is on a USB thumb
-    /// drive attached to the device rather than into the internal memory
-    /// of the device. This parameter defaults to <c>false</c>, ie to the
-    ///  internal memory.</param>
-    /// <returns><c>*this</c>.</returns>
+    /// <param name="name">The name of the file to retrieve. This must include
+    /// the suffix &quot;,INT&quot; or &quot;,EXT&quot; to indicate whether the
+    /// file is in internal memory or on a USB thumb drive.</param>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="std::invalid_argument">If any of the parameters
+    /// <exception cref="std::invalid_argument">If <paramref name="name" />
     /// is <c>nullptr</c>.</exception>
     /// <exception cref="visa_exception">If any of the API calls to the
     /// instrument failed.</exception>
-    hmc8015_instrument& delete_file_from_instrument(_In_z_ const char *name,
-        _In_ const bool use_usb = false);
+    /// <exception cref="std::logic_error">If the method is called while
+    /// the library was compiled without support for VISA.</exception>
+    blob copy_file_from_instrument_or_usb(_In_z_ const char *name) const;
 
     /// <summary>
     /// Sets the current range.
@@ -312,6 +312,90 @@ public:
     hmc8015_instrument& default_functions(void);
 
     /// <summary>
+    /// Deletes the specified file from the instrument.
+    /// </summary>
+    /// <remarks>
+    /// This method can be called if the library has been compiled without
+    /// support for VISA. It has no effect in this case.
+    /// </remarks>
+    /// <param name="name">The name of the file to be deleted.</param>
+    /// <param name="use_usb">If <c>true</c>, the file is on a USB thumb
+    /// drive attached to the device rather than into the internal memory
+    /// of the device. This parameter defaults to <c>false</c>, ie to the
+    ///  internal memory.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::runtime_error">If the method is called on an
+    /// object that has been disposed by moving it.</exception>
+    /// <exception cref="std::invalid_argument">If any of the parameters
+    /// is <c>nullptr</c>.</exception>
+    /// <exception cref="visa_exception">If any of the API calls to the
+    /// instrument failed.</exception>
+    hmc8015_instrument& delete_file_from_instrument(_In_z_ const wchar_t *name,
+        _In_ const bool use_usb = false);
+
+    /// <summary>
+    /// Deletes the specified file from the instrument.
+    /// </summary>
+    /// <remarks>
+    /// This method can be called if the library has been compiled without
+    /// support for VISA. It has no effect in this case.
+    /// </remarks>
+    /// <param name="name">The name of the file to be deleted.</param>
+    /// <param name="use_usb">If <c>true</c>, the file is on a USB thumb
+    /// drive attached to the device rather than into the internal memory
+    /// of the device. This parameter defaults to <c>false</c>, ie to the
+    ///  internal memory.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::runtime_error">If the method is called on an
+    /// object that has been disposed by moving it.</exception>
+    /// <exception cref="std::invalid_argument">If any of the parameters
+    /// is <c>nullptr</c>.</exception>
+    /// <exception cref="visa_exception">If any of the API calls to the
+    /// instrument failed.</exception>
+    hmc8015_instrument& delete_file_from_instrument(_In_z_ const char *name,
+        _In_ const bool use_usb = false);
+
+    /// <summary>
+    /// Deletes the specified file from the instrument or USB thumb drive.
+    /// </summary>
+    /// <remarks>
+    /// This method can be called if the library has been compiled without
+    /// support for VISA. It has no effect in this case.
+    /// </remarks>
+    /// <param name="name">The name of the file to be deleted. This must include
+    /// the suffix &quot;,INT&quot; or &quot;,EXT&quot; to indicate whether the
+    /// file is in internal memory or on a USB thumb drive.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::runtime_error">If the method is called on an
+    /// object that has been disposed by moving it.</exception>
+    /// <exception cref="std::invalid_argument">If any of the parameters
+    /// is <c>nullptr</c>.</exception>
+    /// <exception cref="visa_exception">If any of the API calls to the
+    /// instrument failed.</exception>
+    hmc8015_instrument& delete_file_from_instrument_or_usb(
+        _In_z_ const wchar_t *name);
+
+    /// <summary>
+    /// Deletes the specified file from the instrument or USB thumb drive.
+    /// </summary>
+    /// <remarks>
+    /// This method can be called if the library has been compiled without
+    /// support for VISA. It has no effect in this case.
+    /// </remarks>
+    /// <param name="name">The name of the file to be deleted. This must include
+    /// the suffix &quot;,INT&quot; or &quot;,EXT&quot; to indicate whether the
+    /// file is in internal memory or on a USB thumb drive.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::runtime_error">If the method is called on an
+    /// object that has been disposed by moving it.</exception>
+    /// <exception cref="std::invalid_argument">If any of the parameters
+    /// is <c>nullptr</c>.</exception>
+    /// <exception cref="visa_exception">If any of the API calls to the
+    /// instrument failed.</exception>
+    hmc8015_instrument& delete_file_from_instrument_or_usb(
+        _In_z_ const char *name);
+
+    /// <summary>
     /// Displays the given text or clears the display.
     /// </summary>
     /// <param name="text">The text to be displayed or <c>nullptr</c> to
@@ -388,98 +472,6 @@ public:
         _In_ const std::int32_t hour = 0,
         _In_ const std::int32_t minute = 0,
         _In_ const std::int32_t second = 0);
-
-    /// <summary>
-    /// Gets the configured name of the instrument.
-    /// </summary>
-    /// <param name="dst">A buffer that is able to hold at least
-    /// <paramref name="cnt" /> elements. It is safe to pass <c>nullptr</c>,
-    /// in which case the method will only measure the required buffer size.
-    /// </param>
-    /// <param name="cnt">The size of <paramref name="dst" /> in number of
-    /// characters. The name of the R&S instruments we use cannot exceed 20
-    /// ASCII characters, so a buffer of 21 characters should always
-    /// suffice.</param>
-    /// <returns>The required buffer size for the name, including the
-    /// terminating zero.</returns>
-    /// <exception cref="std::runtime_error">If the method is called on an
-    /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
-    /// instrument failed.</exception>
-    inline std::size_t instrument_name(_Out_writes_(cnt) wchar_t *dst,
-            _In_ const std::size_t cnt) const {
-        return this->_instrument.name(dst, cnt);
-    }
-
-    /// <summary>
-    /// Gets the configured name of the instrument.
-    /// </summary>
-    /// <param name="dst">A buffer that is able to hold at least
-    /// <paramref name="cnt" /> elements. It is safe to pass <c>nullptr</c>,
-    /// in which case the method will only measure the required buffer size.
-    /// </param>
-    /// <param name="cnt">The size of <paramref name="dst" /> in number of
-    /// characters. The name of the R&S instruments we use cannot exceed 20
-    /// ASCII characters, so a buffer of 21 characters should always
-    /// suffice.</param>
-    /// <returns>The required buffer size for the name, including the
-    /// terminating zero.</returns>
-    /// <exception cref="std::runtime_error">If the method is called on an
-    /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
-    /// instrument failed.</exception>
-    inline std::size_t instrument_name(_Out_writes_(cnt) char *dst,
-            _In_ const std::size_t cnt) const {
-        return this->_instrument.name(dst, cnt);
-    }
-
-    /// <summary>
-    /// Measures the size of the buffer to hold the name of the instrument.
-    /// </summary>
-    /// <param name="dst"><c>nullptr</c>.</param>
-    /// <param name="cnt">This parameter is ignored.</param>
-    /// <returns>The required buffer size for the name, including the
-    /// terminating zero.</returns>
-    /// <exception cref="std::runtime_error">If the method is called on an
-    /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
-    /// instrument failed.</exception>
-    inline std::size_t instrument_name(_In_opt_ const std::nullptr_t dst,
-            _In_ const std::size_t cnt) const {
-        return this->_instrument.name(nullptr, 0);
-    }
-
-    /// <summary>
-    /// Sets the user-defined name of the instrument.
-    /// </summary>
-    /// <param name="name">The new name of the instrument.</param>
-    /// <returns><c>*this</c>.</returns>
-    /// <exception cref="std::invalid_argument">If <paramref name="name" />
-    /// is <c>nullptr</c>.</exception>
-    /// <exception cref="std::runtime_error">If the method is called on an
-    /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
-    /// instrument failed.</exception>
-    hmc8015_instrument& instrument_name(_In_z_ const wchar_t *name) {
-        this->_instrument.name(name);
-        return *this;
-    }
-
-    /// <summary>
-    /// Sets the name of the instrument.
-    /// </summary>
-    /// <param name="name">The new name of the instrument.</param>
-    /// <returns><c>*this</c>.</returns>
-    /// <exception cref="std::invalid_argument">If <paramref name="name" />
-    /// is <c>nullptr</c>.</exception>
-    /// <exception cref="std::runtime_error">If the method is called on an
-    /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
-    /// instrument failed.</exception>
-    hmc8015_instrument& instrument_name(_In_z_ const char *name) {
-        this->_instrument.name(name);
-        return *this;
-    }
 
     /// <summary>
     /// Gets whether logging is enabled or not.
@@ -577,6 +569,22 @@ public:
         _In_ const std::size_t cnt);
 
     /// <summary>
+    /// Measures the size of the path to the log file.
+    /// </summary>
+    /// <param name="path">Must be <c>nullptr</c>.</param>
+    /// <param name="cnt">The parameter is ignored.</param>
+    /// <returns>The actual length of the path, including the terminating
+    /// null character.</returns>
+    /// <exception cref="std::runtime_error">If the method is called on an
+    /// object that has been disposed by moving it.</exception>
+    /// <exception cref="visa_exception">If the VISA command was not
+    /// processed successfully.</exception>
+    inline std::size_t log_file(_In_opt_ std::nullptr_t path,
+            _In_ const std::size_t cnt) {
+        return this->log_file(static_cast<char *>(nullptr), 0);
+    }
+
+    /// <summary>
     /// Sets the path to the log file.
     /// </summary>
     /// <param name="path">The path to the log file, usually just the
@@ -615,28 +623,6 @@ public:
     hmc8015_instrument& log_file(_In_z_ const wchar_t *path,
         _In_ const bool overwrite = false,
         _In_ const bool use_usb = false);
-
-    /// <summary>
-    /// Gets the name of the sensor.
-    /// </summary>
-    /// <remarks>
-    /// It is safe to call this method on a disposed object, in which case
-    /// the name will be <c>nullptr</c>.
-    /// </remarks>
-    /// <returns>The implementation-defined, human-readable name of the
-    /// sensor.</returns>
-    inline _Ret_maybenull_z_ const wchar_t *name(void) const noexcept {
-        return this->_name.as<wchar_t>();
-    }
-
-    /// <summary>
-    /// Gets the VISA path of the instrument.
-    /// </summary>
-    /// <returns>The path of the instrument.</returns>
-    /// <returns>The path of the instrument.</returns>
-    inline _Ret_maybenull_z_ const char *path(void) const noexcept {
-        return this->_instrument.path();
-    }
 
     /// <summary>
     /// Resets the instrument to its default state.
@@ -680,22 +666,6 @@ public:
     hmc8015_instrument& stop_integrator(void);
 
     /// <summary>
-    /// Synchonises the date and time on the instrument with the system
-    /// clock of the computer calling this API.
-    /// </summary>
-    /// <param name="utc">If <c>true</c>, UTC will be used, the local time
-    /// otherwise. This parameter defaults to <c>false</c>.</param>
-    /// <returns><c>*this</c>.</returns>
-    /// <exception cref="std::runtime_error">If the method is called on an
-    /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If the VISA command was not
-    /// processed successfully.</exception>
-    inline hmc8015_instrument& synchronise_clock(_In_ const bool utc = false) {
-        this->_instrument.synchronise_clock(utc);
-        return *this;
-    }
-
-    /// <summary>
     /// Sets the voltage range.
     /// </summary>
     /// <remarks>
@@ -732,17 +702,6 @@ public:
     /// <returns><c>*this</c></returns>
     hmc8015_instrument& operator =(_Inout_ hmc8015_instrument&& rhs) noexcept;
 
-    /// <summary>
-    /// Determines whether the sensor is valid.
-    /// </summary>
-    /// <remarks>
-    /// A sensor is considered valid until it has been disposed by a move
-    /// operation.
-    /// </remarks>
-    /// <returns><c>true</c> if the sensor is valid, <c>false</c>
-    /// otherwise.</returns>
-    operator bool(void) const noexcept;
-
 private:
 
     void configure(void);
@@ -753,9 +712,6 @@ private:
         _In_z_ const char *quantity,
         _In_ const hmc8015_instrument_range range,
         _In_ const float value);
-
-    visa_instrument _instrument;
-    blob _name;
 };
 
 PWROWG_NAMESPACE_END

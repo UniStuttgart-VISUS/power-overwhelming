@@ -90,6 +90,11 @@ public:
         int _payload;
     };
 
+    TEST_METHOD(test_ctor) {
+        type_erased_storage tes;
+        Assert::IsFalse(tes, L"Initialised empty", LINE_INFO());
+    }
+
     TEST_METHOD(test_cp_ctor) {
         std::size_t cp = 0;
         std::size_t cp_ctor = 0;

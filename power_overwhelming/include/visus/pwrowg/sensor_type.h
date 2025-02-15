@@ -79,6 +79,11 @@ enum class sensor_type : std::uint32_t {
     throttling = 0x00100000,
 
     /// <summary>
+    /// The sensor measures energy in Joules or Watt hours.
+    /// </summary>
+    energy = 0x00200000,
+
+    /// <summary>
     /// The sensor is a software sensor which obtains its data from the driver
     /// or operating system.
     /// </summary>

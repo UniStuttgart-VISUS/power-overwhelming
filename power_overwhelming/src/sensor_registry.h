@@ -24,6 +24,7 @@
 #include "adl_sensor.h"
 #include "detect_sample.h"
 #include "emi_sensor.h"
+#include "hmc8015_sensor.h"
 #include "msr_sensor.h"
 #include "nvml_sensor.h"
 #include "sensor_array_configuration_impl.h"
@@ -294,7 +295,7 @@ typedef basic_sensor_registry<
 
     //adl_sensor,
     //emi_sensor
-    //hmc8015_sensor,
+    hmc8015_sensor,
     //msr_sensor,
     nvml_sensor,
     //rtx_sensor,

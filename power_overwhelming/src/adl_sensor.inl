@@ -6,26 +6,16 @@
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::adl_sensor::descriptions
- */
-template<class TOutput>
-void PWROWG_DETAIL_NAMESPACE::adl_sensor::descriptions(_In_ TOutput oit,
-        _In_ const configuration_type& config) {
-}
-
-
-/*
  * PWROWG_DETAIL_NAMESPACE::adl_sensor::from_descriptions
  */
-template<class TOutput, class TInput>
+template<class TInput>
 TInput PWROWG_DETAIL_NAMESPACE::adl_sensor::from_descriptions(
-        _In_ TOutput oit,
+        _In_ list_type& dst,
         _In_ std::size_t index,
         _In_ const TInput begin,
-        _In_ const TInput end) {
-    auto retval = move_front_if(begin, end, [](const sensor_description& d) {
-        return starts_with(d.name(), L"ADL/");
-    });
+        _In_ const TInput end,
+        _In_ const configuration_type& config) {
+    auto retval = move_front_if(begin, end, is_nvml_sensor);
 
     for (auto it = begin; it != retval; ++it) {
         //*oit++ = std::make_shared<adl_sensor>(

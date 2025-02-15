@@ -14,6 +14,16 @@
 PWROWG_NAMESPACE_BEGIN
 
 /// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes an
+/// ADL-based sensor.
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><c>true</c> if the sensor is ADL-based, <c>false</c> otherwise.
+/// </returns>
+extern POWER_OVERWHELMING_API bool is_adl_sensor(
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
 /// Answer whether the given <see cref="sensor_description" /> describes a
 /// sensor measuring current.
 /// </summary>
@@ -23,6 +33,15 @@ PWROWG_NAMESPACE_BEGIN
 extern POWER_OVERWHELMING_API bool is_current_sensor(
     _In_ const sensor_description& desc) noexcept;
 
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes a
+/// Rohde &amp; Schwarz HMC 8015 power analyser.
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><c>true</c> if the sensor is a HMC 8015 sensor, <c>false</c>
+/// otherwise.</returns>
+extern POWER_OVERWHELMING_API bool is_hmc8015_sensor(
+    _In_ const sensor_description &desc) noexcept;
 
 /// <summary>
 /// Answer whether the given <see cref="sensor_description" /> describes an

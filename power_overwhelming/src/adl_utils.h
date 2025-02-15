@@ -24,7 +24,8 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// </summary>
 /// <param name="scope">The scope holding the ADL function pointers.</param>
 /// <returns>The adapters found on the system.</returns>
-extern std::vector<AdapterInfo> get_adapters(_In_ adl_scope& scope);
+extern std::vector<AdapterInfo> PWROWG_TEST_API get_adapters(
+    _In_ adl_scope& scope);
 
 /// <summary>
 /// Gets all ADL adapters matching the given <paramref name="predicate" />

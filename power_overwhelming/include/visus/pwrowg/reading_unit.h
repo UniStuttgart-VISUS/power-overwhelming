@@ -37,7 +37,27 @@ enum class reading_unit {
     /// <summary>
     /// Watt, the unit for power.
     /// </summary>
-    watt
+    watt,
+
+    /// <summary>
+    /// Joule, the unit for energy.
+    /// </summary>
+    joule,
+
+    /// <summary>
+    /// Watt-hours, an alternative non-SI unit for energy.
+    /// </summary>
+    watt_hour,
+
+    /// <summary>
+    /// Coulomb, the unit for electric charge.
+    /// </summary>
+    coulomb,
+
+    /// <summary>
+    /// Ampere-hours, an alternative non-SI unit for electric charge.
+    /// </summary>
+    ampere_hour
 };
 
 PWROWG_NAMESPACE_END

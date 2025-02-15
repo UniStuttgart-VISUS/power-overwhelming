@@ -199,16 +199,14 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::specialise(
         source = "voltage";
     }
 
-    return builder.with_id("%s:%hu/%s/%s",
+    return builder.with_id("Tinkerforge/%s:%hu/%s/%s",
             end_point.name(),
             end_point.port(),
             bricklet.uid().c_str(),
             source)
         .with_type(type | sensor_type::hardware)
         .with_path(bricklet.uid())
-        .with_name("Tinkerforge/%s:%hu/%s/%s",
-            end_point.name(),
-            end_point.port(),
+        .with_name("Tinkerforge Voltage/Current Bricklet 2.0 %s (%s)",
             bricklet.uid().c_str(),
             source)
         .measured_in(reading_unit::ampere)

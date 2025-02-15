@@ -13,6 +13,7 @@
 
 #include "visus/pwrowg/adl_configuration.h"
 #include "visus/pwrowg/sensor_description.h"
+#include "visus/pwrowg/sensor_filters.h"
 
 #include "adl_scope.h"
 #include "adl_sensor_source.h"
@@ -48,14 +49,16 @@ public:
     /// Create descriptions for all supported ADL sensors in the system.
     /// </summary>
     /// <remarks>
-    /// <para>It is safe to call this method on systems without AMD GPU.
+    /// <para>It is safe to call this method on systems without ADL GPU.
     /// No descriptions are returned in this case.</para>
     /// </remarks>
     /// <param name="config">The global sensor configuration which might affect
     /// which sensors can be enumerated.</param>
-    /// <returns>A list of sensor descriptors that can be used to instantiate a
-    /// specific sensor.</returns>
-    template<class TOutput> static void descriptions(_In_ TOutput oit,
+    /// <returns>The number of available sensors, independently from the fact
+    /// whether all of them have been returned.</returns>
+    static std::size_t descriptions(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
+        _In_ std::size_t cnt,
         _In_ const configuration_type& config);
 
     /// <summary>
@@ -70,24 +73,25 @@ public:
     /// sensor of this type, are move to the end of the range and the returned
     /// iterator points to the first of those descriptions.</para>
     /// </remarks>
-    /// <typeparam name="TOutput">An output iterator for shared pointers of
-    /// sensors that is able to receive at least a sensor for every element
-    /// <paramref name="begin" /> and <paramref name="end" />.</typeparam>
     /// <typeparam name="TInput">The type of the input iterator over the
     /// <see cref="sensor_description" />s.</typeparam>
-    /// <param name="oit">The output iterator receiving the sensors.</param>
+    /// <param name="dst">The output list, which will receive the sensors and the
+    /// sampler callbacks.</param>
     /// <param name="index">The index to be used for the first sensor created.
     /// </param>
     /// <param name="begin">The begin of the range of sensor descriptions.
     /// </param>
     /// <param name="end">The end of the range of sensor descriptions.</param>
+    /// <param name="config">The configuration for the sensor class.</param>
     /// <returns>The iterator to the first sensor description within
     /// <paramref name="begin" /> and <paramref name="end" /> that has not been
     /// used for creating a sensor.</returns>
-    template<class TOutput, class TInput>
-    static TInput from_descriptions(_In_ TOutput oit, _In_ std::size_t index,
-        _In_ const TInput begin, _In_ const TInput end);
-
+    template<class TInput>
+    static TInput from_descriptions(_In_ list_type& dst,
+        _In_ std::size_t index,
+        _In_ const TInput begin,
+        _In_ const TInput end,
+        _In_ const configuration_type& config);
 
 #if false
     ///// <summary>

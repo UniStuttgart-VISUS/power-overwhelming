@@ -8,6 +8,10 @@
 
 #include <stdexcept>
 
+#include "visus/pwrowg/convert_string.h"
+
+#include "string_functions.h"
+
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
@@ -46,6 +50,107 @@ static const struct {
 };
 
 PWROWG_DETAIL_NAMESPACE_END
+
+
+/*
+ * PWROWG_NAMESPACE::is_current
+ */
+bool PWROWG_NAMESPACE::is_current(
+        _In_ const hmc8015_function function) noexcept {
+    switch (function) {
+        case hmc8015_function::rms_current:
+        case hmc8015_function::current_average:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+
+/*
+ * PWROWG_NAMESPACE::is_energy
+ */
+bool PWROWG_NAMESPACE::is_energy(
+        _In_ const hmc8015_function function) noexcept {
+    switch (function) {
+        case hmc8015_function::watt_hour:
+        case hmc8015_function::positive_watt_hour:
+        case hmc8015_function::negative_watt_hour:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+
+/*
+ * PWROWG_NAMESPACE::is_power
+ */
+bool PWROWG_NAMESPACE::is_power(
+        _In_ const hmc8015_function function) noexcept {
+    switch (function) {
+        case hmc8015_function::active_power:
+        case hmc8015_function::apparent_power:
+        case hmc8015_function::reactive_power:
+
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+
+/*
+ * PWROWG_NAMESPACE::is_voltage
+ */
+bool PWROWG_NAMESPACE::is_voltage(
+        _In_ const hmc8015_function function) noexcept {
+    switch (function) {
+        case hmc8015_function::rms_voltage:
+        case hmc8015_function::average_voltage:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+
+/*
+ * PWROWG_NAMESPACE::parse_hmc8015_function
+ */
+PWROWG_NAMESPACE::hmc8015_function PWROWG_NAMESPACE::parse_hmc8015_function(
+        _In_z_ const wchar_t *function) {
+    if (function == nullptr) {
+        throw std::invalid_argument("A valid string must be provided.");
+    }
+
+    for (auto f = detail::hmc8015_functions; (f->name != nullptr); ++f) {
+        if (detail::equals(function, f->name, true)) {
+            return f->function;
+        }
+    }
+
+    throw std::invalid_argument("The specified string is not a valid HMC8015 "
+        "measurement function.");
+}
+
+
+/*
+ * PWROWG_NAMESPACE::parse_hmc8015_function
+ */
+PWROWG_NAMESPACE::hmc8015_function PWROWG_NAMESPACE::parse_hmc8015_function(
+        _In_z_ const char *function) {
+    if (function == nullptr) {
+        throw std::invalid_argument("A valid string must be provided.");
+    }
+
+    const auto f = convert_string<wchar_t>(function);
+    return parse_hmc8015_function(f.c_str());
+}
 
 
 /*

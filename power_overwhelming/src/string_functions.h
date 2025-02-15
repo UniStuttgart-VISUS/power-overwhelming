@@ -68,6 +68,25 @@ extern PWROWG_TEST_API int compare(_In_opt_z_ const wchar_t *lhs,
     _In_opt_z_ const wchar_t *rhs, _In_ const bool ignore_case = false);
 
 /// <summary>
+/// Tests whether <paramref name="haystack" /> contains
+/// <paramref name="needle" />.
+/// </summary>
+/// <param name="haystack">The string to be tested whether it contains
+/// <paramref name="needle" />. It is safe to pass <c>nullptr</c>, in which
+/// case the result will only be <c>true</c> only if
+/// <paramref name="needle" /> is also <c>nullptr</c>.</param>
+/// <param name="needls">The substring to be searched. It is safe to pass
+/// <c>nullptr</c>, in which case the result will always be <c>true</c>.
+/// </param>
+/// <param name="ignore_case">If <c>true</c>, consider the substring equal if
+/// the strings only differ in case. If <c>false</c>, which is the default,
+/// both strings must match exactly.</param>
+/// <returns><c>true</c> if the string was found, <c>false</c> otherwise.
+/// </returns>
+extern PWROWG_TEST_API bool contains(_In_opt_z_ const wchar_t *haystack,
+    _In_opt_z_ const wchar_t *needle, _In_ const bool ignore_case = false);
+
+/// <summary>
 /// Copies an STL string into a character buffer provided the destination
 /// buffer is sufficiently large.
 /// </summary>

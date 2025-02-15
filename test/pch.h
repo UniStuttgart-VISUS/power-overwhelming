@@ -20,6 +20,7 @@
 #include <visus/pwrowg/csv_iomanip.h>
 #include <visus/pwrowg/event.h>
 #include <visus/pwrowg/for_each_rapl_domain.h>
+#include <visus/pwrowg/hmc8015_configuration.h>
 #include <visus/pwrowg/hmc8015_function.h>
 #include <visus/pwrowg/rapl_domain.h>
 #include <visus/pwrowg/rtx_sample.h>
