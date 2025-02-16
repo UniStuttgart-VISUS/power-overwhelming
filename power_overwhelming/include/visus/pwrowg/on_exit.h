@@ -117,6 +117,6 @@ detail::on_exit_guard<TExitHandler> on_exit(TExitHandler&& exitHandler) {
 
 PWROWG_NAMESPACE_END
 
-#include "on_exit.inl"
+#include "visus/pwrowg/on_exit.inl"
 
 #endif /* !defined(_PWROWG_ON_EXIT_H) */

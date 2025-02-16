@@ -7,7 +7,8 @@
 #if defined(POWER_OVERWHELMING_WITH_VISA)
 #include "visa_library.h"
 
-#include "on_exit.h"
+#include "visus/pwrowg/on_exit.h"
+
 #include "visa_exception.h"
 
 #define __POWER_OVERWHELMING_GET_VISA_FUNC(n) \

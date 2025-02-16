@@ -8,7 +8,7 @@
 #define _PWROWG_SENSOR_STATE_H
 #pragma once
 
-#include "atomic_utilities.h"
+#include "visus/pwrowg/atomic_utilities.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN

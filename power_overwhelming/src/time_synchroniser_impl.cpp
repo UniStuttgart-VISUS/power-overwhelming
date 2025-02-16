@@ -19,7 +19,7 @@
 #include <unistd.h>
 #endif /* defined(_WIN32) */
 
-#include "on_exit.h"
+#include "visus/pwrowg/on_exit.h"
 
 
 #define TIMESYNC_MAX_DATAGRAM (1024)

@@ -12,6 +12,7 @@
 #include <sstream>
 #include <thread>
 
+#include <visus/pwrowg/atomic_collector.h>
 #include <visus/pwrowg/blob.h>
 #include <visus/pwrowg/convert_string.h>
 #include <visus/pwrowg/computer_name.h>
@@ -22,6 +23,7 @@
 #include <visus/pwrowg/for_each_rapl_domain.h>
 #include <visus/pwrowg/hmc8015_configuration.h>
 #include <visus/pwrowg/hmc8015_function.h>
+#include <visus/pwrowg/on_exit.h>
 #include <visus/pwrowg/rapl_domain.h>
 #include <visus/pwrowg/rtx_sample.h>
 #include <visus/pwrowg/parallel_port_trigger.h>
@@ -37,7 +39,6 @@
 #include <detect_sample.h>
 #include <emi_device.h>
 #include <io_util.h>
-#include <on_exit.h>
 #include <msr_magic.h>
 #include <nvml_exception.h>
 #include <nvml_scope.h>

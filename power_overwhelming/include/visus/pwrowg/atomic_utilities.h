@@ -15,7 +15,7 @@
 #include "visus/pwrowg/api.h"
 
 
-PWROWG_DETAIL_NAMESPACE_BEGIN
+PWROWG_NAMESPACE_BEGIN
 
 #if defined(__cpp_lib_hardware_interference_size)
 /// <summary>
@@ -26,7 +26,8 @@ constexpr std::size_t false_sharing_range
 
 #else /* defined(__cpp_lib_hardware_interference_size) */
 /// <summary>
-/// The size, in bytes, of a cache line on processors we use.
+/// The size, in bytes, of a cache line on processors we use. 64 is our best
+/// guess for that, because we are targetting x86 and x64.
 /// </summary>
 constexpr std::size_t false_sharing_range = 64;
 #endif /* defined(__cpp_lib_hardware_interference_size) */
@@ -41,7 +42,7 @@ constexpr std::size_t false_sharing_range = 64;
 /// <returns>A pointer to the memory, which must be freed using
 /// <see cref="free_for_atomic" />.</returns>
 /// <exception cref="std::bad_alloc">If the allocation failed.</exception>
-extern PWROWG_TEST_API _Ret_valid_ void *allocate_for_atomic(
+extern POWER_OVERWHELMING_API _Ret_valid_ void *allocate_for_atomic(
     _In_ const std::size_t size);
 
 /// <summary>
@@ -50,8 +51,8 @@ extern PWROWG_TEST_API _Ret_valid_ void *allocate_for_atomic(
 /// </summary>
 /// <param name="ptr">The pointer to be freed. It is safe to pass
 /// <c>nullptr</c>.</param>
-extern PWROWG_TEST_API void free_for_atomic(_In_opt_ void *ptr) noexcept;
+extern POWER_OVERWHELMING_API void free_for_atomic(_In_opt_ void *ptr) noexcept;
 
-PWROWG_DETAIL_NAMESPACE_END
+PWROWG_NAMESPACE_END
 
 #endif /* !defined(_PWROWG_ATOMIC_UTILITIES_H) */

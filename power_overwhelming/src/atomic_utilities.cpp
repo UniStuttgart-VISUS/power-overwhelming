@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "atomic_utilities.h"
+#include "visus/pwrowg/atomic_utilities.h"
 
 #if defined(_WIN32)
 #include <malloc.h>
@@ -12,9 +12,9 @@
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::allocate_for_atomic
+ * PWROWG_NAMESPACE::allocate_for_atomic
  */
-_Ret_valid_ void *PWROWG_DETAIL_NAMESPACE::allocate_for_atomic(
+_Ret_valid_ void *PWROWG_NAMESPACE::allocate_for_atomic(
         _In_ const std::size_t size) {
 #if defined(_WIN32)
     void *retval = ::_aligned_malloc(size, false_sharing_range);
@@ -31,9 +31,9 @@ _Ret_valid_ void *PWROWG_DETAIL_NAMESPACE::allocate_for_atomic(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::free_for_atomic
+ * PWROWG_NAMESPACE::free_for_atomic
  */
-void PWROWG_DETAIL_NAMESPACE::free_for_atomic(_In_opt_ void *ptr) noexcept {
+void PWROWG_NAMESPACE::free_for_atomic(_In_opt_ void *ptr) noexcept {
     if (ptr != nullptr) {
 #if defined(_WIN32)
         ::_aligned_free(ptr);
