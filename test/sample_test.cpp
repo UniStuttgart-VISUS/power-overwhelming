@@ -22,85 +22,57 @@ public:
         {
             sample s;
             Assert::IsTrue(ts.value() <= s.timestamp.value(), L"timestamp", LINE_INFO());
-            Assert::AreEqual(0.0, s.reading.floating_point, L"value", LINE_INFO());
+            Assert::AreEqual(0.0f, s.reading.floating_point, L"value", LINE_INFO());
+            Assert::AreEqual(sample::source_type(0), s.source, L"source", LINE_INFO());
         }
 
         {
-            sample s(42.0);
+            sample s(1, 42.0f);
             Assert::IsTrue(ts.value() <= s.timestamp.value(), L"timestamp", LINE_INFO());
-            Assert::AreEqual(42.0, s.reading.floating_point, L"value", LINE_INFO());
+            Assert::AreEqual(42.0f, s.reading.floating_point, L"value", LINE_INFO());
+            Assert::AreEqual(sample::source_type(1), s.source, L"source", LINE_INFO());
         }
 
         {
-            sample s(42.0f);
+            sample s(1, std::int32_t(-42));
             Assert::IsTrue(ts.value() <= s.timestamp.value(), L"timestamp", LINE_INFO());
-            Assert::AreEqual(42.0, s.reading.floating_point, L"value", LINE_INFO());
+            Assert::AreEqual(std::int32_t(-42), s.reading.signed_integer, L"value", LINE_INFO());
+            Assert::AreEqual(sample::source_type(1), s.source, L"source", LINE_INFO());
         }
 
         {
-            sample s(std::int64_t(-42));
+            sample s(1, std::uint32_t(42));
             Assert::IsTrue(ts.value() <= s.timestamp.value(), L"timestamp", LINE_INFO());
-            Assert::AreEqual(std::int64_t(-42), s.reading.signed_integer, L"value", LINE_INFO());
+            Assert::AreEqual(std::uint32_t(42), s.reading.unsigned_integer, L"value", LINE_INFO());
+            Assert::AreEqual(sample::source_type(1), s.source, L"source", LINE_INFO());
         }
 
         {
-            sample s(std::int32_t(-42));
-            Assert::IsTrue(ts.value() <= s.timestamp.value(), L"timestamp", LINE_INFO());
-            Assert::AreEqual(std::int64_t(-42), s.reading.signed_integer, L"value", LINE_INFO());
-        }
-
-        {
-            sample s(std::uint64_t(42));
-            Assert::IsTrue(ts.value() <= s.timestamp.value(), L"timestamp", LINE_INFO());
-            Assert::AreEqual(std::uint64_t(42), s.reading.unsigned_integer, L"value", LINE_INFO());
-        }
-
-        {
-            sample s(std::uint32_t(42));
-            Assert::IsTrue(ts.value() <= s.timestamp.value(), L"timestamp", LINE_INFO());
-            Assert::AreEqual(std::uint64_t(42), s.reading.unsigned_integer, L"value", LINE_INFO());
-        }
-
-        {
-            sample s(ts);
+            sample s(1, ts);
             Assert::AreEqual(ts.value(), s.timestamp.value(), L"timestamp", LINE_INFO());
-            Assert::AreEqual(0.0, s.reading.floating_point, L"value", LINE_INFO());
+            Assert::AreEqual(0.0f, s.reading.floating_point, L"value", LINE_INFO());
+            Assert::AreEqual(sample::source_type(1), s.source, L"source", LINE_INFO());
         }
 
         {
-            sample s(ts, 42.0);
+            sample s(1, ts, 42.0f);
             Assert::AreEqual(ts.value(), s.timestamp.value(), L"timestamp", LINE_INFO());
-            Assert::AreEqual(42.0, s.reading.floating_point, L"value", LINE_INFO());
+            Assert::AreEqual(sample::source_type(1), s.source, L"source", LINE_INFO());
+            Assert::AreEqual(42.0f, s.reading.floating_point, L"value", LINE_INFO());
         }
 
         {
-            sample s(ts, 42.0f);
+            sample s(1, ts, std::int32_t(-42));
             Assert::AreEqual(ts.value(), s.timestamp.value(), L"timestamp", LINE_INFO());
-            Assert::AreEqual(42.0, s.reading.floating_point, L"value", LINE_INFO());
+            Assert::AreEqual(std::int32_t(-42), s.reading.signed_integer, L"value", LINE_INFO());
+            Assert::AreEqual(sample::source_type(1), s.source, L"source", LINE_INFO());
         }
 
         {
-            sample s(ts, std::int64_t(-42));
+            sample s(1, ts, std::uint32_t(42));
             Assert::AreEqual(ts.value(), s.timestamp.value(), L"timestamp", LINE_INFO());
-            Assert::AreEqual(std::int64_t(-42), s.reading.signed_integer, L"value", LINE_INFO());
-        }
-
-        {
-            sample s(ts, std::int32_t(-42));
-            Assert::AreEqual(ts.value(), s.timestamp.value(), L"timestamp", LINE_INFO());
-            Assert::AreEqual(std::int64_t(-42), s.reading.signed_integer, L"value", LINE_INFO());
-        }
-
-        {
-            sample s(ts, std::uint64_t(42));
-            Assert::AreEqual(ts.value(), s.timestamp.value(), L"timestamp", LINE_INFO());
-            Assert::AreEqual(std::uint64_t(42), s.reading.unsigned_integer, L"value", LINE_INFO());
-        }
-
-        {
-            sample s(ts, std::uint32_t(42));
-            Assert::AreEqual(ts.value(), s.timestamp.value(), L"timestamp", LINE_INFO());
-            Assert::AreEqual(std::uint64_t(42), s.reading.unsigned_integer, L"value", LINE_INFO());
+            Assert::AreEqual(std::uint32_t(42), s.reading.unsigned_integer, L"value", LINE_INFO());
+            Assert::AreEqual(sample::source_type(1), s.source, L"source", LINE_INFO());
         }
 
     }

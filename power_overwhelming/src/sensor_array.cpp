@@ -9,10 +9,11 @@
 #include <memory>
 #include <stdexcept>
 
+#include "visus/pwrowg/thread_name.h"
+
 #include "sensor_array_configuration_impl.h"
 #include "sensor_array_impl.h"
 #include "sensor_registry.h"
-#include "thread_name.h"
 
 
 /*
@@ -144,8 +145,8 @@ void PWROWG_NAMESPACE::sensor_array::start(void) {
 
     // A callback that does nothing which serves for detecting samplers
     // that are inherently slow.
-    static const auto sample_nothing = [](const std::size_t,
-        const sample_type *, const std::size_t, void *) { };
+    static const auto sample_nothing = [](const sample_type *,
+        const std::size_t, void *) { };
 
     volatile auto impl = this->check_not_disposed();
 
@@ -295,7 +296,7 @@ void PWROWG_NAMESPACE::sensor_array::sample(
         name += std::to_string(offset);
         name += " - ";
         name += std::to_string(offset + end);
-        detail::set_thread_name(name.c_str());
+        set_thread_name(name.c_str());
     }
 
     while (impl->state) {

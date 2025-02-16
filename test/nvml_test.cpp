@@ -56,7 +56,7 @@ public:
         Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
 
         for (auto& s : sensors) {
-            s.sample([](const std::size_t source, const sample *samples, const std::size_t cnt, void *context) {
+            s.sample([](const sample *samples, const std::size_t cnt, void *context) {
                 Assert::AreEqual(std::size_t(1), cnt, L"NVML creates single sample", LINE_INFO());
             });
         }

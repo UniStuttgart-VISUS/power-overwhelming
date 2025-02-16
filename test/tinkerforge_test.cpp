@@ -49,7 +49,7 @@ public:
         for (auto& s : sensors) {
             auto evt = create_event();
 
-            s.sample([](const std::size_t source, const sample *samples, const std::size_t cnt, void *context) {
+            s.sample([](const sample *samples, const std::size_t cnt, void *context) {
                 auto evt = static_cast<event_type *>(context);
                 set_event(*evt);
                 Assert::AreEqual(std::size_t(1), cnt, L"Tinkerforge creates single sample", LINE_INFO());

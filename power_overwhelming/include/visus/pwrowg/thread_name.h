@@ -18,7 +18,7 @@
 #include "visus/pwrowg/api.h"
 
 
-PWROWG_DETAIL_NAMESPACE_BEGIN
+PWROWG_NAMESPACE_BEGIN
 
 /// <summary>
 /// The platform-native type representing the ID of a thread.
@@ -32,18 +32,19 @@ typedef pthread_t native_thread_id;
 /// <summary>
 /// Apply the given debug name to the thread with the specified ID.
 /// </summary>
-/// <param name="thread_id"></param>
-/// <param name="thread_name"></param>
-extern void PWROWG_TEST_API set_thread_name(
+/// <param name="thread_id">The ID of the thread to set the name of.</param>
+/// <param name="thread_name">The name of the thread.</param>
+extern void POWER_OVERWHELMING_API set_thread_name(
     _In_ const native_thread_id thread_id,
     _In_z_ const char* thread_name);
 
 /// <summary>
 /// Set the debug name of the calling thread.
 /// </summary>
-/// <param name="thread_name"></param>
-extern void PWROWG_TEST_API set_thread_name(_In_z_ const char* thread_name);
+/// <param name="thread_name">The name of the thread.</param>
+extern void POWER_OVERWHELMING_API set_thread_name(
+    _In_z_ const char* thread_name);
 
-PWROWG_DETAIL_NAMESPACE_END
+PWROWG_NAMESPACE_END
 
 #endif /* !defined(_PWROWG_THREAD_NAME_H) */

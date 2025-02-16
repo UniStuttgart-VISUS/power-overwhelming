@@ -31,19 +31,14 @@ PWROWG_NAMESPACE_BEGIN
 /// samples to be dropped. Processing data and receiving samples should be
 /// decoupled to avoid this.</para>
 /// </remarks>
-/// <param name="source">The zero-based index of the sensor that has created
-/// the samples. The <see cref="sensor_description" /> of this sensor can be
-/// used to obtain information about how to interpret the sensor readings.
-/// </param>
 /// <param name="samples">An array of one or more <paramref name="sample" />s.
 /// </param>
 /// <param name="cnt">The number of samples in the <paramref name="samples" />
 /// array.</param>
 /// <param anem="context">A user-defined pointer that has been registered when
 /// starting the sensor array.</param>
-typedef void (*sensor_array_callback)(_In_ const std::size_t source,
-    _In_reads_(cnt) const sample *samples, _In_ const std::size_t cnt,
-    _In_opt_ void *context);
+typedef void (*sensor_array_callback)(_In_reads_(cnt) const sample *samples,
+    _In_ const std::size_t cnt, _In_opt_ void *context);
 
 PWROWG_NAMESPACE_END
 

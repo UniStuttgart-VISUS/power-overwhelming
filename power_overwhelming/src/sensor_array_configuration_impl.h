@@ -63,8 +63,7 @@ struct sensor_array_configuration_impl final {
     inline sensor_array_configuration_impl(void) : context(nullptr),
             context_type(sensor_array_context_type::user_defined),
             interval(5000) {
-        this->callback = [](std::size_t, const sample *, std::size_t,
-            void *) { };
+        this->callback = [](const sample *, std::size_t, void *) { };
     }
 
     /// <summary>

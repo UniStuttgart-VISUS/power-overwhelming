@@ -22,36 +22,33 @@ PWROWG_NAMESPACE_BEGIN
 /// <para>The correct interpretation of the data is defined by the
 /// <see cref="reading_type" /> in the <see cref="sensor_description" /> of
 /// the sensor that produced the reading.</para>
-/// <para>The rationale for using <c>double</c> and 64-bit integers is that
-/// the <see cref="timestamp" /> must be 64-bit. Using 64 bits for both ensures
-/// are consistent alignment of the samples without padding.</para>
 /// </remarks>
 union reading final {
 
     /// <summary>
     /// THe value as raw bytes.
     /// </summary>
-    std::uint8_t bytes[8];
+    std::uint8_t bytes[4];
 
     /// <summary>
-    /// The value as IEE-754 floating point number (<c>double</c>).
+    /// The value as IEE-754 floating point number.
     /// </summary>
-    double floating_point;
+    float floating_point;
 
     /// <summary>
     /// The reading as a signed integer.
     /// </summary>
-    std::int64_t signed_integer;
+    std::int32_t signed_integer;
 
     /// <summary>
     /// The reading as an unsigned integer.
     /// </summary>
-    std::uint64_t unsigned_integer;
+    std::uint32_t unsigned_integer;
 };
 
-static_assert(sizeof(reading) == 8, "The size of a reading must be 8 bytes. If "
-    "this assertion fails, something got messed up in the declaration of the "
-    "reading union.");
+static_assert(sizeof(reading) == 4, "The size of a reading must be four bytes. "
+    "If this assertion fails, something got messed up in the declaration of "
+    "the reading union.");
 
 PWROWG_NAMESPACE_END
 

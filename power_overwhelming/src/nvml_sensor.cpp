@@ -186,7 +186,7 @@ void PWROWG_DETAIL_NAMESPACE::nvml_sensor::sample(
     assert(callback != nullptr);
 
     // Create the sample with the current timestamp.
-    PWROWG_NAMESPACE::sample s;
+    PWROWG_NAMESPACE::sample s(this->_index);
 
     // Get the power usage in milliwatts.
     unsigned int mw = 0;
@@ -199,5 +199,5 @@ void PWROWG_DETAIL_NAMESPACE::nvml_sensor::sample(
     // Convert to Watts.
     s.reading.floating_point = static_cast<value_type>(mw) / thousand;
 
-    callback(this->_index, &s, 1, context);
+    callback(&s, 1, context);
 }

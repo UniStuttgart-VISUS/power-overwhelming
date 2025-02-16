@@ -114,9 +114,9 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::current_callback(
     assert(data != nullptr);
     auto that = static_cast<tinkerforge_sensor *>(data);
     std::lock_guard<decltype(that->_lock)> l(that->_lock);
-    PWROWG_NAMESPACE::sample sample(static_cast<value_type>(value)
-        / static_cast<value_type>(1000));
-    that->_callback(that->_index_current, &sample, 1, that->_context);
+    PWROWG_NAMESPACE::sample sample(that->_index_current, 
+        static_cast<value_type>(value) / static_cast<value_type>(1000));
+    that->_callback(&sample, 1, that->_context);
 }
 
 
@@ -130,9 +130,9 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::power_callback(
     assert(data != nullptr);
     auto that = static_cast<tinkerforge_sensor *>(data);
     std::lock_guard<decltype(that->_lock)> l(that->_lock);
-    PWROWG_NAMESPACE::sample sample(static_cast<value_type>(value)
-        / static_cast<value_type>(1000));
-    that->_callback(that->_index_power, &sample, 1, that->_context);
+    PWROWG_NAMESPACE::sample sample(that->_index_power,
+        static_cast<value_type>(value) / static_cast<value_type>(1000));
+    that->_callback(&sample, 1, that->_context);
 }
 
 
@@ -148,17 +148,15 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::power_time_callback(
     assert(data != nullptr);
     auto that = static_cast<tinkerforge_sensor *>(data);
     std::lock_guard<decltype(that->_lock)> l(that->_lock);
-    PWROWG_NAMESPACE::sample sample(static_cast<value_type>(value)
-        / static_cast<value_type>(1000));
     const auto ts = that->_time_xlate(time, that->_bricklet);
     //auto wall_time = create_timestamp(that->async_sampling.resolution());
     //::OutputDebugStringW((that->sensor_name + L" " + std::to_wstring(wall_time)
     //    + L" " + std::to_wstring(time)
     //    + L" " + std::to_wstring(wall_time - ts)
     //    + L"\r\n").c_str());
-    PWROWG_NAMESPACE::sample sample(ts, static_cast<value_type>(value)
-        / static_cast<value_type>(1000));
-    that->_callback(that->_index_power, &sample, 1, that->_context);
+    PWROWG_NAMESPACE::sample sample(that->_index_power,
+        ts, static_cast<value_type>(value) / static_cast<value_type>(1000));
+    that->_callback(&sample, 1, that->_context);
 #else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
     power_callback(value, data);
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
@@ -224,9 +222,9 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::voltage_callback(
     assert(data != nullptr);
     auto that = static_cast<tinkerforge_sensor *>(data);
     std::lock_guard<decltype(that->_lock)> l(that->_lock);
-    PWROWG_NAMESPACE::sample sample(static_cast<value_type>(value)
-        / static_cast<value_type>(1000));
-    that->_callback(that->_index_voltage, &sample, 1, that->_context);
+    PWROWG_NAMESPACE::sample sample(that->_index_voltage,
+        static_cast<value_type>(value) / static_cast<value_type>(1000));
+    that->_callback(&sample, 1, that->_context);
 }
 
 

@@ -19,6 +19,7 @@
 #include <visus/pwrowg/cpu_affinity.h>
 #include <visus/pwrowg/cpu_info.h>
 #include <visus/pwrowg/csv_iomanip.h>
+#include <visus/pwrowg/csv_sink.h>
 #include <visus/pwrowg/event.h>
 #include <visus/pwrowg/for_each_rapl_domain.h>
 #include <visus/pwrowg/hmc8015_configuration.h>

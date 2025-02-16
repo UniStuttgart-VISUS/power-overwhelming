@@ -49,7 +49,7 @@ public:
         for (auto& s : sensors) {
             auto evt = create_event();
 
-            s.sample([](const std::size_t source, const sample *samples, const std::size_t cnt, void *context) {
+            s.sample([](const sample *samples, const std::size_t cnt, void *context) {
                 Assert::AreEqual(std::size_t(1), cnt, L"USB PD creates single sample", LINE_INFO());
             });
         }

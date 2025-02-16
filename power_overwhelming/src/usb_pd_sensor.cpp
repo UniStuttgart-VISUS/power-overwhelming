@@ -140,12 +140,14 @@ void PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::sample(
 
         if (this->_index_voltage != invalid_index) {
             s.reading.floating_point = voltage / 1000.0;
-            callback(this->_index_voltage, &s, 1, context);
+            s.source = this->_index_voltage;
+            callback(&s, 1, context);
         }
 
         if (this->_index_voltage != invalid_index) {
             s.reading.floating_point = loopback_current / 1000.0;
-            callback(this->_index_current, &s, 1, context);
+            s.source = this->_index_current;
+            callback(&s, 1, context);
         }
     }
 }

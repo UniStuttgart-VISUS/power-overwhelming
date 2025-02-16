@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "thread_name.h"
+#include "visus/pwrowg/thread_name.h"
 
 // See https://msdn.microsoft.com/de-de/library/xcb2z8hs.aspx?f=255&MSPPError=-2147217396
 
@@ -24,9 +24,9 @@ typedef struct tagTHREADNAME_INFO {
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::set_thread_name
+ * PWROWG_NAMESPACE::set_thread_name
  */
-void PWROWG_DETAIL_NAMESPACE::set_thread_name(
+void PWROWG_NAMESPACE::set_thread_name(
         _In_ const native_thread_id thread_id,
         _In_z_ const char *thread_name) {
 #if defined(_WIN32)
@@ -51,9 +51,9 @@ void PWROWG_DETAIL_NAMESPACE::set_thread_name(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::set_thread_name
+ * PWROWG_NAMESPACE::set_thread_name
  */
-void PWROWG_DETAIL_NAMESPACE::set_thread_name(
+void PWROWG_NAMESPACE::set_thread_name(
         _In_z_ const char *thread_name) {
 #if defined(_WIN32)
     set_thread_name(::GetCurrentThreadId(), thread_name);
