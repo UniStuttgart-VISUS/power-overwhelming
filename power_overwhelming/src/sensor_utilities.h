@@ -18,9 +18,14 @@
 #include "visus/pwrowg/sensor_description.h"
 
 #include "sensor_state.h"
+#include "string_functions.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
+
+/* Forward declarations. */
+struct sensor_array_impl;
+
 
 /// <summary>
 /// Get all serialised sensor descriptions for sensors on the current
@@ -94,6 +99,23 @@ extern nlohmann::json PWROWG_TEST_API read_json(_In_z_ const char *path);
 /// <param name="path">The path to the JSON file.</param>
 /// <returns>The contents of the JSON file.</returns>
 extern nlohmann::json PWROWG_TEST_API read_json(_In_z_ const wchar_t *path);
+
+/// <summary>
+/// Sort the given range of <see cref="sensor_description" />s according to
+/// their path.
+/// </summary>
+/// <typeparam name="TIterator"></typeparam>
+/// <param name="begin"></param>
+/// <param name="end"></param>
+template<class TIterator>
+inline void sort_by_path(_In_ TIterator begin, _In_ TIterator end) {
+    std::stable_sort(
+        begin,
+        end,
+        [](const sensor_description& lhs, const sensor_description& rhs) {
+            return (compare(lhs.path(), rhs.path()) < 0);
+        });
+}
 
 /// <summary>
 /// Write JSON configuration to a file.

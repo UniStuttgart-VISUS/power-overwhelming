@@ -11,6 +11,7 @@
 #include <cstdlib>
 
 #include "visus/pwrowg/sample.h"
+#include "visus/pwrowg/sensor_description.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -35,10 +36,16 @@ PWROWG_NAMESPACE_BEGIN
 /// </param>
 /// <param name="cnt">The number of samples in the <paramref name="samples" />
 /// array.</param>
-/// <param anem="context">A user-defined pointer that has been registered when
+/// <param name="context">A user-defined pointer that has been registered when
 /// starting the sensor array.</param>
+/// <param name="sensors">An array holding the sensor descriptions. The caller
+/// ensures that the indices provided in the <paramref name="samples" /> are
+/// valid in this array, i.e. it is safe to obtain a description for any sensor
+/// the callback is called for.</param>
 typedef void (*sensor_array_callback)(_In_reads_(cnt) const sample *samples,
-    _In_ const std::size_t cnt, _In_opt_ void *context);
+    _In_ const std::size_t cnt,
+    _In_ const sensor_description *sensors,
+    _In_opt_ void *context);
 
 PWROWG_NAMESPACE_END
 

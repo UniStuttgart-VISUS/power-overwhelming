@@ -37,7 +37,7 @@ struct sensor_array_impl final {
     /// The signature of a sampler function.
     /// </summary>
     typedef std::function<void(const sensor_array_callback callback,
-        void *context)> sampler_func;
+        sensor_description *, void *context)> sampler_func;
 
     /// <summary>
     /// Holds the configuration of the array, including the sample callback

@@ -232,8 +232,6 @@ private:
 
     _Ret_valid_ const detail::sensor_array_impl *check_not_disposed(void) const;
 
-    void sync_context(void);
-
     detail::sensor_array_impl *_impl;
 };
 

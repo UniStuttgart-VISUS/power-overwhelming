@@ -10,6 +10,7 @@
 
 #if defined(_WIN32)
 
+#include <cassert>
 #include <list>
 #include <memory>
 #include <string>
@@ -83,6 +84,10 @@ public:
     /// <param name="begin">The begin of the range of sensor descriptions.
     /// </param>
     /// <param name="end">The end of the range of sensor descriptions.</param>
+    /// <param name="owner">The sensor array owning the sensors to be created.
+    /// This pointer is required to gain access to the callback pointers and
+    /// the context data. It can also be used to access the per-sensor class
+    /// configuration contained  in <paramref name="config" /> later on.</param>
     /// <param name="config">The configuration for the sensor class.</param>
     /// <returns>The iterator to the first sensor description within
     /// <paramref name="begin" /> and <paramref name="end" /> that has not been
@@ -92,6 +97,7 @@ public:
         _In_ std::size_t index,
         _In_ const TInput begin,
         _In_ const TInput end,
+        _In_ const sensor_array_impl *owner,
         _In_ const configuration_type& config);
 
     /// <summary>
@@ -118,9 +124,12 @@ public:
     /// Deliver a sample to the given <paramref name="callback" />.
     /// </summary>
     /// <param name="callback">The callback to be invoked.</param>
+    /// <param name="sensors">The sensor descriptions passed to the
+    /// <paramref name="callback" />.</param>
     /// <param name="context">An optional context pointer passed to the
     /// <paramref name="callback" />.</param>
     void sample(_In_ const sensor_array_callback callback,
+        _In_ const sensor_description *sensors,
         _In_opt_ void *context = nullptr);
 
     usb_pd_sensor& operator =(const usb_pd_sensor& rhs) = delete;

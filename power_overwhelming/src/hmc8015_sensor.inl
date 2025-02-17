@@ -14,12 +14,59 @@ TInput PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::from_descriptions(
         _In_ std::size_t index,
         _In_ const TInput begin,
         _In_ const TInput end,
+        _In_ const sensor_array_impl *owner,
         _In_ const configuration_type& config) {
-    auto retval = move_front_if(begin, end, is_hmc8015_sensor);
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    typedef sensor_description_builder builder_type;
+    assert(owner != nullptr);
 
-    for (auto it = begin; it != retval; ++it) {
-        dst.emplace_back(it->path(), index++, config);
+    // Move all HMC sensors to the front of the descriptors.
+    auto retval = move_front_if(begin, end, is_hmc8015_sensor);
+#if (defined(DEBUG) || defined(_DEBUG))
+    auto _rem = std::distance(begin, retval);
+#endif /* (defined(DEBUG) || defined(_DEBUG)) */
+
+    // Sort the range of HMC sensors by device.
+    sort_by_path(begin, retval);
+
+    // At this point, the sensors are grouped by their path and we can create one
+    // for each device and a LUT that maps the configured quantity to an index in
+    // the array of sensor descriptors.
+    for (auto it = begin; it != retval; /* [sic] */) {
+        const std::wstring path = it->path();
+        std::vector<hmc8015_function> functions;
+
+        while ((it != retval) && equals(it->path(), path)) {
+            auto func = builder_type::private_data<hmc8015_function>(*it++);
+            functions.push_back(*func);
+#if (defined(DEBUG) || defined(_DEBUG))
+            --_rem;
+#endif /* (defined(DEBUG) || defined(_DEBUG)) */
+        }
+
+        // Open and configure the instrument.
+        hmc8015_instrument instrument(path.c_str(), config.timeout());
+        instrument.reset();
+        instrument.synchronise_clock(true);
+
+        // Enable the configured functions.
+        instrument.custom_functions(functions.data(), functions.size());
+
+        // Create the sensor.
+        const auto cnt_functions = functions.size();
+        dst.emplace_back(std::move(instrument),
+            owner,
+            index,
+            std::move(functions));
+        index += cnt_functions;
     }
 
+#if (defined(DEBUG) || defined(_DEBUG))
+    assert(_rem == 0);
+#endif /* (defined(DEBUG) || defined(_DEBUG)) */
     return retval;
+
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    return begin;
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }

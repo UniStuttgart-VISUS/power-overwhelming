@@ -40,11 +40,9 @@ using namespace visus::pwrowg;
 sensor_array_configuration config;
 
 config.sample_every(std::chrono::milliseconds(5))
-    .deliver_sensors_as_context()
-    .deliver_to([](std::size_t idx, const sample *samples, std::size_t cnt, void *ctx) {
-        auto descs = static_cast<sensor_description *>(ctx);
+    .deliver_to([](const sample *samples, std::size_t cnt, const sensor_description *sensors, void *ctx) {
         // Do something with the 'samples' here.
-        // You can access the sensor meta data via 'idx' in 'descs'.
+        // You can access the sensor meta data via samples[i].source in 'descs'.
     })
     .configure<tinkerforge_configuration>([](tinkerforge_configuration& c) {
         // This is only an example which sets the timeout for connecting to

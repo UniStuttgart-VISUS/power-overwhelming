@@ -8,6 +8,7 @@
 #define _PWROWG_NVML_SENSOR_H
 #pragma once
 
+#include <cassert>
 #include <list>
 #include <memory>
 #include <string>
@@ -94,6 +95,10 @@ public:
     /// <param name="begin">The begin of the range of sensor descriptions.
     /// </param>
     /// <param name="end">The end of the range of sensor descriptions.</param>
+    /// <param name="owner">The sensor array owning the sensors to be created.
+    /// This pointer is required to gain access to the callback pointers and
+    /// the context data. It can also be used to access the per-sensor class
+    /// configuration contained  in <paramref name="config" /> later on.</param>
     /// <param name="config">The configuration for the sensor class.</param>
     /// <returns>The iterator to the first sensor description within
     /// <paramref name="begin" /> and <paramref name="end" /> that has not been
@@ -103,6 +108,7 @@ public:
         _In_ std::size_t index,
         _In_ const TInput begin,
         _In_ const TInput end,
+        _In_ const sensor_array_impl *owner,
         _In_ const configuration_type& config);
 
     /// <summary>
@@ -145,6 +151,9 @@ public:
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
+    /// <param name="device>The NVML device to obtain the power readings from.
+    /// </param>
+    /// <param name="index>The index of the descriptor of this sensor.</param>
     inline nvml_sensor(_In_ const nvmlDevice_t device,
             _In_ const std::size_t index)
         : _device(device), _index(index) { }
@@ -155,29 +164,20 @@ public:
     /// Deliver a sample to the given <paramref name="callback" />.
     /// </summary>
     /// <param name="callback">The callback to be invoked.</param>
+    /// <param name="sensors">The sensor descriptions passed to the
+    /// <paramref name="callback" />.</param>
     /// <param name="context">An optional context pointer passed to the
     /// <paramref name="callback" />.</param>
     void sample(_In_ const sensor_array_callback callback,
+        _In_ const sensor_description *sensors,
         _In_opt_ void *context = nullptr);
 
     nvml_sensor& operator =(const nvml_sensor& rhs) = delete;
 
 private:
 
-    /// <summary>
-    /// The NVML device the sensor is reading from.
-    /// </summary>
     nvmlDevice_t _device;
-
-    /// <summary>
-    /// The index of the sensor in the array.
-    /// </summary>
     std::size_t _index;
-
-    /// <summary>
-    /// The NVML scope making sure the library is ready while the sensor
-    /// exists.
-    /// </summary>
     nvml_scope _scope;
 };
 

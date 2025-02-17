@@ -41,6 +41,8 @@ class atomic_collector final {
 
 public:
 
+    static_assert(PageSize >= 1, "A page must contain at least one element.");
+
     /// <summary>
     /// The type of the result object that can be retrieved from the
     /// collector.

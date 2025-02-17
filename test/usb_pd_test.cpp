@@ -41,17 +41,19 @@ public:
         descs.resize(type::descriptions(nullptr, 0, config));
         type::descriptions(descs.data(), descs.size(), config);
 
+        detail::sensor_array_impl dummy;
+
         type::list_type sensors;
-        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), config);
+        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), &dummy, config);
         Assert::AreEqual(descs.size() / 2, sensors.size(), L"Created in groups of two", LINE_INFO());
         Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
 
         for (auto& s : sensors) {
             auto evt = create_event();
 
-            s.sample([](const sample *samples, const std::size_t cnt, void *context) {
+            s.sample([](const sample *samples, const std::size_t cnt, const sensor_description *descs, void *context) {
                 Assert::AreEqual(std::size_t(1), cnt, L"USB PD creates single sample", LINE_INFO());
-            });
+            }, descs.data(), nullptr);
         }
     }
 };

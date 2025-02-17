@@ -9,6 +9,7 @@
 #pragma once
 
 #include <array>
+#include <cassert>
 #include <limits>
 #include <list>
 #include <memory>
@@ -86,6 +87,10 @@ public:
     /// <param name="begin">The begin of the range of sensor descriptions.
     /// </param>
     /// <param name="end">The end of the range of sensor descriptions.</param>
+    /// <param name="owner">The sensor array owning the sensors to be created.
+    /// This pointer is required to gain access to the callback pointers and
+    /// the context data. It can also be used to access the per-sensor class
+    /// configuration contained  in <paramref name="config" /> later on.</param>
     /// <param name="config">The configuration for the sensor class.</param>
     /// <returns>The iterator to the first sensor description within
     /// <paramref name="begin" /> and <paramref name="end" /> that has not been
@@ -95,6 +100,7 @@ public:
         _In_ std::size_t index,
         _In_ const TInput begin,
         _In_ const TInput end,
+        _In_ const sensor_array_impl *owner,
         _In_ const configuration_type& config);
 
     ///// <summary>
@@ -130,8 +136,8 @@ public:
     /// daemon.</param>
     /// <param name="uid">The unique identifier of the voltage/current
     /// bricklet addressed by the sensor.</param>
-    /// <param name="source">A bitmask of the sources enabled on the
-    /// bricklet.</param>
+    /// <param name="owner">The owner of the sensor, which stores the callback
+    /// and all information that needs to passed to it.</param>
     /// <param name="index_power">The index of the power sensor in the array
     /// or <see cref="invalid_index" /> to disable the power sensor.</param>
     /// <param name="index_voltage">The index of the voltage sensor in the array
@@ -144,7 +150,7 @@ public:
     /// opened.</exception>
     tinkerforge_sensor(_In_ tinkerforge_scope scope,
         _In_z_ const wchar_t *uid,
-        _In_ std::shared_ptr<tinkerforge_configuration> config,
+        _In_ const sensor_array_impl *owner,
         _In_ const std::size_t index_power,
         _In_ const std::size_t index_voltage = invalid_index,
         _In_ const std::size_t index_current = invalid_index);
@@ -168,8 +174,8 @@ public:
     /// <exception cref="tinkerforge_exception">If the operation failed.
     /// </exception>
     void configuration(_Out_ tinkerforge_sample_averaging& averaging,
-        _Out_ tinkerforge_conversion_time &voltage_conversion_time,
-        _Out_ tinkerforge_conversion_time &current_conversion_time);
+        _Out_ tinkerforge_conversion_time& voltage_conversion_time,
+        _Out_ tinkerforge_conversion_time& current_conversion_time);
 
     /// <summary>
     /// Configures the bricklet.
@@ -291,33 +297,28 @@ public:
     /// <summary>
     /// Starts or stops sampling the sensor.
     /// </summary>
-    /// <param name="callback">The callback to deliver the samples to. If this
-    /// is <c>nullptr</c>, the sensor will be disabled.</param>
-    /// <param name="interval">The sampling interval.</param>
-    /// <param name="context">A user-defined pointer passed to
-    /// <paramref name="callback" />.</param>
-    void sample(_In_opt_ const sensor_array_callback callback,
-        _In_ const std::chrono::milliseconds interval,
-        _In_opt_ void *context = nullptr);
+    /// <param name="enable"><c>true</c> for enabling the sensor,
+    /// <c>false</c> for disabling it.</param>
+    void sample(_In_ const bool enable);
 
 private:
 
     /// <summary>
     /// Dispatches a sensor reading to <see cref="_callback" />.
     /// </summary>
-    static void CALLBACK current_callback(_In_ const std::int32_t current,
+    static void CALLBACK current_callback(_In_ const std::int32_t value,
         _In_ void *data);
 
     /// <summary>
     /// Dispatches a sensor reading to <see cref="_callback" />.
     /// </summary>
-    static void CALLBACK power_callback(_In_ const std::int32_t current,
+    static void CALLBACK power_callback(_In_ const std::int32_t value,
         _In_ void *data);
 
     /// <summary>
     /// Dispatches a sensor reading to <see cref="_callback" />.
     /// </summary>
-    static void CALLBACK power_time_callback(_In_ const std::int32_t power,
+    static void CALLBACK power_time_callback(_In_ const std::int32_t value,
         _In_ const std::uint32_t time, _In_ void *data);
 
     /// <summary>
@@ -342,8 +343,13 @@ private:
     /// <summary>
     /// Dispatches a sensor reading to <see cref="_callback" />.
     /// </summary>
-    static void CALLBACK voltage_callback(_In_ const std::int32_t current,
+    static void CALLBACK voltage_callback(_In_ const std::int32_t value,
         _In_ void *data);
+
+    /// <summary>
+    /// Provides access to the sensor configuration via the owner pointer.
+    /// </summary>
+    const configuration_type& configuration(void) const noexcept;
 
     /// <summary>
     /// Disable all callbacks.
@@ -365,14 +371,12 @@ private:
     /// </summary>
     void enable_voltage_callback(_In_ const std::chrono::milliseconds interval);
 
-    sensor_array_callback _callback;
-    std::shared_ptr<tinkerforge_configuration> _config;
-    void *_context;
     mutable VoltageCurrentV2 _bricklet;
     std::size_t _index_current;
     std::size_t _index_power;
     std::size_t _index_voltage;
     std::mutex _lock;
+    const sensor_array_impl *_owner;
     tinkerforge_scope _scope;
     sensor_state _state;
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)

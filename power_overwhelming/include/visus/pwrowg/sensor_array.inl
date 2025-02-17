@@ -19,6 +19,8 @@ PWROWG_NAMESPACE::sensor_array::for_matches(
     // Count sensors, but account for dynamic sensors being detached
     // betweeen the calls.
     auto cnt = all_descriptions(descs.data(), descs.size(), config);
+    // Similarly, additional sensors could have become available in the
+    // meantime, so look for the smaller range.
     auto end = (cnt < descs.size()) ? descs.begin() + cnt : descs.end();
 
     // Select the sensors matching the predicate and create the array.

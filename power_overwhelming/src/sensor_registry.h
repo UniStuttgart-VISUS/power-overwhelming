@@ -36,6 +36,10 @@
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
+/* Forward declarations */
+struct sensor_array_impl;
+
+
 /// <summary>
 /// The type of a sensor registry, which is the central location where all
 /// sensors need to be registered in order to be available for use in a
@@ -53,10 +57,11 @@ template<class... TSensors> class basic_sensor_registry final {
 public:
 
     /// <summary>
-    /// The signature of a sampler function.
+    /// The signature of a (synchronous) sampler function that retrieves one or
+    /// more samples from a sensor to be delivered to the given callback.
     /// </summary>
     typedef std::function<void(const sensor_array_callback callback,
-        void *context)> sampler_func;
+        const sensor_description *, void *context)> sampler_func;
 
     /// <summary>
     /// The type of sensors created by the registry.
@@ -99,8 +104,17 @@ public:
     /// <param name="begin">The start of the range of sensor descriptions to
     /// create sensors for.</param>
     /// <param name="end">The end of the range of sensor descriptions.</param>
+    /// <param name="owner">The sensor array owning the sensors to be created.
+    /// This pointer is required to gain access to the callback pointers and
+    /// the context data. It can also be used to access the per-sensor class
+    /// configuration contained  in <paramref name="config" /> later on.</param>
     /// <param name="config">The array configuration, which holds the
-    /// configuration data for the sensor classes.</param>
+    /// configuration data for the sensor classes. Note that this could be
+    /// obtained from <paramref name="owner" /> in principle, but that would
+    /// result in a cyclic dependency of includes, so we force the caller to
+    /// perform the lookup for the call. The caller is the sensor array, which
+    /// is not a template and therefore can resolve the cycle by making forward
+    /// declarations and including only in its compilation unit.</param>
     /// <returns>The position of the first configuration that has not been used
     /// to create a sensor. If this is equal to <paramref name="end" />, all
     /// sensors have been successfully created.</returns>
@@ -108,8 +122,10 @@ public:
     static inline TInput create(_In_ sensor_list_type& dst,
             _In_ const TInput begin,
             _In_ const TInput end,
+            _In_ const sensor_array_impl *owner,
             _In_ const sensor_array_configuration_impl& config) {
-        return create0<0>(dst, type_list<TSensors...>(), 0, begin, end, config);
+        return create0<0>(dst, type_list<TSensors...>(), 0, begin, end, owner,
+            config);
     }
 
     /// <summary>
@@ -124,21 +140,23 @@ public:
         _In_ const sensor_array_configuration_impl& config);
 
     /// <summary>
-    /// Starts all of the <paramref name="sensors" /> that support asynchronous
-    /// sampling and writes <see cref="sensor_array_impl::sampler_func" />s for
-    /// all other ones to <paramref name="oit" />.
+    /// Starts (or stops) all of the <paramref name="sensors" /> that support
+    /// asynchronous sampling and writes
+    /// <see cref="sensor_array_impl::sampler_func" />s for all other ones to
+    /// <paramref name="oit" />.
     /// </summary>
     /// <typeparam name="TOutput"></typeparam>
     /// <param name="oit"></param>
     /// <param name="sensors"></param>
-    /// <param name="callback"></param>
-    /// <param name="interval"></param>
-    /// <param name="context"></param>
-    template<class TOutput> static void sample(_In_ TOutput oit,
-        _In_ sensor_list_type& sensors,
-        _In_opt_ const sensor_array_callback callback,
-        _In_ const std::chrono::milliseconds interval,
-        _In_opt_ void *context);
+    /// <param name="enable"></param>
+    template<class TOutput> inline static void sample(_In_ TOutput oit,
+            _In_ sensor_list_type& sensors,
+            _In_ const bool enable) {
+        sample0(oit,
+            std::make_index_sequence<sizeof...(TSensors)>(),
+            sensors,
+            enable);
+    }
 
     /// <summary>
     /// Answer the number of sensor types in the registry.
@@ -175,6 +193,7 @@ private:
         _In_ const std::size_t index,
         _In_ const TInput begin,
         _In_ const TInput end,
+        _In_ const sensor_array_impl *owner,
         _In_ const sensor_array_configuration_impl& config);
 
     /// <summary>
@@ -186,6 +205,7 @@ private:
             _In_ const std::size_t index,
             _In_ const TInput begin,
             _In_ const TInput end,
+            _In_ const sensor_array_impl *owner,
             _In_ const sensor_array_configuration_impl& config) {
         return begin;
     }
@@ -218,8 +238,10 @@ private:
     static std::enable_if_t<detail::has_sync_sample<T>::type::value,
         sampler_func>
     make_sampler(_In_ T& sensor) {
-        return [&sensor](const sensor_array_callback cb, void *ctx) {
-            sensor.sample(cb, ctx);
+        return [&sensor](_In_ const sensor_array_callback cb,
+                _In_ const sensor_description *sensors,
+                _In_opt_ void *ctx) {
+            sensor.sample(cb, sensors, ctx);
         };
     }
 
@@ -230,7 +252,9 @@ private:
     static std::enable_if_t<!detail::has_sync_sample<T>::type::value,
         sampler_func>
     make_sampler(_In_ T &sensor) {
-        return [](const sensor_array_callback cb, void *ctx) {
+        return [](_In_opt_ const sensor_array_callback cb,
+                _In_opt_ const sensor_description *sensors,
+                _In_opt_ void *ctx) {
             assert(false);
         };
     }
@@ -239,30 +263,24 @@ private:
     static void sample0(_In_ TOutput oit,
         _In_ std::index_sequence<Index, Indices...>,
         _In_ sensor_list_type& sensor_lists,
-        _In_opt_ const sensor_array_callback callback,
-        _In_ const std::chrono::milliseconds interval,
-        _In_opt_ void *context);
+        _In_ const bool enable);
 
     template<class TOutput>
     inline static void sample0(_In_ TOutput oit,
         _In_ std::index_sequence<>,
         _In_ sensor_list_type& sensor_lists,
-        _In_opt_ const sensor_array_callback callback,
-        _In_ const std::chrono::milliseconds interval,
-        _In_opt_ void *context) { }
+        _In_ const bool enable) { }
 
     /// <summary>
-    /// Tries asynchronously sampling <paramref name="begin" /> to
-    /// <paramref name="end" /> or returns <c>false</c> if
-    /// <typepararamref name="T"/> is a synchronous sensor.
+    /// Tries to enable or disable asynchronously sampling
+    /// <paramref name="begin" /> to <paramref name="end" /> or returns
+    /// <c>false</c> if <typepararamref name="T"/> is a synchronous sensor.
     /// </summary>
     template<class T, class TInput>
     static std::enable_if_t<detail::has_async_sample<T>::type::value, bool>
     sample1(_In_ const TInput begin,
         _In_ const TInput end,
-        _In_opt_ const sensor_array_callback callback,
-        _In_ const std::chrono::milliseconds interval,
-        _In_opt_ void *context);
+        _In_ const bool enable);
 
     /// <summary>
     /// Recursion stop.
@@ -271,9 +289,7 @@ private:
     static std::enable_if_t<!detail::has_async_sample<T>::type::value, bool>
     sample1(_In_ const TInput begin,
             _In_ const TInput end,
-            _In_opt_ const sensor_array_callback callback,
-            _In_ const std::chrono::milliseconds interval,
-            _In_opt_ void *context) {
+            _In_ const bool enable) {
         return false;
     }
 };

@@ -14,11 +14,16 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
         _In_ std::size_t index,
         _In_ const TInput begin,
         _In_ const TInput end,
+        _In_ const sensor_array_impl *owner,
         _In_ const configuration_type& config) {
     typedef sensor_description_builder builder_type;
+    assert(owner != nullptr);
 
     // Find out which are the TF sensors.
     auto retval = move_front_if(begin, end, is_tinkerforge_sensor);
+#if (defined(DEBUG) || defined(_DEBUG))
+    auto _rem = std::distance(begin, retval);
+#endif /* (defined(DEBUG) || defined(_DEBUG)) */
 
     // Group the sensors by their brick daemon and bricklet. Sensors on the same
     // bricklet are sorted to match the order in the constructor.
@@ -38,9 +43,6 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
 
         return (retval < 0);
     });
-
-    // Generate a shared configuration object to prevent a copy for each sensor.
-    auto shared_config = std::make_shared<configuration_type>(config);
 
     for (auto it = begin; it != retval; /* [sic] */) {
         // At this point, there are always up to three sensors that come from the
@@ -68,12 +70,18 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
         const auto voltage = sensor_index(sensor_type::voltage);
         const auto current = sensor_index(sensor_type::current);
         index += types.size();
+#if (defined(DEBUG) || defined(_DEBUG))
+        _rem -= types.size();
+#endif /* (defined(DEBUG) || defined(_DEBUG)) */
 
-        dst.emplace_back(*scope, uid, shared_config, power, voltage, current);
+        dst.emplace_back(*scope, uid, owner, power, voltage, current);
         dst.back().configuration(config.averaging(),
             config.voltage_conversion_time(),
             config.current_conversion_time());
     }
 
+#if (defined(DEBUG) || defined(_DEBUG))
+    assert(_rem == 0);
+#endif /* (defined(DEBUG) || defined(_DEBUG)) */
     return retval;
 }

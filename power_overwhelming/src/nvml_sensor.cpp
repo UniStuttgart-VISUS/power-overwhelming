@@ -7,7 +7,6 @@
 #include "nvml_sensor.h"
 
 #include <array>
-#include <cassert>
 #include <stdexcept>
 
 
@@ -180,6 +179,7 @@ PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_serial(
  */
 void PWROWG_DETAIL_NAMESPACE::nvml_sensor::sample(
         _In_ const sensor_array_callback callback,
+        _In_ const sensor_description *sensors,
         _In_opt_ void *context) {
     typedef decltype(reading::floating_point) value_type;
     static constexpr auto thousand = static_cast<value_type>(1000);
@@ -199,5 +199,5 @@ void PWROWG_DETAIL_NAMESPACE::nvml_sensor::sample(
     // Convert to Watts.
     s.reading.floating_point = static_cast<value_type>(mw) / thousand;
 
-    callback(&s, 1, context);
+    callback(&s, 1, sensors, context);
 }

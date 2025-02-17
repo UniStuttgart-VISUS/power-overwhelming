@@ -8,10 +8,11 @@
 #define _PWROWG_HMC8015_SENSOR_H
 #pragma once
 
+#include <cassert>
 #include <list>
 #include <memory>
+#include <regex>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "visus/pwrowg/hmc8015_configuration.h"
@@ -80,6 +81,10 @@ public:
     /// <param name="begin">The begin of the range of sensor descriptions.
     /// </param>
     /// <param name="end">The end of the range of sensor descriptions.</param>
+    /// <param name="owner">The sensor array owning the sensors to be created.
+    /// This pointer is required to gain access to the callback pointers and
+    /// the context data. It can also be used to access the per-sensor class
+    /// configuration contained  in <paramref name="config" /> later on.</param>
     /// <param name="config">The configuration for the sensor class.</param>
     /// <returns>The iterator to the first sensor description within
     /// <paramref name="begin" /> and <paramref name="end" /> that has not been
@@ -89,44 +94,63 @@ public:
         _In_ std::size_t index,
         _In_ const TInput begin,
         _In_ const TInput end,
+        _In_ const sensor_array_impl *owner,
         _In_ const configuration_type& config);
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    /// <param name="path"></param>
+    /// <param name="instrument"></param>
+    /// <param name="owner"></param>
     /// <param name="index"></param>
-    /// <param name="config"></param>
-    hmc8015_sensor(_In_z_ const wchar_t *path,
+    /// <parma name="functions"></param>
+    hmc8015_sensor(_Inout_ hmc8015_instrument&& instrument,
+        _In_ const sensor_array_impl *owner,
         _In_ const std::size_t index,
-        _In_ const configuration_type& config);
+        _Inout_ std::vector<hmc8015_function>&& functions);
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    hmc8015_sensor(void) = delete;
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
     hmc8015_sensor(const hmc8015_sensor& rhs) = delete;
 
     /// <summary>
     /// Starts or stops sampling the sensor.
     /// </summary>
-    /// <param name="callback">The callback to deliver the samples to. If this
-    /// is <c>nullptr</c>, the sensor will be disabled.</param>
-    /// <param name="interval">The sampling interval.</param>
-    /// <param name="context">A user-defined pointer passed to
-    /// <paramref name="callback" />.</param>
-    void sample(_In_opt_ const sensor_array_callback callback,
-        _In_ const std::chrono::milliseconds interval,
-        _In_opt_ void *context = nullptr);
+    /// <param name="enable"><c>true</c> for enabling the sensor,
+    /// <c>false</c> for disabling it.</param>
+    void sample(_In_ const bool enable);
 
     hmc8015_sensor& operator =(const hmc8015_sensor& rhs) = delete;
 
 private:
 
+    /// <summary>
+    /// Configure what the sensor readings are based on the given
+    /// <paramref name="function" /> and return whether the provided
+    /// function is supported or not.
+    /// </summary>
     static bool specialise(_In_ sensor_description_builder& builder,
         _In_ const hmc8015_function function);
 
-    configuration_type _config;
-    std::unordered_map<std::string, std::size_t> _indices;
+    /// <summary>
+    /// A regular expression that is used to patch the name of the log file
+    /// the HMC reports for downloading it.
+    /// </summary>
+    static const std::regex rx_log_patch;
+
+    /// <summary>
+    /// Provides access to the sensor configuration via the owner pointer.
+    /// </summary>
+    const configuration_type& configuration(void) const noexcept;
+
+    std::vector<hmc8015_function> _functions;
+    std::size_t _index;
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     hmc8015_instrument _instrument;
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    const sensor_array_impl *_owner;
     sensor_state _state;
 };
 

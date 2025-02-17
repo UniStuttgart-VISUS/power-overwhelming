@@ -6,70 +6,65 @@
 
 
 /*
- * PWROWG_NAMESPACE::csv_sink<TStream, PageSize>::sample_callback
+ * PWROWG_NAMESPACE::csv_sink<TStream>::csv_sink
  */
-template<class TStream, std::size_t PageSize>
-void PWROWG_NAMESPACE::csv_sink<TStream, PageSize>::sample_callback(
-        _In_reads_(cnt) const sample *samples,
-        _In_ const std::size_t cnt,
-        _In_opt_ void *context) {
-    assert(context != nullptr);
-    auto that = static_cast<csv_sink *>(context);
-
-    for (std::size_t i = 0; i < cnt; ++i) {
-        that->_collector.push(samples[i]);
-    }
-}
-
-
-/*
- * PWROWG_NAMESPACE::csv_sink<TStream, PageSize>::csv_sink
- */
-template<class TStream, std::size_t PageSize>
-PWROWG_NAMESPACE::csv_sink<TStream, PageSize>::csv_sink(
-        _Inout_ stream_type&& stream)
-    : _evt_write(create_event(false, false)),
-        _stream(std::move(stream)) {
+template<class TStream>
+PWROWG_NAMESPACE::csv_sink<TStream>::csv_sink(_Inout_ stream_type&& stream)
+        : _stream(std::move(stream)) {
     if (!this->_stream.is_open()) {
         throw std::invalid_argument("An open output stream must be provided.");
     }
+
+    this->_delimiter = getcsvdelimiter(this->_stream);
 }
 
 
 /*
- * PWROWG_NAMESPACE::csv_sink<TStream, PageSize>::write_header
+ * PWROWG_NAMESPACE::csv_sink<TStream>::write_sample
  */
-template<class TStream, std::size_t PageSize>
-void PWROWG_NAMESPACE::csv_sink<TStream, PageSize>::write_header(void) {
-    const auto delimiter = getcsvdelimiter(this->_stream);
-    this->_stream
-        << PWROWG_TPL_LITERAL(char_type, "Timestamp") << delimiter
-        << PWROWG_TPL_LITERAL(char_type, "Sensor") << delimiter
-        << PWROWG_TPL_LITERAL(char_type, "Value") << std::endl;
-}
+template<class TStream>
+template<class TIterator>
+void PWROWG_NAMESPACE::csv_sink<TStream>::write_samples(
+        _In_ const TIterator begin,
+        _In_ const TIterator end,
+        _In_ const sensor_description *sensors) {
+    assert(sensors != nullptr);
 
+    for (auto it = begin; it != end; ++it) {
+        auto& desc = sensors[it->source];
 
-/*
- * PWROWG_NAMESPACE::csv_sink<TStream, PageSize>::write
- */
-template<class TStream, std::size_t PageSize>
-void PWROWG_NAMESPACE::csv_sink<TStream, PageSize>::write(void) {
-    const auto delimiter = getcsvdelimiter(this->_stream);
+        this->_stream
+            << it->timestamp << this->_delimiter
+            << it->source << this->_delimiter;
 
-    set_thread_name("PwrOwg CSV Writer");
+        switch (desc.reading_type()) {
+            case reading_type::floating_point:
+                this->_stream << it->reading.floating_point;
+                break;
 
-    while (true) {
-        wait_event(this->_evt_write);
-        auto data = this->_collector.reset();
+            case reading_type::signed_integer:
+                this->_stream << it->reading.signed_integer;
+                break;
 
-        for (auto& d : data) {
-            this->_stream
-                << d.sample.timestamp << delimiter
-                << d.sensor << delimiter;
-
-            // TODO: need to find out what the correct type is ...
-
-            this->_stream << std::endl;
+            case reading_type::unsigned_integer:
+                this->_stream << it->reading.unsigned_integer;
+                break;
         }
+
+        this->_stream << std::endl;
     }
 }
+
+
+///*
+// * PWROWG_NAMESPACE::csv_sink<TStream>::write_header
+// */
+//template<class TStream>
+//void PWROWG_NAMESPACE::csv_sink<TStream>::write_header(void) {
+//    const auto delimiter = getcsvdelimiter(this->_stream);
+//    this->_stream
+//        << PWROWG_TPL_LITERAL(char_type, "Timestamp") << delimiter
+//        << PWROWG_TPL_LITERAL(char_type, "Sensor") << delimiter
+//        << PWROWG_TPL_LITERAL(char_type, "Value") << std::endl;
+//}
+//

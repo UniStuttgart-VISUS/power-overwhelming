@@ -92,20 +92,6 @@ public:
         _In_ std::function<void(_In_ TConfig&)> configure);
 
     /// <summary>
-    /// Sets the <see cref="sensor_array" /> automatically as the context when
-    /// the sampler starts.
-    /// </summary>
-    /// <remarks>
-    /// It is unsafe to move the <see cref="sensor_array" /> when using this
-    /// option. The array tries to track the pointer, but this is not thread-safe
-    /// and might cause crashes if a running array is moved.
-    /// </remarks>
-    /// <returns><c>*this</c>.</returns>
-    /// <exception cref="std::runtime_error">If the method is invoked on an
-    /// object that has been disposed by a move.</exception>
-    sensor_array_configuration& deliver_array_as_context(void);
-
-    /// <summary>
     /// Sets the user-defined context to be delivered to the sample callback.
     /// </summary>
     /// <param name="context">The context pointer to pass to the callback.
@@ -114,15 +100,6 @@ public:
     /// <exception cref="std::runtime_error">If the method is invoked on an
     /// object that has been disposed by a move.</exception>
     sensor_array_configuration& deliver_context(_In_opt_ void *context);
-
-    /// <summary>
-    /// Sets the array of <see cref="sensor_description"/>s used by the
-    /// <see cref="sensor_array" /> as the context passed to the callback.
-    /// </summary>
-    /// <returns><c>*this</c>.</returns>
-    /// <exception cref="std::runtime_error">If the method is invoked on an
-    /// object that has been disposed by a move.</exception>
-    sensor_array_configuration& deliver_sensors_as_context(void);
 
     /// <summary>
     /// Sets the callback receiving the samples from the sensor array.

@@ -43,6 +43,9 @@ PWROWG_NAMESPACE::sensor_array PWROWG_NAMESPACE::sensor_array::for_all(
     // Count sensors, but account for dynamic sensors being detached
     // betweeen the calls.
     auto cnt = all_descriptions(descs.data(), descs.size(), config);
+    // Similarly, additional sensors could have become available in the
+    // meantime.
+    cnt = (std::min)(cnt, descs.size());
 
     return sensor_array(std::move(config), descs.data(), cnt);
 }
@@ -66,6 +69,7 @@ PWROWG_NAMESPACE::sensor_array::sensor_array(
         auto end = detail::sensor_registry::create(this->_impl->sensors,
             this->_impl->descriptions.begin(),
             this->_impl->descriptions.end(),
+            this->_impl,
             *this->_impl->configuration);
         this->_impl->descriptions.erase(end, this->_impl->descriptions.end());
     }
@@ -79,7 +83,6 @@ PWROWG_NAMESPACE::sensor_array::sensor_array(
         _Inout_ sensor_array&& rhs) noexcept
         : _impl(rhs._impl) {
     rhs._impl = nullptr;
-    this->sync_context();
 }
 
 
@@ -143,25 +146,15 @@ void PWROWG_NAMESPACE::sensor_array::start(void) {
     using std::chrono::duration_cast;
     typedef PWROWG_NAMESPACE::sample sample_type;
 
-    // A callback that does nothing which serves for detecting samplers
-    // that are inherently slow.
-    static const auto sample_nothing = [](const sample_type *,
-        const std::size_t, void *) { };
-
     volatile auto impl = this->check_not_disposed();
 
     impl->state.begin_start();
-
-    // Make sure that auto-context is lazily initialised.
-    this->sync_context();
 
     // Start the asynchronous sensors and get samples for synchronous ones.
     impl->samplers.clear();
     detail::sensor_registry::sample(std::back_inserter(impl->samplers),
         impl->sensors,
-        impl->configuration->callback,
-        impl->configuration->interval,
-        impl->configuration->context);
+        true);
 
     // Start sampler threads for the synchronous sensors.
     {
@@ -176,7 +169,8 @@ void PWROWG_NAMESPACE::sensor_array::start(void) {
             // it with others. The purpose here is finding APIs that are blocking
             // and would cause others to generate less samples than requested.
             const auto b = std::chrono::steady_clock::now();
-            sampler(sample_nothing, nullptr);
+            sampler(detail::sensor_array_configuration_impl::sample_nothing,
+                nullptr, nullptr);
             const auto dt = std::chrono::steady_clock::now() - b;
 
             if ((sum += dt) > impl->configuration->interval) {
@@ -210,11 +204,8 @@ void PWROWG_NAMESPACE::sensor_array::sensor_array::stop(void) {
     impl->state.begin_stop();
 
     // Stop the asynchronous sensors.
-    detail::sensor_registry::sample(std::back_inserter(impl->samplers),
-        impl->sensors,
-        nullptr,
-        impl->configuration->interval,
-        impl->configuration->context);
+    detail::sensor_registry::sample(impl->samplers.begin(), impl->sensors,
+        false);
 
     // Wait for the sampler threads, which should exit now as the state signals
     // that we are stopping.
@@ -243,7 +234,6 @@ PWROWG_NAMESPACE::sensor_array& PWROWG_NAMESPACE::sensor_array::operator =(
     if (this != std::addressof(rhs)) {
         this->_impl = rhs._impl;
         rhs._impl = nullptr;
-        this->sync_context();
     }
 
     return *this;
@@ -304,7 +294,9 @@ void PWROWG_NAMESPACE::sensor_array::sample(
         const auto then = now + config->interval;
 
         for (std::size_t i = offset; i < end; ++i) {
-            impl->samplers[i](config->callback, config->context);
+            impl->samplers[i](config->callback,
+                impl->descriptions.data(),
+                config->context);
         }
 
         std::this_thread::sleep_until(then);
@@ -341,25 +333,4 @@ PWROWG_NAMESPACE::sensor_array::check_not_disposed(void) const {
     }
 
     return retval;
-}
-
-
-/*
- * PWROWG_NAMESPACE::sensor_array::sync_context
- */
-void PWROWG_NAMESPACE::sensor_array::sync_context(void) {
-    using context_type = detail::sensor_array_context_type;
-    volatile auto impl = this->_impl;
-
-    if ((impl != nullptr) && (impl->configuration != nullptr)) {
-        switch (impl->configuration->context_type) {
-            case context_type::sensor_array:
-                impl->configuration->context = this;
-                break;
-
-            case context_type::sensor_descs:
-                impl->configuration->context = impl->descriptions.data();
-                break;
-        }
-    }
 }

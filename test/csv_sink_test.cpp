@@ -15,14 +15,14 @@ TEST_CLASS(csv_sink_test) {
 
     TEST_METHOD(char_sink) {
         typedef std::ofstream stream_type;
-        typedef csv_sink<stream_type> sink_type;
+        typedef atomic_sink<csv_sink<stream_type>> sink_type;
 
         sensor_array_configuration config;
         stream_type stream;
         stream.open("test.csv");
         stream << setcsvdelimiter(',');
 
-        sink_type sink(std::move(stream));
+        sink_type sink(std::chrono::milliseconds(100), std::move(stream));
         config.deliver_context(&sink)
             .deliver_to(sink_type::sample_callback);
 

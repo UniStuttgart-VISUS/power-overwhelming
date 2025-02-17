@@ -34,41 +34,14 @@ PWROWG_NAMESPACE::sensor_array_configuration::~sensor_array_configuration(
 
 
 /*
- * PWROWG_NAMESPACE::sensor_array_configuration::deliver_array_as_context
- */
-PWROWG_NAMESPACE::sensor_array_configuration&
-PWROWG_NAMESPACE::sensor_array_configuration::deliver_array_as_context(void) {
-    auto impl = this->check_not_disposed();
-    impl->context = nullptr;
-    impl->context_type = detail::sensor_array_context_type::sensor_array;
-    return *this;
-}
-
-
-/*
  * PWROWG_NAMESPACE::sensor_array_configuration::deliver_context
  */
 PWROWG_NAMESPACE::sensor_array_configuration &
 PWROWG_NAMESPACE::sensor_array_configuration::deliver_context(
         _In_opt_ void *context) {
-    auto impl = this->check_not_disposed();
-    impl->context = context;
-    impl->context_type = detail::sensor_array_context_type::user_defined;
+    this->check_not_disposed()->context = context;
     return *this;
 }
-
-
-/*
- * PWROWG_NAMESPACE::sensor_array_configuration::deliver_sensors_as_context
- */
-PWROWG_NAMESPACE::sensor_array_configuration&
-PWROWG_NAMESPACE::sensor_array_configuration::deliver_sensors_as_context(void) {
-    auto impl = this->check_not_disposed();
-    impl->context = nullptr;
-    impl->context_type = detail::sensor_array_context_type::sensor_descs;
-    return *this;
-}
-
 
 /*
  * PWROWG_NAMESPACE::sensor_array_configuration::deliver_to

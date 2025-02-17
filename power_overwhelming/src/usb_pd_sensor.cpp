@@ -124,6 +124,7 @@ PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::~usb_pd_sensor(void) {
  */
 void PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::sample(
         _In_ const sensor_array_callback callback,
+        _In_ const sensor_description *sensors,
         _In_opt_ void *context) {
     unsigned char temperature;
     std::uint16_t voltage;
@@ -141,13 +142,13 @@ void PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::sample(
         if (this->_index_voltage != invalid_index) {
             s.reading.floating_point = voltage / 1000.0;
             s.source = this->_index_voltage;
-            callback(&s, 1, context);
+            callback(&s, 1, sensors, context);
         }
 
         if (this->_index_voltage != invalid_index) {
             s.reading.floating_point = loopback_current / 1000.0;
             s.source = this->_index_current;
-            callback(&s, 1, context);
+            callback(&s, 1, sensors, context);
         }
     }
 }

@@ -11,21 +11,16 @@
 #include <cassert>
 #include <iostream>
 #include <stdexcept>
-#include <thread>
 
-#include "visus/pwrowg/atomic_collector.h"
+#include "visus/pwrowg/atomic_sink.h"
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/csv_iomanip.h"
-#include "visus/pwrowg/event.h"
 #include "visus/pwrowg/literal.h"
-#include "visus/pwrowg/sample.h"
-#include "visus/pwrowg/thread_name.h"
 
 
 PWROWG_NAMESPACE_BEGIN
 
-template<class TStream, std::size_t PageSize = 512>
-class csv_sink final {
+template<class TStream> class csv_sink {
 
 public:
 
@@ -39,40 +34,22 @@ public:
     /// </summary>
     typedef TStream stream_type;
 
-    /// <summary>
-    /// The callback that must be registered with the sensor array to use the
-    /// sink as target for the samples.
-    /// </summary>
-    /// <param name="samples"></param>
-    /// <param name="cnt"></param>
-    /// <param name="context"></param>
-    static void sample_callback(_In_reads_(cnt) const sample *samples,
-        _In_ const std::size_t cnt,
-        _In_opt_ void *context);
-
     explicit csv_sink(_Inout_ stream_type&& stream);
+
+protected:
+
+    /// <summary>
+    /// Write the given range of samples to the <see cref="_stream" />.
+    /// </summary>
+    template<class TIterator>
+    void write_samples(_In_ const TIterator begin,
+        _In_ const TIterator end,
+        _In_ const sensor_description *sensors);
 
 private:
 
-    /// <summary>
-    /// The atomic collector used to dump the samples to.
-    /// </summary>
-    typedef atomic_collector<sample, PageSize> collector_type;
-
-    /// <summary>
-    /// Writes the CSV header to <see cref="_stream" />.
-    /// </summary>
-    void write_header(void);
-
-    /// <summary>
-    /// The code running in the <see cref="_writer" /> thread.
-    /// </summary>
-    void write(void);
-
-    collector_type _collector;
-    event_type _evt_write;
+    char_type _delimiter;
     stream_type _stream;
-    std::thread _writer;
 };
 
 PWROWG_NAMESPACE_END

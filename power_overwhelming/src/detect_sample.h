@@ -26,9 +26,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// method.</typeparam>
 template<class TType>
 using _async_sample = decltype(std::declval<TType &>().sample(
-    std::declval<sensor_array_callback>(),
-    std::declval<std::chrono::milliseconds>(),
-    std::declval<void *>()));
+    std::declval<bool>()));
 
 /// <summary>
 /// The detector type for the synchronous sample method to be used by
@@ -39,6 +37,7 @@ using _async_sample = decltype(std::declval<TType &>().sample(
 template<class TType>
 using _sync_sample = decltype(std::declval<TType &>().sample(
     std::declval<sensor_array_callback>(),
+    std::declval<sensor_description *>(),
     std::declval<void *>()));
 
 /// <summary>

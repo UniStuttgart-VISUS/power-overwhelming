@@ -14,16 +14,15 @@ TInput PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::from_descriptions(
         _In_ std::size_t index,
         _In_ const TInput begin,
         _In_ const TInput end,
+        _In_ const sensor_array_impl *owner,
         _In_ const configuration_type& config) {
     auto retval = move_front_if(begin, end, is_usb_pd_sensor);
+#if (defined(DEBUG) || defined(_DEBUG))
+    auto _rem = std::distance(begin, retval);
+#endif /* (defined(DEBUG) || defined(_DEBUG)) */
 
-    auto d = std::distance(begin, retval);
-
-    // Group the sensors by their device ID.
-    std::sort(begin, retval,
-        [](const sensor_description& lhs, const sensor_description& rhs) {
-            return (compare(lhs.id(), rhs.id()) < 0);
-        });
+    // Group the sensors by their device path.
+    sort_by_path(begin, retval);
 
     for (auto it = begin; it != retval; /* [sic] */) {
         // At this point, there are one or two sensors from the same device.
@@ -42,6 +41,9 @@ TInput PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::from_descriptions(
         types.reserve(2);
         while ((it != retval) && equals(it->path(), port)) {
             types.push_back(pwr_volt_cur_mask(*it++));
+#if (defined(DEBUG) || defined(_DEBUG))
+            --_rem;
+#endif /* (defined(DEBUG) || defined(_DEBUG)) */
         }
 
         // Generate sensor IDs for the active sources.
@@ -51,5 +53,8 @@ TInput PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::from_descriptions(
         dst.emplace_back(port, voltage, current);
     }
 
+#if (defined(DEBUG) || defined(_DEBUG))
+    assert(_rem == 0);
+#endif /* (defined(DEBUG) || defined(_DEBUG)) */
     return retval;
 }

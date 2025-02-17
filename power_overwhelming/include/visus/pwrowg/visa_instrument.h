@@ -1064,9 +1064,7 @@ public:
     /// commands issued afterwards.
     /// </summary>
     /// <remarks>
-    /// <para>This method issues a <c>*WAI</c> command.</param>
-    /// <para>This method does nothing if the library was compiled without
-    /// support for VISA.</para>
+    /// <para>This method issues a <c>*WAI</c> command.</para>
     /// </remarks>
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
@@ -1079,10 +1077,6 @@ public:
     /// Write at most <paramref name="cnt" /> bytes of the given data to the
     /// instrument.
     /// </summary>
-    /// <remarks>
-    /// <para>This method does nothing if the library was compiled without
-    /// support for VISA.</para>
-    /// </remarks>
     /// <param name="buffer">The buffer holding the data to write.</param>
     /// <param name="cnt">The size of <paramref name="buffer" /> in bytes.
     /// </param>

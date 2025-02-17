@@ -57,17 +57,21 @@ int _tmain(const int argc, const TCHAR **argv) {
     {
         visus::pwrowg::sensor_array_configuration config;
         config
+            .configure<visus::pwrowg::hmc8015_configuration>([](visus::pwrowg::hmc8015_configuration& c) {
+                c.timeout(std::chrono::seconds(10));
+            })
             .sample_every(std::chrono::milliseconds(5))
-            .deliver_to([](const visus::pwrowg::sample *s, std::size_t n, void *c) {
-                auto descs = static_cast<visus::pwrowg::sensor_description *>(c);
+            .deliver_to([](const visus::pwrowg::sample *s,
+                    std::size_t n,
+                    const visus::pwrowg::sensor_description *descs,
+                    void *) {
                 for (std::size_t i = 0; i < n; ++i) {
                     std::cout << s[i].source << "/"
                         << visus::pwrowg::convert_string<char>(descs[s[i].source].name()) << "@"
                         << s[i].timestamp << ": "
                         << s->reading.floating_point << std::endl;
                 }
-            })
-            .deliver_sensors_as_context();
+            });
 
         auto sensors = visus::pwrowg::sensor_array::for_all(std::move(config));
 
@@ -81,7 +85,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 
         // Sample the sensors for some time.
         sensors.start();
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(5));
         sensors.stop();
     }
 

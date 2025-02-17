@@ -487,6 +487,25 @@ public:
     }
 
     /// <summary>
+    /// Answer a comma-separated list of files on the instrument or the USB thumb
+    /// drive connected to the instrument.
+    /// </summary>
+    /// <param name="dst">If not <c>nullptr</c>, receives at most
+    /// <paramref name="cnt" /> characters of the string.</param>
+    /// <param name="cnt">The buffer size in number of characters.</param>
+    /// <param name="use_usb">If <c>true</c>, list the contents of the USB drive
+    /// rather than the internal files.</param>
+    /// <returns>The required buffer size for <paramref name="dst" />.</returns>
+    /// <exception cref="std::runtime_error">If the method is called on an
+    /// object that has been disposed by moving it.</exception>
+    /// <exception cref="visa_exception">If the VISA command was not
+    /// processed successfully.</exception>
+    std::size_t list_files_on_instrument(
+        _Out_writes_opt_z_(cnt) char *dst,
+        _In_ const std::size_t cnt,
+        _In_ const bool use_usb = false) const;
+
+    /// <summary>
     /// Enables or disables logging.
     /// </summary>
     /// <param name="enable">Start logging if <c>true</c>, otherwise, stop

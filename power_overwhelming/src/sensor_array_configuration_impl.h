@@ -15,8 +15,6 @@
 #include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_configuration.h"
 
-#include "sensor_array_context_type.h"
-
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
@@ -32,6 +30,19 @@ struct sensor_array_configuration_impl final {
     typedef std::unique_ptr<sensor_configuration> sensor_config;
 
     /// <summary>
+    /// An ampty sampler callback, which is user as the default, that does
+    /// nothing.
+    /// </summary>
+    /// <param name=""></param>
+    /// <param name=""></param>
+    /// <param name=""></param>
+    /// <param name=""></param>
+    static void sample_nothing(_In_opt_ const sample *samples,
+        _In_ const std::size_t cnt,
+        _In_opt_ const sensor_description *sensors,
+        _In_opt_ void *context) { }
+
+    /// <summary>
     /// The callback that the <see cref="sampler_threads" /> must invoke.
     /// </summary>
     sensor_array_callback callback;
@@ -41,11 +52,6 @@ struct sensor_array_configuration_impl final {
     /// <see cref="callback" />.
     /// </summary>
     void *context;
-
-    /// <summary>
-    /// The type of a potentially auto-generated <see cref="context" />.
-    /// </summary>
-    sensor_array_context_type context_type;
 
     /// <summary>
     /// The sampling interval for the <see cref="sampler_threads" />.
@@ -60,11 +66,10 @@ struct sensor_array_configuration_impl final {
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    inline sensor_array_configuration_impl(void) : context(nullptr),
-            context_type(sensor_array_context_type::user_defined),
-            interval(5000) {
-        this->callback = [](const sample *, std::size_t, void *) { };
-    }
+    inline sensor_array_configuration_impl(void)
+        : callback(sample_nothing),
+        context(nullptr),
+        interval(5000) { }
 
     /// <summary>
     /// Gets the sensor configuration registered with the specified ID.

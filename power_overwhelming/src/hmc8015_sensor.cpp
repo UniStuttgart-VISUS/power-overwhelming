@@ -13,6 +13,8 @@
 
 #include <rapidcsv.h>
 
+#include "sensor_array_impl.h"
+
 
 /*
  * PWROWG_DETAIL_NAMESPACE_BEGIN::hmc8015_sensor::descriptions
@@ -24,6 +26,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::descriptions(
     std::size_t retval = 0;
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
+    // These are the functions we enable by default if the user did not request
+    // anything special via the 'config' object.
     const std::array<hmc8015_function, 6> default_functions {
         hmc8015_function::rms_voltage,
         hmc8015_function::rms_current,
@@ -81,8 +85,6 @@ std::size_t PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::descriptions(
                 cnt_funcs = default_functions.size();
             }
 
-            i.custom_functions(funcs, cnt_funcs);
-
             // Create a descriptor for each function being recorded.
             for (std::size_t f = 0; f < cnt_funcs; ++f) {
                 if (specialise(builder, funcs[f])) {
@@ -94,8 +96,6 @@ std::size_t PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::descriptions(
                     }
 
                     ++retval;
-
-                    break;  // TODO, TODO, TODO, HACK
                 }
             }
         }
@@ -112,43 +112,84 @@ std::size_t PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::descriptions(
 }
 
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::hmc8015_sensor
  */
 PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::hmc8015_sensor(
-        _In_z_ const wchar_t *path,
+        _Inout_ hmc8015_instrument&& instrument,
+        _In_ const sensor_array_impl *owner,
         _In_ const std::size_t index,
-        _In_ const configuration_type& config)
-    : _config(config) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    this->_instrument = hmc8015_instrument(path, config.timeout());
-    this->_instrument.timeout(config.timeout());
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+        _Inout_ std::vector<hmc8015_function>&& functions)
+    : _functions(std::move(functions)),
+        _instrument(std::move(instrument)),
+        _index(index),
+        _owner(owner) {
+    if (!this->_instrument) {
+        throw std::invalid_argument("A valid HMC 8015 instrument must be used "
+            "for a sensor..");
+    }
+    if (this->_owner == nullptr) {
+        throw std::invalid_argument("The owning sensor array of a HMC 8015 "
+            "sensor must not be null.");
+    }
 }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
 /*
  * PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample
  */
-void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(
-        _In_opt_ const sensor_array_callback callback,
-        _In_ const std::chrono::milliseconds interval,
-        _In_opt_ void *context) {
+void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     using std::chrono::duration;
     using std::chrono::duration_cast;
 
-    if (callback != nullptr) {
+    if (enable) {
         this->_state.begin_start();
 
-        // TODO: generate file name from time.
+        // Clamp the sampling interval according to the SCPI Programmer's
+        // Manual p. 43.
+        auto interval = duration_cast<duration<float>>(
+            this->_owner->configuration->interval).count();
+        if (interval < 0.1f) {
+            interval = std::numeric_limits<float>::lowest();
+        } else if (interval > 600.0f) {
+            interval = (std::numeric_limits<float>::max)();
+        }
 
-        const auto i = duration_cast<duration<float>>(interval);
-        this->_instrument.integrator_behaviour(hmc8015_integrator_mode::manual)
-            .log_behaviour(i.count(), hmc8015_log_mode::unlimited)
-            .log_file("hackno.csv", false, false)
-            .start_integrator()
-            .log(true);
+        // Set the user-defined log file or create one.
+        if (this->configuration().log_file() != nullptr) {
+            this->_instrument.log_file(
+                this->configuration().log_file(),
+                true,
+                this->configuration().log_to_usb());
+
+        } else {
+            // Unfortunately, the HMC8015 only supports 8.3 file names, so we
+            // try to build a unique one ...
+            std::stringstream file_name_builder;
+
+            // TODO: find s.th. better here, e.g. base64
+            auto timestamp = std::chrono::high_resolution_clock::now()
+                .time_since_epoch().count();
+            timestamp = timestamp & UINT_MAX ^ (timestamp >> 32);
+            file_name_builder << std::hex
+                << static_cast<std::uint32_t>(timestamp)
+                << ".csv";
+
+            auto file_name = file_name_builder.str();
+            this->_instrument.log_file(
+                file_name.c_str(),
+                true,
+                this->configuration().log_to_usb());
+        }
+
+        this->_instrument.integrator_behaviour(hmc8015_integrator_mode::manual);
+        this->_instrument.log_behaviour(interval, hmc8015_log_mode::unlimited);
+        this->_instrument.reset_integrator();
+        this->_instrument.start_integrator();
+        this->_instrument.log(true);
 
         this->_state.end_start();
 
@@ -156,13 +197,30 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(
         this->_state.begin_stop();
 
         // Stop integration and logging.
-        this->_instrument.stop_integrator()
-            .log(false);
+        this->_instrument.log(false);
+        this->_instrument.stop_integrator();
 
         // Find out where the instrument wrote the data to.
         std::vector<char> log;
         log.resize(this->_instrument.log_file(nullptr, 0));
         this->_instrument.log_file(log.data(), log.size());
+
+        {
+            std::vector<char> logs;
+            logs.resize(this->_instrument.list_files_on_instrument(nullptr, 0));
+            this->_instrument.list_files_on_instrument(logs.data(), logs.size());
+            logs.push_back('\r');
+            logs.push_back('\n');
+            ::OutputDebugStringA(logs.data());
+        }
+
+        // Patch the file name, because what is reported by the device is wrong.
+        std::match_results<std::vector<char>::iterator> match;
+        if (std::regex_match(log.begin(), log.end(), match, rx_log_patch)) {
+            log.insert(match[1].first, { '.', 'C', 'S', 'V' });
+        }
+
+        this->_instrument.operation_complete();
 
         // Download the CSV file into memory.
         auto log_data = this->_instrument.copy_file_from_instrument_or_usb(
@@ -184,7 +242,7 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(
         // If using internal memory, delete the log file. If the user selected the
         // USB thumb drive, we assume the original data should be kept for
         // reference.
-        if (!this->_config.log_to_usb()) {
+        if (!this->configuration().log_to_usb()) {
             this->_instrument.delete_file_from_instrument_or_usb(log.data());
         }
 
@@ -201,6 +259,8 @@ bool PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::specialise(
         _In_ sensor_description_builder& builder,
         _In_ const hmc8015_function function) {
     const auto base_type = sensor_type::external | sensor_type::system;
+
+    builder.with_private_data(function);
 
     if (is_current(function)) {
         builder.produces(reading_type::floating_point)
@@ -230,4 +290,25 @@ bool PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::specialise(
         // This is nothing we support in the sensor.
         return false;
     }
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::rx_log_patch
+ */
+const std::regex PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::rx_log_patch(
+    "^\".+(\").+$", std::regex::icase | std::regex::ECMAScript);
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::configuration
+ */
+const PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::configuration_type&
+PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::configuration(void) const noexcept {
+    assert(this->_owner != nullptr);
+    assert(this->_owner->configuration != nullptr);
+    auto it = this->_owner->configuration->sensor_configs.find(
+        configuration_type::id);
+    assert(it != this->_owner->configuration->sensor_configs.end());
+    return dynamic_cast<const configuration_type &>(*it->second);
 }

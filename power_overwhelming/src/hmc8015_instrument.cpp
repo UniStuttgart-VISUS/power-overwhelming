@@ -377,6 +377,25 @@ PWROWG_NAMESPACE::hmc8015_instrument::integrator_behaviour(
 
 
 /*
+ * PWROWG_NAMESPACE::hmc8015_instrument::list_files_on_instrument
+ */
+std::size_t PWROWG_NAMESPACE::hmc8015_instrument::list_files_on_instrument(
+        _Out_writes_opt_z_(cnt) char *dst,
+        _In_ const std::size_t cnt,
+        _In_ const bool use_usb) const {
+    auto retval = this->query(use_usb ? "DATA:LIST? EXT" : "DATA:LIST? INT");
+
+    if ((dst != nullptr) && (cnt > 0)) {
+        const auto c = (std::min)(cnt, retval.size());
+        std::copy_n(retval.begin(), c, dst);
+        dst[c - 1] = 0;
+    }
+
+    return retval.size();
+}
+
+
+/*
  * PWROWG_NAMESPACE::hmc8015_instrument::log
  */
 PWROWG_NAMESPACE::hmc8015_instrument&
@@ -412,7 +431,8 @@ PWROWG_NAMESPACE::hmc8015_instrument::log(_In_ const bool enable) {
  */
 bool PWROWG_NAMESPACE::hmc8015_instrument::logging(void) const {
     auto response = this->query("LOG:STATE?\n");
-    return (!response.empty() && (*response.as<char>() != '0'));
+    auto status = response.as<char>();
+    return ((status != nullptr) && (*status != '0'));
 }
 
 
@@ -525,6 +545,9 @@ PWROWG_NAMESPACE::hmc8015_instrument::log_behaviour(
 
     // Use the first page configured in the constructor.
     this->write("LOG:PAGE 1\n");
+
+    // Wait for the device to finish.
+    this->operation_complete();
 
     return *this;
 }
