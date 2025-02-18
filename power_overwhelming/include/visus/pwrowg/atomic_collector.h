@@ -145,9 +145,7 @@ private:
 #if defined(PWROWG_PROFILE_ATOMIC_COLLECTOR)
     alignas(false_sharing_range) std::atomic<std::size_t> _alloc_discarded;
 #endif /* defined(PWROWG_PROFILE_ATOMIC_COLLECTOR) */
-
     alignas(false_sharing_range) std::atomic<page_type *> _pages;
-
     std::uint8_t _padding[false_sharing_range - sizeof(_pages)];
 };
 

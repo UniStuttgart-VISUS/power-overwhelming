@@ -72,9 +72,10 @@ private:
 
     collector_type _collector;
     std::chrono::milliseconds _interval;
-    std::atomic<bool> _running;
-    const sensor_description *_sensors;
     std::thread _writer;
+    alignas(false_sharing_range) std::atomic<bool> _running;
+    alignas(false_sharing_range) std::atomic<const sensor_description *>
+        _sensors;
 };
 
 PWROWG_NAMESPACE_END

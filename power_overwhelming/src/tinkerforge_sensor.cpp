@@ -481,7 +481,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::voltage_callback(
     std::lock_guard<decltype(that->_lock)> l(that->_lock);
     PWROWG_NAMESPACE::sample sample(that->_index_voltage,
         static_cast<value_type>(value) / static_cast<value_type>(1000));
-    config->callback(&sample, 1, sensors, config->callback);
+    config->callback(&sample, 1, sensors, config->context);
 }
 
 

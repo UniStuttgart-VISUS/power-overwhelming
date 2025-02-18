@@ -17,7 +17,10 @@ void PWROWG_NAMESPACE::atomic_sink<TSink, PageSize>::sample_callback(
     assert(context != nullptr);
     auto that = static_cast<atomic_sink *>(context);
 
-    that->_sensors = sensors;
+    {
+        const sensor_description *expected = nullptr;
+        that->_sensors.compare_exchange_strong(expected, sensors);
+    }
 
     for (std::size_t i = 0; i < cnt; ++i) {
         that->_collector.push(samples[i]);
@@ -72,7 +75,7 @@ void PWROWG_NAMESPACE::atomic_sink<TSink, PageSize>::write(void) {
     }
 
     // There might be dangling stuff in the collector.
-    if (this->_sensors!= nullptr) {
+    if (this->_sensors != nullptr) {
         auto samples = this->_collector.reset();
         TSink::write_samples(samples.begin(), samples.end(), this->_sensors);
     }
