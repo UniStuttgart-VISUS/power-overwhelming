@@ -34,10 +34,10 @@ TEST_CLASS(multi_sz_test) {
         Assert::AreEqual(std::size_t(4), msz.count(), L"multi-sz has 4 entries.", LINE_INFO());
         Assert::AreEqual(size_t(23), msz.length(), L"multi-sz has length 23.", LINE_INFO());
         Assert::AreEqual("Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), "Hugo", L"at(1) is \"Hugo\".", LINE_INFO());
-        Assert::AreEqual(msz.at(2), "Heinz", L"at(2) is \"Heinz\".", LINE_INFO());
-        Assert::AreEqual(msz.at(3), "Hans", L"at(3) is \"Hans\".", LINE_INFO());
-        Assert::IsNull(msz.at(4), L"at(3) is nullptr.", LINE_INFO());
+        Assert::AreEqual("Hugo", msz.at(1), L"at(1) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual("Heinz", msz.at(2), L"at(2) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual("Hans", msz.at(3), L"at(3) is \"Hans\".", LINE_INFO());
+        Assert::IsNull(msz.at(4), L"at(3) is nullptr.",  LINE_INFO());
         Assert::AreEqual(msz[0], "Horst", L"[0] is \"Horst\".", LINE_INFO());
         Assert::AreEqual(msz[1], "Hugo", L"[1] is \"Hugo\".", LINE_INFO());
         Assert::AreEqual(msz[2], "Heinz", L"[2] is \"Heinz\".", LINE_INFO());
@@ -51,16 +51,48 @@ TEST_CLASS(multi_sz_test) {
         Assert::IsFalse(msz.empty(), L"multi-sz is intially not empty.", LINE_INFO());
         Assert::AreEqual(std::size_t(4), msz.count(), L"multi-sz has 4 entries.", LINE_INFO());
         Assert::AreEqual(size_t(23), msz.length(), L"multi-sz has length 23.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), L"Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), L"Hugo", L"at(1) is \"Hugo\".", LINE_INFO());
-        Assert::AreEqual(msz.at(2), L"Heinz", L"at(2) is \"Heinz\".", LINE_INFO());
-        Assert::AreEqual(msz.at(3), L"Hans", L"at(3) is \"Hans\".", LINE_INFO());
+        Assert::AreEqual(L"Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual(L"Hugo", msz.at(1), L"at(1) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual(L"Heinz", msz.at(2), L"at(2) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual(L"Hans", msz.at(3), L"at(3) is \"Hans\".", LINE_INFO());
         Assert::IsNull(msz.at(4), L"at(3) is nullptr.", LINE_INFO());
         Assert::AreEqual(msz[0], L"Horst", L"[0] is \"Horst\".", LINE_INFO());
         Assert::AreEqual(msz[1], L"Hugo", L"[1] is \"Hugo\".", LINE_INFO());
         Assert::AreEqual(msz[2], L"Heinz", L"[2] is \"Heinz\".", LINE_INFO());
         Assert::AreEqual(msz[3], L"Hans", L"[3] is \"Hans\".", LINE_INFO());
         Assert::IsNull(msz[4], L"[3] is nullptr.", LINE_INFO());
+    }
+
+    TEST_METHOD(char_blob_ctor) {
+        typedef char char_type;
+        const char_type data[] = "Horst\0Hugo\0Heinz\0Hans\0";
+        blob blob(sizeof(data));
+        ::memcpy(blob, data, sizeof(data));
+        multi_sz<char_type> msz(blob);
+        Assert::IsFalse(msz.empty(), L"multi-sz is intially not empty.", LINE_INFO());
+        Assert::AreEqual(std::size_t(4), msz.count(), L"multi-sz has 4 entries.", LINE_INFO());
+        Assert::AreEqual(size_t(23), msz.length(), L"multi-sz has length 23.", LINE_INFO());
+        Assert::AreEqual("Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual("Hugo", msz.at(1), L"at(1) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual("Heinz", msz.at(2), L"at(2) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual("Hans", msz.at(3), L"at(3) is \"Hans\".", LINE_INFO());
+        Assert::IsNull(msz.at(4), L"at(3) is nullptr.", LINE_INFO());
+    }
+
+    TEST_METHOD(wchar_t_blob_ctor) {
+        typedef wchar_t char_type;
+        const char_type data[] = L"Horst\0Hugo\0Heinz\0Hans\0";
+        blob blob(sizeof(data));
+        ::memcpy(blob, data, sizeof(data));
+        multi_sz<char_type> msz(blob);
+        Assert::IsFalse(msz.empty(), L"multi-sz is intially not empty.", LINE_INFO());
+        Assert::AreEqual(std::size_t(4), msz.count(), L"multi-sz has 4 entries.", LINE_INFO());
+        Assert::AreEqual(size_t(23), msz.length(), L"multi-sz has length 23.", LINE_INFO());
+        Assert::AreEqual(L"Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual(L"Hugo", msz.at(1), L"at(1) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual(L"Heinz", msz.at(2), L"at(2) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual(L"Hans", msz.at(3), L"at(3) is \"Hans\".", LINE_INFO());
+        Assert::IsNull(msz.at(4), L"at(3) is nullptr.", LINE_INFO());
     }
 
     TEST_METHOD(char_clone) {
@@ -117,8 +149,8 @@ TEST_CLASS(multi_sz_test) {
         Assert::AreEqual(std::size_t(2), msz.count(), L"multi-sz has 2 entries.", LINE_INFO());
         Assert::IsTrue(clone.empty(), L"clone is now empty.", LINE_INFO());
 
-        Assert::AreEqual(msz.at(0), "Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), "Hugo", L"at(1) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual("Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual("Hugo", msz.at(1), L"at(1) is \"Hugo\".", LINE_INFO());
 
         Assert::IsFalse(msz == clone, L"Equality", LINE_INFO());
         Assert::IsTrue(msz != clone, L"Inequality", LINE_INFO());
@@ -144,8 +176,8 @@ TEST_CLASS(multi_sz_test) {
         Assert::AreEqual(std::size_t(2), msz.count(), L"multi-sz has 2 entries.", LINE_INFO());
         Assert::IsTrue(clone.empty(), L"clone is now empty.", LINE_INFO());
 
-        Assert::AreEqual(msz.at(0), L"Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), L"Hugo", L"at(1) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual(L"Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual(L"Hugo", msz.at(1), L"at(1) is \"Hugo\".", LINE_INFO());
 
         Assert::IsFalse(msz == clone, L"Equality", LINE_INFO());
         Assert::IsTrue(msz != clone, L"Inequality", LINE_INFO());
@@ -174,22 +206,22 @@ TEST_CLASS(multi_sz_test) {
         msz.add("Horst");
         Assert::IsFalse(msz.empty(), L"Not empty.", LINE_INFO());
         Assert::AreEqual(std::size_t(1), msz.count(), L"One added.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), "Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::IsNull(msz.at(1), L"at(1) is nullptr.", LINE_INFO());
+        Assert::AreEqual("Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::IsNull( msz.at(1), L"at(1) is nullptr.",LINE_INFO());
 
         msz.add("Hugo");
         Assert::IsFalse(msz.empty(), L"Not empty.", LINE_INFO());
         Assert::AreEqual(std::size_t(2), msz.count(), L"One added.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), "Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), "Hugo", L"at(1) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual("Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual("Hugo", msz.at(1), L"at(1) is \"Hugo\".", LINE_INFO());
         Assert::IsNull(msz.at(2), L"at(2) is nullptr.", LINE_INFO());
 
         msz.add("Heinz");
         Assert::IsFalse(msz.empty(), L"Not empty.", LINE_INFO());
         Assert::AreEqual(std::size_t(3), msz.count(), L"One added.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), "Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), "Hugo", L"at(2) is \"Hugo\".", LINE_INFO());
-        Assert::AreEqual(msz.at(2), "Heinz", L"at(3) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual("Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual("Hugo", msz.at(1), L"at(2) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual("Heinz", msz.at(2), L"at(3) is \"Heinz\".", LINE_INFO());
         Assert::IsNull(msz.at(3), L"at(3) is nullptr.", LINE_INFO());
     }
 
@@ -200,22 +232,22 @@ TEST_CLASS(multi_sz_test) {
         msz.add(L"Horst");
         Assert::IsFalse(msz.empty(), L"Not empty.", LINE_INFO());
         Assert::AreEqual(std::size_t(1), msz.count(), L"One added.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), L"Horst", L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual(L"Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
         Assert::IsNull(msz.at(1), L"at(1) is nullptr.", LINE_INFO());
 
         msz.add(L"Hugo");
         Assert::IsFalse(msz.empty(), L"Not empty.", LINE_INFO());
         Assert::AreEqual(std::size_t(2), msz.count(), L"One added.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), L"Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), L"Hugo", L"at(1) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual(L"Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual(L"Hugo", msz.at(1), L"at(1) is \"Hugo\".", LINE_INFO());
         Assert::IsNull(msz.at(2), L"at(2) is nullptr.", LINE_INFO());
 
         msz.add(L"Heinz");
         Assert::IsFalse(msz.empty(), L"Not empty.", LINE_INFO());
         Assert::AreEqual(std::size_t(3), msz.count(), L"One added.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), L"Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), L"Hugo", L"at(2) is \"Hugo\".", LINE_INFO());
-        Assert::AreEqual(msz.at(2), L"Heinz", L"at(3) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual(L"Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual(L"Hugo", msz.at(1), L"at(2) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual(L"Heinz", msz.at(2), L"at(3) is \"Heinz\".", LINE_INFO());
         Assert::IsNull(msz.at(3), L"at(3) is nullptr.", LINE_INFO());
     }
 
@@ -241,8 +273,8 @@ TEST_CLASS(multi_sz_test) {
             Assert::IsFalse(msz.empty(), L"multi-sz is intially not empty.", LINE_INFO());
             msz.remove_if([](const char *s) { return s[0] == 'H' && s[1] == 'o'; });
             Assert::AreEqual(std::size_t(2), msz.count(), L"Two remaining.", LINE_INFO());
-            Assert::AreEqual(msz.at(0), "Hugo", L"at(0) is \"Hugo\".", LINE_INFO());
-            Assert::AreEqual(msz.at(1), "Hans", L"at(1) is \"Hans\".", LINE_INFO());
+            Assert::AreEqual("Hugo", msz.at(0), L"at(0) is \"Hugo\".", LINE_INFO());
+            Assert::AreEqual("Hans", msz.at(1), L"at(1) is \"Hans\".", LINE_INFO());
         }
     }
 
@@ -268,8 +300,8 @@ TEST_CLASS(multi_sz_test) {
             Assert::IsFalse(msz.empty(), L"multi-sz is intially not empty.", LINE_INFO());
             msz.remove_if([](const wchar_t *s) { return s[0] == L'H' && s[1] == L'o'; });
             Assert::AreEqual(std::size_t(2), msz.count(), L"Two remaining.", LINE_INFO());
-            Assert::AreEqual(msz.at(0), L"Hugo", L"at(0) is \"Hugo\".", LINE_INFO());
-            Assert::AreEqual(msz.at(1), L"Hans", L"at(1) is \"Hans\".", LINE_INFO());
+            Assert::AreEqual(L"Hugo", msz.at(0), L"at(0) is \"Hugo\".", LINE_INFO());
+            Assert::AreEqual(L"Hans", msz.at(1), L"at(1) is \"Hans\".", LINE_INFO());
         }
     }
 
@@ -282,22 +314,22 @@ TEST_CLASS(multi_sz_test) {
 
         msz.remove("Hugo");
         Assert::AreEqual(std::size_t(3), msz.count(), L"Three remaining.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), "Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), "Heinz", L"at(1) is \"Heinz\".", LINE_INFO());
-        Assert::AreEqual(msz.at(2), "Hans", L"at(2) is \"Hans\".", LINE_INFO());
+        Assert::AreEqual("Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual("Heinz", msz.at(1), L"at(1) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual("Hans", msz.at(2), L"at(2) is \"Hans\".", LINE_INFO());
 
         msz.remove("Horst");
         Assert::AreEqual(std::size_t(2), msz.count(), L"Two remaining.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), "Heinz", L"at(0) is \"Heinz\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), "Hans", L"at(1) is \"Hans\".", LINE_INFO());
+        Assert::AreEqual("Heinz", msz.at(0), L"at(0) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual("Hans", msz.at(1), L"at(1) is \"Hans\".", LINE_INFO());
 
         msz.remove("Hans");
         Assert::AreEqual(std::size_t(1), msz.count(), L"One remaining.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), "Heinz", L"at(0) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual("Heinz", msz.at(0), L"at(0) is \"Heinz\".", LINE_INFO());
 
         msz.remove("Hans"); // [sic]
         Assert::AreEqual(std::size_t(1), msz.count(), L"One remaining.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), "Heinz", L"at(0) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual("Heinz", msz.at(0), L"at(0) is \"Heinz\".", LINE_INFO());
 
         msz.remove("Heinz");
         Assert::AreEqual(std::size_t(0), msz.count(), L"None remaining.", LINE_INFO());
@@ -313,22 +345,22 @@ TEST_CLASS(multi_sz_test) {
 
         msz.remove(L"Hugo");
         Assert::AreEqual(std::size_t(3), msz.count(), L"Three remaining.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), L"Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), L"Heinz", L"at(1) is \"Heinz\".", LINE_INFO());
-        Assert::AreEqual(msz.at(2), L"Hans", L"at(2) is \"Hans\".", LINE_INFO());
+        Assert::AreEqual(L"Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual(L"Heinz", msz.at(1), L"at(1) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual(L"Hans", msz.at(2), L"at(2) is \"Hans\".", LINE_INFO());
 
         msz.remove(L"Horst");
         Assert::AreEqual(std::size_t(2), msz.count(), L"Two remaining.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), L"Heinz", L"at(0) is \"Heinz\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), L"Hans", L"at(1) is \"Hans\".", LINE_INFO());
+        Assert::AreEqual(L"Heinz", msz.at(0), L"at(0) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual(L"Hans", msz.at(1), L"at(1) is \"Hans\".", LINE_INFO());
 
         msz.remove(L"Hans");
         Assert::AreEqual(std::size_t(1), msz.count(), L"One remaining.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), L"Heinz", L"at(0) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual(L"Heinz", msz.at(0), L"at(0) is \"Heinz\".", LINE_INFO());
 
         msz.remove(L"Hans"); // [sic]
         Assert::AreEqual(std::size_t(1), msz.count(), L"One remaining.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), L"Heinz", L"at(0) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual(L"Heinz", msz.at(0), L"at(0) is \"Heinz\".", LINE_INFO());
 
         msz.remove(L"Heinz");
         Assert::AreEqual(std::size_t(0), msz.count(), L"None remaining.", LINE_INFO());
@@ -343,33 +375,33 @@ TEST_CLASS(multi_sz_test) {
 
         msz.insert(0, "Hugo");
         Assert::AreEqual(std::size_t(1), msz.count(), L"Element added.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), "Hugo", L"at(0) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual("Hugo", msz.at(0), L"at(0) is \"Hugo\".", LINE_INFO());
 
         msz.insert(0, "Horst");
         Assert::AreEqual(std::size_t(2), msz.count(), L"Element added.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), "Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), "Hugo", L"at(1) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual("Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual("Hugo", msz.at(1), L"at(1) is \"Hugo\".", LINE_INFO());
 
         msz.insert(1, "Heinz");
         Assert::AreEqual(std::size_t(3), msz.count(), L"Element added.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), "Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), "Heinz", L"at(1) is \"Heinz\".", LINE_INFO());
-        Assert::AreEqual(msz.at(2), "Hugo", L"at(2) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual("Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual("Heinz", msz.at(1), L"at(1) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual("Hugo", msz.at(2), L"at(2) is \"Hugo\".", LINE_INFO());
 
         msz.insert(3, "Egon");
         Assert::AreEqual(std::size_t(4), msz.count(), L"Element added.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), "Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), "Heinz", L"at(1) is \"Heinz\".", LINE_INFO());
-        Assert::AreEqual(msz.at(2), "Hugo", L"at(2) is \"Hugo\".", LINE_INFO());
-        Assert::AreEqual(msz.at(3), "Egon", L"at(3) is \"Egon\".", LINE_INFO());
+        Assert::AreEqual("Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual("Heinz", msz.at(1), L"at(1) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual("Hugo", msz.at(2), L"at(2) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual("Egon", msz.at(3), L"at(3) is \"Egon\".", LINE_INFO());
 
         msz.insert(100, "Walter");
         Assert::AreEqual(std::size_t(5), msz.count(), L"Element added.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), "Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), "Heinz", L"at(1) is \"Heinz\".", LINE_INFO());
-        Assert::AreEqual(msz.at(2), "Hugo", L"at(2) is \"Hugo\".", LINE_INFO());
-        Assert::AreEqual(msz.at(3), "Egon", L"at(3) is \"Egon\".", LINE_INFO());
-        Assert::AreEqual(msz.at(4), "Walter", L"at(4) is \"Walter\".", LINE_INFO());
+        Assert::AreEqual("Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual("Heinz", msz.at(1), L"at(1) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual("Hugo", msz.at(2), L"at(2) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual("Egon", msz.at(3), L"at(3) is \"Egon\".", LINE_INFO());
+        Assert::AreEqual("Walter", msz.at(4), L"at(4) is \"Walter\".", LINE_INFO());
     }
 
     TEST_METHOD(wchar_t_insert) {
@@ -380,33 +412,33 @@ TEST_CLASS(multi_sz_test) {
 
         msz.insert(0, L"Hugo");
         Assert::AreEqual(std::size_t(1), msz.count(), L"Element added.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), L"Hugo", L"at(0) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual(L"Hugo", msz.at(0), L"at(0) is \"Hugo\".", LINE_INFO());
 
         msz.insert(0, L"Horst");
         Assert::AreEqual(std::size_t(2), msz.count(), L"Element added.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), L"Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), L"Hugo", L"at(1) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual(L"Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual(L"Hugo", msz.at(1), L"at(1) is \"Hugo\".", LINE_INFO());
 
         msz.insert(1, L"Heinz");
         Assert::AreEqual(std::size_t(3), msz.count(), L"Element added.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), L"Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), L"Heinz", L"at(1) is \"Heinz\".", LINE_INFO());
-        Assert::AreEqual(msz.at(2), L"Hugo", L"at(2) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual(L"Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual(L"Heinz", msz.at(1), L"at(1) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual(L"Hugo", msz.at(2), L"at(2) is \"Hugo\".", LINE_INFO());
 
         msz.insert(3, L"Egon");
         Assert::AreEqual(std::size_t(4), msz.count(), L"Element added.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), L"Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), L"Heinz", L"at(1) is \"Heinz\".", LINE_INFO());
-        Assert::AreEqual(msz.at(2), L"Hugo", L"at(2) is \"Hugo\".", LINE_INFO());
-        Assert::AreEqual(msz.at(3), L"Egon", L"at(3) is \"Egon\".", LINE_INFO());
+        Assert::AreEqual(L"Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual(L"Heinz", msz.at(1), L"at(1) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual(L"Hugo", msz.at(2), L"at(2) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual(L"Egon", msz.at(3), L"at(3) is \"Egon\".", LINE_INFO());
 
         msz.insert(100, L"Walter");
         Assert::AreEqual(std::size_t(5), msz.count(), L"Element added.", LINE_INFO());
-        Assert::AreEqual(msz.at(0), L"Horst", L"at(0) is \"Horst\".", LINE_INFO());
-        Assert::AreEqual(msz.at(1), L"Heinz", L"at(1) is \"Heinz\".", LINE_INFO());
-        Assert::AreEqual(msz.at(2), L"Hugo", L"at(2) is \"Hugo\".", LINE_INFO());
-        Assert::AreEqual(msz.at(3), L"Egon", L"at(3) is \"Egon\".", LINE_INFO());
-        Assert::AreEqual(msz.at(4), L"Walter", L"at(4) is \"Walter\".", LINE_INFO());
+        Assert::AreEqual(L"Horst", msz.at(0), L"at(0) is \"Horst\".", LINE_INFO());
+        Assert::AreEqual(L"Heinz", msz.at(1), L"at(1) is \"Heinz\".", LINE_INFO());
+        Assert::AreEqual(L"Hugo", msz.at(2), L"at(2) is \"Hugo\".", LINE_INFO());
+        Assert::AreEqual(L"Egon", msz.at(3), L"at(3) is \"Egon\".", LINE_INFO());
+        Assert::AreEqual(L"Walter", msz.at(4), L"at(4) is \"Walter\".", LINE_INFO());
     }
 
     TEST_METHOD(char_iterator) {

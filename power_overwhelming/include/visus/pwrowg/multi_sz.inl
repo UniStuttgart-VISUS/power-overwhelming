@@ -164,6 +164,20 @@ PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::multi_sz(
     }
 }
 
+/*
+ * PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::multi_sz
+ */
+template<class TChar, class TTraits>
+PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::multi_sz(
+        _In_ const blob& value)
+        : _value(nullptr) {
+    if (!value.empty()) {
+        auto cnt = multi_sz::size(value.as<TChar>());
+        assert(cnt > 2);
+        this->_value = new value_type[cnt];
+        ::memcpy(this->_value, value.as<TChar>(), cnt * sizeof(value_type));
+    }
+}
 
 /*
  * PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::multi_sz

@@ -51,7 +51,7 @@
 #include <iterator>
 #include <vector>
 
-#include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/blob.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -240,6 +240,14 @@ public:
     /// <i>two</c> zeros at the end of the set. The caller remains owner of the
     /// memory.</param>
     explicit multi_sz(_In_opt_z_ const value_type *value = nullptr);
+
+    /// <summary>
+    /// Initialise a new instance.
+    /// </summary>
+    /// <param name="value">A <see cref="blob" /> that contains a set of
+    /// zero-terminated strings, termiated by <i>two</c> zeros at the end of the
+    /// data.</param>
+    explicit multi_sz(_In_ const blob& value);
 
     /// <summary>
     /// Clone <paramref name="rhs" />.

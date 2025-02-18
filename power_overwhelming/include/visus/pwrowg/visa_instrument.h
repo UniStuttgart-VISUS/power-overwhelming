@@ -17,6 +17,7 @@
 #include <visa.h>
 
 #include "visus/pwrowg/blob.h"
+#include "visus/pwrowg/multi_sz.h"
 #include "visus/pwrowg/visa_event_status.h"
 #include "visus/pwrowg/visa_status_byte.h"
 
@@ -110,6 +111,25 @@ public:
     /// not be allocated.</exception>
     static blob find_resources(_In_z_ const char *query);
 
+
+    /// <summary>
+    /// Find all resources matching the given VISA resource query.
+    /// </summary>
+    /// <typeparam name="TChar">The type of a character.</typeparam>
+    /// <param name="query">The query to issue on the resource manager.
+    /// </param>
+    /// <returns>A <see cref="multi_sz" /> holding the device paths matching
+    /// the query.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="query" />
+    /// is <c>nullptr</c>.</exception>
+    /// <exception cref="visa_exception">If the query failed.</exception>
+    /// <exception cref="std::bad_alloc">If the memory for the output could
+    /// not be allocated.</exception>
+    template<class TChar>
+    inline static multi_sz<TChar> find_resources(_In_z_ const TChar *query) {
+        return multi_sz<TChar>(find_resources(query));
+    }
+
     /// <summary>
     /// Find all instruments of the specified type connected to the machine
     /// the code is running on.
@@ -155,6 +175,28 @@ public:
     /// not be allocated.</exception>
     static blob find_resources(_In_z_ const char *vendor_id,
         _In_z_ const char *instrument_id);
+
+    /// <summary>
+    /// Find all instruments of the specified type connected to the machine
+    /// the code is running on.
+    /// </summary>
+    /// <typeparam name="TChar">The type of a character.</typeparam>
+    /// <param name="vendor_id">The ID of the vendor to search for.</param>
+    /// <param name="instrument_id">The ID of the instrument to search for.
+    /// </param>
+    /// <returns>A <see cref="multi_sz" /> holding the device paths matching
+    /// the query.</returns>
+    /// <exception cref="std::invalid_argument">If
+    /// <paramref name="vendor_id" /> is <c>nullptr</c> or if
+    ///  <paramref name="instrument_id" /> is <c>nullptr</c>.</exception>
+    /// <exception cref="visa_exception">If the query failed.</exception>
+    /// <exception cref="std::bad_alloc">If the memory for the output could
+    /// not be allocated.</exception>
+    template<class TChar>
+    inline static blob find_resources(_In_z_ const TChar *vendor_id,
+            _In_z_ const TChar *instrument_id) {
+        return multi_sz(find_resources(vendor_id, instrument_id));
+    }
 
     /// <summary>
     /// Invokes <paramref name="callback" /> for each active instance of a
