@@ -188,6 +188,7 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
         this->_instrument.integrator_behaviour(hmc8015_integrator_mode::manual);
         this->_instrument.log_behaviour(interval, hmc8015_log_mode::unlimited);
         this->_instrument.reset_integrator();
+        this->_instrument.operation_complete();
         this->_instrument.start_integrator();
         this->_instrument.log(true);
 
@@ -224,8 +225,8 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
 
         // Download the CSV file into memory.
         auto log_data = this->_instrument.copy_file_from_instrument_or_usb(
-            //log.data());
-            "\"63FE0D59.CSV\", INT");
+            log.data());
+            //"\"63FE0D59.CSV\", INT");
 
         // Parse the samples and emit everything at once.
         std::stringstream log_stream(log_data);

@@ -63,16 +63,14 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
                 }
             }
 
-            {
-                auto status = nvidia_management_library::instance()
-                    .nvmlDeviceGetUUID(device, guid.data(),
-                        static_cast<unsigned int>(guid.size()));
-                if (status != NVML_SUCCESS) {
-                    throw nvml_exception(status);
-                }
-
-                builder.with_id("NVML/%s", pci_info.busId);
-            }
+            //{
+            //    auto status = nvidia_management_library::instance()
+            //        .nvmlDeviceGetUUID(device, guid.data(),
+            //            static_cast<unsigned int>(guid.size()));
+            //    if (status != NVML_SUCCESS) {
+            //        throw nvml_exception(status);
+            //    }
+            //}
 
             {
                 auto status = nvidia_management_library::instance()
@@ -82,9 +80,10 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
                 }
 
                 builder.with_path(pci_info.busId);
+                builder.with_id("NVML/%s", pci_info.busId);
             }
 
-            builder.with_name("%s (NVML)", name.data(), pci_info.busId);
+            builder.with_name("%s (NVML)", name.data());
 
             if ((dst != nullptr) && (cnt > 0)) {
                 dst[retval] = builder.build();

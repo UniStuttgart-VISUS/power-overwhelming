@@ -32,7 +32,24 @@ TEST_CLASS(csv_sink_test) {
         sensors.stop();
     }
 
-    TEST_METHOD(wchar_t_sink) {}
+    TEST_METHOD(wchar_t_sink) {
+        typedef std::wofstream stream_type;
+        typedef atomic_sink<csv_sink<stream_type>> sink_type;
+
+        sensor_array_configuration config;
+        stream_type stream;
+        stream.open(L"test.csv");
+        stream << setcsvdelimiter(L',');
+
+        sink_type sink(std::chrono::milliseconds(100), std::move(stream));
+        config.deliver_context(&sink)
+            .deliver_to(sink_type::sample_callback);
+
+        auto sensors = sensor_array::for_all(std::move(config));
+        sensors.start();
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        sensors.stop();
+    }
 };
 
 PWROWG_TEST_NAMESPACE_END
