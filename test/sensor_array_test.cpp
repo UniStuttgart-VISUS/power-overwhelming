@@ -81,6 +81,23 @@ public:
             }
         }
     }
+
+    TEST_METHOD(test_exclude) {
+        sensor_array_configuration config;
+        config.exclude<hmc8015_configuration>()
+            .exclude<nvml_configuration>()
+            .exclude<tinkerforge_configuration>();
+
+        std::vector<sensor_description> descs;
+        descs.resize(sensor_array::all_descriptions(nullptr, 0, config));
+        sensor_array::all_descriptions(descs.data(), descs.size(), config);
+
+        Assert::IsFalse(std::any_of(descs.begin(), descs.end(), is_hmc8015_sensor), L"No HMC 8015 sensor", LINE_INFO());
+        Assert::IsFalse(std::any_of(descs.begin(), descs.end(), is_nvml_sensor), L"No NVML sensor", LINE_INFO());
+        Assert::IsFalse(std::any_of(descs.begin(), descs.end(), is_tinkerforge_sensor), L"No Tinkerforge sensor", LINE_INFO());
+
+        sensor_array sensors(std::move(config), descs.data(), descs.size());
+    }
 };
 
 PWROWG_TEST_NAMESPACE_END

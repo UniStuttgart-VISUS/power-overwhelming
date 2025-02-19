@@ -32,7 +32,7 @@ PWROWG_NAMESPACE::sensor_array_configuration::configure(
  * PWROWG_NAMESPACE::sensor_array_configuration::configure
  */
 template<class TConfig>
-inline PWROWG_NAMESPACE::sensor_array_configuration&
+PWROWG_NAMESPACE::sensor_array_configuration&
 PWROWG_NAMESPACE::sensor_array_configuration::configure(
         _In_ std::function<void(_In_ TConfig &)> configure) {
     if (!configure) {

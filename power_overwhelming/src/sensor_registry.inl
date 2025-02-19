@@ -107,11 +107,13 @@ PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::descriptions0(
         "sampling.");
     typedef T sensor_type;
     typedef typename sensor_type::configuration_type config_type;
+    const auto exclude = (config.exclude_list.find(config_type::id)
+        != config.exclude_list.end());
     std::size_t retval = 0;
 
     // If we have the configuration, create the descriptions for 'T'.
     auto it = config.sensor_configs.find(config_type::id);
-    if (it != config.sensor_configs.end()) {
+    if ((it != config.sensor_configs.end()) && !exclude) {
         auto c = static_cast<const config_type *>(it->second.get());
         retval = sensor_type::descriptions(dst, cnt, *c);
 

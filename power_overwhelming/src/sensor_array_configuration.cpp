@@ -59,6 +59,17 @@ PWROWG_NAMESPACE::sensor_array_configuration::deliver_to(
 
 
 /*
+ * PWROWG_NAMESPACE::sensor_array_configuration::exclude
+ */
+PWROWG_NAMESPACE::sensor_array_configuration&
+PWROWG_NAMESPACE::sensor_array_configuration::exclude(
+        _In_ const guid& config_id) {
+    this->check_not_disposed()->exclude_list.insert(config_id);
+    return *this;
+}
+
+
+/*
  * PWROWG_NAMESPACE::sensor_array_configuration::sample_every
  */
 PWROWG_NAMESPACE::sensor_array_configuration&

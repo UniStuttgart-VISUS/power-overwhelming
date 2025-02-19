@@ -10,6 +10,7 @@
 
 #include <typeindex>
 #include <memory>
+#include <set>
 #include <unordered_map>
 
 #include "visus/pwrowg/sensor_array_callback.h"
@@ -52,6 +53,11 @@ struct sensor_array_configuration_impl final {
     /// <see cref="callback" />.
     /// </summary>
     void *context;
+
+    /// <summary>
+    /// The list of sensor configuration IDs to exclude completely.
+    /// </summary>
+    std::set<guid> exclude_list;
 
     /// <summary>
     /// The sampling interval for the <see cref="sampler_threads" />.

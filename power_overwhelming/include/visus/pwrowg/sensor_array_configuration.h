@@ -128,6 +128,38 @@ public:
     }
 
     /// <summary>
+    /// Excludes a whole sensor class from enumeration based on its
+    /// configuration ID.
+    /// </summary>
+    /// <remarks>
+    /// <para>Enumerating certain sensors (e.g. VISA-based ones) might be very
+    /// slow, even for getting the <see cref="sensor_description" />s. This
+    /// exclude list enables users to exclude a whole class of sensors from even
+    /// being considered.</para>
+    /// <para>Excluding the same sensor class multiple times has no effect.
+    /// </para>
+    /// </remarks>
+    /// <param name="config_id">The GUID of the configuration class of the
+    /// sensor to be excluded.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::runtime_error">If the method is invoked on an
+    /// object that has been disposed by a move.</exception>
+    sensor_array_configuration& exclude(_In_ const guid& config_id);
+
+    /// <summary>
+    /// Excludes a whole sensor class from enumeration based on its configuration
+    /// object.
+    /// </summary>
+    /// <typeparam name="TConfig">The type of the sensor configuration that is
+    /// used for the sensors to be excluded.</typeparam>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::runtime_error">If the method is invoked on an
+    /// object that has been disposed by a move.</exception>
+    template<class TConfig> inline sensor_array_configuration& exclude(void) {
+        return this->exclude(TConfig::id);
+    }
+
+    /// <summary>
     /// Sets the sampling interval in milliseconds.
     /// </summary>
     /// <param name="millis">The sampling interval in milliseconds.</param>
