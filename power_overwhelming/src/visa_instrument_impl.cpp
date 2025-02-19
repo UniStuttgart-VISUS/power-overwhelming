@@ -382,6 +382,13 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_binary(
         // is the number of digits to follow (at most 9).
         *retval.as<char>(2) = 0;
         const auto digits = std::atoi(retval.as<char>(1));
+
+        // If the number of digits is zero, we must do an unbounded read.
+        if (digits == 0) {
+            // TODO: check whether we need to remove a line break
+            return this->read_all();
+        }
+
         retval.reserve(digits + 1);
         this->read(retval.begin(), digits);
 
@@ -389,11 +396,11 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_binary(
         size = std::atoi(retval.as<char>());
     }
 
-    retval.reserve(size);
+    retval.resize(size);
+    assert(retval.size() == size);
 
-    auto rem = retval.size();
-    while (rem > 0) {
-        rem -= this->read(retval.end() - rem, rem);
+    while (size > 0) {
+        size -= this->read(retval.end() - size, size);
     }
 
     // Read and discard all junk that might be in the buffer. If we do not

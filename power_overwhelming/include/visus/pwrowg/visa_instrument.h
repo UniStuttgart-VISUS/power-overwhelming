@@ -65,7 +65,7 @@ public:
     /// as follows:</para>
     /// <code>
     /// for (auto d = devices.as&lt;wchar_t&gt;();
-    ///         (d != nullptr) && (*d != 0);
+    ///         (d != nullptr) &amp;&amp; (*d != 0);
     ///         d += ::wcslen(d) + 1) {
     ///     visa_instrument instrument(d, 5000);
     ///     // Do something with the instrument.
@@ -94,7 +94,7 @@ public:
     /// as follows:</para>
     /// <code>
     /// for (auto d = devices.as&lt;char&gt;();
-    ///         (d != nullptr) && (*d != 0);
+    ///         (d != nullptr) &amp;&amp; (*d != 0);
     ///         d += ::strlen(d) + 1) {
     ///     visa_instrument instrument(d, 5000);
     ///     // Do something with the instrument.
@@ -110,25 +110,6 @@ public:
     /// <exception cref="std::bad_alloc">If the memory for the output could
     /// not be allocated.</exception>
     static blob find_resources(_In_z_ const char *query);
-
-
-    /// <summary>
-    /// Find all resources matching the given VISA resource query.
-    /// </summary>
-    /// <typeparam name="TChar">The type of a character.</typeparam>
-    /// <param name="query">The query to issue on the resource manager.
-    /// </param>
-    /// <returns>A <see cref="multi_sz" /> holding the device paths matching
-    /// the query.</returns>
-    /// <exception cref="std::invalid_argument">If <paramref name="query" />
-    /// is <c>nullptr</c>.</exception>
-    /// <exception cref="visa_exception">If the query failed.</exception>
-    /// <exception cref="std::bad_alloc">If the memory for the output could
-    /// not be allocated.</exception>
-    template<class TChar>
-    inline static multi_sz<TChar> find_resources(_In_z_ const TChar *query) {
-        return multi_sz<TChar>(find_resources(query));
-    }
 
     /// <summary>
     /// Find all instruments of the specified type connected to the machine
@@ -175,28 +156,6 @@ public:
     /// not be allocated.</exception>
     static blob find_resources(_In_z_ const char *vendor_id,
         _In_z_ const char *instrument_id);
-
-    /// <summary>
-    /// Find all instruments of the specified type connected to the machine
-    /// the code is running on.
-    /// </summary>
-    /// <typeparam name="TChar">The type of a character.</typeparam>
-    /// <param name="vendor_id">The ID of the vendor to search for.</param>
-    /// <param name="instrument_id">The ID of the instrument to search for.
-    /// </param>
-    /// <returns>A <see cref="multi_sz" /> holding the device paths matching
-    /// the query.</returns>
-    /// <exception cref="std::invalid_argument">If
-    /// <paramref name="vendor_id" /> is <c>nullptr</c> or if
-    ///  <paramref name="instrument_id" /> is <c>nullptr</c>.</exception>
-    /// <exception cref="visa_exception">If the query failed.</exception>
-    /// <exception cref="std::bad_alloc">If the memory for the output could
-    /// not be allocated.</exception>
-    template<class TChar>
-    inline static blob find_resources(_In_z_ const TChar *vendor_id,
-            _In_z_ const TChar *instrument_id) {
-        return multi_sz(find_resources(vendor_id, instrument_id));
-    }
 
     /// <summary>
     /// Invokes <paramref name="callback" /> for each active instance of a
@@ -1100,6 +1059,16 @@ public:
     /// <exception cref="visa_exception">If the current system state could
     /// not be retrieved.</exception>
     visa_instrument& timeout(_In_ const timeout_type timeout);
+
+    /// <summary>
+    /// Call <see cref="viClear" /> on the instrument, which will flush all
+    /// buffers, but do not throw in case of an error.
+    /// </summary>
+    /// <returns><c>true</c> if the operation succeded, <c>false</c>
+    /// otherwise.</returns>
+    /// <exception cref="std::runtime_error">If the method is called on an
+    /// object that has been disposed by moving it.</exception>
+    bool try_clear(void);
 
     /// <summary>
     /// Waits for all previous commands to complete before continuing with

@@ -19,13 +19,15 @@
 /// <param name="argv"></param>
 /// <returns></returns>
 int _tmain(const int argc, const TCHAR **argv) {
+    using namespace visus::pwrowg;
+
 #if (defined(DEBUG) || defined(_DEBUG))
     ::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     //::_CrtSetBreakAlloc(558);
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
 
 #if true
-    visus::pwrowg::stable_power_state_scope spss;
+    stable_power_state_scope spss;
 #endif
 
     // Tinkerforge instruments
@@ -55,25 +57,26 @@ int _tmain(const int argc, const TCHAR **argv) {
 
     // Main sensor array.
     {
-        visus::pwrowg::sensor_array_configuration config;
+        sensor_array_configuration config;
         config
-            .configure<visus::pwrowg::hmc8015_configuration>([](visus::pwrowg::hmc8015_configuration& c) {
-                c.timeout(std::chrono::seconds(10));
+            .configure<hmc8015_configuration>([](hmc8015_configuration& c) {
+                c.timeout(std::chrono::seconds(30));
+                c.log_to_usb(true);
             })
             .sample_every(std::chrono::milliseconds(5))
-            .deliver_to([](const visus::pwrowg::sample *s,
+            .deliver_to([](const sample *s,
                     std::size_t n,
-                    const visus::pwrowg::sensor_description *descs,
+                    const sensor_description *descs,
                     void *) {
                 for (std::size_t i = 0; i < n; ++i) {
                     std::cout << s[i].source << "/"
-                        << visus::pwrowg::convert_string<char>(descs[s[i].source].name()) << "@"
+                        << convert_string<char>(descs[s[i].source].name()) << "@"
                         << s[i].timestamp << ": "
                         << s->reading.floating_point << std::endl;
                 }
             });
 
-        auto sensors = visus::pwrowg::sensor_array::for_all(std::move(config));
+        auto sensors = sensor_array::for_all(std::move(config));
 
         // Print all sensors.
         for (auto s : sensors) {

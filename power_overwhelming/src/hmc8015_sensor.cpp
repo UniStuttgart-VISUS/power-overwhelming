@@ -37,6 +37,16 @@ std::size_t PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::descriptions(
         hmc8015_function::integration_time
     };
 
+    // Determine which functions are actually enabled: the configured ones or
+    // the default if the user did not provide anything special.
+    auto funcs = config.functions();
+    auto cnt_funcs = config.count_functions();
+
+    if (funcs == nullptr) {
+        funcs = default_functions.data();
+        cnt_funcs = default_functions.size();
+    }
+
     // Force output counter to be empty if no buffer was provided.
     if (dst == nullptr) {
         cnt = 0;
@@ -48,57 +58,86 @@ std::size_t PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::descriptions(
         .produces(reading_type::floating_point);
 
     try {
-        std::vector<hmc8015_instrument> instruments;
-        instruments.resize(hmc8015_instrument::for_all(
-            nullptr,
-            0,
-            config.timeout()));
-        hmc8015_instrument::for_all(
-            instruments.data(),
-            instruments.size(),
-            config.timeout());
-
-        for (auto& i : instruments) {
-            // Determine the unique path of the instrument, which we need to
-            // connect the sensor to and which we need to build the ID.
-            const auto path = i.path();
-            if (path == nullptr) {
-                continue;
-            }
-            builder.with_path(path);
-
-            // Create the friendly name.
-            {
-                std::vector<wchar_t> name;
-                name.resize(i.identify(name.data(), name.size()));
-                i.identify(name.data(), name.size());
-                builder.with_name(name.data());
-            }
-
-            // Determine which functions to enable: the configured ones or the
-            // default if the user did not provide anything special.
-            auto funcs = config.functions();
-            auto cnt_funcs = config.count_functions();
-
-            if (funcs == nullptr) {
-                funcs = default_functions.data();
-                cnt_funcs = default_functions.size();
-            }
-
-            // Create a descriptor for each function being recorded.
+        if (cnt == 0) {
+            // If we are only measuring, we do not open the device, because this
+            // is expensive, but we only enumerate the device paths and multiply
+            // them by the number of active functions.
+            auto multiplier = 0;
             for (std::size_t f = 0; f < cnt_funcs; ++f) {
                 if (specialise(builder, funcs[f])) {
-                    if (cnt > 0) {
-                        dst[retval] = builder
-                            .with_id("%s/%ls", path, to_string(funcs[f]))
-                            .build();
-                        --cnt;
-                    }
-
-                    ++retval;
+                    ++multiplier;
                 }
             }
-        }
+
+            auto instruments = visa_instrument::find_resources(
+                hmc8015_instrument::rohde_und_schwarz,
+                hmc8015_instrument::product_id);
+
+            retval = multi_sz<char>::count(instruments.as<char>()) * multiplier;
+
+        } else {
+            // If we have a request for actually retrieving the descriptors, we
+            // need to connect to the devices in order to obtain the name.
+            std::vector<hmc8015_instrument> instruments;
+            instruments.resize(hmc8015_instrument::for_all(
+                nullptr,
+                0,
+                config.timeout()));
+            hmc8015_instrument::for_all(
+                instruments.data(),
+                instruments.size(),
+                config.timeout());
+
+            for (auto& i : instruments) {
+                // Move the instrument to the heap, such that it can be shared
+                // between the descriptors using the same hardware. The rationale
+                // for this is that reconnecting multiple times to the same HMC
+                // makes the whole process even more fragile than it already is,
+                // so we want to avoid this. When the sensors are created, all
+                // functions on the same instrument share the same sensor anyway.
+                auto instrument = std::make_shared<hmc8015_instrument>(
+                    std::move(i));
+
+                instrument->reset(true, true);
+
+                // Determine the unique path of the instrument, which we need to
+                // connect the sensor to and which we need to build the ID.
+                const auto path = instrument->path();
+                if (path == nullptr) {
+                    continue;
+                }
+                builder.with_path(path);
+
+                //try {
+                //    instrument->clear();
+                //    instrument->operation_complete();
+                //} catch (...) { /* If this fails, there was no I/O pending. */ }
+
+                // Create the friendly name.
+                {
+                    std::vector<wchar_t> name;
+                    name.resize(instrument->identify(name.data(), name.size()));
+                    instrument->identify(name.data(), name.size());
+                    builder.with_name(name.data());
+                }
+
+                // Create a descriptor for each function being recorded.
+                for (std::size_t f = 0; f < cnt_funcs; ++f) {
+                    if (specialise(builder, funcs[f])) {
+                        if (cnt > 0) {
+                            dst[retval] = builder
+                                .with_id("%s/%ls", path, to_string(funcs[f]))
+                                .with_new_private_data<private_data>(instrument, funcs[f])
+                                .build();
+                            --cnt;
+                        }
+
+                        ++retval;
+                    }
+                }
+
+            } /* for (auto& i : instruments) */
+        } /* if (cnt == 0) */
 
         return retval;
 
@@ -145,6 +184,9 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
     using std::chrono::duration;
     using std::chrono::duration_cast;
 
+    constexpr auto log_directory = "DATA/";
+    constexpr auto log_extension = ".CSV";
+
     if (enable) {
         this->_state.begin_start();
 
@@ -160,8 +202,15 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
 
         // Set the user-defined log file or create one.
         if (this->configuration().log_file() != nullptr) {
+            this->_log = this->configuration().log_file();
+
+            auto ext = this->_log.find_last_of('.');
+            if (ext == std::string::npos) {
+                this->_log += ext;
+            }
+
             this->_instrument.log_file(
-                this->configuration().log_file(),
+                this->_log.c_str(),
                 true,
                 this->configuration().log_to_usb());
 
@@ -176,11 +225,12 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
             timestamp = timestamp & UINT_MAX ^ (timestamp >> 32);
             file_name_builder << std::hex
                 << static_cast<std::uint32_t>(timestamp)
-                << ".csv";
+                << log_extension;
 
-            auto file_name = file_name_builder.str();
+            this->_log = file_name_builder.str();
+            assert(this->_log.length() <= 8 + 1 + 3);
             this->_instrument.log_file(
-                file_name.c_str(),
+                this->_log.c_str(),
                 true,
                 this->configuration().log_to_usb());
         }
@@ -188,7 +238,7 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
         this->_instrument.integrator_behaviour(hmc8015_integrator_mode::manual);
         this->_instrument.log_behaviour(interval, hmc8015_log_mode::unlimited);
         this->_instrument.reset_integrator();
-        this->_instrument.operation_complete();
+        //this->_instrument.operation_complete();
         this->_instrument.start_integrator();
         this->_instrument.log(true);
 
@@ -200,33 +250,40 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
         // Stop integration and logging.
         this->_instrument.log(false);
         this->_instrument.stop_integrator();
+        this->_instrument.operation_complete();
+
+        //{
+        //    std::vector<char> logs;
+        //    logs.resize(this->_instrument.list_files_on_instrument(nullptr, 0));
+        //    this->_instrument.list_files_on_instrument(logs.data(), logs.size());
+        //    logs.push_back('\r');
+        //    logs.push_back('\n');
+        //    ::OutputDebugStringA(logs.data());
+        //}
 
         // Find out where the instrument wrote the data to.
         std::vector<char> log;
         log.resize(this->_instrument.log_file(nullptr, 0));
         this->_instrument.log_file(log.data(), log.size());
 
-        {
-            std::vector<char> logs;
-            logs.resize(this->_instrument.list_files_on_instrument(nullptr, 0));
-            this->_instrument.list_files_on_instrument(logs.data(), logs.size());
-            logs.push_back('\r');
-            logs.push_back('\n');
-            ::OutputDebugStringA(logs.data());
-        }
-
         // Patch the file name, because what is reported by the device is wrong.
+        // For the device randomly adding a serial number that is not used by
+        // the hardware, we have persisted the '_log', making it easier to fix
+        // everything now.
         std::match_results<std::vector<char>::iterator> match;
-        if (std::regex_match(log.begin(), log.end(), match, rx_log_patch)) {
-            log.insert(match[1].first, { '.', 'C', 'S', 'V' });
-        }
-
-        this->_instrument.operation_complete();
+        auto log_file = std::regex_replace(log.data(),
+            rx_log_patch,
+            this->_log);
 
         // Download the CSV file into memory.
-        auto log_data = this->_instrument.copy_file_from_instrument_or_usb(
-            log.data());
-            //"\"63FE0D59.CSV\", INT");
+        blob log_data;
+        try {
+            log_data = this->_instrument.copy_file_from_instrument_or_usb(
+                log_file.c_str());
+        } catch (...) {
+            log_data = this->_instrument.copy_file_from_instrument_or_usb(
+                log_file.c_str());
+        }
 
         // Parse the samples and emit everything at once.
         std::stringstream log_stream(log_data);
@@ -261,8 +318,6 @@ bool PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::specialise(
         _In_ sensor_description_builder& builder,
         _In_ const hmc8015_function function) {
     const auto base_type = sensor_type::external | sensor_type::system;
-
-    builder.with_private_data(function);
 
     if (is_current(function)) {
         builder.produces(reading_type::floating_point)
@@ -299,7 +354,9 @@ bool PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::specialise(
  * PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::rx_log_patch
  */
 const std::regex PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::rx_log_patch(
-    "^\".+(\").+$", std::regex::icase | std::regex::ECMAScript);
+    "\".+\"", std::regex::icase);
+//    "^\".+(\")\\s*,\\s*([A-Z]+)$", std::regex::icase);
+//    "^\"([^\"]+)\"\\s*,\\s*([A-Z]+)$", std::regex::icase);
 
 
 /*

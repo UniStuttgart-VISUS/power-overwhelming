@@ -210,8 +210,10 @@ void PWROWG_NAMESPACE::sensor_array::sensor_array::stop(void) {
     // Wait for the sampler threads, which should exit now as the state signals
     // that we are stopping.
     for (auto& t : impl->sampler_threads) {
+        assert(t.joinable());
         t.join();
     }
+    impl->sampler_threads.clear();
 
     impl->state.end_stop();
 }
@@ -299,7 +301,9 @@ void PWROWG_NAMESPACE::sensor_array::sample(
                 config->context);
         }
 
+        ::OutputDebugStringA("sleep\r\n");
         std::this_thread::sleep_until(then);
+        ::OutputDebugStringA("wake\r\n");
     }
 }
 

@@ -644,16 +644,6 @@ public:
         _In_ const bool use_usb = false);
 
     /// <summary>
-    /// Resets the instrument to its default state.
-    /// </summary>
-    /// <returns><c>*this</c>.</returns>
-    /// <exception cref="std::runtime_error">If the method is called on an
-    /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If the VISA command was not
-    /// processed successfully.</exception>
-    hmc8015_instrument& reset(void);
-
-    /// <summary>
     /// Resets the manual integration time, which is displayed on the
     /// display (status line).
     /// </summary>

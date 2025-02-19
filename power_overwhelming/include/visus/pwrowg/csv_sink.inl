@@ -35,7 +35,8 @@ void PWROWG_NAMESPACE::csv_sink<TStream>::write_samples(
 
         this->_stream
             << it->timestamp << this->_delimiter
-            << it->source << this->_delimiter;
+            << it->source << this->_delimiter
+            << convert_string<char_type>(desc.name()) << this->_delimiter;
 
         switch (desc.reading_type()) {
             case reading_type::floating_point:

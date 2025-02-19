@@ -28,7 +28,11 @@ TEST_CLASS(csv_sink_test) {
 
         auto sensors = sensor_array::for_all(std::move(config));
         sensors.start();
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+        sensors.stop();
+
+        sensors.start();
+        std::this_thread::sleep_for(std::chrono::seconds(2));
         sensors.stop();
     }
 

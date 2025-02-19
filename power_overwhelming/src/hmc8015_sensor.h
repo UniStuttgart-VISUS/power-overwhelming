@@ -127,6 +127,17 @@ public:
 private:
 
     /// <summary>
+    /// The private data passed from the descriptor to the sensor.
+    /// </summary>
+    struct private_data {
+        std::shared_ptr<hmc8015_instrument> instrument;
+        hmc8015_function function;
+        inline private_data(_In_ std::shared_ptr<hmc8015_instrument> instrument,
+            _In_ const hmc8015_function function)
+            : instrument(instrument), function(function) { }
+    };
+
+    /// <summary>
     /// Configure what the sensor readings are based on the given
     /// <paramref name="function" /> and return whether the provided
     /// function is supported or not.
@@ -150,6 +161,7 @@ private:
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     hmc8015_instrument _instrument;
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    std::string _log;
     const sensor_array_impl *_owner;
     sensor_state _state;
 };

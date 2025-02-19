@@ -717,7 +717,7 @@ PWROWG_NAMESPACE::visa_instrument::reset(
         } catch (...) { /* Ignore this. */ }
 
         // ... then, do the standard VISA flush.
-        this->clear();
+        this->try_clear();
     }
 
     if (clear_status) {
@@ -881,6 +881,16 @@ PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::timeout(
         _In_ const timeout_type timeout) {
     return this->attribute(VI_ATTR_TMO_VALUE, timeout);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::visa_instrument::try_clear
+ */
+bool PWROWG_NAMESPACE::visa_instrument::try_clear(void) {
+    auto status = detail::visa_library::instance().viClear(
+        this->check_not_disposed().session);
+    return (status == VI_SUCCESS);
 }
 
 

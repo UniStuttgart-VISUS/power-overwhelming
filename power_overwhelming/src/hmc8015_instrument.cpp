@@ -546,8 +546,8 @@ PWROWG_NAMESPACE::hmc8015_instrument::log_behaviour(
     // Use the first page configured in the constructor.
     this->write("LOG:PAGE 1\n");
 
-    // Wait for the device to finish.
-    this->operation_complete();
+    //// Wait for the device to finish.
+    //this->operation_complete();
 
     return *this;
 }
@@ -594,6 +594,7 @@ PWROWG_NAMESPACE::hmc8015_instrument::log_file(
         auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
             "DATA:DEL \"%s\", %s\n", path, location);
         this->write(cmd);
+        this->operation_complete();
         // Clear error in case file did not exist.
         this->clear_status();
     }
@@ -602,6 +603,7 @@ PWROWG_NAMESPACE::hmc8015_instrument::log_file(
         auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
             "LOG:FNAM \"%s\", %s\n", path, location);
         this->write(cmd);
+        this->operation_complete();
     }
 
     return *this;
@@ -622,19 +624,6 @@ PWROWG_NAMESPACE::hmc8015_instrument::log_file(
 
     auto p = convert_string<char>(path);
     return this->log_file(p.c_str(), overwrite, use_usb);
-}
-
-
-/*
- * PWROWG_NAMESPACE::hmc8015_instrument::reset
- */
-PWROWG_NAMESPACE::hmc8015_instrument&
-PWROWG_NAMESPACE::hmc8015_instrument::reset(void) {
-    visa_instrument::reset();
-    this->configure();
-    this->throw_on_system_error();
-    this->clear_status();
-    return *this;
 }
 
 

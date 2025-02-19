@@ -50,10 +50,8 @@ PWROWG_NAMESPACE::atomic_sink<TSink, PageSize>::atomic_sink(
 template<class TSink, std::size_t PageSize>
 PWROWG_NAMESPACE::atomic_sink<TSink, PageSize>::~atomic_sink(void) noexcept {
     this->_running.store(false, std::memory_order_release);
-
-    if (this->_writer.joinable()) {
-        this->_writer.join();
-    }
+    assert(this->_writer.joinable());
+    this->_writer.join();
 }
 
 

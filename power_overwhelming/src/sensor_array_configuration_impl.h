@@ -69,7 +69,7 @@ struct sensor_array_configuration_impl final {
     inline sensor_array_configuration_impl(void)
         : callback(sample_nothing),
         context(nullptr),
-        interval(5000) { }
+        interval(5) { }
 
     /// <summary>
     /// Gets the sensor configuration registered with the specified ID.

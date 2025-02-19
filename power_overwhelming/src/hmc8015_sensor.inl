@@ -33,28 +33,28 @@ TInput PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::from_descriptions(
     // for each device and a LUT that maps the configured quantity to an index in
     // the array of sensor descriptors.
     for (auto it = begin; it != retval; /* [sic] */) {
+        auto pd = builder_type::private_data<private_data>(*it);
+        auto instrument = pd->instrument;
         const std::wstring path = it->path();
         std::vector<hmc8015_function> functions;
 
         while ((it != retval) && equals(it->path(), path)) {
-            auto func = builder_type::private_data<hmc8015_function>(*it++);
-            functions.push_back(*func);
+            pd = builder_type::private_data<private_data>(*it++);
+            functions.push_back(pd->function);
 #if (defined(DEBUG) || defined(_DEBUG))
             --_rem;
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
         }
 
         // Open and configure the instrument.
-        hmc8015_instrument instrument(path.c_str(), config.timeout());
-        instrument.reset();
-        instrument.synchronise_clock(true);
+        instrument->synchronise_clock(true);
 
         // Enable the configured functions.
-        instrument.custom_functions(functions.data(), functions.size());
+        instrument->custom_functions(functions.data(), functions.size());
 
         // Create the sensor.
         const auto cnt_functions = functions.size();
-        dst.emplace_back(std::move(instrument),
+        dst.emplace_back(std::move(*instrument),
             owner,
             index,
             std::move(functions));
