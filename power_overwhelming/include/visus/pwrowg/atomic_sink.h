@@ -26,6 +26,14 @@ PWROWG_NAMESPACE_BEGIN
 /// <see cref="atomic_collector" /> and calls the <c>write_sample</c> method of
 /// <typeparamref name="TSink" /> to periodically persist the data.
 /// </summary>
+/// <remarks>
+/// <para>The sink will start its I/O thread on construction and stop it when it
+/// is deleted. This might be a problem if the sensor array and the sink live in
+/// the same scope. It is recommended to <see cref="dispose" /> the sink
+/// explicitly before the sensor array goes out of scope, because the sink
+/// requires the sensor array to write its final output when the writer thread
+/// exits.</para>
+/// </remarks>
 /// <typeparam name="TSink">The type of the sink, which must have a protected
 /// method <c>write_sample</c> that perists a single <see cref="sample" />.
 /// </typeparam>
@@ -57,6 +65,16 @@ public:
     /// Finalises the instance.
     /// </summary>
     ~atomic_sink(void) noexcept;
+
+    /// <summary>
+    /// Disposes the sink, which stops the writer thread.
+    /// </summary>
+    /// <remarks>
+    /// Use this to enforce that the sink is stopped before the sensor array it
+    /// retrieves its samples from is destroyed, which might be a problem if both
+    /// are local variables in the same scope.
+    /// </remarks>
+    void dispose(void) noexcept;
 
 private:
 

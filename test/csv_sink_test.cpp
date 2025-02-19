@@ -34,6 +34,8 @@ TEST_CLASS(csv_sink_test) {
         sensors.start();
         std::this_thread::sleep_for(std::chrono::seconds(2));
         sensors.stop();
+
+        sink.dispose();
     }
 
     TEST_METHOD(wchar_t_sink) {
@@ -53,6 +55,8 @@ TEST_CLASS(csv_sink_test) {
         sensors.start();
         std::this_thread::sleep_for(std::chrono::seconds(1));
         sensors.stop();
+
+        sink.dispose();
     }
 };
 

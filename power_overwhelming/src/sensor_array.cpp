@@ -301,9 +301,7 @@ void PWROWG_NAMESPACE::sensor_array::sample(
                 config->context);
         }
 
-        ::OutputDebugStringA("sleep\r\n");
         std::this_thread::sleep_until(then);
-        ::OutputDebugStringA("wake\r\n");
     }
 }
 
