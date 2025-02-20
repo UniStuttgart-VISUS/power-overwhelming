@@ -60,8 +60,12 @@ int _tmain(const int argc, const TCHAR **argv) {
         sensor_array_configuration config;
         config
             .configure<hmc8015_configuration>([](hmc8015_configuration& c) {
-                c.timeout(std::chrono::seconds(30));
-                c.log_to_usb(true);
+                //c.function_list(hmc8015_function::rms_current);
+                c.timeout(std::chrono::seconds(10));
+                c.current_range(hmc8015_instrument_range::maximum);
+                c.voltage_range(hmc8015_instrument_range::maximum);
+                //c.log_file("pwrowg.tsv");
+                c.log_to_usb(false);
             })
             .sample_every(std::chrono::milliseconds(5))
             .deliver_to([](const sample *s,
@@ -70,7 +74,7 @@ int _tmain(const int argc, const TCHAR **argv) {
                     void *) {
                 for (std::size_t i = 0; i < n; ++i) {
                     std::cout << s[i].source << "/"
-                        << convert_string<char>(descs[s[i].source].name()) << "@"
+                        << convert_string<char>(descs[s[i].source].id()) << "@"
                         << s[i].timestamp << ": "
                         << s->reading.floating_point << std::endl;
                 }
@@ -88,7 +92,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 
         // Sample the sensors for some time.
         sensors.start();
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         sensors.stop();
     }
 

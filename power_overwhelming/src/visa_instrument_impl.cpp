@@ -403,6 +403,8 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_binary(
         size -= this->read(retval.end() - size, size);
     }
 
+    this->throw_on_system_error();
+
     // Read and discard all junk that might be in the buffer. If we do not
     // do this, the next query could be interrupted. This might also fail,
     // in which case we just ignore it.

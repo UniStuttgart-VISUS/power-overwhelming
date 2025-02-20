@@ -703,7 +703,7 @@ public:
     /// <para>The <pararmef name="context" /> passed to the method will be
     /// moved to newly allocated heap memory that lives as long as the
     /// callback is active. The object will take care of destructing the
-    /// object and freeing the heap mempry allocated for it.</para>
+    /// object and freeing the heap memory allocated for it.</para>
     /// </remarks>
     /// <typeparam name="TContext">The type of the context object passed to
     /// the callback. This type must be movable.</typeparam>

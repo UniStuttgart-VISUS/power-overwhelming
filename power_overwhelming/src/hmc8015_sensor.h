@@ -91,7 +91,7 @@ public:
     /// used for creating a sensor.</returns>
     template<class TInput>
     static TInput from_descriptions(_In_ list_type& dst,
-        _In_ std::size_t index,
+        _In_ sample::source_type index,
         _In_ const TInput begin,
         _In_ const TInput end,
         _In_ const sensor_array_impl *owner,
@@ -107,7 +107,7 @@ public:
     /// <parma name="functions"></param>
     hmc8015_sensor(_Inout_ hmc8015_instrument&& instrument,
         _In_ const sensor_array_impl *owner,
-        _In_ const std::size_t index,
+        _In_ const PWROWG_NAMESPACE::sample::source_type index,
         _Inout_ std::vector<hmc8015_function>&& functions);
 #else /* defined(POWER_OVERWHELMING_WITH_VISA) */
     hmc8015_sensor(void) = delete;
@@ -138,6 +138,16 @@ private:
     };
 
     /// <summary>
+    /// Create a time-based file name for the log.
+    /// </summary>
+    static std::string create_file_name(void);
+
+    /// <summary>
+    /// Parse the string representation of time.
+    /// </summary>
+    static std::chrono::milliseconds parse_time(_In_ const std::string& time);
+
+    /// <summary>
     /// Configure what the sensor readings are based on the given
     /// <paramref name="function" /> and return whether the provided
     /// function is supported or not.
@@ -157,11 +167,11 @@ private:
     const configuration_type& configuration(void) const noexcept;
 
     std::vector<hmc8015_function> _functions;
-    std::size_t _index;
+    PWROWG_NAMESPACE::sample::source_type _index;
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     hmc8015_instrument _instrument;
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
-    std::string _log;
+    std::vector<char> _log;
     const sensor_array_impl *_owner;
     sensor_state _state;
 };

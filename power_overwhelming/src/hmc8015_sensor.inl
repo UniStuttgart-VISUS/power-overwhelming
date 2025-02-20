@@ -11,7 +11,7 @@
 template<class TInput>
 TInput PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::from_descriptions(
         _In_ list_type& dst,
-        _In_ std::size_t index,
+        _In_ sample::source_type index,
         _In_ const TInput begin,
         _In_ const TInput end,
         _In_ const sensor_array_impl *owner,
@@ -45,12 +45,6 @@ TInput PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::from_descriptions(
             --_rem;
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
         }
-
-        // Open and configure the instrument.
-        instrument->synchronise_clock(true);
-
-        // Enable the configured functions.
-        instrument->custom_functions(functions.data(), functions.size());
 
         // Create the sensor.
         const auto cnt_functions = functions.size();

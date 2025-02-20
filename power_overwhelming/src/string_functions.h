@@ -458,7 +458,7 @@ template<class TChar> void safe_assign(_Inout_opt_z_ TChar *& dst,
 /// <c>nullptr</c>.</param>
 /// <exception cref="std::bad_alloc">If the memory for
 /// <paramref name="dst" /> could not be allocated.</exception>
-_Ret_maybenull_z_ POWER_OVERWHELMING_API wchar_t *safe_duplicate(
+_Ret_maybenull_z_ PWROWG_TEST_API wchar_t *safe_duplicate(
     _In_opt_z_ const wchar_t *src);
 
 /// <summary>
@@ -472,14 +472,14 @@ _Ret_maybenull_z_ POWER_OVERWHELMING_API wchar_t *safe_duplicate(
 /// <c>nullptr</c>.</param>
 /// <exception cref="std::bad_alloc">If the memory for
 /// <paramref name="dst" /> could not be allocated.</exception>
-_Ret_maybenull_z_ POWER_OVERWHELMING_API char *safe_duplicate(
+_Ret_maybenull_z_ PWROWG_TEST_API char *safe_duplicate(
     _In_opt_z_ const char *src);
 
 /// <summary>
 /// Tests whether <paramref name="str" /> starts with
-///  <paramref name="start" />.
+/// <paramref name="start" />.
 /// </summary>
-    /// <remarks>
+/// <remarks>
 /// This function is only exported from the library for testing purposes.
 /// </remarks>
 /// <param name="str">The string to be tested whether it starts with
@@ -492,16 +492,17 @@ _Ret_maybenull_z_ POWER_OVERWHELMING_API char *safe_duplicate(
 /// <param name="ignore_case">If <c>true</c>, consider the prefix equal if
 /// the strings only differ in case. If <c>false</c>, which is the default,
 /// both strings must match exactly.</param>
-/// <returns><c>true</c> if both strings are equal, <c>false</c> otherwise.
-/// </returns>
-POWER_OVERWHELMING_API bool starts_with(_In_opt_z_ const char *str,
-    _In_opt_z_ const char *start, _In_ const bool ignore_case = false);
+/// <returns><c>true</c> if both strings have the same prefix,
+/// <c>false</c> otherwise.</returns>
+PWROWG_TEST_API bool starts_with(_In_opt_z_ const char *str,
+    _In_opt_z_ const char *start,
+    _In_ const bool ignore_case = false);
 
 /// <summary>
 /// Tests whether <paramref name="str" /> starts with
-///  <paramref name="start" />.
+/// <paramref name="start" />.
 /// </summary>
-    /// <remarks>
+/// <remarks>
 /// This function is only exported from the library for testing purposes.
 /// </remarks>
 /// <param name="str">The string to be tested whether it starts with
@@ -514,10 +515,36 @@ POWER_OVERWHELMING_API bool starts_with(_In_opt_z_ const char *str,
 /// <param name="ignore_case">If <c>true</c>, consider the prefix equal if
 /// the strings only differ in case. If <c>false</c>, which is the default,
 /// both strings must match exactly.</param>
-/// <returns><c>true</c> if both strings are equal, <c>false</c> otherwise.
-/// </returns>
-POWER_OVERWHELMING_API bool starts_with(_In_opt_z_ const wchar_t *str,
-    _In_opt_z_ const wchar_t *start, _In_ const bool ignore_case = false);
+/// <returns><c>true</c> if both strings have the same prefix,
+/// <c>false</c> otherwise.</returns>
+PWROWG_TEST_API bool starts_with(_In_opt_z_ const wchar_t *str,
+    _In_opt_z_ const wchar_t *start,
+    _In_ const bool ignore_case = false);
+
+/// <summary>
+/// Tests whether <paramref name="str" /> starts with
+/// <paramref name="start" />.
+/// </summary>
+/// <typeparam name="TChar"></typeparam>
+/// <typeparam name="TTraits"></typeparam>
+/// <typeparam name="TAlloc"></typeparam>
+/// <param name="str">The string to be tested whether it starts with
+/// <paramref name="start" />.</param>
+/// <param name="start">The string to be searched at the begin of
+/// <paramref name="str" />.</param>
+/// <param name="ignore_case">If <c>true</c>, consider the prefix equal if
+/// the strings only differ in case. If <c>false</c>, which is the default,
+/// both strings must match exactly.</param>
+/// <returns><c>true</c> if both strings have the same prefix,
+/// <c>false</c> otherwise.</returns>
+template<class TChar, class TTraits, class TAlloc>
+inline bool starts_with(
+        _In_ const std::basic_string<TChar, TTraits, TAlloc>& str,
+        _In_ const std::basic_string<TChar, TTraits, TAlloc>& start,
+        _In_ const bool ignore_case = false) {
+    return starts_with(str.c_str(), start.c_str(), ignore_case);
+}
+
 
 /// <summary>
 /// Determine the first character in the given string for which

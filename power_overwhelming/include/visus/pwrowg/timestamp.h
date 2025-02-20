@@ -182,6 +182,12 @@ public:
     }
 
     /// <summary>
+    /// Creates a timestamp for today, 00:00:00 UTC.
+    /// </summary>
+    /// <returns>The timestamp for the begin of this day in UTC.</returns>
+    static timestamp today(void);
+
+    /// <summary>
     /// A timestamp with value zero (1st January 1601 UTC).
     /// </summary>
     static const timestamp zero;

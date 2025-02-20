@@ -83,6 +83,22 @@ PWROWG_NAMESPACE::timestamp::from_tm(_In_ std::tm& t) {
 
 
 /*
+ * PWROWG_NAMESPACE::timestamp::today
+ */
+PWROWG_NAMESPACE::timestamp PWROWG_NAMESPACE::timestamp::today(void) {
+    std::time_t now;
+    std::time(&now);
+
+    std::tm tm = *std::gmtime(&now);
+    tm.tm_hour = 0;
+    tm.tm_min = 0;
+    tm.tm_sec = 0;
+
+    return from_tm(tm);
+}
+
+
+/*
  * PWROWG_NAMESPACE::timestamp::zero
  */
 const PWROWG_NAMESPACE::timestamp

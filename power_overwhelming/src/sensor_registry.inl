@@ -57,7 +57,7 @@ template<std::size_t I, class TInput, class T, class... Ts>
 TInput PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::create0(
         _In_ sensor_list_type& dst,
         _In_ type_list<T, Ts...>,
-        _In_ const std::size_t index,
+        _In_ const sample::source_type index,
         _In_ const TInput begin,
         _In_ const TInput end,
         _In_ const sensor_array_impl *owner,

@@ -8,12 +8,14 @@
 
 #include <array>
 #include <cassert>
-#include <sstream>
 #include <stdexcept>
 
 #include <rapidcsv.h>
 
+#include "visus/pwrowg/blob_streambuf.h"
+
 #include "sensor_array_impl.h"
+#include "tokenise.h"
 
 
 /*
@@ -99,6 +101,11 @@ std::size_t PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::descriptions(
                     std::move(i));
 
                 instrument->reset(true, true);
+                instrument->current_range(config.current_range(),
+                    config.current_range_value());
+                instrument->voltage_range(config.voltage_range(),
+                    config.voltage_range_value());
+                instrument->operation_complete();
 
                 // Determine the unique path of the instrument, which we need to
                 // connect the sensor to and which we need to build the ID.
@@ -158,7 +165,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::descriptions(
 PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::hmc8015_sensor(
         _Inout_ hmc8015_instrument&& instrument,
         _In_ const sensor_array_impl *owner,
-        _In_ const std::size_t index,
+        _In_ const PWROWG_NAMESPACE::sample::source_type index,
         _Inout_ std::vector<hmc8015_function>&& functions)
     : _functions(std::move(functions)),
         _instrument(std::move(instrument)),
@@ -184,7 +191,7 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
     using std::chrono::duration;
     using std::chrono::duration_cast;
 
-    constexpr auto log_directory = "DATA/";
+    constexpr auto ext_directory = "DATA/";
     constexpr auto log_extension = ".CSV";
 
     if (enable) {
@@ -200,47 +207,83 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
             interval = (std::numeric_limits<float>::max)();
         }
 
+        // Enable the requested functions.
+        this->_instrument.custom_functions(this->_functions.data(),
+            this->_functions.size());
+
         // Set the user-defined log file or create one.
-        if (this->configuration().log_file() != nullptr) {
-            this->_log = this->configuration().log_file();
+        {
+            const auto log = this->configuration().log_file();
+            if (log != nullptr) {
+                this->_instrument.log_file(
+                    log,
+                    true,
+                    this->configuration().log_to_usb());
 
-            auto ext = this->_log.find_last_of('.');
-            if (ext == std::string::npos) {
-                this->_log += ext;
+            } else {
+                auto log = create_file_name();
+                this->_instrument.log_file(
+                    log.c_str(),
+                    true,
+                    this->configuration().log_to_usb());
             }
+        }
 
-            this->_instrument.log_file(
-                this->_log.c_str(),
-                true,
-                this->configuration().log_to_usb());
+        // Now, find out what the actual log file ist, because the device might
+        // change that and once we started the logging, we cannot get the correct
+        // name anymore, because the device then tells us what the next file
+        // name would be if we restarted logging with the same name rather than
+        // what the current log name actually is ...
+        {
+            this->_log.resize(this->_instrument.log_file(nullptr, 0));
+            this->_instrument.log_file(this->_log.data(), this->_log.size());
 
-        } else {
-            // Unfortunately, the HMC8015 only supports 8.3 file names, so we
-            // try to build a unique one ...
-            std::stringstream file_name_builder;
+            // We have the log name now, but we cannot use this to download the
+            // data, because this requires the file name extension which is not
+            // returned from the device. Therefore, patch the file name and
+            // remember it for the download later on.
+            //std::match_results<std::vector<char>::iterator> match;
+            std::cmatch match;
+            if (std::regex_match(this->_log.data(), match, rx_log_patch)) {
+                auto d = match[1].first - this->_log.data();
+                auto e = match[1].second - this->_log.data();
+                auto l = std::string(match[2].first, match[2].second);
 
-            // TODO: find s.th. better here, e.g. base64
-            auto timestamp = std::chrono::high_resolution_clock::now()
-                .time_since_epoch().count();
-            timestamp = timestamp & UINT_MAX ^ (timestamp >> 32);
-            file_name_builder << std::hex
-                << static_cast<std::uint32_t>(timestamp)
-                << log_extension;
+                {
+                    auto it = this->_log.begin();
+                    std::advance(it, e);
+                    this->_log.insert(it,
+                        log_extension,
+                        log_extension + ::strlen(log_extension));
+                }
 
-            this->_log = file_name_builder.str();
-            assert(this->_log.length() <= 8 + 1 + 3);
-            this->_instrument.log_file(
-                this->_log.c_str(),
-                true,
-                this->configuration().log_to_usb());
+                // There is a special case if we are on the USB thumb drive: the
+                // instrument will log into the folder "DATA/" as it does
+                // internally, but in contrast to internal memory, we need to
+                // specify the full path for the external drive, so we patch
+                // again and insert it. Note that as we compute the offsets from
+                // the start, the patches to the file name need to be applied
+                // back to front.
+                if (equals(l, "EXT", true)) {
+                    auto it = this->_log.begin();
+                    std::advance(it, d);
+                    this->_log.insert(it,
+                        ext_directory,
+                        ext_directory + ::strlen(ext_directory));
+                }
+            }
         }
 
         this->_instrument.integrator_behaviour(hmc8015_integrator_mode::manual);
         this->_instrument.log_behaviour(interval, hmc8015_log_mode::unlimited);
         this->_instrument.reset_integrator();
-        //this->_instrument.operation_complete();
+        this->_instrument.operation_complete();
         this->_instrument.start_integrator();
         this->_instrument.log(true);
+
+        // Make sure that we explode if there was any error before. This usually
+        // happens if logging fails, which is absolutely critical.
+        this->_instrument.throw_on_system_error();
 
         this->_state.end_start();
 
@@ -261,53 +304,142 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
         //    ::OutputDebugStringA(logs.data());
         //}
 
-        // Find out where the instrument wrote the data to.
-        std::vector<char> log;
-        log.resize(this->_instrument.log_file(nullptr, 0));
-        this->_instrument.log_file(log.data(), log.size());
-
-        // Patch the file name, because what is reported by the device is wrong.
-        // For the device randomly adding a serial number that is not used by
-        // the hardware, we have persisted the '_log', making it easier to fix
-        // everything now.
-        std::match_results<std::vector<char>::iterator> match;
-        auto log_file = std::regex_replace(log.data(),
-            rx_log_patch,
-            this->_log);
-
         // Download the CSV file into memory.
+        //auto log_data = this->_instrument.copy_file_from_instrument_or_usb(
+        //    this->_log.data());
         blob log_data;
         try {
             log_data = this->_instrument.copy_file_from_instrument_or_usb(
-                log_file.c_str());
-        } catch (...) {
+                this->_log.data());
+        } catch (visa_exception) {
+            // Second chance ...
+            std::this_thread::sleep_for(this->configuration()
+                .timeout_as<std::chrono::milliseconds>());
             log_data = this->_instrument.copy_file_from_instrument_or_usb(
-                log_file.c_str());
+                this->_log.data());
         }
 
         // Parse the samples and emit everything at once.
-        std::stringstream log_stream(log_data);
+        blob_streambuf<char> log_buf(log_data);
+        std::istream log_stream(&log_buf);
         rapidcsv::Document csv(log_stream,
             rapidcsv::LabelParams(),
             rapidcsv::SeparatorParams(';', true),
             rapidcsv::ConverterParams(),
             rapidcsv::LineReaderParams(true, '#', true));
 
-        // TODO
-        //csv.GetRowNames();
-        //URMS[V]; IRMS[A]; P[W]; FU[Hz]; EMPTY; EMPTY; S[VA]; Q[var]; LAMBDA[]; UTHD[%]; Timestamp
-        //231.27E+00;45.0E-03;6.63E+00;50.0E+00;nan;nan;10.38E+00; 7.98E+00; 639E-03; 2E+00; 04:49:33:000
+        const auto columns = csv.GetColumnNames();
+        std::vector<PWROWG_NAMESPACE::sample> samples;
+        auto sensor = this->_index;
+        const auto today = timestamp::today();
 
-        // If using internal memory, delete the log file. If the user selected the
-        // USB thumb drive, we assume the original data should be kept for
-        // reference.
+        // Get all the timestamps, which are time-only, so we need to offset it
+        // by the date.
+        // TODO: this is unsafe (especially at VISUS ;)). Refactor using date from header and detect date wraps.
+        std::vector<timestamp> timestamps;
+
+        {
+            auto ts = csv.GetColumn<std::string>(
+                this->configuration().timestamp_column());
+            timestamps.reserve(ts.size());
+            std::transform(ts.begin(),
+                ts.end(),
+                std::back_inserter(timestamps),
+                [&today](const std::string& s) {
+                    return today + parse_time(s);
+                });
+        }
+
+        for (auto f : this->_functions) {
+            auto func = PWROWG_NAMESPACE::convert_string<char>(to_string(f));
+            auto it = std::find_if(columns.begin(),
+                columns.end(),
+                [&func](const std::string& c) {
+                    return starts_with(c, func, true);
+                });
+
+            if (it != columns.end()) {
+                auto col = csv.GetColumn<float>(*it);
+                samples.clear();
+                samples.reserve(col.size());
+
+                for (auto r : col) {
+                    samples.emplace_back(sensor, r);
+                }
+
+                this->_owner->configuration->callback(
+                    samples.data(),
+                    samples.size(),
+                    this->_owner->descriptions.data(),
+                    this->_owner->configuration->context);
+            }
+
+            ++sensor;
+        }
+
         if (!this->configuration().log_to_usb()) {
-            this->_instrument.delete_file_from_instrument_or_usb(log.data());
+            this->_instrument.delete_file_from_instrument_or_usb(
+                this->_log.data());
         }
 
         this->_state.end_stop();
     }
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::create_file_name
+ */
+std::string PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::create_file_name(void) {
+    // Unfortunately, the HMC8015 only supports 8.3 file names, so we try to
+    // build a unique one within that range without simply using an RFC time
+    // stamp.
+    std::stringstream builder;
+
+    // TODO: find s.th. better here, e.g. base64
+    auto timestamp = std::chrono::high_resolution_clock::now()
+        .time_since_epoch().count();
+    timestamp = timestamp & UINT_MAX ^ (timestamp >> 32);
+
+    builder << std::hex
+        << std::uppercase
+        << static_cast<std::uint32_t>(timestamp);
+
+    return builder.str();
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::parse_time
+ */
+std::chrono::milliseconds PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::parse_time(
+        _In_ const std::string& time) {
+    // TODO: performance (avoid copies).
+    std::chrono::milliseconds retval(0);
+
+    const auto tokens = tokenise_if(time,
+        [](const char c) {
+            return ((c == ':') || (c == '.'));
+        },
+        true);
+    if ((tokens.size() < 2) || (tokens.size() > 4)) {
+        throw std::invalid_argument("The specified input does not represent a "
+            "valid time of day.");
+    }
+
+    retval += std::chrono::hours(std::stoi(tokens[0]));
+    retval += std::chrono::minutes(std::stoi(tokens[1]));
+
+    if (tokens.size() > 2) {
+        retval += std::chrono::seconds(std::stoi(tokens[2]));
+    }
+
+    if (tokens.size() > 3) {
+        retval += std::chrono::milliseconds(std::stoi(tokens[3]));
+    }
+
+    return retval;
 }
 
 
@@ -354,9 +486,8 @@ bool PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::specialise(
  * PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::rx_log_patch
  */
 const std::regex PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::rx_log_patch(
-    "\".+\"", std::regex::icase);
-//    "^\".+(\")\\s*,\\s*([A-Z]+)$", std::regex::icase);
-//    "^\"([^\"]+)\"\\s*,\\s*([A-Z]+)$", std::regex::icase);
+    "^\"([^\"]+)\"\\s*,\\s*([A-Z]+)$", std::regex::icase);
+//    "^\"(.+)\"\\s*,\\s*([A-Z]+)$", std::regex::icase);
 
 
 /*

@@ -697,7 +697,10 @@ PWROWG_NAMESPACE::blob
 PWROWG_NAMESPACE::visa_instrument::read_binary(void) const {
     auto& impl = this->check_not_disposed();
     auto retval = impl.read_binary();
-    this->throw_on_system_error();
+    // Note: It is not reasonable to check for system errors here, because the
+    // read_binary method tries reading all junk at the end, which will
+    // inevitably cause an error.
+    //this->throw_on_system_error();
     return retval;
 }
 
