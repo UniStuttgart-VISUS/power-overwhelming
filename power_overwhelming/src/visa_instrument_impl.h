@@ -158,15 +158,6 @@ public:
     ~visa_instrument_impl(void);
 
     /// <summary>
-    /// Answer whether auto-termination of string commands is enabled.
-    /// </summary>
-    /// <returns><c>true</c> if a non-zero <see cref="terminal_character" />
-    /// is set, <c>false</c> otherwise.</returns>
-    inline bool auto_terminate(void) const noexcept {
-        return (this->terminal_character != 0);
-    }
-
-    /// <summary>
     /// Checks for a system error if <see cref="enable_system_checks" />
     /// is <c>true</c> and throws an exception if there is a system errror.
     /// </summary>
@@ -293,13 +284,12 @@ public:
     /// required for implementing the check of the system state.</para>
     /// </para>
     /// </remarks>
-    /// <param name="buffer_size">The size of the read buffer being used. If
-    /// this is less than the response size, the buffer will be resized
-    /// until everything was read.
-    /// </param>
-    /// <returns>The full output from the device.</returns>
+    /// <param name="buffer">The buffer used to receive the response. The method
+    /// will grow it as necessary. You can preallocate the buffer with the
+    /// suggested initial size.</param>
+    /// <returns><paramref name="buffer" />.</returns>
     /// <exception cref="visa_exception">If the operation failed.</exception>
-    blob read_all(_In_ const std::size_t buffer_size = 1024) const;
+    blob& read_all(_Inout_ blob& buffer) const;
 
     /// <summary>
     /// Reads a binary response starting with the # marker for the number of

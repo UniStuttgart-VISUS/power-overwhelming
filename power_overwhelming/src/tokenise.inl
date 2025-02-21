@@ -6,28 +6,38 @@
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::tokenise_if
+ * PWROWG_DETAIL_NAMESPACE::tokenise_range_if
  */
-template<class C, class P>
-std::vector<std::basic_string<C>> PWROWG_DETAIL_NAMESPACE::tokenise_if(
-        const std::basic_string<C>& str, const P predicate,
-        const bool omitEmpty) {
-    typedef typename std::decay<decltype(str)>::type StringType;
+template<class TChar, class TPredicate>
+std::vector<std::basic_string<TChar>>
+PWROWG_DETAIL_NAMESPACE::tokenise_range_if(
+        _In_opt_ const TChar *begin,
+        _In_opt_ const TChar *end,
+        _In_ const TPredicate predicate,
+        _In_ const bool omit_empty) {
+    auto is_end = [end](const TChar *c) {
+        return (((end != nullptr) && (c >= end)) || (*c == 0));
+    };
 
-    auto s = str.data();
-    std::vector<StringType> retval;
+    std::vector<std::basic_string<TChar>> retval;
 
-    do {
-        auto begin = s;
+    if (begin != nullptr) {
+        auto cur = begin;
 
-        while ((*s != 0) && !predicate(*s)) {
-            ++s;
+        while (!is_end(cur)) {
+            auto b = cur;
+
+            while (!is_end(cur) && !predicate(*cur)) {
+                ++cur;
+            }
+
+            if (!omit_empty || ((cur - b) > 0)) {
+                retval.emplace_back(b, cur);
+            }
+
+            ++cur;
         }
-
-        if (!omitEmpty || ((s - begin) > 0)) {
-            retval.emplace_back(begin, s);
-        }
-    } while (*s++ != 0);
+    }
 
     return retval;
 }

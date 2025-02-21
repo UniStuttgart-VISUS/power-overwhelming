@@ -18,6 +18,7 @@ TEST_CLASS(csv_sink_test) {
         typedef atomic_sink<csv_sink<stream_type>> sink_type;
 
         sensor_array_configuration config;
+        config.exclude<hmc8015_configuration>();
         stream_type stream;
         stream.open("test.csv");
         stream << setcsvdelimiter(',');
@@ -43,6 +44,7 @@ TEST_CLASS(csv_sink_test) {
         typedef atomic_sink<csv_sink<stream_type>> sink_type;
 
         sensor_array_configuration config;
+        config.exclude<hmc8015_configuration>();
         stream_type stream;
         stream.open(L"test.csv");
         stream << setcsvdelimiter(L',');

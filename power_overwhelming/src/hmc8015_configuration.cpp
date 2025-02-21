@@ -26,7 +26,8 @@ const PWROWG_NAMESPACE::guid PWROWG_NAMESPACE::hmc8015_configuration::id(
  * PWROWG_NAMESPACE::hmc8015_configuration::hmc8015_configuration
  */
 PWROWG_NAMESPACE::hmc8015_configuration::hmc8015_configuration(void) noexcept
-        : _current_range(hmc8015_instrument_range::automatically),
+        : _clear_internal_memory(false),
+        _current_range(hmc8015_instrument_range::automatically),
         _current_range_value(0.0f),
         _cnt_functions(0),
         _functions(nullptr),
@@ -205,6 +206,7 @@ PWROWG_NAMESPACE::hmc8015_configuration&
 PWROWG_NAMESPACE::hmc8015_configuration::operator =(
         _In_ const hmc8015_configuration& rhs) noexcept {
     if (this != std::addressof(rhs)) {
+        this->_clear_internal_memory = rhs._clear_internal_memory;
         this->_current_range = rhs._current_range;
         this->_current_range_value = rhs._current_range_value;
         this->functions(rhs._functions, rhs._cnt_functions);

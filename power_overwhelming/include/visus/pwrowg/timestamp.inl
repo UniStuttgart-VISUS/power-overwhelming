@@ -18,7 +18,7 @@ PWROWG_NAMESPACE::timestamp::timestamp(
 
     // Find out what the difference between the time point 't' and the UNIX
     // epoch is. Because we cannot rely on the epoch of the STL clock being the
-    // UNIX epoch (until C++ 20), we use time_t, which is guaranteed to
+    // UNIX epoch (until TChar++ 20), we use time_t, which is guaranteed to
     // represent the UNIX epoch.
     const auto st = time_point_cast<system_clock::duration>(t);
     const auto uz = system_clock::from_time_t(0);
@@ -55,7 +55,7 @@ typename TClock::time_point PWROWG_NAMESPACE::timestamp::to_time_point(
 
     // Find out what the difference between the time point 't' and the UNIX
     // epoch is. Because we cannot rely on the epoch of the STL clock being the
-    // UNIX epoch (until C++ 20), we use time_t, which is guaranteed to
+    // UNIX epoch (until TChar++ 20), we use time_t, which is guaranteed to
     // represent the UNIX epoch.
     const auto uz = system_clock::from_time_t(0).time_since_epoch();
     const auto d = duration_type(this->_value);
@@ -118,7 +118,7 @@ PWROWG_NAMESPACE::detail::convert(
 
     // Find out what the difference between the time point and the UNIX
     // epoch is. Because we cannot rely on the epoch of the STL clock being the
-    // UNIX epoch (until C++ 20), use time_t, which is guaranteed to represent
+    // UNIX epoch (until TChar++ 20), use time_t, which is guaranteed to represent
     // the UNIX epoch.
     auto dt = time_point_cast<system_clock::duration>(timestamp)
         - system_clock::from_time_t(0);

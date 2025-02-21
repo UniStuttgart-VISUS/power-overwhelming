@@ -99,6 +99,28 @@ PWROWG_NAMESPACE::hmc8015_instrument::~hmc8015_instrument(void) {
 
 
 /*
+ * PWROWG_NAMESPACE::hmc8015_instrument::clear_internal_memory
+ */
+void PWROWG_NAMESPACE::hmc8015_instrument::clear_internal_memory(void) {
+    const auto response = this->query("DATA:LIST? INT");
+    const auto b = response.as<char>();
+    assert(b != nullptr);
+    assert(sizeof(char) == 1);
+    const auto e = b + response.size();
+
+    auto files = detail::tokenise(b, e, ',', true);
+
+    for (auto& f : files) {
+        detail::trim_if(f, [](const char c) {
+            return (c == '"') || std::isspace(c);
+        });
+
+        this->delete_file_from_instrument(f.c_str());
+    }
+}
+
+
+/*
  * PWROWG_NAMESPACE::hmc8015_instrument::copy_file_from_instrument
  */
 PWROWG_NAMESPACE::blob
@@ -561,10 +583,12 @@ std::size_t PWROWG_NAMESPACE::hmc8015_instrument::log_file(
     auto value = this->query("LOG:FNAM?\n");
 
     // Copy as much as the output buffer can hold.
-    if (path != nullptr) {
+    if ((path != nullptr) && !value.empty()) {
+        auto src = value.as<char>();
+        _Analysis_assume_(src != nullptr);
+
         for (std::size_t i = 0; (i < cnt) && (i < value.size()); ++i) {
-            _Analysis_assume_(value.as<char>(i) != nullptr);
-            path[i] = *value.as<char>(i);
+            path[i] = src[i];
         }
 
         // The last character in the reponse is always the line feed, which
@@ -588,11 +612,11 @@ PWROWG_NAMESPACE::hmc8015_instrument::log_file(
         throw std::invalid_argument("The path to the log file cannot be null.");
     }
 
-    auto location = use_usb ? "EXT" : "INT";
-
     if (overwrite) {
-        auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
-            "DATA:DEL \"%s\", %s\n", path, location);
+        auto cmd = use_usb
+            ? detail::format_string("DATA:DEL \"%s%s.CSV\", EXT\n",
+                ext_log_directory, path)
+            : detail::format_string("DATA:DEL \"%s.CSV\", INT\n", path);
         this->write(cmd);
         this->operation_complete();
         // Clear error in case file did not exist.
@@ -601,11 +625,12 @@ PWROWG_NAMESPACE::hmc8015_instrument::log_file(
 
     {
         auto cmd = PWROWG_DETAIL_NAMESPACE::format_string(
-            "LOG:FNAM \"%s\", %s\n", path, location);
+            "LOG:FNAM \"%s\", %s\n", path, use_usb ? "EXT" : "INT");
         this->write(cmd);
         this->operation_complete();
     }
 
+    this->throw_on_system_error();
     return *this;
 }
 
@@ -696,7 +721,7 @@ void PWROWG_NAMESPACE::hmc8015_instrument::configure(void) {
     assert(*this);
 
     // Configure the display to show always the same stuff.
-    // Default: URMS,IRMS,P,FPLL,URAN,IRAN,S,Q,LAMB,PHI
+    // Default: URMS,IRMS,TPredicate,FPLL,URAN,IRAN,S,Q,LAMB,PHI
     this->write("VIEW:NUM:SHOW 1\n");
     this->write("VIEW:NUM:PAGE1:SIZE 10\n");
     this->write("VIEW:NUM:PAGE1:CELL1:FUNC URMS\n");
@@ -713,7 +738,7 @@ void PWROWG_NAMESPACE::hmc8015_instrument::configure(void) {
     this->write("VIEW:NUM:PAGE1:CELL10:FUNC AH\n");
 
     // Configure the stuff we want to measure.
-    // Default: URMS,IRMS,P,FPLL,URAN,IRAN,S,Q,LAMB,PHI
+    // Default: URMS,IRMS,TPredicate,FPLL,URAN,IRAN,S,Q,LAMB,PHI
     this->default_functions();
 
     this->write("CHAN1:ACQ:MODE AUTO\n");

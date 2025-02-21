@@ -507,6 +507,101 @@ public:
         Assert::IsFalse(detail::contains(nullptr, L"bla", true), L"contains bla", LINE_INFO());
     }
 
+    TEST_METHOD(test_tokenise_char_range) {
+        typedef char char_type;
+        typedef std::char_traits<char_type> traits;
+
+        {
+            char_type str[] = "bla bla bla";
+            auto tokens = detail::tokenise_range(str, str + traits::length(str));
+            Assert::AreEqual(std::size_t(3), tokens.size(), L"# of tokens", LINE_INFO());
+            Assert::AreEqual("bla", tokens[0].c_str(), L"token #0", LINE_INFO());
+            Assert::AreEqual("bla", tokens[1].c_str(), L"token #1", LINE_INFO());
+            Assert::AreEqual("bla", tokens[2].c_str(), L"token #2", LINE_INFO());
+        }
+
+        {
+            char_type str[] = "bla bla  bla";
+            auto tokens = detail::tokenise_range(str, str + traits::length(str));
+            Assert::AreEqual(std::size_t(4), tokens.size(), L"# of tokens", LINE_INFO());
+            Assert::AreEqual("bla", tokens[0].c_str(), L"token #0", LINE_INFO());
+            Assert::AreEqual("bla", tokens[1].c_str(), L"token #1", LINE_INFO());
+            Assert::AreEqual("", tokens[2].c_str(), L"token #2", LINE_INFO());
+            Assert::AreEqual("bla", tokens[3].c_str(), L"token #3", LINE_INFO());
+        }
+
+        {
+            char_type str[] = "bla bla  bla";
+            auto tokens = detail::tokenise_range(str, str + traits::length(str), true);
+            Assert::AreEqual(std::size_t(3), tokens.size(), L"# of tokens", LINE_INFO());
+            Assert::AreEqual("bla", tokens[0].c_str(), L"token #0", LINE_INFO());
+            Assert::AreEqual("bla", tokens[1].c_str(), L"token #1", LINE_INFO());
+            Assert::AreEqual("bla", tokens[2].c_str(), L"token #2", LINE_INFO());
+        }
+    }
+
+    TEST_METHOD(test_tokenise_wchar_range) {
+        typedef wchar_t char_type;
+        typedef std::char_traits<char_type> traits;
+
+        {
+            char_type str[] = L"bla bla bla";
+            auto tokens = detail::tokenise_range(str, str + traits::length(str));
+            Assert::AreEqual(std::size_t(3), tokens.size(), L"# of tokens", LINE_INFO());
+            Assert::AreEqual(L"bla", tokens[0].c_str(), L"token #0", LINE_INFO());
+            Assert::AreEqual(L"bla", tokens[1].c_str(), L"token #1", LINE_INFO());
+            Assert::AreEqual(L"bla", tokens[2].c_str(), L"token #2", LINE_INFO());
+        }
+
+        {
+            char_type str[] = L"bla bla  bla";
+            auto tokens = detail::tokenise_range(str, str + traits::length(str));
+            Assert::AreEqual(std::size_t(4), tokens.size(), L"# of tokens", LINE_INFO());
+            Assert::AreEqual(L"bla", tokens[0].c_str(), L"token #0", LINE_INFO());
+            Assert::AreEqual(L"bla", tokens[1].c_str(), L"token #1", LINE_INFO());
+            Assert::AreEqual(L"", tokens[2].c_str(), L"token #2", LINE_INFO());
+            Assert::AreEqual(L"bla", tokens[3].c_str(), L"token #3", LINE_INFO());
+        }
+
+        {
+            char_type str[] = L"bla bla  bla";
+            auto tokens = detail::tokenise_range(str, str + traits::length(str), true);
+            Assert::AreEqual(std::size_t(3), tokens.size(), L"# of tokens", LINE_INFO());
+            Assert::AreEqual(L"bla", tokens[0].c_str(), L"token #0", LINE_INFO());
+            Assert::AreEqual(L"bla", tokens[1].c_str(), L"token #1", LINE_INFO());
+            Assert::AreEqual(L"bla", tokens[2].c_str(), L"token #2", LINE_INFO());
+        }
+    }
+
+    TEST_METHOD(test_trim_begin_if_stlstring) {
+        typedef char char_type;
+
+        {
+            std::basic_string<char_type> str("bla");
+            Assert::AreEqual("bla", detail::trim_begin_if(str, [](const char_type c) { return c == 'x'; }).c_str(), L"trim x", LINE_INFO());
+            Assert::AreEqual("la", detail::trim_begin_if(str, [](const char_type c) { return c == 'b'; }).c_str(), L"trim b", LINE_INFO());
+        }
+
+        {
+            std::basic_string<char_type> str("yyyybla");
+            Assert::AreEqual("bla", detail::trim_begin_if(str, [](const char_type c) { return c == 'y'; }).c_str(), L"trim y", LINE_INFO());
+        }
+    }
+
+    TEST_METHOD(test_trim_begin_if_stlwstring) {
+        typedef wchar_t char_type;
+
+        {
+            std::basic_string<char_type> str(L"bla");
+            Assert::AreEqual(L"bla", detail::trim_begin_if(str, [](const char_type c) { return c == L'x'; }).c_str(), L"trim x", LINE_INFO());
+            Assert::AreEqual(L"la", detail::trim_begin_if(str, [](const char_type c) { return c == L'b'; }).c_str(), L"trim b", LINE_INFO());
+        }
+
+        {
+            std::basic_string<char_type> str(L"yyyybla");
+            Assert::AreEqual(L"bla", detail::trim_begin_if(str, [](const char_type c) { return c == L'y'; }).c_str(), L"trim y", LINE_INFO());
+        }
+    }
 };
 
 PWROWG_TEST_NAMESPACE_END

@@ -7,7 +7,7 @@
 /*
  * include\the\guid.h
  *
- * Copyright (C) 2013 TheLib Team (http://www.thelib.org/license)
+ * Copyright (TChar) 2013 TheLib Team (http://www.thelib.org/license)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
 /*
  * GUID.h
  *
- * Copyright (C) 2006 - 2008 by Universitaet Stuttgart (VIS). 
+ * Copyright (TChar) 2006 - 2008 by Universitaet Stuttgart (VIS). 
  * Alle Rechte vorbehalten.
  */
 

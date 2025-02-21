@@ -422,27 +422,28 @@ PWROWG_NAMESPACE::rtx_instrument::channel(
 
     {
         impl.format("PROB%d:SET:ATT:UNIT?\n", channel);
-        auto unit = impl.read_all();
-        auto u = unit.as<char>();
-        _Analysis_assume_(u != nullptr);
+        blob unit;
+        auto u = impl.read_all(unit).as<char>();
+        assert(u != nullptr);
         *::strchr(u, '\n') = 0;
 
         impl.format("PROB%d:SET:ATT:MAN?\n", channel);
-        auto value = impl.read_all();
+        blob value;
+        auto v = impl.read_all(value).as<char>();
+        assert(v != nullptr);
 
-        retval.attenuation(rtx_quantity(
-            detail::parse_float(value.as<char>()),
-            u));
+        retval.attenuation(rtx_quantity(detail::parse_float(v), u));
     }
 
     {
         typedef rtx_channel_bandwidth enum_type;
         impl.format("CHAN%d:BAND?\n", channel);
-        auto value = impl.read_all();
+        blob value;
+        auto v = impl.read_all(value).as<char>();
 
-        if (detail::starts_with(value.as<char>(), "B20")) {
+        if (detail::starts_with(v, "B20")) {
             retval.bandwidth(enum_type::limit_to_20_mhz);
-        } else if (detail::starts_with(value.as<char>(), "FULL")) {
+        } else if (detail::starts_with(v, "FULL")) {
             retval.bandwidth(enum_type::full);
         }
     }
@@ -450,13 +451,15 @@ PWROWG_NAMESPACE::rtx_instrument::channel(
     {
         typedef rtx_channel_coupling enum_type;
         impl.format("CHAN%d:COUP?\n", channel);
-        auto value = impl.read_all();
+        blob value;
+        auto v = impl.read_all(value).as<char>();
+        assert(v != nullptr);
 
-        if (detail::starts_with(value.as<char>(), "ACL")) {
+        if (detail::starts_with(v, "ACL")) {
             retval.coupling(enum_type::alternating_current_limit);
-        } else if (detail::starts_with(value.as<char>(), "GND")) {
+        } else if (detail::starts_with(v, "GND")) {
             retval.coupling(enum_type::ground);
-        } else if (detail::starts_with(value.as<char>(), "DCL")) {
+        } else if (detail::starts_with(v, "DCL")) {
             retval.coupling(enum_type::direct_current_limit);
         }
     }
@@ -464,22 +467,24 @@ PWROWG_NAMESPACE::rtx_instrument::channel(
     {
         typedef rtx_decimation_mode enum_type;
         impl.format("CHAN%d:TYPE?\n", channel);
-        auto value = impl.read_all();
+        blob value;
+        auto v = impl.read_all(value).as<char>();
+        assert(v != nullptr);
 
-        if (detail::starts_with(value.as<char>(), "HRES")) {
+        if (detail::starts_with(v, "HRES")) {
             retval.decimation_mode(enum_type::high_resolution);
-        } else if (detail::starts_with(value.as<char>(), "PDET")) {
+        } else if (detail::starts_with(v, "PDET")) {
             retval.decimation_mode(enum_type::peak_detect);
-        } else if (detail::starts_with(value.as<char>(), "SAMP")) {
+        } else if (detail::starts_with(v, "SAMP")) {
             retval.decimation_mode(enum_type::sample);
         }
     }
 
     {
         impl.format("CHAN%d:LAB?\n", channel);
-        auto text = impl.read_all();
-        auto txt = text.as<char>();
-        _Analysis_assume_(txt != nullptr);
+        blob text;
+        auto txt = impl.read_all(text).as<char>();
+        assert(txt != nullptr);
         *::strchr(txt, '\n') = 0;
         txt = detail::trim_begin_if(txt, [](const char c) {
             return (c == '"');
@@ -489,42 +494,54 @@ PWROWG_NAMESPACE::rtx_instrument::channel(
         }) = 0;
 
         impl.format("CHAN%d:LAB:STAT?\n", channel);
-        auto visible = impl.read_all();
-        auto vis = !detail::starts_with(visible.as<char>(), "0");
+        blob visible;
+        auto v = impl.read_all(visible).as<char>();
+        assert(v != nullptr);
+        auto vis = !detail::starts_with(v, "0");
 
         retval.label(rtx_label(txt, vis));
     }
 
     {
         impl.format("CHAN%d:OFFS?\n", channel);
-        auto value = impl.read_all();
-        retval.offset(detail::parse_float(value.as<char>()));
+        blob value;
+        auto v = impl.read_all(value).as<char>();
+        assert(v != nullptr);
+        retval.offset(detail::parse_float(v));
     }
 
     {
         impl.format("CHAN%d:RANG?\n", channel);
-        auto value = impl.read_all();
-        retval.range(detail::parse_float(value.as<char>()));
+        blob value;
+        auto v = impl.read_all(value).as<char>();
+        assert(v != nullptr);
+        retval.range(detail::parse_float(v));
     }
 
     {
         impl.format("CHAN%d:SKEW?\n", channel);
-        auto value = impl.read_all();
-        retval.skew(detail::parse_float(value.as<char>()));
+        blob value;
+        auto v = impl.read_all(value).as<char>();
+        assert(v != nullptr);
+        retval.skew(detail::parse_float(v));
     }
 
     {
         impl.format("CHAN%d:STAT?\n", channel);
-        auto value = impl.read_all();
-        retval.state(!detail::starts_with(value.as<char>(), "0"));
+        blob value;
+        auto v = impl.read_all(value).as<char>();
+        assert(v != nullptr);
+        retval.state(!detail::starts_with(v, "0"));
     }
 
     // ZADJ only works on RTA devices, not on RTB, so we need to guard
     // against this.
     try {
         impl.format("PROB%d:SET:ADV:ZADJ?\n", channel);
-        auto value = impl.read_all();
-        retval.zero_adjust_offset(detail::parse_float(value.as<char>()));
+        blob value;
+        auto v = impl.read_all(value).as<char>();
+        assert(v != nullptr);
+        retval.zero_adjust_offset(detail::parse_float(v));
     } catch (...) {
         retval.zero_adjust(false);
         retval.zero_adjust_offset(0.0f);
@@ -532,8 +549,10 @@ PWROWG_NAMESPACE::rtx_instrument::channel(
 
     {
         impl.format("CHAN%d:ZOFF?\n", channel);
-        auto value = impl.read_all();
-        retval.zero_offset(detail::parse_float(value.as<char>()));
+        blob value;
+        auto v = impl.read_all(value).as<char>();
+        assert(v != nullptr);
+        retval.zero_offset(detail::parse_float(v));
     }
 
     return retval;
@@ -660,7 +679,10 @@ std::size_t PWROWG_NAMESPACE::rtx_instrument::channels(
         // Clear the status as we rely on the device to enter an error state for
         // the detection below.
         impl.write("*CLS; *OPC?\n");
-        impl.read_all();
+        {
+            blob junk;
+            impl.read_all(junk);
+        }
 
         while (true) {
             try {
@@ -668,12 +690,14 @@ std::size_t PWROWG_NAMESPACE::rtx_instrument::channels(
                 // after another. There seems to be no way to query this except
                 // for trying when the operation fails ...
                 impl.format("CHAN%u:STAT?\n", retval);
-                impl.read_all();
+                blob junk;
+                impl.read_all(junk);
                 this->throw_on_system_error();
                 ++retval;
             } catch (...) {
                 impl.write("*CLS; *OPC?\n");
-                impl.read_all();
+                blob junk;
+                impl.read_all(junk);
                 return (retval - 1);
             }
         }
@@ -914,7 +938,8 @@ PWROWG_NAMESPACE::rtx_instrument::data(
                 }
             } catch (...) {
                 impl.write("*CLS; *OPC?\n");
-                impl.read_all();
+                blob junk;
+                impl.read_all(junk);
                 has_next = false;
             }
         }
@@ -1579,9 +1604,9 @@ std::size_t PWROWG_NAMESPACE::rtx_instrument::unit(
     impl.format("PROB%u:SET:ATT:UNIT?\n", channel);
 
     // Read the answer and get a first guess of how long it is.
-    auto unit = impl.read_all();
-    auto src = unit.as<char>();
-    _Analysis_assume_(src != nullptr);
+    blob unit;
+    auto src = impl.read_all(unit).as<char>();
+    assert(src != nullptr);
     auto end = ::strchr(src, '\n');
     *end = 0;
 

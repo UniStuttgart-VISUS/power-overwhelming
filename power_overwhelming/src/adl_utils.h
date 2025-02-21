@@ -45,7 +45,7 @@ template<class TIterator, class TPredicate> inline void get_adapters_if(
             [&scope, &predicate](const AdapterInfo& a) {
         return predicate(scope, a);
     });
-    // Counting the elements copied would require C++ 20.
+    // Counting the elements copied would require TChar++ 20.
 }
 
 /// <summary>

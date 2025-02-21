@@ -13,6 +13,7 @@
 #include <rapidcsv.h>
 
 #include "visus/pwrowg/blob_streambuf.h"
+#include "visus/pwrowg/on_exit.h"
 
 #include "sensor_array_impl.h"
 #include "tokenise.h"
@@ -191,9 +192,6 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
     using std::chrono::duration;
     using std::chrono::duration_cast;
 
-    constexpr auto ext_directory = "DATA/";
-    constexpr auto log_extension = ".CSV";
-
     if (enable) {
         this->_state.begin_start();
 
@@ -252,9 +250,11 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
                 {
                     auto it = this->_log.begin();
                     std::advance(it, e);
+                    auto end = hmc8015_instrument::log_extension
+                        + ::strlen(hmc8015_instrument::log_extension);
                     this->_log.insert(it,
-                        log_extension,
-                        log_extension + ::strlen(log_extension));
+                        hmc8015_instrument::log_extension,
+                        end);
                 }
 
                 // There is a special case if we are on the USB thumb drive: the
@@ -267,9 +267,11 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
                 if (equals(l, "EXT", true)) {
                     auto it = this->_log.begin();
                     std::advance(it, d);
+                    auto end = hmc8015_instrument::ext_log_directory
+                        + ::strlen(hmc8015_instrument::ext_log_directory);
                     this->_log.insert(it,
-                        ext_directory,
-                        ext_directory + ::strlen(ext_directory));
+                        hmc8015_instrument::ext_log_directory,
+                        end);
                 }
             }
         }
@@ -280,9 +282,11 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
         this->_instrument.operation_complete();
         this->_instrument.start_integrator();
         this->_instrument.log(true);
+        this->_instrument.display("hmc8015_sensor is active.");
 
         // Make sure that we explode if there was any error before. This usually
         // happens if logging fails, which is absolutely critical.
+        this->_instrument.operation_complete();
         this->_instrument.throw_on_system_error();
 
         this->_state.end_start();
@@ -290,10 +294,15 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
     } else {
         this->_state.begin_stop();
 
+        auto grd_msg = on_exit([this](void) {
+            this->_instrument.display(static_cast<char *>(nullptr));
+        });
+
         // Stop integration and logging.
         this->_instrument.log(false);
         this->_instrument.stop_integrator();
         this->_instrument.operation_complete();
+        this->_instrument.display("hmc8015_sensor is processing results.");
 
         //{
         //    std::vector<char> logs;
@@ -309,12 +318,13 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
         //    this->_log.data());
         blob log_data;
         try {
-            log_data = this->_instrument.copy_file_from_instrument_or_usb(
+           log_data = this->_instrument.copy_file_from_instrument_or_usb(
                 this->_log.data());
         } catch (visa_exception) {
             // Second chance ...
             std::this_thread::sleep_for(this->configuration()
                 .timeout_as<std::chrono::milliseconds>());
+            this->_instrument.clear_status();
             log_data = this->_instrument.copy_file_from_instrument_or_usb(
                 this->_log.data());
         }

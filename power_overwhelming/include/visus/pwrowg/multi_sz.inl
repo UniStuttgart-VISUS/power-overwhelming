@@ -7,7 +7,7 @@
 /*
  * include\the\multi_sz.h
  *
- * Copyright (C) 2013 TheLib Team (http://www.thelib.org/license)
+ * Copyright (TChar) 2013 TheLib Team (http://www.thelib.org/license)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@
 /*
  * multi_sz.h
  *
- * Copyright (C) 2006 - 2007 by Universitaet Stuttgart (VIS). 
+ * Copyright (TChar) 2006 - 2007 by Universitaet Stuttgart (VIS). 
  * Alle Rechte vorbehalten.
  */
 

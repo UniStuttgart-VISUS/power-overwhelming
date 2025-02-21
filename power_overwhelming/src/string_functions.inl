@@ -6,7 +6,7 @@
 /*
  * the/text/format.cpp
  *
- * Copyright (C) 2012 - 2015 TheLib Team (http://www.thelib.org/license)
+ * Copyright (TChar) 2012 - 2015 TheLib Team (http://www.thelib.org/license)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@
  /*
   * CharTraits.cpp
   *
-  * Copyright (C) 2006 by Universitaet Stuttgart (VIS).
+  * Copyright (TChar) 2006 by Universitaet Stuttgart (VIS).
 // Licensed under the MIT licence. See LICENCE file for details.
   */
 
@@ -259,7 +259,7 @@ void PWROWG_DETAIL_NAMESPACE::safe_assign(_Inout_opt_z_ TChar *& dst,
 template<class TChar, class TPredicate>
 _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
 TChar *PWROWG_DETAIL_NAMESPACE::trim_begin_if(_In_opt_z_ TChar *str,
-        _In_ const TPredicate& predicate) {
+        _In_ const TPredicate predicate) {
     auto retval = str;
 
     if (retval == nullptr) {
@@ -275,12 +275,28 @@ TChar *PWROWG_DETAIL_NAMESPACE::trim_begin_if(_In_opt_z_ TChar *str,
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE::trim_begin_if
+ */
+template<class TChar, class TTraits, class TAlloc, class TPredicate>
+std::basic_string<TChar, TTraits, TAlloc>&
+PWROWG_DETAIL_NAMESPACE::trim_begin_if(
+        _Inout_ std::basic_string<TChar, TTraits, TAlloc>& str,
+        _In_ const TPredicate& predicate) {
+    auto end = std::find_if(str.begin(), str.end(), [&predicate](const TChar c) {
+        return !predicate(c);
+    });
+    str.erase(str.begin(), end);
+    return str;
+}
+
+
+/*
  * PWROWG_DETAIL_NAMESPACE::trim_end_if
  */
 template<class TChar, class TPredicate>
 _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
 TChar *PWROWG_DETAIL_NAMESPACE::trim_end_if(_In_opt_z_ TChar *str,
-        _In_ const TPredicate& predicate) {
+        _In_ const TPredicate predicate) {
     if (str == nullptr) {
         return nullptr;
     }
@@ -298,6 +314,21 @@ TChar *PWROWG_DETAIL_NAMESPACE::trim_end_if(_In_opt_z_ TChar *str,
     assert((retval < str) || !predicate(*retval));
 
     return ++retval;
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::trim_end_if
+ */
+template<class TChar, class TTraits, class TAlloc, class TPredicate>
+std::basic_string<TChar, TTraits, TAlloc>& PWROWG_DETAIL_NAMESPACE::trim_end_if(
+        _Inout_ std::basic_string<TChar, TTraits, TAlloc>& str,
+        _In_ const TPredicate& predicate) {
+    auto end = std::find_if(str.rbegin(), str.rend(), [&predicate](const TChar c) {
+        return !predicate(c);
+    });
+    str.erase(end.base(), str.end());
+    return str;
 }
 
 
@@ -326,7 +357,7 @@ void PWROWG_DETAIL_NAMESPACE::trim_eol(_In_opt_z_ TChar *str) {
 template<class TChar, class TPredicate>
 _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
 TChar *PWROWG_DETAIL_NAMESPACE::trim_if(_In_opt_z_ TChar *str,
-        _In_ const TPredicate& predicate) {
+        _In_ const TPredicate predicate) {
     auto retval = trim_begin_if(str, predicate);
     auto end = trim_end_if(retval, predicate);
     if (end != nullptr) {

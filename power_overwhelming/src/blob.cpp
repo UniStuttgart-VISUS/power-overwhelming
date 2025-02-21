@@ -203,8 +203,9 @@ void PWROWG_NAMESPACE::blob::resize(_In_ const std::size_t size) {
 /*
  * PWROWG_NAMESPACE::blob::truncate
  */
-void PWROWG_NAMESPACE::blob::truncate(_In_ const std::size_t size) {
-    if (this->_size != size) {
+void PWROWG_NAMESPACE::blob::truncate(_In_ const std::size_t size,
+        _In_ const bool noalloc) {
+    if ((this->_size > size) || !noalloc) {
         const auto existing = this->_data;
 
         if (size > 0) {
@@ -218,8 +219,9 @@ void PWROWG_NAMESPACE::blob::truncate(_In_ const std::size_t size) {
         }
 
         delete[] existing;
-        this->_size = size;
     }
+
+    this->_size = size;
 }
 
 

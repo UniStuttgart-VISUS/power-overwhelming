@@ -355,9 +355,13 @@ public:
     /// the existing range of content will remain uninitialised.</para>
     /// </remarks>
     /// <param name="size">The requested size in bytes.</param>
+    /// <param name="noalloc">If <c>true</c>, the truncation will be performed
+    /// by decreasing the indicated size without actually freeing the excess
+    /// memory. This flag has no effect if the requested <paramref name="size" />
+    /// is more than what is currently allocated.</param>
     /// <exception cref="std::bad_alloc">If the required memory could not
     /// be allocated.</exception>
-    void truncate(_In_ const std::size_t size);
+    void truncate(_In_ const std::size_t size, _In_ const bool noalloc = false);
 
     /// <summary>
     /// Assignment.

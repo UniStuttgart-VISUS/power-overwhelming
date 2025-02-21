@@ -64,8 +64,9 @@ int _tmain(const int argc, const TCHAR **argv) {
                 c.timeout(std::chrono::seconds(10));
                 c.current_range(hmc8015_instrument_range::maximum);
                 c.voltage_range(hmc8015_instrument_range::maximum);
-                //c.log_file("pwrowg.tsv");
-                c.log_to_usb(false);
+                c.clear_internal_memory(true);
+                //c.log_file("pdmp");
+                c.log_to_usb(true);
             })
             .sample_every(std::chrono::milliseconds(5))
             .deliver_to([](const sample *s,
@@ -92,7 +93,7 @@ int _tmain(const int argc, const TCHAR **argv) {
 
         // Sample the sensors for some time.
         sensors.start();
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(5));
         sensors.stop();
     }
 

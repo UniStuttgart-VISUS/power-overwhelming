@@ -566,7 +566,26 @@ inline bool starts_with(
 /// <paramref name="predicate" /> does not hold any more.</returns>
 template<class TChar, class TPredicate>
 _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
-TChar *trim_begin_if(_In_opt_z_ TChar *str,
+TChar *trim_begin_if(_In_opt_z_ TChar *str, _In_ const TPredicate predicate);
+
+/// <summary>
+/// Removes all characters matching <paramref name="predicate" /> from the start
+/// of the given string.
+/// </summary>
+/// <typeparam name="TChar">The type of the character in the string.
+/// </typeparam>
+/// <typeparam name="TTraits">The character traits.</typeparam>
+/// <typeparam name="TAlloc">The allocator of the string.</typeparam>
+/// <typeparam name="TPredicate">The type of the predicate functor, which
+/// must take a character of type <typeparamref name="TChar" /> and return a
+/// <c>bool</c>.</typeparam>
+/// <param name="str">The string to be trimmed.</param>
+/// <param name="predicate">The predicate that all characters that are to be
+/// removed must fulfil.</param>
+/// <returns><parmref name="str" />.</returns>
+template<class TChar, class TTraits, class TAlloc, class TPredicate>
+std::basic_string<TChar, TTraits, TAlloc>& trim_begin_if(
+    _Inout_ std::basic_string<TChar, TTraits, TAlloc>& str,
     _In_ const TPredicate& predicate);
 
 /// <summary>
@@ -608,7 +627,27 @@ inline TChar *trim_begin(_In_opt_z_ TChar *str) {
 /// <paramref name="predicate" /> still holds.</returns>
 template<class TChar, class TPredicate>
 _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
-TChar *trim_end_if(_In_opt_z_ TChar *str, _In_ const TPredicate& predicate);
+TChar *trim_end_if(_In_opt_z_ TChar *str, _In_ const TPredicate predicate);
+
+/// <summary>
+/// Removes all characters matching <paramref name="predicate" /> from the end
+/// of the given string.
+/// </summary>
+/// <typeparam name="TChar">The type of the character in the string.
+/// </typeparam>
+/// <typeparam name="TTraits">The character traits.</typeparam>
+/// <typeparam name="TAlloc">The allocator of the string.</typeparam>
+/// <typeparam name="TPredicate">The type of the predicate functor, which
+/// must take a character of type <typeparamref name="TChar" /> and return a
+/// <c>bool</c>.</typeparam>
+/// <param name="str">The string to be trimmed.</param>
+/// <param name="predicate">The predicate that all characters that are to be
+/// removed must fulfil.</param>
+/// <returns><parmref name="str" />.</returns>
+template<class TChar, class TTraits, class TAlloc, class TPredicate>
+std::basic_string<TChar, TTraits, TAlloc>& trim_end_if(
+    _Inout_ std::basic_string<TChar, TTraits, TAlloc>& str,
+    _In_ const TPredicate& predicate);
 
 /// <summary>
 /// Determine the last whitespace character from the end of the given
@@ -657,7 +696,29 @@ template<class TChar> void trim_eol(_In_opt_z_ TChar *str);
 /// character accordingly.</returns>
 template<class TChar, class TPredicate>
 _When_(str != nullptr, _Ret_z_) _When_(str == nullptr, _Ret_null_)
-TChar *trim_if(_In_opt_z_ TChar *str, _In_ const TPredicate& predicate);
+TChar *trim_if(_In_opt_z_ TChar *str, _In_ const TPredicate predicate);
+
+/// <summary>
+/// Removes all characters matching <paramref name="predicate" /> from the begin
+/// and end of the given string.
+/// </summary>
+/// <typeparam name="TChar">The type of the character in the string.
+/// </typeparam>
+/// <typeparam name="TTraits">The character traits.</typeparam>
+/// <typeparam name="TAlloc">The allocator of the string.</typeparam>
+/// <typeparam name="TPredicate">The type of the predicate functor, which
+/// must take a character of type <typeparamref name="TChar" /> and return a
+/// <c>bool</c>.</typeparam>
+/// <param name="str">The string to be trimmed.</param>
+/// <param name="predicate">The predicate that all characters that are to be
+/// removed must fulfil.</param>
+/// <returns><parmref name="str" />.</returns>
+template<class TChar, class TTraits, class TAlloc, class TPredicate>
+inline std::basic_string<TChar, TTraits, TAlloc>& trim_if(
+        _Inout_ std::basic_string<TChar, TTraits, TAlloc>& str,
+        _In_ const TPredicate& predicate) {
+    return trim_begin_if(trim_end_if(str, predicate), predicate);
+}
 
 PWROWG_DETAIL_NAMESPACE_END
 

@@ -104,7 +104,7 @@ template<> struct json_serialiser<std::wstring, false, false> final {
 };
 
 /// <summary>
-/// Specialisation for C-style strings.
+/// Specialisation for TChar-style strings.
 /// </summary>
 template<> struct json_serialiser<const char *, false, false> final {
     typedef std::string value_type;
@@ -119,7 +119,7 @@ template<> struct json_serialiser<const char *, false, false> final {
 };
 
 /// <summary>
-/// Specialisation for C-style strings.
+/// Specialisation for TChar-style strings.
 /// </summary>
 template<> struct json_serialiser<const wchar_t *, false, false> final {
     static inline std::wstring deserialise(
@@ -134,7 +134,7 @@ template<> struct json_serialiser<const wchar_t *, false, false> final {
 };
 
 /// <summary>
-/// Specialisation for statically sized C-style strings of length
+/// Specialisation for statically sized TChar-style strings of length
 /// <typeparamref name="Length" />.
 /// </summary>
 template<std::size_t Length>

@@ -84,6 +84,10 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::create(
                 break;
         }
 
+        // Determine the termination character for commands and responses.
+        visa_exception::throw_on_error(visa_library::instance().viGetAttribute(
+            retval->session, VI_ATTR_TERMCHAR, &retval->terminal_character));
+
         retval->_path = path;
 
         _instruments[path] = retval;
@@ -245,10 +249,10 @@ std::string PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::identify(
         void) const {
     const auto cmd = "*IDN?\n";
     this->write_all(reinterpret_cast<const byte_type *>(cmd) , ::strlen(cmd));
-    auto id = this->read_all();
 
-    auto retval = id.as<char>();
-    _Analysis_assume_(retval != nullptr);
+    blob id;
+    auto retval = this->read_all(id).as<char>();
+    assert(retval != nullptr);
     *::strchr(retval, '\n') = 0;
 
     return retval;
@@ -301,12 +305,12 @@ std::size_t PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read(
 /*
  * PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_all
  */
-PWROWG_NAMESPACE::blob
-PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_all(
-        _In_ const std::size_t buffer_size) const {
-    static const std::size_t min_size = 1;
+PWROWG_NAMESPACE::blob& PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_all(
+        _Inout_ blob& buffer) const {
+    if (buffer.empty()) {
+        buffer.resize(1024);    // The default size used by R&S.
+    }
 
-    blob retval((std::max)(buffer_size, min_size));
     ViUInt32 offset = 0;
     ViUInt32 read = 0;
     ViStatus status = VI_SUCCESS_MAX_CNT;
@@ -314,26 +318,27 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_all(
     while (status == VI_SUCCESS_MAX_CNT) {
         status = detail::visa_library::instance().viRead(
             this->session,
-            retval.as<ViByte>(offset),
-            static_cast<ViUInt32>(retval.size() - offset),
+            buffer.as<ViByte>(offset),
+            static_cast<ViUInt32>(buffer.size() - offset),
             &read);
         offset += read;
 
-        if (status == VI_SUCCESS_MAX_CNT) {
+        // Terminate in case of any error.
+        visa_exception::throw_on_error(status);
+
+        if (status != VI_SUCCESS) {
             // Increase the buffer size if the message was not completely read.
             // The 50% increase is something used by many STL vector
             // implementations, so it is probably a reasonable heuristic.
-            retval.grow(retval.size() + (std::max)(retval.size() / 2,
-                min_size));
-        } else {
-            // Terminate in case of any error.
-            visa_exception::throw_on_error(status);
+            buffer.grow(buffer.size() + (std::max)(buffer.size() / 2,
+                static_cast<std::size_t>(32)));
         }
     };
 
-    retval.truncate(offset);
+    // Truncate to the actual size, but do not reallocate to free excess memory.
+    buffer.truncate(offset, true);
 
-    return retval;
+    return buffer;
 }
 
 
@@ -341,8 +346,7 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_all(
  * PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_binary
  */
 PWROWG_NAMESPACE::blob
-PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_binary(
-        void) const {
+PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_binary(void) const {
     blob retval(16);
     std::size_t size = 0;
 
@@ -353,9 +357,10 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_binary(
     }
 
     if (*retval.as<char>(1) == '(') {
-        // This is the "variable length" mode where the data starts with
-        // #(<number of bytes>). We need to read the input character by
-        // character until we read the closing parenthesis.
+        // This is the "variable length" mode specific to R&S instruments
+        // where the data starts with #(<number of bytes>). We need to read
+        // the input character by character until we read the closing
+        // parenthesis.
         byte_type byte = 0;
         bool need_more = true;
 
@@ -383,10 +388,12 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_binary(
         *retval.as<char>(2) = 0;
         const auto digits = std::atoi(retval.as<char>(1));
 
-        // If the number of digits is zero, we must do an unbounded read.
+        // If the number of digits is zero, we must do an unbounded read. This is
+        // the IEEE 488.2 standard behaviour for files of 1 GB or larger, which
+        // R&S does not implement.
         if (digits == 0) {
-            // TODO: check whether we need to remove a line break
-            return this->read_all();
+            retval.reserve(1024);   // Use R&S' default for the inital read.
+            return this->read_all(retval);
         }
 
         retval.reserve(digits + 1);
@@ -396,21 +403,17 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_binary(
         size = std::atoi(retval.as<char>());
     }
 
-    retval.resize(size);
-    assert(retval.size() == size);
-
-    while (size > 0) {
-        size -= this->read(retval.end() - size, size);
-    }
+    retval.reserve(size);
+    assert(retval.size() >= size);
+    this->read_all(retval);
 
     this->throw_on_system_error();
 
-    // Read and discard all junk that might be in the buffer. If we do not
-    // do this, the next query could be interrupted. This might also fail,
-    // in which case we just ignore it.
-    try {
-        this->read_all();
-    } catch (...) { }
+    // In binary mode, remove the terminal character as described in
+    // https://scdn.rohde-schwarz.com/ur/pws/dl_downloads/dl_application/application_notes/1sl381/1SL381_1e_Binary_transfer_using_SCPI.pdf
+    if (*retval.as<char>(retval.size() - 1) == this->terminal_character) {
+        retval.truncate(retval.size() - 1, true);
+    }
 
     return retval;
 }
@@ -457,7 +460,8 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::resource_class(
 int PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::system_error(
         _Out_ std::string& message) const {
     this->write(":SYST:ERR?\n");
-    auto status = this->read_all();
+    blob status;
+    this->read_all(status);
 
     auto delimiter = std::find_if(status.begin(), status.end(),
         [](const byte_type b) { return b == ','; });
@@ -568,7 +572,7 @@ void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::write(
     assert(str != nullptr);
     auto len = ::strlen(str);
 
-    if (this->auto_terminate() && (str[len - 1] != this->terminal_character)) {
+    if (str[len - 1] != this->terminal_character) {
         std::vector<byte_type> term(len + 1);
         ::memcpy(term.data(), str, len * sizeof(char));
         term[len++] = this->terminal_character;

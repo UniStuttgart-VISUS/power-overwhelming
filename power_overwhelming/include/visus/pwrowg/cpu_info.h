@@ -115,7 +115,7 @@ enum class cpu_vendor {
     cyrix,
 
     /// <summary>
-    /// Identifies a DM&P Vortex86 CPU.
+    /// Identifies a DM&TPredicate Vortex86 CPU.
     /// </summary>
     dmp,
 

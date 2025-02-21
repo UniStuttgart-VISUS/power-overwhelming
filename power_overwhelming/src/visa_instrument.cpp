@@ -48,9 +48,7 @@ PWROWG_NAMESPACE::blob PWROWG_NAMESPACE::visa_instrument::find_resources(
     auto cur = retval.as<char_type>();
     const auto end = reinterpret_cast<char_type *>(retval.end());
     assert(cur != nullptr);
-    _Analysis_assume_(cur != nullptr);
     assert(end != nullptr);
-    _Analysis_assume_(end != nullptr);
 
     for (auto& d : devices) {
         detail::convert_string(cur, end - cur, d.c_str(), d.size());
@@ -84,7 +82,6 @@ PWROWG_NAMESPACE::blob PWROWG_NAMESPACE::visa_instrument::find_resources(
     blob retval(len * sizeof(char_type));
     auto cur = retval.as<char_type>();
     assert(cur != nullptr);
-    _Analysis_assume_(cur != nullptr);
 
     for (auto& d : devices) {
         std::copy(d.begin(), d.end(), cur);
@@ -289,6 +286,7 @@ PWROWG_NAMESPACE::visa_instrument::attribute(_In_ ViAttr name,
     return *this;
 }
 
+
 /*
  * PWROWG_NAMESPACE::visa_instrument::beep
  */
@@ -306,7 +304,9 @@ PWROWG_NAMESPACE::visa_instrument::beep(_In_ const std::size_t cnt) {
  */
 bool PWROWG_NAMESPACE::visa_instrument::beep_on_error(void) {
     auto response = this->query("SYST:BEEP:ERR:STAT?\n");
-    auto status = std::atoi(response.as<char>());
+    auto r = response.as<char>();
+    assert(r != nullptr);
+    auto status = std::atoi(r);
     return (status != 0);
 }
 
@@ -375,7 +375,9 @@ PWROWG_NAMESPACE::visa_instrument::enable_system_checks(
 PWROWG_NAMESPACE::visa_event_status
 PWROWG_NAMESPACE::visa_instrument::event_status(void) const {
     auto response = this->query("*ESR?\n");
-    auto status = std::atoi(response.as<char>());
+    auto r = response.as<char>();
+    assert(r != nullptr);
+    auto status = std::atoi(r);
     return static_cast<visa_event_status>(status);
 }
 
@@ -682,11 +684,11 @@ std::size_t PWROWG_NAMESPACE::visa_instrument::read(
 /*
  * PWROWG_NAMESPACE::visa_instrument::read_all
  */
-PWROWG_NAMESPACE::blob
-PWROWG_NAMESPACE::visa_instrument::read_all(
+PWROWG_NAMESPACE::blob PWROWG_NAMESPACE::visa_instrument::read_all(
         _In_ const std::size_t buffer_size) const {
     auto& impl = this->check_not_disposed();
-    return impl.read_all(buffer_size);
+    blob retval(buffer_size);
+    return impl.read_all(retval);
 }
 
 
@@ -751,7 +753,9 @@ PWROWG_NAMESPACE::visa_instrument::service_request_status(
 PWROWG_NAMESPACE::visa_status_byte
 PWROWG_NAMESPACE::visa_instrument::service_request_status(void) const {
     auto response = this->query("*SRE?\n");
-    auto status = std::atoi(response.as<char>());
+    auto r = response.as<char>();
+    assert(r != nullptr);
+    auto status = std::atoi(r);
     return static_cast<visa_status_byte>(status);
 }
 
@@ -844,7 +848,9 @@ int PWROWG_NAMESPACE::visa_instrument::system_error(void) const {
 
         if ((delimiter != nullptr) && (delimiter != status.end())) {
             *delimiter = '\0';
-            return std::atoi(reinterpret_cast<char *>(status.begin()));
+            auto s = reinterpret_cast<char *>(status.begin());
+            assert(s != nullptr);
+            return std::atoi(s);
         }
     }
 
@@ -957,7 +963,7 @@ PWROWG_NAMESPACE::visa_instrument::write(
     auto& impl = this->check_not_disposed();
     auto s = convert_string<char>(str);
 
-    if (impl.auto_terminate() && (s.back() != impl.terminal_character)) {
+    if (s.back() != impl.terminal_character) {
         s += impl.terminal_character;
     }
 

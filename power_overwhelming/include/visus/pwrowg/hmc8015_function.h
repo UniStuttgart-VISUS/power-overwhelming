@@ -25,7 +25,7 @@ enum class hmc8015_function {
     empty,
 
     /// <summary>
-    /// The active power P.
+    /// The active power TPredicate.
     /// </summary>
     active_power,
 

@@ -46,6 +46,15 @@ TInput PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::from_descriptions(
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
         }
 
+        // Make sure that the local interface is locked.
+        instrument->write("SYST:REM\n");
+
+        // Clear the memory if requested, but only now that we actually intend to
+        // use the instrument.
+        if (config.clear_internal_memory()) {
+            instrument->clear_internal_memory();
+        }
+
         // Create the sensor.
         const auto cnt_functions = functions.size();
         dst.emplace_back(std::move(*instrument),

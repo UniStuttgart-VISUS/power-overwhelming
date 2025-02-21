@@ -51,6 +51,16 @@ public:
         _In_ const std::int32_t timeout = 3000);
 
     /// <summary>
+    /// The directory used on the front USB drive for storing log files.
+    /// </summary>
+    static constexpr const char *ext_log_directory = "DATA/";
+
+    /// <summary>
+    /// The file name extension of the log file.
+    /// </summary>
+    static constexpr const char *log_extension = ".CSV";
+
+    /// <summary>
     /// The product ID of the HMC8015.
     /// </summary>
     /// <remarks>
@@ -109,6 +119,11 @@ public:
     /// Finalise the instance.
     /// </summary>
     ~hmc8015_instrument(void);
+
+    /// <summary>
+    /// Enumerates all files in internal memory and deletes them.
+    /// </summary>
+    void clear_internal_memory(void);
 
     /// <summary>
     /// Reads a file from the device into memory.

@@ -51,6 +51,29 @@ public:
     ~hmc8015_configuration(void) noexcept;
 
     /// <summary>
+    /// Answer whether the sensor should clean the internal memory of the
+    /// HMC 8015 on initialisation.
+    /// </summary>
+    /// <returns><c>true</c> if the memory should be cleaned, <c>false</c>
+    /// otherwise.</returns>
+    inline bool clear_internal_memory(void) const noexcept {
+        return this->_clear_internal_memory;
+    }
+
+    /// <summary>
+    /// Instructs the sensor to (not) clear the internal device memory of the
+    /// HMC 8015 on initialisation.
+    /// </summary>
+    /// <param name="value"><c>true</c> for clearing the memory, <c>false</c>
+    /// for leaving existing data untouched..</param>
+    /// <returns><c>*this</c>.</returns>
+    hmc8015_configuration& clear_internal_memory(
+            _In_ const bool value) noexcept {
+        this->_clear_internal_memory = value;
+        return *this;
+    }
+
+    /// <summary>
     /// Answer the number of functions to be displayed.
     /// </summary>
     /// <returns>The number of elements in <see cref="functions" />.</returns>
@@ -329,6 +352,7 @@ public:
 
 private:
 
+    bool _clear_internal_memory;
     std::size_t _cnt_functions;
     hmc8015_instrument_range _current_range;
     float _current_range_value;
