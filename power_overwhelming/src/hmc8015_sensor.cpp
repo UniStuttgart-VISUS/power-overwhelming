@@ -294,10 +294,6 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
     } else {
         this->_state.begin_stop();
 
-        auto grd_msg = on_exit([this](void) {
-            this->_instrument.display(static_cast<char *>(nullptr));
-        });
-
         // Stop integration and logging.
         this->_instrument.log(false);
         this->_instrument.stop_integrator();
@@ -391,6 +387,8 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
             this->_instrument.delete_file_from_instrument_or_usb(
                 this->_log.data());
         }
+
+        this->_instrument.display(static_cast<char *>(nullptr));
 
         this->_state.end_stop();
     }

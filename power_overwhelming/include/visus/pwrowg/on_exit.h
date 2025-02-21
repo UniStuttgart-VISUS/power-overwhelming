@@ -9,6 +9,7 @@
 #pragma once
 
 #include "visus/pwrowg/api.h"
+#include "visus/pwrowg/unique_variable.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -116,6 +117,15 @@ detail::on_exit_guard<TExitHandler> on_exit(TExitHandler&& exitHandler) {
 }
 
 PWROWG_NAMESPACE_END
+
+
+/// <summary>
+/// Declares a exit guard variable that executes the
+/// <paramref name="exit_handler" /> lambda expression when it is destroyed.
+/// </summary>
+#define pwrowg_on_exit(exit_handler)\
+volatile auto PWROWG_UNIQUE_VARIABLE(__pwrowg_scope_guard) \
+= PWROWG_NAMESPACE::on_exit(exit_handler)
 
 #include "visus/pwrowg/on_exit.inl"
 

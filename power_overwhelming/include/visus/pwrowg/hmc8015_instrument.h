@@ -435,6 +435,19 @@ public:
     hmc8015_instrument& display(_In_opt_z_ const wchar_t *text);
 
     /// <summary>
+    /// Clears the display.
+    /// </summary>
+    /// <param name="text"><c>nullptr</c>.</param>
+    /// <returns><c>*this</c>.</returns>
+    /// <exception cref="std::runtime_error">If the method is called on an
+    /// object that has been disposed by moving it.</exception>
+    /// <exception cref="visa_exception">If the VISA command was not
+    /// processed successfully.</exception>
+    inline hmc8015_instrument& display(_In_opt_z_ const std::nullptr_t text) {
+        return this->display(static_cast<char *>(nullptr));
+    }
+
+    /// <summary>
     /// Answer the functions the instrument is currently sampling in form of
     /// a comma-separated list.
     /// </summary>
