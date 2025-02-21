@@ -90,6 +90,7 @@ PWROWG_NAMESPACE::hmc8015_instrument::hmc8015_instrument(
  */
 PWROWG_NAMESPACE::hmc8015_instrument::~hmc8015_instrument(void) {
     if (*this) {
+        this->display(nullptr);
         // Reset the system state to local operations, but make sure that we
         // do not throw in the destructor. Therefore, we use the library
         // directly instead of the wrappers checking the state of the calls.

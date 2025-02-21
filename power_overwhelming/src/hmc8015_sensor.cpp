@@ -282,7 +282,6 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
         this->_instrument.operation_complete();
         this->_instrument.start_integrator();
         this->_instrument.log(true);
-        this->_instrument.display("hmc8015_sensor is active.");
 
         // Make sure that we explode if there was any error before. This usually
         // happens if logging fails, which is absolutely critical.
@@ -298,7 +297,6 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
         this->_instrument.log(false);
         this->_instrument.stop_integrator();
         this->_instrument.operation_complete();
-        this->_instrument.display("hmc8015_sensor is processing results.");
 
         //{
         //    std::vector<char> logs;
@@ -387,8 +385,6 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
             this->_instrument.delete_file_from_instrument_or_usb(
                 this->_log.data());
         }
-
-        this->_instrument.display(static_cast<char *>(nullptr));
 
         this->_state.end_stop();
     }

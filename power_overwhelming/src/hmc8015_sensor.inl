@@ -55,6 +55,9 @@ TInput PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::from_descriptions(
             instrument->clear_internal_memory();
         }
 
+        // Notify users that a sensor is using the HMC.
+        instrument->display("hmc8015_sensor is using the instrument.");
+
         // Create the sensor.
         const auto cnt_functions = functions.size();
         dst.emplace_back(std::move(*instrument),
