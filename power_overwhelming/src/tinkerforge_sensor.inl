@@ -11,7 +11,7 @@
 template<class TInput>
 TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
         _In_ list_type& dst,
-        _In_ std::size_t index,
+        _In_ sample::source_type index,
         _In_ const TInput begin,
         _In_ const TInput end,
         _In_ const sensor_array_impl *owner,
