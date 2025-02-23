@@ -118,19 +118,25 @@ public:
     /// <summary>
     /// Create a new instance for the specified adapter index.
     /// </summary>
-    /// <param name="index">The adapter index to create the sensor for.
+    /// <param name="adapter_index">The adapter index to create the sensor for.
     /// </param>
     /// <param name="sources">The sensor sources to retrieve.</param>
     /// <param name="sampling_rate">The sampling rate at which the ADL should
     /// provide new data.</param>
+    /// <param name="index">The index of the first of the
+    /// <paramref name="sources" />.</param>
     /// <returns></returns>
     /// <exception cref="adl_exception">If the specified device was not
     /// found, or another error occurred in ADL.</exception>
     static inline std::shared_ptr<adl_sensor> from_index(
-            _In_ const int index,
+            _In_ const int adapter_index,
             _In_ const std::vector<ADL_PMLOG_SENSORS>& sources,
-            _In_ const sampling_rate_type sampling_rate) {
-        return std::make_shared<adl_sensor>(index, sources, sampling_rate);
+            _In_ const sampling_rate_type sampling_rate,
+            _In_ const PWROWG_NAMESPACE::sample::source_type index) {
+        return std::make_shared<adl_sensor>(adapter_index,
+            sources,
+            sampling_rate,
+            index);
     }
 
     /// <summary>
@@ -141,6 +147,8 @@ public:
     /// <param name="sources">The sensor sources to retrieve.</param>
     /// <param name="sampling_rate">The sampling rate at which the ADL should
     /// provide new data.</param>
+    /// <param name="index">The index of the first of the
+    /// <paramref name="sources" />.</param>
     /// <returns></returns>
     /// <exception cref="std::invalid_argument">If <paramref name="udid" />
     /// is <c>nullptr</c> or if it did not match exactly one device.
@@ -150,7 +158,8 @@ public:
     static std::shared_ptr<adl_sensor> from_udid(
         _In_z_ const char *udid,
         _In_ const std::vector<ADL_PMLOG_SENSORS>& sources,
-        _In_ const sampling_rate_type sampling_rate);
+        _In_ const sampling_rate_type sampling_rate,
+        _In_ const PWROWG_NAMESPACE::sample::source_type index);
 
     /// <summary>
     /// Create a new instance for the unique device ID.
@@ -160,6 +169,8 @@ public:
     /// <param name="sources">The sensor sources to retrieve.</param>
     /// <param name="sampling_rate">The sampling rate at which the ADL should
     /// provide new data.</param>
+    /// <param name="index">The index of the first of the
+    /// <paramref name="sources" />.</param>
     /// <returns></returns>
     /// <exception cref="std::invalid_argument">If <paramref name="udid" />
     /// is <c>nullptr</c> or if it did not match exactly one device.
@@ -169,9 +180,10 @@ public:
     static inline std::shared_ptr<adl_sensor> from_udid(
             _In_z_ const wchar_t *udid,
             _In_ const std::vector<ADL_PMLOG_SENSORS>& sources,
-            _In_ const sampling_rate_type sampling_rate) {
+            _In_ const sampling_rate_type sampling_rate,
+            _In_ const PWROWG_NAMESPACE::sample::source_type index) {
         auto u = PWROWG_NAMESPACE::convert_string<char>(udid);
-        return from_udid(u.c_str(), sources, sampling_rate);
+        return from_udid(u.c_str(), sources, sampling_rate, index);
     }
 
     /// <summary>
@@ -182,9 +194,12 @@ public:
     /// <param name="sources">The sources to be sampled from the adapter.</param>
     /// <param name="sampling_rate">The sampling rate at which the ADL should
     /// provide new data.</param>
+    /// <param name="index">The index of the first of the
+    /// <paramref name="sources" />.</param>
     adl_sensor(_In_ const adapter_type adapter,
         _In_ const std::vector<ADL_PMLOG_SENSORS>& sources,
-        _In_ const sampling_rate_type sampling_rate);
+        _In_ const sampling_rate_type sampling_rate,
+        _In_ const PWROWG_NAMESPACE::sample::source_type index);
 
     adl_sensor(const adl_sensor&) = delete;
 
@@ -221,11 +236,24 @@ private:
     };
 
     /// <summary>
+    /// The type of a timestamp.
+    /// </summary>
+    typedef PWROWG_NAMESPACE::timestamp timestamp_type;
+
+    /// <summary>
     /// Specialises the description builder for the given type of sensor.
     /// </summary>
     static bool specialise(_In_ sensor_description_builder& builder,
         _In_ const AdapterInfo& info,
         _In_ const ADL_PMLOG_SENSORS sensor);
+
+    /// <summary>
+    /// Convert the last update time of <paramref name="data" /> to a timestamp.
+    /// </summary>
+    inline timestamp_type timestamp(_In_ const ADLPMLogData& data) noexcept {
+        auto local = static_cast<timestamp_type::value_type>(data.ulLastUpdated);
+        return timestamp_type(local + this->_utc_offset);
+    }
 
     /// <summary>
     /// The adpater index of the device, which is required for a series of
@@ -237,6 +265,11 @@ private:
     /// The handle for the device the sensor is working on.
     /// </summary>
     ADL_D3DKMT_HANDLE _device;
+
+    /// <summary>
+    /// The index of the first source.
+    /// </summary>
+    PWROWG_NAMESPACE::sample::source_type _index;
 
     /// <summary>
     /// The ADL scope making sure the library is ready while the sensor
@@ -259,7 +292,7 @@ private:
     /// <summary>
     /// The UTC offset of the local time, which is reported by ADL.
     /// </summary>
-    timestamp::value_type _utc_offset;
+    timestamp_type::value_type _utc_offset;
 };
 
 PWROWG_DETAIL_NAMESPACE_END

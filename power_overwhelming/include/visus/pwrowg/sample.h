@@ -100,7 +100,6 @@ struct sample final {
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    /// </summary>
     /// <param name="source">The zero-based index of the sensor that created the
     /// sample</param>
     /// <param name="timestamp">The timestamp of the sample.</param>
@@ -116,7 +115,6 @@ struct sample final {
 
     /// <summary>
     /// Initialises a new instance.
-    /// </summary>
     /// </summary>
     /// <param name="source">The zero-based index of the sensor that created the
     /// sample</param>

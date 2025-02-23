@@ -254,7 +254,8 @@ std::shared_ptr<PWROWG_DETAIL_NAMESPACE::adl_sensor>
 PWROWG_DETAIL_NAMESPACE::adl_sensor::from_udid(
         _In_z_ const char *udid,
         _In_ const std::vector<ADL_PMLOG_SENSORS>& sources,
-        _In_ const sampling_rate_type sampling_rate) {
+        _In_ const sampling_rate_type sampling_rate,
+        _In_ const PWROWG_NAMESPACE::sample::source_type index) {
     if (udid == nullptr) {
         throw std::invalid_argument("The unique device identifier cannot be "
             "null.");
@@ -275,7 +276,7 @@ PWROWG_DETAIL_NAMESPACE::adl_sensor::from_udid(
             "match a device.");
     }
 
-    return from_index(it->iAdapterIndex, sources, sampling_rate);
+    return from_index(it->iAdapterIndex, sources, sampling_rate, index);
 }
 
 
@@ -285,8 +286,10 @@ PWROWG_DETAIL_NAMESPACE::adl_sensor::from_udid(
 PWROWG_DETAIL_NAMESPACE::adl_sensor::adl_sensor(
         _In_ const adapter_type adapter,
         _In_ const std::vector<ADL_PMLOG_SENSORS>& sources,
-        _In_ const sampling_rate_type sampling_rate)
+        _In_ const sampling_rate_type sampling_rate,
+        _In_ const PWROWG_NAMESPACE::sample::source_type index)
     : _adapter_index(adapter),
+        _index(index),
         _start_output({ 0 }),
         _utc_offset(get_timezone_bias()) {
     // Get the PM log device.
@@ -342,7 +345,53 @@ void PWROWG_DETAIL_NAMESPACE::adl_sensor::sample(
         _In_ const sensor_array_callback callback,
         _In_ const sensor_description *sensors,
         _In_opt_ void *context) {
-    throw "TODO";
+    typedef decltype(reading::floating_point) reading_type;
+    constexpr auto thousand = static_cast<reading_type>(1000);
+
+    const auto& data = *static_cast<ADLPMLogData *>(
+        this->_start_output.pLoggingAddress);
+
+    // MAJOR HAZARD HERE!!! WE HAVE NO IDEA WHAT UNIT IS USED FOR VOLTAGE AND
+    // CURRENT. The documentation says nothing about this, but some overclocking
+    // tools (specifically "MorePowerTool") suggest that voltage is in mV,
+    // current in A and power in W.
+
+    for (auto i = 0; (i < ADL_PMLOG_MAX_SENSORS)
+            && (data.ulValues[i][0] != ADL_SENSOR_MAXTYPES); ++i) {
+        const auto type = static_cast<ADL_PMLOG_SENSORS>(data.ulValues[i][0]);
+        const auto value = data.ulValues[i][1];
+
+        if (is_current(type)) {
+            PWROWG_NAMESPACE::sample s(this->_index + i,
+                this->timestamp(data),
+                static_cast<reading_type>(value));
+            callback(&s, 1, sensors, context);
+
+        } else if (is_power(type)) {
+            PWROWG_NAMESPACE::sample s(this->_index + i,
+                this->timestamp(data),
+                static_cast<reading_type>(value));
+            callback(&s, 1, sensors, context);
+
+        } else if (is_thermal(type)) {
+            PWROWG_NAMESPACE::sample s(this->_index + i,
+                this->timestamp(data),
+                static_cast<reading_type>(value));
+            callback(&s, 1, sensors, context);
+
+        } else if (is_throttling(type)) {
+            PWROWG_NAMESPACE::sample s(this->_index + i,
+                this->timestamp(data),
+                value);
+            callback(&s, 1, sensors, context);
+
+        } else if (is_voltage(type)) {
+            PWROWG_NAMESPACE::sample s(this->_index + i,
+                this->timestamp(data),
+                static_cast<reading_type>(value) / thousand);
+            callback(&s, 1, sensors, context);
+        }
+    }
 }
 
 
@@ -861,10 +910,7 @@ visus::power_overwhelming::detail::adl_sensor_impl::sample(void) const {
 
     const auto timestamp = this->timestamp(*data);
 
-    // MAJOR HAZARD HERE!!! WE HAVE NO IDEA WHAT UNIT IS USED FOR VOLTAGE AND
-    // CURRENT. The documentation says nothing about this, but some overclocking
-    // tools (specifically "MorePowerTool") suggest that voltage is in mV,
-    // current in A and power in W.
+
 
     unsigned int current, power, voltage;
     switch (filter_sensor_readings(voltage, current, power, *data)) {
