@@ -254,7 +254,7 @@ std::shared_ptr<PWROWG_DETAIL_NAMESPACE::adl_sensor>
 PWROWG_DETAIL_NAMESPACE::adl_sensor::from_udid(
         _In_z_ const char *udid,
         _In_ const std::vector<ADL_PMLOG_SENSORS>& sources,
-        _In_ const sensor_array_impl *owner) {
+        _In_ const sampling_rate_type sampling_rate) {
     if (udid == nullptr) {
         throw std::invalid_argument("The unique device identifier cannot be "
             "null.");
@@ -275,7 +275,7 @@ PWROWG_DETAIL_NAMESPACE::adl_sensor::from_udid(
             "match a device.");
     }
 
-    return from_index(it->iAdapterIndex, sources, owner);
+    return from_index(it->iAdapterIndex, sources, sampling_rate);
 }
 
 
@@ -285,19 +285,13 @@ PWROWG_DETAIL_NAMESPACE::adl_sensor::from_udid(
 PWROWG_DETAIL_NAMESPACE::adl_sensor::adl_sensor(
         _In_ const adapter_type adapter,
         _In_ const std::vector<ADL_PMLOG_SENSORS>& sources,
-        const sensor_array_impl *owner)
+        _In_ const sampling_rate_type sampling_rate)
     : _adapter_index(adapter),
-        _owner(owner),
         _start_output({ 0 }),
-        _utc_offset(detail::get_timezone_bias()) {
-    if (this->_owner == nullptr) {
-        throw std::invalid_argument("The owning sensor array of an ADL sensor "
-            "must not be null.");
-    }
-
+        _utc_offset(get_timezone_bias()) {
     // Get the PM log device.
     {
-        auto status = detail::amd_display_library::instance()
+        auto status = amd_display_library::instance()
             .ADL2_Device_PMLog_Device_Create(
                 this->_scope,
                 this->_adapter_index,
@@ -312,6 +306,21 @@ PWROWG_DETAIL_NAMESPACE::adl_sensor::adl_sensor(
     for (std::size_t i = 0; i < sources.size(); ++i) {
         this->_start_input.usSensors[i] = sources[i];
     }
+
+    // Remember the sampling rate of the array.
+    this->_start_input.ulSampleRate
+        = std::chrono::duration_cast<sampling_rate_type>(sampling_rate).count();
+
+    // Start up ADL sample delivery.
+    {
+        auto status = amd_display_library::instance()
+            .ADL2_Adapter_PMLog_Start(this->_scope,
+                this->_adapter_index,
+                &this->_start_input,
+                &this->_start_output,
+                this->_device);
+        adl_exception::throw_on_error(status);
+    }
 }
 
 
@@ -319,10 +328,10 @@ PWROWG_DETAIL_NAMESPACE::adl_sensor::adl_sensor(
  * PWROWG_DETAIL_NAMESPACE::adl_sensor::~adl_sensor
  */
 PWROWG_DETAIL_NAMESPACE::adl_sensor::~adl_sensor(void) noexcept {
-    if (this->_state) {
-        // If we are still running, shut down delivery of ADL samples.
-        throw "TODO";
-    }
+    detail::amd_display_library::instance()
+        .ADL2_Adapter_PMLog_Stop(this->_scope,
+            this->_adapter_index,
+            this->_device);
 }
 
 
@@ -333,27 +342,6 @@ void PWROWG_DETAIL_NAMESPACE::adl_sensor::sample(
         _In_ const sensor_array_callback callback,
         _In_ const sensor_description *sensors,
         _In_opt_ void *context) {
-    if (this->_state.try_begin_start()) {
-        // If ADL has not yet been enabled, do so.
-        this->_start_input.ulSampleRate
-            = std::chrono::duration_cast<sampling_rate_type>(
-                this->_owner->configuration->interval).count();
-
-        auto status = detail::amd_display_library::instance()
-            .ADL2_Adapter_PMLog_Start(this->_scope,
-                this->_adapter_index,
-                &this->_start_input,
-                &this->_start_output,
-                this->_device);
-        if (adl_exception::check_error(status)) {
-            this->_state.stop();
-            throw adl_exception(status);
-        }
-
-        this->_state.end_start();
-    }
-
-
     throw "TODO";
 }
 
