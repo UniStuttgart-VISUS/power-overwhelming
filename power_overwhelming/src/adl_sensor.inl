@@ -44,6 +44,9 @@ TInput PWROWG_DETAIL_NAMESPACE::adl_sensor::from_descriptions(
                 break;
             }
 
+#if (defined(DEBUG) || defined(_DEBUG))
+            --_rem;
+#endif /* (defined(DEBUG) || defined(_DEBUG)) */
             sources.push_back(pd->source);
             ++it;
         }
