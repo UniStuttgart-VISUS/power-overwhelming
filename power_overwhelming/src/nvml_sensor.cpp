@@ -85,14 +85,14 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
 
             builder.with_name("%s (NVML)", name.data());
 
-            if ((dst != nullptr) && (cnt > 0)) {
+            if ((dst != nullptr) && (retval < cnt)) {
                 dst[retval] = builder.build();
             }
         }
 
         return retval;
     } catch (...) {
-        /* Probably no NVIDIA GPU, ignore it.*/
+        // Probably no NVIDIA GPU, ignore it.
         return 0;
     }
 }

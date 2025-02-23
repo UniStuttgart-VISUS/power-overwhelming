@@ -83,7 +83,28 @@ static std::string adl_to_string(const int code) {
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE::adl_exception::check_error
+ */
+bool PWROWG_DETAIL_NAMESPACE::adl_exception::check_error(
+        _In_ const value_type status) {
+    return (status < 0);
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::adl_exception::throw_on_error
+ */
+void PWROWG_DETAIL_NAMESPACE::adl_exception::throw_on_error(
+        _In_ const value_type status) {
+    if (status < 0) {
+        throw adl_exception(status);
+    }
+}
+
+
+/*
  * PWROWG_DETAIL_NAMESPACE::adl_exception::adl_exception
  */
-PWROWG_DETAIL_NAMESPACE::adl_exception::adl_exception(const value_type code)
+PWROWG_DETAIL_NAMESPACE::adl_exception::adl_exception(
+        _In_ const value_type code)
     : std::runtime_error(adl_to_string(code).c_str()), _code(code) { }

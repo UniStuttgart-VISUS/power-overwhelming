@@ -17,7 +17,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// Gets the timezone bias of the system in 100 ns units.
 /// </summary>
 /// <returns>The timezone bias in 100 ns units.</returns>
-timestamp::value_type get_timezone_bias(void);
+extern PWROWG_TEST_API timestamp::value_type get_timezone_bias(void);
 
 PWROWG_DETAIL_NAMESPACE_END
 

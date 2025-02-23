@@ -8,16 +8,20 @@
 #define _PWROWG_ADL_SENSOR_H
 #pragma once
 
+#include <chrono>
 #include <list>
 #include <vector>
 
 #include "visus/pwrowg/adl_configuration.h"
+#include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_description.h"
 #include "visus/pwrowg/sensor_filters.h"
 
 #include "adl_scope.h"
-#include "adl_sensor_source.h"
-#include "sensor_state.h"
+#include "adl_exception.h"
+#include "amd_display_library.h"
+#include "sensor_utilities.h"
 #include "timezone.h"
 
 
@@ -30,10 +34,18 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <para>Implementation note: There will always be one ADL sensor per AMD
 /// device in a sensor array which samples all ADL data. The reason for that is
 /// that ADL returns everything in one batch from the device.</para>
+/// <para>The ADL sensor is weird in that is internally asynchronous, because
+/// the driver delivers the samples without our intervention. However, we need to
+/// retrieve them synchronously from the designated memory area.</para>
 /// </remarks>
 class PWROWG_TEST_API adl_sensor final {
 
 public:
+
+    /// <summary>
+    /// The type used to refer to an adapter via its index.
+    /// </summary>
+    typedef decltype(AdapterInfo::iAdapterIndex) adapter_type;
 
     /// <summary>
     /// The type of sensor class configuration used by this sensor.
@@ -44,6 +56,11 @@ public:
     /// The type of a list of sensors of this type.
     /// </summary>
     typedef std::list<adl_sensor> list_type;
+
+    /// <summary>
+    /// The type used to express the ADL sampling rate.
+    /// </summary>
+    typedef std::chrono::duration<unsigned long, std::milli> sampling_rate_type;
 
     /// <summary>
     /// Create descriptions for all supported ADL sensors in the system.
@@ -82,6 +99,10 @@ public:
     /// <param name="begin">The begin of the range of sensor descriptions.
     /// </param>
     /// <param name="end">The end of the range of sensor descriptions.</param>
+    /// <param name="owner">The sensor array owning the sensors to be created.
+    /// This pointer is required to gain access to the callback pointers and
+    /// the context data. It can also be used to access the per-sensor class
+    /// configuration contained  in <paramref name="config" /> later on.</param>
     /// <param name="config">The configuration for the sensor class.</param>
     /// <returns>The iterator to the first sensor description within
     /// <paramref name="begin" /> and <paramref name="end" /> that has not been
@@ -91,197 +112,139 @@ public:
         _In_ std::size_t index,
         _In_ const TInput begin,
         _In_ const TInput end,
+        _In_ const sensor_array_impl *owner,
         _In_ const configuration_type& config);
 
-#if false
-    ///// <summary>
-    ///// Create a new instance for the specified adapter index.
-    ///// </summary>
-    ///// <param name="index">The adapter index to create the sensor for.
-    ///// </param>
-    ///// <param name="source">The sensor source to retrieve. If the source
-    ///// is not supported, the method will fail.</param>
-    ///// <returns></returns>
-    ///// <exception cref="adl_exception">If the specified device was not
-    ///// found, or another error occurred in ADL.</exception>
-    //static adl_sensor from_index(_In_ const int index,
-    //    _In_ const adl_sensor_source source);
+    /// <summary>
+    /// Create a new instance for the specified adapter index.
+    /// </summary>
+    /// <param name="index">The adapter index to create the sensor for.
+    /// </param>
+    /// <param name="sources">The sensor sources to retrieve.</param>
+    /// <param name="owner">The sensor array that owns the sensor, which is
+    /// required to obtain the requested sampling rate.</param>
+    /// <returns></returns>
+    /// <exception cref="adl_exception">If the specified device was not
+    /// found, or another error occurred in ADL.</exception>
+    static inline std::shared_ptr<adl_sensor> from_index(
+            _In_ const int index,
+            _In_ const std::vector<ADL_PMLOG_SENSORS>& sources,
+            _In_ const sensor_array_impl *owner) {
+        // Note: We cannot use make_shared here, because it does not honour our
+        // requirements for alignment.
+        return std::shared_ptr<adl_sensor>(
+            new adl_sensor(index, sources, owner));
+    }
 
-    ///// <summary>
-    ///// Create a new instance for the unique device ID.
-    ///// </summary>
-    ///// <param name="udid">The unique device ID to create the sensor for.
-    ///// </param>
-    ///// <param name="source">The sensor source to retrieve. If the source
-    ///// is not supported, the method will fail.</param>
-    ///// <returns></returns>
-    ///// <exception cref="std::invalid_argument">If <paramref name="udid" />
-    ///// is <c>nullptr</c> or if it did not match exactly one device.
-    ///// </exception>
-    ///// <exception cref="adl_exception">If the specified device was not
-    ///// found, or another error occurred in ADL.</exception>
-    //static adl_sensor from_udid(_In_z_ const char *udid,
-    //    _In_ const adl_sensor_source source);
+    /// <summary>
+    /// Create a new instance for the unique device ID.
+    /// </summary>
+    /// <param name="udid">The unique device ID to create the sensor for.
+    /// </param>
+    /// <param name="sources">The sensor sources to retrieve.</param>
+    /// <param name="owner">The sensor array that owns the sensor, which is
+    /// required to obtain the requested sampling rate.</param>
+    /// <returns></returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="udid" />
+    /// is <c>nullptr</c> or if it did not match exactly one device.
+    /// </exception>
+    /// <exception cref="adl_exception">If the specified device was not
+    /// found, or another error occurred in ADL.</exception>
+    static std::shared_ptr<adl_sensor> from_udid(
+        _In_z_ const char *udid,
+        _In_ const std::vector<ADL_PMLOG_SENSORS>& sources,
+        _In_ const sensor_array_impl *owner);
 
-    ///// <summary>
-    ///// Create a new instance for the unique device ID.
-    ///// </summary>
-    ///// <param name="udid">The unique device ID to create the sensor for.
-    ///// </param>
-    ///// <param name="source">The sensor source to retrieve. If the source
-    ///// is not supported, the method will fail.</param>
-    ///// <returns></returns>
-    ///// <exception cref="std::invalid_argument">If <paramref name="udid" />
-    ///// is <c>nullptr</c> or if it did not match exactly one device.
-    ///// </exception>
-    ///// <exception cref="adl_exception">If the specified device was not
-    ///// found, or another error occurred in ADL.</exception>
-    //static adl_sensor from_udid(_In_z_ const wchar_t *udid,
-    //    _In_ const adl_sensor_source source);
+    /// <summary>
+    /// Create a new instance for the unique device ID.
+    /// </summary>
+    /// <param name="udid">The unique device ID to create the sensor for.
+    /// </param>
+    /// <param name="sources">The sensor sources to retrieve.</param>
+    /// <param name="owner">The sensor array that owns the sensor, which is
+    /// required to obtain the requested sampling rate.</param>
+    /// <returns></returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="udid" />
+    /// is <c>nullptr</c> or if it did not match exactly one device.
+    /// </exception>
+    /// <exception cref="adl_exception">If the specified device was not
+    /// found, or another error occurred in ADL.</exception>
+    static inline std::shared_ptr<adl_sensor> from_udid(
+            _In_z_ const wchar_t *udid,
+            _In_ const std::vector<ADL_PMLOG_SENSORS>& sources,
+            _In_ const sensor_array_impl *owner) {
+        auto u = PWROWG_NAMESPACE::convert_string<char>(udid);
+        return from_udid(u.c_str(), sources, owner);
+    }
 
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    /// <exception cref="std::bad_alloc">If the memory for the sensor state
-    /// could not be allocated.</exception>
-    /// <exception cref="std::system_error">If the ADL could not be loaded.
-    /// </exception>
-    /// <exception cref="adl_exception">If the ADL could not be initialised.
-    /// </exception>
-    adl_sensor(void);
-
-    /// <summary>
-    /// Move <paramref name="rhs" /> into a new instance.
-    /// </summary>
-    /// <param name="rhs"></param>
-    /// <returns></returns>
-    inline adl_sensor(_In_ adl_sensor&& rhs) noexcept : _impl(rhs._impl) {
-        rhs._impl = nullptr;
-    }
-
-    /// <summary>
-    /// Initialise a new instance from a status block.
-    /// </summary>
-    /// <remarks>
-    /// This constructor is intended for internal use only.
-    /// </remarks>
-    /// <param name="impl">The status block, which must have been allocated
-    /// using <c>new</c>. The object takes ownership of the status block.
+    /// <param name="adapter">The index of the adapter to create the sensor for.
     /// </param>
-    inline explicit adl_sensor(
-            _In_ detail::adl_sensor_impl *&& impl) noexcept
-            : _impl(impl) {
-        impl = nullptr;
-    }
+    /// <param name="sources">The sources to be sampled from the adapter.</param>
+    /// <param name="owner">The sensor array that owns the sensor, which is
+    /// required to obtain the requested sampling rate.</param>
+    adl_sensor(_In_ const adapter_type adapter,
+        _In_ const std::vector<ADL_PMLOG_SENSORS>& sources,
+        _In_ const sensor_array_impl *owner);
+
+    adl_sensor(const adl_sensor&) = delete;
 
     /// <summary>
-    /// Finalise the instance.
+    /// Finalises the instance.
     /// </summary>
-    virtual ~adl_sensor(void);
+    ~adl_sensor(void) noexcept;
 
     /// <summary>
-    /// Gets the name of the sensor.
+    /// Deliver a sample to the given <paramref name="callback" />.
     /// </summary>
-    /// <returns>The implementation-defined, human-readable name of the
-    /// sensor.</returns>
-    virtual _Ret_maybenull_z_ const wchar_t *name(
-        void) const noexcept override;
-
-    /// <summary>
-    /// Asynchronously sample the sensor every
-    /// <paramref name="sampling_period "/> microseconds.
-    /// </summary>
-    /// <remarks>
-    /// <para>This method <see cref="start" />s the sensor and regularly
-    /// queries it on a background thread.</para>
-    /// <para>If you have multiple sensors running asynchronously, it is
-    /// recommended to use the same <paramref name="sampling_period" /> as
-    /// the implementation can use the same background thread in this
-    /// case.</para>
-    /// </remarks>
-    /// <param name="on_measurement">The callback to be invoked if new data
-    /// arrived. If this is <c>nullptr</c>, the asynchronous sampling will
-    /// be disabled.</param>
-    /// <param name="period">The desired sampling period in
-    /// microseconds. This parameter defaults to 1 millisecond.</param>
-    /// <param name="context">A user-defined context pointer that is passed
-    /// on to <see cref="on_measurement" />. This parameter defaults to
-    /// <c>nullptr</c>.</para>
-    /// <exception cref="std::runtime_error">If the sensor has been moved.
-    /// </exception>
-    /// <exception cref="std::logic_error">If the sensor is already being
-    /// sampled asynchronously due to a previous call to the method.
-    /// </exception>
-    /// <exception cref="tinkerforge_exception">If the sensor could not be
-    /// sampled. </exception>
-    void sample(_In_opt_ const measurement_callback on_measurement,
-        _In_ const microseconds_type period = default_sampling_period,
+    /// <param name="callback">The callback to be invoked.</param>
+    /// <param name="sensors">The sensor descriptions passed to the
+    /// <paramref name="callback" />.</param>
+    /// <param name="context">An optional context pointer passed to the
+    /// <paramref name="callback" />.</param>
+    void sample(_In_ const sensor_array_callback callback,
+        _In_ const sensor_description *sensors,
         _In_opt_ void *context = nullptr);
-
-    using sensor::sample;
-
-    /// <summary>
-    /// Starts the sensor asynchronously collecting data.
-    /// </summary>
-    /// <remarks>
-    /// <para>This method is for expert use only. It puts the sensor into
-    /// sampling state, but does not deliver the data to any callback.
-    /// Instead, callers are expected to retrieve data using the
-    /// synchronous <see cref="sample" /> method in a separate thread.
-    /// Note that putting the sensor in sampling state this way will prevent
-    /// the asynchronous <see cref="sample" /> method from working. You
-    /// should therefore either use either of the methods and never mix
-    /// them.</para>
-    /// </remarks>
-    /// <param name="sampling_period">The desired sampling period in
-    /// microseconds.</param>
-    /// <exception cref="std::runtime_error">If the method is called when
-    /// the sensor is already asynchronously collecting data.</exception>
-    /// <exception cref="adl_exception">If the source could not be
-    /// started.</exception>
-    void start(_In_ const microseconds_type sampling_period);
-
-    /// <summary>
-    /// Stops the sensor from asynchronously collecting data.
-    /// </summary>
-    /// <remarks>
-    /// <para>The method is for expert use only. If you call it while the
-    /// asynchronous <see cref="sample" /> method is running, asynchronous
-    /// sampling will be stopped as well.</para>
-    /// <para>It is safe to call this method on a sensor that is not
-    /// sampling asynchronously or that has been disposed by a move
-    /// operation.</para>
-    /// </remarks>
-    void stop(void);
-
-    /// <summary>
-    /// Gets the type of the sensor source.
-    /// </summary>
-    /// <returns>The sensor source.</returns>
-    adl_sensor_source source(void) const;
-
-    /// <summary>
-    /// Answer the unique device ID of the adapter the sensor is for.
-    /// </summary>
-    /// <param name=""></param>
-    /// <returns></returns>
-    _Ret_maybenull_z_ const char *udid(void) const noexcept;
-#endif
 
     adl_sensor& operator =(const adl_sensor&) = delete;
 
 private:
 
     /// <summary>
+    /// The sensor-specific data embedded in a description.
+    /// </summary>
+    struct private_data {
+        adapter_type adapter;
+        ADL_PMLOG_SENSORS source;
+        inline private_data(_In_ const adapter_type adapter,
+                _In_ const ADL_PMLOG_SENSORS source)
+            : adapter(adapter), source(source) { }
+    };
+
+    /// <summary>
+    /// Specialises the description builder for the given type of sensor.
+    /// </summary>
+    static bool specialise(_In_ sensor_description_builder& builder,
+        _In_ const AdapterInfo& info,
+        _In_ const ADL_PMLOG_SENSORS sensor);
+
+    /// <summary>
     /// The adpater index of the device, which is required for a series of
     /// APIs.
     /// </summary>
-    decltype(AdapterInfo::iAdapterIndex) _adapter_index;
+    adapter_type _adapter_index;
 
     /// <summary>
     /// The handle for the device the sensor is working on.
     /// </summary>
     ADL_D3DKMT_HANDLE _device;
+
+    /// <summary>
+    /// The owner of this sensor.
+    /// </summary>
+    const sensor_array_impl *_owner;
 
     /// <summary>
     /// The ADL scope making sure the library is ready while the sensor

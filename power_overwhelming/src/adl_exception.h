@@ -28,18 +28,35 @@ public:
     typedef int value_type;
 
     /// <summary>
+    /// Tests wheher <paramref name="status" /> indicates an ADL error.
+    /// </summary>
+    /// <param name="status">The error code to be tested.</param>
+    /// <returns><c>true</c> if <paramref name="status" /> indicates an error,
+    /// <c>false</c> otherwise.</returns>
+    static bool check_error(_In_ const value_type status);
+
+    /// <summary>
+    /// If <paramref name="status" /> indicates an ADL error, throw a
+    /// <see cref="adl_exception" />.
+    /// </summary>
+    /// <param name="status">The error code to be tested.</param>
+    /// <exception cref="adl_exception">If the given status code
+    /// represents an error state.</exception>
+    static void throw_on_error(_In_ const value_type status);
+
+    /// <summary>
     /// Initialises a new instance.
     /// </summary>
     /// <param name="code">The error code, which also determines the error
     /// message.</param>
-    adl_exception(const value_type code);
+    adl_exception(_In_ const value_type code);
 
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
     /// <param name="code">The error code.</param>
     /// <param name="message">A custom error message.</param>
-    adl_exception(const value_type code, const std::string& message)
+    adl_exception(_In_ const value_type code, _In_  const std::string& message)
         : std::runtime_error(message.c_str()), _code(code) { }
 
     /// <summary>

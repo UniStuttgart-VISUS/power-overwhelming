@@ -10,11 +10,10 @@
 #include <cstring>
 #include <vector>
 
-#include "visus/pwrowg/convert_string.h"
-
 #include "adl_utils.h"
-#include "amd_display_library.h"
+#include "sensor_array_impl.h"
 #include "sensor_description_builder.h"
+#include "zero_memory.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -201,16 +200,17 @@ std::size_t PWROWG_DETAIL_NAMESPACE::adl_sensor::descriptions(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
         _In_ std::size_t cnt,
         _In_ const configuration_type& config) {
+    auto builder = sensor_description_builder::create()
+        .with_vendor(L"AMD");
+
     try {
         detail::adl_scope scope;
+        std::size_t retval = 0;
 
         // Get all active adapters.
         const auto adapters = get_adapters(scope);
 
         // For each adapter, get all supported sensors.
-        auto builder = sensor_description_builder::create()
-            .with_vendor(L"AMD");
-
         for (auto& a : adapters) {
             ADLPMLogSupportInfo support_info;
 
@@ -221,7 +221,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::adl_sensor::descriptions(
                         a.iAdapterIndex,
                         &support_info);
                 if (status != ADL_OK) {
-                    throw adl_exception(status);
+                    continue;
                 }
             }
 
@@ -229,56 +229,181 @@ std::size_t PWROWG_DETAIL_NAMESPACE::adl_sensor::descriptions(
             for (auto s : support_info.usSensors) {
                 auto sensor = static_cast<ADL_PMLOG_SENSORS>(s);
 
-                if (is_current(sensor)) {
-                } else if (is_power(sensor)) {
-                } else if (is_thermal(sensor)) {
-                } else if (is_throttling(sensor)) {
-                } else if (is_voltage(sensor)) {
+                if (specialise(builder, a, sensor)) {
+                    if ((dst != nullptr) && (retval < cnt)) {
+                        dst[retval] = builder.build();
+                    }
+
+                    ++retval;
                 }
             }
-        /*case adl_sensor_source::asic:
-            this->sensor_name = L"ADL/ASIC/" + this->device_name
-                + L"/" + std::to_wstring(this->adapter_index);
-            break;
-
-        case adl_sensor_source::board:
-            this->sensor_name = L"ADL/BOARD/" + this->device_name
-                + L"/" + std::to_wstring(this->adapter_index);
-            break;
-
-        case adl_sensor_source::cpu:
-            this->sensor_name = L"ADL/CPU/" + this->device_name
-                + L"/" + std::to_wstring(this->adapter_index);
-            break;
-
-        case adl_sensor_source::graphics:
-            this->sensor_name = L"ADL/GFX/" + this->device_name
-                + L"/" + std::to_wstring(this->adapter_index);
-            break;
-
-        case adl_sensor_source::soc:
-            this->sensor_name = L"ADL/SOC/" + this->device_name
-                + L"/" + std::to_wstring(this->adapter_index);
-            break;
-
-        default:
-            throw std::invalid_argument("The specified sensor source is "
-                "unsupported.");*/
-
-
-            //for_adapter(std::back_inserter(retval),
-            //    scope,
-            //    a,
-            //    adl_sensor_source::all);
         }
-        throw "TODO";
-        return 0;
 
+        return retval;
     } catch (...) {
         // AMD is not supported, we ignore that at this point.
         return 0;
     }
 }
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::adl_sensor::from_udid
+ */
+std::shared_ptr<PWROWG_DETAIL_NAMESPACE::adl_sensor>
+PWROWG_DETAIL_NAMESPACE::adl_sensor::from_udid(
+        _In_z_ const char *udid,
+        _In_ const std::vector<ADL_PMLOG_SENSORS>& sources,
+        _In_ const sensor_array_impl *owner) {
+    if (udid == nullptr) {
+        throw std::invalid_argument("The unique device identifier cannot be "
+            "null.");
+    }
+
+    detail::adl_scope scope;
+
+    // Get all active adapters.
+    const auto adapters = get_adapters(scope);
+
+    // Find the one with the requested UDID.
+    auto it = std::find_if(adapters.begin(), adapters.end(),
+        [udid](const AdapterInfo& s) {
+            return equals(udid, s.strUDID, true);
+        });
+    if (it == adapters.end()) {
+        throw std::invalid_argument("The unique device identifier did not "
+            "match a device.");
+    }
+
+    return from_index(it->iAdapterIndex, sources, owner);
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::adl_sensor::adl_sensor
+ */
+PWROWG_DETAIL_NAMESPACE::adl_sensor::adl_sensor(
+        _In_ const adapter_type adapter,
+        _In_ const std::vector<ADL_PMLOG_SENSORS>& sources,
+        const sensor_array_impl *owner)
+    : _adapter_index(adapter),
+        _owner(owner),
+        _start_output({ 0 }),
+        _utc_offset(detail::get_timezone_bias()) {
+    if (this->_owner == nullptr) {
+        throw std::invalid_argument("The owning sensor array of an ADL sensor "
+            "must not be null.");
+    }
+
+    // Get the PM log device.
+    {
+        auto status = detail::amd_display_library::instance()
+            .ADL2_Device_PMLog_Device_Create(
+                this->_scope,
+                this->_adapter_index,
+                &this->_device);
+        adl_exception::throw_on_error(status);
+    }
+
+    // Store all the sources we are interested in the startup block that will
+    // enable them when we start sampling.
+    ::ZeroMemory(this->_start_input.usSensors,
+        sizeof(this->_start_input.usSensors));
+    for (std::size_t i = 0; i < sources.size(); ++i) {
+        this->_start_input.usSensors[i] = sources[i];
+    }
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::adl_sensor::~adl_sensor
+ */
+PWROWG_DETAIL_NAMESPACE::adl_sensor::~adl_sensor(void) noexcept {
+    if (this->_state) {
+        // If we are still running, shut down delivery of ADL samples.
+        throw "TODO";
+    }
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::adl_sensor::sample
+ */
+void PWROWG_DETAIL_NAMESPACE::adl_sensor::sample(
+        _In_ const sensor_array_callback callback,
+        _In_ const sensor_description *sensors,
+        _In_opt_ void *context) {
+    if (this->_state.try_begin_start()) {
+        // If ADL has not yet been enabled, do so.
+        this->_start_input.ulSampleRate
+            = std::chrono::duration_cast<sampling_rate_type>(
+                this->_owner->configuration->interval).count();
+
+        auto status = detail::amd_display_library::instance()
+            .ADL2_Adapter_PMLog_Start(this->_scope,
+                this->_adapter_index,
+                &this->_start_input,
+                &this->_start_output,
+                this->_device);
+        if (adl_exception::check_error(status)) {
+            this->_state.stop();
+            throw adl_exception(status);
+        }
+
+        this->_state.end_start();
+    }
+
+
+    throw "TODO";
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::adl_sensor::specialise
+ */
+bool PWROWG_DETAIL_NAMESPACE::adl_sensor::specialise(
+        _In_ sensor_description_builder& builder,
+        _In_ const AdapterInfo& info,
+        _In_ const ADL_PMLOG_SENSORS sensor) {
+    const auto base_type = sensor_type::gpu | sensor_type::software;
+    auto source = to_string(sensor);
+
+    if (is_current(sensor)) {
+        builder.produces(reading_type::floating_point)
+            .measured_in(reading_unit::ampere)
+            .with_type(base_type | sensor_type::current);
+
+    } else if (is_power(sensor)) {
+        builder.produces(reading_type::floating_point)
+            .measured_in(reading_unit::watt)
+            .with_type(base_type | sensor_type::power);
+
+    } else if (is_thermal(sensor)) {
+        builder.produces(reading_type::floating_point)
+            .measured_in(reading_unit::unknown)
+            .with_type(base_type | sensor_type::temperature);
+
+    } else if (is_throttling(sensor)) {
+        builder.produces(reading_type::unsigned_integer)
+            .measured_in(reading_unit::unknown)
+            .with_type(base_type | sensor_type::throttling);
+
+    } else if (is_voltage(sensor)) {
+        builder.produces(reading_type::floating_point)
+            .measured_in(reading_unit::volt)
+            .with_type(base_type | sensor_type::voltage);
+
+    } else {
+        // We do not support this one.
+        return false;
+    }
+
+    builder.with_name(L"%hs (%s)", info.strAdapterName, source.c_str())
+        .with_id(L"ADL/%hs/%s", info.strUDID, source.c_str())
+        .with_new_private_data<private_data>(info.iAdapterIndex, sensor);
+    return true;
+}
+
 
 
 
@@ -388,321 +513,6 @@ static bool filter_sensor_readings(_Out_opt_ unsigned int& value,
 }
 
 
-/// <summary>
-/// Add all <see cref="sensor_description" />s for all supported sensors of
-/// <paramref name="adapter" /> to the specified output iterator.
-/// </summary>
-/// <typeparam name="TIterator"></typeparam>
-/// <param name="oit"></param>
-/// <param name="scope"></param>
-/// <param name="adapter"></param>
-/// <param name="source"></param>
-/// <returns></returns>
-template<class TIterator>
-std::size_t for_adapter(_In_ TIterator oit,
-        _In_ PWROWG_DETAIL_NAMESPACE::adl_scope& scope,
-        _In_ const AdapterInfo& adapter,
-        _In_ const PWROWG_DETAIL_NAMESPACE::adl_sensor_source source) {
-    using namespace PWROWG_DETAIL_NAMESPACE;
-#define _PWROWG_ENABLED(haystack, needle) ((haystack & needle) == needle)
-
-    std::size_t retval = 0;
-    ADLPMLogSupportInfo supportInfo;
-
-    // First, find out whether the adapter supports PMLlog.
-    {
-        auto status = detail::amd_display_library::instance()
-            .ADL2_Adapter_PMLog_Support_Get(scope, adapter.iAdapterIndex,
-            &supportInfo);
-        if (status != ADL_OK) {
-            throw adl_exception(status);
-        }
-    }
-
-    // Now, check all of the supported sensor sources.
-    if (_PWROWG_ENABLED(source, adl_sensor_source::asic)) {
-        auto source = adl_sensor_source::asic;
-        auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
-            supportInfo);
-
-        if (!ids.empty()) {
-            auto impl = new detail::adl_sensor_impl(adapter);
-            impl->configure_source(source, std::move(ids));
-            *oit++ = adl_sensor(std::move(impl));
-            ++retval;
-        }
-    }
-
-    if (_PWROWG_ENABLED(source, adl_sensor_source::cpu)) {
-        auto source = adl_sensor_source::cpu;
-        auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
-            supportInfo);
-
-        if (!ids.empty()) {
-            auto impl = new detail::adl_sensor_impl(adapter);
-            impl->configure_source(source, std::move(ids));
-            *oit++ = adl_sensor(std::move(impl));
-            ++retval;
-        }
-    }
-
-    if (_PWROWG_ENABLED(source, adl_sensor_source::graphics)) {
-        auto source = adl_sensor_source::graphics;
-        auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
-            supportInfo);
-
-        if (!ids.empty()) {
-            auto impl = new detail::adl_sensor_impl(adapter);
-            impl->configure_source(source, std::move(ids));
-            *oit++ = adl_sensor(std::move(impl));
-            ++retval;
-        }
-    }
-
-    if (_PWROWG_ENABLED(source, adl_sensor_source::soc)) {
-        auto source = adl_sensor_source::soc;
-        auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
-            supportInfo);
-
-        if (!ids.empty()) {
-            auto impl = new detail::adl_sensor_impl(adapter);
-            impl->configure_source(source, std::move(ids));
-            *oit++ = adl_sensor(std::move(impl));
-            ++retval;
-        }
-    }
-
-    if (_PWROWG_ENABLED(source, adl_sensor_source::board)) {
-        auto source = adl_sensor_source::board;
-        auto ids = detail::adl_sensor_impl::get_sensor_ids(source,
-            supportInfo);
-
-        if (!ids.empty()) {
-            auto impl = new detail::adl_sensor_impl(adapter);
-            impl->configure_source(source, std::move(ids));
-            *oit++ = adl_sensor(std::move(impl));
-            ++retval;
-        }
-    }
-
-    return retval;
-#undef _PWROWG_ENABLED
-}
-
-
-/// <summary>
-/// Gets the IDs of the hardware sensors associated with the specified
-/// source.
-/// </summary>
-/// <remarks>
-/// The sensors are ordered (if supported): voltage, current, power.
-/// </remarks>
-/// <param name="source">The source to be measured.</param>
-/// <returns>The IDs of the hardware sensors measuring the values at the
-/// source.</returns>
-static std::vector<ADL_PMLOG_SENSORS> get_sensor_ids(
-        _In_ const PWROWG_DETAIL_NAMESPACE::adl_sensor_source source) {
-    using PWROWG_DETAIL_NAMESPACE::adl_sensor_source;
-
-    switch (source) {
-        case adl_sensor_source::asic:
-            // TODO: Due to the logic combining voltage, current and power,
-            // we currently cannot support SSPAIRED_ASICPOWER atm. Rework
-            // this in the future.
-            return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_ASIC_POWER /*,
-                ADL_PMLOG_SSPAIRED_ASICPOWER */ };
-
-        case adl_sensor_source::cpu:
-            return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_CPU_POWER };
-
-        case adl_sensor_source::board:
-            return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_BOARD_POWER };
-
-        case adl_sensor_source::graphics:
-            return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_GFX_VOLTAGE,
-                ADL_PMLOG_GFX_CURRENT, ADL_PMLOG_GFX_POWER };
-
-        case adl_sensor_source::soc:
-            return std::vector<ADL_PMLOG_SENSORS> { ADL_PMLOG_SOC_VOLTAGE,
-                ADL_PMLOG_SOC_CURRENT, ADL_PMLOG_SOC_POWER };
-
-        default:
-            return std::vector<ADL_PMLOG_SENSORS>();
-    };
-}
-
-
-/// <summary>
-/// Determine which sensors of the specified source are supported in the
-/// given <see cref="ADLPMLogSupportInfo" />.
-/// </summary>
-/// <param name="source"></param>
-/// <param name="supportInfo"></param>
-/// <returns>The intersection of the sensors supported according to
-/// <paramref name="supportInfo" /> and the sensors required for
-/// <paramref name="source" />.</returns>
-static std::vector<ADL_PMLOG_SENSORS> get_sensor_ids(
-        _In_ const PWROWG_DETAIL_NAMESPACE::adl_sensor_source source,
-        _In_ const ADLPMLogSupportInfo& supportInfo) {
-    using PWROWG_DETAIL_NAMESPACE::supports_sensor;
-    auto retval = get_sensor_ids(source);
-
-    // Erase all sensor IDs not supported according to 'supportInfo'.
-    {
-        auto end = std::remove_if(retval.begin(), retval.end(),
-            [&supportInfo](const int id) {
-                return !supports_sensor(supportInfo, id);
-            });
-        retval.erase(end, retval.end());
-    }
-
-    if ((retval.size() == 1) && !is_power(retval.front())) {
-        // If there is only one sensor, it must be a power sensor. Having either
-        // voltage or current is useless, so we do not report this.
-        retval.clear();
-
-    } else if (retval.size() == 2) {
-        // If we have two sensors, it must be voltage and current as we can
-        // compute the power from both. Alternatively, if one of the sensors
-        // is a power sensor, remove all except this one.
-        auto haveCurrent = is_current(retval[0]) || is_current(retval[1]);
-        auto haveVoltage = is_voltage(retval[0]) || is_voltage(retval[1]);
-
-        if (!haveCurrent || !haveVoltage) {
-            auto end = std::remove_if(retval.begin(), retval.end(),
-                [](const ADL_PMLOG_SENSORS id) { return !is_power(id); });
-            retval.erase(end, retval.end());
-        }
-    }
-
-    return retval;
-}
-
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::adl_sensor::descriptions
- */
-std::vector<PWROWG_NAMESPACE::sensor_description>
-PWROWG_DETAIL_NAMESPACE::adl_sensor::descriptions(void) {
-    std::vector<sensor_description> retval;
-
-    try {
-        auto builder = sensor_description_builder::create().with_vendor(L"AMD");
-        detail::adl_scope scope;
-
-        // Get all active adapters.
-        const auto adapters = detail::get_adapters(scope);
-
-        // For each adapter, get all supported sensors.
-        for (auto& a : adapters) {
-            for_adapter(std::back_inserter(retval),
-                scope,
-                a,
-                adl_sensor_source::all);
-        }
-    } catch (...) {
-        /* AMD is not supported, we ignore that at this point.*/
-    }
-
-    return retval;
-}
-
-
-///*
-// * visus::power_overwhelming::adl_sensor::from_index
-// */
-//visus::power_overwhelming::adl_sensor
-//visus::power_overwhelming::adl_sensor::from_index(_In_ const int index,
-//        _In_ const adl_sensor_source source) {
-//    adl_sensor retval;
-//
-//    auto status = detail::amd_display_library::instance()
-//        .ADL2_Device_PMLog_Device_Create(nullptr, index, &retval._impl->device);
-//    if (status != ADL_OK) {
-//        throw adl_exception(status);
-//    }
-//
-//    throw "TODO: Implement retrieval from index.";
-//
-//    return retval;
-//}
-
-
-///*
-// * visus::power_overwhelming::adl_sensor::from_udid
-// */
-//visus::power_overwhelming::adl_sensor
-//visus::power_overwhelming::adl_sensor::from_udid(_In_z_ const char *udid,
-//        _In_ const adl_sensor_source source) {
-//    if (udid == nullptr) {
-//        throw std::invalid_argument("The unique device identifier cannot be "
-//            "null.");
-//    }
-//
-//    detail::adl_scope scope;
-//
-//    auto adapters = detail::get_adapters_if(scope,
-//        [udid](const detail::adl_scope&, const AdapterInfo& a) {
-//            return (::strcmp(udid, a.strUDID) == 0);
-//        });
-//    if (adapters.size() != 1) {
-//        throw std::invalid_argument("The unique device identifier did not "
-//            "match a single device.");
-//    }
-//
-//    std::vector<adl_sensor> retval;
-//    auto sensors = detail::for_adapter(std::back_inserter(retval), scope,
-//        adapters.front(), source);
-//    if (sensors != 1) {
-//        throw std::invalid_argument("A unique sensor source must be specified "
-//            "when creating a single sensor.");
-//    }
-//
-//    return std::move(retval.front());
-//}
-//
-//
-///*
-// * visus::power_overwhelming::adl_sensor::from_udid
-// */
-//visus::power_overwhelming::adl_sensor
-//visus::power_overwhelming::adl_sensor::from_udid(_In_z_ const wchar_t *udid,
-//        _In_ const adl_sensor_source source) {
-//    auto u = convert_string<char>(udid);
-//    return from_udid(u.c_str(), source);
-//}
-//
-
-
-/*
- * visus::power_overwhelming::adl_sensor::adl_sensor
- */
-visus::power_overwhelming::adl_sensor::adl_sensor(void)
-    : _impl(new detail::adl_sensor_impl()) { }
-
-
-/*
- * visus::power_overwhelming::adl_sensor::~adl_sensor
- */
-visus::power_overwhelming::adl_sensor::~adl_sensor(void) {
-    delete this->_impl;
-}
-
-
-/*
- * visus::power_overwhelming::adl_sensor::name
- */
-_Ret_maybenull_z_ const wchar_t *visus::power_overwhelming::adl_sensor::name(
-        void) const noexcept {
-    if (this->_impl == nullptr) {
-        return nullptr;
-    } else {
-        return this->_impl->sensor_name.c_str();
-    }
-}
-
-
 /*
  * visus::power_overwhelming::adl_sensor::sample
  */
@@ -772,6 +582,7 @@ _Ret_maybenull_z_ const char *visus::power_overwhelming::adl_sensor::udid(
         return this->_impl->udid.c_str();
     }
 }
+
 
 
 /*

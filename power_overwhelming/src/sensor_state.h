@@ -112,7 +112,21 @@ public:
     /// <summary>
     /// Forcefully change the state to <see cref="value_type::stopped" />.
     /// </summary>
-    void stop(void);
+    void stop(void) noexcept;
+
+    /// <summary>
+    /// Try chaning the state to <see cref="value_type::starting" />.
+    /// </summary>
+    /// <returns><c>true</c> if the state change was possible and has been
+    /// applied, <c>false</c> otherwise</returns>
+    bool try_begin_start(void) noexcept;
+
+    /// <summary>
+    /// Try chaning the state to <see cref="value_type::stopping" />.
+    /// </summary>
+    /// <returns><c>true</c> if the state change was possible and has been
+    /// applied, <c>false</c> otherwise</returns>
+    bool try_begin_stop(void) noexcept;
 
     /// <summary>
     /// Gets a momentary snapshot of the <see cref="value_type" /> the sensor

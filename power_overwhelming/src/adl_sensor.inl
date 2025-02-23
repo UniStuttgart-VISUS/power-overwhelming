@@ -14,8 +14,9 @@ TInput PWROWG_DETAIL_NAMESPACE::adl_sensor::from_descriptions(
         _In_ std::size_t index,
         _In_ const TInput begin,
         _In_ const TInput end,
+        _In_ const sensor_array_impl *owner,
         _In_ const configuration_type& config) {
-    auto retval = move_front_if(begin, end, is_nvml_sensor);
+    auto retval = move_front_if(begin, end, is_adl_sensor);
 
     for (auto it = begin; it != retval; ++it) {
         //*oit++ = std::make_shared<adl_sensor>(
