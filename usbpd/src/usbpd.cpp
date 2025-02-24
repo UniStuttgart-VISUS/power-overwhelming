@@ -33,8 +33,8 @@ void usb_pd_tester_close(usb_pd_tester tester) {
 /*
  * ::usb_pd_tester_enumerate
  */
-char *usb_pd_tester_enumerate(const std::size_t timeout,
-        const std::size_t wait) {
+char *usb_pd_tester_enumerate(const std::int64_t timeout,
+        const std::int64_t wait) {
     // The sample says that 16 characters for the name is OK ...
     constexpr std::size_t max_len = 16;
 
@@ -48,9 +48,13 @@ char *usb_pd_tester_enumerate(const std::size_t timeout,
         testers[i][0] = 0;
     }
 
+    // Perform a "magic" sleep like the example ...
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
     // Compute the point in time where we give up finding devices.
     const auto deadline = std::chrono::steady_clock::now()
-        + std::chrono::milliseconds(timeout);
+        + std::chrono::milliseconds(std::abs(timeout));
+    const std::chrono::milliseconds retry_after(std::abs(wait));
 
     // Find the PD testers attached to the system. Note: If this does not find
     // anything although a device has been attached, the software probably
@@ -78,8 +82,7 @@ char *usb_pd_tester_enumerate(const std::size_t timeout,
             return retval;
         }
 
-        // Another magic number from the sample for the sleep here ...
-        std::this_thread::sleep_for(std::chrono::milliseconds(wait));
+        std::this_thread::sleep_for(retry_after);
     } while (deadline < std::chrono::steady_clock::now());
 
     return nullptr;

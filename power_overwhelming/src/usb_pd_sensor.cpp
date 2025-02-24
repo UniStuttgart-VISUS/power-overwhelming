@@ -26,69 +26,65 @@ std::size_t PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::descriptions(
         _In_ const configuration_type& config) {
     static const auto base_type = sensor_type::hardware | sensor_type::external;
     std::size_t retval = 0;
-    PDTester tester;
-    // The sample says that 16 characters for the name is OK ...
-    char hacknomatik[MAX_NUM_TESTERS * 16];
-    char *testers[MAX_NUM_TESTERS];
 
     // Handle potential misuse of API.
     if (dst == nullptr) {
         cnt = 0;
     }
 
-    // Build the output array expected by the enumerator.
-    for (std::size_t i = 0; i < MAX_NUM_TESTERS; ++i) {
-        testers[i] = hacknomatik + i * sizeof(hacknomatik) / MAX_NUM_TESTERS;
+    try {
+        auto testers = usb_pd_library::instance().usb_pd_tester_enumerate(
+            config.timeout(), 100);
+        if (testers == nullptr) {
+            return 0;
+        }
+
+        pwrowg_on_exit([testers](void) {
+            usb_pd_library::instance().usb_pd_tester_free(testers);
+        });
+
+        auto builder = sensor_description_builder::create()
+            .with_vendor(L"PassMark")
+            .produces(reading_type::floating_point);
+
+        assert(testers != nullptr);
+        for (auto path = testers; *path != 0; path += ::strlen(path) + 1) {
+            auto tester = usb_pd_library::instance().usb_pd_tester_open(path);
+            if (tester == nullptr) {
+                continue;
+            }
+
+            // It is really important to disconnect whatever happens below!
+            usb_pd_library::instance().usb_pd_tester_close(tester);
+
+            if (retval < cnt) {
+                dst[retval] = builder.with_id(L"%hs/voltage", path)
+                    .with_path(path)
+                    .with_name(L"USB PD %hs (voltage)", path)
+                    .with_type(base_type | sensor_type::voltage)
+                    .measured_in(reading_unit::volt)
+                    .build();
+            }
+            ++retval;
+
+            if (retval < cnt) {
+                dst[retval] = builder.with_id(L"%hs/current", path)
+                    .with_path(path)
+                    .with_name(L"USB PD %hs (current)", path)
+                    .with_type(base_type | sensor_type::current)
+                    .measured_in(reading_unit::ampere)
+                    .build();
+            }
+            ++retval;
+        }
+
+        return retval;
+    } catch (...) {
+        // This typically indicates that the usbpd library could not be loaded,
+        // most likely due to a missing driver on the sytem which would have been
+        // installed if a device had been connected.
+        return 0;
     }
-
-    // Compute the point in time where we give up finding devices.
-    const auto deadline = std::chrono::steady_clock::now()
-        + std::chrono::milliseconds(config.timeout());
-
-    // Find the PD testers attached to the system. Note: If this does not find
-    // anything although a device has been attached, the software probably
-    // crashed before and did not disconnect properly. The PD tester needs to be
-    // power cycled in this case.
-    do {
-        retval = tester.GetConnectedDevices(testers);
-        // Another magic number from the sample for the sleep here ...
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    } while ((retval < 1) && (deadline < std::chrono::steady_clock::now()));
-
-    auto builder = sensor_description_builder::create()
-        .with_vendor(L"PassMark")
-        .produces(reading_type::floating_point);
-
-    for (std::size_t i = 0, d = 0; i < retval; ++i) {
-        if (!tester.Connect(testers[i], event_callback)) {
-            --retval;
-            continue;
-        }
-
-        // It is really important to disconnect whatever happens below!
-        tester.Disconnect();
-
-        if (d < cnt) {
-            dst[d++] = builder.with_id(L"%hs/voltage", testers[i])
-                .with_path(testers[i])
-                .with_name(L"USB PD/%hs/voltage", testers[i])
-                .with_type(base_type | sensor_type::voltage)
-                .measured_in(reading_unit::volt)
-                .build();
-        }
-
-        if (d < cnt) {
-            dst[d++] = builder.with_id(L"%hs/current", testers[i])
-                .with_path(testers[i])
-                .with_name(L"USB PD/%hs/current", testers[i])
-                .with_type(base_type | sensor_type::current)
-                .measured_in(reading_unit::ampere)
-                .build();
-        }
-    }
-
-    // We have voltage and current from each device.
-    return (2 * retval);
 }
 
 
@@ -105,7 +101,8 @@ PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::usb_pd_sensor(
     }
 
     auto p = PWROWG_NAMESPACE::convert_string<char>(port);
-    if (!this->_tester.Connect(const_cast<char *>(p.c_str()), event_callback)) {
+    this->_tester = usb_pd_library::instance().usb_pd_tester_open(p.c_str());
+    if (this->_tester == nullptr) {
         throw std::runtime_error("Failed to connect to USB PD tester.");
     }
 }
@@ -115,7 +112,7 @@ PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::usb_pd_sensor(
  * PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::~usb_pd_sensor
  */
 PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::~usb_pd_sensor(void) {
-    this->_tester.Disconnect();
+    usb_pd_library::instance().usb_pd_tester_close(this->_tester);
 }
 
 
@@ -132,7 +129,10 @@ void PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::sample(
     std::uint16_t current;
     std::uint16_t loopback_current;
 
-    if (this->_tester.GetStatistics(&temperature,
+    
+
+    if (usb_pd_library::instance().usb_pd_tester_query(this->_tester,
+            &temperature,
             &voltage,
             &set_current,
             &current,
@@ -152,12 +152,5 @@ void PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::sample(
         }
     }
 }
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::event_callback
- */
-void PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::event_callback(
-    _In_ const int event_code) { }
 
 #endif /* defined(_WIN32) */

@@ -306,7 +306,7 @@ typedef basic_sensor_registry<
 #if defined(_WIN32)
     // Windows-specific sensors
     emi_sensor,
-    //usb_pd_sensor,
+    usb_pd_sensor,
     //nvapi_sensor,
 #endif  /* defined(_WIN32) */
 

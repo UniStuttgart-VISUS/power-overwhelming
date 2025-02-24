@@ -12,11 +12,16 @@
 #include <cstdlib>
 
 
+#if defined(_WIN32)
 #if defined(USBPD_EXPORTS)
 #define USBPD_API __declspec(dllexport)
 #else /* defined(USBPD_EXPORTS) */
 #define USBPD_API __declspec(dllimport)
 #endif /* defined(USBPD_EXPORTS) */
+
+#else /* defined(_WIN32) */
+#define USBPD_API
+#endif /* defined(_WIN32) */
 
 
 /// <summary>
@@ -51,8 +56,8 @@ extern "C" USBPD_API void usb_pd_tester_close(usb_pd_tester tester);
 /// <returns>A buffer holding the paths of the devices. The caller must free
 /// the memory using <see cref="usb_pd_tester_free" />. If no device was found,
 /// the return value is <c>nullptr</c>.</returns>
-extern "C" USBPD_API char *usb_pd_tester_enumerate(const std::size_t timeout,
-    const std::size_t wait);
+extern "C" USBPD_API char *usb_pd_tester_enumerate(const std::int64_t timeout,
+    const std::int64_t wait);
 
 /// <summary>
 /// Frees a buffer that has been allocated by the API.
@@ -91,37 +96,5 @@ extern "C" USBPD_API bool usb_pd_tester_query(usb_pd_tester tester,
     std::uint16_t *set_current,
     std::uint16_t *current,
     std::uint16_t *loopback_current);
-
-
-#if defined(__cplusplus)
-/// <summary>
-/// Queries the current statistics from the given <paramref name="tester" />.
-/// </summary>
-/// <param name="tester">The handle for the device to query.</param>
-/// <param name="temperature">Receives the current internal temperature in
-/// degrees Celsius.</param>
-/// <param name="voltage">Receives the current voltage in millivolts.</param>
-/// <param name="set_current">Receives the current in milliamperes that has been
-/// set as load for the device under test.</param>
-/// <param name="current">Receives the current in milliamperes.</param>
-/// <param name="loopback_current">Receives the loopback current in
-/// milliamperes.</param>
-/// <returns><c>true</c> in case the returned values are valid, <c>false</c>
-/// otherwise.</returns>
-inline bool usb_pd_tester_query(usb_pd_tester tester,
-        std::uint8_t& temperature,
-        std::uint16_t& voltage,
-        std::uint16_t& set_current,
-        std::uint16_t& current,
-        std::uint16_t& loopback_current) {
-    return ::usb_pd_tester_query(tester,
-        &temperature,
-        &voltage,
-        &set_current,
-        &current,
-        &loopback_current);
-}
-
-#endif /* defined(__cplusplus) */
 
 #endif /* !defined(_USBPD_H) */
