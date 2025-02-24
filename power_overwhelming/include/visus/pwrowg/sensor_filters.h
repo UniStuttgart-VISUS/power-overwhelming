@@ -115,6 +115,16 @@ extern POWER_OVERWHELMING_API bool is_current_sensor(
 
 /// <summary>
 /// Answer whether the given <see cref="sensor_description" /> describes a
+/// sensor based on the Energy Metering Interface
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><c>true</c> if the sensor is an EMI sensor, <c>false</c> otherwise.
+/// </returns>
+extern POWER_OVERWHELMING_API bool is_emi_sensor(
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes a
 /// sensor measuring energy.
 /// </summary>
 /// <param name="desc">The sensor to check.</param>

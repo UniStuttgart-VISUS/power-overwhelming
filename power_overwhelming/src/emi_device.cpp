@@ -73,7 +73,8 @@ PWROWG_DETAIL_NAMESPACE::emi_device::metadata(void) const {
         {
             DWORD returned = 0;
             EMI_METADATA_SIZE size;
-            if (!::DeviceIoControl(this->_handle, IOCTL_EMI_GET_METADATA_SIZE,
+            if (!::DeviceIoControl(this->_handle,
+                    IOCTL_EMI_GET_METADATA_SIZE,
                     nullptr, 0,
                     &size, sizeof(size),
                     &returned, 0)) {
@@ -89,7 +90,8 @@ PWROWG_DETAIL_NAMESPACE::emi_device::metadata(void) const {
         {
             DWORD returned = 0;
             const auto size = static_cast<DWORD>(this->_metadata.size());
-            if (!::DeviceIoControl(this->_handle, IOCTL_EMI_GET_METADATA,
+            if (!::DeviceIoControl(this->_handle,
+                    IOCTL_EMI_GET_METADATA,
                     nullptr, 0,
                     this->_metadata.data(), size,
                     &returned, 0)) {

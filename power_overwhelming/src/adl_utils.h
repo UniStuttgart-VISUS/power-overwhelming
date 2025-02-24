@@ -65,65 +65,10 @@ template<class TPredicate> std::vector<AdapterInfo> get_adapters_if(
 /// <param name="scope"></param>
 /// <param name="adapter"></param>
 /// <returns></returns>
-extern bool is_active(_In_ adl_scope& scope, _In_ const AdapterInfo& adapter);
+extern bool PWROWG_TEST_API is_active(_In_ adl_scope& scope,
+    _In_ const AdapterInfo& adapter);
 
-/// <summary>
-/// Answer whether the given sensor <paramref name="id" /> is enabled in the
-/// given support <paramref name="info" />.
-/// </summary>
-/// <param name="info"></param>
-/// <param name="id"></param>
-/// <returns></returns>
-inline bool supports_sensor(_In_ const ADLPMLogSupportInfo& info,
-        _In_ const int id) {
-    const auto end = info.usSensors + ADL_PMLOG_MAX_SENSORS;
-    const auto it = std::find(info.usSensors, end, id);
-    return (it < end);
-}
 
-/// <summary>
-/// Answer whether the given sensor <paramref name="id" /> is supported by
-/// the given <paramref name="adapter" />.
-/// </summary>
-/// <param name="scope"></param>
-/// <param name="adapter"></param>
-/// <param name="id"></param>
-/// <returns></returns>
-extern bool supports_sensor(_In_ adl_scope& scope,
-    _In_ const AdapterInfo& adapter,
-    _In_ const int id);
-
-/// <summary>
-/// Answer whether any of the sensor IDs within <paramref name="begin" /> and
-/// <paramref name="end" /> are supported by the given
-/// <paramref name="adapter" />.
-/// </summary>
-/// <typeparam name="TIterator"></typeparam>
-/// <param name="scope"></param>
-/// <param name="adapter"></param>
-/// <param name="begin"></param>
-/// <param name="end"></param>
-/// <returns></returns>
-template<class TIterator> bool supports_any_sensor(
-        _In_ adl_scope& scope,
-        _In_ const AdapterInfo& adapter,
-        _In_ TIterator&& begin,
-        _In_ TIterator&& end) {
-    ADLPMLogSupportInfo info;
-
-    {
-        auto status = detail::amd_display_library::instance()
-            .ADL2_Adapter_PMLog_Support_Get(scope, adapter.iAdapterIndex,
-                &info);
-        if (status != ADL_OK) {
-            throw adl_exception(status);
-        }
-    }
-
-    return std::any_of(begin, end, [&info](const int id) {
-        return supports_sensor(info, id);
-    });
-}
 
 PWROWG_DETAIL_NAMESPACE_END
 

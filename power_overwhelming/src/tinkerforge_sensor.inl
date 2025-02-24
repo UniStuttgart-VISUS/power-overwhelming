@@ -63,17 +63,17 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
         types.reserve(3);
         for (auto jt = it; it != retval && same_bricklet(*it, *jt);) {
             types.push_back(pwr_volt_cur_mask(*it++));
+#if (defined(DEBUG) || defined(_DEBUG))
+            --_rem;
+#endif /* (defined(DEBUG) || defined(_DEBUG)) */
         }
 
         // Generate sensor IDs for the active sources.
         const auto power = sensor_index(sensor_type::power);
         const auto voltage = sensor_index(sensor_type::voltage);
         const auto current = sensor_index(sensor_type::current);
-        index += types.size();
-#if (defined(DEBUG) || defined(_DEBUG))
-        _rem -= types.size();
-#endif /* (defined(DEBUG) || defined(_DEBUG)) */
 
+        index += types.size();
         dst.emplace_back(*scope, uid, owner, power, voltage, current);
         dst.back().configuration(config.averaging(),
             config.voltage_conversion_time(),

@@ -40,6 +40,15 @@ bool PWROWG_NAMESPACE::is_current_sensor(
 
 
 /*
+ * PWROWG_NAMESPACE::is_emi_sensor
+ */
+bool PWROWG_NAMESPACE::is_emi_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    return detail::starts_with(desc.id(), L"EMI/");
+}
+
+
+/*
  * PWROWG_NAMESPACE::is_energy_sensor
  */
 bool PWROWG_NAMESPACE::is_energy_sensor(

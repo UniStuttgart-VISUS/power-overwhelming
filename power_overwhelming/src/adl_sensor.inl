@@ -27,9 +27,9 @@ TInput PWROWG_DETAIL_NAMESPACE::adl_sensor::from_descriptions(
 
     // Group the sensors by their adapter.
     std::sort(begin, retval,
-            [](const sensor_description &lhs, const sensor_description &rhs) {
-        auto pdl = *builder_type::private_data<private_data>(lhs);
-        auto pdr = *builder_type::private_data<private_data>(rhs);
+            [](const sensor_description& lhs, const sensor_description& rhs) {
+        auto pdl = builder_type::private_data<private_data>(lhs);
+        auto pdr = builder_type::private_data<private_data>(rhs);
         return (pdl->adapter < pdr->adapter);
     });
 
@@ -44,14 +44,16 @@ TInput PWROWG_DETAIL_NAMESPACE::adl_sensor::from_descriptions(
                 break;
             }
 
+            sources.push_back(pd->source);
+            ++it;
 #if (defined(DEBUG) || defined(_DEBUG))
             --_rem;
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
-            sources.push_back(pd->source);
-            ++it;
         }
 
-        dst.emplace_back(adapter, sources, owner->configuration->interval,
+        dst.emplace_back(adapter,
+            sources,
+            owner->configuration->interval,
             index);
         index += sources.size();
     }

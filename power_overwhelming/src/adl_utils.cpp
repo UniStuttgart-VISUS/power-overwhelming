@@ -54,25 +54,3 @@ bool PWROWG_DETAIL_NAMESPACE::is_active(_In_ adl_scope& scope,
     }
     return (retval == 0);
 }
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::supports_sensor
- */
-bool PWROWG_DETAIL_NAMESPACE::supports_sensor(
-        _In_ adl_scope& scope,
-        _In_ const AdapterInfo& adapter,
-        _In_ const int id) {
-    ADLPMLogSupportInfo info;
-
-    {
-        auto status = PWROWG_DETAIL_NAMESPACE::amd_display_library::instance()
-            .ADL2_Adapter_PMLog_Support_Get(scope, adapter.iAdapterIndex,
-                &info);
-        if (status != ADL_OK) {
-            throw adl_exception(status);
-        }
-    }
-
-    return supports_sensor(info, id);
-}
