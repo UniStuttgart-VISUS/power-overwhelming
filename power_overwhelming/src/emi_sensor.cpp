@@ -171,7 +171,6 @@ void PWROWG_DETAIL_NAMESPACE::emi_sensor::sample(
         _In_ const sensor_description *sensors,
         _In_opt_ void *context) {
     assert(callback != nullptr);
-    assert(sensors != nullptr);
     std::vector<std::uint8_t> data(0);
 
     switch (this->version()) {
@@ -227,7 +226,6 @@ void PWROWG_DETAIL_NAMESPACE::emi_sensor::evaluate(
         _In_ const sensor_description *sensors,
         _In_opt_ void *context) {
     assert(callback != nullptr);
-    assert(sensors != nullptr);
     assert(this->_last_energy.size() == 1);
     assert(this->_last_time.size() == 1);
     assert(this->_time_offset.size() == 1);
@@ -259,16 +257,15 @@ void PWROWG_DETAIL_NAMESPACE::emi_sensor::evaluate(
         _In_ const sensor_description *sensors,
         _In_opt_ void *context) {
     assert(callback != nullptr);
-    assert(sensors != nullptr);
     const auto md = this->_device->metadata_as<EMI_METADATA_V2>();
     assert(this->_channels.size() == md->ChannelCount);
 
     PWROWG_NAMESPACE::sample::source_type i = 0;
 
     for (auto c : this->_channels) {
-        assert(this->_last_energy.size() == c);
-        assert(this->_last_time.size() == c);
-        assert(this->_time_offset.size() == c);
+        assert(this->_last_energy.size() > c);
+        assert(this->_last_time.size() > c);
+        assert(this->_time_offset.size() > c);
 
         auto de = data.ChannelData[c].AbsoluteEnergy - this->_last_energy[c];
         auto dt = data.ChannelData[c].AbsoluteTime - this->_last_time[c];

@@ -35,7 +35,7 @@ TInput PWROWG_DETAIL_NAMESPACE::emi_sensor::from_descriptions(
         auto path = it->path();
 
         while ((it != retval) && equals(it->path(), path)) {
-            auto c = builder_type::private_data<USHORT>(*it);
+            auto c = builder_type::private_data<USHORT>(*it++);
             if (c != nullptr) {
                 channels.push_back(*c);
             }

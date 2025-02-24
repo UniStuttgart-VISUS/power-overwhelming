@@ -214,7 +214,12 @@ std::size_t PWROWG_DETAIL_NAMESPACE::adl_sensor::descriptions(
         for (auto& a : adapters) {
             ADLPMLogSupportInfo support_info;
 
-            // First, find out whether the adapter supports PMLog.
+            // First, skip any inactive adapter.
+            if (!is_active(scope, a)) {
+                continue;
+            }
+
+            // Second, find out whether the adapter supports PMLog.
             {
                 auto status = amd_display_library::instance()
                     .ADL2_Adapter_PMLog_Support_Get(scope,

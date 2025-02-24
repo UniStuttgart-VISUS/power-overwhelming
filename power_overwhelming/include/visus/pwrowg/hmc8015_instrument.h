@@ -443,7 +443,7 @@ public:
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="visa_exception">If the VISA command was not
     /// processed successfully.</exception>
-    inline hmc8015_instrument& display(_In_opt_z_ const std::nullptr_t text) {
+    inline hmc8015_instrument& display(_In_opt_ const std::nullptr_t text) {
         return this->display(static_cast<char *>(nullptr));
     }
 

@@ -4,7 +4,6 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "visus/pwrowg/collector.h"
 #include "visus/pwrowg/dump_sensors.h"
 
 #include <algorithm>
