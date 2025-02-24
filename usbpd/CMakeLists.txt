@@ -29,7 +29,7 @@ target_include_directories(${PROJECT_NAME}
         $<BUILD_INTERFACE:${SourceDir}>)
 
 if (WIN32)
-target_link_libraries(${PROJECT_NAME} PRIVATE passmark_usb_pd_tester)
+    target_link_libraries(${PROJECT_NAME} PRIVATE passmark_usb_pd_tester)
 endif ()
 
 # Install

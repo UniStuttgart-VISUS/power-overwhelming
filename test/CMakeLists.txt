@@ -42,7 +42,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     adl
     nvml
     tinkerforge
-    power_overwhelming)
+    power_overwhelming
+    usbpd)
 
 # The test requires access to the VISA headers to test the instruments.
 if (PWROWG_WithVisa)
