@@ -22,6 +22,7 @@ TEST_CLASS(csv_sink_test) {
         stream_type stream;
         stream.open("test.csv");
         stream << setcsvdelimiter(',');
+        stream << setcsvcolumns(csv_column::id | csv_column::label | csv_column::name);
 
         sink_type sink(std::chrono::milliseconds(100), std::move(stream));
         config.deliver_context(&sink)

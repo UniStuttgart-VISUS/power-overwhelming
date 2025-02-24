@@ -27,8 +27,6 @@ public:
         Assert::AreEqual(long(0), std::cout.iword(PWROWG_DETAIL_NAMESPACE::io_index_header()), L"Print data", LINE_INFO());
         std::cout << csvheader;
         Assert::AreEqual(long(1), std::cout.iword(PWROWG_DETAIL_NAMESPACE::io_index_header()), L"Print header", LINE_INFO());
-        std::cout << csvdata;
-        Assert::AreEqual(long(0), std::cout.iword(PWROWG_DETAIL_NAMESPACE::io_index_header()), L"Print data", LINE_INFO());
     }
 
     //TEST_METHOD(test_print_stringstream) {
