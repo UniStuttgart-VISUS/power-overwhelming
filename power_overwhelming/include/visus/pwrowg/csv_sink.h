@@ -48,6 +48,7 @@ protected:
 
 private:
 
+    csv_column _columns;
     char_type _delimiter;
     stream_type _stream;
 };

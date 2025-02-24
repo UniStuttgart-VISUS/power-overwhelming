@@ -127,6 +127,19 @@ PWROWG_DETAIL_NAMESPACE_END
 PWROWG_NAMESPACE_BEGIN
 
 /// <summary>
+/// Checks whether the CSV header flag is set on the specified
+/// <paramref name="stream" /> and resets the flag.
+/// </summary>
+/// <param name="stream">The stream to manipulate.</param>
+/// <returns><paramref name="stream" /></returns>
+inline bool check_csvheader(_In_ std::ios_base& stream) noexcept {
+    auto retval = stream.iword(detail::io_index_header());
+    stream.iword(detail::io_index_header()) = static_cast<long>(0);
+    return (retval != 0);
+}
+
+
+/// <summary>
 /// Instructs the stream to print the header line of measurements instead
 /// of the actual data.
 /// </summary>
