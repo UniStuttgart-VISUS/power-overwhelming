@@ -17,7 +17,7 @@ public:
 
     TEST_METHOD(test_char_delimiter) {
         Assert::AreEqual(long(0), std::cout.iword(PWROWG_DETAIL_NAMESPACE::io_index_delimiter()), L"No delimiter set", LINE_INFO());
-        Assert::AreEqual('\t', getcsvdelimiter(std::cout), L"Fallback retrieved.", LINE_INFO());
+        Assert::AreEqual(',', getcsvdelimiter(std::cout), L"Fallback retrieved.", LINE_INFO());
         std::cout << setcsvdelimiter(';');
         Assert::AreEqual(long(';'), std::cout.iword(PWROWG_DETAIL_NAMESPACE::io_index_delimiter()), L"Delimiter set", LINE_INFO());
         Assert::AreEqual(';', getcsvdelimiter(std::cout), L"Delimiter retrieved.", LINE_INFO());
