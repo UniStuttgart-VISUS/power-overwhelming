@@ -113,28 +113,17 @@ sensors.start();
 sensors.stop();
 ```
 
-
-**TODO**
-
 ## Extending the library
-Adding new kinds of sensors requires several steps. First, a new sensor class is required, which needs to satisfy the following requirements:
+The main motivation for modifying the library is adding additional sensors. The new design of the API directly changes how sensors are implemented and most importantly drastically reduces the amount of code typically required to implement a sensor.
 
-* All sensors must inherit from `visus::power_overwhelming::sensor` and implement the interface defined therein.
-* The name should end with `_sensor`.
-* All implementation details must be hidden from the public interface using the [PIMPL pattern](https://learn.microsoft.com/en-us/cpp/cpp/pimpl-for-compile-time-encapsulation-modern-cpp).
-* The sensor class must support move semantics (move constructor and move assignment).
-* The sensor class must implement a method `static std::size_t for_all(emi_sensor *out_sensors, const std::size_t cnt_sensors)` that can be used to retrieve all sensors of this kind that are available on the machine. The method shall always return the number of sensors available, even if `out_sensors` is `nullptr` or the buffer is too small to hold all sensors. Sensors shall only be written to `out_sensors` if the buffer is valid and large enough to hold all of them.
-
-Second, in order to be eligible for the automated enumeration by the sensor utility functions,
-* a template specialisation of `visus::power_overwhelming::detail::sensor_desc` must be provided in [sensor_desc.h](power_overwhelming/src/sensor_desc.h), which provides means to serialise and deserialise sensors,
-* the class must be added to the `sensor_list` template at the bottom of [sensor_desc.h](power_overwhelming/src/sensor_desc.h).
-
-The specialisation of `visus::power_overwhelming::detail::sensor_desc` must fulfil the following contract:
-* It must have a member `static constexpr const char *type_name` specifing the unique name of the sensor, which can be declared using the `POWER_OVERWHELMING_DECLARE_SENSOR_NAME` macro.
-* It must have a member `static constexpr bool intrinsic_async` specifying whether the sensor can run asynchronously without emulating it by starting a sampler thread that regularly polls the sensor. You can use the `POWER_OVERWHELMING_DECLARE_INTRINSIC_ASYNC` to declare this member.
-* It must have a method `static inline nlohmann::json serialise(const value_type& value)` which serialises the given sensor into a JSON representation. The JSON representation must be an object which contains a string field named "type" (use the `visus::power_overwhelming::detail::json_field_type` constant in [sensor_desc.h](power_overwhelming/src/sensor_desc.h) for the name) which has the `type_name` constant as its value. This field is used in conjunction with the aforementioned `sensor_list` to automatically dispatch deserialisation to your specialisation of the traits class. 
-* It must have a method `static inline value_type deserialise(const nlohmann::json& value)` which restores a sensor from a given JSON representation.
-* If the sensor can serialise all of its instances more efficiently than creating an instance of it and converting these instances to JSON, it can implement a method `static inline nlohmann::json serialise_all(void)` which serialises all sensors into a JSON array. The library will prefer this method if it is provided.
+### What's new
+The main changes when implementing a sensor are
+* Sensors are now fully opaque to the user of the library. There is no need for using the [PIMPL pattern](https://learn.microsoft.com/en-us/cpp/cpp/pimpl-for-compile-time-encapsulation-modern-cpp) anymore. You can use all template classes you desire when implementing your sensor.
+* A sensor is no longer a source of a single type of data, but can produce multiple data streams. For instance, the ADL sensor for AMD GPUs wraps a single GPU and produces all data we can get from it. This way, handles and other resources required to produce different data from the same origin can be easily shared.
+* Each sensor has a configuration class which allows for specifying implementation-specific data. Typically, these configuration objects to not configure a specific sensor instance, but the whole sensor class. For instance, users can configure the hosts where to look for Tinkerforge bricklets, but they cannot configure individual bricklets in different ways. However, you are in principle free to provide means to address individual sensors in your configuration object.
+* Each sensor produces one or more data streams (data of the same type from the same source) which are described via a [sensor_description](power_overwhelming/include/visus/pwrowg/sensor_description.h). The sensor description allows for uniquely identifying a sensor and provides information about the data the sensor produces. One sensor class might have multiple sensor descriptions. For instance, a single ADL sensor provides different power and temperature readings for the GPU it is responsible for. Sensor descriptions are mandatory and can be used by the library to reflect on all available sensors. There is no longer the need to provide special metadata objects, but it is sufficient to fill all the required descriptions.
+* A sensor can either produce samples synchronously (by polling) or asynchronously (pushing). The framework will detect the type of sensor via the signature of its `sample` method and automatically poll synchronous sensors. There is no longer the need for sensors to implement synchronous and asynchronous sampling methods.
+* A sensor class must be able to enumerate [sensor_descriptions](power_overwhelming/include/visus/pwrowg/sensor_description.h) for all of the data it produces and create actual sensor instances from a list of such descriptions.
 
 ## Acknowledgments
 This work was partially funded by Deutsche Forschungsgemeinschaft (DFG) as part of [SFB/Transregio 161](https://www.sfbtrr161.de) (project ID 251654672).
