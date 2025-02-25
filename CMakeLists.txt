@@ -26,7 +26,6 @@ set(PWROWG_CustomTinkerforgeFirmwareRev "" CACHE STRING "The firmware revision t
 # Dependencies
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/third_party)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/usbpd)
 
 # The library
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/power_overwhelming)

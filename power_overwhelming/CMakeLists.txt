@@ -76,7 +76,7 @@ if (WIN32)
 endif ()
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE adl nlohmann_json::nlohmann_json nvml tinkerforge usbpd rapidcsv)
+    PRIVATE adl nlohmann_json::nlohmann_json nvml tinkerforge usbpdtesterdriver rapidcsv)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PUBLIC Ws2_32)

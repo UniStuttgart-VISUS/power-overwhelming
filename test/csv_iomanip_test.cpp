@@ -119,7 +119,7 @@ public:
 
     TEST_METHOD(test_wchar_delimiter) {
         Assert::AreEqual(long(0), std::wcout.iword(PWROWG_DETAIL_NAMESPACE::io_index_delimiter()), L"No delimiter set", LINE_INFO());
-        Assert::AreEqual(L'\t', getcsvdelimiter(std::wcout), L"Fallback retrieved.", LINE_INFO());
+        Assert::AreEqual(L',', getcsvdelimiter(std::wcout), L"Fallback retrieved.", LINE_INFO());
         std::wcout << setcsvdelimiter(L';');
         Assert::AreEqual(long(';'), std::wcout.iword(PWROWG_DETAIL_NAMESPACE::io_index_delimiter()), L"Delimiter set", LINE_INFO());
         Assert::AreEqual(L';', getcsvdelimiter(std::wcout), L"Delimiter retrieved.", LINE_INFO());

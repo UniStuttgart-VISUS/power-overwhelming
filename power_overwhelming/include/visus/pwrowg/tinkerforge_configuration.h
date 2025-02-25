@@ -37,7 +37,7 @@ public:
     /// <summary>
     /// Represents the location of a Tinkerforge Brickd.
     /// </summary>
-    class end_point final {
+    class POWER_OVERWHELMING_API end_point final {
 
     public:
 

@@ -16,23 +16,6 @@ TEST_CLASS(usb_pd_test) {
 
 public:
 
-    TEST_METHOD(test_enumeration) {
-        auto paths = ::usb_pd_tester_enumerate(1000, 100);
-
-        if (paths != nullptr) {
-            auto p = paths;
-
-            while (*p != 0) {
-                auto tester = ::usb_pd_tester_open(p);
-                Assert::IsNotNull(tester, L"Can open tester", LINE_INFO());
-                ::usb_pd_tester_close(tester);
-                p += ::strlen(p) + 1;
-            }
-        }
-
-        ::usb_pd_tester_free(paths);
-    }
-
     TEST_METHOD(test_descriptions) {
         typedef detail::usb_pd_sensor type;
 

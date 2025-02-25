@@ -51,7 +51,7 @@ TInput PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::from_descriptions(
         const auto current = sensor_index(sensor_type::current);
 
         index += types.size();
-        dst.emplace_back(port, voltage, current);
+        dst.emplace_back(port, config, voltage, current);
     }
 
 #if (defined(DEBUG) || defined(_DEBUG))

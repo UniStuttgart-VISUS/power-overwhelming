@@ -8,7 +8,8 @@
 #define _PWROWG_USB_PD_LIBRARY_H
 #pragma once
 
-#include <usbpd.h>
+
+#include <ftd2xx.h>
 
 #include "library_base.h"
 
@@ -33,11 +34,14 @@ public:
     /// ont eh machine we are running on.</exception>
     static const usb_pd_library& instance(void);
 
-    __PWROWG_USB_PD_FUNC(usb_pd_tester_close);
-    __PWROWG_USB_PD_FUNC(usb_pd_tester_enumerate);
-    __PWROWG_USB_PD_FUNC(usb_pd_tester_free);
-    __PWROWG_USB_PD_FUNC(usb_pd_tester_open);
-    __PWROWG_USB_PD_FUNC(usb_pd_tester_query);
+    __PWROWG_USB_PD_FUNC(FT_Close);
+    __PWROWG_USB_PD_FUNC(FT_ListDevices);
+    __PWROWG_USB_PD_FUNC(FT_OpenEx);
+    __PWROWG_USB_PD_FUNC(FT_Read);
+    __PWROWG_USB_PD_FUNC(FT_SetBaudRate);
+    __PWROWG_USB_PD_FUNC(FT_SetDataCharacteristics);
+    __PWROWG_USB_PD_FUNC(FT_SetTimeouts);
+    __PWROWG_USB_PD_FUNC(FT_Write);
 
 private:
 

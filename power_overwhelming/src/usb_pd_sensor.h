@@ -108,7 +108,8 @@ public:
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    usb_pd_sensor(_In_z_ const wchar_t *port,
+    usb_pd_sensor(_In_z_ const wchar_t *serial,
+        _In_ const configuration_type& config,
         _In_ const std::size_t index_voltage,
         _In_ const std::size_t index_current);
 
@@ -135,9 +136,17 @@ public:
 
 private:
 
+    void read(_Out_writes_bytes_(cnt) void *data,
+        _In_ const std::uint32_t cnt);
+
+    std::vector<std::uint8_t> read(void);
+
+    void write(_In_reads_bytes_(cnt) const void *data,
+        _In_ const std::uint32_t cnt);
+
     std::size_t _index_voltage;
     std::size_t _index_current;
-    usb_pd_tester _tester;
+    FT_HANDLE _tester;
 };
 
 PWROWG_DETAIL_NAMESPACE_END

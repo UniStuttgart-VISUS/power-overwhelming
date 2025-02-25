@@ -33,29 +33,36 @@ std::size_t PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::descriptions(
     }
 
     try {
-        auto testers = usb_pd_library::instance().usb_pd_tester_enumerate(
-            config.timeout(), 100);
-        if (testers == nullptr) {
-            return 0;
-        }
+        DWORD devices;
+        char path[64];
 
-        pwrowg_on_exit([testers](void) {
-            usb_pd_library::instance().usb_pd_tester_free(testers);
-        });
+        {
+            auto status = usb_pd_library::instance().FT_ListDevices(&devices,
+                nullptr,
+                FT_LIST_NUMBER_ONLY);
+            if (!FT_SUCCESS(status)) {
+                return 0;
+            }
+        }
 
         auto builder = sensor_description_builder::create()
             .with_vendor(L"PassMark")
             .produces(reading_type::floating_point);
 
-        assert(testers != nullptr);
-        for (auto path = testers; *path != 0; path += ::strlen(path) + 1) {
-            auto tester = usb_pd_library::instance().usb_pd_tester_open(path);
-            if (tester == nullptr) {
+        for (std::uintptr_t i = 0; i < devices; ++i) {
+            auto status = usb_pd_library::instance().FT_ListDevices(
+                reinterpret_cast<void *>(i),
+                path,
+                FT_LIST_BY_INDEX | FT_OPEN_BY_SERIAL_NUMBER);
+            if (!FT_SUCCESS(status)) {
+                // That did not work.
                 continue;
             }
 
-            // It is really important to disconnect whatever happens below!
-            usb_pd_library::instance().usb_pd_tester_close(tester);
+            if (::strncmp(path, "PMPD", 4) != 0) {
+                // This is some other device.
+                continue;
+            }
 
             if (retval < cnt) {
                 dst[retval] = builder.with_id(L"%hs/voltage", path)
@@ -78,13 +85,14 @@ std::size_t PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::descriptions(
             ++retval;
         }
 
-        return retval;
     } catch (...) {
         // This typically indicates that the usbpd library could not be loaded,
         // most likely due to a missing driver on the sytem which would have been
         // installed if a device had been connected.
-        return 0;
+        retval = 0;
     }
+
+    return retval;
 }
 
 
@@ -92,18 +100,60 @@ std::size_t PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::descriptions(
  * PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::usb_pd_sensor
  */
 PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::usb_pd_sensor(
-        _In_z_ const wchar_t *port,
+        _In_z_ const wchar_t *serial,
+        _In_ const configuration_type& config,
         _In_ const std::size_t index_voltage,
         _In_ const std::size_t index_current)
-        : _index_current(index_current), _index_voltage(index_voltage) {
-    if (port == nullptr) {
-        throw std::invalid_argument("A valid port must be provided.");
+    : _index_current(index_current),
+        _index_voltage(index_voltage),
+        _tester(nullptr) {
+    if (serial == nullptr) {
+        throw std::invalid_argument("A valid device serial must be provided.");
     }
 
-    auto p = PWROWG_NAMESPACE::convert_string<char>(port);
-    this->_tester = usb_pd_library::instance().usb_pd_tester_open(p.c_str());
-    if (this->_tester == nullptr) {
-        throw std::runtime_error("Failed to connect to USB PD tester.");
+    {
+        auto s = PWROWG_NAMESPACE::convert_string<char>(serial);
+        auto status = usb_pd_library::instance().FT_OpenEx(
+            const_cast<char *>(s.c_str()),
+            FT_OPEN_BY_SERIAL_NUMBER,
+            &this->_tester);
+        if (!FT_SUCCESS(status)) {
+            // TODO: create a system_error specialisation.
+            throw std::runtime_error("Failed to connect to USB PD tester.");
+        }
+    }
+
+    {
+        auto status = usb_pd_library::instance().FT_SetBaudRate(
+            this->_tester,
+            115200);
+        if (!FT_SUCCESS(status)) {
+            // TODO: create a system_error specialisation.
+            throw std::runtime_error("FT_SetBaudRate failed.");
+        }
+    }
+
+    {
+        auto status = usb_pd_library::instance().FT_SetDataCharacteristics(
+            this->_tester,
+            FT_BITS_8,
+            FT_STOP_BITS_1,
+            FT_PARITY_NONE);
+        if (!FT_SUCCESS(status)) {
+            // TODO: create a system_error specialisation.
+            throw std::runtime_error("FT_SetDataCharacteristics failed.");
+        }
+    }
+
+    {
+        auto status = usb_pd_library::instance().FT_SetTimeouts(
+            this->_tester,
+            config.read_timeout(),
+            config.write_timeout());
+        if (!FT_SUCCESS(status)) {
+            // TODO: create a system_error specialisation.
+            throw std::runtime_error("FT_SetTimeouts failed.");
+        }
     }
 }
 
@@ -112,7 +162,7 @@ PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::usb_pd_sensor(
  * PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::~usb_pd_sensor
  */
 PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::~usb_pd_sensor(void) {
-    usb_pd_library::instance().usb_pd_tester_close(this->_tester);
+    usb_pd_library::instance().FT_Close(this->_tester);
 }
 
 
@@ -123,34 +173,97 @@ void PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::sample(
         _In_ const sensor_array_callback callback,
         _In_ const sensor_description *sensors,
         _In_opt_ void *context) {
-    unsigned char temperature;
-    std::uint16_t voltage;
-    std::uint16_t set_current;
-    std::uint16_t current;
-    std::uint16_t loopback_current;
+    static const std::uint8_t request[] = { 0x02, 0x01, 0x0C, 0x0C, 0x03 };
 
-    
+    this->write(request, std::size(request));
+    auto response = this->read();
 
-    if (usb_pd_library::instance().usb_pd_tester_query(this->_tester,
-            &temperature,
-            &voltage,
-            &set_current,
-            &current,
-            &loopback_current)) {
-        PWROWG_NAMESPACE::sample s;
+    PWROWG_NAMESPACE::sample s;
 
-        if (this->_index_voltage != invalid_index) {
-            s.reading.floating_point = voltage / 1000.0;
-            s.source = this->_index_voltage;
-            callback(&s, 1, sensors, context);
-        }
+    if (this->_index_voltage != invalid_index) {
+        auto voltage = *reinterpret_cast<std::uint16_t *>(response.data() + 5);
+        s.reading.floating_point = voltage / 1000.0f;
+        s.source = this->_index_voltage;
+        callback(&s, 1, sensors, context);
+    }
 
-        if (this->_index_voltage != invalid_index) {
-            s.reading.floating_point = loopback_current / 1000.0;
-            s.source = this->_index_current;
-            callback(&s, 1, sensors, context);
-        }
+    if (this->_index_voltage != invalid_index) {
+        auto current = *reinterpret_cast<std::uint16_t *>(response.data() + 11);
+        s.reading.floating_point = current / 1000.0f;
+        s.source = this->_index_current;
+        callback(&s, 1, sensors, context);
     }
 }
 
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::read
+ */
+void PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::read(
+        _Out_writes_bytes_(cnt) void *data,
+        _In_ const std::uint32_t cnt) {
+    assert(data != nullptr);
+    auto rem = cnt;
+    auto dst = static_cast<std::uint8_t *>(data);
+
+    while (rem > 0) {
+        DWORD read;
+        auto status = usb_pd_library::instance().FT_Read(this->_tester,
+            dst,
+            rem,
+            &read);
+        if (!FT_SUCCESS(status)) {
+            // TODO: create a system_error specialisation.
+            throw std::runtime_error("FT_Read failed.");
+        }
+
+        assert(read <= rem);
+        rem -= read;
+        dst += read;
+    }
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::read
+ */
+std::vector<std::uint8_t> PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::read(void) {
+    std::vector<std::uint8_t> retval(2);
+    this->read(retval.data(), static_cast<std::uint32_t>(retval.size()));
+
+    const auto off = retval.size();
+    const auto cnt = static_cast<uint32_t>(retval[1] + 1 + 1);
+    retval.resize(retval.size() + cnt);
+    this->read(retval.data() + off, cnt);
+
+    return retval;
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::write
+ */
+void PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::write(
+        _In_reads_bytes_(cnt) const void *data,
+        _In_ const std::uint32_t cnt) {
+    assert(data != nullptr);
+    auto rem = cnt;
+    auto src = static_cast<std::uint8_t *>(const_cast<void *>(data));
+
+    while (rem > 0) {
+        DWORD written;
+        auto status = usb_pd_library::instance().FT_Write(this->_tester,
+            src,
+            rem,
+            &written);
+        if (!FT_SUCCESS(status)) {
+            // TODO: create a system_error specialisation.
+            throw std::runtime_error("FT_Write failed.");
+        }
+
+        assert(written <= rem);
+        rem -= written;
+        src += written;
+    }
+}
 #endif /* defined(_WIN32) */

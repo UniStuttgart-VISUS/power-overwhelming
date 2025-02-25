@@ -26,13 +26,16 @@ PWROWG_DETAIL_NAMESPACE::usb_pd_library::instance(void) {
  */
 PWROWG_DETAIL_NAMESPACE::usb_pd_library::usb_pd_library(void)
 #if defined(_WIN32)
-        : library_base(TEXT("usbpd.dll")) {
+        : library_base(TEXT("ftd2xx64.dll"), TEXT("ftd2xx.dll")) {
 #else /* defined(_WIN32) */
-        : library_base("usbpd.so") {
+        : library_base("ftd2xx.so") {
 #endif /* defined(_WIN32) */
-    __PWROWG_GET_USB_PD_FUNC(usb_pd_tester_close);
-    __PWROWG_GET_USB_PD_FUNC(usb_pd_tester_enumerate);
-    __PWROWG_GET_USB_PD_FUNC(usb_pd_tester_free);
-    __PWROWG_GET_USB_PD_FUNC(usb_pd_tester_open);
-    __PWROWG_GET_USB_PD_FUNC(usb_pd_tester_query);
+    __PWROWG_GET_USB_PD_FUNC(FT_Close);
+    __PWROWG_GET_USB_PD_FUNC(FT_ListDevices);
+    __PWROWG_GET_USB_PD_FUNC(FT_OpenEx);
+    __PWROWG_GET_USB_PD_FUNC(FT_Read);
+    __PWROWG_GET_USB_PD_FUNC(FT_SetBaudRate);
+    __PWROWG_GET_USB_PD_FUNC(FT_SetDataCharacteristics);
+    __PWROWG_GET_USB_PD_FUNC(FT_SetTimeouts);
+    __PWROWG_GET_USB_PD_FUNC(FT_Write);
 }

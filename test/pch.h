@@ -53,7 +53,6 @@
 #include <setup_api.h>
 #include <string_functions.h>
 #include <tokenise.h>
-#include <usbpd.h>
 
 #include <CppUnitTest.h>
 

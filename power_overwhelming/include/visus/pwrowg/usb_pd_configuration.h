@@ -35,6 +35,14 @@ public:
     usb_pd_configuration(void) noexcept;
 
     /// <summary>
+    /// Answer the timeout for reading from the device, in milliseconds.
+    /// </summary>
+    /// <returns>The timeout in milliseconds.</returns>
+    inline std::int32_t read_timeout(void) const noexcept {
+        return this->_read_timeout;
+    }
+
+    /// <summary>
     /// Answer the timeout for searching devices, in milliseconds.
     /// </summary>
     /// <returns>The timeout in milliseconds.</returns>
@@ -57,9 +65,19 @@ public:
         return *this;
     }
 
+    /// <summary>
+    /// Answer the timeout for writing to the device, in milliseconds.
+    /// </summary>
+    /// <returns>The timeout in milliseconds.</returns>
+    inline std::int32_t write_timeout(void) const noexcept {
+        return this->_write_timeout;
+    }
+
 private:
 
+    std::uint32_t _read_timeout;
     std::int64_t _timeout;
+    std::uint32_t _write_timeout;
 };
 
 PWROWG_NAMESPACE_END

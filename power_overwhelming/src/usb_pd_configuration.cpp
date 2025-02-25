@@ -18,4 +18,4 @@ const PWROWG_NAMESPACE::guid PWROWG_NAMESPACE::usb_pd_configuration::id(
  * PWROWG_NAMESPACE::usb_pd_configuration::usb_pd_configuration
  */
 PWROWG_NAMESPACE::usb_pd_configuration::usb_pd_configuration(void) noexcept 
-    : _timeout(5000) { }
+    : _read_timeout(5), _timeout(5000), _write_timeout(100) { }
