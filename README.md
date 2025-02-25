@@ -126,7 +126,7 @@ The main changes when implementing a sensor are
 * A sensor class must be able to enumerate [sensor_descriptions](power_overwhelming/include/visus/pwrowg/sensor_description.h) for all of the data it produces and create actual sensor instances from a list of such descriptions.
 
 ### Your sensor class
-The framework interacts with your sensor class based on conventions (described below) rather ran requiring the implementation of abstract classes. This gives implementors the maximum amount of freedom when designing their classes. The framework even does not require sensors to be copyable, so you can delete the copy constructor and assignment operator. This is actually the recommended way for dealing with a sensor object that manages unique resources like a device or file handle.
+The framework interacts with your sensor class based on conventions (described below) rather than requiring the implementation of abstract classes. This gives implementors the maximum amount of freedom when designing their classes. The framework even does not require sensors to be copyable, so you can delete the copy constructor and assignment operator. This is actually the recommended way for dealing with a sensor object that manages unique resources like a device or file handle.
 
 Sensor classes are not publicly visible, so they are declared and defined in the [src](power_overwhelming/src) folder and located in the `detail` namespace. It is strongly recommended to use the `PWROWG_DETAIL_NAMESPACE_BEGIN` and `PWROWG_DETAIL_NAMESPACE_END` macros to ensure proper API versioning.
 
@@ -150,6 +150,11 @@ The sensor class must fulfill two requirements:
 * It must not use `template` members, including classes like `std::string`. If you need to store dynamically allocated string, use a [`blob`](power_overwhelming/include/visus/pwrowg/blob.h), manage your memory manually or use the [PIMPL pattern](https://learn.microsoft.com/en-us/cpp/cpp/pimpl-for-compile-time-encapsulation-modern-cpp).
 
 ### The `descriptions` methods
+A sensor must return descriptions for all kinds of data it can produce on a system via a method ```static std::size_t descriptions(sensor_description *dst, std::size_t cnt, configuration_type& config)```. The caller provides a buffer `dst` for at most `cnt` descriptions. This buffer may also be `nullptr`, in which case the method shall write nothing, but still return the required number of elements in `dst`. The framework will call the method once `descriptions(nullptr, 0)` to measure the required buffer size and afterwards with the actual buffer and its size.
+
+Sensors that rely on dynamic discovery of devices, for instance via USB enumeration, should make best efforts to report the required buffer size. If the situation changes between calls due to hardware being unplugged, the method shall return the maximum possible number of sensors in the given buffer and discard the remaining ones. In any case, a call to the method made with a valid, non-empty buffer must always return the number of valid elements that have been written to the buffer.
+
+The [sensor_descriptions](power_overwhelming/include/visus/pwrowg/sensor_description.h) is mostly a read-only class. In order to fill it, sensors must use a [sensor_description_builder](power_overwhelming/src/sensor_description_builder.h). Sensors must fill all properties of the description class except for the user-defined label, which can be modified later.
 
 ### The `from_descriptions` method
 
