@@ -125,5 +125,27 @@ The main changes when implementing a sensor are
 * A sensor can either produce samples synchronously (by polling) or asynchronously (pushing). The framework will detect the type of sensor via the signature of its `sample` method and automatically poll synchronous sensors. There is no longer the need for sensors to implement synchronous and asynchronous sampling methods.
 * A sensor class must be able to enumerate [sensor_descriptions](power_overwhelming/include/visus/pwrowg/sensor_description.h) for all of the data it produces and create actual sensor instances from a list of such descriptions.
 
+### Your sensor class
+The framework interacts with your sensor class based on conventions (described below) rather ran requiring the implementation of abstract classes. This gives implementors the maximum amount of freedom when designing their classes. The framework even does not require sensors to be copyable, so you can delete the copy constructor and assignment operator. This is actually the recommended way for dealing with a sensor object that manages unique resources like a device or file handle.
+
+Sensor classes are not publicly visible, so they are declared and defined in the [src](power_overwhelming/src) folder and located in the `detail` namespace. It is strongly recommended to use the `PWROWG_DETAIL_NAMESPACE_BEGIN` and `PWROWG_DETAIL_NAMESPACE_END` macros to ensure proper API versioning.
+
+Sensor classes are typically named with the "_sensor" suffix. For instance, if you were to provide a sensor for power readings for a toaster, you would call it `toaster_sensor`.
+
+A sensor class must have the following `public` members:
+* A `typedef configuration_type` which refers to the class that users of the library can use to modify the behaviour of the sensor.
+* A `typedef list_type` which refers to a container for the sensor. Typically, we use `std::list<>` for that, because it does not have any copyability or constructability requirements.
+* A `static descriptions` method which provides `sensor_description`s for all sensors of the class on the system.
+* A `static from_descriptions` which transforms `sensor_description`s into actual sensor instances.
+* A `sample` instance method which either synchronously samples the sensor or starts/stops asynchronous sampling.
+
+### The `configuration_type`
+
+### The `descriptions` methods
+
+### The `from_descriptions` method
+
+### The `sample` method
+
 ## Acknowledgments
 This work was partially funded by Deutsche Forschungsgemeinschaft (DFG) as part of [SFB/Transregio 161](https://www.sfbtrr161.de) (project ID 251654672).
