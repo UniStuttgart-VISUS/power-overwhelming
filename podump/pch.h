@@ -28,6 +28,7 @@
 #include "visus/pwrowg/sensor_filters.h"
 #include "visus/pwrowg/stable_power_state_scope.h"
 #include "visus/pwrowg/tinkerforge_display.h"
+#include "visus/pwrowg/usb_pd_configuration.h"
 
 
 #if !defined(_WIN32)

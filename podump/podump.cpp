@@ -59,6 +59,8 @@ int _tmain(const int argc, const TCHAR **argv) {
     {
         sensor_array_configuration config;
         config
+            //.exclude<tinkerforge_configuration>()
+            //.exclude<usb_pd_configuration>()
             .configure<hmc8015_configuration>([](hmc8015_configuration& c) {
                 //c.function_list(hmc8015_function::rms_current);
                 c.timeout(std::chrono::seconds(10));

@@ -44,8 +44,10 @@ TInput PWROWG_DETAIL_NAMESPACE::emi_sensor::from_descriptions(
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
         }
 
-        index += (std::max)(channels.size(), static_cast<std::size_t>(1));
+        auto used_indices = (std::max)(channels.size(),
+            static_cast<std::size_t>(1));
         dst.emplace_back(path, std::move(channels), index);
+        index += used_indices;
     }
 
 #if (defined(DEBUG) || defined(_DEBUG))
