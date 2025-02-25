@@ -35,6 +35,29 @@ public:
     usb_pd_configuration(void) noexcept;
 
     /// <summary>
+    /// Answer the timeout for reading from the device, in milliseconds.
+    /// </summary>
+    /// <returns>The timeout in milliseconds.</returns>
+    inline std::int32_t read_timeout(void) const noexcept {
+        return this->_read_timeout;
+    }
+
+    /// <summary>
+    /// Sets the timeout for reading from the device.
+    /// </summary>
+    /// <typeparam name="TType"></typeparam>
+    /// <typeparam name="TPeriod"></typeparam>
+    /// <param name="timeout"></param>
+    /// <returns></returns>
+    template<class TType, class TPeriod>
+    inline usb_pd_configuration& read_timeout(
+            _In_ const std::chrono::duration<TType, TPeriod> timeout) {
+        auto m = std::chrono::duration_cast<std::chrono::milliseconds>(timeout);
+        this->_read_timeout = std::abs(m.count());
+        return *this;
+    }
+
+    /// <summary>
     /// Answer the timeout for searching devices, in milliseconds.
     /// </summary>
     /// <returns>The timeout in milliseconds.</returns>
@@ -57,9 +80,34 @@ public:
         return *this;
     }
 
+    /// <summary>
+    /// Answer the timeout for writing to the device, in milliseconds.
+    /// </summary>
+    /// <returns>The timeout in milliseconds.</returns>
+    inline std::int32_t write_timeout(void) const noexcept {
+        return this->_write_timeout;
+    }
+
+    /// <summary>
+    /// Sets the timeout for writing to the device.
+    /// </summary>
+    /// <typeparam name="TType"></typeparam>
+    /// <typeparam name="TPeriod"></typeparam>
+    /// <param name="timeout"></param>
+    /// <returns></returns>
+    template<class TType, class TPeriod>
+    inline usb_pd_configuration& write_timeout(
+            _In_ const std::chrono::duration<TType, TPeriod> timeout) {
+        auto m = std::chrono::duration_cast<std::chrono::milliseconds>(timeout);
+        this->_write_timeout = std::abs(m.count());
+        return *this;
+    }
+
 private:
 
+    std::uint32_t _read_timeout;
     std::int64_t _timeout;
+    std::uint32_t _write_timeout;
 };
 
 PWROWG_NAMESPACE_END

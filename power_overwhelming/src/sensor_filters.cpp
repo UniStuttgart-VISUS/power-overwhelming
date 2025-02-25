@@ -116,7 +116,7 @@ bool PWROWG_NAMESPACE::is_tinkerforge_sensor(
  */
 bool PWROWG_NAMESPACE::is_usb_pd_sensor(
         _In_ const sensor_description& desc) noexcept {
-    return detail::starts_with(desc.name(), L"USB PD/");
+    return detail::starts_with(desc.name(), L"USB PD ");
 }
 
 

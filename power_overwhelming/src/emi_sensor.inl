@@ -15,7 +15,7 @@ TInput PWROWG_DETAIL_NAMESPACE::emi_sensor::from_descriptions(
     _In_ const TInput begin,
     _In_ const TInput end,
     _In_ const sensor_array_impl *owner,
-    _In_ const configuration_type &config) {
+    _In_ const configuration_type& config) {
     typedef sensor_description_builder builder_type;
 
     // Find out which are the EMI sensors.

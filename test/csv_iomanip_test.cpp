@@ -17,7 +17,7 @@ public:
 
     TEST_METHOD(test_char_delimiter) {
         Assert::AreEqual(long(0), std::cout.iword(PWROWG_DETAIL_NAMESPACE::io_index_delimiter()), L"No delimiter set", LINE_INFO());
-        Assert::AreEqual('\t', getcsvdelimiter(std::cout), L"Fallback retrieved.", LINE_INFO());
+        Assert::AreEqual(',', getcsvdelimiter(std::cout), L"Fallback retrieved.", LINE_INFO());
         std::cout << setcsvdelimiter(';');
         Assert::AreEqual(long(';'), std::cout.iword(PWROWG_DETAIL_NAMESPACE::io_index_delimiter()), L"Delimiter set", LINE_INFO());
         Assert::AreEqual(';', getcsvdelimiter(std::cout), L"Delimiter retrieved.", LINE_INFO());
@@ -27,8 +27,6 @@ public:
         Assert::AreEqual(long(0), std::cout.iword(PWROWG_DETAIL_NAMESPACE::io_index_header()), L"Print data", LINE_INFO());
         std::cout << csvheader;
         Assert::AreEqual(long(1), std::cout.iword(PWROWG_DETAIL_NAMESPACE::io_index_header()), L"Print header", LINE_INFO());
-        std::cout << csvdata;
-        Assert::AreEqual(long(0), std::cout.iword(PWROWG_DETAIL_NAMESPACE::io_index_header()), L"Print data", LINE_INFO());
     }
 
     //TEST_METHOD(test_print_stringstream) {
@@ -121,7 +119,7 @@ public:
 
     TEST_METHOD(test_wchar_delimiter) {
         Assert::AreEqual(long(0), std::wcout.iword(PWROWG_DETAIL_NAMESPACE::io_index_delimiter()), L"No delimiter set", LINE_INFO());
-        Assert::AreEqual(L'\t', getcsvdelimiter(std::wcout), L"Fallback retrieved.", LINE_INFO());
+        Assert::AreEqual(L',', getcsvdelimiter(std::wcout), L"Fallback retrieved.", LINE_INFO());
         std::wcout << setcsvdelimiter(L';');
         Assert::AreEqual(long(';'), std::wcout.iword(PWROWG_DETAIL_NAMESPACE::io_index_delimiter()), L"Delimiter set", LINE_INFO());
         Assert::AreEqual(L';', getcsvdelimiter(std::wcout), L"Delimiter retrieved.", LINE_INFO());

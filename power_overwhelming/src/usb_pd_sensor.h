@@ -16,8 +16,6 @@
 #include <string>
 #include <vector>
 
-#include <PDTesterAPI.h>
-
 #include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_description.h"
 #include "visus/pwrowg/sensor_filters.h"
@@ -25,6 +23,7 @@
 
 #include "sensor_description_builder.h"
 #include "sensor_utilities.h"
+#include "usb_pd_library.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -109,7 +108,8 @@ public:
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    usb_pd_sensor(_In_z_ const wchar_t *port,
+    usb_pd_sensor(_In_z_ const wchar_t *serial,
+        _In_ const configuration_type& config,
         _In_ const std::size_t index_voltage,
         _In_ const std::size_t index_current);
 
@@ -136,11 +136,17 @@ public:
 
 private:
 
-    static void event_callback(_In_ const int event_code);
+    void read(_Out_writes_bytes_(cnt) void *data,
+        _In_ const std::uint32_t cnt);
+
+    std::vector<std::uint8_t> read(void);
+
+    void write(_In_reads_bytes_(cnt) const void *data,
+        _In_ const std::uint32_t cnt);
 
     std::size_t _index_voltage;
     std::size_t _index_current;
-    PDTester _tester;
+    FT_HANDLE _tester;
 };
 
 PWROWG_DETAIL_NAMESPACE_END

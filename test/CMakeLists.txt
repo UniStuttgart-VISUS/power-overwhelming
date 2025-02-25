@@ -42,18 +42,14 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     adl
     nvml
     tinkerforge
-    power_overwhelming)
+    power_overwhelming
+    usbpdtesterdriver)
 
 # The test requires access to the VISA headers to test the instruments.
 if (PWROWG_WithVisa)
     find_package(VISA REQUIRED)
     target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
     target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_WITH_VISA)
-endif ()
-
-# The test requires access to the USB PD headers to test the sensor object.
-if (WIN32)
-    target_link_libraries(${PROJECT_NAME} PRIVATE passmark_usb_pd_tester)
 endif ()
 
 # Grab the DLLs to be tested and copy them to the output directory such that
