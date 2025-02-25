@@ -140,7 +140,14 @@ A sensor class must have the following `public` members:
 * A `sample` instance method which either synchronously samples the sensor or starts/stops asynchronous sampling.
 
 ### The `configuration_type`
-The `configuration_type` is a `typedef` for a [public API](power_overwhelming/include/visus/pwrowg/) that allows the users
+The `configuration_type` is a `typedef` for a [public API](power_overwhelming/include/visus/pwrowg/) that allows the users to influence the behaviour of your sensors. Your configuration class can also be empty if there is nothing to configure, but it must exist and it must be unique. Typically, the configuration class is named with the suffix "_configuration". For the above-mentioned toaster example, it would be called `toaster_configuration`.
+
+The sensor class must fulfill two requirements:
+* It must derive from [`sensor_configuration`](power_overwhelming/include/visus/pwrowg/sensor_configuration.h).
+* It must have a member `static const guid id`, which is a unique GUID for your sensor.
+* It must be copyable.
+* It must be located in the public namespace. It is strongly recommended to use the `PWROWG_NAMESPACE_BEGIN` and `PWROWG_NAMESPACE_END` macros to ensure proper API versioning.
+* It must not use `template` members, including classes like `std::string`. If you need to store dynamically allocated string, use a [`blob`](power_overwhelming/include/visus/pwrowg/blob.h), manage your memory manually or use the [PIMPL pattern](https://learn.microsoft.com/en-us/cpp/cpp/pimpl-for-compile-time-encapsulation-modern-cpp).
 
 ### The `descriptions` methods
 
@@ -149,7 +156,7 @@ The `configuration_type` is a `typedef` for a [public API](power_overwhelming/in
 ### The `sample` method
 
 ### Registering your sensor
-All sensors are centrally registered at one place, in the [`sensor_registry`](power_overwhelming/src/sensor_registry.h).
+All sensors are centrally registered at one place, in the [`sensor_registry`](power_overwhelming/src/sensor_registry.h). Just add your class in the `typedef` at the bottom of the file.
 
 ## Acknowledgments
 This work was partially funded by Deutsche Forschungsgemeinschaft (DFG) as part of [SFB/Transregio 161](https://www.sfbtrr161.de) (project ID 251654672).
