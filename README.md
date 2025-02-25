@@ -134,18 +134,22 @@ Sensor classes are typically named with the "_sensor" suffix. For instance, if y
 
 A sensor class must have the following `public` members:
 * A `typedef configuration_type` which refers to the class that users of the library can use to modify the behaviour of the sensor.
-* A `typedef list_type` which refers to a container for the sensor. Typically, we use `std::list<>` for that, because it does not have any copyability or constructability requirements.
+* A `typedef list_type` which refers to a container for the sensor. Typically, we use `std::list<>` for that, because it does not have any copyability or constructability requirements. This data structure is not used for obtaining actual samples from the sensors, so it does not need to be maximally efficient. 
 * A `static descriptions` method which provides `sensor_description`s for all sensors of the class on the system.
 * A `static from_descriptions` which transforms `sensor_description`s into actual sensor instances.
 * A `sample` instance method which either synchronously samples the sensor or starts/stops asynchronous sampling.
 
 ### The `configuration_type`
+The `configuration_type` is a `typedef` for a [public API](power_overwhelming/include/visus/pwrowg/) that allows the users
 
 ### The `descriptions` methods
 
 ### The `from_descriptions` method
 
 ### The `sample` method
+
+### Registering your sensor
+All sensors are centrally registered at one place, in the [`sensor_registry`](power_overwhelming/src/sensor_registry.h).
 
 ## Acknowledgments
 This work was partially funded by Deutsche Forschungsgemeinschaft (DFG) as part of [SFB/Transregio 161](https://www.sfbtrr161.de) (project ID 251654672).
