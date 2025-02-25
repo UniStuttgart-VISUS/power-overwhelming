@@ -44,7 +44,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::emi_sensor::descriptions(
                 if (retval < cnt) {
                     const auto md = dev->metadata_as<EMI_METADATA_V1>();
                     builder.with_vendor(md->HardwareOEM)
-                        .with_name(L"%s %us", md->HardwareModel,
+                        .with_name(L"%s %hu", md->HardwareModel,
                             md->HardwareRevision)
                         .with_id(L"EMI/%s", path.c_str())
                         .with_type(base_type)
@@ -64,9 +64,9 @@ std::size_t PWROWG_DETAIL_NAMESPACE::emi_sensor::descriptions(
                     if (retval < cnt) {
                         std::wstring n(c->ChannelName, c->ChannelNameSize);
                         builder.with_vendor(md->HardwareOEM)
-                            .with_name(L"%s %us/%s", md->HardwareModel,
+                            .with_name(L"%s %hu/%s", md->HardwareModel,
                                 md->HardwareRevision, n.c_str())
-                            .with_id(L"EMI/%s/%us", path.c_str(), i)
+                            .with_id(L"EMI/%s/%hu", path.c_str(), i)
                             .with_type(base_type)
                             .with_editable_type(editable_type)
                             .produces(reading_type::floating_point)
