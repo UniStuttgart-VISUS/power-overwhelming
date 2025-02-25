@@ -83,6 +83,16 @@ std::size_t PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::descriptions(
                     .build();
             }
             ++retval;
+
+            if (retval < cnt) {
+                dst[retval] = builder.with_id(L"%hs/power", path)
+                    .with_path(path)
+                    .with_name(L"USB PD %hs (apparent power)", path)
+                    .with_type(base_type | sensor_type::power)
+                    .measured_in(reading_unit::watt)
+                    .build();
+            }
+            ++retval;
         }
 
     } catch (...) {
@@ -103,8 +113,10 @@ PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::usb_pd_sensor(
         _In_z_ const wchar_t *serial,
         _In_ const configuration_type& config,
         _In_ const std::size_t index_voltage,
-        _In_ const std::size_t index_current)
+        _In_ const std::size_t index_current,
+        _In_ const std::size_t index_power)
     : _index_current(index_current),
+        _index_power(index_power),
         _index_voltage(index_voltage),
         _tester(nullptr) {
     if (serial == nullptr) {
@@ -180,17 +192,24 @@ void PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::sample(
 
     PWROWG_NAMESPACE::sample s;
 
+    auto voltage = *reinterpret_cast<std::uint16_t*>(response.data() + 5);
+    auto current = *reinterpret_cast<std::uint16_t*>(response.data() + 11);
+
     if (this->_index_voltage != invalid_index) {
-        auto voltage = *reinterpret_cast<std::uint16_t *>(response.data() + 5);
         s.reading.floating_point = voltage / 1000.0f;
         s.source = this->_index_voltage;
         callback(&s, 1, sensors, context);
     }
 
-    if (this->_index_voltage != invalid_index) {
-        auto current = *reinterpret_cast<std::uint16_t *>(response.data() + 11);
+    if (this->_index_current != invalid_index) {
         s.reading.floating_point = current / 1000.0f;
         s.source = this->_index_current;
+        callback(&s, 1, sensors, context);
+    }
+
+    if (this->_index_power != invalid_index) {
+        s.reading.floating_point = (voltage / 1000.0f) * (current / 1000.0f);
+        s.source = this->_index_power;
         callback(&s, 1, sensors, context);
     }
 }

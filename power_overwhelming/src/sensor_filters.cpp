@@ -17,7 +17,7 @@
  */
 bool PWROWG_NAMESPACE::is_adl_sensor(
         _In_ const sensor_description& desc) noexcept {
-    return detail::starts_with(desc.path(), L"ADL/");
+    return detail::starts_with(desc.id(), L"ADL/");
 }
 
 

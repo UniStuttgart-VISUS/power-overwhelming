@@ -49,9 +49,10 @@ TInput PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::from_descriptions(
         // Generate sensor IDs for the active sources.
         const auto voltage = sensor_index(sensor_type::voltage);
         const auto current = sensor_index(sensor_type::current);
+        const auto power = sensor_index(sensor_type::power);
 
         index += types.size();
-        dst.emplace_back(port, config, voltage, current);
+        dst.emplace_back(port, config, voltage, current, power);
     }
 
 #if (defined(DEBUG) || defined(_DEBUG))

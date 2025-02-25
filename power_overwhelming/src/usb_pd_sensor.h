@@ -111,7 +111,8 @@ public:
     usb_pd_sensor(_In_z_ const wchar_t *serial,
         _In_ const configuration_type& config,
         _In_ const std::size_t index_voltage,
-        _In_ const std::size_t index_current);
+        _In_ const std::size_t index_current,
+        _In_ const std::size_t index_power);
 
     usb_pd_sensor(const usb_pd_sensor& rhs) = delete;
 
@@ -144,8 +145,9 @@ private:
     void write(_In_reads_bytes_(cnt) const void *data,
         _In_ const std::uint32_t cnt);
 
-    std::size_t _index_voltage;
     std::size_t _index_current;
+    std::size_t _index_power;
+    std::size_t _index_voltage;
     FT_HANDLE _tester;
 };
 

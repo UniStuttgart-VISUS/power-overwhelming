@@ -442,6 +442,7 @@ bool PWROWG_DETAIL_NAMESPACE::adl_sensor::specialise(
 
     builder.with_name(L"%hs (%s)", info.strAdapterName, source.c_str())
         .with_id(L"ADL/%hs/%s", info.strUDID, source.c_str())
+        .with_path(info.strUDID)
         .with_new_private_data<private_data>(info.iAdapterIndex, sensor);
     return true;
 }
