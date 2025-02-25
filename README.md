@@ -150,7 +150,11 @@ The sensor class must fulfill two requirements:
 * It must not use `template` members, including classes like `std::string`. If you need to store dynamically allocated string, use a [`blob`](power_overwhelming/include/visus/pwrowg/blob.h), manage your memory manually or use the [PIMPL pattern](https://learn.microsoft.com/en-us/cpp/cpp/pimpl-for-compile-time-encapsulation-modern-cpp).
 
 ### The `descriptions` methods
-A sensor must return descriptions for all kinds of data it can produce on a system via a method ```static std::size_t descriptions(sensor_description *dst, std::size_t cnt, configuration_type& config)```. The caller provides a buffer `dst` for at most `cnt` descriptions. This buffer may also be `nullptr`, in which case the method shall write nothing, but still return the required number of elements in `dst`. The framework will call the method once `descriptions(nullptr, 0)` to measure the required buffer size and afterwards with the actual buffer and its size.
+A sensor must return descriptions for all kinds of data it can produce on a system via a method 
+```c++
+static std::size_t descriptions(sensor_description *dst, std::size_t cnt, configuration_type& config);
+```
+The caller provides a buffer `dst` for at most `cnt` descriptions. This buffer may also be `nullptr`, in which case the method shall write nothing, but still return the required number of elements in `dst`. The framework will call the method once `descriptions(nullptr, 0)` to measure the required buffer size and afterwards with the actual buffer and its size.
 
 Sensors that rely on dynamic discovery of devices, for instance via USB enumeration, should make best efforts to report the required buffer size. If the situation changes between calls due to hardware being unplugged, the method shall return the maximum possible number of sensors in the given buffer and discard the remaining ones. In any case, a call to the method made with a valid, non-empty buffer must always return the number of valid elements that have been written to the buffer.
 
