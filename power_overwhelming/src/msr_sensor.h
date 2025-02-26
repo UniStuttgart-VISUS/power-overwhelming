@@ -11,13 +11,19 @@
 #include <ios>
 #include <list>
 #include <utility>
+#include <vector>
 
 #include "visus/pwrowg/msr_configuration.h"
 #include "visus/pwrowg/rapl_domain.h"
 #include "visus/pwrowg/rapl_quantity.h"
+#include "visus/pwrowg/sample.h"
+#include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_description.h"
+#include "visus/pwrowg/sensor_filters.h"
+#include "visus/pwrowg/timestamp.h"
 
 #include "msr_device.h"
+#include "sensor_utilities.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -26,9 +32,35 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// Implementation of a power sensor using the device files for the RAPL
 /// machine-specific registers (MSRs).
 /// </summary>
-class msr_sensor final {
+class PWROWG_TEST_API msr_sensor final {
 
 public:
+
+    /// <summary>
+    /// Identification of an MSRs and its unit divisor.
+    /// </summary>
+    struct register_identifier final {
+
+        /// <summary>
+        /// The divisor to convert the register value into the actual value.
+        /// </summary>
+        float divisor;
+
+        /// <summary>
+        /// The offset of the register.
+        /// </summary>
+        std::streamoff offset;
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="offset">The offset of the register.</param>
+        /// <param name="divisor"> The divisor to convert the register value
+        /// into the actual value.</param>
+        inline register_identifier(_In_ const std::streamoff offset,
+                _In_ const float divisor = 1.0f)
+            : divisor(divisor), offset(offset) { }
+    };
 
     /// <summary>
     /// The type of sensor class configuration used by this sensor.
@@ -67,11 +99,6 @@ public:
         _In_ std::size_t cnt,
         _In_ const configuration_type& config);
 
-
-private:
-
-    msr_device _device;
-
 #if false
     /// <summary>
     /// Creates a new sensor for the specified core and RAPL domain,
@@ -109,26 +136,6 @@ private:
         _In_ const std::uint32_t unit_offset);
 
     /// <summary>
-    /// Create sensors for all MSR files.
-    /// </summary>
-    /// <param name="out_sensors">Receives the sensors, if not
-    /// <c>nullptr</c>.</param>
-    /// <param name="cnt_sensors">The available space in
-    /// <paramref name="out_sensors" />.</param>
-    /// <param name="reserved">Reserved for future use. Must be
-    /// <c>false</c>.</param>
-    /// <returns>The number of sensors available on the system, regardless
-    /// of the size of the output array. If this number is larger than
-    /// <paramref name="cntSensors" />, not all sensors have been returned.
-    /// </returns>
-    /// <exception cref="std::system_error">If enumerating or opening the
-    /// devices failed.</exception>
-    static std::size_t for_all(
-        _Out_writes_opt_(cnt_sensors) msr_sensor *out_sensors,
-        _In_ const std::size_t cnt_sensors,
-        _In_ const bool reserved = false);
-
-    /// <summary>
     /// Create an MSR sensor for the specified core and RAPL domain.
     /// </summary>
     /// <param name="core">The index of the CPU core for which the MSR
@@ -143,102 +150,83 @@ private:
     /// be opened.</exception>
     static msr_sensor for_core(_In_ const core_type core,
         _In_ const rapl_domain domain);
+#endif
+
+    /// <summary>
+    /// Generate sensors for all matching configurations within
+    /// <paramref name="begin" /> and <paramref name="end" />.
+    /// </summary>
+    /// <remarks>
+    /// <para>The method will go through all sensor descriptions provided and
+    /// created sensors for each description that is recognised as one of its
+    /// own. All of these matching descriptions are sorted to the begin of the
+    /// range. All other descriptions, which could not be used to create a
+    /// sensor of this type, are move to the end of the range and the returned
+    /// iterator points to the first of those descriptions.</para>
+    /// </remarks>
+    /// <typeparam name="TInput">The type of the input iterator over the
+    /// <see cref="sensor_description" />s.</typeparam>
+    /// <param name="dst">The output list, which will receive the sensors and the
+    /// sampler callbacks.</param>
+    /// <param name="index">The index to be used for the first sensor created.
+    /// </param>
+    /// <param name="begin">The begin of the range of sensor descriptions.
+    /// </param>
+    /// <param name="end">The end of the range of sensor descriptions.</param>
+    /// <param name="owner">The sensor array owning the sensors to be created.
+    /// This pointer is required to gain access to the callback pointers and
+    /// the context data. It can also be used to access the per-sensor class
+    /// configuration contained  in <paramref name="config" /> later on.</param>
+    /// <param name="config">The configuration for the sensor class.</param>
+    /// <returns>The iterator to the first sensor description within
+    /// <paramref name="begin" /> and <paramref name="end" /> that has not been
+    /// used for creating a sensor.</returns>
+    template<class TInput>
+    static TInput from_descriptions(_In_ list_type& dst,
+        _In_ sample::source_type index,
+        _In_ const TInput begin,
+        _In_ const TInput end,
+        _In_ const sensor_array_impl *owner,
+        _In_ const configuration_type& config);
 
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    msr_sensor(void);
+    /// <param name="path"></param>
+    /// <param name="registers"></param>
+    /// <param name="index"></param>
+    msr_sensor(_In_z_ const wchar_t *path,
+        _Inout_ std::vector<register_identifier>&& registers,
+        _In_ const PWROWG_NAMESPACE::sample::source_type index);
 
     /// <summary>
-    /// Move <paramref name="rhs" /> into a new instance.
+    /// Deliver a sample to the given <paramref name="callback" />.
     /// </summary>
-    /// <param name="rhs">The object to be moved.</param>
-    inline msr_sensor(_In_ msr_sensor&& rhs) noexcept : _impl(rhs._impl) {
-        rhs._impl = nullptr;
-    }
-
-    /// <summary>
-    /// Finalise the instance.
-    /// </summary>
-    virtual ~msr_sensor(void);
-
-    /// <summary>
-    /// Answer the core the sensor is sampling.
-    /// </summary>
-    /// <returns>The index ofo the core the sensor is sampling.</returns>
-    /// <exception cref="std::runtime_error">If the method is called on a
-    /// sensor that has been disposed.</exception>
-    core_type core(void) const;
-
-    /// <summary>
-    /// Answer the RAPL domain the sensor is sampling.
-    /// </summary>
-    /// <returns>The RAPL domain the sensor is sampling.</returns>
-    /// <exception cref="std::runtime_error">If the method is called on a
-    /// sensor that has been disposed.</exception>
-    rapl_domain domain(void) const;
-
-    /// <summary>
-    /// Reads the raw sensor data and applies the unit transformation such
-    /// that the return value is in Joules (accumulated since an undefined
-    /// start point).
-    /// </summary>
-    /// <returns>The current value of the counter in Joules.</returns>
-    raw_sample_type read(void) const;
-
-    /// <inheritdoc />
-    virtual _Ret_maybenull_z_ const wchar_t *name(
-        void) const noexcept override;
-
-    using sensor::sample;
-
-    /// <summary>
-    /// Asynchronously sample the sensor every
-    /// <paramref name="sampling_period "/> microseconds.
-    /// </summary>
-    /// <param name="on_measurement">The callback to be invoked if new data
-    /// arrived. If this is <c>nullptr</c>, the asynchronous sampling will
-    /// be disabled.</param>
-    /// <param name="period">The desired sampling period in
-    /// microseconds. This parameter defaults to 1 millisecond.</param>
-    /// <param name="context">A user-defined context pointer that is passed
-    /// on to <see cref="on_measurement" />. This parameter defaults to
-    /// <c>nullptr</c>.</para>
-    /// <exception cref="std::runtime_error">If the sensor has been moved.
-    /// </exception>
-    /// <exception cref="std::logic_error">If the sensor is already being
-    /// sampled asynchronously due to a previous call to the method.
-    /// </exception>
-    /// <exception cref="tinkerforge_exception">If the sensor could not be
-    /// sampled. </exception>
-    void sample(_In_opt_ const measurement_callback on_measurement,
-        _In_ const microseconds_type period = default_sampling_period,
+    /// <param name="callback">The callback to be invoked.</param>
+    /// <param name="sensors">The sensor descriptions passed to the
+    /// <paramref name="callback" />.</param>
+    /// <param name="context">An optional context pointer passed to the
+    /// <paramref name="callback" />.</param>
+    void sample(_In_ const sensor_array_callback callback,
+        _In_ const sensor_description *sensors,
         _In_opt_ void *context = nullptr);
-
-    /// <summary>
-    /// Move assignment.
-    /// </summary>
-    /// <param name="rhs">The right-hand side operand</param>
-    /// <returns><c>*this</c></returns>
-    msr_sensor& operator =(_In_ msr_sensor&& rhs) noexcept;
-
-    /// <inheritdoc />
-    virtual operator bool(void) const noexcept override;
-
-protected:
-
-    /// <inheritdoc />
-    void sample_async(_Inout_ async_sampling&& sampling) override;
-
-    /// <inheritdoc />
-    measurement_data sample_sync(void) const override;
 
 private:
 
-    detail::msr_sensor_impl *_impl;
-#endif
+    /// <summary>
+    /// The character type used for device paths.
+    /// </summary>
+    typedef msr_device::string_type::value_type path_char_type;
+
+    msr_device _device;
+    PWROWG_NAMESPACE::sample::source_type _index;
+    std::vector<timestamp> _last_timestamp;
+    std::vector<float> _last_value;
+    std::vector<register_identifier> _registers;
 };
 
 PWROWG_DETAIL_NAMESPACE_END
+
+#include "msr_sensor.inl"
 
 #endif /* defined(_PWROWG_MSR_SENSOR_H) */

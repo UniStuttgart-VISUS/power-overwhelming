@@ -154,6 +154,16 @@ extern POWER_OVERWHELMING_API bool is_hmc8015_sensor(
     _In_ const sensor_description &desc) noexcept;
 
 /// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes a
+/// sensor based on the RAPL MSRs.
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><c>true</c> if the sensor is a MSR sensor, <c>false</c> otherwise.
+/// </returns>
+extern POWER_OVERWHELMING_API bool is_msr_sensor(
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
 /// Answer whether the given <see cref="sensor_description" /> fulfills none of
 /// the given <paramref name="predicates" />.
 /// </summary>

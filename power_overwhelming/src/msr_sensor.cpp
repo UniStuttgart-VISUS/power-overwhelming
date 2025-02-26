@@ -69,7 +69,7 @@ static const rapl_domain_configs_type domain_configs = {
 /// <summary>
 /// Determine the unit divisor for the given configuration.
 /// </summary>
-static float divisor(_In_ const msr_device& device,
+static float msr_unit_divisor(_In_ const msr_device& device,
         _In_ const msr_magic_config& config) {
     auto divisor = device.read(config.unit_location);
     divisor = (divisor & config.unit_mask) >> config.unit_offset;
@@ -86,9 +86,14 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
         _In_ std::size_t cnt,
         _In_ const configuration_type& config) {
+    const auto base_type = sensor_type::software | sensor_type::power;
     sensor_description_builder builder;
     std::size_t retval = 0;
     bool succeeded = true;
+
+    if (dst == nullptr) {
+        cnt = 0;
+    }
 
     for (core_type c = 0; succeeded; ++c) {
         try {
@@ -101,18 +106,18 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
             // anyway.
             thread_affinity_scope affinity_scope(c);
 
-            const auto v = get_cpu_vendor();
-            builder.with_vendor(to_string(v))
-                .with_name(L"%s (MSR)", to_string(v));
+            const auto vendor = get_cpu_vendor();
+            builder.with_vendor(to_string(vendor));
 
-            auto vit = domain_configs.find(v);
+            auto vit = domain_configs.find(vendor);
             if (vit == domain_configs.end()) {
                 // We do not have MSR addresses for the CPU vendor.
                 continue;
             }
 
             // Test-create the device file to find out whether it is supported.
-            auto dev = msr_device(msr_device::path(c));
+            const auto path = msr_device::path(c);
+            auto dev = msr_device(path);
 
             // Emit descriptions for all RAPL supported RAPL domains.
             for (auto& d : vit->second) {
@@ -122,7 +127,32 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
                     continue;
                 }
 
-                //d.second.
+                switch (d.first) {
+                    case rapl_domain::package:
+                    case rapl_domain::pp0:
+                    case rapl_domain::pp1:
+                        builder.with_type(base_type | sensor_type::cpu);
+                        break;
+
+                    case rapl_domain::dram:
+                        builder.with_type(base_type | sensor_type::memory);
+                        break;
+                }
+
+                builder.with_id(L"MSR/%d/%s", c, to_string(d.first))
+                    .with_name(L"%s %s (MSR)", to_string(vendor), to_string(d.first))
+                    .with_path(path)
+                    .produces(reading_type::floating_point)
+                    .measured_in(reading_unit::watt)
+                    .with_new_private_data<register_identifier>(
+                        d.second.data_location,
+                        msr_unit_divisor(dev, d.second));
+
+                if (retval < cnt) {
+                    dst[retval] = builder.build();
+                }
+
+                ++retval;
             }
 
         } catch (std::system_error) {
@@ -136,67 +166,6 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
 
     return retval;
 }
-
-//
-///*
-// * PWROWG_DETAIL_NAMESPACE::msr_sensor::offset
-// */
-//std::pair<std::streamoff, float> PWROWG_DETAIL_NAMESPACE::msr_sensor::offset(
-//        _In_ const msr_device::core_type core,
-//        _In_ const rapl_domain domain,
-//        _In_opt_ const msr_magic_config *config_override) {
-//    // Before doing anything else, we need to find out the CPU vendor for being
-//    // able to decide what the offset of the RAPL domain is (and where the
-//    // divisor for the energy unit is located). In order to make sure that we
-//    // read the CPUID of the correct socket, we set the thread affinity to the
-//    // core requested by the user. If this fails, the core does not exist, so we
-//    // do not need to continue anyway.
-//    thread_affinity_scope affinity_scope(core);
-//
-//    const auto vendor = get_cpu_vendor();
-//    if (vendor == cpu_vendor::unknown) {
-//        throw std::runtime_error("The vendor of the CPU could not be "
-//            "determined, which is vital for initialising the RAPL domain "
-//            "information correctly.");
-//    }
-//
-//    // This is the configuration we will use to determine the offsets. Assign it
-//    // either from user input or from our hardcoded magic tables.
-//    msr_magic_config config;
-//
-//    if (config_override != nullptr) {
-//        config = *config_override;
-//
-//    } else {
-//        auto vit = domain_configs.find(vendor);
-//        if (vit == domain_configs.end()) {
-//            throw std::runtime_error("The MSR sensor is not supported for the "
-//                "CPU of this machine.");
-//        }
-//
-//        auto dit = vit->second.find(domain);
-//        if (dit == vit->second.end()) {
-//            throw std::invalid_argument("The specified RAPL domain is not "
-//                "supported for the specified CPU core.");
-//        }
-//
-//        if (dit->second.is_supported && !dit->second.is_supported(core)) {
-//            throw std::invalid_argument("The specified RAPL domain is not "
-//                "supported for the specified CPU core.");
-//        }
-//
-//        config = dit->second;
-//    }
-//
-//    // Open the MSR device file or get access to an already open instance for
-//    // the same CPU core. We need this to read the divisor.
-//    auto device = msr_device_factory::create(core);
-//    auto divisor = device->read(config.unit_location);
-//    divisor = (divisor & config.unit_mask) >> config.unit_offset;
-//    divisor = 1 << divisor;
-//
-//    return std::make_pair(config.data_location, static_cast<float>(divisor));
-//}
 
 
 #if false
@@ -240,133 +209,66 @@ visus::power_overwhelming::msr_sensor::for_core(_In_ const core_type core,
     retval._impl->set(core, domain, nullptr);
     return retval;
 }
-
-
-/*
- * visus::power_overwhelming::msr_sensor::msr_sensor
- */
-visus::power_overwhelming::msr_sensor::msr_sensor(void)
-    : _impl(new detail::msr_sensor_impl()) { }
-
-
-/*
- * visus::power_overwhelming::msr_sensor::~msr_sensor
- */
-visus::power_overwhelming::msr_sensor::~msr_sensor(void) {
-    delete this->_impl;
-}
-
-
-/*
- * visus::power_overwhelming::msr_sensor::core
- */
-visus::power_overwhelming::msr_sensor::core_type
-visus::power_overwhelming::msr_sensor::core(void) const {
-    this->check_not_disposed();
-    return this->_impl->core;
-}
-
-
-/*
- * visus::power_overwhelming::msr_sensor::domain
- */
-visus::power_overwhelming::rapl_domain
-visus::power_overwhelming::msr_sensor::domain(void) const {
-    this->check_not_disposed();
-    return this->_impl->domain;
-}
-
-
-/*
- * visus::power_overwhelming::msr_sensor::read
- */
-visus::power_overwhelming::msr_sensor::raw_sample_type
-visus::power_overwhelming::msr_sensor::read(void) const {
-    this->check_not_disposed();
-    return this->_impl->read(true);
-}
-
-
-/*
- * visus::power_overwhelming::msr_sensor::name
- */
-_Ret_maybenull_z_
-const wchar_t *visus::power_overwhelming::msr_sensor::name(
-        void) const noexcept {
-    return (this->_impl != nullptr)
-        ? this->_impl->sensor_name.c_str()
-        : nullptr;
-}
-
-
-/*
- * visus::power_overwhelming::msr_sensor::sample
- */
-void visus::power_overwhelming::msr_sensor::sample(
-        _In_opt_ const measurement_callback on_measurement,
-        _In_ const microseconds_type period,
-        _In_opt_ void *context) {
-#if defined(_WIN32)
-    ::OutputDebugStringW(L"PWROWG DEPRECATION WARNING: This method is only "
-        L"provided for backwards compatibility and might be removed in "
-        L"future versions of the library. Use async_sampling to configure "
-        L"asynchronous sampling.\r\n");
-#endif /* defined(_WIN32) */
-    this->check_not_disposed();
-    this->sample_async(std::move(async_sampling()
-        .samples_every(period)
-        .delivers_measurements_to(on_measurement)
-        .passes_context(context)));
-}
-
-
-/*
- * visus::power_overwhelming::msr_sensor::operator =
- */
-visus::power_overwhelming::msr_sensor&
-visus::power_overwhelming::msr_sensor::operator =(
-        _In_ msr_sensor&& rhs) noexcept {
-    if (this != std::addressof(rhs)) {
-        delete this->_impl;
-        this->_impl = rhs._impl;
-        rhs._impl = nullptr;
-    }
-
-    return *this;
-}
-
-
-/*
- * visus::power_overwhelming::msr_sensor::operator bool
- */
-visus::power_overwhelming::msr_sensor::operator bool(void) const noexcept {
-    return ((this->_impl != nullptr) && (this->_impl->device != nullptr)
-        && *this->_impl->device);
-}
-
-
-/*
- * visus::power_overwhelming::msr_sensor::sample_async
- */
-void visus::power_overwhelming::msr_sensor::sample_async(
-        _Inout_ async_sampling&& sampling) {
-    assert(this->_impl != nullptr);
-    this->_impl->async_sampling = std::move(sampling);
-
-    if (this->_impl->async_sampling) {
-        detail::sampler::default_sampler += this->_impl;
-    } else {
-        detail::sampler::default_sampler -= this->_impl;
-    }
-}
-
-
-/*
- * visus::power_overwhelming::msr_sensor::sample_sync
- */
-visus::power_overwhelming::measurement_data
-visus::power_overwhelming::msr_sensor::sample_sync(void) const {
-    assert(this->_impl);
-    return this->_impl->sample();
-}
 #endif
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::msr_sensor::msr_sensor
+ */
+PWROWG_DETAIL_NAMESPACE::msr_sensor::msr_sensor(_In_z_ const wchar_t *path,
+        _Inout_ std::vector<register_identifier>&& registers,
+        _In_ const PWROWG_NAMESPACE::sample::source_type index)
+    : _device(PWROWG_NAMESPACE::convert_string<path_char_type>(path)),
+        _index(index),
+        _registers(std::move(registers)) {
+    this->_last_timestamp.reserve(this->_registers.size());
+    this->_last_value.reserve(this->_registers.size());
+
+    // Obtain the first reading, which (i) ensures the sensor is working and
+    // (ii) provides the reference value to convert energy into power estimates.
+    for (auto& r : this->_registers) {
+        this->_last_value.emplace_back(this->_device.read(r.offset)
+            / r.divisor);
+        this->_last_timestamp.push_back(timestamp::now());
+    }
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::msr_sensor::sample
+ */
+void PWROWG_DETAIL_NAMESPACE::msr_sensor::sample(
+        _In_ const sensor_array_callback callback,
+        _In_ const sensor_description *sensors,
+        _In_opt_ void *context) {
+    typedef std::chrono::duration<float> seconds_type;
+    assert(callback != nullptr);
+
+    std::vector<PWROWG_NAMESPACE::sample> samples;
+    samples.resize(this->_registers.size());
+
+    for (decltype(this->_index) i = 0; i < this->_registers.size(); ++i) {
+        const auto& r = this->_registers[i];
+
+        // Obtain new readings.
+        const auto value = this->_device.read(r.offset) / r.divisor;
+        const auto now = timestamp::now();
+
+        // Compute the time elapsed since the last call to the method. We use
+        // that to compute the point in time for the sample in between the two
+        // calls as the timestamp of the sample we deliver.
+        const auto dt = now - this->_last_timestamp[i];
+        const auto timestamp = this->_last_timestamp[i] + dt / 2;
+
+        auto dv = value - this->_last_value[i];
+        dv /= std::chrono::duration_cast<seconds_type>(dt).count();
+
+        samples.emplace_back(this->_index + i, timestamp, dv);
+
+        // Preserve the current values for the next call.
+        this->_last_timestamp[i] = now;
+        this->_last_value[i] = value;
+    }
+
+    callback(samples.data(), samples.size(), sensors, context);
+}

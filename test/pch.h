@@ -42,6 +42,7 @@
 #include <emi_device.h>
 #include <io_util.h>
 #include <msr_magic.h>
+#include <msr_sensor.h>
 #include <nvml_exception.h>
 #include <nvml_scope.h>
 #include <nvml_sensor.h>
@@ -53,6 +54,7 @@
 #include <setup_api.h>
 #include <string_functions.h>
 #include <tokenise.h>
+#include <transient_driver.h>
 
 #include <CppUnitTest.h>
 

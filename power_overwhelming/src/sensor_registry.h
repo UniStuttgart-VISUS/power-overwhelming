@@ -312,7 +312,7 @@ typedef basic_sensor_registry<
 
     adl_sensor,
     hmc8015_sensor,
-    //msr_sensor,
+    msr_sensor,
     nvml_sensor,
     //rtx_sensor,
     tinkerforge_sensor>
