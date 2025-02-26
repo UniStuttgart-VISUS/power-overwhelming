@@ -259,8 +259,8 @@ void sample(const bool enable);
 | --------- | ----------- |
 | `enable`  | Controls whether asynchronous sampling should be started (`true`) or stopped (`false`). |
 
-> [!IMPORTANT]
-> If the method is called with `false` to stop sampling, it must not return before the last sample of the sensor has been delivered.
+> [!CAUTION]
+> If the method is called with `false` to stop sampling, it must not return before the last sample of the sensor has been delivered. Failure to do so may result in memory access violations during cleanup.
 
 ### Registering your sensor
 All sensors are centrally registered at one place, in the [`sensor_registry`](power_overwhelming/src/sensor_registry.h). Just add your class in the `typedef` at the bottom of the file.
