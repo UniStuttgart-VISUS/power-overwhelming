@@ -115,7 +115,7 @@ enum class cpu_vendor {
     cyrix,
 
     /// <summary>
-    /// Identifies a DM&TPredicate Vortex86 CPU.
+    /// Identifies a DM&amp;P Vortex86 CPU.
     /// </summary>
     dmp,
 
@@ -234,6 +234,7 @@ enum class cpu_vendor {
     zhaoxin
 };
 
+
 /// <summary>
 /// Extracts the CPU family and model from the second CPUID result.
 /// </summary>
@@ -242,6 +243,16 @@ enum class cpu_vendor {
 /// <returns>A description of the CPU model.</returns>
 extern POWER_OVERWHELMING_API cpu_model extract_cpu_model(
     _In_reads_(2) const cpu_info info[2]) noexcept;
+
+/// <summary>
+/// Extracts the CPU vendor identification string.
+/// </summary>
+/// <param name="dst">A buffer receiving the CPU name.</param>
+/// <param name="info">The first <see cref="cpu_info" /> retrieved from
+/// <see cref="get_cpu_info" />.</param>
+extern POWER_OVERWHELMING_API void extract_cpu_vendor(
+    _Out_writes_(0x20) char dst[20],
+    _In_ const cpu_info &info);
 
 /// <summary>
 /// Extracts the vendor from the first CPUID result.
@@ -285,6 +296,14 @@ extern POWER_OVERWHELMING_API std::uint32_t get_cpu_info(
 /// <see cref="cpu_vendor::unknown" /> if the CPU vendor could not be
 /// determined.</returns>
 extern POWER_OVERWHELMING_API cpu_vendor get_cpu_vendor(void) noexcept;
+
+/// <summary>
+/// Answer a string representation of the given <paramref name="vendor" />.
+/// </summary>
+/// <param name="vendor"></param>
+/// <returns></returns>
+extern POWER_OVERWHELMING_API _Ret_z_ const wchar_t *to_string(
+    _In_ const cpu_vendor vendor) noexcept;
 
 PWROWG_NAMESPACE_END
 

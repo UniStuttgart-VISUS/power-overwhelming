@@ -17,7 +17,7 @@
 #include <Windows.h>
 #endif /* defined(_WIN32) */
 
-#include "msr_sensor.h"
+#include "visus/pwrowg/api.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -30,14 +30,14 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <see cref="msr_sensor_impl" /> is the same as for the
 /// <see cref="emi_device" />.</para>
 /// </remarks>
-class msr_device final {
+class PWROWG_TEST_API msr_device final {
 
 public:
 
     /// <summary>
-    /// The type used to identify a CPU core.
+    /// The type used to index CPU cores.
     /// </summary>
-    typedef msr_sensor::core_type core_type;
+    typedef std::uint32_t core_type;
 
     /// <summary>
     /// The native type of the file handle.
@@ -49,9 +49,9 @@ public:
 #endif /* defined(_WIN32) */
 
     /// <summary>
-    /// The type of data read from the MSR device file.
+    /// The type of the raw samples read from the registers.
     /// </summary>
-    typedef msr_sensor::raw_sample_type sample_type;
+    typedef std::uint64_t sample_type;
 
     /// <summary>
     /// The type used to specify device names.

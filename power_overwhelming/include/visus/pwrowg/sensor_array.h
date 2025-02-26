@@ -114,8 +114,39 @@ public:
     /// <summary>
     /// Answer a pointer to the description of the first sensor.
     /// </summary>
-    /// <returns>The description of the first sensor.</returns>
+    /// <returns>The description of the first sensor. The callee remains owner
+    /// of the memory.</returns>
     _Ret_maybenull_ const sensor_description *begin(void) const noexcept;
+
+    /// <summary>
+    /// Answer a pointer to the description of the first sensor.
+    /// </summary>
+    /// <remarks>
+    /// This accessor can be used to change the label of a sensor. However, be
+    /// aware that the API is not thread-safe, so multiple threads manipulating
+    /// the descriptor will corrupt the data. The sensor array itself will,
+    /// however, not change the descriptors after it has been created.
+    /// </remarks>
+    /// <returns>The description of the first sensor. The callee remains owner
+    /// of the memory.</returns>
+    _Ret_maybenull_ sensor_description *begin(void) noexcept;
+
+    /// <summary>
+    /// Answer a pointer to the description of the first sensor.
+    /// </summary>
+    /// <returns>The description of the first sensor. The callee remains owner
+    /// of the memory.</returns>
+    inline _Ret_maybenull_ const sensor_description *cbegin(void) noexcept {
+        return this->begin();
+    }
+
+    /// <summary>
+    /// Answer a pointer beyond the description of the last sensor.
+    /// </summary>
+    /// <returns>The end of the sensor descriptions.</returns>
+    inline _Ret_maybenull_ const sensor_description *cend(void) const noexcept {
+        return this->end();
+    }
 
     /// <summary>
     /// Answer the descriptors for all sensors that are active in the array.
@@ -146,6 +177,12 @@ public:
     /// </summary>
     /// <returns>The end of the sensor descriptions.</returns>
     _Ret_maybenull_ const sensor_description *end(void) const noexcept;
+
+    /// <summary>
+    /// Answer a pointer beyond the description of the last sensor.
+    /// </summary>
+    /// <returns>The end of the sensor descriptions.</returns>
+    _Ret_maybenull_ sensor_description *end(void) noexcept;
 
     /// <summary>
     /// Starts sampling all sensors in the array.

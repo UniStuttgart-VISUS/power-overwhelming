@@ -54,6 +54,11 @@ enum class sensor_type : std::uint32_t {
     gpu = 0x00000008,
 
     /// <summary>
+    /// The sensor measures the memory power draw.
+    /// </summary>
+    memory = 0x00000010,
+
+    /// <summary>
     /// The sensor provides power readings.
     /// </summary>
     power = 0x00010000,

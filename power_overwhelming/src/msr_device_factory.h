@@ -25,7 +25,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <remarks>
 /// <para>The factory is thread-safe.</para>
 /// </remarks>
-class msr_device_factory final {
+class PWROWG_TEST_API msr_device_factory final {
 
 public:
 

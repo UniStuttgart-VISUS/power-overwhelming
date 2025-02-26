@@ -4,20 +4,206 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#if false
 #include "msr_sensor.h"
 
 #include <cassert>
+#include <stdexcept>
 
+#include "visus/pwrowg/cpu_affinity.h"
+#include "visus/pwrowg/cpu_info.h"
 #include "visus/pwrowg/for_each_rapl_domain.h"
 
 #include "msr_magic.h"
 #include "msr_sensor_impl.h"
+#include "sensor_description_builder.h"
+#include "sensor_utilities.h"
+
+
+PWROWG_DETAIL_NAMESPACE_BEGIN
+
+/// <summary>
+/// The type of a lookup table mapping RAPL domains to their location in
+/// the MSR device file, which can also be used to find out whether a
+/// RAPL domain is supported for a CPU vendor.
+/// </summary>
+typedef std::map<cpu_vendor, std::map<rapl_domain, msr_magic_config>>
+rapl_domain_configs_type;
+
+/// <summary>
+/// Build a lookup table for the locations of the energy samples for the given
+/// combination of CPU vendor and RAPL domain.
+/// </summary>
+static const rapl_domain_configs_type domain_configs = {
+    {
+        cpu_vendor::amd,
+        {
+            make_energy_magic_config(cpu_vendor::amd,
+                rapl_domain::package,
+                msr_offsets::amd::package_energy_status),
+            make_energy_magic_config(cpu_vendor::amd,
+                rapl_domain::pp0,
+                msr_offsets::amd::pp0_energy_status)
+        }
+    },
+
+    {
+        cpu_vendor::intel,
+        {
+            make_energy_magic_config(cpu_vendor::intel,
+                rapl_domain::dram,
+                msr_offsets::intel::dram_energy_status),
+            make_energy_magic_config(cpu_vendor::intel,
+                rapl_domain::package,
+                msr_offsets::intel::package_energy_status),
+            make_energy_magic_config(cpu_vendor::intel,
+                rapl_domain::pp0,
+                msr_offsets::intel::pp0_energy_status),
+            make_energy_magic_config(cpu_vendor::intel,
+                rapl_domain::pp1,
+                msr_offsets::intel::pp1_energy_status),
+        }
+    },
+};
+
+
+/// <summary>
+/// Determine the unit divisor for the given configuration.
+/// </summary>
+static float divisor(_In_ const msr_device& device,
+        _In_ const msr_magic_config& config) {
+    auto divisor = device.read(config.unit_location);
+    divisor = (divisor & config.unit_mask) >> config.unit_offset;
+    return static_cast<float>(1 << divisor);
+}
+
+PWROWG_DETAIL_NAMESPACE_END
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions
+ */
+std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
+        _In_ std::size_t cnt,
+        _In_ const configuration_type& config) {
+    sensor_description_builder builder;
+    std::size_t retval = 0;
+    bool succeeded = true;
+
+    for (core_type c = 0; succeeded; ++c) {
+        try {
+            // Before doing anything else, we need to find out the CPU vendor
+            // for being able to decide what the offset of the RAPL domain is
+            // (and where the divisor for the energy unit is located). In order
+            // to make sure that we read the CPUID of the correct socket, we set
+            // the thread affinity to the core requested by the user. If this
+            // fails, the core does not exist, so we do not need to continue
+            // anyway.
+            thread_affinity_scope affinity_scope(c);
+
+            const auto v = get_cpu_vendor();
+            builder.with_vendor(to_string(v))
+                .with_name(L"%s (MSR)", to_string(v));
+
+            auto vit = domain_configs.find(v);
+            if (vit == domain_configs.end()) {
+                // We do not have MSR addresses for the CPU vendor.
+                continue;
+            }
+
+            // Test-create the device file to find out whether it is supported.
+            auto dev = msr_device(msr_device::path(c));
+
+            // Emit descriptions for all RAPL supported RAPL domains.
+            for (auto& d : vit->second) {
+                if (d.second.is_supported && !d.second.is_supported(c)) {
+                    // The specified RAPL domain has specifically been marked as
+                    // unsupported for the given core.
+                    continue;
+                }
+
+                //d.second.
+            }
+
+        } catch (std::system_error) {
+            // If creating a device for core 'c' causes an std::system_error, we
+            // have reached the last core and leave the loop. Papa Schlumpf
+            // would not approve this use of exceptions for control flow, but it
+            // is the simplest way to implement this without duplicating code.
+            succeeded = false;
+        }
+    }
+
+    return retval;
+}
+
+//
+///*
+// * PWROWG_DETAIL_NAMESPACE::msr_sensor::offset
+// */
+//std::pair<std::streamoff, float> PWROWG_DETAIL_NAMESPACE::msr_sensor::offset(
+//        _In_ const msr_device::core_type core,
+//        _In_ const rapl_domain domain,
+//        _In_opt_ const msr_magic_config *config_override) {
+//    // Before doing anything else, we need to find out the CPU vendor for being
+//    // able to decide what the offset of the RAPL domain is (and where the
+//    // divisor for the energy unit is located). In order to make sure that we
+//    // read the CPUID of the correct socket, we set the thread affinity to the
+//    // core requested by the user. If this fails, the core does not exist, so we
+//    // do not need to continue anyway.
+//    thread_affinity_scope affinity_scope(core);
+//
+//    const auto vendor = get_cpu_vendor();
+//    if (vendor == cpu_vendor::unknown) {
+//        throw std::runtime_error("The vendor of the CPU could not be "
+//            "determined, which is vital for initialising the RAPL domain "
+//            "information correctly.");
+//    }
+//
+//    // This is the configuration we will use to determine the offsets. Assign it
+//    // either from user input or from our hardcoded magic tables.
+//    msr_magic_config config;
+//
+//    if (config_override != nullptr) {
+//        config = *config_override;
+//
+//    } else {
+//        auto vit = domain_configs.find(vendor);
+//        if (vit == domain_configs.end()) {
+//            throw std::runtime_error("The MSR sensor is not supported for the "
+//                "CPU of this machine.");
+//        }
+//
+//        auto dit = vit->second.find(domain);
+//        if (dit == vit->second.end()) {
+//            throw std::invalid_argument("The specified RAPL domain is not "
+//                "supported for the specified CPU core.");
+//        }
+//
+//        if (dit->second.is_supported && !dit->second.is_supported(core)) {
+//            throw std::invalid_argument("The specified RAPL domain is not "
+//                "supported for the specified CPU core.");
+//        }
+//
+//        config = dit->second;
+//    }
+//
+//    // Open the MSR device file or get access to an already open instance for
+//    // the same CPU core. We need this to read the divisor.
+//    auto device = msr_device_factory::create(core);
+//    auto divisor = device->read(config.unit_location);
+//    divisor = (divisor & config.unit_mask) >> config.unit_offset;
+//    divisor = 1 << divisor;
+//
+//    return std::make_pair(config.data_location, static_cast<float>(divisor));
+//}
+
+
+#if false
+/*
  * visus::power_overwhelming::msr_sensor::force_create
  */
+
 visus::power_overwhelming::msr_sensor
 visus::power_overwhelming::msr_sensor::force_create(
         _In_ const core_type core,
@@ -39,61 +225,6 @@ visus::power_overwhelming::msr_sensor::force_create(
 
     assert(retval._impl != nullptr);
     retval._impl->set(core, domain, &config);
-    return retval;
-}
-
-
-/*
- * visus::power_overwhelming::msr_sensor::for_all
- */
-std::size_t visus::power_overwhelming::msr_sensor::for_all(
-        _Out_writes_opt_(cnt_sensors) msr_sensor *out_sensors,
-        _In_ const std::size_t cnt_sensors,
-        _In_ const bool consider_topology) {
-    std::size_t retval = 0;
-    bool succeeded = true;
-
-    for (core_type c = 0; succeeded; ++c) {
-        try {
-            // Test-create the device file to find out whether the core exists.
-            auto dev = detail::msr_device_factory::create(c);
-            if (dev == nullptr) {
-                throw std::logic_error("An invalid MSR device was created by "
-                    "the msr_device_factory, which should never happen.");
-            }
-
-            // Now that we know that the core exists, try creating sensors for
-            // all RAPL domains.
-            for_each_rapl_domain([&](const rapl_domain domain) {
-                try {
-                    msr_sensor sensor;
-                    assert(sensor._impl != nullptr);
-                    sensor._impl->set(c, domain, nullptr);
-
-                    if (retval < cnt_sensors) {
-                        out_sensors[retval] = std::move(sensor);
-                    }
-
-                    ++retval;
-                } catch (...) {
-                    // Not being able to create a sensor for a specific RAPL
-                    // domain does not constitute a fatall error. The RAPL
-                    // domain just might not be supported for the CPU, so we
-                    // continue enumerating in this case.
-                }
-
-                return true;
-            });
-
-        } catch (std::system_error) {
-            // If creating a device for core 'c' causes an std::system_error, we
-            // have reached the last core and leave the loop. Papa Schlumpf
-            // would not approve this use of exceptions for control flow, but it
-            // is the simplest way to implement this without duplicating code.
-            succeeded = false;
-        }
-    }
-
     return retval;
 }
 
@@ -238,5 +369,4 @@ visus::power_overwhelming::msr_sensor::sample_sync(void) const {
     assert(this->_impl);
     return this->_impl->sample();
 }
-
 #endif

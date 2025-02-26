@@ -9,9 +9,15 @@
 #pragma once
 
 #include <ios>
+#include <list>
+#include <utility>
 
+#include "visus/pwrowg/msr_configuration.h"
 #include "visus/pwrowg/rapl_domain.h"
 #include "visus/pwrowg/rapl_quantity.h"
+#include "visus/pwrowg/sensor_description.h"
+
+#include "msr_device.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -25,14 +31,46 @@ class msr_sensor final {
 public:
 
     /// <summary>
-    /// The type of the raw samples read from the registers.
+    /// The type of sensor class configuration used by this sensor.
     /// </summary>
-    typedef std::uint64_t raw_sample_type;
+    typedef msr_configuration configuration_type;
 
     /// <summary>
     /// The type used to index CPU cores.
     /// </summary>
-    typedef std::uint32_t core_type;
+    typedef msr_device::core_type core_type;
+
+    /// <summary>
+    /// The type of a list of sensors of this type.
+    /// </summary>
+    typedef std::list<msr_sensor> list_type;
+
+    /// <summary>
+    /// The type of the raw samples read from the registers.
+    /// </summary>
+    typedef msr_device::sample_type raw_sample_type;
+
+    /// <summary>
+    /// Create descriptions for all supported MSR sensors in the system.
+    /// </summary>
+    /// <remarks>
+    /// <para>It is safe to call this method on systems that do not support
+    /// reading RAPL MSRs. No descriptions are returned in this case.
+    /// </para>
+    /// </remarks>
+    /// <param name="config">The global sensor configuration which might affect
+    /// which sensors can be enumerated.</param>
+    /// <returns>The number of available sensors, independently from the fact
+    /// whether all of them have been returned.</returns>
+    static std::size_t descriptions(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
+        _In_ std::size_t cnt,
+        _In_ const configuration_type& config);
+
+
+private:
+
+    msr_device _device;
 
 #if false
     /// <summary>

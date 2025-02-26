@@ -105,6 +105,16 @@ PWROWG_NAMESPACE::sensor_array::begin(void) const noexcept {
 
 
 /*
+ * PWROWG_NAMESPACE::sensor_array::begin
+ */
+_Ret_maybenull_ PWROWG_NAMESPACE::sensor_description *
+PWROWG_NAMESPACE::sensor_array::begin(void) noexcept {
+    volatile auto impl = this->_impl;  // sic!
+    return (impl != nullptr) ? impl->descriptions.data() : nullptr;
+}
+
+
+/*
  * PWROWG_NAMESPACE::sensor_array::descriptions
  */
 std::size_t PWROWG_NAMESPACE::sensor_array::descriptions(
@@ -132,6 +142,18 @@ std::size_t PWROWG_NAMESPACE::sensor_array::descriptions(
  */
 _Ret_maybenull_ const PWROWG_NAMESPACE::sensor_description *
 PWROWG_NAMESPACE::sensor_array::end(void) const noexcept {
+    volatile auto impl = this->_impl;  // sic!
+    return (impl != nullptr)
+        ? impl->descriptions.data() + impl->descriptions.size()
+        : nullptr;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::sensor_array::end
+ */
+_Ret_maybenull_ PWROWG_NAMESPACE::sensor_description *
+PWROWG_NAMESPACE::sensor_array::end(void) noexcept {
     volatile auto impl = this->_impl;  // sic!
     return (impl != nullptr)
         ? impl->descriptions.data() + impl->descriptions.size()
