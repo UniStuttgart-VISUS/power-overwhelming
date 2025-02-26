@@ -140,7 +140,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
                 }
 
                 builder.with_id(L"MSR/%d/%s", c, to_string(d.first))
-                    .with_name(L"%s %s (MSR)", to_string(vendor), to_string(d.first))
+                    .with_name(L"%s Core %d %s (MSR)", to_string(vendor), c,
+                        to_string(d.first))
                     .with_path(path)
                     .produces(reading_type::floating_point)
                     .measured_in(reading_unit::watt)
@@ -245,7 +246,7 @@ void PWROWG_DETAIL_NAMESPACE::msr_sensor::sample(
     assert(callback != nullptr);
 
     std::vector<PWROWG_NAMESPACE::sample> samples;
-    samples.resize(this->_registers.size());
+    samples.reserve(this->_registers.size());
 
     for (decltype(this->_index) i = 0; i < this->_registers.size(); ++i) {
         const auto& r = this->_registers[i];

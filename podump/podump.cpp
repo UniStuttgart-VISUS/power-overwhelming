@@ -76,9 +76,10 @@ int _tmain(const int argc, const TCHAR **argv) {
                     const sensor_description *descs,
                     void *) {
                 for (std::size_t i = 0; i < n; ++i) {
-                    std::cout << s[i].source << "/"
-                        << convert_string<char>(descs[s[i].source].id()) << "@"
-                        << s[i].timestamp << ": "
+                    auto desc = descs[s[i].source];
+                    std::wcout << s[i].source << L"/"
+                        << desc.id() << L" (" << desc.name() << L")"
+                        << L" @" << s[i].timestamp << L": "
                         << s->reading.floating_point << std::endl;
                 }
             });
