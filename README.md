@@ -153,7 +153,7 @@ The sensor class must fulfill two requirements:
 The default constructor of the configuration type should assign the safest possible default values such that a sensor will most likely work if it receives an unmodified instance-
 
 ### The `descriptions` methods
-A sensor must return descriptions for all kinds of data it can produce on a system via a method 
+A sensor must return descriptions for all kinds of data it can produce on a system via a method
 ```c++
 static std::size_t descriptions(sensor_description *dst, std::size_t cnt, configuration_type& config);
 ```
@@ -163,13 +163,16 @@ static std::size_t descriptions(sensor_description *dst, std::size_t cnt, config
 | `cnt`     | The number of elements that can be written to `dst`. |
 | `config`  | The configuration object for the sensor class after it has been modified by the user. |
 
-The method must always return the number of sensors that would have been written if `dst` was unbounded. This way, callers can first measure the required buffer size using `descriptions(nulltpr, 0, config)`, then allocate the buffer and afterwards retrieve the data.
+> [!IMPORTANT]
+> The method must always return the number of sensors that would have been written if `dst` was unbounded.
+
+This way, callers can first measure the required buffer size using `descriptions(nulltpr, 0, config)`, then allocate the buffer and afterwards retrieve the data.
 
 Sensors that rely on dynamic discovery of devices, for instance via USB enumeration, should make best efforts to report the required buffer size correctly and return as many sensors as possible if `dst` is non-`nullptr`. Consider the following scenario where `cnt_prev` has been returned in the call for measuring the buffer and is now passed for the `cnt` parameter, and `cnt_cur` is the number of sensors available when actually retrieving the data and the return value of the method. The expected behaviour is:
 
-* If ```cnt_cur < cnt_prev```: The method writes  `cnt_cur` descriptions to `dst` and returns `cnt_cur`.
+* If ```cnt_cur < cnt_prev``` (A sensor has been detached between the calls): The method writes  `cnt_cur` descriptions to `dst` and returns `cnt_cur`.
 * If ```cnt_cur == cnt_prev```: The method writes `cnt_cur` descriptions to `dst` and returns `cnt_cur`.
-* If ```cnt_cur > cnt_prev```: The method writes `cnt_prev` descriptions to `dst` and returns `cnt_cur`.
+* If ```cnt_cur > cnt_prev``` (A sensor has been attached between the calls): The method writes `cnt_prev` descriptions to `dst` and returns `cnt_cur`.
 
 The [sensor_descriptions](power_overwhelming/include/visus/pwrowg/sensor_description.h) is mostly a read-only class. In order to fill it, sensors must use a [sensor_description_builder](power_overwhelming/src/sensor_description_builder.h). Sensors must fill all properties of the description class except for the user-defined label, which can be modified later.
 
@@ -200,11 +203,23 @@ for (std::size_t i = 0; i < cnt_sensors; ++i) {
 ```
 
 ### The `from_descriptions` method
-Sensors must be able to filter out their `sensor_description`s from a list of descriptions and create new instance from these descriptions. The method for that has the following signature:
+Sensors must be able to filter out their `sensor_description`s from a list of descriptions and create new instance from these descriptions. The method for that has the signature
 ```c++
 template<class TInput>
-static TInput from_descriptions(_In_ list_type& dst, _In_ sample::source_type index, _In_ const TInput begin, _In_ const TInput end, _In_ const sensor_array_impl *owner, _In_ const configuration_type& config);
+static TInput from_descriptions(list_type& dst, sample::source_type index, const TInput begin, const TInput end, const sensor_array_impl *owner, const configuration_type& config);
 ```
+| Parameter | Description |
+| --------- | ----------- |
+| `TInput`  | An iterator over `sensor_description`s. |
+| `dst`     | A reference to the container defined as `list_type` by the sensor. The method adds its sensor instances to this container. |
+| `index`   | The index to be assigned to the first sensor being returned to `dst`. |
+| `begin`   | The begin of the range of `sensor_description`s. |
+| `end`     | The end of the range of `sensor_description`s. |
+| `owner`   | The sensor array that is creating the sensors. It is guaranteed to exist as long as the sensors it creates. |
+| `config`  | The configuration object for the sensor class after it has been modified by the user. |
+
+> [!WARNING]
+> Do not include `sensor_array_impl.h` in your header as this would cause a cyclic dependency! `sensor_array_impl` must be forward declared, for instance by including `sensor_utilities.h`.
 
 ### The `sample` method
 
