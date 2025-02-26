@@ -142,7 +142,7 @@ A sensor class must have the following `public` members:
 ### The `configuration_type`
 The `configuration_type` is a `typedef` for a [public API](power_overwhelming/include/visus/pwrowg/) that allows the users to influence the behaviour of your sensors. Your configuration class can also be empty if there is nothing to configure, but it must exist and it must be unique. Typically, the configuration class is named with the suffix "_configuration". For the above-mentioned toaster example, it would be called `toaster_configuration`.
 
-The sensor class must fulfill two requirements:
+The sensor class must fulfill the following requirements:
 * It must derive from [`sensor_configuration`](power_overwhelming/include/visus/pwrowg/sensor_configuration.h).
 * It must have a member `static const guid id`, which is a unique GUID for your sensor.
 * It must be copyable.
