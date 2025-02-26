@@ -116,7 +116,7 @@ sensors.stop();
 ## Extending the library
 The main motivation for modifying the library is adding additional sensors. The new design of the API directly changes how sensors are implemented and most importantly drastically reduces the amount of code typically required to implement a sensor.
 
-### What's new
+### What's new?
 The main changes when implementing a sensor are
 * Sensors are now fully opaque to the user of the library. There is no need for using the [PIMPL pattern](https://learn.microsoft.com/en-us/cpp/cpp/pimpl-for-compile-time-encapsulation-modern-cpp) anymore. You can use all template classes you desire when implementing your sensor.
 * A sensor is no longer a source of a single type of data, but can produce multiple data streams. For instance, the ADL sensor for AMD GPUs wraps a single GPU and produces all data we can get from it. This way, handles and other resources required to produce different data from the same origin can be easily shared.
