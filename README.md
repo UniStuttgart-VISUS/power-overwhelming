@@ -202,6 +202,17 @@ for (std::size_t i = 0; i < cnt_sensors; ++i) {
 }
 ```
 
+The private data you pass to the description is type-erased in the public interface. It is your responsibility to remember the type you stored there. You can retrieve the private data using the `sensor_description_builder::private_data` method like this:
+```c++
+auto pd = sensor_description_builder<my_private_data>(desc);
+```
+
+You can use any data structure as your private data as long as it is copyable. You can use the `with_new_private_data` template to in-place construct (emplace) a new instance like this:
+```c++
+builder.with_new_private_data<my_private_data>(/* Parameters for the constructor of my_private_data. */);
+```
+
+
 ### The `from_descriptions` method
 Sensors must be able to filter out their `sensor_description`s from a list of descriptions and create new instance from these descriptions. The method for that has the signature
 ```c++
@@ -220,6 +231,14 @@ static TInput from_descriptions(list_type& dst, sample::source_type index, const
 
 > [!WARNING]
 > Do not include `sensor_array_impl.h` in your header as this would cause a cyclic dependency! `sensor_array_impl` must be forward declared, for instance by including `sensor_utilities.h`.
+
+The `from_descriptions` method is expected to perform the following tasks:
+1. Sort the range [`begin`, `end`[ such that all `sensor_description`s for the sensor type are at the begin of the range. You can use any method you want to achieve this, but the recommended way of doing this using the `move_front_if` function from `sensor_utilities.h`.
+1. Create a sensor for each description in the range of compatible `sensor_description`s. Note that you are free to combine multiple `sensor_description`s into one sensor, so the number of sensors created may be less than the number of compatible descriptions. The sensor must have an index for each `sensor_description` it implements. The range of indices must start at `index`.
+1. Return the iterator past the range of `sensor_description`s for the sensor type (the remainder of [`begin`, `end`[ that has not been processed. This is the value returned by `move_front_if`.
+
+> [!CAUTION]
+> You must assign all indices within [`index`, `index` + number of compatible descriptions[ in the order the compatible descriptions are when the method exits. Failure to do so will cause output data to be corrupted, because the semantics of the samples is solely determined by the index of the description in the output array.
 
 ### The `sample` method
 There are two possible signatures for the `sample` method, depending on wether the sensor is sampled synchronously or asynchronously. The synchronous variant looks like
