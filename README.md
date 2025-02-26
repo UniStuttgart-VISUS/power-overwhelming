@@ -185,7 +185,9 @@ builder.with_type(/* Describe what the sensor measures using a combination 'sens
 std::size_t retval = 0;
 for (std::size_t i = 0; i < cnt_sensors; ++i) {
     // Adjust builder as necessary, it is reusable and will create a new
-    // instance every time.
+    // instance every time. Properties that are unchanged between the calls
+    // to 'build' will be the same for each instance, ie the builder does
+    // not reset them to their default value.
 
     if (retval++ < cnt) {
         dst[i] = builder.build();
