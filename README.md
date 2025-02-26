@@ -232,6 +232,7 @@ void sample(const sensor_array_callback callback, const sensor_description *sens
 | `sensors` | The list of sensor descriptions that must be forwarded to the `callback`. |
 | `context` | The user-defined context pointer that must be forwarded to the `callback`. |
 
+The asynchronous variant has the following signature:
 ```c++
 void sample(const bool enable);
 ```
