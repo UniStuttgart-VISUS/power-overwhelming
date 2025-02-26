@@ -141,7 +141,7 @@ typedef std::pair<rapl_domain, msr_magic_config> msr_magic_config_entry;
 /// <param name="domain">The RAPL domain to be tested.</param>
 /// <returns><c>true</c> if the core has a RAPL MSRs for the specified
 /// domain.</returns>
-extern POWER_OVERWHELMING_API bool is_rapl_energy_supported(
+extern PWROWG_TEST_API bool is_rapl_energy_supported(
     _In_ const msr_sensor::core_type core, _In_ const rapl_domain domain);
 
 /// <summary>
@@ -149,7 +149,7 @@ extern POWER_OVERWHELMING_API bool is_rapl_energy_supported(
 /// vendor and the energy unit and wraps it into a pair for the initialiser
 /// of a lookup table.
 /// </summary>
-extern msr_magic_config_entry make_energy_magic_config(
+extern PWROWG_TEST_API msr_magic_config_entry make_energy_magic_config(
     _In_ const cpu_vendor vendor,
     _In_ const rapl_domain domain,
     _In_ const std::streamoff data_location,
@@ -159,7 +159,7 @@ extern msr_magic_config_entry make_energy_magic_config(
 /// Creates a <see cref="msr_magic_config" /> with the built-in check for
 /// whether RAPL MSRs are supported.
 /// </summary>
-inline msr_magic_config_entry make_energy_magic_config(
+inline PWROWG_TEST_API msr_magic_config_entry make_energy_magic_config(
         _In_ const cpu_vendor vendor,
         _In_ const rapl_domain domain,
         _In_ const std::streamoff data_location) {

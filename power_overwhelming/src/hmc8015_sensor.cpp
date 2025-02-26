@@ -371,11 +371,9 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
                     samples.emplace_back(sensor, r);
                 }
 
-                this->_owner->configuration->callback(
+                sensor_array_impl::callback(this->_owner,
                     samples.data(),
-                    samples.size(),
-                    this->_owner->descriptions.data(),
-                    this->_owner->configuration->context);
+                    samples.size());
             }
 
             ++sensor;

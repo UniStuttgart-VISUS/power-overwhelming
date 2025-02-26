@@ -362,12 +362,12 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::current_callback(
     typedef decltype(reading::floating_point) value_type;
     assert(data != nullptr);
     auto that = static_cast<tinkerforge_sensor *>(data);
-    auto config = that->_owner->configuration.get();
-    auto sensors = that->_owner->descriptions.data();
     std::lock_guard<decltype(that->_lock)> l(that->_lock);
     PWROWG_NAMESPACE::sample sample(that->_index_current, 
         static_cast<value_type>(value) / static_cast<value_type>(1000));
-    config->callback(&sample, 1, sensors, config->context);
+    sensor_array_impl::callback(that->_owner)(&sample, 1,
+        sensor_array_impl::raw_descriptions(that->_owner),
+        sensor_array_impl::context(that->_owner));
 }
 
 
@@ -380,12 +380,12 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::power_callback(
     typedef decltype(reading::floating_point) value_type;
     assert(data != nullptr);
     auto that = static_cast<tinkerforge_sensor *>(data);
-    auto config = that->_owner->configuration.get();
-    auto sensors = that->_owner->descriptions.data();
     std::lock_guard<decltype(that->_lock)> l(that->_lock);
     PWROWG_NAMESPACE::sample sample(that->_index_power,
         static_cast<value_type>(value) / static_cast<value_type>(1000));
-    config->callback(&sample, 1, sensors, config->context);
+    sensor_array_impl::callback(that->_owner)(&sample, 1,
+        sensor_array_impl::raw_descriptions(that->_owner),
+        sensor_array_impl::context(that->_owner));
 }
 
 
@@ -400,8 +400,6 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::power_time_callback(
     typedef decltype(reading::floating_point) value_type;
     assert(data != nullptr);
     auto that = static_cast<tinkerforge_sensor *>(data);
-    auto config = that->_owner->configuration.get();
-    auto sensors = that->_owner->descriptions.data();
     std::lock_guard<decltype(that->_lock)> l(that->_lock);
     const auto ts = that->_time_xlate(time, that->_bricklet);
     //auto wall_time = create_timestamp(that->async_sampling.resolution());
@@ -411,7 +409,9 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::power_time_callback(
     //    + L"\r\n").c_str());
     PWROWG_NAMESPACE::sample sample(that->_index_power,
         ts, static_cast<value_type>(value) / static_cast<value_type>(1000));
-    config->callback(&sample, 1, sensors, config->context);
+    sensor_array_impl::callback(that->_owner)(&sample, 1,
+        sensor_array_impl::raw_descriptions(that->_owner),
+        sensor_array_impl::context(that->_owner));
 #else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
     power_callback(value, data);
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
@@ -476,12 +476,12 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::voltage_callback(
     typedef decltype(reading::floating_point) value_type;
     assert(data != nullptr);
     auto that = static_cast<tinkerforge_sensor *>(data);
-    auto config = that->_owner->configuration.get();
-    auto sensors = that->_owner->descriptions.data();
     std::lock_guard<decltype(that->_lock)> l(that->_lock);
     PWROWG_NAMESPACE::sample sample(that->_index_voltage,
         static_cast<value_type>(value) / static_cast<value_type>(1000));
-    config->callback(&sample, 1, sensors, config->context);
+    sensor_array_impl::callback(that->_owner)(&sample, 1,
+        sensor_array_impl::raw_descriptions(that->_owner),
+        sensor_array_impl::context(that->_owner));
 }
 
 

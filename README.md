@@ -254,6 +254,12 @@ void sample(const sensor_array_callback callback, const sensor_description *sens
 | `sensors` | The list of sensor descriptions that must be forwarded to the `callback`. |
 | `context` | The user-defined context pointer that must be forwarded to the `callback`. |
 
+> [!CAUTION]
+> Sensors should not assume that the callback and the context pointer never change. The user can switch these parameters when restarting an array. If the data are cached locally, the cache must be invalidated whenever the sensor is started.
+
+> [!TIP]
+> You can use the `sensor_array_impl::callback` convenience method to invoke the callback given you have stored the `snesor_array_impl` owning the sensor.
+
 The asynchronous variant has the following signature:
 ```c++
 void sample(const bool enable);

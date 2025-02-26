@@ -157,6 +157,22 @@ public:
     void start(void);
 
     /// <summary>
+    /// Reconfigures the array to deliver data to <paramref name="callback" />
+    /// and starts it.
+    /// </summary>
+    /// <param name="callback">The new callback to deliver data to.</param>
+    /// <param name="context">The new context pointer passed to the
+    /// <paramref name="callback" />.</param>
+    /// <exception cref="std::invalid_argument">If the
+    /// <paramref name="callback" /> is invalid.</exception>
+    /// <exception cref="std::runtime_error">If the object has been invalidated
+    /// by a move operation.</exception>
+    /// <exception cref="std::logic_error">If the sensor array was already
+    /// running.</exception>
+    void start(_In_ const sensor_array_callback callback,
+        _In_opt_ void *context);
+
+    /// <summary>
     /// Stops all sensors and blocks until all asynchronous sampling has ended.
     /// </summary>
     void stop(void);
@@ -227,6 +243,11 @@ private:
     static void sample(_In_ detail::sensor_array_impl *impl,
         _In_ const std::size_t offset,
         _In_ const std::size_t limit);
+
+    /// <summary>
+    /// Performs the actual startup without changing the state.
+    /// </summary>
+    static void start(_In_ detail::sensor_array_impl *impl);
 
     _Ret_valid_ detail::sensor_array_impl *check_not_disposed(void);
 

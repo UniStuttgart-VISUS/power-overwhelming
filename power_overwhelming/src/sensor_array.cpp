@@ -143,54 +143,28 @@ PWROWG_NAMESPACE::sensor_array::end(void) const noexcept {
  * PWROWG_NAMESPACE::sensor_array::start
  */
 void PWROWG_NAMESPACE::sensor_array::start(void) {
-    using std::chrono::duration_cast;
-    typedef PWROWG_NAMESPACE::sample sample_type;
-
     volatile auto impl = this->check_not_disposed();
-
     impl->state.begin_start();
+    start(impl);
+    impl->state.end_start();
+}
 
-    // Start the asynchronous sensors and get samples for synchronous ones.
-    impl->samplers.clear();
-    detail::sensor_registry::sample(std::back_inserter(impl->samplers),
-        impl->sensors,
-        true);
 
-    // Start sampler threads for the synchronous sensors.
-    {
-        std::size_t first = 0;
-        std::chrono::nanoseconds sum(0);
-
-        for (std::size_t i = 0; i < impl->samplers.size(); ++i) {
-            const auto sampler = impl->samplers[i];
-
-            // Note: it is sufficient to sample only once at this point, because
-            // if the time to call the sampler is negligible, we can safely group
-            // it with others. The purpose here is finding APIs that are blocking
-            // and would cause others to generate less samples than requested.
-            const auto b = std::chrono::steady_clock::now();
-            sampler(detail::sensor_array_configuration_impl::sample_nothing,
-                nullptr, nullptr);
-            const auto dt = std::chrono::steady_clock::now() - b;
-
-            if ((sum += dt) > impl->configuration->interval) {
-                impl->sampler_threads.emplace_back(sensor_array::sample,
-                    impl,
-                    first,
-                    i + 1 - first);
-                first = i + 1;
-                sum = decltype(sum)::zero();
-            }
-        }
-
-        if (first < impl->samplers.size()) {
-            impl->sampler_threads.emplace_back(sensor_array::sample,
-                impl,
-                first,
-                (std::numeric_limits<std::size_t>::max)());
-        }
+/*
+ * PWROWG_NAMESPACE::sensor_array::start
+ */
+void PWROWG_NAMESPACE::sensor_array::start(
+        _In_ const sensor_array_callback callback,
+        _In_opt_ void *context) {
+    if (callback == nullptr) {
+        throw std::invalid_argument("A valid callback must be provided.");
     }
 
+    volatile auto impl = this->check_not_disposed();
+    impl->state.begin_start();
+    impl->configuration->callback = callback;
+    impl->configuration->context = context;
+    start(impl);
     impl->state.end_start();
 }
 
@@ -302,6 +276,57 @@ void PWROWG_NAMESPACE::sensor_array::sample(
         }
 
         std::this_thread::sleep_until(then);
+    }
+}
+
+
+/*
+ * PWROWG_NAMESPACE::sensor_array::start
+ */
+void PWROWG_NAMESPACE::sensor_array::start(
+        _In_ detail::sensor_array_impl *impl) {
+    assert(impl != nullptr);
+    assert(impl->state == detail::sensor_state::value_type::starting);
+
+    // Start the asynchronous sensors and get samples for synchronous ones.
+    impl->samplers.clear();
+    detail::sensor_registry::sample(std::back_inserter(impl->samplers),
+        impl->sensors,
+        true);
+
+    // Start sampler threads for the synchronous sensors.
+    {
+        std::size_t first = 0;
+        std::chrono::nanoseconds sum(0);
+
+        for (std::size_t i = 0; i < impl->samplers.size(); ++i) {
+            const auto sampler = impl->samplers[i];
+
+            // Note: it is sufficient to sample only once at this point, because
+            // if the time to call the sampler is negligible, we can safely group
+            // it with others. The purpose here is finding APIs that are blocking
+            // and would cause others to generate less samples than requested.
+            const auto b = std::chrono::steady_clock::now();
+            sampler(detail::sensor_array_configuration_impl::sample_nothing,
+                nullptr, nullptr);
+            const auto dt = std::chrono::steady_clock::now() - b;
+
+            if ((sum += dt) > impl->configuration->interval) {
+                impl->sampler_threads.emplace_back(sensor_array::sample,
+                    impl,
+                    first,
+                    i + 1 - first);
+                first = i + 1;
+                sum = decltype(sum)::zero();
+            }
+        }
+
+        if (first < impl->samplers.size()) {
+            impl->sampler_threads.emplace_back(sensor_array::sample,
+                impl,
+                first,
+                (std::numeric_limits<std::size_t>::max)());
+        }
     }
 }
 

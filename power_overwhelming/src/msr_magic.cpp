@@ -64,7 +64,7 @@ bool PWROWG_DETAIL_NAMESPACE::is_rapl_energy_supported(
                     case 0x9A:  // Alder Lake L
                     case 0xBE:  // Alder Lake N
                     case 0xB7:  // Raptor Lake
-                    case 0xBA:  // Raptor Lake TPredicate
+                    case 0xBA:  // Raptor Lake P
                     case 0xAC:  // Meteor Lake
                     case 0xAA:  // Meteor Lake L
                         return true;

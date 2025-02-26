@@ -40,6 +40,56 @@ struct sensor_array_impl final {
         sensor_description *, void *context)> sampler_func;
 
     /// <summary>
+    /// Answer the sample callback stored in the given array.
+    /// </summary>
+    /// <param name="impl">The array to check retrieve the callback from.
+    /// </param>
+    /// <returns>The callback stored in the given array.</returns>
+    static inline sensor_array_callback callback(
+            _In_ const sensor_array_impl *impl) {
+        assert(impl != nullptr);
+        assert(impl->configuration != nullptr);
+        return impl->configuration->callback;
+    }
+
+    /// <summary>
+    /// Invokes the sample callback stored in the given array.
+    /// </summary>
+    /// <param name="impl">The sensor array to invoke the callback of.</param>
+    /// <param name="samples">The samples to be delivered.</param>
+    /// <param name="cnt">The number of samples to be delivered.</param>
+    static inline void callback(_In_ const sensor_array_impl *impl,
+            _In_reads_(cnt) const sample *samples,
+            _In_ const std::size_t cnt) {
+        callback(impl)(samples, cnt, raw_descriptions(impl), context(impl));
+    }
+
+    /// <summary>
+    /// Answer the user-defined context pointer stored in the given array.
+    /// </summary>
+    /// <param name="impl">The array to check retrieve the context from.
+    /// </param>
+    /// <returns>The context stored in the given array.</returns>
+    static inline _Ret_maybenull_ void *context(
+            _In_ const sensor_array_impl *impl) {
+        assert(impl != nullptr);
+        assert(impl->configuration != nullptr);
+        return impl->configuration->context;
+    }
+
+    /// <summary>
+    /// Answer the sensor list of the array as a raw pointer.
+    /// </summary>
+    /// <param name="impl">The array to check retrieve the context from.
+    /// </param>
+    /// <returns>The context stored in the given array.</returns>
+    static inline _Ret_maybenull_ const sensor_description *raw_descriptions(
+            _In_ const sensor_array_impl *impl) {
+        assert(impl != nullptr);
+        return impl->descriptions.data();
+    }
+
+    /// <summary>
     /// Holds the configuration of the array, including the sample callback
     /// and the user-defined context passed to it.
     /// </summary>
