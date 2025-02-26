@@ -222,6 +222,25 @@ static TInput from_descriptions(list_type& dst, sample::source_type index, const
 > Do not include `sensor_array_impl.h` in your header as this would cause a cyclic dependency! `sensor_array_impl` must be forward declared, for instance by including `sensor_utilities.h`.
 
 ### The `sample` method
+There are two possible signatures for the `sample` method, depending on wether the sensor is sampled synchronously or asynchronously. The synchronous variant looks like
+```c++
+void sample(const sensor_array_callback callback, const sensor_description *sensors, void *context);
+```
+| Parameter | Description |
+| --------- | ----------- |
+| `callback` | The `sensor_array_callback` the sensor should invoke for any sample it can currently produce. |
+| `sensors` | The list of sensor descriptions that must be forwarded to the `callback`. |
+| `context` | The user-defined context pointer that must be forwarded to the `callback`. |
+
+```c++
+void sample(const bool enable);
+```
+| Parameter | Description |
+| --------- | ----------- |
+| `enable`  | Controls whether asynchronous sampling should be started (`true`) or stopped (`false`). |
+
+> [!IMPORTANT]
+> If the method is called with `false` to stop sampling, it must not return before the last sample of the sensor has been delivered.
 
 ### Registering your sensor
 All sensors are centrally registered at one place, in the [`sensor_registry`](power_overwhelming/src/sensor_registry.h). Just add your class in the `typedef` at the bottom of the file.
