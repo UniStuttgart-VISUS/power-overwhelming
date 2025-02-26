@@ -233,7 +233,7 @@ static TInput from_descriptions(list_type& dst, sample::source_type index, const
 > Do not include `sensor_array_impl.h` in your header as this would cause a cyclic dependency! `sensor_array_impl` must be forward declared, for instance by including `sensor_utilities.h`.
 
 The `from_descriptions` method is expected to perform the following tasks:
-1. Sort the range [`begin`, `end`[ such that all `sensor_description`s for the sensor type are at the begin of the range. You can use any method you want to achieve this, but the recommended way is using the `move_front_if` function from [sensor_utilities.h](power_overwhelming/src/sensor_utilities.h).
+1. Sort the range [`begin`, `end`[ such that all `sensor_description`s for the sensor type are at the begin of the range (range of compatible descriptions). You can use any method you want to achieve this, but the recommended way is using the `move_front_if` function from [sensor_utilities.h](power_overwhelming/src/sensor_utilities.h).
 1. Create a sensor for each description in the range of compatible `sensor_description`s. Note that you are free to combine multiple `sensor_description`s into one sensor, so the number of sensors created may be less than the number of compatible descriptions. The sensor must have an index for each `sensor_description` it implements. The range of indices must start at `index`.
 1. Return the iterator past the range of `sensor_description`s for the sensor type (the remainder of [`begin`, `end`[ that has not been processed. This is the value returned by `move_front_if`.
 
