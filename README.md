@@ -165,7 +165,11 @@ static std::size_t descriptions(sensor_description *dst, std::size_t cnt, config
 
 The method must always return the number of sensors that would have been written if `dst` was unbounded. This way, callers can first measure the required buffer size using `descriptions(nulltpr, 0, config)`, then allocate the buffer and afterwards retrieve the data.
 
-Sensors that rely on dynamic discovery of devices, for instance via USB enumeration, should make best efforts to report the required buffer size correctly. If the situation changes between calls due to hardware being unplugged, the method shall return the maximum possible number of descriptions in the given buffer and discard the remaining ones. In any case, a call to the method made with a valid, non-empty buffer must always return the number of valid elements that have been written to the buffer.
+Sensors that rely on dynamic discovery of devices, for instance via USB enumeration, should make best efforts to report the required buffer size correctly and return as many sensors as possible if `dst` is non-`nullptr`. Consider the following scenario where `cnt_prev` has been returned in the call for measuring the buffer and is now passed for the `cnt` parameter, and `cnt_cur` is the number of sensors available when actually retrieving the data and the return value of the method. The expected behaviour is:
+
+* If ```cnt_cur < cnt_prev```: The method writes  `cnt_cur` descriptions to `dst` and returns `cnt_cur`.
+* If ```cnt_cur == cnt_prev```: The method writes `cnt_cur` descriptions to `dst` and returns `cnt_cur`.
+* If ```cnt_cur > cnt_prev```: The method writes `cnt_prev` descriptions to `dst` and returns `cnt_cur`.
 
 The [sensor_descriptions](power_overwhelming/include/visus/pwrowg/sensor_description.h) is mostly a read-only class. In order to fill it, sensors must use a [sensor_description_builder](power_overwhelming/src/sensor_description_builder.h). Sensors must fill all properties of the description class except for the user-defined label, which can be modified later.
 
