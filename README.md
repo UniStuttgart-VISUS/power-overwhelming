@@ -196,6 +196,11 @@ for (std::size_t i = 0; i < cnt_sensors; ++i) {
 ```
 
 ### The `from_descriptions` method
+Sensors must be able to filter out their `sensor_description`s from a list of descriptions and create new instance from these descriptions. The method for that has the following signature:
+```c++
+template<class TInput>
+static TInput from_descriptions(_In_ list_type& dst, _In_ sample::source_type index, _In_ const TInput begin, _In_ const TInput end, _In_ const sensor_array_impl *owner, _In_ const configuration_type& config);
+```
 
 ### The `sample` method
 
