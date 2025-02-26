@@ -146,19 +146,42 @@ The sensor class must fulfill two requirements:
 * It must derive from [`sensor_configuration`](power_overwhelming/include/visus/pwrowg/sensor_configuration.h).
 * It must have a member `static const guid id`, which is a unique GUID for your sensor.
 * It must be copyable.
+* It must be default-constructible.
 * It must be located in the public namespace. It is strongly recommended to use the `PWROWG_NAMESPACE_BEGIN` and `PWROWG_NAMESPACE_END` macros to ensure proper API versioning.
 * It must not use `template` members, including classes like `std::string`. If you need to store dynamically allocated string, use a [`blob`](power_overwhelming/include/visus/pwrowg/blob.h), manage your memory manually or use the [PIMPL pattern](https://learn.microsoft.com/en-us/cpp/cpp/pimpl-for-compile-time-encapsulation-modern-cpp).
+
+The default constructor of the configuration type should assign the safest possible default values such that a sensor will most likely work if it receives an unmodified instance-
 
 ### The `descriptions` methods
 A sensor must return descriptions for all kinds of data it can produce on a system via a method 
 ```c++
 static std::size_t descriptions(sensor_description *dst, std::size_t cnt, configuration_type& config);
 ```
-The caller provides a buffer `dst` for at most `cnt` descriptions. This buffer may also be `nullptr`, in which case the method shall write nothing, but still return the required number of elements in `dst`. The framework will call the method once `descriptions(nullptr, 0)` to measure the required buffer size and afterwards with the actual buffer and its size.
+| Parameter | Description |
+| --------- | ----------- |
+| `dst`     | A caller-provided buffer for at most `cnt` sensor descriptions. This buffer can be `nullptr`, in which case nothing shall be written to it. |
+| `cnt`     | The number of elements that can be written to `dst`. |
+| `config`  | The configuration object for the sensor class after it has been modified by the user. |
 
-Sensors that rely on dynamic discovery of devices, for instance via USB enumeration, should make best efforts to report the required buffer size. If the situation changes between calls due to hardware being unplugged, the method shall return the maximum possible number of sensors in the given buffer and discard the remaining ones. In any case, a call to the method made with a valid, non-empty buffer must always return the number of valid elements that have been written to the buffer.
+The method must always return the number of sensors that would have been written if `dst` was unbounded. This way, callers can first measure the required buffer size using `descriptions(nulltpr, 0, config)`, then allocate the buffer and afterwards retrieve the data.
+
+Sensors that rely on dynamic discovery of devices, for instance via USB enumeration, should make best efforts to report the required buffer size correctly. If the situation changes between calls due to hardware being unplugged, the method shall return the maximum possible number of descriptions in the given buffer and discard the remaining ones. In any case, a call to the method made with a valid, non-empty buffer must always return the number of valid elements that have been written to the buffer.
 
 The [sensor_descriptions](power_overwhelming/include/visus/pwrowg/sensor_description.h) is mostly a read-only class. In order to fill it, sensors must use a [sensor_description_builder](power_overwhelming/src/sensor_description_builder.h). Sensors must fill all properties of the description class except for the user-defined label, which can be modified later.
+
+```c++
+sensor_description_builder builder;
+
+builder.with_type(/* Describe what the sensor measures using a combination 'sensor_type's. */)
+    .with_editable_type(/* If your sensor is not hardwired to something, set the bits of the 'sensor_type' that the user may change. */)
+    .with_vendor(/* The name of the manufacturer of the sensor, which may be used for filtering. */)
+    .with_id(/* A unique ID for the sensor, typically in the form "<sensor type>/<hardware id>/<quantity>". */)
+    .with_name(/* A human-readable name for creating charts etc. This does not have to be unique, but ideally is. */)
+    .with_path(/* A string that allows you to identify the hardware, e.g. a device path, a hardware ID, etc. */)
+    .with_private_data(/* Additional information you may need to instantiate a sensor for the description. */)
+    .produces(/* The data type the sensor writes to a 'sample'. */)
+    .measured_id(/* If known, the unit the quantity is measured in. */);
+```
 
 ### The `from_descriptions` method
 
