@@ -150,7 +150,7 @@ The sensor class must fulfill the following requirements:
 * It must be located in the public namespace. It is strongly recommended to use the `PWROWG_NAMESPACE_BEGIN` and `PWROWG_NAMESPACE_END` macros to ensure proper API versioning.
 * It must not use `template` members, including classes like `std::string`. If you need to store dynamically allocated string, use a [`blob`](power_overwhelming/include/visus/pwrowg/blob.h), manage your memory manually or use the [PIMPL pattern](https://learn.microsoft.com/en-us/cpp/cpp/pimpl-for-compile-time-encapsulation-modern-cpp).
 
-The default constructor of the configuration type should assign the safest possible default values such that a sensor will most likely work if it receives an unmodified instance-
+The default constructor of the configuration type should assign the safest possible default values such that a sensor will most likely work if it receives an unmodified instance.
 
 ### The `descriptions` methods
 A sensor must return descriptions for all kinds of data it can produce on a system via a method
