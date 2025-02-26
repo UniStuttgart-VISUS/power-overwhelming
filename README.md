@@ -241,7 +241,7 @@ The `from_descriptions` method is expected to perform the following tasks:
 > You must assign all indices within [`index`, `index` + number of compatible descriptions[ in the order the compatible descriptions are when the method exits. Failure to do so will cause output data to be corrupted, because the semantics of the samples is solely determined by the index of the description in the output array.
 
 > [!TIP]
-> It is recommended to provide a predicate in [sensor_filters.h](power_overwhelming/include/visus/pwrowg/sensor_filters.h) for selecting the descriptions of your sensors. This predicate can then passed to `move_front_if` to select the range of compatible descriptions, but it can also help user end user to select specific sensors to be enabled in the sensor array.
+> It is recommended to provide a predicate in [sensor_filters.h](power_overwhelming/include/visus/pwrowg/sensor_filters.h) for selecting the descriptions of your sensors (`is_toaster_sensor` for the aforementioned toaster example). This predicate can then passed to `move_front_if` to select the range of compatible descriptions, but it can also help user end user to select specific sensors to be enabled in the sensor array.
 
 ### The `sample` method
 There are two possible signatures for the `sample` method, depending on wether the sensor is sampled synchronously or asynchronously. The synchronous variant looks like
