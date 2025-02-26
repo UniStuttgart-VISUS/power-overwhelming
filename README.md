@@ -181,6 +181,16 @@ builder.with_type(/* Describe what the sensor measures using a combination 'sens
     .with_private_data(/* Additional information you may need to instantiate a sensor for the description. */)
     .produces(/* The data type the sensor writes to a 'sample'. */)
     .measured_id(/* If known, the unit the quantity is measured in. */);
+
+std::size_t retval = 0;
+for (std::size_t i = 0; i < cnt_sensors; ++i) {
+    // Adjust builder as necessary, it is reusable and will create a new
+    // instance every time.
+
+    if (retval++ < cnt) {
+        dst[i] = builder.build();
+    }
+}
 ```
 
 ### The `from_descriptions` method
