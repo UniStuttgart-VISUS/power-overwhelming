@@ -301,7 +301,7 @@ PWROWG_DETAIL_NAMESPACE::powenetics_sensor::specialise(
         _In_ const selector_type& selector) {
     return builder.with_type(type)
         .with_id(L"Powenetics/%s/%s/%s", port.c_str(), rail, quantity)
-        .with_name("Powenetics %s %s", rail, rail)
+        .with_name(L"Powenetics %s %s", rail, quantity)
         .measured_in(unit)
         .with_private_data(selector);
 }

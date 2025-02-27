@@ -20,7 +20,7 @@ TInput PWROWG_DETAIL_NAMESPACE::powenetics_sensor::from_descriptions(
     assert(owner != nullptr);
 
     // Find out which are the Powenetics sensors.
-    auto retval = move_front_if(begin, end, is_power_sensor);
+    auto retval = move_front_if(begin, end, is_powenetics_sensor);
 #if (defined(DEBUG) || defined(_DEBUG))
     auto _rem = std::distance(begin, retval);
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
