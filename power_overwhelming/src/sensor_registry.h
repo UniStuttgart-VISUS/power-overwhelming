@@ -27,6 +27,7 @@
 #include "hmc8015_sensor.h"
 #include "msr_sensor.h"
 #include "nvml_sensor.h"
+#include "powenetics_sensor.h"
 #include "sensor_array_configuration_impl.h"
 #include "string_functions.h"
 #include "tinkerforge_sensor.h"
@@ -314,6 +315,9 @@ typedef basic_sensor_registry<
     hmc8015_sensor,
     msr_sensor,
     nvml_sensor,
+#if defined(POWER_OVERWHELMING_WITH_POWENETICS)
+    powenetics_sensor,
+#endif /* defined(POWER_OVERWHELMING_WITH_POWENETICS) */
     //rtx_sensor,
     tinkerforge_sensor>
     sensor_registry;

@@ -8,9 +8,9 @@
 #define _PWROWG_COM_ERROR_CATEGORY_H
 #pragma once
 
-#if defined(_WIN32)
 #include <system_error>
 
+#if defined(_WIN32)
 #include <Windows.h>
 
 #include "visus/pwrowg/api.h"
@@ -80,6 +80,17 @@ namespace std {
         return std::error_code(static_cast<int>(e),
             PWROWG_DETAIL_NAMESPACE::com_category());
     }
+}
+
+#else /* defined(_WIN32) */
+
+/// <summary>
+/// Answer the one and only <see cref="com_error_category" />.
+/// </summary>
+/// <returns>The only instance of <see cref="com_error_category" />.
+/// </returns>
+inline PWROWG_TEST_API const std::error_category& com_category(void) noexcept {
+    return std::system_category();
 }
 
 #endif /* defined(_WIN32) */

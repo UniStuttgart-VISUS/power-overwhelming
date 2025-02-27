@@ -103,6 +103,15 @@ bool PWROWG_NAMESPACE::is_nvml_sensor(
 
 
 /*
+ * PWROWG_NAMESPACE::is_powenetics_sensor
+ */
+bool PWROWG_NAMESPACE::is_powenetics_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    return detail::starts_with(desc.id(), L"Powenetics/");
+}
+
+
+/*
  * PWROWG_NAMESPACE::is_power_sensor
  */
 bool PWROWG_NAMESPACE::is_power_sensor(

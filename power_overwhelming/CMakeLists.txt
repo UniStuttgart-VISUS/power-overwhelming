@@ -7,7 +7,7 @@ find_package(VISA QUIET)
 
 # User-configurable options
 option(PWROWG_WithAdl "Build support for the AMD Display Library" ON)
-option(PWROWG_WithBenchlab "Build support for the Benchlab telemetry system" ON)
+option(PWROWG_WithBenchlab "Build support for the Benchlab telemetry system" OFF)
 option(PWROWG_WithNvml "Build support for the NVIDIA Management Library" ON)
 option(PWROWG_WithPowenetics "Build support for Powenetics" ON)
 option(PWROWG_WithTimeSynchronisation "Build support for Cristian's algorithm" OFF)
@@ -32,12 +32,23 @@ add_library(${PROJECT_NAME} SHARED ${PublicHeaderFiles} ${PrivateHeaderFiles} ${
 # Configure the compiler.
 target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_EXPORTS UNICODE _UNICODE)
 
+
 if (PWROWG_WithAdl)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_ADL)
 endif ()
 
+if (PWROWG_WithBenchlab)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_BENCHLAB)
+    target_link_libraries(${PROJECT_NAME} PRIVATE libbenchlab)
+endif ()
+
 if (PWROWG_WithNvml)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_NVML)
+endif ()
+
+if (PWROWG_WithPowenetics)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_POWENETICS)
+    target_link_libraries(${PROJECT_NAME} PRIVATE libpowenetics)
 endif ()
 
 if (PWROWG_WithTimeSynchronisation)
@@ -46,9 +57,8 @@ endif ()
 
 if (PWROWG_WithVisa)
     find_package(VISA REQUIRED)
-    add_definitions("-DPOWER_OVERWHELMING_WITH_VISA")
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_VISA)
     target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
-    target_link_libraries(${PROJECT_NAME})
 endif ()
 
 if (PWROWG_CustomTinkerforgeFirmwareMajor)
@@ -63,6 +73,7 @@ if (PWROWG_CustomTinkerforgeFirmwareMajor)
         target_compile_definitions(${PROJECT_NAME} PRIVATE CUSTOM_TINKERFORGE_FIRMWARE_RV=${PWROWG_CustomTinkerforgeFirmwareRevision})
     endif ()
 endif ()
+
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC

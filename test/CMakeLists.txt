@@ -45,6 +45,12 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     power_overwhelming
     usbpdtesterdriver)
 
+# The test requires access to the Powenetics headers to test the sensor.
+if (PWROWG_WithPowenetics)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_POWENETICS)
+    target_link_libraries(${PROJECT_NAME} PRIVATE libpowenetics)
+endif ()
+
 # The test requires access to the VISA headers to test the instruments.
 if (PWROWG_WithVisa)
     find_package(VISA REQUIRED)

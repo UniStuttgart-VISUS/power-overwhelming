@@ -20,15 +20,15 @@ void query_hmc8015(void) {
 
     try {
         std::vector<hmc8015_instrument> sensors;
-        sensors.resize(hmc8015_sensor::for_all(nullptr, 0));
-        hmc8015_sensor::for_all(sensors.data(), sensors.size(), 10000);
+        sensors.resize(hmc8015_instrument::for_all(nullptr, 0));
+        hmc8015_instrument::for_all(sensors.data(), sensors.size(), 10000);
 
         for (auto& s : sensors) {
             s.display("Die Kraft ist überwältigend!");
             s.synchronise_clock();
             s.log_file("podump.csv", true, true);
-            s.current_range(instrument_range::maximum);
-            s.voltage_range(instrument_range::explicitly, 300);
+            s.current_range(hmc8015_instrument_range::maximum);
+            s.voltage_range(hmc8015_instrument_range::explicitly, 300);
 
             {
                 std::vector<char> f(s.functions(nullptr, 0));
@@ -49,7 +49,7 @@ void query_hmc8015(void) {
             //    log_mode::time_span, 5, now.wYear, now.wMonth,
             //    now.wDay, now.wHour, now.wMinute, now.wSecond + 5);
             s.log_behaviour(std::numeric_limits<float>::lowest(),
-                log_mode::duration);
+                hmc8015_log_mode::duration);
             s.log(true);
             std::wcout << s.logging() << std::endl;
 
@@ -73,12 +73,17 @@ void query_hmc8015(void) {
             std::this_thread::sleep_for(std::chrono::seconds(6));
             s.log(false);
 
-            std::wcout << s.name() << L":" << std::endl;
-            s.default_functions();
-            auto m = s.sample();
-            std::wcout << m.timestamp() << L": " << m.voltage() << " V * "
-                << m.current() << " A = " << m.power() << L" W"
-                << std::endl;
+            std::vector<char> name(1024);
+            name.resize(s.name(nullptr, 0));
+            s.name(name.data(), name.size());
+            std::wcout << name.data() << L":" << std::endl;
+
+            // Not supported on instrument
+            //s.default_functions();
+            //auto m = s.sample();
+            //std::wcout << m.timestamp() << L": " << m.voltage() << " V * "
+            //    << m.current() << " A = " << m.power() << L" W"
+            //    << std::endl;
 
             auto log_data = s.copy_file_from_instrument("podump.csv", true);
             std::string log(log_data.begin(), log_data.end());
@@ -227,16 +232,16 @@ void query_rtx_instrument(void) {
             //    .range(rtx_quantity(5)));
 
             std::cout << "Main " << std::this_thread::get_id() << std::endl;
-            auto event = visus::power_overwhelming::create_event();
+            auto event = visus::pwrowg::create_event();
             i.on_operation_complete([](visa_instrument &i, void *) {
                 std::cout << "OPC in thread #" << std::this_thread::get_id() << std::endl;
             }, &i);
             i.on_operation_complete_ex([&event](visa_instrument& i) {
                 std::cout << "OPC in thread #" << std::this_thread::get_id() << std::endl;
-                visus::power_overwhelming::set_event(event);
+                visus::pwrowg::set_event(event);
             });
             i.operation_complete_async();
-            visus::power_overwhelming::wait_event(event);
+            visus::pwrowg::wait_event(event);
             i.on_operation_complete(nullptr);
 
             i.trigger_position(rtx_quantity(0.0f, "ms"));
@@ -268,7 +273,7 @@ void query_rtx_instrument(void) {
             i.throw_on_system_error();
 
             i.save_state_to_instrument(L"_PODUMP.SET").operation_complete();
-            i.reset(visus::power_overwhelming::rtx_instrument_reset::all);
+            i.reset(visus::pwrowg::rtx_instrument_reset::all);
             i.load_state_from_instrument(L"_PODUMP.SET").operation_complete();
             i.delete_file_from_instrument(L"_PODUMP.SET", L"/INT/SETTINGS");
 
@@ -278,7 +283,7 @@ void query_rtx_instrument(void) {
                 of.open("podump.set", std::ios::binary | std::ios::trunc);
                 of.write(state.as<char>(), state.size());
                 of.close();
-                i.reset(visus::power_overwhelming::rtx_instrument_reset::reset);
+                i.reset(visus::pwrowg::rtx_instrument_reset::reset);
                 i.copy_state_to_instrument(state);
             }
 

@@ -189,6 +189,16 @@ extern POWER_OVERWHELMING_API bool is_nvml_sensor(
 
 /// <summary>
 /// Answer whether the given <see cref="sensor_description" /> describes a
+/// sensor based on the Powenetics v2 PMD by Cybenetics.
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><c>true</c> if the sensor is Powenetics-based, <c>false</c>
+/// otherwise.</returns>
+extern POWER_OVERWHELMING_API bool is_powenetics_sensor(
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes a
 /// sensor measuring power.
 /// </summary>
 /// <param name="desc">The sensor to check.</param>
