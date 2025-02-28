@@ -31,10 +31,10 @@
 /// <param name="argv"></param>
 /// <returns></returns>
 int _tmain(const int argc, const TCHAR **argv) {
-    using namespace visus::power_overwhelming;
+    using namespace visus::pwrowg;
 
     std::wcout << L"rtx_config" << std::endl;
-    std::wcout << L"© 2023 Visualisierungsinstitut der Universität Stuttgart."
+    std::wcout << L"© 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart."
         << std::endl << L"All rights reserved."
         << std::endl << std::endl;
 
