@@ -338,6 +338,7 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
                 [&func](const std::string& c) {
                     return starts_with(c, func, true);
                 });
+            auto tt = timestamps.begin();
 
             if (it != columns.end()) {
                 auto col = csv.GetColumn<float>(*it);
@@ -345,7 +346,7 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
                 samples.reserve(col.size());
 
                 for (auto r : col) {
-                    samples.emplace_back(sensor, r);
+                    samples.emplace_back(sensor, *tt++, r);
                 }
 
                 sensor_array_impl::callback(this->_owner,
