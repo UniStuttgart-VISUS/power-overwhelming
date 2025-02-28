@@ -26,7 +26,7 @@ SDKs included in the repository are the [AMD Display Library (ADL)](https://gith
 ### Support for Rohde & Schwarz instruments
 The library supports reading Rohde & Schwarz oscilloscopes of the RTB 2000 family and HMC8015 power analysers. In order for this to work, VISA must be installed on the development machine. You can download the drivers from https://www.rohde-schwarz.com/de/driver-pages/fernsteuerung/3-visa-and-tools_231388.html. The VISA installation is automatically detected by CMAKE. If VISA was found `POWER_OVERWHELMING_WITH_VISA` will be defined. Otherwise, VISA will not be supported and using it will fail at runtime.
 
-Only the power analyser is currently ready to use, **support for automating oscilloscopes is work in progress.**
+Only the power analyser is currently ready to use, **support for oscilloscopes as automated sensors is work in progress,** but they can be controlled programmatically to perform automated measurements.
 
 ## Using the library
 In order to sample current, voltage and power samples, create a `sensor_array` for the sensors you are interested in. You can retrieve `sensor_description`s for all available sensors as follows:
