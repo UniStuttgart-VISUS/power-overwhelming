@@ -65,7 +65,7 @@ sensor_array sensors(std::move(config), descs.data(), cnt);
 ```
 
 > [!NOTE]
-> Note that the `sensor_array` takes ownership of the `sensor_array_configuration`. You cannot use it anymore once the array has created from it.
+> Note that the `sensor_array` takes ownership of the `sensor_array_configuration`. You cannot use it anymore once the array has been created from it.
 
 If you want to limit the sensors in your sensor array, you can filter `descs` before creating the array. Alternatively, there is a convenience method that does this for you by means of a unary predicate on the descriptions:
 ```c++
