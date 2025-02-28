@@ -26,17 +26,17 @@ int _tmain(const int argc, const TCHAR **argv) {
     //::_CrtSetBreakAlloc(558);
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
 
-#if true
+#if false
     stable_power_state_scope spss;
 #endif
 
     // Tinkerforge instruments
-#if true
+#if false
     ::print_tinkerforge_display();
 #endif
 
     // Rohde & Schwarz instruments
-#if true
+#if false
 #if true
     ::query_hmc8015();
 #endif
@@ -98,6 +98,14 @@ int _tmain(const int argc, const TCHAR **argv) {
         sensors.start();
         std::this_thread::sleep_for(std::chrono::seconds(5));
         sensors.stop();
+
+        //for (std::size_t i = 0; i < 4; ++i) {
+        //    std::this_thread::sleep_for(std::chrono::seconds(5));
+
+        //    sensors.start();
+        //    std::this_thread::sleep_for(std::chrono::seconds(5));
+        //    sensors.stop();
+        //}
     }
 
     return 0;

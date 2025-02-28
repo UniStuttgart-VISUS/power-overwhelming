@@ -761,9 +761,9 @@ void PWROWG_NAMESPACE::hmc8015_instrument::initialise(void) {
     this->attribute(VI_ATTR_WR_BUF_OPER_MODE, VI_FLUSH_ON_ACCESS);
     this->attribute(VI_ATTR_RD_BUF_OPER_MODE, VI_FLUSH_ON_ACCESS);
 
-    // Lock the system to indicate that it is controlled by the software. As
-    // locking the system is not critical, do not check for system errors here.
-    this->write("SYST:REM\n");
+    //// Lock the system to indicate that it is controlled by the software. As
+    //// locking the system is not critical, do not check for system errors here.
+    //this->write("SYST:REM\n");
 
     // Clear any error that might have been caused by our setup. We do not want
     // to abort just because the display does not look as expected.

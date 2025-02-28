@@ -46,8 +46,8 @@ TInput PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::from_descriptions(
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
         }
 
-        // Make sure that the local interface is locked.
-        instrument->write("SYST:REM\n");
+        //// Make sure that the local interface is locked.
+        //instrument->write("SYST:REM\n");
 
         // Clear the memory if requested, but only now that we actually intend to
         // use the instrument.
@@ -57,6 +57,32 @@ TInput PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::from_descriptions(
 
         // Notify users that a sensor is using the HMC.
         instrument->display("hmc8015_sensor is using the instrument.");
+
+        // Prepare the device.
+        instrument->reset(true, true);
+        instrument->current_range(config.current_range(),
+            config.current_range_value());
+        instrument->voltage_range(config.voltage_range(),
+            config.voltage_range_value());
+
+        // Clamp the sampling interval according to the SCPI Programmer's
+        // Manual p. 43.
+        {
+            using namespace std::chrono;
+            auto interval = duration_cast<duration<float>>(
+                owner->configuration->interval).count();
+            if (interval < 0.1f) {
+                interval = std::numeric_limits<float>::lowest();
+            } else if (interval > 600.0f) {
+                interval = (std::numeric_limits<float>::max)();
+            }
+
+            instrument->integrator_behaviour(hmc8015_integrator_mode::manual);
+            instrument->log_behaviour(interval, hmc8015_log_mode::unlimited);
+        }
+
+        // Enable the requested functions.
+        instrument->custom_functions(functions.data(), functions.size());
 
         // Create the sensor.
         const auto cnt_functions = functions.size();

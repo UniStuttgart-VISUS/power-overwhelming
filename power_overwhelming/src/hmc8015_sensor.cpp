@@ -101,13 +101,6 @@ std::size_t PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::descriptions(
                 auto instrument = std::make_shared<hmc8015_instrument>(
                     std::move(i));
 
-                instrument->reset(true, true);
-                instrument->current_range(config.current_range(),
-                    config.current_range_value());
-                instrument->voltage_range(config.voltage_range(),
-                    config.voltage_range_value());
-                instrument->operation_complete();
-
                 // Determine the unique path of the instrument, which we need to
                 // connect the sensor to and which we need to build the ID.
                 const auto path = instrument->path();
@@ -195,20 +188,6 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
     if (enable) {
         this->_state.begin_start();
 
-        // Clamp the sampling interval according to the SCPI Programmer's
-        // Manual p. 43.
-        auto interval = duration_cast<duration<float>>(
-            this->_owner->configuration->interval).count();
-        if (interval < 0.1f) {
-            interval = std::numeric_limits<float>::lowest();
-        } else if (interval > 600.0f) {
-            interval = (std::numeric_limits<float>::max)();
-        }
-
-        // Enable the requested functions.
-        this->_instrument.custom_functions(this->_functions.data(),
-            this->_functions.size());
-
         // Set the user-defined log file or create one.
         {
             const auto log = this->configuration().log_file();
@@ -276,8 +255,6 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
             }
         }
 
-        this->_instrument.integrator_behaviour(hmc8015_integrator_mode::manual);
-        this->_instrument.log_behaviour(interval, hmc8015_log_mode::unlimited);
         this->_instrument.reset_integrator();
         this->_instrument.operation_complete();
         this->_instrument.start_integrator();
