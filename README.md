@@ -21,12 +21,12 @@ This project provides a library for measuring the power consumption of GPUs (and
 The library is self-contained and most optional external dependencies are in the third_party folder. External dependencies from GitHub are fetched by CMake. Once built, the external dependencies are invisible to the user of the library. However, the required DLLs must be present on the target machine. Configure the project using [CMake](https://cmake.org/) and build with Visual Studio or alike.
 
 ### Sensors included in the repository
-SDKs included in the repository are the [AMD Display Library (ADL)](https://github.com/GPUOpen-LibrariesAndSDKs/display-library), the [NVIDIA Management Library (NVML)](https://developer.nvidia.com/nvidia-management-library-nvml) and support for [Tinkerforge](https://github.com/Tinkerforge) bricks and bricklets. On Windows 11, the [Energy Meter Interface](https://learn.microsoft.com/en-us/windows-hardware/drivers/powermeter/energy-meter-interface) can be used to query the RAPL (Running Average Power Limit Energy Reporting) registers of the system. This sensor might be available on certain Windows 10  installations, but according to a [presentation by the Firefox team](https://fosdem.org/2023/schedule/event/energy_power_profiling_firefox/attachments/slides/5537/export/events/attachments/energy_power_profiling_firefox/slides/5537/FOSDEM_2023_Power_profiling_with_the_Firefox_Profiler.pdf), specialised hardware is required for that. The `msr_sensor` provides access to the RAPL registers on Linux and on Windows systems that run the [pwrowgrapdrv driver](pwrowgrapldrv/README.md).
+SDKs included in the repository are the [AMD Display Library (ADL)](https://github.com/GPUOpen-LibrariesAndSDKs/display-library), the [NVIDIA Management Library (NVML)](https://developer.nvidia.com/nvidia-management-library-nvml), support for [Tinkerforge](https://github.com/Tinkerforge) bricks and bricklets and support of the [Cybenetics Powenetics v2 power measurement device](https://www.cybenetics.com/index.php?option=powenetics) via our own [libpownetics](https://github.com/UniStuttgart-VISUS/libpowenetics/). On Windows 11, the [Energy Meter Interface](https://learn.microsoft.com/en-us/windows-hardware/drivers/powermeter/energy-meter-interface) can be used to query the RAPL (Running Average Power Limit Energy Reporting) registers of the system. This sensor might be available on certain Windows 10  installations, but according to a [presentation by the Firefox team](https://fosdem.org/2023/schedule/event/energy_power_profiling_firefox/attachments/slides/5537/export/events/attachments/energy_power_profiling_firefox/slides/5537/FOSDEM_2023_Power_profiling_with_the_Firefox_Profiler.pdf), specialised hardware is required for that. The `msr_sensor` provides access to the RAPL registers on Linux and on Windows systems that run our own [pwrowgrapldrv driver](pwrowgrapldrv/README.md).
 
 ### Support for Rohde & Schwarz instruments
 The library supports reading Rohde & Schwarz oscilloscopes of the RTB 2000 family and HMC8015 power analysers. In order for this to work, VISA must be installed on the development machine. You can download the drivers from https://www.rohde-schwarz.com/de/driver-pages/fernsteuerung/3-visa-and-tools_231388.html. The VISA installation is automatically detected by CMAKE. If VISA was found `POWER_OVERWHELMING_WITH_VISA` will be defined. Otherwise, VISA will not be supported and using it will fail at runtime.
 
-Only the power analyser is currently ready to use, **support for automating oscilloscopes is work in progress.**
+Only the power analyser is currently ready to use, **support for oscilloscopes as automated sensors is work in progress,** but they can be controlled programmatically to perform automated measurements.
 
 ## Using the library
 In order to sample current, voltage and power samples, create a `sensor_array` for the sensors you are interested in. You can retrieve `sensor_description`s for all available sensors as follows:
@@ -65,7 +65,7 @@ sensor_array sensors(std::move(config), descs.data(), cnt);
 ```
 
 > [!NOTE]
-> Note that the `sensor_array` takes ownership of the `sensor_array_configuration`. You cannot use it anymore once the array has created from it.
+> Note that the `sensor_array` takes ownership of the `sensor_array_configuration`. You cannot use it anymore once the array has been created from it.
 
 If you want to limit the sensors in your sensor array, you can filter `descs` before creating the array. Alternatively, there is a convenience method that does this for you by means of a unary predicate on the descriptions:
 ```c++
@@ -112,6 +112,29 @@ sensors.start();
 // Perform the work you want to benchmark and stop the sensors afterwards.
 sensors.stop();
 ```
+
+> [!NOTE]
+> Filtering the `sensor_description`s before creating the `sensor_array` from them does not prevent the library from trying to enumerate sensors that do not exist on your system. This may cause the initialisation to run into potentially long timeouts.
+
+If you know that you do not have sensors that potentially take a significant time to enumerate (this includes Tinkerforge bricklets, all kinds of VISA devices and other hardware connected via USB), you can tell the sensor array to exclude the whole class of sensors via the `sensor_array_configuration`:
+```c++
+using namespace visus::pwrowg;
+
+sensor_array_configuration config;
+// Exclude all sensors from enumeration that use 'hmc8015_configuration'.
+config.exclude<hmc8015_configuration>();
+// Exclude all sensors from enumeration that use 'powenetics_configuration'.
+config.exclude<powenetics_configuration>();
+// Exclude all sensors from enumeration that use 'tinkerforge_configuration'.
+config.exclude<tinkerforge_configuration>();
+// Exclude all sensors from enumeration that use 'usb_pd_configuration'.
+config.exclude<usb_pd_configuration>();
+
+// Configure behaviour of other sensors here as necessary.
+
+auto sensors = sensor_array::for_all(std::move(config));
+```
+
 
 ## Extending the library
 The main motivation for modifying the library is adding additional sensors. The new design of the API directly changes how sensors are implemented and most importantly drastically reduces the amount of code typically required to implement a sensor.
