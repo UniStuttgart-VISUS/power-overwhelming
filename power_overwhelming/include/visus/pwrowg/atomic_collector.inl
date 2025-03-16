@@ -91,9 +91,9 @@ void PWROWG_NAMESPACE::atomic_collector<TValue, PageSize>::reserve(
             // Erase the previous head from the 'next' pointer to prevent
             // deletion of the list if we release 'head' now.
             head->next = nullptr;
-#if defined(ESS_PROFILE_ATOMIC_COLLECTOR)
+#if defined(PWROWG_PROFILE_ATOMIC_COLLECTOR)
             ++this->_alloc_discarded;
-#endif /* defined(ESS_PROFILE_ATOMIC_COLLECTOR) */
+#endif /* defined(PWROWG_PROFILE_ATOMIC_COLLECTOR) */
         }
     }
 }
