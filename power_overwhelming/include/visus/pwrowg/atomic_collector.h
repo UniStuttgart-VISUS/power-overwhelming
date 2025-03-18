@@ -105,6 +105,7 @@ public:
         assert(page->ready < page->used);
         assert(index < PageSize);
         auto location = page->values() + index;
+        new (location) value_type();
         *location = item;
         page->ready.fetch_add(1);
     }
@@ -120,6 +121,7 @@ public:
         assert(page->ready < page->used);
         assert(index < PageSize);
         auto location = page->values() + index;
+        new (location) value_type();
         *location = std::move(item);
         page->ready.fetch_add(1);
     }

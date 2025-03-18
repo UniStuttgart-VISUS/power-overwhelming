@@ -68,7 +68,7 @@ int _tmain(const int argc, const TCHAR **argv) {
                 c.voltage_range(hmc8015_instrument_range::maximum);
                 c.clear_internal_memory(true);
                 //c.log_file("pdmp");
-                c.log_to_usb(true);
+                c.log_to_usb(false);
             })
             .sample_every(std::chrono::milliseconds(5))
             .deliver_to([](const sample *s,
