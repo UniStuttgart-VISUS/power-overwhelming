@@ -37,7 +37,6 @@ PWROWG_NAMESPACE::collector_result<TValue, PageSize>::page::~page(
     for (auto p = this->next; p != nullptr;) {
         auto q = p->next;
         p->next = nullptr;
-        p->~page();
         delete p;
         p = q;
     }
