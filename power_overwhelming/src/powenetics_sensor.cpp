@@ -38,7 +38,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::powenetics_sensor::descriptions(
         {
             auto len = ports.size();
             auto hr = ::powenetics_probe(ports.data(), &len);
-            if (hr == HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_POWER)) {
+            if (hr == HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER)) {
                 // Increase the buffer size and try again.
                 ports.resize(len);
                 hr = ::powenetics_probe(ports.data(), &len);
