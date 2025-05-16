@@ -57,6 +57,14 @@ public:
     virtual ~marker_configuration(void) noexcept;
 
     /// <summary>
+    /// Clears all marker names.
+    /// </summary>
+    inline void clear(void) noexcept {
+        delete[] this->_names;
+        this->_names = nullptr;
+    }
+
+    /// <summary>
     /// Answer the number of configured markers.
     /// </summary>
     std::size_t size(void) const noexcept;

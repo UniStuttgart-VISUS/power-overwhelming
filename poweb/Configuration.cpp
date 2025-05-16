@@ -16,6 +16,7 @@ static constexpr const char *FIELD_ITERATIONS = "iterations";
 static constexpr const char *FIELD_ROOT = "poweb";
 static constexpr const char *FIELD_URLS = "urls";
 static constexpr const char *FIELD_VISIBLE_PERIOD = "visiblePeriod";
+static constexpr const char *FIELD_WRITE_INTERVAL = "writeInterval";
 
 
 /*
@@ -28,8 +29,7 @@ Configuration::Configuration(void) : _blankPage(L"about:blank"), _coolDown(0),
 /*
  * Configuration::Configuration
  */
-Configuration::Configuration(const std::wstring& path)
-        : _collector(std::make_unique<CollectorType>(MakeStream(path))) {
+Configuration::Configuration(const std::wstring& path) {
     std::ifstream stream(path);
     assert(stream.good());
     nlohmann::json config;
@@ -54,6 +54,13 @@ Configuration::Configuration(const std::wstring& path)
 
     this->_visiblePeriod = decltype(this->_visiblePeriod)(
         webConfig[FIELD_VISIBLE_PERIOD].get<std::uint64_t>());
+
+    {
+        std::chrono::milliseconds writeInterval(
+            webConfig[FIELD_WRITE_INTERVAL].get<std::uint64_t>());
+        this->_collector.reset(new CollectorType(writeInterval,
+            MakeStream(path)));
+    }
 }
 
 
@@ -61,7 +68,14 @@ Configuration::Configuration(const std::wstring& path)
  * Configuration::StartCollector
  */
 void Configuration::StartCollector(void) {
-    this->_collector.start();
+    if (this->_collector) {
+        std::vector<visus::pwrowg::sensor_description> descs;
+        descs.resize(this->_sensors.descriptions(nullptr, 0));
+        this->_sensors.descriptions(descs.data(), descs.size());
+
+        this->_sensors.start(CollectorType::sample_callback,
+            this->_collector.get());
+    }
 }
 
 
@@ -69,7 +83,7 @@ void Configuration::StartCollector(void) {
  * Configuration::StopCollector
  */
 void Configuration::StopCollector(void) {
-    this->_collector.stop();
+    this->_sensors.stop();
 }
 
 

@@ -31,31 +31,42 @@ public:
         Assert::AreEqual(L"Erich", config[0], L"First marker unchanged", LINE_INFO());
         Assert::AreEqual(L"Walter", config[1], L"Second marker", LINE_INFO());
         Assert::IsNull(config[2], L"No third marker", LINE_INFO());
+
+        config.clear();
+        Assert::AreEqual(std::size_t(0), config.size(), L"Empty", LINE_INFO());
+        Assert::IsNull(config[0], L"No first marker", LINE_INFO());
     }
 
-    //TEST_METHOD(test_sensor_creation) {
-    //    typedef detail::usb_pd_sensor type;
+    TEST_METHOD(test_sensor_creation) {
+        typedef detail::marker_sensor type;
 
-    //    type::configuration_type config;
-    //    std::vector<sensor_description> descs;
-    //    descs.resize(type::descriptions(nullptr, 0, config));
-    //    type::descriptions(descs.data(), descs.size(), config);
+        type::configuration_type config;
+        Assert::AreEqual(std::size_t(0), type::descriptions(nullptr, 0, config), L"Nothing without marker", LINE_INFO());
 
-    //    detail::sensor_array_impl dummy;
+        config += L"Erich";
+        std::vector<sensor_description> descs;
+        descs.resize(type::descriptions(nullptr, 0, config));
+        type::descriptions(descs.data(), descs.size(), config);
+        Assert::AreEqual(std::size_t(1), type::descriptions(nullptr, 0, config), L"Single sensor with marker", LINE_INFO());
 
-    //    type::list_type sensors;
-    //    const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), &dummy, config);
-    //    Assert::AreEqual(descs.size() / 2, sensors.size(), L"Created in groups of two", LINE_INFO());
-    //    Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
+        Assert::AreEqual(L"VISUS/Marker", descs[0].id(), L"Sensor ID", LINE_INFO());
+        Assert::AreEqual(L"VISUS", descs[0].vendor(), L"Vendor", LINE_INFO());
 
-    //    for (auto& s : sensors) {
-    //        auto evt = create_event();
+        detail::sensor_array_impl dummy;
 
-    //        s.sample([](const sample *samples, const std::size_t cnt, const sensor_description *descs, void *context) {
-    //            Assert::AreEqual(std::size_t(1), cnt, L"USB PD creates single sample", LINE_INFO());
-    //        }, descs.data(), nullptr);
-    //    }
-    //}
+        type::list_type sensors;
+        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), &dummy, config);
+        Assert::AreEqual(std::size_t(1), sensors.size(), L"Always one sensor", LINE_INFO());
+        Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
+
+        for (auto& s : sensors) {
+            auto evt = create_event();
+
+            //s.sample([](const sample *samples, const std::size_t cnt, const sensor_description *descs, void *context) {
+            //    Assert::AreEqual(std::size_t(1), cnt, L"USB PD creates single sample", LINE_INFO());
+            //}, descs.data(), nullptr);
+        }
+    }
 };
 
 PWROWG_TEST_NAMESPACE_END

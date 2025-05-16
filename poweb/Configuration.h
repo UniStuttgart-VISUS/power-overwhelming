@@ -133,6 +133,7 @@ private:
     std::chrono::milliseconds _coolDown;
     std::chrono::milliseconds _initialWait;
     std::uint32_t _iterations;
+    visus::pwrowg::sensor_array _sensors;
     std::vector<std::wstring> _urls;
     std::chrono::milliseconds _visiblePeriod;
 };

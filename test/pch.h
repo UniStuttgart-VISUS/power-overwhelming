@@ -42,6 +42,7 @@
 #include <detect_sample.h>
 #include <emi_device.h>
 #include <io_util.h>
+#include <marker_sensor.h>
 #include <msr_magic.h>
 #include <msr_sensor.h>
 #include <nvml_exception.h>

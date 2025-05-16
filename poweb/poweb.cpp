@@ -9,6 +9,8 @@
 #include "Controller.h"
 #include "resource.h"
 
+#include <wil/win32_helpers.h>
+
 
 /* Global variables. */
 static Controller controller;

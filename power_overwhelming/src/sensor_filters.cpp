@@ -85,6 +85,15 @@ bool PWROWG_NAMESPACE::is_hmc8015_sensor(
 
 
 /*
+ * PWROWG_NAMESPACE::is_marker_sensor
+ */
+POWER_OVERWHELMING_API bool PWROWG_NAMESPACE::is_marker_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    return detail::equals(desc.id(), L"VISUS/Marker");
+}
+
+
+/*
  * PWROWG_NAMESPACE::is_msr_sensor
  */
 bool PWROWG_NAMESPACE::is_msr_sensor(
