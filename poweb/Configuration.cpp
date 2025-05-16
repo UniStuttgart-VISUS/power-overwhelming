@@ -7,7 +7,7 @@
 #include "Configuration.h"
 
 
-using namespace visus::power_overwhelming;
+using namespace visus::pwrowg;
 
 static constexpr const char *FIELD_BLANK_PAGE = "blankPage";
 static constexpr const char *FIELD_COOL_DOWN = "coolDown";
@@ -29,7 +29,7 @@ Configuration::Configuration(void) : _blankPage(L"about:blank"), _coolDown(0),
  * Configuration::Configuration
  */
 Configuration::Configuration(const std::wstring& path)
-        : _collector(collector::from_json(path.c_str())) {
+        : _collector(std::make_unique<CollectorType>(MakeStream(path))) {
     std::ifstream stream(path);
     assert(stream.good());
     nlohmann::json config;

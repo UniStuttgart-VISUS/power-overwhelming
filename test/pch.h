@@ -24,6 +24,7 @@
 #include <visus/pwrowg/for_each_rapl_domain.h>
 #include <visus/pwrowg/hmc8015_configuration.h>
 #include <visus/pwrowg/hmc8015_function.h>
+#include <visus/pwrowg/marker_configuration.h>
 #include <visus/pwrowg/multi_sz.h>
 #include <visus/pwrowg/on_exit.h>
 #include <visus/pwrowg/rapl_domain.h>

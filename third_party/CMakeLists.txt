@@ -73,7 +73,7 @@ endif ()
 
 # Windows Implementation Library
 FetchContent_Declare(wil
-    URL "https://github.com/microsoft/wil/archive/v1.0.230202.1.tar.gz"
+    URL "https://github.com/microsoft/wil/archive/refs/tags/v1.0.250325.1.zip"
 )
 option(FAST_BUILD "" OFF)
 option(WIL_BUILD_PACKAGING "" OFF)
@@ -110,10 +110,11 @@ mark_as_advanced(FORCE
 
 # Benchlab
 FetchContent_Declare(libbenchlab
-    URL "https://github.com/UniStuttgart-VISUS/libbenchlab/archive/refs/tags/v0.1.zip"
+    URL "https://github.com/UniStuttgart-VISUS/libbenchlab/archive/refs/tags/v0.2.zip"
 )
 option(BENCHLAB_BuildTests "" OFF)
 option(BENCHLAB_BuildCclient "" OFF)
+option(BENCHLAB_BuildCppClient "" OFF)
 option(BENCHLAB_BuildExcellentPowenetics "" OFF)
 FetchContent_GetProperties(libbenchlab)
 if (NOT libbenchlab_POPULATED)

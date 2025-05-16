@@ -168,6 +168,29 @@ public:
     typedef TChar value_type;
 
     /// <summary>
+    /// Allocate a new multi-sz concatenating <paramref name="rhs" /> at the end
+    /// of the <paramref name="lhs" />.
+    /// </summary>
+    /// <remarks>
+    /// This method returns memory that the caller must deallocate. Avoid using
+    /// it whenever possible.
+    /// </remarks>
+    /// <param name="lhs">The multi-sz to append to. It is safe to pass
+    /// <c>nullptr</c>. A copy of <paramref name="rhs" /> as multi-sz, i.e.
+    /// with two zeros at the end, will be returned in this case, provided it is
+    /// non-<c>nullptr</c>. The caller remains owner of the memory.</param>
+    /// <param name="rhs">The string to be appended. This must not be a multi-sz!
+    /// If it is, only the first element will be appended. It is safe to pass
+    /// <c>nullptr</c>. A copy of <paramref name="lhs" /> will be returned in
+    /// this case, provided it is non-<c>nullptr</c>. The caller remains owner
+    /// of the memory.</param>
+    /// <returns>A new multi-sz holding all concatenated values. This buffer must
+    /// be deallocated using <c>delete[]</c>.</returns>
+    static _Ret_maybenull_z_ value_type *add(
+        _In_opt_z_ const value_type *lhs,
+        _In_opt_z_ const value_type *rhs);
+
+    /// <summary>
     /// Answer a pointer to the <paramref name="idx" />th string in the given
     /// multi-sz.
     /// </summary>
@@ -245,8 +268,8 @@ public:
     /// Initialise a new instance.
     /// </summary>
     /// <param name="value">A <see cref="blob" /> that contains a set of
-    /// zero-terminated strings, termiated by <i>two</c> zeros at the end of the
-    /// data.</param>
+    /// zero-terminated strings, terminated by <i>two</c> zeros at the end of
+    /// the data.</param>
     explicit multi_sz(_In_ const blob& value);
 
     /// <summary>
@@ -282,7 +305,7 @@ public:
     }
 
     /// <summary>
-    /// Append <paramref name="str" /> ad the end of the multi-sz.
+    /// Append <paramref name="str" /> at the end of the multi-sz.
     /// </summary>
     /// <param name="str">The string to be appended. It is safe to pass
     /// <c>nullptr</c> (nothing will happen in this case). Nothing will happen
@@ -294,6 +317,7 @@ public:
     /// <summary>
     /// Answer the raw data of the <paramref name="idx" />th string in the
     /// multi-sz or <c>nullptr</c> if no such element exists.
+    /// </summary>
     /// <param name="idx">The zero-based index of the string to retrieve.
     /// </param>
     /// <returns>A pointer to the <paramref name="idx" />th string or
@@ -382,7 +406,7 @@ public:
     }
 
     /// <summary>
-    /// Append <paramref name="str" /> ad the end of the multi-sz.
+    /// Append <paramref name="str" /> at the end of the multi-sz.
     /// </summary>
     /// <param name="str">The string to be appended. It is safe to pass
     /// <c>nullptr</c> (nothing will happen in this case). Nothing will happen
@@ -455,7 +479,7 @@ public:
     }
 
     /// <summary>
-    /// Append <paramref name="str" /> ad the end of the multi-sz.
+    /// Append <paramref name="str" /> at the end of the multi-sz.
     /// </summary>
     /// <param name="str">The string to be appended. It is safe to pass
     /// <c>nullptr</c> (nothing will happen in this case). Nothing will happen

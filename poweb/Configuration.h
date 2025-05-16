@@ -14,6 +14,12 @@ class Configuration final {
 public:
 
     /// <summary>
+    /// The implementation collecting the power measurements.
+    /// </summary>
+    typedef visus::pwrowg::atomic_sink<visus::pwrowg::csv_sink<std::ofstream>>
+        CollectorType;
+
+    /// <summary>
     /// Initialises an empty instance.
     /// </summary>
     Configuration(void);
@@ -36,8 +42,8 @@ public:
     /// Gets the power collector object.
     /// </summary>
     /// <returns></returns>
-    inline visus::power_overwhelming::collector& GetCollector(void) noexcept {
-        return this->_collector;
+    inline CollectorType& GetCollector(void) noexcept {
+        return *this->_collector;
     }
 
     /// <summary>
@@ -116,8 +122,14 @@ public:
 
 private:
 
+    static inline std::ofstream MakeStream(_In_ const std::wstring& path) {
+        std::ofstream retval;
+        retval.open(path.c_str(), std::ios::trunc);
+        return retval;
+    }
+
     std::wstring _blankPage;
-    visus::power_overwhelming::collector _collector;
+    std::unique_ptr<CollectorType> _collector;
     std::chrono::milliseconds _coolDown;
     std::chrono::milliseconds _initialWait;
     std::uint32_t _iterations;

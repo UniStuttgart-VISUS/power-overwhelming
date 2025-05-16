@@ -20,6 +20,11 @@
 
 PWROWG_NAMESPACE_BEGIN
 
+/// <summary>
+/// A sink writing the power measurements to a CSV file via the given
+/// <typeparamref name="TStream" /> type.
+/// </summary>
+/// <typeparam name="TStream">The type of the output stream.</typeparam>
 template<class TStream> class csv_sink {
 
 public:

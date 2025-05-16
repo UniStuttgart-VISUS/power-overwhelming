@@ -33,5 +33,7 @@
 #include <WebView2.h>
 #include <WebView2EnvironmentOptions.h>
 
-#include "visus/pwrowg/collector.h"
+#include "visus/pwrowg/atomic_sink.h"
+#include "visus/pwrowg/csv_sink.h"
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/sensor_array.h"

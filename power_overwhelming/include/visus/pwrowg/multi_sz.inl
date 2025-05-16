@@ -86,6 +86,43 @@ PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::iterator::operator ++(void) {
 }
 
 
+
+/*
+ * PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::add
+ */
+template<class TChar, class TTraits>
+_Ret_maybenull_z_
+typename PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::value_type *
+PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::add(
+        _In_opt_z_ const value_type *lhs,
+        _In_opt_z_ const value_type *rhs) {
+    const auto cnt_lhs = multi_sz::size(lhs);
+    const auto cnt_rhs = (rhs != nullptr) ? traits_type::length(rhs) + 1 : 0;
+    value_type *retval = nullptr;
+
+    if ((cnt_lhs == 0) && (cnt_rhs > 0)) {
+        // Copy 'rhs', which needs an additional terminator at the end.
+        retval = new value_type[cnt_rhs + 1];
+        ::memcpy(retval, rhs, cnt_rhs * sizeof(value_type));
+        retval[cnt_rhs] = 0;
+
+    } else if ((cnt_lhs > 0) && (cnt_rhs == 0)) {
+        // Copy 'lhs'.
+        retval = new value_type[cnt_lhs];
+        ::memcpy(retval, lhs, cnt_lhs * sizeof(value_type));
+
+    } else if ((cnt_lhs > 0) && (cnt_rhs > 0)) {
+        // Perform the concatenation.
+        retval = new value_type[cnt_lhs + cnt_rhs];
+        ::memcpy(retval, lhs, cnt_lhs * sizeof(value_type));
+        ::memcpy(retval + cnt_lhs - 1, rhs, cnt_rhs * sizeof(value_type));
+        retval[cnt_lhs + cnt_rhs - 1] = 0;
+    }
+
+    return retval;
+}
+
+
 /* 
  * PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::at
  */
@@ -164,6 +201,7 @@ PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::multi_sz(
     }
 }
 
+
 /*
  * PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::multi_sz
  */
@@ -178,6 +216,7 @@ PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::multi_sz(
         ::memcpy(this->_value, value.as<TChar>(), cnt * sizeof(value_type));
     }
 }
+
 
 /*
  * PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::multi_sz
@@ -219,28 +258,9 @@ template<class TChar, class TTraits>
 PWROWG_NAMESPACE::multi_sz<TChar, TTraits>&
 PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::add(
         _In_opt_z_ const value_type *str) {
-    if ((str != nullptr) && (*str != 0)) {
-        const auto cnt_cur = multi_sz::size(this->_value);
-        const auto cnt_str = traits_type::length(str) + 1;
-        value_type *value = nullptr;
-        assert(cnt_str > 0);
-
-        if (cnt_cur > 0) {
-            value = new value_type[cnt_cur + cnt_str];
-            ::memcpy(value, this->_value, cnt_cur * sizeof(value_type));
-            ::memcpy(value + cnt_cur - 1, str, cnt_str * sizeof(value_type));
-            value[cnt_cur + cnt_str - 1] = 0;
-
-        } else {
-            value = new value_type[cnt_str + 1];
-            ::memcpy(value, str, cnt_str * sizeof(value_type));
-            value[cnt_str] = 0;
-        }
-
-        this->clear();
-        this->_value = value;
-    }
-
+    auto value = add(this->_value, str);
+    this->clear();
+    this->_value = value;
     return *this;
 }
 
