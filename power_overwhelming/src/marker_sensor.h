@@ -8,6 +8,7 @@
 #define _PWROWG_MARKER_SENSOR_H
 #pragma once
 
+#include <atomic>
 #include <cassert>
 #include <list>
 #include <memory>
@@ -24,6 +25,7 @@
 
 #include "sensor_description_builder.h"
 #include "sensor_utilities.h"
+#include "unique_container.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -48,7 +50,7 @@ public:
     /// <summary>
     /// The type of a list of sensors of this type.
     /// </summary>
-    typedef std::list<marker_sensor> list_type;
+    typedef unique_container<marker_sensor> list_type;
 
     /// <summary>
     /// Create descriptions for the single <see cref="marker_sensor" /> that
@@ -112,15 +114,25 @@ public:
     /// <param name="config>The configuration object holding the names of the
     /// markers.</param>
     inline marker_sensor(_In_ const configuration_type& config)
-        : _markers(config.size()) { }
+        : _markers(config.size()), _running(false) { }
 
     marker_sensor(const marker_sensor& rhs) = delete;
+
+    /// <summary>
+    /// Starts or stops sampling the sensor.
+    /// </summary>
+    /// <param name="enable"><c>true</c> for enabling the sensor,
+    /// <c>false</c> for disabling it.</param>
+    inline void sample(_In_ const bool enable) {
+        this->_running.store(enable, std::memory_order_release);
+    }
 
     marker_sensor& operator =(const marker_sensor& rhs) = delete;
 
 private:
 
     std::size_t _markers;
+    std::atomic<bool> _running;
 };
 
 PWROWG_DETAIL_NAMESPACE_END

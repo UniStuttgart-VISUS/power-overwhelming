@@ -61,7 +61,7 @@ const auto cnt = sensor_array::all_descriptions(descs.data(), descs.size());
 // the size of 'descs' here would be unsafe in case plug-and-play sensors are
 // involved which could be disconnected between enumerating them and creating
 // the sensor array.
-sensor_array sensors(std::move(config), descs.data(), cnt);
+sensor_array sensors(std::move(config), descs.data(), (std::min)(descs.size(), cnt));
 ```
 
 > [!NOTE]
@@ -281,7 +281,7 @@ void sample(const sensor_array_callback callback, const sensor_description *sens
 > Sensors should not assume that the callback and the context pointer never change. The user can switch these parameters when restarting an array. If the data are cached locally, the cache must be invalidated whenever the sensor is started.
 
 > [!TIP]
-> You can use the `sensor_array_impl::callback` convenience method to invoke the callback given you have stored the `snesor_array_impl` owning the sensor.
+> You can use the `sensor_array_impl::callback` convenience method to invoke the callback given you have stored the `sensor_array_impl` owning the sensor.
 
 The asynchronous variant has the following signature:
 ```c++

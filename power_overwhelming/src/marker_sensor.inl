@@ -18,8 +18,8 @@ TInput PWROWG_DETAIL_NAMESPACE::marker_sensor::from_descriptions(
         _In_ const configuration_type& config) {
     auto retval = move_front_if(begin, end, is_marker_sensor);
 
-    for (auto it = begin; it != retval; ++it) {
-        dst.emplace_back(config);
+    if (begin != retval) {
+        dst.emplace(config);
     }
 
     return retval;
