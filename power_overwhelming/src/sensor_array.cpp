@@ -165,7 +165,7 @@ PWROWG_NAMESPACE::sensor_array::end(void) noexcept {
  * PWROWG_NAMESPACE::sensor_array::marker
  */
 bool PWROWG_NAMESPACE::sensor_array::marker(_In_ const timestamp timestamp,
-        _In_ const unsigned int id) const {
+        _In_ const int id) const {
     typedef detail::marker_sensor::list_type type;
     typedef detail::tuple_types_t<decltype(this->_impl->sensors)> types;
     typedef detail::type_list_index_of<type, types> index;

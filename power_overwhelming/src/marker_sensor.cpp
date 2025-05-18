@@ -28,7 +28,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::marker_sensor::descriptions(
             .with_vendor(L"VISUS")
             .with_name(L"VISUS timestamp markers")
             .with_type(sensor_type::unknown)
-            .produces(reading_type::unsigned_integer)
+            .produces(reading_type::signed_integer)
             .measured_in(reading_unit::unknown);
         *dst = builder.build();
     }
@@ -48,7 +48,7 @@ bool PWROWG_DETAIL_NAMESPACE::marker_sensor::emit(
         this->_emitting.store(false, std::memory_order_release);
     });
 
-    const auto retval = this->_state && (id < this->_markers);
+    const auto retval = (id >= 0) && (id < this->_markers) && this->_state;
 
     if (retval) {
         PWROWG_NAMESPACE::sample sample;

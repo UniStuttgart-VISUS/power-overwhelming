@@ -36,4 +36,5 @@
 #include "visus/pwrowg/atomic_sink.h"
 #include "visus/pwrowg/csv_sink.h"
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/marker_configuration.h"
 #include "visus/pwrowg/sensor_array.h"

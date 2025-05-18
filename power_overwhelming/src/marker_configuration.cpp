@@ -8,6 +8,8 @@
 
 #include <stdexcept>
 
+#include "visus/pwrowg/multi_sz.h"
+
 
 /*
  * PWROWG_NAMESPACE::marker_configuration::id
@@ -94,5 +96,5 @@ int PWROWG_NAMESPACE::marker_configuration::operator +=(
     delete[] this->_names;
     this->_names = names;
 
-    return multi_sz<wchar_t>::count(this->_names) - 1;
+    return static_cast<int>(multi_sz<wchar_t>::count(this->_names)) - 1;
 }

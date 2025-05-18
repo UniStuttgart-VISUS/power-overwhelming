@@ -8,7 +8,8 @@
 #define _PWROWG_MARKER_CONFIGURATION_H
 #pragma once
 
-#include "visus/pwrowg/multi_sz.h"
+#include <string>
+
 #include "visus/pwrowg/sensor_configuration.h"
 
 
@@ -100,6 +101,15 @@ public:
     /// <param name="name">The name of the marker to be added.</param>
     /// <returns>The zero-based index of the marker.</returns>
     int operator +=(_In_z_ const wchar_t *name);
+
+    /// <summary>
+    /// Adds a marker with the specified name.
+    /// </summary>
+    /// <param name="name">The name of the marker to be added.</param>
+    /// <returns>The zero-based index of the marker.</returns>
+    inline int operator +=(_In_ const std::wstring& name) {
+        return *this += name.c_str();
+    }
 
 private:
 

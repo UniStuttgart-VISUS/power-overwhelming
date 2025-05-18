@@ -23,8 +23,7 @@ static constexpr const char *FIELD_WRITE_INTERVAL = "writeInterval";
  * Configuration::Configuration
  */
 Configuration::Configuration(void) : _blankPage(L"about:blank"), _coolDown(0),
-    _initialWait(0), _iterations(0), _visiblePeriod(0) { }
-
+    _initialWait(0), _iterations(0), _markerBlank(0), _visiblePeriod(0) { }
 
 /*
  * Configuration::Configuration
@@ -51,6 +50,25 @@ Configuration::Configuration(const std::wstring& path) {
         std::transform(urls.begin(), urls.end(), this->_urls.begin(),
             [](const std::string &u) { return convert_string<wchar_t>(u); });
     }
+
+    sensor_array_configuration sensorConf;
+    sensorConf.configure<marker_configuration>(
+            [this](marker_configuration& c) {
+        this->_markerBlank = c += L"blank";
+
+        for (auto& u : this->_urls) {
+            {
+                std::wstringstream ss;
+                ss << L"navigating \"" << u << L"\"" << std::ends;
+                this->_markersNav.push_back(c += ss.str());
+            }
+            {
+                std::wstringstream ss;
+                ss << L"showing \"" << u << L"\"" << std::ends;
+                this->_markersShow.push_back(c += ss.str());
+            }
+        }
+    });
 
     this->_visiblePeriod = decltype(this->_visiblePeriod)(
         webConfig[FIELD_VISIBLE_PERIOD].get<std::uint64_t>());

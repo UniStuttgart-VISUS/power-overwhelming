@@ -88,10 +88,34 @@ public:
     /// Gets the time for which the page should stay visible once the navigation
     /// has completed.
     /// </summary>
-    /// <param name=""></param>
     /// <returns></returns>
     inline std::chrono::milliseconds GetVisiblePeriod(void) const noexcept {
         return this->_visiblePeriod;
+    }
+
+    /// <summary>
+    /// Emits the marker indicating that the blank page is shown.
+    /// </summary>
+    inline void MarkerBlank(void) const noexcept {
+        this->_sensors.marker(this->_markerBlank);
+    }
+
+    /// <summary>
+    /// Emits the marker for navigating to the <paramref name="url" />th URL.
+    /// </summary>
+    /// <param name="url"></param>
+    inline void MarkerNavigate(_In_ const std::size_t url) const {
+        assert(url < this->_markersNav.size());
+        this->_sensors.marker(this->_markersNav[url]);
+    }
+
+    /// <summary>
+    /// Emits the marker for showing to the <paramref name="url" />th URL.
+    /// </summary>
+    /// <param name="url"></param>
+    inline void MarkerShow(_In_ const std::size_t url) const {
+        assert(url < this->_markersShow.size());
+        this->_sensors.marker(this->_markersShow[url]);
     }
 
     /// <summary>
@@ -133,6 +157,9 @@ private:
     std::chrono::milliseconds _coolDown;
     std::chrono::milliseconds _initialWait;
     std::uint32_t _iterations;
+    unsigned int _markerBlank;
+    std::vector<unsigned int> _markersNav;
+    std::vector<unsigned int> _markersShow;
     visus::pwrowg::sensor_array _sensors;
     std::vector<std::wstring> _urls;
     std::chrono::milliseconds _visiblePeriod;

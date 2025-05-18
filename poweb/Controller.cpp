@@ -276,12 +276,12 @@ void Controller::Run(const std::wstring configFile,
         const std::function<void(const Configuration &)> onComplete) {
     try {
         Configuration config(configFile);
+        //config.GetSensors()
 
         // Wait for the browser to become ready.
         this->WaitEvent();
 
         // Start collecting power samples.
-        config.GetCollector().marker(L"waiting");
         config.StartCollector();
 
         // Initially wait until the browser stops consuming excessive energy for
@@ -290,31 +290,26 @@ void Controller::Run(const std::wstring configFile,
         config.WaitInitially();
 
         // Go through the test URLs.
+        std::size_t idx = 0;
         for (auto& u : config.GetUrls()) {
             for (std::uint32_t i = 0; i < config.GetIterations(); ++i) {
                 ::OutputDebugString(_T("Blank page.\r\n"));
-                config.GetCollector().marker(L"blank");
+                config.MarkerBlank();
                 this->Navigate(config.GetBlankPage());
                 this->WaitEvent();
                 config.WaitForCoolDown();
 
                 ::OutputDebugString(_T("Navigate to actual page.\r\n"));
-                {
-                    std::wstringstream ss;
-                    ss << L"navigating \"" << u << L"\"" << std::ends;
-                    config.GetCollector().marker(ss.str().c_str());
-                }
+                config.MarkerNavigate(idx);
                 this->Navigate(u);
                 this->WaitEvent();
 
                 ::OutputDebugString(_T("Show actual page.\r\n"));
-                {
-                    std::wstringstream ss;
-                    ss << L"showing \"" << u << L"\"" << std::ends;
-                    config.GetCollector().marker(ss.str().c_str());
-                }
+                config.MarkerShow(idx);
                 config.WaitForVisiblePeriod();
             }
+
+            ++idx;
         }
 
         // Stop collecting power samples.
