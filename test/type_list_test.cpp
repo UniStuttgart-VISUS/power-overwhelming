@@ -61,6 +61,18 @@ public:
         typedef detail::type_list_filter_t<detail::has_sync_sample, list> filtered;
         Assert::IsTrue(std::is_same_v<detail::nvml_sensor, detail::type_list_at<0, filtered>::type>, L"NVML selected", LINE_INFO());
     }
+
+    TEST_METHOD(test_index_of) {
+        typedef detail::type_list<std::int32_t, float, std::uint32_t, double> list;
+        Assert::AreEqual(std::size_t(0), detail::type_list_index_of_v<std::int32_t, list>, L"int32", LINE_INFO());
+        Assert::AreEqual(std::size_t(2), detail::type_list_index_of_v<std::uint32_t, list>, L"uint32_t", LINE_INFO());
+    }
+
+    TEST_METHOD(test_tuple_types) {
+        typedef std::tuple<std::int32_t, float, std::uint32_t, double> tuple;
+        typedef detail::type_list<std::int32_t, float, std::uint32_t, double> list;
+        Assert::IsTrue(std::is_same_v<detail::tuple_types_t<tuple>, list>, L"correct list", LINE_INFO());
+    }
 };
 
 PWROWG_TEST_NAMESPACE_END

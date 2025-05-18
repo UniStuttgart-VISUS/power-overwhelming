@@ -25,6 +25,7 @@
 #include "detect_sample.h"
 #include "emi_sensor.h"
 #include "hmc8015_sensor.h"
+#include "marker_sensor.h"
 #include "msr_sensor.h"
 #include "nvml_sensor.h"
 #include "powenetics_sensor.h"
@@ -71,7 +72,7 @@ public:
     /// A list is used here, because sensors do not have to be copyable or
     /// movable for this container to work.
     /// </remarks>
-    typedef std::tuple<std::list<TSensors>...> sensor_list_type;
+    typedef std::tuple<typename TSensors::list_type...> sensor_list_type;
 
     /// <summary>
     /// Adds the default configurations for all of
@@ -313,6 +314,7 @@ typedef basic_sensor_registry<
 
     adl_sensor,
     hmc8015_sensor,
+    marker_sensor,
     msr_sensor,
     nvml_sensor,
 #if defined(POWER_OVERWHELMING_WITH_POWENETICS)

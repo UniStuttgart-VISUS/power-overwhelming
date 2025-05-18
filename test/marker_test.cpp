@@ -40,31 +40,28 @@ public:
     TEST_METHOD(test_sensor_creation) {
         typedef detail::marker_sensor type;
 
-        type::configuration_type config;
-        Assert::AreEqual(std::size_t(0), type::descriptions(nullptr, 0, config), L"Nothing without marker", LINE_INFO());
+        sensor_array_configuration config;
+        config.configure<marker_configuration>([](marker_configuration &c) { c += L"Erich"; })
+            .exclude<hmc8015_configuration>()
+            .exclude<tinkerforge_configuration>()
+            .exclude<usb_pd_configuration>();
 
-        config += L"Erich";
+        auto sensors = sensor_array::for_matches(std::move(config), is_marker_sensor);
+
         std::vector<sensor_description> descs;
-        descs.resize(type::descriptions(nullptr, 0, config));
-        type::descriptions(descs.data(), descs.size(), config);
-        Assert::AreEqual(std::size_t(1), type::descriptions(nullptr, 0, config), L"Single sensor with marker", LINE_INFO());
+        descs.resize(sensors.descriptions(nullptr, 0));
+        sensors.descriptions(descs.data(), descs.size());
+        Assert::AreEqual(std::size_t(1), descs.size(), L"Single sensor with marker", LINE_INFO());
 
         Assert::AreEqual(L"VISUS/Marker", descs[0].id(), L"Sensor ID", LINE_INFO());
         Assert::AreEqual(L"VISUS", descs[0].vendor(), L"Vendor", LINE_INFO());
 
-        detail::sensor_array_impl dummy;
-
-        type::list_type sensors;
-        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), &dummy, config);
-        Assert::AreEqual(std::size_t(1), sensors.size(), L"Always one sensor", LINE_INFO());
-        Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
-
         for (auto& s : sensors) {
-            auto evt = create_event();
-
-            //s.sample([](const sample *samples, const std::size_t cnt, const sensor_description *descs, void *context) {
-            //    Assert::AreEqual(std::size_t(1), cnt, L"USB PD creates single sample", LINE_INFO());
-            //}, descs.data(), nullptr);
+            Assert::IsFalse(sensors.marker(0));
+            sensors.start();
+            Assert::IsFalse(sensors.marker(1));
+            Assert::IsTrue(sensors.marker(0));
+            sensors.stop();
         }
     }
 };

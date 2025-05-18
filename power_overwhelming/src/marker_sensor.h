@@ -8,22 +8,16 @@
 #define _PWROWG_MARKER_SENSOR_H
 #pragma once
 
+#include <array>
 #include <atomic>
-#include <cassert>
-#include <list>
-#include <memory>
-#include <string>
-#include <vector>
-
-#include <nvml.h>
 
 #include "visus/pwrowg/marker_configuration.h"
-#include "visus/pwrowg/multi_sz.h"
-#include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_description.h"
 #include "visus/pwrowg/sensor_filters.h"
+#include "visus/pwrowg/timestamp.h"
 
 #include "sensor_description_builder.h"
+#include "sensor_state.h"
 #include "sensor_utilities.h"
 #include "unique_container.h"
 
@@ -35,8 +29,13 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// stream.
 /// </summary>
 /// <remarks>
-/// A marker is a user-defined string from a <see cref="marker_configuration" />,
-/// which is referenced by its index.
+/// <para>A marker is a user-defined string from a
+/// <see cref="marker_configuration" />, which is referenced by its index. For
+/// performance reasons, the string is never used when creating samples, but
+/// the sensor only checks whether the provided index is valid.</para>
+/// <para>The marker sensor is special in that it is directly linked to the
+/// sensor array for injecting markers into the sensor stream. This is
+/// necessary because users of the API cannot see the sensor itself.</para>
 /// </remarks>
 class PWROWG_TEST_API marker_sensor final {
 
@@ -111,28 +110,44 @@ public:
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
+    /// <param name="index">The index/ID of the sensor</param>
+    /// <param name="owner">The array the sensor belongs to.</param>
     /// <param name="config>The configuration object holding the names of the
     /// markers.</param>
-    inline marker_sensor(_In_ const configuration_type& config)
-        : _markers(config.size()), _running(false) { }
+    inline marker_sensor(_In_ const std::size_t index,
+            _In_ const sensor_array_impl *owner,
+            _In_ const configuration_type& config)
+        : _emitting(false), _index(index), _markers(config.size()),
+            _owner(owner) { }
 
     marker_sensor(const marker_sensor& rhs) = delete;
+
+    /// <summary>
+    /// If the sensor is enabled and <paramref name="id" /> is valid, emit the
+    /// specified marker event.
+    /// </summary>
+    /// <param name="timestamp">The timestamp of the marker event.</param>
+    /// <param name="id">The index of the marker.</param>
+    /// <returns><c>true</c> if the sample was acutally emitted, <c>false</c>
+    /// otherwise.</returns>
+    bool emit(_In_ const timestamp timestamp, _In_ const unsigned int id);
 
     /// <summary>
     /// Starts or stops sampling the sensor.
     /// </summary>
     /// <param name="enable"><c>true</c> for enabling the sensor,
     /// <c>false</c> for disabling it.</param>
-    inline void sample(_In_ const bool enable) {
-        this->_running.store(enable, std::memory_order_release);
-    }
+    void sample(_In_ const bool enable);
 
     marker_sensor& operator =(const marker_sensor& rhs) = delete;
 
 private:
 
+    std::atomic<bool> _emitting;
+    std::size_t _index;
     std::size_t _markers;
-    std::atomic<bool> _running;
+    const sensor_array_impl *_owner;
+    sensor_state _state;
 };
 
 PWROWG_DETAIL_NAMESPACE_END

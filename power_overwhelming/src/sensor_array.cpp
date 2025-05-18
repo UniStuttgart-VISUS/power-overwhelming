@@ -162,6 +162,27 @@ PWROWG_NAMESPACE::sensor_array::end(void) noexcept {
 
 
 /*
+ * PWROWG_NAMESPACE::sensor_array::marker
+ */
+bool PWROWG_NAMESPACE::sensor_array::marker(_In_ const timestamp timestamp,
+        _In_ const unsigned int id) const {
+    typedef detail::marker_sensor::list_type type;
+    typedef detail::tuple_types_t<decltype(this->_impl->sensors)> types;
+    typedef detail::type_list_index_of<type, types> index;
+
+    volatile auto impl = this->_impl;  // sic!
+    auto& list = std::get<index::value>(this->_impl->sensors);
+    auto retval = ((impl != nullptr) && !list.empty());
+
+    if (retval) {
+        retval = list.begin()->emit(timestamp, id);
+    }
+
+    return retval;
+}
+
+
+/*
  * PWROWG_NAMESPACE::sensor_array::start
  */
 void PWROWG_NAMESPACE::sensor_array::start(void) {

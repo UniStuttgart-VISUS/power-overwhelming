@@ -16,10 +16,11 @@ TInput PWROWG_DETAIL_NAMESPACE::marker_sensor::from_descriptions(
         _In_ const TInput end,
         _In_ const sensor_array_impl *owner,
         _In_ const configuration_type& config) {
+    assert(owner != nullptr);
     auto retval = move_front_if(begin, end, is_marker_sensor);
 
     if (begin != retval) {
-        dst.emplace(config);
+        dst.emplace(index, owner, config);
     }
 
     return retval;

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cinttypes>
+#include <tuple>
 #include <type_traits>
 
 #include "visus/pwrowg/api.h"
@@ -20,7 +21,29 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// A list of zero or more types.
 /// </summary>
 /// <typeparam name="TTypes">The types in the list.</typeparam>
-template<class... TTypes> struct type_list { };
+template<class... TTypes> struct type_list final { };
+
+
+/// <summary>
+/// Derives a <see cref="type_list" /> from a tuple.
+/// </summary>
+/// <typeparam name="TTuple">The type of the tuple.</typeparam>
+template<class TTuple> struct tuple_types final { };
+
+/// <summary>
+/// Specialisation for actual tuples.
+/// </summary>
+/// <typeparam name="TTypes">The types in the tuple.</typeparam>
+template<class... TTypes> struct tuple_types<std::tuple<TTypes...>> final {
+    typedef type_list<TTypes...> type;
+};
+
+/// <summary>
+/// Derives a <see cref="type_list" /> from a tuple.
+/// </summary>
+/// <typeparam name="TTuple">The type of the tuple.</typeparam>
+template<class TTuple>
+using tuple_types_t = typename tuple_types<TTuple>::type;
 
 
 /// <summary>
@@ -138,6 +161,47 @@ struct type_list_filter<TPredicate, type_list<THead>> {
 /// <typeparam name="TList"></typeparam>
 template<template<class> class TPredicate, class TList>
 using type_list_filter_t = typename type_list_filter<TPredicate, TList>::type;
+
+
+/// <summary>
+/// Searches the first occurrence of <typeparamref name="TType" /> in
+/// <typeparamref name="TList" />.
+/// </summary>
+/// <typeparam name="TType">The type to search.</typeparam>
+/// <typeparam name="TList">The type of the type list.</typeparam>
+/// <typeparam name="Index">The current index.</typeparam>
+template<class TType, class TList, std::size_t Index = 0>
+struct type_list_index_of { };
+
+/// <summary>
+/// Specialisation for a match at <typeparamref name="Index" />.
+/// </summary>
+template<class TType, std::size_t Index, class... TTail>
+struct type_list_index_of<TType, type_list<TType, TTail...>, Index>
+    : std::integral_constant<std::size_t, Index> { };
+
+/// <summary>
+/// Specialisation for a mismatch at <typeparamref name="Index" />.
+/// </summary>
+template<class TType, std::size_t Index, class THead, class... TTail>
+struct type_list_index_of<TType, type_list<THead, TTail...>, Index>
+    : type_list_index_of<TType, type_list<TTail...>, Index + 1> { };
+
+/// <summary>
+/// Recursion stop for <see cref="type_list_index_of" />.
+/// </summary>
+template<class TType, std::size_t Index>
+struct type_list_index_of<TType, type_list<>, Index> { };
+
+/// <summary>
+/// Searches the first occurrence of <typeparamref name="TType" /> in
+/// <typeparamref name="TList" />.
+/// </summary>
+/// <typeparam name="TType">The type to search.</typeparam>
+/// <typeparam name="TList">The type of the type list.</typeparam>
+/// <typeparam name="Index">The current index.</typeparam>
+template<class TType, class TList>
+constexpr auto type_list_index_of_v = type_list_index_of<TType, TList>::value;
 
 PWROWG_DETAIL_NAMESPACE_END
 

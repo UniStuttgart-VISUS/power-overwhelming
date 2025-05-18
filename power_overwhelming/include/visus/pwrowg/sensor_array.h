@@ -185,6 +185,31 @@ public:
     _Ret_maybenull_ sensor_description *end(void) noexcept;
 
     /// <summary>
+    /// If a <see cref="detail::marker_sensor" /> was configured, emit the
+    /// specified marker.
+    /// </summary>
+    /// <param name="timestamp">The timestamp of the marker event.</param>
+    /// <param name="id">The ID of the marker.</param>
+    /// <returns><c>true</c> if the marker was emitted, <c>false</c> if either
+    /// the marker sensor was not configured, the marker ID was invalid or the
+    /// array was not running.</returns>
+    bool marker(_In_ const timestamp timestamp,
+        _In_ const unsigned int id) const;
+
+    /// <summary>
+    /// If a <see cref="detail::marker_sensor" /> was configured, emit the
+    /// specified marker.
+    /// </summary>
+    /// <param name="timestamp">The timestamp of the marker event.</param>
+    /// <param name="id">The ID of the marker.</param>
+    /// <returns><c>true</c> if the marker was emitted, <c>false</c> if either
+    /// the marker sensor was not configured, the marker ID was invalid or the
+    /// array was not running.</returns>
+    inline bool marker(_In_ const unsigned int id) const {
+        return this->marker(timestamp::now(), id);
+    }
+
+    /// <summary>
     /// Starts sampling all sensors in the array.
     /// </summary>
     /// <exception cref="std::runtime_error">If the object has been invalidated
