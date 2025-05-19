@@ -159,7 +159,9 @@ TIterator PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::copy(
     if (multi_sz != nullptr) {
         for (auto s = multi_sz; *s != 0; ++s) {
             *oit = s;
-            while (*s++ != 0);
+            while (*s != 0) {
+                ++s;
+            }
         }
     }
 

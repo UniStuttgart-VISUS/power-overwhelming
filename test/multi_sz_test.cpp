@@ -514,6 +514,81 @@ TEST_CLASS(multi_sz_test) {
             Assert::IsTrue(it == msz.end(), L"At end", LINE_INFO());
         }
     }
+
+
+    TEST_METHOD(char_copy) {
+        typedef char char_type;
+
+        {
+            std::vector<std::basic_string<char_type>> strings;
+            multi_sz<char_type>::copy(nullptr, std::back_inserter(strings));
+            Assert::IsTrue(strings.empty(), L"Nothing copied", LINE_INFO());
+        }
+
+        {
+            multi_sz<char_type> msz;
+            std::vector<std::basic_string<char_type>> strings;
+            multi_sz<char_type>::copy(msz.data(), std::back_inserter(strings));
+            Assert::IsTrue(strings.empty(), L"Nothing copied", LINE_INFO());
+        }
+
+        {
+            multi_sz<char_type> msz;
+            msz.add(PWROWG_TPL_LITERAL(char_type, "Horst"));
+            std::vector<std::basic_string<char_type>> strings;
+            multi_sz<char_type>::copy(msz.data(), std::back_inserter(strings));
+            Assert::AreEqual(std::size_t(1), strings.size(), L"One copied", LINE_INFO());
+            Assert::AreEqual(PWROWG_TPL_LITERAL(char_type, "Horst"), strings.front().data(), L"Copy OK", LINE_INFO());
+        }
+
+        {
+            multi_sz<char_type> msz;
+            msz.add(PWROWG_TPL_LITERAL(char_type, "Horst"));
+            msz.add(PWROWG_TPL_LITERAL(char_type, "Egon"));
+            std::vector<std::basic_string<char_type>> strings;
+            multi_sz<char_type>::copy(msz.data(), std::back_inserter(strings));
+            Assert::AreEqual(std::size_t(2), strings.size(), L"Two copied", LINE_INFO());
+            Assert::AreEqual(PWROWG_TPL_LITERAL(char_type, "Horst"), strings.front().data(), L"Front OK", LINE_INFO());
+            Assert::AreEqual(PWROWG_TPL_LITERAL(char_type, "Egon"), strings.back().data(), L"Back OK", LINE_INFO());
+        }
+    }
+
+    TEST_METHOD(wchar_t_copy) {
+        typedef wchar_t char_type;
+
+        {
+            std::vector<std::basic_string<char_type>> strings;
+            multi_sz<char_type>::copy(nullptr, std::back_inserter(strings));
+            Assert::IsTrue(strings.empty(), L"Nothing copied", LINE_INFO());
+        }
+
+        {
+            multi_sz<char_type> msz;
+            std::vector<std::basic_string<char_type>> strings;
+            multi_sz<char_type>::copy(msz.data(), std::back_inserter(strings));
+            Assert::IsTrue(strings.empty(), L"Nothing copied", LINE_INFO());
+        }
+
+        {
+            multi_sz<char_type> msz;
+            msz.add(PWROWG_TPL_LITERAL(char_type, "Horst"));
+            std::vector<std::basic_string<char_type>> strings;
+            multi_sz<char_type>::copy(msz.data(), std::back_inserter(strings));
+            Assert::AreEqual(std::size_t(1), strings.size(), L"One copied", LINE_INFO());
+            Assert::AreEqual(PWROWG_TPL_LITERAL(char_type, "Horst"), strings.front().data(), L"Copy OK", LINE_INFO());
+        }
+
+        {
+            multi_sz<char_type> msz;
+            msz.add(PWROWG_TPL_LITERAL(char_type, "Horst"));
+            msz.add(PWROWG_TPL_LITERAL(char_type, "Egon"));
+            std::vector<std::basic_string<char_type>> strings;
+            multi_sz<char_type>::copy(msz.data(), std::back_inserter(strings));
+            Assert::AreEqual(std::size_t(2), strings.size(), L"Two copied", LINE_INFO());
+            Assert::AreEqual(PWROWG_TPL_LITERAL(char_type, "Horst"), strings.front().data(), L"Front OK", LINE_INFO());
+            Assert::AreEqual(PWROWG_TPL_LITERAL(char_type, "Egon"), strings.back().data(), L"Back OK", LINE_INFO());
+        }
+    }
 };
 
 PWROWG_TEST_NAMESPACE_END

@@ -99,7 +99,7 @@ public:
         /// <summary>
         /// A reference to the iterate dvalues.
         /// </summary>
-        typedef const TChar *& reference;
+        typedef const TChar *reference;
 
         /// <summary>
         /// Clone <paramref name="rhs" />.
