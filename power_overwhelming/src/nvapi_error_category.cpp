@@ -43,9 +43,9 @@ const std::error_category& PWROWG_DETAIL_NAMESPACE::nvapi_category(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::nvapi_throw_if_failed
+ * PWROWG_DETAIL_NAMESPACE::throw_if_nvapi_failed
  */
-void PWROWG_DETAIL_NAMESPACE::nvapi_throw_if_failed(
+void PWROWG_DETAIL_NAMESPACE::throw_if_nvapi_failed(
         _In_ const NvAPI_Status status,
         _In_opt_z_ const char *message) {
     if (status < 0) {

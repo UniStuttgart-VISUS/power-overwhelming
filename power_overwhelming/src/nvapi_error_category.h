@@ -69,7 +69,7 @@ PWROWG_TEST_API const std::error_category& nvapi_category(void) noexcept;
 /// exception.</param>
 /// <exception cref="std::system_error">If <paramref name="status" /> indicates
 /// failure.</exception>
-PWROWG_TEST_API void nvapi_throw_if_failed(_In_ const NvAPI_Status status,
+PWROWG_TEST_API void throw_if_nvapi_failed(_In_ const NvAPI_Status status,
     _In_opt_z_ const char *message = nullptr);
 
 PWROWG_DETAIL_NAMESPACE_END
