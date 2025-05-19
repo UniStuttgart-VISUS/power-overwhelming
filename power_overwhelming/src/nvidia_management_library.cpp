@@ -1,5 +1,5 @@
 ﻿// <copyright file="nvidia_management_library.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -24,8 +24,8 @@ PWROWG_DETAIL_NAMESPACE::nvidia_management_library::instance(void) {
 /*
  * ...::detail::nvidia_management_library::nvidia_management_library
  */
-PWROWG_DETAIL_NAMESPACE::nvidia_management_library
-::nvidia_management_library(void)
+PWROWG_DETAIL_NAMESPACE::nvidia_management_library::nvidia_management_library(
+        void)
 #if defined(_WIN32)
         : library_base(TEXT("nvml.dll")) {
 #else /* defined(_WIN32) */
@@ -44,3 +44,5 @@ PWROWG_DETAIL_NAMESPACE::nvidia_management_library
     __POWER_OVERWHELMING_GET_NVML_FUNC(nvmlInit);
     __POWER_OVERWHELMING_GET_NVML_FUNC(nvmlShutdown);
 }
+
+#undef __POWER_OVERWHELMING_GET_NVML_FUNC

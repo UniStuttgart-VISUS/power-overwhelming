@@ -4,10 +4,12 @@
 
 # Search optional dependencies
 find_package(VISA QUIET)
+find_package(NVAPI QUIET)
 
 # User-configurable options
 option(PWROWG_WithAdl "Build support for the AMD Display Library" ON)
 option(PWROWG_WithBenchlab "Build support for the Benchlab telemetry system" OFF)
+cmake_dependent_option(PWROWG_WithNvapi "Build support for NVIDIA API" OFF WIN32 OFF)
 option(PWROWG_WithNvml "Build support for the NVIDIA Management Library" ON)
 option(PWROWG_WithPowenetics "Build support for Powenetics" ON)
 option(PWROWG_WithTimeSynchronisation "Build support for Cristian's algorithm" OFF)
@@ -41,6 +43,12 @@ endif ()
 if (PWROWG_WithBenchlab)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_BENCHLAB)
     target_link_libraries(${PROJECT_NAME} PRIVATE libbenchlab)
+endif ()
+
+if (PWROWG_WithNvapi)
+    find_package(NVAPI REQUIRED)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_NVAPI)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${NVAPI_INCLUDE_DIR})
 endif ()
 
 if (PWROWG_WithNvml)
