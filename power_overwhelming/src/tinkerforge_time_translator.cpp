@@ -74,9 +74,7 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::get_coord_times(
     const auto begin = timestamp::now();
     const auto status = ::voltage_current_v2_get_time(&bricklet, &time);
     const auto end = timestamp::now();
-    if (status < 0) {
-        throw tinkerforge_exception(status);
-    }
+    throw_if_tinkerforge_failed(status);
 
     const auto dt = duration_cast<milliseconds>(end - begin).count();
     return std::make_pair(begin + milliseconds(dt >> 1), time);

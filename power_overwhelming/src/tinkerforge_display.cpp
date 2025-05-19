@@ -12,7 +12,7 @@
 
 #include "tinkerforge_bricklet.h"
 #include "tinkerforge_display_impl.h"
-#include "tinkerforge_exception.h"
+#include "tinkerforge_error_category.h"
 
 
 /*
@@ -66,9 +66,7 @@ void PWROWG_NAMESPACE::tinkerforge_display::clear(void) {
     }
 
     auto status = ::lcd_128x64_clear_display(&this->_impl->bricklet);
-    if (status < 0) {
-        throw PWROWG_DETAIL_NAMESPACE::tinkerforge_exception(status);
-    }
+    detail::throw_if_tinkerforge_failed(status);
 }
 
 
@@ -91,9 +89,7 @@ void PWROWG_NAMESPACE::tinkerforge_display::print(
 
     auto status = ::lcd_128x64_draw_text(&this->_impl->bricklet, x, y, font,
         colour, text);
-    if (status < 0) {
-        throw PWROWG_DETAIL_NAMESPACE::tinkerforge_exception(status);
-    }
+    detail::throw_if_tinkerforge_failed(status);
 }
 
 

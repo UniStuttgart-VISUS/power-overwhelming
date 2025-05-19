@@ -13,7 +13,6 @@
 
 #include "string_functions.h"
 #include "tinkerforge_bricklet.h"
-#include "tinkerforge_exception.h"
 #include "tinkerforge_scope.h"
 
 

@@ -146,7 +146,7 @@ public:
     /// or <see cref="invalid_index" /> to disable the current sensor.</param>
     /// <exception cref="std::invalid_argument">If <paramref name="uid" />
     /// is <c>nullptr</c>.</exception>
-    /// <exception cref="tinkerforge_exception">If the bricklet could not be
+    /// <exception cref="std::system_error">If the bricklet could not be
     /// opened.</exception>
     tinkerforge_sensor(_In_ tinkerforge_scope scope,
         _In_z_ const wchar_t *uid,
@@ -171,7 +171,7 @@ public:
     /// time for current.</param>
     /// <exception cref="std::runtime_error">If the sensor has been disposed
     /// by a move before.</exception>
-    /// <exception cref="tinkerforge_exception">If the operation failed.
+    /// <exception cref="std::system_error">If the operation failed.
     /// </exception>
     void configuration(_Out_ tinkerforge_sample_averaging& averaging,
         _Out_ tinkerforge_conversion_time& voltage_conversion_time,
@@ -187,7 +187,7 @@ public:
     /// current.</param>
     /// <exception cref="std::runtime_error">If the sensor has been disposed
     /// by a move before.</exception>
-    /// <exception cref="tinkerforge_exception">If the operation failed.
+    /// <exception cref="std::system_error">If the operation failed.
     /// </exception>
     void configuration(_In_ const tinkerforge_sample_averaging averaging,
         _In_ const tinkerforge_conversion_time voltage_conversion_time,
@@ -200,7 +200,7 @@ public:
     /// <returns>The error statistics</returns>
     /// <exception cref="std::runtime_error">If the sensor has been disposed
     /// by a move before.</exception>
-    /// <exception cref="tinkerforge_exception">If the operation failed.
+    /// <exception cref="std::system_error">If the operation failed.
     /// </exception>
     tinkerforge_error_count error_count(void) const;
 
@@ -238,7 +238,7 @@ public:
     /// for a list of identifiers.</param>
     /// <exception cref="std::runtime_error">If the sensor has been disposed
     /// by a move before.</exception>
-    /// <exception cref="tinkerforge_exception">If the operation failed.
+    /// <exception cref="std::system_error">If the operation failed.
     /// </exception>
     void identify(_Out_writes_(8) char uid[8],
         _Out_writes_(8) char connected_to_uid[8],
@@ -253,7 +253,7 @@ public:
     /// <param name="uid">Receives the UID of the sensor bricklet.</param>
     /// <exception cref="std::runtime_error">If the sensor has been disposed
     /// by a move before.</exception>
-    /// <exception cref="tinkerforge_exception">If the operation failed.
+    /// <exception cref="std::system_error">If the operation failed.
     /// </exception>
     void identify(_Out_writes_(8) char uid[8]) const;
 

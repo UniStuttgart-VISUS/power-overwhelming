@@ -20,8 +20,6 @@
 #include "visus/pwrowg/api.h"
 #include "visus/pwrowg/timestamp.h"
 
-#include "tinkerforge_exception.h"
-
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
@@ -68,7 +66,7 @@ public:
     /// </summary>
     /// <param name="bricklet"></param>
     /// <returns></returns>
-    /// <exception cref="tinkerforge_exception"></exception>
+    /// <exception cref="std::system_error"></exception>
     static times_type get_coord_times(_In_ bricklet_type& bricklet);
 
     /// <summary>

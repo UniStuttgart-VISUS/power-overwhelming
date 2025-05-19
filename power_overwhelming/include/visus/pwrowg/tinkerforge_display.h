@@ -65,7 +65,7 @@ public:
     /// is <c>nullptr</c>.</exceptions>
     /// <exception cref="std::bad_alloc">If the required resources could not
     /// be allocated.</exceptions>
-    /// <exception cref="tinkerforge_exception">If the connection to the
+    /// <exception cref="std::system_error">If the connection to the
     /// master brick could not be established.</exception>
     tinkerforge_display(_In_z_ const char *uid,
         _In_opt_z_ const char *host,

@@ -14,7 +14,7 @@
 #include <WinSock2.h>
 #endif /* defined(_WIN32) */
 
-#include "tinkerforge_exception.h"
+#include "tinkerforge_error_category.h"
 
 
 /*
@@ -54,7 +54,7 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::data::data(
         if (status < 0) {
             // Must deallocate if throwing after ipcon_create!
             ::ipcon_destroy(&this->connection);
-            throw tinkerforge_exception(status);
+            throw std::system_error(status, tinkerforge_category());
         }
     }
 
@@ -68,7 +68,7 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::data::data(
         if (status < 0) {
             // Same as above: manually cleanup resources.
             ::ipcon_destroy(&this->connection);
-            throw tinkerforge_exception(status);
+            throw std::system_error(status, tinkerforge_category());
         }
     }
 }

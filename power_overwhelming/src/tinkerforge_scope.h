@@ -51,7 +51,7 @@ public:
     /// </param>
     /// <param name="port">The port on which the Brick daemon is listening.
     /// </param>
-    /// <exception cref="tinkerforge_exception">In case the connection could
+    /// <exception cref="std::system_error">In case the connection could
     /// not be established.</exception>
     tinkerforge_scope(const std::string& host, const std::uint16_t port);
 

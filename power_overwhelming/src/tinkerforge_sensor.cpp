@@ -9,7 +9,7 @@
 #include <stdexcept>
 
 #include "sensor_array_impl.h"
-#include "tinkerforge_exception.h"
+#include "tinkerforge_error_category.h"
 
 
 /*
@@ -87,7 +87,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::descriptions(
                 }
                 ++retval;
             }
-        } catch (tinkerforge_exception) {
+        } catch (std::system_error) {
             // If the connection failed in the scope, we do not have any
             // bricklets from the specific host. This is typically caused
             // by brickd not running on 'end_point'. At this point, the
@@ -178,9 +178,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::configuration(
         reinterpret_cast<avg_type *>(&averaging),
         reinterpret_cast<adc_type *>(&voltage_conversion_time),
         reinterpret_cast<adc_type *>(&current_conversion_time));
-    if (status < 0) {
-        throw tinkerforge_exception(status);
-    }
+    throw_if_tinkerforge_failed(status);
 }
 
 
@@ -199,9 +197,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::configuration(
         static_cast<avg_type>(averaging),
         static_cast<adc_type>(voltage_conversion_time),
         static_cast<adc_type>(current_conversion_time));
-    if (status < 0) {
-        throw tinkerforge_exception(status);
-    }
+    throw_if_tinkerforge_failed(status);
 }
 
 
@@ -217,9 +213,7 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::error_count(void) const {
         &retval.message_checksum,
         &retval.frame,
         &retval.overflow);
-    if (status < 0) {
-        throw tinkerforge_exception(status);
-    }
+    throw_if_tinkerforge_failed(status);
 
     return retval;
 }
@@ -242,9 +236,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::identify(
         hardware_version,
         firmware_version,
         &device_id);
-    if (status < 0) {
-        throw tinkerforge_exception(status);
-    }
+    throw_if_tinkerforge_failed(status);
 }
 
 
@@ -272,9 +264,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::reset(void) {
 
     {
         auto status = ::voltage_current_v2_reset(&this->_bricklet);
-        if (status < 0) {
-            throw tinkerforge_exception(status);
-        }
+        throw_if_tinkerforge_failed(status);
     }
 
     // As per
@@ -539,33 +529,25 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::disable_callbacks(void) {
     {
         auto status = ::voltage_current_v2_set_current_callback_configuration(
             &this->_bricklet, 0, false, 'x', 0, 0);
-        if (status < 0) {
-            throw tinkerforge_exception(status);
-        }
+        throw_if_tinkerforge_failed(status);
     }
 
     {
         auto status = ::voltage_current_v2_set_power_callback_configuration(
             &this->_bricklet, 0, false, 'x', 0, 0);
-        if (status < 0) {
-            throw tinkerforge_exception(status);
-        }
+        throw_if_tinkerforge_failed(status);
     }
 
     {
         auto status = ::voltage_current_v2_set_voltage_callback_configuration(
             &this->_bricklet, 0, false, 'x', 0, 0);
-        if (status < 0) {
-            throw tinkerforge_exception(status);
-        }
+        throw_if_tinkerforge_failed(status);
     }
 
     if (this->has_internal_time()) {
         auto status = ::voltage_current_v2_set_power_time_callback_configuration(
             &this->_bricklet, false);
-        if (status < 0) {
-            throw tinkerforge_exception(status);
-        }
+        throw_if_tinkerforge_failed(status);
     }
 }
 
@@ -587,9 +569,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::enable_current_callback(
         'x',
         0,
         0);
-    if (status < 0) {
-        throw tinkerforge_exception(status);
-    }
+    throw_if_tinkerforge_failed(status);
 }
 
 
@@ -607,9 +587,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::enable_power_callback(
         auto status = ::voltage_current_v2_set_power_time_callback_configuration(
             &this->_bricklet,
             true);
-        if (status < 0) {
-            throw tinkerforge_exception(status);
-        }
+        throw_if_tinkerforge_failed(status);
 
     } else {
         ::voltage_current_v2_register_callback(&this->_bricklet,
@@ -624,9 +602,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::enable_power_callback(
             'x',
             0,
             0);
-        if (status < 0) {
-            throw tinkerforge_exception(status);
-        }
+        throw_if_tinkerforge_failed(status);
     }
 }
 
@@ -648,7 +624,5 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::enable_voltage_callback(
         'x',
         0,
         0);
-    if (status < 0) {
-        throw tinkerforge_exception(status);
-    }
+    throw_if_tinkerforge_failed(status);
 }

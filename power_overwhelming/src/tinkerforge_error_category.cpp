@@ -1,21 +1,32 @@
-﻿// <copyright file="tinkerforge_exception.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+﻿// <copyright file="tinkerforge_error_category.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "tinkerforge_exception.h"
+#include "tinkerforge_error_category.h"
+
+#include <string>
 
 #include <ip_connection.h>
 
 
-/// <summary>
-/// Get a human-readable error description for the given Tinkerforge error code.
-/// </summary>
-/// <param name="code"></param>
-/// <returns></returns>
-static std::string tinkerforge_to_string(const int code) {
-    switch (code) {
+/*
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_error_category::default_error_condition
+ */
+std::error_condition
+PWROWG_DETAIL_NAMESPACE::tinkerforge_error_category::default_error_condition(
+        int status) const noexcept {
+    return std::error_condition(status, tinkerforge_category());
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::message
+ */
+std::string PWROWG_DETAIL_NAMESPACE::tinkerforge_error_category::message(
+        int status) const {
+    switch (status) {
         case E_OK:
             return "The operation completed successfully.";
 
@@ -71,13 +82,32 @@ static std::string tinkerforge_to_string(const int code) {
             return "The response has an unexpected length.";
 
         default:
-            return std::to_string(code);
+            return std::to_string(status);
     }
 }
 
+
 /*
- * PWROWG_DETAIL_NAMESPACE::tinkerforge_exception::tinkerforge_exception
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_category
  */
-PWROWG_DETAIL_NAMESPACE::tinkerforge_exception::tinkerforge_exception(
-        const value_type code)
-    : std::runtime_error(tinkerforge_to_string(code).c_str()), _code(code) { }
+const std::error_category& PWROWG_DETAIL_NAMESPACE::tinkerforge_category(
+        void) noexcept {
+    static const tinkerforge_error_category retval;
+    return retval;
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::throw_if_tinkerforge_failed
+ */
+void PWROWG_DETAIL_NAMESPACE::throw_if_tinkerforge_failed(
+        _In_ const int status,
+        _In_opt_z_ const char *message) {
+    if (status < 0) {
+        if (message == nullptr) {
+            throw std::system_error(status, tinkerforge_category());
+        } else {
+            throw std::system_error(status, tinkerforge_category(), message);
+        }
+    }
+}
