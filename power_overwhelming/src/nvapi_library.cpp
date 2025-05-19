@@ -4,6 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
+#if defined(POWER_OVERWHELMING_WITH_NVAPI)
 #include "nvapi_library.h"
 
 
@@ -30,8 +31,10 @@ PWROWG_DETAIL_NAMESPACE::nvapi_library::nvapi_library(void)
 #else /* defined(_WIN32) */
         : library_base("libnvapi.so") {
 #endif /* defined(_WIN32) */
+    __POWER_OVERWHELMING_GET_NVAPI_FUNC(NvAPI_GetErrorMessage);
     __POWER_OVERWHELMING_GET_NVAPI_FUNC(NvAPI_Initialize);
     __POWER_OVERWHELMING_GET_NVAPI_FUNC(NvAPI_Unload);
 }
 
 #undef __POWER_OVERWHELMING_GET_NVAPI_FUNC
+#endif /* defined(POWER_OVERWHELMING_WITH_NVAPI) */

@@ -7,6 +7,7 @@
 #if !defined(_PWROWG_NVAPI_LIBRARY_H)
 #define _PWROWG_NVAPI_LIBRARY_H
 #pragma once
+#if defined(POWER_OVERWHELMING_WITH_NVAPI)
 
 #include <nvapi.h>
 
@@ -34,6 +35,7 @@ public:
     /// </exception>
     static const nvapi_library& instance(void);
 
+    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GetErrorMessage);
     __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_Initialize);
     __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_Unload);
 
@@ -47,4 +49,5 @@ private:
 
 PWROWG_DETAIL_NAMESPACE_END
 
+#endif /* defined(POWER_OVERWHELMING_WITH_NVAPI) */
 #endif /* !defined(_PWROWG_NVAPI_LIBRARY_H) */
