@@ -142,15 +142,26 @@ Typically, your data callback will persist the data to disk for further analysis
 ```c++
 using namespace visus::pwrowg;
 
-// Create a CSV sink.
-atomic_sink<csv_sink<std::ofstream>> sink;
+// Create a CSV sink that writes all accumulated samples every
+// second to "log.csv".
+atomic_sink<csv_sink<std::ofstream>> sink(std::chrono::milliseconds(1000), std::oftream("log.csv"));
 
-// Configure the sensor array and have samples delivered to the
-// built-in callback. The sink must be passed as the user
-// pointer to the callback.
+// Configure the sensor array and have samples delivered to the  built-in
+// callback. The sink must be passed as the user pointer to the callback.
 sensor_array_configuration config;
 config.sample_every(std::chrono::milliseconds(5))
     .deliver_to(decltype(sink)::sample_callback, &sink);
+
+// Create an array for all available sensors.
+auto sensors = sensor_array::for_all(std::move(config));
+
+// As the CSV sink only stores minimal data, you also want to preserve the
+// sensor descriptions for later.
+dump_sensors(sensors, "sensors.json");
+
+// Alternatively, you could reconfigure the stream passed to the sink
+// to include additional data:
+// stream << setcsvcolumns(csv_column::label | csv_column::name);
 ```
 
 ## Extending the library
@@ -159,14 +170,14 @@ The main motivation for modifying the library is to add additional sensors. The 
 ### What's new?
 The main changes when implementing a sensor are
 * Sensors are now fully opaque to the user of the library. There is no need for using the [PIMPL pattern](https://learn.microsoft.com/en-us/cpp/cpp/pimpl-for-compile-time-encapsulation-modern-cpp) anymore. You can use all template classes you desire when implementing your sensor.
-* A sensor is no longer a source of a single type of data, but can produce multiple data streams. For instance, the ADL sensor for AMD GPUs wraps a single GPU and produces all data we can get from it. This way, handles and other resources required to produce different data from the same origin can be easily shared.
-* Each sensor has a configuration class which allows for specifying implementation-specific data. Typically, these configuration objects to not configure a specific sensor instance, but the whole sensor class. For instance, users can configure the hosts where to look for Tinkerforge bricklets, but they cannot configure individual bricklets in different ways. However, you are in principle free to provide means to address individual sensors in your configuration object.
-* Each sensor produces one or more data streams (data of the same type from the same source) which are described via a [sensor_description](power_overwhelming/include/visus/pwrowg/sensor_description.h). The sensor description allows for uniquely identifying a sensor and provides information about the data the sensor produces. One sensor class might have multiple sensor descriptions. For instance, a single ADL sensor provides different power and temperature readings for the GPU it is responsible for. Sensor descriptions are mandatory and can be used by the library to reflect on all available sensors. There is no longer the need to provide special metadata objects, but it is sufficient to fill all the required descriptions.
-* A sensor can either produce samples synchronously (by polling) or asynchronously (pushing). The framework will detect the type of sensor via the signature of its `sample` method and automatically poll synchronous sensors. There is no longer the need for sensors to implement synchronous and asynchronous sampling methods.
+* A sensor is no longer a source of a single type of data, but can produce multiple data streams. For instance, the ADL sensor for AMD GPUs wraps a single GPU and produces all the data we can get from it. This way, handles and other resources required to produce different data from the same origin can be easily shared.
+* Each sensor has a configuration class which allows for specifying implementation-specific data. Typically, these configuration objects do not configure a specific sensor instance, but the whole sensor class. For instance, users can configure the hosts where to look for Tinkerforge bricklets, but they cannot configure individual bricklets in different ways. However, you are in principle free to provide means to address individual sensors in your configuration object.
+* Each sensor produces one or more data streams (data of the same type from the same source) which are described via a [sensor_description](power_overwhelming/include/visus/pwrowg/sensor_description.h). The sensor description allows for uniquely identifying a sensor and provides information about the data the sensor produces. One sensor class might have multiple sensor descriptions. For instance, a single ADL sensor provides different power and temperature readings for the GPU it is responsible for. Sensor descriptions are mandatory and can be used by the library to reflect on all available sensors. There is no longer a need to provide special metadata objects, but it is sufficient to fill all the required descriptions.
+* A sensor can either produce samples synchronously (by polling) or asynchronously (pushing). The framework will detect the type of sensor via the signature of its `sample` method and automatically poll synchronous sensors. There is no longer a need for sensors to implement synchronous and asynchronous sampling methods.
 * A sensor class must be able to enumerate [sensor_descriptions](power_overwhelming/include/visus/pwrowg/sensor_description.h) for all of the data it produces and create actual sensor instances from a list of such descriptions.
 
 ### Your sensor class
-The framework interacts with your sensor class based on conventions (described below) rather than requiring the implementation of abstract classes. This gives implementors the maximum amount of freedom when designing their classes. The framework even does not require sensors to be copyable, so you can delete the copy constructor and assignment operator. This is actually the recommended way for dealing with a sensor object that manages unique resources like a device or file handle.
+The framework interacts with your sensor class based on conventions (described below) rather than requiring the implementation of abstract classes. This gives implementors the maximum amount of freedom when designing their classes. The framework does not even require sensors to be copyable, so you can delete the copy constructor and assignment operator. This is actually the recommended way for dealing with a sensor object that manages unique resources like a device or file handle.
 
 Sensor classes are not publicly visible, so they are declared and defined in the [src](power_overwhelming/src) folder and located in the `detail` namespace. It is strongly recommended to use the `PWROWG_DETAIL_NAMESPACE_BEGIN` and `PWROWG_DETAIL_NAMESPACE_END` macros to ensure proper API versioning.
 
@@ -182,13 +193,13 @@ A sensor class must have the following `public` members:
 ### The `configuration_type`
 The `configuration_type` is a `typedef` for a [public API](power_overwhelming/include/visus/pwrowg/) that allows the users to influence the behaviour of your sensors. Your configuration class can also be empty if there is nothing to configure, but it must exist and it must be unique. Typically, the configuration class is named with the suffix "_configuration". For the above-mentioned toaster example, it would be called `toaster_configuration`.
 
-The sensor class must fulfill the following requirements:
+The sensor class must fulfil the following requirements:
 * It must derive from [`sensor_configuration`](power_overwhelming/include/visus/pwrowg/sensor_configuration.h).
 * It must have a member `static const guid id`, which is a unique GUID for your sensor.
 * It must be copyable.
 * It must be default-constructible.
 * It must be located in the public namespace. It is strongly recommended to use the `PWROWG_NAMESPACE_BEGIN` and `PWROWG_NAMESPACE_END` macros to ensure proper API versioning.
-* It must not use `template` members, including classes like `std::string`. If you need to store dynamically allocated string, use a [`blob`](power_overwhelming/include/visus/pwrowg/blob.h), manage your memory manually or use the [PIMPL pattern](https://learn.microsoft.com/en-us/cpp/cpp/pimpl-for-compile-time-encapsulation-modern-cpp).
+* It must not use `template` members, including classes like `std::string`. If you need to store a dynamically allocated string, use a [`blob`](power_overwhelming/include/visus/pwrowg/blob.h), manage your memory manually or use the [PIMPL pattern](https://learn.microsoft.com/en-us/cpp/cpp/pimpl-for-compile-time-encapsulation-modern-cpp).
 
 The default constructor of the configuration type should assign the safest possible default values such that a sensor will most likely work if it receives an unmodified instance.
 
