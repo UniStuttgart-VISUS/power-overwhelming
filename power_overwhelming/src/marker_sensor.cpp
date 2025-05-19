@@ -48,7 +48,9 @@ bool PWROWG_DETAIL_NAMESPACE::marker_sensor::emit(
         this->_emitting.store(false, std::memory_order_release);
     });
 
-    const auto retval = (id >= 0) && (id < this->_markers) && this->_state;
+    const auto retval = (id >= 0)
+        && (id < this->_markers.size())
+        && this->_state;
 
     if (retval) {
         PWROWG_NAMESPACE::sample sample;

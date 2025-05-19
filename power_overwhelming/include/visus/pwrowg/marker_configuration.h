@@ -66,6 +66,14 @@ public:
     }
 
     /// <summary>
+    /// Gets the names of the configured markers.
+    /// </summary>
+    /// <returns>A multi-sz holding the names of the markers.</returns>
+    inline _Ret_maybenull_z_ const wchar_t *names(void) const noexcept {
+        return this->_names;
+    }
+
+    /// <summary>
     /// Answer the number of configured markers.
     /// </summary>
     std::size_t size(void) const noexcept;

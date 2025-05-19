@@ -135,7 +135,7 @@ PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::at(
     auto retval = multi_sz;
 
     if (retval != nullptr) {
-        for (size_type i = 0; (i < idx) && (*retval != 0); i++) {
+        for (size_type i = 0; (i < idx) && (*retval != 0); ++i) {
             while (*retval++ != 0);
         }
 
@@ -145,6 +145,25 @@ PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::at(
     }
 
     return retval;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::copy
+ */
+template<class TChar, class TTraits>
+template<class TIterator>
+TIterator PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::copy(
+        _In_opt_z_ const value_type *multi_sz,
+        _In_ TIterator oit) {
+    if (multi_sz != nullptr) {
+        for (auto s = multi_sz; *s != 0; ++s) {
+            *oit = s;
+            while (*s++ != 0);
+        }
+    }
+
+    return oit;
 }
 
 

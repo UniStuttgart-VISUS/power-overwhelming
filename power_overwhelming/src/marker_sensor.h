@@ -10,8 +10,11 @@
 
 #include <array>
 #include <atomic>
+#include <string>
+#include <vector>
 
 #include "visus/pwrowg/marker_configuration.h"
+#include "visus/pwrowg/multi_sz.h"
 #include "visus/pwrowg/sensor_description.h"
 #include "visus/pwrowg/sensor_filters.h"
 #include "visus/pwrowg/timestamp.h"
@@ -117,8 +120,10 @@ public:
     inline marker_sensor(_In_ const std::size_t index,
             _In_ const sensor_array_impl *owner,
             _In_ const configuration_type& config)
-        : _emitting(false), _index(index), _markers(config.size()),
-            _owner(owner) { }
+            : _emitting(false), _index(index), _owner(owner) {
+        multi_sz<wchar_t>::copy(config.names(),
+            std::back_inserter(this->_markers));
+    }
 
     marker_sensor(const marker_sensor& rhs) = delete;
 
@@ -145,7 +150,7 @@ private:
 
     std::atomic<bool> _emitting;
     std::size_t _index;
-    std::size_t _markers;
+    std::vector<std::wstring> _markers;
     const sensor_array_impl *_owner;
     sensor_state _state;
 };

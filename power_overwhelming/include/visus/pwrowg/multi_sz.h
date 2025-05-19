@@ -210,6 +210,20 @@ public:
         _In_ const size_type idx) noexcept;
 
     /// <summary>
+    /// Copy the strings to an output iterator.
+    /// </summary>
+    /// <typeparam name="TIterator">An output iterator receiving the strings.
+    /// </typeparam>
+    /// <param name="multi_sz">A set of zero-terminated strings, terminated with
+    /// <i>two</c> zeros at the end of the set. The caller remains owner of the
+    /// memory.</param>
+    /// <param name="oit">The output iterator receiving the data.</param>
+    /// <returns>The output iterator past the last written element.</returns>
+    template<class TIterator>
+    static TIterator copy(_In_opt_z_ const value_type *multi_sz,
+        _In_ TIterator oit);
+
+    /// <summary>
     ///  Answer the number of entries in the set of zero-terminated strings
     /// <paramref name="multi_sz" />.
     /// </summary>
