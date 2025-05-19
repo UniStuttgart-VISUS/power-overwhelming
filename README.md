@@ -144,7 +144,7 @@ using namespace visus::pwrowg;
 
 // Create a CSV sink that writes all accumulated samples every
 // second to "log.csv".
-atomic_sink<csv_sink<std::ofstream>> sink(std::chrono::milliseconds(1000), std::oftream("log.csv"));
+atomic_sink<csv_sink<std::ofstream>> sink(std::chrono::milliseconds(1000), std::ofstream("log.csv"));
 
 // Configure the sensor array and have samples delivered to the  built-in
 // callback. The sink must be passed as the user pointer to the callback.
