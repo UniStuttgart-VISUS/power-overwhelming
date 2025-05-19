@@ -3,6 +3,7 @@
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 
+#if defined(POWER_OVERWHELMING_WITH_ADL)
 #include "adl_sensor.h"
 
 #include <algorithm>
@@ -10,6 +11,7 @@
 #include <cstring>
 #include <vector>
 
+#include "adl_error_category.h"
 #include "adl_utils.h"
 #include "sensor_array_impl.h"
 #include "sensor_description_builder.h"
@@ -304,7 +306,7 @@ PWROWG_DETAIL_NAMESPACE::adl_sensor::adl_sensor(
                 this->_scope,
                 this->_adapter_index,
                 &this->_device);
-        adl_exception::throw_on_error(status);
+        throw_if_adl_failed(status);
     }
 
     // Store all the sources we are interested in the startup block that will
@@ -327,7 +329,7 @@ PWROWG_DETAIL_NAMESPACE::adl_sensor::adl_sensor(
                 &this->_start_input,
                 &this->_start_output,
                 this->_device);
-        adl_exception::throw_on_error(status);
+        throw_if_adl_failed(status);
     }
 }
 
@@ -447,6 +449,7 @@ bool PWROWG_DETAIL_NAMESPACE::adl_sensor::specialise(
     return true;
 }
 
+#endif /* defined(POWER_OVERWHELMING_WITH_ADL) */
 
 
 

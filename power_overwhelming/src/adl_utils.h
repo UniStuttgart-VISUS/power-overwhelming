@@ -6,13 +6,13 @@
 #if !defined(_PWROWG_ADL_UTILS_H)
 #define _PWROWG_ADL_UTILS_H
 #pragma once
+#if defined(POWER_OVERWHELMING_WITH_ADL)
 
 #include <algorithm>
 #include <cstdlib>
 #include <iterator>
 #include <vector>
 
-#include "adl_exception.h"
 #include "adl_scope.h"
 #include "zero_memory.h"
 
@@ -24,8 +24,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// </summary>
 /// <param name="scope">The scope holding the ADL function pointers.</param>
 /// <returns>The adapters found on the system.</returns>
-extern std::vector<AdapterInfo> PWROWG_TEST_API get_adapters(
-    _In_ adl_scope& scope);
+PWROWG_TEST_API std::vector<AdapterInfo> get_adapters(_In_ adl_scope& scope);
 
 /// <summary>
 /// Gets all ADL adapters matching the given <paramref name="predicate" />
@@ -65,13 +64,12 @@ template<class TPredicate> std::vector<AdapterInfo> get_adapters_if(
 /// <param name="scope"></param>
 /// <param name="adapter"></param>
 /// <returns></returns>
-extern bool PWROWG_TEST_API is_active(_In_ adl_scope& scope,
+PWROWG_TEST_API bool is_active(_In_ adl_scope& scope,
     _In_ const AdapterInfo& adapter);
-
-
 
 PWROWG_DETAIL_NAMESPACE_END
 
 #include "adl_utils.inl"
 
+#endif /* defined(POWER_OVERWHELMING_WITH_ADL) */
 #endif /* !defined(_PWROWG_ADL_UTILS_H) */

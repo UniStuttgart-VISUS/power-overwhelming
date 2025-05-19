@@ -4,12 +4,13 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
+#if defined(POWER_OVERWHELMING_WITH_ADL)
 #include "adl_scope.h"
 
 #include <cassert>
 #include <cstdint>
 
-#include "adl_exception.h"
+#include "adl_error_category.h"
 #include "amd_display_library.h"
 
 
@@ -37,9 +38,7 @@ void __stdcall PWROWG_DETAIL_NAMESPACE::adl_scope::deallocate(void **buffer) {
 PWROWG_DETAIL_NAMESPACE::adl_scope::adl_scope(void) : _handle(0) {
     auto status = amd_display_library::instance().ADL2_Main_Control_Create(
         adl_scope::allocate, 1, &this->_handle);
-    if (status != ADL_OK) {
-        throw adl_exception(status);
-    }
+    throw_if_adl_failed(status);
 }
 
 
@@ -49,3 +48,5 @@ PWROWG_DETAIL_NAMESPACE::adl_scope::adl_scope(void) : _handle(0) {
 PWROWG_DETAIL_NAMESPACE::adl_scope::~adl_scope(void) {
     amd_display_library::instance().ADL2_Main_Control_Destroy(this->_handle);
 }
+
+#endif /* defined(POWER_OVERWHELMING_WITH_ADL) */

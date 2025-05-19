@@ -313,7 +313,9 @@ typedef basic_sensor_registry<
     //nvapi_sensor,
 #endif  /* defined(_WIN32) */
 
+#if defined(POWER_OVERWHELMING_WITH_ADL)
     adl_sensor,
+#endif /* defined(POWER_OVERWHELMING_WITH_ADL) */
     hmc8015_sensor,
     marker_sensor,
     msr_sensor,

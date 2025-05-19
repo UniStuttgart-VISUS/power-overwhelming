@@ -3,8 +3,10 @@
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 
+#if defined(POWER_OVERWHELMING_WITH_ADL)
 #include "adl_utils.h"
 
+#include "adl_error_category.h"
 #include "amd_display_library.h"
 
 
@@ -19,10 +21,7 @@ std::vector<AdapterInfo> PWROWG_DETAIL_NAMESPACE::get_adapters(
         int cnt;
         auto status = PWROWG_DETAIL_NAMESPACE::amd_display_library::instance()
             .ADL2_Adapter_NumberOfAdapters_Get(scope, &cnt);
-        if (status != ADL_OK) {
-            throw adl_exception(status);
-        }
-
+        throw_if_adl_failed(status);
         retval.resize(cnt);
     }
 
@@ -32,9 +31,7 @@ std::vector<AdapterInfo> PWROWG_DETAIL_NAMESPACE::get_adapters(
 
         auto status = PWROWG_DETAIL_NAMESPACE::amd_display_library::instance()
             .ADL2_Adapter_AdapterInfo_Get(scope, retval.data(), size);
-        if (status != ADL_OK) {
-            throw adl_exception(status);
-        }
+        throw_if_adl_failed(status);
     }
 
     return retval;
@@ -49,8 +46,8 @@ bool PWROWG_DETAIL_NAMESPACE::is_active(_In_ adl_scope& scope,
     int retval = 0;
     auto status = PWROWG_DETAIL_NAMESPACE::amd_display_library::instance()
         .ADL2_Adapter_Active_Get(scope, adapter.iAdapterIndex, &retval);
-    if (status != ADL_OK) {
-        throw adl_exception(status);
-    }
+    throw_if_adl_failed(status);
     return (retval == 0);
 }
+
+#endif /* defined(POWER_OVERWHELMING_WITH_ADL) */

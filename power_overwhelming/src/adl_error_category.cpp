@@ -1,20 +1,33 @@
-﻿// <copyright file="adl_exception.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+﻿// <copyright file="adl_error_category.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
+// <author>Christoph Müller</author>
 
-#include "adl_exception.h"
+#if defined(POWER_OVERWHELMING_WITH_ADL)
+#include "adl_error_category.h"
+
+#include <string>
 
 #include <adl_defines.h>
 
 
-/// <summary>
-/// Get a human-readable error description for the given ADL error code.
-/// </summary>
-/// <param name="code"></param>
-/// <returns></returns>
-static std::string adl_to_string(const int code) {
-    switch (code) {
+/*
+ * PWROWG_DETAIL_NAMESPACE::adl_error_category::default_error_condition
+ */
+std::error_condition
+PWROWG_DETAIL_NAMESPACE::adl_error_category::default_error_condition(
+        int status) const noexcept {
+    return std::error_condition(status, adl_category());
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::message
+ */
+std::string PWROWG_DETAIL_NAMESPACE::adl_error_category::message(
+        int status) const {
+    switch (status) {
         case ADL_OK_WAIT:
             return "Try again later.";
 
@@ -77,34 +90,34 @@ static std::string adl_to_string(const int code) {
             return "The graphics drvier is incompatible with ADL.";
 
         default:
-            return std::to_string(code);
+            return std::to_string(status);
     }
 }
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::adl_exception::check_error
+ * PWROWG_DETAIL_NAMESPACE::adl_category
  */
-bool PWROWG_DETAIL_NAMESPACE::adl_exception::check_error(
-        _In_ const value_type status) {
-    return (status < 0);
+const std::error_category& PWROWG_DETAIL_NAMESPACE::adl_category(
+        void) noexcept {
+    static const adl_error_category retval;
+    return retval;
 }
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::adl_exception::throw_on_error
+ * PWROWG_DETAIL_NAMESPACE::throw_if_adl_failed
  */
-void PWROWG_DETAIL_NAMESPACE::adl_exception::throw_on_error(
-        _In_ const value_type status) {
+void PWROWG_DETAIL_NAMESPACE::throw_if_adl_failed(
+        _In_ const int status,
+        _In_opt_z_ const char *message) {
     if (status < 0) {
-        throw adl_exception(status);
+        if (message == nullptr) {
+            throw std::system_error(status, adl_category());
+        } else {
+            throw std::system_error(status, adl_category(), message);
+        }
     }
 }
 
-
-/*
- * PWROWG_DETAIL_NAMESPACE::adl_exception::adl_exception
- */
-PWROWG_DETAIL_NAMESPACE::adl_exception::adl_exception(
-        _In_ const value_type code)
-    : std::runtime_error(adl_to_string(code).c_str()), _code(code) { }
+#endif /* defined(POWER_OVERWHELMING_WITH_ADL) */

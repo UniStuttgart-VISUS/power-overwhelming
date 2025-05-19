@@ -38,7 +38,7 @@
 #include <visus/pwrowg/sensor_description.h>
 #include <visus/pwrowg/timestamp.h>
 
-#include <adl_exception.h>
+#include <adl_error_category.h>
 #include <detect_sample.h>
 #include <emi_device.h>
 #include <io_util.h>

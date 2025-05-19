@@ -6,6 +6,7 @@
 #if !defined(_PWROWG_ADL_SCOPE_H)
 #define _PWROWG_ADL_SCOPE_H
 #pragma once
+#if defined(POWER_OVERWHELMING_WITH_ADL)
 
 #include <adl_sdk.h>
 
@@ -42,7 +43,7 @@ public:
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    /// <exception cref="adl_exception">If the ADL could not be loaded.
+    /// <exception cref="std::system_error">If the ADL could not be loaded.
     /// </exception>
     adl_scope(void);
 
@@ -71,4 +72,5 @@ private:
 
 PWROWG_DETAIL_NAMESPACE_END
 
+#endif /* defined(POWER_OVERWHELMING_WITH_ADL) */
 #endif /* !defined(_PWROWG_ADL_SCOPE_H) */

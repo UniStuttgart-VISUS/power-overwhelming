@@ -7,6 +7,8 @@
 #if defined(POWER_OVERWHELMING_WITH_NVAPI)
 #include "nvapi_error_category.h"
 
+#include <string>
+
 #include "nvapi_library.h"
 
 
@@ -26,9 +28,14 @@ PWROWG_DETAIL_NAMESPACE::nvapi_error_category::default_error_condition(
 std::string PWROWG_DETAIL_NAMESPACE::nvapi_error_category::message(
         int status) const {
     NvAPI_ShortString msg;
-    nvapi_library::instance().NvAPI_GetErrorMessage(
-        static_cast<NvAPI_Status>(status), msg);
-    return msg;
+
+    if (nvapi_library::instance().NvAPI_GetErrorMessage(
+            static_cast<NvAPI_Status>(status),
+            msg) == NVAPI_OK) {
+        return msg;
+    } else {
+        return std::to_string(status);
+    }
 }
 
 

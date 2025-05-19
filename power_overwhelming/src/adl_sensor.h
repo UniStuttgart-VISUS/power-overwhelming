@@ -7,6 +7,7 @@
 #if !defined(_PWROWG_ADL_SENSOR_H)
 #define _PWROWG_ADL_SENSOR_H
 #pragma once
+#if defined(POWER_OVERWHELMING_WITH_ADL)
 
 #include <chrono>
 #include <list>
@@ -19,7 +20,6 @@
 #include "visus/pwrowg/sensor_filters.h"
 
 #include "adl_scope.h"
-#include "adl_exception.h"
 #include "amd_display_library.h"
 #include "sensor_description_builder.h"
 #include "sensor_utilities.h"
@@ -127,7 +127,7 @@ public:
     /// <param name="index">The index of the first of the
     /// <paramref name="sources" />.</param>
     /// <returns></returns>
-    /// <exception cref="adl_exception">If the specified device was not
+    /// <exception cref="std::system_error">If the specified device was not
     /// found, or another error occurred in ADL.</exception>
     static inline std::shared_ptr<adl_sensor> from_index(
             _In_ const int adapter_index,
@@ -154,7 +154,7 @@ public:
     /// <exception cref="std::invalid_argument">If <paramref name="udid" />
     /// is <c>nullptr</c> or if it did not match exactly one device.
     /// </exception>
-    /// <exception cref="adl_exception">If the specified device was not
+    /// <exception cref="std::system_error">If the specified device was not
     /// found, or another error occurred in ADL.</exception>
     static std::shared_ptr<adl_sensor> from_udid(
         _In_z_ const char *udid,
@@ -176,7 +176,7 @@ public:
     /// <exception cref="std::invalid_argument">If <paramref name="udid" />
     /// is <c>nullptr</c> or if it did not match exactly one device.
     /// </exception>
-    /// <exception cref="adl_exception">If the specified device was not
+    /// <exception cref="std::system_error">If the specified device was not
     /// found, or another error occurred in ADL.</exception>
     static inline std::shared_ptr<adl_sensor> from_udid(
             _In_z_ const wchar_t *udid,
@@ -300,4 +300,5 @@ PWROWG_DETAIL_NAMESPACE_END
 
 #include "adl_sensor.inl"
 
+#endif /* defined(POWER_OVERWHELMING_WITH_ADL) */
 #endif /* defined(_PWROWG_ADL_SENSOR_H) */
