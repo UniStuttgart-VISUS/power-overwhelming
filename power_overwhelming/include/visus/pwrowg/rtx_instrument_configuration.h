@@ -762,7 +762,7 @@ public:
     /// <returns><c>*this</c>.</returns>
     inline rtx_instrument_configuration& min_time_base(
             _In_ const float min_time_base) noexcept {
-        this->_min_time_base;
+        this->_min_time_base = min_time_base;
         return *this;
     }
 

@@ -36,6 +36,9 @@ public:
 
 protected:
 
+    typedef typename std::basic_streambuf<TChar, TTraits>::off_type off_type;
+    typedef typename std::basic_streambuf<TChar, TTraits>::pos_type pos_type;
+
     /// <summary>
     /// Seek to the specified offset.
     /// </summary>
@@ -52,7 +55,7 @@ protected:
 private:
 
     inline TChar *begin(void) noexcept {
-        return this->_blob.as<TChar>();
+        return this->_blob.template as<TChar>();
     }
 
     inline TChar *end(void) noexcept {
@@ -60,7 +63,7 @@ private:
         // nullptr for an out-of-range access.
         return this->_blob.empty()
             ? nullptr
-            : this->_blob.as<TChar>(this->_blob.size() - 1) + 1;
+            : this->_blob.template as<TChar>(this->_blob.size() - 1) + 1;
     }
 
     inline pos_type limit(void) noexcept {

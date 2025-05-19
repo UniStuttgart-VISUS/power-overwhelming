@@ -129,8 +129,13 @@ mark_as_advanced(FORCE
 
 # Passmark USB PD tester
 add_library(usbpdtesterdriver INTERFACE IMPORTED GLOBAL)
+if (WIN32)
 set_target_properties(usbpdtesterdriver PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/usbpdtesterdriver_2.12.28")
+else ()
+set_target_properties(usbpdtesterdriver PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/libftd2xx-linux-x86_64-1.4.33")
+endif ()
 
 # rapidcsv
 FetchContent_Declare(rapidcsv

@@ -6,6 +6,11 @@
 
 #include "sensor_utilities.h"
 
+#include <stdexcept>
+
+#include "sensor_array_configuration_impl.h"
+#include "sensor_array_impl.h"
+
 //#include <cassert>
 //#include <fstream>
 //#include <type_traits>
@@ -227,6 +232,29 @@
 //    s << json.dump(4);
 //    s.flush();
 //}
+
+
+/*
+ * PWROWG_NAMESPACE::get_sampling_interval
+ */
+std::chrono::milliseconds PWROWG_DETAIL_NAMESPACE::get_sampling_interval(
+        _In_ const sensor_array_configuration_impl& config) noexcept {
+    return config.interval;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::get_sampling_interval
+ */
+std::chrono::milliseconds PWROWG_DETAIL_NAMESPACE::get_sampling_interval(
+        _In_ const sensor_array_impl& sensors) {
+    if (sensors.configuration == nullptr) {
+        throw std::invalid_argument("A sensor array with a valid configuration "
+            "must be used to obtain the sampling rate.");
+    }
+
+    return get_sampling_interval(*sensors.configuration);
+}
 
 
 /*

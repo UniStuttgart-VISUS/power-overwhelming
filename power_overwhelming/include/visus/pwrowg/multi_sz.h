@@ -72,13 +72,34 @@ public:
     /// <summary>
     /// An iterator over the strings in a <see cref="multi_sz" />.
     /// </summary>
-    class iterator : public std::iterator<std::forward_iterator_tag,
-            const TChar *,
-            std::ptrdiff_t,
-            const TChar *,
-            const TChar *> {
+    class iterator final {
 
     public:
+
+        /// <summary>
+        /// The iterator category.
+        /// </summary>
+        typedef std::forward_iterator_tag iterator_category;
+
+        /// <summary>
+        /// The type being iterated.
+        /// </summary>
+        typedef const TChar *value_type;
+
+        /// <summary>
+        /// The type expressing distances between iterators.
+        /// </summary>
+        typedef std::ptrdiff_t difference_type;
+
+        /// <summary>
+        /// A pointer to the iterated values.
+        /// </summary>
+        typedef const TChar *pointer;
+
+        /// <summary>
+        /// A reference to the iterate dvalues.
+        /// </summary>
+        typedef const TChar *& reference;
 
         /// <summary>
         /// Clone <paramref name="rhs" />.

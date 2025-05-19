@@ -45,7 +45,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::powenetics_sensor::descriptions(
             }
 
             if (FAILED(hr)) {
-                throw std::system_error(hr, com_error_category());
+                throw std::system_error(hr, com_category());
             }
         }
 
@@ -224,9 +224,14 @@ PWROWG_DETAIL_NAMESPACE::powenetics_sensor::powenetics_sensor(
             "sensor must not be null.");
     }
 
+#if defined(_WIN32)
     auto hr = ::powenetics_open(&this->_handle, path, nullptr);
+#else /* defined(_WIN32) */
+    auto p = PWROWG_NAMESPACE::convert_string<powenetics_char>(path);
+    auto hr = ::powenetics_open(&this->_handle, p.c_str(), nullptr);
+#endif /* defined(_WIN32) */
     if (FAILED(hr)) {
-        throw std::system_error(hr, com_error_category());
+        throw std::system_error(hr, com_category());
     }
 }
 
@@ -250,7 +255,7 @@ void PWROWG_DETAIL_NAMESPACE::powenetics_sensor::sample(
         auto hr = ::powenetics_start_streaming(this->_handle, on_sample, this);
         if (FAILED(hr)) {
             this->_state.stop();
-            throw new std::system_error(hr, com_error_category());
+            throw new std::system_error(hr, com_category());
         }
 
         this->_state.end_start();

@@ -102,7 +102,7 @@ PWROWG_NAMESPACE::guid& PWROWG_NAMESPACE::guid::parse(
     }
 
 #else /* defined(_WIN32) */
-    if (::uuid_parse(dst, retval._value) == -1) {
+    if (::uuid_parse(str, retval._value) == -1) {
         throw std::system_error(errno, std::system_category());
     }
 #endif /* defined(_WIN32) */
@@ -128,7 +128,7 @@ PWROWG_NAMESPACE::guid& PWROWG_NAMESPACE::guid::parse(
     }
 
 #else /* defined(_WIN32) */
-    auto s = convert_string<char>(dst);
+    auto s = convert_string<char>(str);
     parse(retval, s.c_str());
 #endif /* defined(_WIN32) */
 
@@ -347,7 +347,7 @@ std::size_t PWROWG_NAMESPACE::guid::to_string(
     const auto retval = static_cast<std::size_t>(36 + 1);
 
     if ((dst != nullptr) && (cnt >= retval)) {
-        ::uuid_unparse(this->id, dst);
+        ::uuid_unparse(this->_value, dst);
     }
 
     return retval;
@@ -389,7 +389,7 @@ std::size_t PWROWG_NAMESPACE::guid::to_string(
 
     if ((dst != nullptr) && (cnt >= tmp1.size())) {
         const auto tmp2 = convert_string<wchar_t>(tmp1.data());
-        ::wcscpy(dst, tmp2.c_str(), cnt);
+        ::wcsncpy(dst, tmp2.c_str(), cnt);
     }
 
     return tmp1.size();

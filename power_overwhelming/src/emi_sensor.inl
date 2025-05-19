@@ -5,6 +5,7 @@
 // <author>Christoph Müller</author>
 
 
+#if defined(_WIN32)
 /*
  * PWROWG_DETAIL_NAMESPACE::emi_sensor::from_descriptions
  */
@@ -52,3 +53,4 @@ TInput PWROWG_DETAIL_NAMESPACE::emi_sensor::from_descriptions(
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
     return retval;
 }
+#endif /* defined(_WIN32) */

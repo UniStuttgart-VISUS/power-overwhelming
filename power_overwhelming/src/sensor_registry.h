@@ -18,6 +18,7 @@
 #include <utility>
 #include <vector>
 
+#include "visus/pwrowg/guid.h"
 #include "visus/pwrowg/sensor_array_configuration.h"
 #include "visus/pwrowg/sensor_description.h"
 

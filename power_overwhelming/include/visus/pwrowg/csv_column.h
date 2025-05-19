@@ -8,6 +8,7 @@
 #define _PWROWG_CSV_COLUMN_H
 #pragma once
 
+#include <cinttypes>
 #include <cstring>
 #include <type_traits>
 

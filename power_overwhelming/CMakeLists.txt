@@ -26,6 +26,7 @@ source_group("Header Files\\include" FILES  ${PublicHeaderFiles})
 source_group("Header Files\\src" FILES ${PrivateHeaderFiles})
 source_group("Source Files\\src" FILES ${SourceFiles})
 
+
 # Define the output.
 add_library(${PROJECT_NAME} SHARED ${PublicHeaderFiles} ${PrivateHeaderFiles} ${SourceFiles})
 
@@ -93,7 +94,7 @@ if (WIN32)
     target_link_libraries(${PROJECT_NAME} PUBLIC Ws2_32)
 else ()
     find_package(Threads REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS} Threads::Threads)
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS} Threads::Threads uuid)
     set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 endif ()
 

@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/rtx_instrument.h"
 
 #include "rtx_serialisation.h"
 #include "string_functions.h"
@@ -478,6 +479,7 @@ void PWROWG_NAMESPACE::rtx_instrument_configuration::save(
 }
 
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * PWROWG_NAMESPACE::rtx_instrument_configuration::save
  */
@@ -487,6 +489,7 @@ void PWROWG_NAMESPACE::rtx_instrument_configuration::save(
         _In_z_ const wchar_t *path) {
     detail::save_json(detail::to_json(instruments, cnt), path);
 }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
 /*

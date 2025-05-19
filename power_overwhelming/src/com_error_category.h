@@ -10,10 +10,11 @@
 
 #include <system_error>
 
+#include "visus/pwrowg/api.h"
+
+
 #if defined(_WIN32)
 #include <Windows.h>
-
-#include "visus/pwrowg/api.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN

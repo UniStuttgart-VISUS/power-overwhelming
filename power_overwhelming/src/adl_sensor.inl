@@ -53,7 +53,7 @@ TInput PWROWG_DETAIL_NAMESPACE::adl_sensor::from_descriptions(
 
         dst.emplace_back(adapter,
             sources,
-            owner->configuration->interval,
+            get_sampling_interval(*owner),
             index);
         index += sources.size();
     }

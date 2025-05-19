@@ -21,6 +21,7 @@
 #include "adl_scope.h"
 #include "adl_exception.h"
 #include "amd_display_library.h"
+#include "sensor_description_builder.h"
 #include "sensor_utilities.h"
 #include "timezone.h"
 

@@ -25,7 +25,7 @@
 #if defined(POWER_OVERWHELMING_EVENT_EMULATION)
 PWROWG_DETAIL_NAMESPACE_BEGIN
 struct event_impl;
-PWROWG_DETAIL_NAMESPACE_BEGIN
+PWROWG_DETAIL_NAMESPACE_END
 #endif /* defined(POWER_OVERWHELMING_EVENT_EMULATION) */
 
 
@@ -39,7 +39,7 @@ PWROWG_NAMESPACE_BEGIN
 /// handle.
 /// </remarks>
 #if defined(POWER_OVERWHELMING_EVENT_EMULATION)
-typedef PWROWG_DETAIL_NAMESPACE::event_impl *event_type;
+typedef detail::event_impl *event_type;
 #else /* defined(POWER_OVERWHELMING_EVENT_EMULATION) */
 typedef HANDLE event_type;
 #endif /* defined(POWER_OVERWHELMING_EVENT_EMULATION) */
@@ -52,7 +52,7 @@ typedef HANDLE event_type;
 /// <returns></returns>
 /// <exception cref="std::bad_alloc"></exception>
 /// <exception cref="std::system_error"></exception>
-extern _Ret_valid_ event_type POWER_OVERWHELMING_API create_event(
+_Ret_valid_ event_type POWER_OVERWHELMING_API create_event(
     _In_ const bool manual_reset = false,
     _In_ const bool initially_signalled = false);
 
@@ -60,7 +60,7 @@ extern _Ret_valid_ event_type POWER_OVERWHELMING_API create_event(
 /// Destroys the given event.
 /// </summary>
 /// <param name="event">The event to be released.</param>
-extern void POWER_OVERWHELMING_API destroy_event(
+void POWER_OVERWHELMING_API destroy_event(
     _Inout_opt_ event_type& event);
 
 /// <summary>
@@ -69,7 +69,7 @@ extern void POWER_OVERWHELMING_API destroy_event(
 /// <param name="event">The handle of the event to reset.</param>
 /// <exception cref="std::system_error">In case the operation failed.
 /// </exception>
-extern void POWER_OVERWHELMING_API reset_event(_In_ event_type event);
+void POWER_OVERWHELMING_API reset_event(_In_ event_type event);
 
 /// <summary>
 /// Signals an event.
@@ -77,7 +77,7 @@ extern void POWER_OVERWHELMING_API reset_event(_In_ event_type event);
 /// <param name="event">The handle of the event to set.</param>
 /// <exception cref="std::system_error">In case the operation failed.
 /// </exception>
-extern void POWER_OVERWHELMING_API set_event(_In_ event_type event);
+void POWER_OVERWHELMING_API set_event(_In_ event_type event);
 
 /// <summary>
 /// Waits for an event to become signalled.
@@ -85,7 +85,7 @@ extern void POWER_OVERWHELMING_API set_event(_In_ event_type event);
 /// <param name="event">The handle of the event to wait for.</param>
 /// <exception cref="std::system_error">In case the operation failed.
 /// </exception>
-extern void POWER_OVERWHELMING_API wait_event(_In_ event_type event);
+void POWER_OVERWHELMING_API wait_event(_In_ event_type event);
 
 /// <summary>
 /// Waits for an event to become signalled.
@@ -96,7 +96,7 @@ extern void POWER_OVERWHELMING_API wait_event(_In_ event_type event);
 /// the operation timed out without another error.</returns>
 /// <exception cref="std::system_error">In case the operation failed.
 /// </exception>
-extern bool POWER_OVERWHELMING_API wait_event(_In_ event_type event,
+bool POWER_OVERWHELMING_API wait_event(_In_ event_type event,
     _In_ const unsigned int timeout);
 
 PWROWG_NAMESPACE_END

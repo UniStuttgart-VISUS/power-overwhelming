@@ -1,0 +1,626 @@
+D2XX version 00010433
+Running test 3 only.
+Running: >>> Test: Loopback
+
+Device 0 (0x0403601C):
+
+Device 1 (0x04036011):
+
+Baud rate 300.
+Estimate 2 seconds to write and read 18 bytes.
+Writing...
+18 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17
+Got 18 (of 18) bytes.
+
+Baud rate 9600.
+Estimate 2 seconds to write and read 600 bytes.
+Writing...
+600 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 14, 14, 29, 29, 45, 45, 60, 60, 75, 75, 75, 91, 91, 106, 106, 122, 122, 137, 137, 137, 152, 152, 168, 168, 183, 183, 198, 198, 214, 214, 214, 229, 229, 244, 244, 260, 260, 275, 275, 291, 291, 291, 306, 306, 321, 321, 337, 337, 352, 352, 352, 367, 367, 383, 383, 398, 398, 413, 413, 429, 429, 429, 444, 444, 459, 459, 475, 475, 490, 490, 490, 506, 506, 521, 521, 536, 536, 552, 552, 567, 567, 567, 582, 582, 598, 598
+Got 600 (of 600) bytes.
+
+Baud rate 115200.
+Estimate 2 seconds to write and read 7200 bytes.
+Writing...
+7200 bytes written.
+Number of bytes in D2XX receive-queue: 0, 5714, 5714, 5714, 5899, 5899, 6083, 6083, 6268, 6268, 6452, 6452, 6452, 6637, 6637, 6822, 6822, 7006, 7006, 7191, 7191
+Got 7200 (of 7200) bytes.
+
+Baud rate 3000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Baud rate 12000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Device 2 (0x04036011):
+
+Baud rate 300.
+Estimate 2 seconds to write and read 18 bytes.
+Writing...
+18 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17
+Got 18 (of 18) bytes.
+
+Baud rate 9600.
+Estimate 2 seconds to write and read 600 bytes.
+Writing...
+600 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 14, 14, 29, 29, 45, 45, 60, 60, 75, 75, 75, 91, 91, 106, 106, 122, 122, 137, 137, 137, 152, 152, 168, 168, 183, 183, 198, 198, 214, 214, 214, 229, 229, 244, 244, 260, 260, 275, 275, 275, 290, 290, 306, 306, 321, 321, 337, 337, 352, 352, 352, 367, 367, 383, 383, 398, 398, 413, 413, 429, 429, 429, 444, 444, 459, 459, 475, 475, 490, 490, 490, 506, 506, 521, 521, 536, 536, 552, 552, 567, 567, 567, 582, 582, 598, 598
+Got 600 (of 600) bytes.
+
+Baud rate 115200.
+Estimate 2 seconds to write and read 7200 bytes.
+Writing...
+7200 bytes written.
+Number of bytes in D2XX receive-queue: 0, 5530, 5715, 5715, 5899, 5899, 6084, 6084, 6268, 6268, 6453, 6453, 6453, 6638, 6638, 6822, 6822, 7007, 7007, 7191, 7191
+Got 7200 (of 7200) bytes.
+
+Baud rate 3000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Baud rate 12000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Device 3 (0x04036011):
+
+Baud rate 300.
+Estimate 2 seconds to write and read 18 bytes.
+Writing...
+18 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17
+Got 18 (of 18) bytes.
+
+Baud rate 9600.
+Estimate 2 seconds to write and read 600 bytes.
+Writing...
+600 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 14, 14, 29, 29, 45, 45, 60, 60, 75, 75, 75, 91, 91, 106, 106, 121, 121, 137, 137, 137, 152, 152, 168, 168, 183, 183, 198, 198, 214, 214, 214, 229, 229, 244, 244, 260, 260, 275, 275, 290, 290, 290, 306, 306, 321, 321, 336, 336, 352, 352, 352, 367, 367, 383, 383, 398, 398, 413, 413, 429, 429, 429, 444, 444, 459, 459, 475, 475, 490, 490, 490, 505, 505, 521, 521, 536, 536, 552, 552, 567, 567, 567, 582, 582, 598, 598
+Got 600 (of 600) bytes.
+
+Baud rate 115200.
+Estimate 2 seconds to write and read 7200 bytes.
+Writing...
+7200 bytes written.
+Number of bytes in D2XX receive-queue: 0, 5713, 5713, 5713, 5897, 5897, 6082, 6082, 6267, 6267, 6451, 6451, 6451, 6636, 6636, 6821, 6821, 7005, 7005, 7190, 7190
+Got 7200 (of 7200) bytes.
+
+Baud rate 3000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Baud rate 12000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Device 4 (0x04036011):
+
+Baud rate 300.
+Estimate 2 seconds to write and read 18 bytes.
+Writing...
+18 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 16, 17, 17, 17, 17
+Got 18 (of 18) bytes.
+
+Baud rate 9600.
+Estimate 2 seconds to write and read 600 bytes.
+Writing...
+600 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 14, 14, 29, 29, 45, 45, 60, 60, 60, 75, 75, 91, 91, 106, 106, 121, 121, 137, 137, 137, 152, 152, 168, 168, 183, 183, 198, 198, 214, 214, 214, 229, 229, 244, 244, 260, 260, 275, 275, 275, 290, 290, 306, 306, 321, 321, 337, 337, 352, 352, 352, 367, 367, 383, 383, 398, 398, 413, 413, 429, 429, 429, 444, 444, 459, 459, 475, 475, 490, 490, 490, 505, 505, 521, 521, 536, 536, 552, 552, 567, 567, 567, 582, 582, 598, 598
+Got 600 (of 600) bytes.
+
+Baud rate 115200.
+Estimate 2 seconds to write and read 7200 bytes.
+Writing...
+7200 bytes written.
+Number of bytes in D2XX receive-queue: 0, 5712, 5712, 5712, 5897, 5897, 6081, 6081, 6266, 6266, 6451, 6451, 6451, 6635, 6635, 6820, 6820, 7004, 7004, 7189, 7189
+Got 7200 (of 7200) bytes.
+
+Baud rate 3000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Baud rate 12000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Test PASSED.
+<<< Passed!
+Loading ./build/x86_64/libftd2xx.so.1.4.33
+D2XX version 00010433
+Running test 3 only.
+Running: >>> Test: Loopback
+
+Device 0 (0x0403601C):
+
+Device 1 (0x04036011):
+
+Baud rate 300.
+Estimate 2 seconds to write and read 18 bytes.
+Writing...
+18 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17
+Got 18 (of 18) bytes.
+
+Baud rate 9600.
+Estimate 2 seconds to write and read 600 bytes.
+Writing...
+600 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 14, 14, 29, 29, 45, 45, 60, 60, 75, 75, 75, 91, 91, 106, 106, 121, 121, 137, 137, 137, 152, 152, 168, 168, 183, 183, 198, 198, 214, 214, 214, 229, 229, 244, 244, 260, 260, 275, 275, 290, 290, 290, 306, 306, 321, 321, 337, 337, 352, 352, 352, 367, 367, 383, 383, 398, 398, 413, 413, 429, 429, 429, 444, 444, 459, 459, 475, 475, 490, 490, 505, 505, 505, 521, 521, 536, 536, 552, 552, 567, 567, 582, 582, 582, 598, 598
+Got 600 (of 600) bytes.
+
+Baud rate 115200.
+Estimate 2 seconds to write and read 7200 bytes.
+Writing...
+7200 bytes written.
+Number of bytes in D2XX receive-queue: 0, 5714, 5714, 5714, 5898, 5898, 6083, 6083, 6267, 6267, 6452, 6452, 6452, 6637, 6637, 6821, 6821, 7006, 7006, 7191, 7191
+Got 7200 (of 7200) bytes.
+
+Baud rate 3000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Baud rate 12000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Device 2 (0x04036011):
+
+Baud rate 300.
+Estimate 2 seconds to write and read 18 bytes.
+Writing...
+18 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11, 11, 11, 11, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17
+Got 18 (of 18) bytes.
+
+Baud rate 9600.
+Estimate 2 seconds to write and read 600 bytes.
+Writing...
+600 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 14, 14, 29, 29, 45, 45, 60, 60, 75, 75, 75, 91, 91, 106, 106, 122, 122, 137, 137, 152, 152, 152, 168, 168, 183, 183, 198, 198, 214, 214, 214, 229, 229, 244, 244, 260, 260, 275, 275, 291, 291, 291, 306, 306, 321, 321, 337, 337, 352, 352, 367, 367, 367, 383, 383, 398, 398, 413, 413, 429, 429, 444, 444, 444, 459, 459, 475, 475, 490, 490, 506, 506, 521, 521, 521, 536, 536, 552, 552, 567, 567, 582, 582, 598, 598, 598
+Got 600 (of 600) bytes.
+
+Baud rate 115200.
+Estimate 2 seconds to write and read 7200 bytes.
+Writing...
+7200 bytes written.
+Number of bytes in D2XX receive-queue: 0, 5530, 5715, 5715, 5899, 5899, 6084, 6084, 6268, 6268, 6453, 6453, 6453, 6638, 6638, 6822, 6822, 7007, 7007, 7191, 7191
+Got 7200 (of 7200) bytes.
+
+Baud rate 3000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Baud rate 12000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Device 3 (0x04036011):
+
+Baud rate 300.
+Estimate 2 seconds to write and read 18 bytes.
+Writing...
+18 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17
+Got 18 (of 18) bytes.
+
+Baud rate 9600.
+Estimate 2 seconds to write and read 600 bytes.
+Writing...
+600 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 14, 14, 29, 29, 45, 45, 60, 60, 60, 75, 75, 91, 91, 106, 106, 121, 121, 137, 137, 137, 152, 152, 168, 168, 183, 183, 198, 198, 214, 214, 214, 229, 229, 244, 244, 260, 260, 275, 275, 290, 290, 290, 306, 306, 321, 321, 336, 336, 352, 352, 367, 367, 367, 383, 383, 398, 398, 413, 413, 429, 429, 444, 444, 444, 459, 459, 475, 475, 490, 490, 505, 505, 521, 521, 521, 536, 536, 552, 552, 567, 567, 582, 582, 582, 598, 598
+Got 600 (of 600) bytes.
+
+Baud rate 115200.
+Estimate 2 seconds to write and read 7200 bytes.
+Writing...
+7200 bytes written.
+Number of bytes in D2XX receive-queue: 0, 5531, 5715, 5715, 5900, 5900, 6084, 6084, 6269, 6269, 6454, 6454, 6454, 6638, 6638, 6823, 6823, 7007, 7007, 7192, 7192
+Got 7200 (of 7200) bytes.
+
+Baud rate 3000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Baud rate 12000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Device 4 (0x04036011):
+
+Baud rate 300.
+Estimate 2 seconds to write and read 18 bytes.
+Writing...
+18 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17
+Got 18 (of 18) bytes.
+
+Baud rate 9600.
+Estimate 2 seconds to write and read 600 bytes.
+Writing...
+600 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 14, 14, 29, 29, 45, 45, 60, 60, 75, 75, 75, 91, 91, 106, 106, 121, 121, 137, 137, 137, 152, 152, 168, 168, 183, 183, 198, 198, 214, 214, 214, 229, 229, 244, 244, 260, 260, 275, 275, 275, 290, 290, 306, 306, 321, 321, 337, 337, 352, 352, 352, 367, 367, 383, 383, 398, 398, 413, 413, 429, 429, 429, 444, 444, 459, 459, 475, 475, 490, 490, 490, 505, 505, 521, 521, 536, 536, 552, 552, 567, 567, 567, 582, 582, 598, 598
+Got 600 (of 600) bytes.
+
+Baud rate 115200.
+Estimate 2 seconds to write and read 7200 bytes.
+Writing...
+7200 bytes written.
+Number of bytes in D2XX receive-queue: 0, 5714, 5714, 5714, 5898, 5898, 6083, 6083, 6268, 6268, 6452, 6452, 6452, 6637, 6637, 6821, 6821, 7006, 7006, 7191, 7191
+Got 7200 (of 7200) bytes.
+
+Baud rate 3000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Baud rate 12000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Test PASSED.
+<<< Passed!
+D2XX version 00010433
+Running test 8 only.
+Running: >>> Test: Loopback
+
+Device 0 (0x0403601C):
+
+Device 1 (0x04036011):
+
+Baud rate 300.
+Estimate 2 seconds to write and read 18 bytes.
+Writing...
+18 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17
+Got 18 (of 18) bytes.
+
+Baud rate 9600.
+Estimate 2 seconds to write and read 600 bytes.
+Writing...
+600 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 14, 14, 29, 29, 45, 45, 60, 60, 60, 75, 75, 91, 91, 106, 106, 121, 121, 137, 137, 137, 152, 152, 168, 168, 183, 183, 198, 198, 214, 214, 214, 229, 229, 244, 244, 260, 260, 275, 275, 275, 290, 290, 306, 306, 321, 321, 337, 337, 352, 352, 352, 367, 367, 383, 383, 398, 398, 413, 413, 429, 429, 429, 444, 444, 459, 459, 475, 475, 490, 490, 490, 505, 505, 521, 521, 536, 536, 552, 552, 567, 567, 567, 582, 582, 598, 598
+Got 600 (of 600) bytes.
+
+Baud rate 115200.
+Estimate 2 seconds to write and read 7200 bytes.
+Writing...
+7200 bytes written.
+Number of bytes in D2XX receive-queue: 0, 5529, 5714, 5714, 5899, 5899, 6083, 6083, 6268, 6268, 6452, 6452, 6452, 6637, 6637, 6822, 6822, 7006, 7006, 7191, 7191
+Got 7200 (of 7200) bytes.
+
+Baud rate 3000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Baud rate 12000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Device 2 (0x04036011):
+
+Baud rate 300.
+Estimate 2 seconds to write and read 18 bytes.
+Writing...
+18 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17
+Got 18 (of 18) bytes.
+
+Baud rate 9600.
+Estimate 2 seconds to write and read 600 bytes.
+Writing...
+600 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 14, 14, 29, 29, 45, 45, 60, 60, 75, 75, 75, 91, 91, 106, 106, 122, 122, 137, 137, 152, 152, 152, 168, 168, 183, 183, 198, 198, 214, 214, 214, 229, 229, 244, 244, 260, 260, 275, 275, 290, 290, 290, 306, 306, 321, 321, 337, 337, 352, 352, 367, 367, 367, 383, 383, 398, 398, 413, 413, 429, 429, 429, 444, 444, 459, 459, 475, 475, 490, 490, 506, 506, 506, 521, 521, 536, 536, 552, 552, 567, 567, 582, 582, 582, 598, 598
+Got 600 (of 600) bytes.
+
+Baud rate 115200.
+Estimate 2 seconds to write and read 7200 bytes.
+Writing...
+7200 bytes written.
+Number of bytes in D2XX receive-queue: 0, 5529, 5714, 5714, 5899, 5899, 6083, 6083, 6268, 6268, 6452, 6452, 6452, 6637, 6637, 6822, 6822, 7006, 7006, 7191, 7191
+Got 7200 (of 7200) bytes.
+
+Baud rate 3000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Baud rate 12000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Device 3 (0x04036011):
+
+Baud rate 300.
+Estimate 2 seconds to write and read 18 bytes.
+Writing...
+18 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17
+Got 18 (of 18) bytes.
+
+Baud rate 9600.
+Estimate 2 seconds to write and read 600 bytes.
+Writing...
+600 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 14, 14, 29, 29, 45, 45, 60, 60, 75, 75, 75, 91, 91, 106, 106, 121, 121, 137, 137, 137, 152, 152, 168, 168, 183, 183, 198, 198, 214, 214, 214, 229, 229, 244, 244, 260, 260, 275, 275, 290, 290, 306, 306, 306, 321, 321, 336, 336, 352, 352, 367, 367, 367, 383, 383, 398, 398, 413, 413, 429, 429, 444, 444, 444, 459, 459, 475, 475, 490, 490, 505, 505, 521, 521, 521, 536, 536, 552, 552, 567, 567, 582, 582, 582, 598, 598
+Got 600 (of 600) bytes.
+
+Baud rate 115200.
+Estimate 2 seconds to write and read 7200 bytes.
+Writing...
+7200 bytes written.
+Number of bytes in D2XX receive-queue: 0, 5530, 5715, 5715, 5899, 5899, 6084, 6084, 6269, 6269, 6453, 6453, 6453, 6638, 6638, 6822, 6822, 7007, 7007, 7192, 7192
+Got 7200 (of 7200) bytes.
+
+Baud rate 3000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Baud rate 12000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Device 4 (0x04036011):
+
+Baud rate 300.
+Estimate 2 seconds to write and read 18 bytes.
+Writing...
+18 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17
+Got 18 (of 18) bytes.
+
+Baud rate 9600.
+Estimate 2 seconds to write and read 600 bytes.
+Writing...
+600 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 14, 14, 29, 29, 45, 45, 60, 60, 60, 75, 75, 91, 91, 106, 106, 122, 122, 137, 137, 137, 152, 152, 168, 168, 183, 183, 198, 198, 214, 214, 214, 229, 229, 244, 244, 260, 260, 275, 275, 290, 290, 290, 306, 306, 321, 321, 337, 337, 352, 352, 352, 367, 367, 383, 383, 398, 398, 413, 413, 429, 429, 429, 444, 444, 459, 459, 475, 475, 490, 490, 490, 505, 505, 521, 521, 536, 536, 552, 552, 567, 567, 567, 582, 582, 598, 598
+Got 600 (of 600) bytes.
+
+Baud rate 115200.
+Estimate 2 seconds to write and read 7200 bytes.
+Writing...
+7200 bytes written.
+Number of bytes in D2XX receive-queue: 0, 5529, 5714, 5714, 5898, 5898, 6083, 6083, 6268, 6268, 6452, 6452, 6452, 6637, 6637, 6821, 6821, 7006, 7006, 7191, 7191, 7191
+Got 7200 (of 7200) bytes.
+
+Baud rate 3000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Baud rate 12000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Test PASSED.
+<<< Passed!
+Loading ./build/x86_64/libftd2xx.so.1.4.33
+D2XX version 00010433
+Running test 8 only.
+Running: >>> Test: Loopback
+
+Device 0 (0x0403601C):
+
+Device 1 (0x04036011):
+
+Baud rate 300.
+Estimate 2 seconds to write and read 18 bytes.
+Writing...
+18 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17
+Got 18 (of 18) bytes.
+
+Baud rate 9600.
+Estimate 2 seconds to write and read 600 bytes.
+Writing...
+600 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 14, 14, 29, 29, 45, 45, 60, 60, 75, 75, 75, 91, 91, 106, 106, 121, 121, 137, 137, 137, 152, 152, 167, 167, 183, 183, 198, 198, 214, 214, 214, 229, 229, 244, 244, 260, 260, 275, 275, 290, 290, 290, 306, 306, 321, 321, 336, 336, 352, 352, 367, 367, 367, 382, 382, 398, 398, 413, 413, 429, 429, 444, 444, 444, 459, 459, 475, 475, 490, 490, 505, 505, 505, 521, 521, 551, 551, 567, 567, 582, 582, 597, 597
+Got 600 (of 600) bytes.
+
+Baud rate 115200.
+Estimate 2 seconds to write and read 7200 bytes.
+Writing...
+7200 bytes written.
+Number of bytes in D2XX receive-queue: 0, 5530, 5714, 5714, 5899, 5899, 6083, 6083, 6268, 6268, 6453, 6453, 6453, 6637, 6637, 6822, 6822, 7006, 7006, 7191, 7191
+Got 7200 (of 7200) bytes.
+
+Baud rate 3000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Baud rate 12000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Device 2 (0x04036011):
+
+Baud rate 300.
+Estimate 2 seconds to write and read 18 bytes.
+Writing...
+18 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17
+Got 18 (of 18) bytes.
+
+Baud rate 9600.
+Estimate 2 seconds to write and read 600 bytes.
+Writing...
+600 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 14, 14, 30, 30, 45, 45, 60, 60, 76, 76, 76, 91, 91, 106, 106, 122, 122, 137, 137, 137, 152, 152, 168, 168, 183, 183, 198, 198, 214, 214, 214, 229, 229, 245, 245, 260, 260, 275, 275, 291, 291, 291, 306, 306, 321, 321, 337, 337, 352, 352, 367, 367, 367, 383, 383, 398, 398, 414, 414, 429, 429, 429, 444, 444, 460, 460, 475, 475, 490, 490, 506, 506, 506, 521, 521, 536, 536, 552, 552, 567, 567, 582, 582, 582, 598, 598
+Got 600 (of 600) bytes.
+
+Baud rate 115200.
+Estimate 2 seconds to write and read 7200 bytes.
+Writing...
+7200 bytes written.
+Number of bytes in D2XX receive-queue: 0, 5531, 5716, 5716, 5901, 5901, 6085, 6085, 6270, 6270, 6454, 6454, 6454, 6639, 6639, 6824, 6824, 7008, 7008, 7193, 7193
+Got 7200 (of 7200) bytes.
+
+Baud rate 3000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Baud rate 12000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Device 3 (0x04036011):
+
+Baud rate 300.
+Estimate 2 seconds to write and read 18 bytes.
+Writing...
+18 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17
+Got 18 (of 18) bytes.
+
+Baud rate 9600.
+Estimate 2 seconds to write and read 600 bytes.
+Writing...
+600 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 14, 14, 29, 29, 45, 45, 60, 60, 75, 75, 75, 91, 91, 106, 106, 121, 121, 137, 137, 137, 152, 152, 168, 168, 183, 183, 198, 198, 214, 214, 214, 229, 229, 244, 244, 260, 260, 275, 275, 290, 290, 290, 306, 306, 321, 321, 336, 336, 352, 352, 352, 367, 367, 383, 383, 398, 398, 413, 413, 429, 429, 429, 444, 444, 459, 459, 475, 475, 490, 490, 505, 505, 505, 521, 521, 536, 536, 552, 552, 567, 567, 582, 582, 582, 598, 598
+Got 600 (of 600) bytes.
+
+Baud rate 115200.
+Estimate 2 seconds to write and read 7200 bytes.
+Writing...
+7200 bytes written.
+Number of bytes in D2XX receive-queue: 0, 5713, 5713, 5713, 5898, 5898, 6083, 6083, 6267, 6267, 6452, 6452, 6452, 6636, 6636, 6821, 6821, 7006, 7006, 7190, 7190
+Got 7200 (of 7200) bytes.
+
+Baud rate 3000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Baud rate 12000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Device 4 (0x04036011):
+
+Baud rate 300.
+Estimate 2 seconds to write and read 18 bytes.
+Writing...
+18 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17
+Got 18 (of 18) bytes.
+
+Baud rate 9600.
+Estimate 2 seconds to write and read 600 bytes.
+Writing...
+600 bytes written.
+Number of bytes in D2XX receive-queue: 0, 0, 0, 14, 14, 29, 29, 45, 45, 60, 60, 76, 76, 76, 91, 91, 106, 106, 122, 122, 137, 137, 152, 152, 152, 168, 168, 183, 183, 198, 198, 214, 214, 229, 229, 229, 245, 245, 260, 260, 275, 275, 291, 291, 291, 306, 306, 321, 321, 337, 337, 352, 352, 367, 367, 367, 383, 383, 398, 398, 413, 413, 429, 429, 444, 444, 444, 460, 460, 475, 475, 490, 490, 506, 506, 521, 521, 521, 536, 536, 552, 552, 567, 567, 582, 582, 598, 598, 598
+Got 600 (of 600) bytes.
+
+Baud rate 115200.
+Estimate 2 seconds to write and read 7200 bytes.
+Writing...
+7200 bytes written.
+Number of bytes in D2XX receive-queue: 0, 5529, 5713, 5713, 5898, 5898, 6082, 6082, 6267, 6267, 6452, 6452, 6452, 6636, 6636, 6821, 6821, 7005, 7005, 7190, 7190
+Got 7200 (of 7200) bytes.
+
+Baud rate 3000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Baud rate 12000000.
+Estimate 2 seconds to write and read 65536 bytes.
+Writing...
+65536 bytes written.
+Number of bytes in D2XX receive-queue: 0, 65280, 65280
+Got 65536 (of 65536) bytes.
+
+Test PASSED.
+<<< Passed!

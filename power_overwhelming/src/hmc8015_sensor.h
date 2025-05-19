@@ -126,6 +126,7 @@ public:
 
 private:
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// The private data passed from the descriptor to the sensor.
     /// </summary>
@@ -136,6 +137,7 @@ private:
             _In_ const hmc8015_function function)
             : instrument(instrument), function(function) { }
     };
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
     /// <summary>
     /// Create a time-based file name for the log.

@@ -8,6 +8,7 @@
 
 #include <array>
 #include <cassert>
+#include <climits>
 #include <stdexcept>
 
 #include <rapidcsv.h>

@@ -40,7 +40,7 @@ PWROWG_NAMESPACE::blob_streambuf<TChar, TTraits>::seekpos(
         _In_ const pos_type position,
         _In_ const std::ios_base::openmode mode) {
     if ((mode & std::ios_base::in) != 0) {
-        auto pos = this->_blob.as<TChar>(position);
+        auto pos = this->_blob.template as<TChar>(position);
         if (position <= 0) {
             pos = this->begin();
         } else if (position >= this->limit()) {

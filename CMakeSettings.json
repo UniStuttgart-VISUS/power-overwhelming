@@ -9,7 +9,24 @@
             "installRoot": "${projectDir}\\out\\install\\${name}",
             "cmakeCommandArgs": "",
             "buildCommandArgs": "",
-            "ctestCommandArgs": ""
+            "ctestCommandArgs": "",
+            "variables": [
+                {
+                    "name": "PWROWG_BuildStablePower",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "PWROWG_BuildDemo",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "PWROWG_BuildTests",
+                    "value": "False",
+                    "type": "BOOL"
+                }
+            ]
         },
         {
             "name": "WSL-GCC-Debug",
@@ -28,8 +45,48 @@
                     "name": "PWROWG_WithVisa",
                     "value": "False",
                     "type": "BOOL"
+                },
+                {
+                    "name": "PWROWG_BuildDemo",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "PWROWG_BuildDumpSensors",
+                    "value": "true",
+                    "type": "BOOL"
                 }
             ]
+        },
+        {
+            "name": "WSL-Clang-Debug",
+            "generator": "Ninja",
+            "configurationType": "Debug",
+            "buildRoot": "${projectDir}\\out\\build\\${name}",
+            "installRoot": "${projectDir}\\out\\install\\${name}",
+            "cmakeExecutable": "cmake",
+            "cmakeCommandArgs": "",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": "",
+            "inheritEnvironments": [ "linux_clang_x64" ],
+            "variables": [
+                {
+                    "name": "PWROWG_WithVisa",
+                    "value": "False",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "PWROWG_BuildDemo",
+                    "value": "True",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "PWROWG_BuildDumpSensors",
+                    "value": "true",
+                    "type": "BOOL"
+                }
+            ],
+            "wslPath": "${defaultWSLPath}"
         }
     ]
 }

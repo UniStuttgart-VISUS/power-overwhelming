@@ -33,7 +33,7 @@ void PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::configure0(
     // people copy & paste sensors configurations.
     auto it = config.sensor_configs.find(config_type::id);
     if (it != config.sensor_configs.end()) {
-        auto id = config_type::id.to_string<char>();
+        auto id = config_type::id.template to_string<char>();
         auto msg = format_string("A configuration with ID %s has already been "
             "registered. This is a bug in the definition of a sensor "
             "configuration which needs to be fixed by assigning unique GUIDs "
@@ -159,7 +159,7 @@ void PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::sample0(
     auto& list = std::get<Index>(sensor_lists);
 
     // Derive which type of sensor we are processing.
-    typedef std::decay_t<decltype(list)>::value_type sensor_type;
+    typedef typename std::decay_t<decltype(list)>::value_type sensor_type;
 
     // Try to sample the sensors of type 'sensor_type' asynchronously. If that
     // fails, create a sampler function to 'oit'.

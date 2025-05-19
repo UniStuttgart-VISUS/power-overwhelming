@@ -132,9 +132,11 @@ PWROWG_NAMESPACE::rtx_sensor_definition::rtx_sensor_definition(
  */
 void PWROWG_NAMESPACE::rtx_sensor_definition::apply(
         _Inout_ rtx_instrument& instrument) const {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     instrument.channel(this->_current_channel)
         .channel(this->_voltage_channel)
         .operation_complete();
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

@@ -24,6 +24,7 @@
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
 /* Forward declarations. */
+struct sensor_array_configuration_impl;
 struct sensor_array_impl;
 
 
@@ -32,7 +33,7 @@ struct sensor_array_impl;
 /// machine.
 /// </summary>
 /// <returns>A JSON array holding all the descriptors.</returns>
-nlohmann::json get_all_sensor_descs(void);
+PWROWG_TEST_API nlohmann::json get_all_sensor_descs(void);
 
 /// <summary>
 /// Gets all sensors of the specified type.
@@ -48,6 +49,25 @@ template<class TSensor> inline std::vector<TSensor> get_all_sensors_of(void) {
     return retval;
 }
 
+/// <summary>
+/// Retrieves the sampling interval from the given array configuration.
+/// </summary>
+/// <param name="config">The configuration to retrieve the sampling interval
+/// from.</param>
+/// <returns>The sampling interval.</returns>
+std::chrono::milliseconds PWROWG_TEST_API get_sampling_interval(
+    _In_ const sensor_array_configuration_impl& config) noexcept;
+
+/// <summary>
+/// Retrieves the sampling interval from the given sensor array.
+/// </summary>
+/// <param name="sensors">The sensor array to get the sampling interval from.
+/// </param>
+/// <returns>The sampling interval.</returns>
+/// <exception cref="std::invalid_argument">If the sensor array does not hold a
+/// valid configuration.</exception>
+std::chrono::milliseconds PWROWG_TEST_API get_sampling_interval(
+    _In_ const sensor_array_impl& sensors);
 
 /// <summary>
 /// Move the sensors in <see cref="begin" /> to <see cref="end" /> that match
@@ -83,7 +103,7 @@ TIterator move_front_if(_In_ const TIterator begin, _In_ const TIterator end,
 /// <param name="desc">A sensor description to get the sensor type from.</param>
 /// <returns>A mask containing whether the sensor provides power, voltage or
 /// current.</returns>
-extern sensor_type PWROWG_TEST_API pwr_volt_cur_mask(
+sensor_type PWROWG_TEST_API pwr_volt_cur_mask(
     _In_ const sensor_description& desc);
 
 /// <summary>
@@ -91,14 +111,14 @@ extern sensor_type PWROWG_TEST_API pwr_volt_cur_mask(
 /// </summary>
 /// <param name="path">The path to the JSON file.</param>
 /// <returns>The contents of the JSON file.</returns>
-extern nlohmann::json PWROWG_TEST_API read_json(_In_z_ const char *path);
+nlohmann::json PWROWG_TEST_API read_json(_In_z_ const char *path);
 
 /// <summary>
 /// Read a JSON configuration file.
 /// </summary>
 /// <param name="path">The path to the JSON file.</param>
 /// <returns>The contents of the JSON file.</returns>
-extern nlohmann::json PWROWG_TEST_API read_json(_In_z_ const wchar_t *path);
+nlohmann::json PWROWG_TEST_API read_json(_In_z_ const wchar_t *path);
 
 /// <summary>
 /// Sort the given range of <see cref="sensor_description" />s according to
@@ -122,7 +142,7 @@ inline void sort_by_path(_In_ TIterator begin, _In_ TIterator end) {
 /// </summary>
 /// <param name="path">The path to the JSON file.</param>
 /// <param name="json">The JSON content to write</param>
-extern void PWROWG_TEST_API write_json(_In_z_ const char *path,
+void PWROWG_TEST_API write_json(_In_z_ const char *path,
     _In_ const nlohmann::json& json);
 
 /// <summary>
@@ -130,7 +150,7 @@ extern void PWROWG_TEST_API write_json(_In_z_ const char *path,
 /// </summary>
 /// <param name="path">The path to the JSON file.</param>
 /// <param name="json">The JSON content to write</param>
-extern void PWROWG_TEST_API write_json(_In_z_ const wchar_t *path,
+void PWROWG_TEST_API write_json(_In_z_ const wchar_t *path,
     _In_ const nlohmann::json& json);
 
 PWROWG_DETAIL_NAMESPACE_END

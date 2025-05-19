@@ -23,6 +23,7 @@
 #include "visus/pwrowg/timestamp.h"
 
 #include "msr_device.h"
+#include "sensor_description_builder.h"
 #include "sensor_utilities.h"
 
 

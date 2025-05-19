@@ -52,7 +52,7 @@
 
 #if defined(_WIN32)
 #include <guiddef.h>
-#elif defined(_WIN32)
+#else /* defined(_WIN32) */
 #include <uuid/uuid.h>
 #endif /* defined(_WIN32) */
 
@@ -77,7 +77,7 @@ public:
     /// </summary>
 #if defined(_WIN32)
     typedef ::GUID value_type;
-#elif defined(_WIN32)
+#else /* defined(_WIN32) */
     typedef ::uuid_t value_type;
 #endif /* defined(_WIN32) */
 

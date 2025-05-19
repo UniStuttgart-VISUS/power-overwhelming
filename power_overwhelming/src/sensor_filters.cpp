@@ -71,6 +71,7 @@ bool PWROWG_NAMESPACE::is_gpu_sensor(
  */
 bool PWROWG_NAMESPACE::is_hmc8015_sensor(
         _In_ const sensor_description& desc) noexcept {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto product = convert_string<wchar_t>(hmc8015_instrument::product_id);
     auto vendor = convert_string<wchar_t>(visa_instrument::rohde_und_schwarz);
 
@@ -81,6 +82,9 @@ bool PWROWG_NAMESPACE::is_hmc8015_sensor(
 
     return detail::contains(desc.path(), product.c_str(), true)
         && detail::contains(desc.path(), vendor.c_str(), true);
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    return false;
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

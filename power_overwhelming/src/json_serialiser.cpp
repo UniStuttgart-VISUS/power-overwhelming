@@ -26,7 +26,7 @@ nlohmann::json PWROWG_DETAIL_NAMESPACE::load_json(
 #if defined(_WIN32)
     s.open(path);
 #else /* defined(_WIN32) */
-    auto p = power_overwhelming::convert_string<char>(path);
+    auto p = PWROWG_NAMESPACE::convert_string<char>(path);
     s.open(p);
 #endif /* defined(_WIN32) */
 
@@ -55,7 +55,7 @@ void PWROWG_DETAIL_NAMESPACE::save_json(
 #if defined(_WIN32)
     s.open(path, std::ofstream::trunc);
 #else /* defined(_WIN32) */
-    auto p = power_overwhelming::convert_string<char>(path);
+    auto p = PWROWG_NAMESPACE::convert_string<char>(path);
     s.open(p, std::ofstream::trunc);
 #endif /* defined(_WIN32) */
 
