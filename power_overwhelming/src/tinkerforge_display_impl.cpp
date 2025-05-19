@@ -1,8 +1,8 @@
-// <copyright file="tinkerforge_display_impl.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="tinkerforge_display_impl.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "tinkerforge_display_impl.h"
 
@@ -10,9 +10,9 @@
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_display_impl::tinkerforge_display_impl
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_display_impl::tinkerforge_display_impl
  */
-visus::power_overwhelming::detail::tinkerforge_display_impl::tinkerforge_display_impl(
+PWROWG_DETAIL_NAMESPACE::tinkerforge_display_impl::tinkerforge_display_impl(
         const std::string& host, const std::uint16_t port, const char *uid)
         : scope(host, port) {
     if (uid == nullptr) {
@@ -27,9 +27,9 @@ visus::power_overwhelming::detail::tinkerforge_display_impl::tinkerforge_display
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_display_impl::~tinkerforge_display_impl
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_display_impl::~tinkerforge_display_impl
  */
-visus::power_overwhelming::detail::tinkerforge_display_impl::~tinkerforge_display_impl(
+PWROWG_DETAIL_NAMESPACE::tinkerforge_display_impl::~tinkerforge_display_impl(
         void) {
     ::lcd_128x64_destroy(&this->bricklet);
 }

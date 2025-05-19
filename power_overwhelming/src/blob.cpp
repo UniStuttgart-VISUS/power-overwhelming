@@ -1,10 +1,10 @@
-// <copyright file="blob.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// <copyright file="blob.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2023 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
-#include "power_overwhelming/blob.h"
+#include "visus/pwrowg/blob.h"
 
 #include <cassert>
 #include <cstring>
@@ -12,9 +12,9 @@
 
 
 /*
- * visus::power_overwhelming::blob::blob
+ * PWROWG_NAMESPACE::blob::blob
  */
-visus::power_overwhelming::blob::blob(_In_ const blob& rhs)
+PWROWG_NAMESPACE::blob::blob(_In_ const blob& rhs)
         : _data(nullptr), _size(rhs._size) {
     if (rhs._data != nullptr) {
         this->_data = new byte_type[this->_size];
@@ -26,9 +26,9 @@ visus::power_overwhelming::blob::blob(_In_ const blob& rhs)
 
 
 /*
- * visus::power_overwhelming::blob::blob
+ * PWROWG_NAMESPACE::blob::blob
  */
-visus::power_overwhelming::blob::blob(_Inout_ blob&& rhs) noexcept
+PWROWG_NAMESPACE::blob::blob(_Inout_ blob&& rhs) noexcept
         : _data(rhs._data), _size(rhs._size) {
     rhs._data = nullptr;
     rhs._size = 0;
@@ -38,17 +38,17 @@ visus::power_overwhelming::blob::blob(_Inout_ blob&& rhs) noexcept
 
 
 /*
- * visus::power_overwhelming::blob::~blob
+ * PWROWG_NAMESPACE::blob::~blob
  */
-visus::power_overwhelming::blob::~blob(void) {
+PWROWG_NAMESPACE::blob::~blob(void) {
     delete[] this->_data;
 }
 
 
 /*
- * visus::power_overwhelming::blob::at
+ * PWROWG_NAMESPACE::blob::at
  */
-_Ret_maybenull_ void *visus::power_overwhelming::blob::at(
+_Ret_maybenull_ void *PWROWG_NAMESPACE::blob::at(
         _In_ const std::size_t offset) noexcept {
     assert((this->_data != nullptr) || (this->_size == 0));
     return (offset < this->_size)
@@ -58,9 +58,9 @@ _Ret_maybenull_ void *visus::power_overwhelming::blob::at(
 
 
 /*
- * visus::power_overwhelming::blob::at
+ * PWROWG_NAMESPACE::blob::at
  */
-_Ret_maybenull_ const void *visus::power_overwhelming::blob::at(
+_Ret_maybenull_ const void *PWROWG_NAMESPACE::blob::at(
         _In_ const std::size_t offset) const noexcept {
     assert((this->_data != nullptr) || (this->_size == 0));
     return (offset < this->_size)
@@ -70,9 +70,9 @@ _Ret_maybenull_ const void *visus::power_overwhelming::blob::at(
 
 
 /*
- * visus::power_overwhelming::blob::clear
+ * PWROWG_NAMESPACE::blob::clear
  */
-void visus::power_overwhelming::blob::clear(void) {
+void PWROWG_NAMESPACE::blob::clear(void) {
     delete[] this->_data;
     this->_data = nullptr;
     this->_size = 0;
@@ -80,10 +80,10 @@ void visus::power_overwhelming::blob::clear(void) {
 
 
 /*
- * visus::power_overwhelming::blob::end
+ * PWROWG_NAMESPACE::blob::end
  */
-_Ret_maybenull_ visus::power_overwhelming::blob::byte_type *
-visus::power_overwhelming::blob::end(void) noexcept {
+_Ret_maybenull_ PWROWG_NAMESPACE::blob::byte_type *
+PWROWG_NAMESPACE::blob::end(void) noexcept {
     return (this->_data != nullptr)
         ? reinterpret_cast<byte_type *>(this->_data) + this->_size
         : nullptr;
@@ -91,10 +91,10 @@ visus::power_overwhelming::blob::end(void) noexcept {
 
 
 /*
- * visus::power_overwhelming::blob::end
+ * PWROWG_NAMESPACE::blob::end
  */
-_Ret_maybenull_ const visus::power_overwhelming::blob::byte_type *
-visus::power_overwhelming::blob::end(void) const noexcept {
+_Ret_maybenull_ const PWROWG_NAMESPACE::blob::byte_type *
+PWROWG_NAMESPACE::blob::end(void) const noexcept {
     return (this->_data != nullptr)
         ? reinterpret_cast<const byte_type *>(this->_data) + this->_size
         : nullptr;
@@ -102,9 +102,9 @@ visus::power_overwhelming::blob::end(void) const noexcept {
 
 
 /*
- * visus::power_overwhelming::blob::grow
+ * PWROWG_NAMESPACE::blob::grow
  */
-bool visus::power_overwhelming::blob::grow(_In_ const std::size_t size) {
+bool PWROWG_NAMESPACE::blob::grow(_In_ const std::size_t size) {
     const auto retval = (size > this->_size);
 
     if (retval) {
@@ -114,8 +114,9 @@ bool visus::power_overwhelming::blob::grow(_In_ const std::size_t size) {
         if (existing != nullptr) {
             ::memcpy(this->_data, existing, this->_size);
             delete[] existing;
-            this->_size = size;
         }
+
+        this->_size = size;
     }
 
     return retval;
@@ -123,10 +124,10 @@ bool visus::power_overwhelming::blob::grow(_In_ const std::size_t size) {
 
 
 /*
- * visus::power_overwhelming::blob::rbegin
+ * PWROWG_NAMESPACE::blob::rbegin
  */
-_Ret_maybenull_ visus::power_overwhelming::blob::byte_type *
-visus::power_overwhelming::blob::rbegin(void) noexcept {
+_Ret_maybenull_ PWROWG_NAMESPACE::blob::byte_type *
+PWROWG_NAMESPACE::blob::rbegin(void) noexcept {
     return ((this->_data != nullptr) && (this->_size > 0))
         ? reinterpret_cast<byte_type *>(this->_data) + this->_size - 1
         : nullptr;
@@ -134,10 +135,10 @@ visus::power_overwhelming::blob::rbegin(void) noexcept {
 
 
 /*
- * visus::power_overwhelming::blob::rbegin
+ * PWROWG_NAMESPACE::blob::rbegin
  */
-_Ret_maybenull_ const visus::power_overwhelming::blob::byte_type *
-visus::power_overwhelming::blob::rbegin(void) const noexcept {
+_Ret_maybenull_ const PWROWG_NAMESPACE::blob::byte_type *
+PWROWG_NAMESPACE::blob::rbegin(void) const noexcept {
     return ((this->_data != nullptr) && (this->_size > 0))
         ? reinterpret_cast<const byte_type *>(this->_data) + this->_size - 1
         : nullptr;
@@ -145,10 +146,10 @@ visus::power_overwhelming::blob::rbegin(void) const noexcept {
 
 
 /*
- * visus::power_overwhelming::blob::rend
+ * PWROWG_NAMESPACE::blob::rend
  */
-_Ret_maybenull_ visus::power_overwhelming::blob::byte_type *
-visus::power_overwhelming::blob::rend(void) noexcept {
+_Ret_maybenull_ PWROWG_NAMESPACE::blob::byte_type *
+PWROWG_NAMESPACE::blob::rend(void) noexcept {
     return (this->_data != nullptr)
         ? this->_data - 1
         : nullptr;
@@ -156,10 +157,10 @@ visus::power_overwhelming::blob::rend(void) noexcept {
 
 
 /*
- * visus::power_overwhelming::blob::rend
+ * PWROWG_NAMESPACE::blob::rend
  */
-_Ret_maybenull_ const visus::power_overwhelming::blob::byte_type *
-visus::power_overwhelming::blob::rend(void) const noexcept {
+_Ret_maybenull_ const PWROWG_NAMESPACE::blob::byte_type *
+PWROWG_NAMESPACE::blob::rend(void) const noexcept {
     return (this->_data != nullptr)
         ? this->_data - 1
         : nullptr;
@@ -167,9 +168,9 @@ visus::power_overwhelming::blob::rend(void) const noexcept {
 
 
 /*
- * visus::power_overwhelming::blob::reserve
+ * PWROWG_NAMESPACE::blob::reserve
  */
-bool visus::power_overwhelming::blob::reserve(_In_ const std::size_t size) {
+bool PWROWG_NAMESPACE::blob::reserve(_In_ const std::size_t size) {
     const auto retval = (size > this->_size);
 
     if (retval) {
@@ -183,9 +184,9 @@ bool visus::power_overwhelming::blob::reserve(_In_ const std::size_t size) {
 
 
 /*
- * visus::power_overwhelming::blob::resize
+ * PWROWG_NAMESPACE::blob::resize
  */
-void visus::power_overwhelming::blob::resize(_In_ const std::size_t size) {
+void PWROWG_NAMESPACE::blob::resize(_In_ const std::size_t size) {
     if (this->_size != size) {
         delete[] this->_data;
         this->_size = size;
@@ -200,10 +201,11 @@ void visus::power_overwhelming::blob::resize(_In_ const std::size_t size) {
 
 
 /*
- * visus::power_overwhelming::blob::truncate
+ * PWROWG_NAMESPACE::blob::truncate
  */
-void visus::power_overwhelming::blob::truncate(_In_ const std::size_t size) {
-    if (this->_size != size) {
+void PWROWG_NAMESPACE::blob::truncate(_In_ const std::size_t size,
+        _In_ const bool noalloc) {
+    if ((this->_size > size) || !noalloc) {
         const auto existing = this->_data;
 
         if (size > 0) {
@@ -217,15 +219,16 @@ void visus::power_overwhelming::blob::truncate(_In_ const std::size_t size) {
         }
 
         delete[] existing;
-        this->_size = size;
     }
+
+    this->_size = size;
 }
 
 
 /*
- * visus::power_overwhelming::blob::operator =
+ * PWROWG_NAMESPACE::blob::operator =
  */
-visus::power_overwhelming::blob& visus::power_overwhelming::blob::operator =(
+PWROWG_NAMESPACE::blob& PWROWG_NAMESPACE::blob::operator =(
         _In_ const blob& rhs) {
     if (this != std::addressof(rhs)) {
         if ((this->_data != nullptr) && (this->_size != rhs._size)) {
@@ -252,9 +255,9 @@ visus::power_overwhelming::blob& visus::power_overwhelming::blob::operator =(
 
 
 /*
- * visus::power_overwhelming::blob::operator =
+ * PWROWG_NAMESPACE::blob::operator =
  */
-visus::power_overwhelming::blob& visus::power_overwhelming::blob::operator =(
+PWROWG_NAMESPACE::blob& PWROWG_NAMESPACE::blob::operator =(
         _Inout_ blob&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         this->_data = rhs._data;

@@ -1,8 +1,8 @@
-// <copyright file="com_error_category.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="com_error_category.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2022 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "com_error_category.h"
 
@@ -14,10 +14,10 @@
 
 
 /*
- * ...::detail::com_error_category::default_error_condition
+ * PWROWG_DETAIL_NAMESPACE::detail::com_error_category::default_error_condition
  */
 std::error_condition
-visus::power_overwhelming::detail::com_error_category::default_error_condition(
+PWROWG_DETAIL_NAMESPACE::com_error_category::default_error_condition(
         const int hr) const noexcept {
     auto error = HRESULT_CODE(hr);
 
@@ -32,9 +32,9 @@ visus::power_overwhelming::detail::com_error_category::default_error_condition(
 
 
 /*
- * visus::power_overwhelming::detail::message
+ * PWROWG_DETAIL_NAMESPACE::message
  */
-std::string visus::power_overwhelming::detail::com_error_category::message(
+std::string PWROWG_DETAIL_NAMESPACE::com_error_category::message(
         int hr) const {
     _com_error e(hr);
 
@@ -51,9 +51,9 @@ std::string visus::power_overwhelming::detail::com_error_category::message(
 
 
 /*
- * visus::power_overwhelming::detail::com_category
+ * PWROWG_DETAIL_NAMESPACE::com_category
  */
-const std::error_category& visus::power_overwhelming::detail::com_category(
+const std::error_category& PWROWG_DETAIL_NAMESPACE::com_category(
         void) noexcept {
     static const com_error_category retval;
     return retval;

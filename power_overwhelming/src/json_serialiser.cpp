@@ -1,5 +1,5 @@
 ﻿// <copyright file="json_serialiser.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -11,9 +11,9 @@
 
 
 /*
- * nlohmann::json visus::power_overwhelming::detail::load_json
+ * nlohmann::json PWROWG_DETAIL_NAMESPACE::load_json
  */
-nlohmann::json visus::power_overwhelming::detail::load_json(
+nlohmann::json PWROWG_DETAIL_NAMESPACE::load_json(
         _In_z_ const wchar_t *path) {
     if (path == nullptr) {
         throw std::invalid_argument("The path to the JSON file to read must "
@@ -26,7 +26,7 @@ nlohmann::json visus::power_overwhelming::detail::load_json(
 #if defined(_WIN32)
     s.open(path);
 #else /* defined(_WIN32) */
-    auto p = power_overwhelming::convert_string<char>(path);
+    auto p = PWROWG_NAMESPACE::convert_string<char>(path);
     s.open(p);
 #endif /* defined(_WIN32) */
 
@@ -39,9 +39,9 @@ nlohmann::json visus::power_overwhelming::detail::load_json(
 
 
 /*
- * visus::power_overwhelming::detail::save_json
+ * PWROWG_DETAIL_NAMESPACE::save_json
  */
-void visus::power_overwhelming::detail::save_json(
+void PWROWG_DETAIL_NAMESPACE::save_json(
         _In_ const nlohmann::json& json,
         _In_z_ const wchar_t *path) {
     if (path == nullptr) {
@@ -55,7 +55,7 @@ void visus::power_overwhelming::detail::save_json(
 #if defined(_WIN32)
     s.open(path, std::ofstream::trunc);
 #else /* defined(_WIN32) */
-    auto p = power_overwhelming::convert_string<char>(path);
+    auto p = PWROWG_NAMESPACE::convert_string<char>(path);
     s.open(p, std::ofstream::trunc);
 #endif /* defined(_WIN32) */
 

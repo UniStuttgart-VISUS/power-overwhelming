@@ -1,10 +1,10 @@
-// <copyright file="computer_name.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="computer_name.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2023 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
-#include "power_overwhelming/computer_name.h"
+#include "visus/pwrowg/computer_name.h"
 
 #include <system_error>
 
@@ -19,72 +19,68 @@
 #include <errno.h>
 #endif /* defined(_WIN32) */
 
-#include "power_overwhelming/convert_string.h"
+#include "visus/pwrowg/convert_string.h"
 
 
-namespace visus {
-namespace power_overwhelming {
-namespace detail {
+PWROWG_DETAIL_NAMESPACE_BEGIN
 
 #if defined(_WIN32)
-    /// <summary>
-    /// Traits class for the <c>GetComputerName</c> API.
-    /// </summary>
-    /// <typeparam name="TChar">The type of the character to retrieve the
-    /// computer name as.</typeparam>
-    template<class TChar> struct computer_name_api { };
+/// <summary>
+/// Traits class for the <c>GetComputerName</c> API.
+/// </summary>
+/// <typeparam name="TChar">The type of the character to retrieve the
+/// computer name as.</typeparam>
+template<class TChar> struct computer_name_api { };
 
-    /// <summary>
-    /// Specialisation for MBCS.
-    /// </summary>
-    template<> struct computer_name_api<char> {
-        typedef char char_type;
-        typedef DWORD size_type;
-        static inline BOOL get(char_type *buffer, size_type *size) {
-            return ::GetComputerNameA(buffer, size);
-        }
-    };
-
-    /// <summary>
-    /// Specialisation for UTF16.
-    /// </summary>
-    template<> struct computer_name_api<wchar_t> {
-        typedef wchar_t char_type;
-        typedef DWORD size_type;
-        static inline BOOL get(char_type *buffer, size_type *size) {
-            return ::GetComputerNameW(buffer, size);
-        }
-    };
-
-    /// <summary>
-    /// Generic implementation of <c>GetComputerName</c>.
-    /// </summary>
-    template<class TChar>
-    std::size_t computer_name(TChar *dst, const std::size_t cnt) {
-        auto size = (dst != nullptr)
-            ? static_cast<DWORD>(cnt)
-            : static_cast<DWORD>(0);
-
-        if (!computer_name_api<TChar>::get(dst, &size)) {
-            const auto error = ::GetLastError();
-            if ((error != ERROR_BUFFER_OVERFLOW) || (cnt >= size)) {
-                throw std::system_error(error, std::system_category());
-            }
-        }
-
-        return size;
+/// <summary>
+/// Specialisation for MBCS.
+/// </summary>
+template<> struct computer_name_api<char> {
+    typedef char char_type;
+    typedef DWORD size_type;
+    static inline BOOL get(char_type *buffer, size_type *size) {
+        return ::GetComputerNameA(buffer, size);
     }
+};
+
+/// <summary>
+/// Specialisation for UTF16.
+/// </summary>
+template<> struct computer_name_api<wchar_t> {
+    typedef wchar_t char_type;
+    typedef DWORD size_type;
+    static inline BOOL get(char_type *buffer, size_type *size) {
+        return ::GetComputerNameW(buffer, size);
+    }
+};
+
+/// <summary>
+/// Generic implementation of <c>GetComputerName</c>.
+/// </summary>
+template<class TChar>
+std::size_t computer_name(TChar *dst, const std::size_t cnt) {
+    auto size = (dst != nullptr)
+        ? static_cast<DWORD>(cnt)
+        : static_cast<DWORD>(0);
+
+    if (!computer_name_api<TChar>::get(dst, &size)) {
+        const auto error = ::GetLastError();
+        if ((error != ERROR_BUFFER_OVERFLOW) || (cnt >= size)) {
+            throw std::system_error(error, std::system_category());
+        }
+    }
+
+    return size;
+}
 #endif /* defined(_WIN32) */
 
-} /* namespace detail */
-} /* namespace power_overwhelming */
-} /* namespace visus */
+PWROWG_DETAIL_NAMESPACE_END
 
 
 /*
- * visus::power_overwhelming::computer_name
+ * PWROWG_NAMESPACE::computer_name
  */
-std::size_t visus::power_overwhelming::computer_name(
+std::size_t PWROWG_NAMESPACE::computer_name(
         _Out_writes_opt_z_(cnt) char *dst,
         _In_ const std::size_t cnt) {
 #if defined(_WIN32)
@@ -108,9 +104,9 @@ std::size_t visus::power_overwhelming::computer_name(
 
 
 /*
- * visus::power_overwhelming::computer_name
+ * PWROWG_NAMESPACE::computer_name
  */
-std::size_t visus::power_overwhelming::computer_name(
+std::size_t PWROWG_NAMESPACE::computer_name(
         _Out_writes_opt_z_(cnt) wchar_t *dst,
         _In_ const std::size_t cnt) {
 #if defined(_WIN32)

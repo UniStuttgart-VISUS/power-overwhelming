@@ -1,5 +1,5 @@
 ﻿// <copyright file="setstablepowerstate.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2022 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -8,7 +8,7 @@
 
 #include <conio.h>
 
-#include "power_overwhelming/stable_power_state_scope.h"
+#include "visus/pwrowg/stable_power_state_scope.h"
 
 
 /// <summary>
@@ -28,12 +28,12 @@
 int main(void) {
     try {
         std::cout << "Power Overwhelming" << std::endl;
-        std::cout << "Copyright © 2021 - 2023 Visualisierungsinstitut "
+        std::cout << "Copyright © 2021 - 2025 Visualisierungsinstitut "
             "der Universität Stuttgart."
             << std::endl << "All rights reserved."
             << std::endl << std::endl;
 
-        visus::power_overwhelming::stable_power_state_scope spss;
+        visus::pwrowg::stable_power_state_scope spss;
 
         std::cout << spss.size() << ((spss.size() == 1)
             ? " graphics device has " : " graphics devices have ")

@@ -1,10 +1,10 @@
 ﻿// <copyright file="cpu_affinity.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/cpu_affinity.h"
+#include "visus/pwrowg/cpu_affinity.h"
 
 #include <limits>
 #include <stdexcept>
@@ -24,9 +24,9 @@
 
 
 /*
- * visus::power_overwhelming::thread_affinity_scope::thread_affinity_scope
+ * PWROWG_NAMESPACE::thread_affinity_scope::thread_affinity_scope
  */
-visus::power_overwhelming::thread_affinity_scope::thread_affinity_scope(
+PWROWG_NAMESPACE::thread_affinity_scope::thread_affinity_scope(
         _In_ const std::uint32_t logical_cpu) {
 
 
@@ -69,9 +69,9 @@ visus::power_overwhelming::thread_affinity_scope::thread_affinity_scope(
 
 
 /*
-* visus::power_overwhelming::thread_affinity_scope::~thread_affinity_scope
+* PWROWG_NAMESPACE::thread_affinity_scope::~thread_affinity_scope
  */
-visus::power_overwhelming::thread_affinity_scope::~thread_affinity_scope(void) {
+PWROWG_NAMESPACE::thread_affinity_scope::~thread_affinity_scope(void) {
     // Note: If the restore here fails, we just need to accept it, because we
     // cannot throw in a destructor.
 #if (defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0601))
@@ -93,9 +93,9 @@ visus::power_overwhelming::thread_affinity_scope::~thread_affinity_scope(void) {
 
 
 /*
- * visus::power_overwhelming::set_thread_affinity
+ * PWROWG_NAMESPACE::set_thread_affinity
  */
-void visus::power_overwhelming::set_thread_affinity(
+void PWROWG_NAMESPACE::set_thread_affinity(
         _In_ const std::uint32_t logical_cpu) {
 #if (defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0601))
     const auto groups = ::GetActiveProcessorGroupCount();

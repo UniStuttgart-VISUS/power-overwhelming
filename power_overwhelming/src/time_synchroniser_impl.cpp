@@ -1,8 +1,8 @@
-// <copyright file="time_synchroniser_impl.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="time_synchroniser_impl.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2022 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #if defined(POWER_OVERWHELMING_WITH_TIME_SYNCHRONISER)
 #include "time_synchroniser_impl.h"
@@ -19,7 +19,7 @@
 #include <unistd.h>
 #endif /* defined(_WIN32) */
 
-#include "on_exit.h"
+#include "visus/pwrowg/on_exit.h"
 
 
 #define TIMESYNC_MAX_DATAGRAM (1024)
@@ -67,18 +67,17 @@ bool std::less<sockaddr>::operator ()(const sockaddr & lhs,
 
 
 /*
- * visus::power_overwhelming::detail::time_synchroniser_impl::time_synchroniser_impl
+ * PWROWG_DETAIL_NAMESPACE::time_synchroniser_impl::time_synchroniser_impl
  */
-visus::power_overwhelming::detail::time_synchroniser_impl
+PWROWG_DETAIL_NAMESPACE::time_synchroniser_impl
 ::time_synchroniser_impl(void) : grace_period(2), socket(INVALID_SOCKET),
     state(0) { }
 
 
 /*
- * visus::power_overwhelming::detail::time_synchroniser_impl::~time_synchroniser_impl
+ * PWROWG_DETAIL_NAMESPACE::time_synchroniser_impl::~time_synchroniser_impl
  */
-visus::power_overwhelming::detail::time_synchroniser_impl
-::~time_synchroniser_impl(void) {
+PWROWG_DETAIL_NAMESPACE::time_synchroniser_impl::~time_synchroniser_impl(void) {
     this->stop();
 
     if (this->receiver.joinable()) {
@@ -88,9 +87,9 @@ visus::power_overwhelming::detail::time_synchroniser_impl
 
 
 /*
- * visus::power_overwhelming::detail::time_synchroniser_impl::on_request
+ * PWROWG_DETAIL_NAMESPACE::time_synchroniser_impl::on_request
  */
-void visus::power_overwhelming::detail::time_synchroniser_impl::on_request(
+void PWROWG_DETAIL_NAMESPACE::time_synchroniser_impl::on_request(
         const tsmsg_request *request, const sockaddr& addr,
         const int addr_length) {
     assert(request != nullptr);
@@ -103,9 +102,9 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::on_request(
 
 
 /*
- * visus::power_overwhelming::detail::time_synchroniser_impl::on_response
+ * PWROWG_DETAIL_NAMESPACE::time_synchroniser_impl::on_response
  */
-void visus::power_overwhelming::detail::time_synchroniser_impl::on_response(
+void PWROWG_DETAIL_NAMESPACE::time_synchroniser_impl::on_response(
         const tsmsg_response *response, const sockaddr& addr,
         const int addr_length) {
     assert(response != nullptr);
@@ -144,9 +143,9 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::on_response(
 
 
 /*
- * visus::power_overwhelming::detail::time_synchroniser_impl::receive
+ * PWROWG_DETAIL_NAMESPACE::time_synchroniser_impl::receive
  */
-void visus::power_overwhelming::detail::time_synchroniser_impl::receive(
+void PWROWG_DETAIL_NAMESPACE::time_synchroniser_impl::receive(
         const int address_family, const std::uint16_t port) {
     assert(this->socket == INVALID_SOCKET);
 
@@ -258,9 +257,9 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::receive(
 
 
 /*
- * visus::power_overwhelming::detail::time_synchroniser_impl::start
+ * PWROWG_DETAIL_NAMESPACE::time_synchroniser_impl::start
  */
-void visus::power_overwhelming::detail::time_synchroniser_impl::start(
+void PWROWG_DETAIL_NAMESPACE::time_synchroniser_impl::start(
         const int address_family, const std::uint16_t port) {
     auto expected = 0;
     if (!this->state.compare_exchange_strong(expected, 2,
@@ -274,9 +273,9 @@ void visus::power_overwhelming::detail::time_synchroniser_impl::start(
 
 
 /*
- * visus::power_overwhelming::detail::time_synchroniser_impl::stop
+ * PWROWG_DETAIL_NAMESPACE::time_synchroniser_impl::stop
  */
-void visus::power_overwhelming::detail::time_synchroniser_impl::stop(void) {
+void PWROWG_DETAIL_NAMESPACE::time_synchroniser_impl::stop(void) {
     auto expected = 1;
     if (this->state.compare_exchange_weak(expected, 2,
             std::memory_order::memory_order_release)) {

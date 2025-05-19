@@ -1,8 +1,8 @@
-// <copyright file="emi_device.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="emi_device.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2023 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "emi_device.h"
 
@@ -13,10 +13,9 @@
 
 #if defined(_WIN32)
 /*
- * visus::power_overwhelming::detail::emi_device::emi_device
+ * PWROWG_DETAIL_NAMESPACE::emi_device::emi_device
  */
-visus::power_overwhelming::detail::emi_device::emi_device(
-        const string_type& path)
+PWROWG_DETAIL_NAMESPACE::emi_device::emi_device(const string_type& path)
         : _handle(INVALID_HANDLE_VALUE), _version({ 0 }) {
     this->_handle = ::CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ,
         nullptr, OPEN_EXISTING, 0, NULL);
@@ -28,19 +27,18 @@ visus::power_overwhelming::detail::emi_device::emi_device(
 
 
 /*
- * visus::power_overwhelming::detail::emi_device::emi_device
+ * PWROWG_DETAIL_NAMESPACE::emi_device::emi_device
  */
 
-visus::power_overwhelming::detail::emi_device::emi_device(
-        emi_device&& rhs) noexcept {
+PWROWG_DETAIL_NAMESPACE::emi_device::emi_device(emi_device&& rhs) noexcept {
     *this = std::move(rhs);
 }
 
 
 /*
- * visus::power_overwhelming::detail::emi_device::~emi_device
+ * PWROWG_DETAIL_NAMESPACE::emi_device::~emi_device
  */
-visus::power_overwhelming::detail::emi_device::~emi_device(void) noexcept {
+PWROWG_DETAIL_NAMESPACE::emi_device::~emi_device(void) noexcept {
     if (this->_handle != INVALID_HANDLE_VALUE) {
         ::CloseHandle(this->_handle);
     }
@@ -48,10 +46,10 @@ visus::power_overwhelming::detail::emi_device::~emi_device(void) noexcept {
 
 
 /*
- * visus::power_overwhelming::detail::emi_device::channels
+ * PWROWG_DETAIL_NAMESPACE::emi_device::channels
  */
 decltype(EMI_METADATA_V2::ChannelCount)
-visus::power_overwhelming::detail::emi_device::channels(void) const {
+PWROWG_DETAIL_NAMESPACE::emi_device::channels(void) const {
     switch (this->version().EmiVersion) {
         case EMI_VERSION_V1:
             return 1;
@@ -66,16 +64,17 @@ visus::power_overwhelming::detail::emi_device::channels(void) const {
 
 
 /*
- * visus::power_overwhelming::detail::emi_device::metadata
+ * PWROWG_DETAIL_NAMESPACE::emi_device::metadata
  */
-const visus::power_overwhelming::detail::emi_device::metadata_type&
-visus::power_overwhelming::detail::emi_device::metadata(void) const {
+const PWROWG_DETAIL_NAMESPACE::emi_device::metadata_type&
+PWROWG_DETAIL_NAMESPACE::emi_device::metadata(void) const {
     if (this->_metadata.empty()) {
         // Find out how big the metadata are.
         {
             DWORD returned = 0;
             EMI_METADATA_SIZE size;
-            if (!::DeviceIoControl(this->_handle, IOCTL_EMI_GET_METADATA_SIZE,
+            if (!::DeviceIoControl(this->_handle,
+                    IOCTL_EMI_GET_METADATA_SIZE,
                     nullptr, 0,
                     &size, sizeof(size),
                     &returned, 0)) {
@@ -91,7 +90,8 @@ visus::power_overwhelming::detail::emi_device::metadata(void) const {
         {
             DWORD returned = 0;
             const auto size = static_cast<DWORD>(this->_metadata.size());
-            if (!::DeviceIoControl(this->_handle, IOCTL_EMI_GET_METADATA,
+            if (!::DeviceIoControl(this->_handle,
+                    IOCTL_EMI_GET_METADATA,
                     nullptr, 0,
                     this->_metadata.data(), size,
                     &returned, 0)) {
@@ -108,9 +108,9 @@ visus::power_overwhelming::detail::emi_device::metadata(void) const {
 
 
 /*
- * visus::power_overwhelming::detail::emi_device::version
+ * PWROWG_DETAIL_NAMESPACE::emi_device::version
  */
-EMI_VERSION visus::power_overwhelming::detail::emi_device::version(void) const {
+EMI_VERSION PWROWG_DETAIL_NAMESPACE::emi_device::version(void) const {
     if (this->_version.EmiVersion < 1) {
         DWORD returned = 0;
         if (!::DeviceIoControl(this->_handle, IOCTL_EMI_GET_VERSION,
@@ -128,10 +128,10 @@ EMI_VERSION visus::power_overwhelming::detail::emi_device::version(void) const {
 
 
 /*
- * visus::power_overwhelming::detail::emi_device::operator =
+ * PWROWG_DETAIL_NAMESPACE::emi_device::operator =
  */
-visus::power_overwhelming::detail::emi_device&
-visus::power_overwhelming::detail::emi_device::operator =(
+PWROWG_DETAIL_NAMESPACE::emi_device&
+PWROWG_DETAIL_NAMESPACE::emi_device::operator =(
         emi_device &&rhs) noexcept {
     if (this != std::addressof(rhs)) {
         this->_handle = rhs._handle;

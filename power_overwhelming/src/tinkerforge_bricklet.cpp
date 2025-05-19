@@ -1,8 +1,8 @@
-// <copyright file="tinkerforge_scope.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="tinkerforge_bricklet.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2024 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "tinkerforge_bricklet.h"
 
@@ -10,9 +10,9 @@
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_bricklet::tinkerforge_bricklet
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_bricklet::tinkerforge_bricklet
  */
-visus::power_overwhelming::detail::tinkerforge_bricklet::tinkerforge_bricklet(void)
+PWROWG_DETAIL_NAMESPACE::tinkerforge_bricklet::tinkerforge_bricklet(void)
         : _device_type(0), _position('\0') {
     std::fill(this->_firmware_version.begin(), this->_firmware_version.end(),
         static_cast<std::uint8_t>(0));
@@ -22,9 +22,9 @@ visus::power_overwhelming::detail::tinkerforge_bricklet::tinkerforge_bricklet(vo
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_bricklet::tinkerforge_bricklet
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_bricklet::tinkerforge_bricklet
  */
-visus::power_overwhelming::detail::tinkerforge_bricklet::tinkerforge_bricklet(
+PWROWG_DETAIL_NAMESPACE::tinkerforge_bricklet::tinkerforge_bricklet(
         const std::string& uid, const std::string&connected_uid,
         const char position, const std::uint8_t hardware_version[3],
         const std::uint8_t firmware_version[3],

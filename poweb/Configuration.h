@@ -14,6 +14,12 @@ class Configuration final {
 public:
 
     /// <summary>
+    /// The implementation collecting the power measurements.
+    /// </summary>
+    typedef visus::pwrowg::atomic_sink<visus::pwrowg::csv_sink<std::ofstream>>
+        CollectorType;
+
+    /// <summary>
     /// Initialises an empty instance.
     /// </summary>
     Configuration(void);
@@ -36,8 +42,8 @@ public:
     /// Gets the power collector object.
     /// </summary>
     /// <returns></returns>
-    inline visus::power_overwhelming::collector& GetCollector(void) noexcept {
-        return this->_collector;
+    inline CollectorType& GetCollector(void) noexcept {
+        return *this->_collector;
     }
 
     /// <summary>
@@ -82,10 +88,34 @@ public:
     /// Gets the time for which the page should stay visible once the navigation
     /// has completed.
     /// </summary>
-    /// <param name=""></param>
     /// <returns></returns>
     inline std::chrono::milliseconds GetVisiblePeriod(void) const noexcept {
         return this->_visiblePeriod;
+    }
+
+    /// <summary>
+    /// Emits the marker indicating that the blank page is shown.
+    /// </summary>
+    inline void MarkerBlank(void) const noexcept {
+        this->_sensors.marker(this->_markerBlank);
+    }
+
+    /// <summary>
+    /// Emits the marker for navigating to the <paramref name="url" />th URL.
+    /// </summary>
+    /// <param name="url"></param>
+    inline void MarkerNavigate(_In_ const std::size_t url) const {
+        assert(url < this->_markersNav.size());
+        this->_sensors.marker(this->_markersNav[url]);
+    }
+
+    /// <summary>
+    /// Emits the marker for showing to the <paramref name="url" />th URL.
+    /// </summary>
+    /// <param name="url"></param>
+    inline void MarkerShow(_In_ const std::size_t url) const {
+        assert(url < this->_markersShow.size());
+        this->_sensors.marker(this->_markersShow[url]);
     }
 
     /// <summary>
@@ -116,11 +146,21 @@ public:
 
 private:
 
+    static inline std::ofstream MakeStream(_In_ const std::wstring& path) {
+        std::ofstream retval;
+        retval.open(path.c_str(), std::ios::trunc);
+        return retval;
+    }
+
     std::wstring _blankPage;
-    visus::power_overwhelming::collector _collector;
+    std::unique_ptr<CollectorType> _collector;
     std::chrono::milliseconds _coolDown;
     std::chrono::milliseconds _initialWait;
     std::uint32_t _iterations;
+    unsigned int _markerBlank;
+    std::vector<unsigned int> _markersNav;
+    std::vector<unsigned int> _markersShow;
+    visus::pwrowg::sensor_array _sensors;
     std::vector<std::wstring> _urls;
     std::chrono::milliseconds _visiblePeriod;
 };

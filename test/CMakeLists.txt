@@ -31,6 +31,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${PowerOverwhelmingTestInclud
 
 #target_precompile_headers(${PROJECT_NAME} PRIVATE pch.h)
 
+
 # Configure the linker: besides the library to test, we also need to link the
 # Visual Studio testing framework.
 target_link_directories(${PROJECT_NAME} PRIVATE "${VcInstallDir}/Auxiliary/VS/UnitTest/lib/$(LibrariesArchitecture)")
@@ -41,7 +42,21 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     adl
     nvml
     tinkerforge
-    power_overwhelming)
+    power_overwhelming
+    usbpdtesterdriver)
+
+# The test requires access to the Powenetics headers to test the sensor.
+if (PWROWG_WithPowenetics)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_POWENETICS)
+    target_link_libraries(${PROJECT_NAME} PRIVATE libpowenetics)
+endif ()
+
+# The test requires access to the VISA headers to test the instruments.
+if (PWROWG_WithVisa)
+    find_package(VISA REQUIRED)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
+    target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_WITH_VISA)
+endif ()
 
 # Grab the DLLs to be tested and copy them to the output directory such that
 # the Visual Studio test driver finds everything.

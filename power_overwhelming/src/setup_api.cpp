@@ -1,8 +1,8 @@
-// <copyright file="setup_api.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="setup_api.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2023 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #if defined(_WIN32)
 #include <initguid.h> // [sic]
@@ -15,10 +15,10 @@
 
 #if defined(_WIN32)
 /*
- * visus::power_overwhelming::detail::get_class_description
+ * PWROWG_DETAIL_NAMESPACE::get_class_description
  */
-std::basic_string<TCHAR>
-visus::power_overwhelming::detail::get_class_description(const GUID& guid) {
+std::basic_string<TCHAR> PWROWG_DETAIL_NAMESPACE::get_class_description(
+        const GUID& guid) {
     DWORD size = 0;
 
     ::SetupDiGetClassDescription(&guid, nullptr, 0, &size);
@@ -45,10 +45,10 @@ visus::power_overwhelming::detail::get_class_description(const GUID& guid) {
 
 
 /*
- * visus::power_overwhelming::detail::get_device_path
+ * PWROWG_DETAIL_NAMESPACE::get_device_path
  */
-std::basic_string<TCHAR>
-visus::power_overwhelming::detail::get_device_path(HDEVINFO dev_info,
+std::basic_string<TCHAR> PWROWG_DETAIL_NAMESPACE::get_device_path(
+        HDEVINFO dev_info,
         SP_DEVICE_INTERFACE_DATA& interface_data,
         PSP_DEVINFO_DATA device_info_data) {
     DWORD size = 0;

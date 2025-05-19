@@ -1,17 +1,16 @@
-// <copyright file="triple_buffering.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="triple_buffering.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "triple_buffering.h"
 
 
 /*
- * visus::power_overwhelming::detail::swap_read_buffer
+ * PWROWG_DETAIL_NAMESPACE::swap_read_buffer
  */
-bool visus::power_overwhelming::detail::swap_read_buffer(
-        triple_buffer_state& state) {
+bool PWROWG_DETAIL_NAMESPACE::swap_read_buffer(triple_buffer_state& state) {
     auto cur = state.load();
     decltype(cur) nxt;
 
@@ -31,10 +30,9 @@ bool visus::power_overwhelming::detail::swap_read_buffer(
 
 
 /*
- * visus::power_overwhelming::detail::swap_write_buffer
+ * PWROWG_DETAIL_NAMESPACE::swap_write_buffer
  */
-void visus::power_overwhelming::detail::swap_write_buffer(
-        triple_buffer_state& state) {
+void PWROWG_DETAIL_NAMESPACE::swap_write_buffer(triple_buffer_state& state) {
     auto cur = state.load();
     decltype(cur) nxt;
 

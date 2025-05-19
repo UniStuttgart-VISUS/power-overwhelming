@@ -1,53 +1,49 @@
-// <copyright file="on_exit_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="on_exit_test.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "pch.h"
-#include "CppUnitTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 
-namespace visus {
-namespace power_overwhelming {
-namespace test {
+PWROWG_TEST_NAMESPACE_BEGIN
 
-    TEST_CLASS(on_exit_test) {
+TEST_CLASS(on_exit_test) {
 
-    public:
+public:
 
-        TEST_METHOD(test_normal_exit) {
+    TEST_METHOD(test_normal_exit) {
+        {
+            auto i = 0;
+            Assert::AreEqual(0, i, L"Initialisation", LINE_INFO());
+
             {
-                auto i = 0;
-                Assert::AreEqual(0, i, L"Initialisation", LINE_INFO());
-
-                {
-                    auto g = on_exit([&i](void) { i = 10; });
-                    Assert::AreEqual(0, i, L"Unchanged", LINE_INFO());
-                }
-
-                Assert::AreEqual(10, i, L"Exit handler called", LINE_INFO());
+                auto g = on_exit([&i](void) { i = 10; });
+                Assert::AreEqual(0, i, L"Unchanged", LINE_INFO());
             }
-        }
 
-        TEST_METHOD(test_cancellation) {
+            Assert::AreEqual(10, i, L"Exit handler called", LINE_INFO());
+        }
+    }
+
+    TEST_METHOD(test_cancellation) {
+        {
+            auto i = 0;
+            Assert::AreEqual(0, i, L"Initialisation", LINE_INFO());
+
             {
-                auto i = 0;
-                Assert::AreEqual(0, i, L"Initialisation", LINE_INFO());
-
-                {
-                    auto g = on_exit([&i](void) { i = 10; });
-                    Assert::AreEqual(0, i, L"Unchanged", LINE_INFO());
-                    g.cancel();
-                }
-
-                Assert::AreEqual(0, i, L"Exit handler not called", LINE_INFO());
+                auto g = on_exit([&i](void) { i = 10; });
+                Assert::AreEqual(0, i, L"Unchanged", LINE_INFO());
+                g.cancel();
             }
-        }
 
-    };
-} /* namespace test */
-} /* namespace power_overwhelming */
-} /* namespace visus */
+            Assert::AreEqual(0, i, L"Exit handler not called", LINE_INFO());
+        }
+    }
+
+};
+
+PWROWG_TEST_NAMESPACE_END

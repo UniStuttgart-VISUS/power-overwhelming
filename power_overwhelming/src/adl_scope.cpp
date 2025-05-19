@@ -1,8 +1,8 @@
-// <copyright file="adl_scope.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="adl_scope.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "adl_scope.h"
 
@@ -14,19 +14,17 @@
 
 
 /*
- * visus::power_overwhelming::detail::adl_scope::allocate
+ * PWROWG_DETAIL_NAMESPACE::adl_scope::allocate
  */
-void *__stdcall visus::power_overwhelming::detail::adl_scope::allocate(
-        int cnt) {
+void *__stdcall PWROWG_DETAIL_NAMESPACE::adl_scope::allocate(int cnt) {
     return new (std::nothrow) std::uint8_t[cnt];
 }
 
 
 /*
- * visus::power_overwhelming::detail::adl_scope::deallocate
+ * PWROWG_DETAIL_NAMESPACE::adl_scope::deallocate
  */
-void __stdcall visus::power_overwhelming::detail::adl_scope::deallocate(
-        void **buffer) {
+void __stdcall PWROWG_DETAIL_NAMESPACE::adl_scope::deallocate(void **buffer) {
     assert(buffer != nullptr);
     delete static_cast<std::uint8_t *>(*buffer);
     *buffer = nullptr;
@@ -34,9 +32,9 @@ void __stdcall visus::power_overwhelming::detail::adl_scope::deallocate(
 
 
 /*
- * visus::power_overwhelming::detail::adl_scope::adl_scope
+ * PWROWG_DETAIL_NAMESPACE::adl_scope::adl_scope
  */
-visus::power_overwhelming::detail::adl_scope::adl_scope(void) : _handle(0) {
+PWROWG_DETAIL_NAMESPACE::adl_scope::adl_scope(void) : _handle(0) {
     auto status = amd_display_library::instance().ADL2_Main_Control_Create(
         adl_scope::allocate, 1, &this->_handle);
     if (status != ADL_OK) {
@@ -46,8 +44,8 @@ visus::power_overwhelming::detail::adl_scope::adl_scope(void) : _handle(0) {
 
 
 /*
- * visus::power_overwhelming::detail::adl_scope::~adl_scope
+ * PWROWG_DETAIL_NAMESPACE::adl_scope::~adl_scope
  */
-visus::power_overwhelming::detail::adl_scope::~adl_scope(void) {
+PWROWG_DETAIL_NAMESPACE::adl_scope::~adl_scope(void) {
     amd_display_library::instance().ADL2_Main_Control_Destroy(this->_handle);
 }

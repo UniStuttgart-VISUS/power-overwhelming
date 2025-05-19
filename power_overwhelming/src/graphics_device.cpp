@@ -1,10 +1,10 @@
 ﻿// <copyright file="graphics_device.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2022 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/graphics_device.h"
+#include "visus/pwrowg/graphics_device.h"
 
 #include <memory>
 
@@ -18,9 +18,9 @@
 
 
 /*
- * visus::power_overwhelming::graphics_device::all
+ * PWROWG_NAMESPACE::graphics_device::all
  */
-std::size_t visus::power_overwhelming::graphics_device::all(
+std::size_t PWROWG_NAMESPACE::graphics_device::all(
         _Out_writes_opt_(cntDevices) graphics_device *outDevices,
         _In_ const std::size_t cntDevices,
         _In_ const bool onlyHardware) {
@@ -37,7 +37,7 @@ std::size_t visus::power_overwhelming::graphics_device::all(
     hr = ::CreateDXGIFactory1(::IID_IDXGIFactory1,
         reinterpret_cast<void **>(factory.GetAddressOf()));
     if (FAILED(hr)) {
-        throw std::system_error(hr, detail::com_category());
+        throw std::system_error(hr, PWROWG_DETAIL_NAMESPACE::com_category());
     }
 
     for (UINT a = 0; (hr != DXGI_ERROR_NOT_FOUND); ++a) {
@@ -50,7 +50,7 @@ std::size_t visus::power_overwhelming::graphics_device::all(
 
             hr = adapter->GetDesc(&desc);
             if (FAILED(hr)) {
-                throw std::system_error(hr, detail::com_category());
+                throw std::system_error(hr, PWROWG_DETAIL_NAMESPACE::com_category());
             }
 
             if ((desc.VendorId == 0x1414) && (desc.DeviceId == 0x8c)) {
@@ -69,18 +69,20 @@ std::size_t visus::power_overwhelming::graphics_device::all(
                 NULL, 0, NULL, 0, D3D11_SDK_VERSION, device.GetAddressOf(),
                 &featureLevel, nullptr);
             if (FAILED(hr)) {
-                throw std::system_error(hr, detail::com_category());
+                throw std::system_error(hr, PWROWG_DETAIL_NAMESPACE::com_category());
             }
 #elif (POWER_OVERWHELMING_GPU_ABSTRACTION == 12)
             hr = ::D3D12CreateDevice(adapter.Get(), featureLevel,
                 IID_PPV_ARGS(&device));
             if (FAILED(hr)) {
-                throw std::system_error(hr, detail::com_category());
+                throw std::system_error(hr, PWROWG_DETAIL_NAMESPACE::com_category());
             }
 #endif /* (POWER_OVERWHELMING_GPU_ABSTRACTION == 11) */
 
-            detail::safe_replace(outDevices[retval]._adapter, adapter.Get());
-            detail::safe_replace(outDevices[retval]._device, device.Get());
+            PWROWG_DETAIL_NAMESPACE::safe_replace(outDevices[retval]._adapter,
+                adapter.Get());
+            PWROWG_DETAIL_NAMESPACE::safe_replace(outDevices[retval]._device,
+                device.Get());
         }
 
         if (SUCCEEDED(hr)) {
@@ -96,30 +98,30 @@ std::size_t visus::power_overwhelming::graphics_device::all(
 
 
 /*
- * visus::power_overwhelming::graphics_device::graphics_device
+ * PWROWG_NAMESPACE::graphics_device::graphics_device
  */
-visus::power_overwhelming::graphics_device::graphics_device(void) noexcept
+PWROWG_NAMESPACE::graphics_device::graphics_device(void) noexcept
     : _adapter(nullptr), _device(nullptr), _id(nullptr), _name(nullptr) { }
 
 
 /*
- * visus::power_overwhelming::graphics_device::graphics_device
+ * PWROWG_NAMESPACE::graphics_device::graphics_device
  */
-visus::power_overwhelming::graphics_device::graphics_device(
+PWROWG_NAMESPACE::graphics_device::graphics_device(
         _In_ const graphics_device& rhs)
     : _adapter(rhs._adapter), _device(rhs._device),
         _id(nullptr), _name(nullptr) {
 #if (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11)
-    detail::safe_add_ref(this->_adapter);
-    detail::safe_add_ref(this->_device);
+    PWROWG_DETAIL_NAMESPACE::safe_add_ref(this->_adapter);
+    PWROWG_DETAIL_NAMESPACE::safe_add_ref(this->_device);
 #endif /* (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11) */
 }
 
 
 /*
- * visus::power_overwhelming::graphics_device::graphics_device
+ * PWROWG_NAMESPACE::graphics_device::graphics_device
  */
-visus::power_overwhelming::graphics_device::graphics_device(
+PWROWG_NAMESPACE::graphics_device::graphics_device(
         _In_ graphics_device&& rhs) noexcept
     : _adapter(rhs._adapter), _device(rhs._device),
         _id(rhs._id), _name(rhs._name) {
@@ -131,12 +133,12 @@ visus::power_overwhelming::graphics_device::graphics_device(
 
 
 /*
- * visus::power_overwhelming::graphics_device::~graphics_device
+ * PWROWG_NAMESPACE::graphics_device::~graphics_device
  */
-visus::power_overwhelming::graphics_device::~graphics_device(void) {
+PWROWG_NAMESPACE::graphics_device::~graphics_device(void) {
 #if (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11)
-    detail::safe_release(this->_adapter);
-    detail::safe_release(this->_device);
+    PWROWG_DETAIL_NAMESPACE::safe_release(this->_adapter);
+    PWROWG_DETAIL_NAMESPACE::safe_release(this->_device);
 #endif /* (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11) */
 
     delete[] this->_id;
@@ -145,15 +147,15 @@ visus::power_overwhelming::graphics_device::~graphics_device(void) {
 
 
 /*
- * visus::power_overwhelming::graphics_device::operator =
+ * PWROWG_NAMESPACE::graphics_device::operator =
  */
-visus::power_overwhelming::graphics_device
-visus::power_overwhelming::graphics_device::operator =(
+PWROWG_NAMESPACE::graphics_device
+PWROWG_NAMESPACE::graphics_device::operator =(
         _In_ const graphics_device& rhs) {
     if (this != std::addressof(rhs)) {
 #if (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11)
-        detail::safe_replace(this->_adapter, rhs._adapter);
-        detail::safe_replace(this->_device, rhs._device);
+        PWROWG_DETAIL_NAMESPACE::safe_replace(this->_adapter, rhs._adapter);
+        PWROWG_DETAIL_NAMESPACE::safe_replace(this->_device, rhs._device);
 #endif /* (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11) */
 
         // Just clear any existing cached data. The copy will be allocated
@@ -169,15 +171,15 @@ visus::power_overwhelming::graphics_device::operator =(
 
 
 /*
- * visus::power_overwhelming::graphics_device::operator =
+ * PWROWG_NAMESPACE::graphics_device::operator =
  */
-visus::power_overwhelming::graphics_device
-visus::power_overwhelming::graphics_device::operator =(
+PWROWG_NAMESPACE::graphics_device
+PWROWG_NAMESPACE::graphics_device::operator =(
         _In_ graphics_device&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
 #if (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11)
-        detail::safe_move(this->_adapter, std::move(rhs._adapter));
-        detail::safe_move(this->_device, std::move(rhs._device));
+        PWROWG_DETAIL_NAMESPACE::safe_move(this->_adapter, std::move(rhs._adapter));
+        PWROWG_DETAIL_NAMESPACE::safe_move(this->_device, std::move(rhs._device));
 #endif /* (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11) */
 
         // Transfer the cached data as well.
@@ -194,18 +196,18 @@ visus::power_overwhelming::graphics_device::operator =(
 
 
 /*
- * visus::power_overwhelming::graphics_device::operator bool
+ * PWROWG_NAMESPACE::graphics_device::operator bool
  */
-visus::power_overwhelming::graphics_device::operator bool(void) const noexcept {
+PWROWG_NAMESPACE::graphics_device::operator bool(void) const noexcept {
     return ((this->_adapter != nullptr)
         && (this->_device != nullptr));
 }
 
 
 /*
- * visus::power_overwhelming::graphics_device::assert_id_and_name
+ * PWROWG_NAMESPACE::graphics_device::assert_id_and_name
  */
-void visus::power_overwhelming::graphics_device::assert_id_and_name(void) const {
+void PWROWG_NAMESPACE::graphics_device::assert_id_and_name(void) const {
 #if (POWER_OVERWHELMING_GPU_ABSTRACTION >= 11)
     if ((this->_adapter != nullptr) && (this->_id == nullptr)
             && (this->_name == nullptr)) {
@@ -214,7 +216,7 @@ void visus::power_overwhelming::graphics_device::assert_id_and_name(void) const 
         {
             auto hr = this->_adapter->GetDesc(&desc);
             if (FAILED(hr)) {
-                throw std::system_error(hr, detail::com_category());
+                throw std::system_error(hr, PWROWG_DETAIL_NAMESPACE::com_category());
             }
         }
 

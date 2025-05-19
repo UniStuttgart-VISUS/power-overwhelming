@@ -1,5 +1,5 @@
 ﻿# CMakeLists.txt
-# Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+# Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 # Licensed under the MIT licence. See LICENCE file for details.
 
 # Search optional dependencies
@@ -7,7 +7,9 @@ find_package(VISA QUIET)
 
 # User-configurable options
 option(PWROWG_WithAdl "Build support for the AMD Display Library" ON)
+option(PWROWG_WithBenchlab "Build support for the Benchlab telemetry system" OFF)
 option(PWROWG_WithNvml "Build support for the NVIDIA Management Library" ON)
+option(PWROWG_WithPowenetics "Build support for Powenetics" ON)
 option(PWROWG_WithTimeSynchronisation "Build support for Cristian's algorithm" OFF)
 option(PWROWG_WithVisa "Build support for the VISA-based instruments" ${VISA_FOUND})
 cmake_dependent_option(PWROWG_ForceDirect3D11 "Force GPU enumeration via Direct3D 11" OFF WIN32 OFF)
@@ -24,18 +26,30 @@ source_group("Header Files\\include" FILES  ${PublicHeaderFiles})
 source_group("Header Files\\src" FILES ${PrivateHeaderFiles})
 source_group("Source Files\\src" FILES ${SourceFiles})
 
+
 # Define the output.
 add_library(${PROJECT_NAME} SHARED ${PublicHeaderFiles} ${PrivateHeaderFiles} ${SourceFiles})
 
 # Configure the compiler.
 target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_EXPORTS UNICODE _UNICODE)
 
+
 if (PWROWG_WithAdl)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_ADL)
 endif ()
 
+if (PWROWG_WithBenchlab)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_BENCHLAB)
+    target_link_libraries(${PROJECT_NAME} PRIVATE libbenchlab)
+endif ()
+
 if (PWROWG_WithNvml)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_NVML)
+endif ()
+
+if (PWROWG_WithPowenetics)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_POWENETICS)
+    target_link_libraries(${PROJECT_NAME} PRIVATE libpowenetics)
 endif ()
 
 if (PWROWG_WithTimeSynchronisation)
@@ -44,9 +58,8 @@ endif ()
 
 if (PWROWG_WithVisa)
     find_package(VISA REQUIRED)
-    add_definitions("-DPOWER_OVERWHELMING_WITH_VISA")
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_VISA)
     target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
-    target_link_libraries(${PROJECT_NAME})
 endif ()
 
 if (PWROWG_CustomTinkerforgeFirmwareMajor)
@@ -62,6 +75,7 @@ if (PWROWG_CustomTinkerforgeFirmwareMajor)
     endif ()
 endif ()
 
+
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
@@ -74,13 +88,13 @@ if (WIN32)
 endif ()
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE adl nlohmann_json::nlohmann_json nvml tinkerforge)
+    PRIVATE adl nlohmann_json::nlohmann_json nvml tinkerforge usbpdtesterdriver rapidcsv)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PUBLIC Ws2_32)
 else ()
     find_package(Threads REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS} Threads::Threads)
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS} Threads::Threads uuid)
     set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 endif ()
 

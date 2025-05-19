@@ -12,10 +12,10 @@
 
 
 /*
- * visus::power_overwhelming::detail::nvidia_management_library::instance
+ * PWROWG_DETAIL_NAMESPACE::nvidia_management_library::instance
  */
-const visus::power_overwhelming::detail::nvidia_management_library&
-visus::power_overwhelming::detail::nvidia_management_library::instance(void) {
+const PWROWG_DETAIL_NAMESPACE::nvidia_management_library&
+PWROWG_DETAIL_NAMESPACE::nvidia_management_library::instance(void) {
     static const nvidia_management_library instance;
     return instance;
 }
@@ -24,7 +24,7 @@ visus::power_overwhelming::detail::nvidia_management_library::instance(void) {
 /*
  * ...::detail::nvidia_management_library::nvidia_management_library
  */
-visus::power_overwhelming::detail::nvidia_management_library
+PWROWG_DETAIL_NAMESPACE::nvidia_management_library
 ::nvidia_management_library(void)
 #if defined(_WIN32)
         : library_base(TEXT("nvml.dll")) {

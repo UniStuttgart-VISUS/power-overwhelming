@@ -1,15 +1,15 @@
-// <copyright file="tinkerforge_scope.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="tinkerforge_scope.inl" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_scope::copy_bricklets
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::copy_bricklets
  */
 template<class TIterator, class TPredicate>
-std::size_t visus::power_overwhelming::detail::tinkerforge_scope::copy_bricklets(
+std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::copy_bricklets(
         TIterator oit, const TPredicate& predicate) const {
     std::size_t retval = 0;
 
@@ -27,10 +27,10 @@ std::size_t visus::power_overwhelming::detail::tinkerforge_scope::copy_bricklets
 
 
 /*
- * visus::power_overwhelming::detail::tinkerforge_scope::copy_bricklets
+ * PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::copy_bricklets
  */
 template<class TIterator, class TPredicate>
-std::size_t visus::power_overwhelming::detail::tinkerforge_scope::copy_bricklets(
+std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::copy_bricklets(
             TIterator oit, const TPredicate& predicate,
             const std::chrono::milliseconds timeout,
             const std::size_t expected) const {

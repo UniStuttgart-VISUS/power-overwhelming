@@ -1,79 +1,69 @@
-// <copyright file="visa_exception.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="visa_exception.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 #include "visa_exception.h"
 
 #include "visa_library.h"
 
 
-namespace visus {
-namespace power_overwhelming {
-namespace detail {
+PWROWG_DETAIL_NAMESPACE_BEGIN
 
-    /// <summary>
-    /// Convert a VISA error code to an error message.
-    /// </summary>
-    /// <param name="rm"></param>
-    /// <param name="status"></param>
-    /// <returns></returns>
-    static std::string visa_to_string(const visa_exception::value_type status) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-        ViSession rm;
-        // Documentation says 256 would be OK, but most sample code uses 1K.
-        ViChar retval[1024];
+/// <summary>
+/// Convert a VISA error code to an error message.
+/// </summary>
+/// <param name="rm"></param>
+/// <param name="status"></param>
+/// <returns></returns>
+static std::string visa_to_string(const visa_exception::value_type status) {
+    ViSession rm;
+    // Documentation says 256 would be OK, but most sample code uses 1K.
+    ViChar retval[1024];
 
-        if (visa_library::instance().viOpenDefaultRM(&rm) == VI_SUCCESS) {
-            visa_library::instance().viStatusDesc(rm, status, retval);
-            visa_library::instance().viClose(rm);
-            // Documentation says that the error string is valid even if
-            // viStatusDesc fails, so we just return whatever we get ...
-            return retval;
+    if (visa_library::instance().viOpenDefaultRM(&rm) == VI_SUCCESS) {
+        visa_library::instance().viStatusDesc(rm, status, retval);
+        visa_library::instance().viClose(rm);
+        // Documentation says that the error string is valid even if
+        // viStatusDesc fails, so we just return whatever we get ...
+        return retval;
 
-        } else {
-            return std::to_string(status);
-        }
-
-#else /*defined(POWER_OVERWHELMING_WITH_VISA) */
+    } else {
         return std::to_string(status);
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
     }
+}
 
-} /* namespace detail */
-} /* namespace power_overwhelming */
-} /* namespace visus */
+PWROWG_DETAIL_NAMESPACE_END
 
 
 /*
- * visus::power_overwhelming::visa_exception::throw_on_error
+ * PWROWG_DETAIL_NAMESPACE::visa_exception::throw_on_error
  */
-void visus::power_overwhelming::visa_exception::throw_on_error(
+void PWROWG_DETAIL_NAMESPACE::visa_exception::throw_on_error(
         const value_type status) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     if (status < VI_SUCCESS) {
         throw visa_exception(status);
     }
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
 /*
- * visus::power_overwhelming::visa_exception::throw_unless_succeeded
+ * PWROWG_DETAIL_NAMESPACE::visa_exception::throw_unless_succeeded
  */
-void visus::power_overwhelming::visa_exception::throw_unless_succeeded(
+void PWROWG_DETAIL_NAMESPACE::visa_exception::throw_unless_succeeded(
         const value_type status) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
     if (status != VI_SUCCESS) {
         throw visa_exception(status);
     }
-#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
 /*
- * visus::power_overwhelming::visa_exception::visa_exception
+ * PWROWG_DETAIL_NAMESPACE::visa_exception::visa_exception
  */
-visus::power_overwhelming::visa_exception::visa_exception(const value_type code)
+PWROWG_DETAIL_NAMESPACE::visa_exception::visa_exception(const value_type code)
     : std::runtime_error(detail::visa_to_string(code).c_str()), _code(code) { }
+
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */

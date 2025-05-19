@@ -1,15 +1,15 @@
 ﻿// <copyright file="adl_utils.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 
 
 /*
- * visus::power_overwhelming::detail::get_adapters_if
+ * PWROWG_DETAIL_NAMESPACE::get_adapters_if
  */
 template<class TPredicate>
-std::vector<AdapterInfo>
-visus::power_overwhelming::detail::get_adapters_if(_In_ adl_scope& scope,
+std::vector<AdapterInfo> PWROWG_DETAIL_NAMESPACE::get_adapters_if(
+        _In_ adl_scope& scope,
         _In_ const TPredicate& predicate) {
     auto retval = get_adapters(scope);
 

@@ -1,8 +1,8 @@
-// <copyright file="library_base.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="library_base.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "library_base.h"
 
@@ -10,18 +10,18 @@
 
 
 /*
- * visus::power_overwhelming::detail::library_base::library_base
+ * PWROWG_DETAIL_NAMESPACE::library_base::library_base
  */
-visus::power_overwhelming::detail::library_base::library_base(
-        library_base &&rhs) noexcept : _handle(rhs._handle) {
+PWROWG_DETAIL_NAMESPACE::library_base::library_base(
+        library_base&& rhs) noexcept : _handle(rhs._handle) {
     rhs._handle = invalid_handle;
 }
 
 
 /*
- * visus::power_overwhelming::detail::library_base::~library_base
+ * PWROWG_DETAIL_NAMESPACE::library_base::~library_base
  */
-visus::power_overwhelming::detail::library_base::~library_base(void) {
+PWROWG_DETAIL_NAMESPACE::library_base::~library_base(void) {
     if (this->_handle != invalid_handle) {
 #if defined(_WIN32)
         ::FreeLibrary(this->_handle);
@@ -33,11 +33,10 @@ visus::power_overwhelming::detail::library_base::~library_base(void) {
 
 
 /*
- * visus::power_overwhelming::detail::library_base::operator =
+ * PWROWG_DETAIL_NAMESPACE::library_base::operator =
  */
-visus::power_overwhelming::detail::library_base&
-visus::power_overwhelming::detail::library_base::operator =(
-        library_base&& rhs) noexcept {
+PWROWG_DETAIL_NAMESPACE::library_base&
+PWROWG_DETAIL_NAMESPACE::library_base::operator =(library_base&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         this->_handle = rhs._handle;
         rhs._handle = invalid_handle;
@@ -48,9 +47,9 @@ visus::power_overwhelming::detail::library_base::operator =(
 
 
 /*
- * visus::power_overwhelming::detail::library_base::library_base
+ * PWROWG_DETAIL_NAMESPACE::library_base::library_base
  */
-visus::power_overwhelming::detail::library_base::library_base(
+PWROWG_DETAIL_NAMESPACE::library_base::library_base(
         handle_type&& handle) : _handle(handle) {
     if (this->_handle == invalid_handle) {
         throw new std::invalid_argument("A valid library handle must be "
@@ -62,9 +61,9 @@ visus::power_overwhelming::detail::library_base::library_base(
 
 
 /*
- * visus::power_overwhelming::detail::library_base::library_base
+ * PWROWG_DETAIL_NAMESPACE::library_base::library_base
  */
-visus::power_overwhelming::detail::library_base::library_base(
+PWROWG_DETAIL_NAMESPACE::library_base::library_base(
         const char_type *path)
 #if defined(_WIN32)
         : _handle(::LoadLibrary(path)) {
@@ -83,10 +82,10 @@ visus::power_overwhelming::detail::library_base::library_base(
 
 
 /*
- * visus::power_overwhelming::detail::library_base::get_function
+ * PWROWG_DETAIL_NAMESPACE::library_base::get_function
  */
-visus::power_overwhelming::detail::library_base::function_type
-visus::power_overwhelming::detail::library_base::get_function(
+PWROWG_DETAIL_NAMESPACE::library_base::function_type
+PWROWG_DETAIL_NAMESPACE::library_base::get_function(
         const char *name) {
 #if defined(_WIN32)
     auto retval = ::GetProcAddress(this->_handle, name);

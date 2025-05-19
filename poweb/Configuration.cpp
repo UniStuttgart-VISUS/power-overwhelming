@@ -7,7 +7,7 @@
 #include "Configuration.h"
 
 
-using namespace visus::power_overwhelming;
+using namespace visus::pwrowg;
 
 static constexpr const char *FIELD_BLANK_PAGE = "blankPage";
 static constexpr const char *FIELD_COOL_DOWN = "coolDown";
@@ -16,20 +16,19 @@ static constexpr const char *FIELD_ITERATIONS = "iterations";
 static constexpr const char *FIELD_ROOT = "poweb";
 static constexpr const char *FIELD_URLS = "urls";
 static constexpr const char *FIELD_VISIBLE_PERIOD = "visiblePeriod";
+static constexpr const char *FIELD_WRITE_INTERVAL = "writeInterval";
 
 
 /*
  * Configuration::Configuration
  */
 Configuration::Configuration(void) : _blankPage(L"about:blank"), _coolDown(0),
-    _initialWait(0), _iterations(0), _visiblePeriod(0) { }
-
+    _initialWait(0), _iterations(0), _markerBlank(0), _visiblePeriod(0) { }
 
 /*
  * Configuration::Configuration
  */
-Configuration::Configuration(const std::wstring& path)
-        : _collector(collector::from_json(path.c_str())) {
+Configuration::Configuration(const std::wstring& path) {
     std::ifstream stream(path);
     assert(stream.good());
     nlohmann::json config;
@@ -52,8 +51,34 @@ Configuration::Configuration(const std::wstring& path)
             [](const std::string &u) { return convert_string<wchar_t>(u); });
     }
 
+    sensor_array_configuration sensorConf;
+    sensorConf.configure<marker_configuration>(
+            [this](marker_configuration& c) {
+        this->_markerBlank = c += L"blank";
+
+        for (auto& u : this->_urls) {
+            {
+                std::wstringstream ss;
+                ss << L"navigating \"" << u << L"\"" << std::ends;
+                this->_markersNav.push_back(c += ss.str());
+            }
+            {
+                std::wstringstream ss;
+                ss << L"showing \"" << u << L"\"" << std::ends;
+                this->_markersShow.push_back(c += ss.str());
+            }
+        }
+    });
+
     this->_visiblePeriod = decltype(this->_visiblePeriod)(
         webConfig[FIELD_VISIBLE_PERIOD].get<std::uint64_t>());
+
+    {
+        std::chrono::milliseconds writeInterval(
+            webConfig[FIELD_WRITE_INTERVAL].get<std::uint64_t>());
+        this->_collector.reset(new CollectorType(writeInterval,
+            MakeStream(path)));
+    }
 }
 
 
@@ -61,7 +86,14 @@ Configuration::Configuration(const std::wstring& path)
  * Configuration::StartCollector
  */
 void Configuration::StartCollector(void) {
-    this->_collector.start();
+    if (this->_collector) {
+        std::vector<visus::pwrowg::sensor_description> descs;
+        descs.resize(this->_sensors.descriptions(nullptr, 0));
+        this->_sensors.descriptions(descs.data(), descs.size());
+
+        this->_sensors.start(CollectorType::sample_callback,
+            this->_collector.get());
+    }
 }
 
 
@@ -69,7 +101,7 @@ void Configuration::StartCollector(void) {
  * Configuration::StopCollector
  */
 void Configuration::StopCollector(void) {
-    this->_collector.stop();
+    this->_sensors.stop();
 }
 
 

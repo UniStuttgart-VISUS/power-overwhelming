@@ -1,10 +1,10 @@
 ﻿// <copyright file="convert_string.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2022 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/convert_string.h"
+#include "visus/pwrowg/convert_string.h"
 
 #include <codecvt>
 #include <cwchar>
@@ -15,9 +15,9 @@
 
 
 /*
- * visus::power_overwhelming::detail::convert_string
+ * PWROWG_NAMESPACE::detail::convert_string
  */
-std::size_t visus::power_overwhelming::detail::convert_string(
+std::size_t PWROWG_NAMESPACE::detail::convert_string(
         _Out_writes_opt_z_(cnt_output) char *output,
         _In_ const std::size_t cnt_output,
         _In_reads_or_z_(cnt_input) const wchar_t *input,
@@ -53,9 +53,9 @@ std::size_t visus::power_overwhelming::detail::convert_string(
 
 
 /*
- * visus::power_overwhelming::detail::convert_string
+ * PWROWG_NAMESPACE::detail::convert_string
  */
-std::size_t visus::power_overwhelming::detail::convert_string(
+std::size_t PWROWG_NAMESPACE::detail::convert_string(
         _Out_writes_opt_z_(cnt_output) wchar_t *output,
         _In_ const std::size_t cnt_output,
         _In_reads_or_z_(cnt_input) const char *input,

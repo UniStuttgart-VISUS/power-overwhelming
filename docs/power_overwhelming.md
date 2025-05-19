@@ -1091,9 +1091,9 @@
 - [Char}](#T-visus-power_overwhelming-detail-computer_name_api{System-Char} 'visus.power_overwhelming.detail.computer_name_api{System.Char}')
 - [Char}](#T-visus-power_overwhelming-detail-literal_selector{System-Char} 'visus.power_overwhelming.detail.literal_selector{System.Char}')
 - [CompilerServices](#T-visus-power_overwhelming-blob-op_Implicit~System-Void!System-Runtime-CompilerServices 'visus.power_overwhelming.blob.op_Implicit~System.Void!System.Runtime.CompilerServices')
-- [CompilerServices](#T-visus-power_overwhelming-oscilloscope_sample-channel_waveform-op_Implicit~visus-power_overwhelming-oscilloscope_waveform!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices 'visus.power_overwhelming.oscilloscope_sample.channel_waveform.op_Implicit~visus.power_overwhelming.oscilloscope_waveform!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices')
+- [CompilerServices](#T-visus-power_overwhelming-rtx_sample-channel_waveform-op_Implicit~visus-power_overwhelming-rtx_waveform!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices 'visus.power_overwhelming.rtx_sample.channel_waveform.op_Implicit~visus.power_overwhelming.rtx_waveform!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices')
   - [IsConst*()](#M-visus-power_overwhelming-blob-op_Implicit~System-Void!System-Runtime-CompilerServices-IsConst* 'visus.power_overwhelming.blob.op_Implicit~System.Void!System.Runtime.CompilerServices.IsConst*')
-  - [IsImplicitlyDereferenced()](#M-visus-power_overwhelming-oscilloscope_sample-channel_waveform-op_Implicit~visus-power_overwhelming-oscilloscope_waveform!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_sample.channel_waveform.op_Implicit~visus.power_overwhelming.oscilloscope_waveform!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced')
+  - [IsImplicitlyDereferenced()](#M-visus-power_overwhelming-rtx_sample-channel_waveform-op_Implicit~visus-power_overwhelming-rtx_waveform!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_sample.channel_waveform.op_Implicit~visus.power_overwhelming.rtx_waveform!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced')
 - [IsConst**,false,false}](#T-visus-power_overwhelming-detail-json_serialiser{System-Char!System-Runtime-CompilerServices-IsConst**,false,false} 'visus.power_overwhelming.detail.json_serialiser{System.Char!System.Runtime.CompilerServices.IsConst**,false,false}')
 - [IsConst**,false,false}](#T-visus-power_overwhelming-detail-json_serialiser{System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst**,false,false} 'visus.power_overwhelming.detail.json_serialiser{System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst**,false,false}')
 - [IsLong}](#T-std-is_error_code_enum{System-Int32!System-Runtime-CompilerServices-IsLong} 'std.is_error_code_enum{System.Int32!System.Runtime.CompilerServices.IsLong}')
@@ -1212,11 +1212,11 @@
   - [resize(size)](#M-visus-power_overwhelming-blob-resize-System-UInt64!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.blob.resize(System.UInt64!System.Runtime.CompilerServices.IsConst)')
   - [size()](#M-visus-power_overwhelming-blob-size 'visus.power_overwhelming.blob.size')
   - [truncate(size)](#M-visus-power_overwhelming-blob-truncate-System-UInt64!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.blob.truncate(System.UInt64!System.Runtime.CompilerServices.IsConst)')
-- [channel_waveform](#T-visus-power_overwhelming-oscilloscope_sample-channel_waveform 'visus.power_overwhelming.oscilloscope_sample.channel_waveform')
-  - [#ctor(channel,waveform)](#M-visus-power_overwhelming-oscilloscope_sample-channel_waveform-#ctor-System-UInt32!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_sample.channel_waveform.#ctor(System.UInt32!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.oscilloscope_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [#ctor()](#M-visus-power_overwhelming-oscilloscope_sample-channel_waveform-#ctor 'visus.power_overwhelming.oscilloscope_sample.channel_waveform.#ctor')
-  - [channel()](#M-visus-power_overwhelming-oscilloscope_sample-channel_waveform-channel 'visus.power_overwhelming.oscilloscope_sample.channel_waveform.channel')
-  - [waveform()](#M-visus-power_overwhelming-oscilloscope_sample-channel_waveform-waveform 'visus.power_overwhelming.oscilloscope_sample.channel_waveform.waveform')
+- [channel_waveform](#T-visus-power_overwhelming-rtx_sample-channel_waveform 'visus.power_overwhelming.rtx_sample.channel_waveform')
+  - [#ctor(channel,waveform)](#M-visus-power_overwhelming-rtx_sample-channel_waveform-#ctor-System-UInt32!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_sample.channel_waveform.#ctor(System.UInt32!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [#ctor()](#M-visus-power_overwhelming-rtx_sample-channel_waveform-#ctor 'visus.power_overwhelming.rtx_sample.channel_waveform.#ctor')
+  - [channel()](#M-visus-power_overwhelming-rtx_sample-channel_waveform-channel 'visus.power_overwhelming.rtx_sample.channel_waveform.channel')
+  - [waveform()](#M-visus-power_overwhelming-rtx_sample-channel_waveform-waveform 'visus.power_overwhelming.rtx_sample.channel_waveform.waveform')
 - [collector](#T-visus-power_overwhelming-collector 'visus.power_overwhelming.collector')
   - [#ctor(impl)](#M-visus-power_overwhelming-collector-#ctor-visus-power_overwhelming-detail-collector_impl*- 'visus.power_overwhelming.collector.#ctor(visus.power_overwhelming.detail.collector_impl*)')
   - [#ctor(rhs)](#M-visus-power_overwhelming-collector-#ctor-visus-power_overwhelming-collector*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.collector.#ctor(visus.power_overwhelming.collector*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
@@ -1573,7 +1573,7 @@
 - [op_Implicit~System](#T-visus-power_overwhelming-measurement_data_series-op_Implicit~System 'visus.power_overwhelming.measurement_data_series.op_Implicit~System')
 - [op_Implicit~System](#T-visus-power_overwhelming-msr_sensor-op_Implicit~System 'visus.power_overwhelming.msr_sensor.op_Implicit~System')
 - [op_Implicit~System](#T-visus-power_overwhelming-nvml_sensor-op_Implicit~System 'visus.power_overwhelming.nvml_sensor.op_Implicit~System')
-- [op_Implicit~System](#T-visus-power_overwhelming-oscilloscope_quantity-op_Implicit~System 'visus.power_overwhelming.oscilloscope_quantity.op_Implicit~System')
+- [op_Implicit~System](#T-visus-power_overwhelming-rtx_quantity-op_Implicit~System 'visus.power_overwhelming.rtx_quantity.op_Implicit~System')
 - [op_Implicit~System](#T-visus-power_overwhelming-parallel_port_trigger-op_Implicit~System 'visus.power_overwhelming.parallel_port_trigger.op_Implicit~System')
 - [op_Implicit~System](#T-visus-power_overwhelming-rtx_sensor-op_Implicit~System 'visus.power_overwhelming.rtx_sensor.op_Implicit~System')
 - [op_Implicit~System](#T-visus-power_overwhelming-rtx_sensor_definition-op_Implicit~System 'visus.power_overwhelming.rtx_sensor_definition.op_Implicit~System')
@@ -1601,7 +1601,7 @@
   - [Boolean()](#M-visus-power_overwhelming-measurement_data_series-op_Implicit~System-Boolean 'visus.power_overwhelming.measurement_data_series.op_Implicit~System.Boolean')
   - [Boolean()](#M-visus-power_overwhelming-msr_sensor-op_Implicit~System-Boolean 'visus.power_overwhelming.msr_sensor.op_Implicit~System.Boolean')
   - [Boolean()](#M-visus-power_overwhelming-nvml_sensor-op_Implicit~System-Boolean 'visus.power_overwhelming.nvml_sensor.op_Implicit~System.Boolean')
-  - [Single()](#M-visus-power_overwhelming-oscilloscope_quantity-op_Implicit~System-Single 'visus.power_overwhelming.oscilloscope_quantity.op_Implicit~System.Single')
+  - [Single()](#M-visus-power_overwhelming-rtx_quantity-op_Implicit~System-Single 'visus.power_overwhelming.rtx_quantity.op_Implicit~System.Single')
   - [Boolean()](#M-visus-power_overwhelming-parallel_port_trigger-op_Implicit~System-Boolean 'visus.power_overwhelming.parallel_port_trigger.op_Implicit~System.Boolean')
   - [Boolean(rhs)](#M-visus-power_overwhelming-rtx_sensor-op_Implicit~System-Boolean 'visus.power_overwhelming.rtx_sensor.op_Implicit~System.Boolean')
   - [Boolean()](#M-visus-power_overwhelming-rtx_sensor_definition-op_Implicit~System-Boolean 'visus.power_overwhelming.rtx_sensor_definition.op_Implicit~System.Boolean')
@@ -1610,143 +1610,143 @@
   - [Boolean()](#M-visus-power_overwhelming-tinkerforge_display-op_Implicit~System-Boolean 'visus.power_overwhelming.tinkerforge_display.op_Implicit~System.Boolean')
   - [Boolean()](#M-visus-power_overwhelming-tinkerforge_sensor-op_Implicit~System-Boolean 'visus.power_overwhelming.tinkerforge_sensor.op_Implicit~System.Boolean')
   - [Boolean()](#M-visus-power_overwhelming-visa_instrument-op_Implicit~System-Boolean 'visus.power_overwhelming.visa_instrument.op_Implicit~System.Boolean')
-- [oscilloscope_acquisition](#T-visus-power_overwhelming-oscilloscope_acquisition 'visus.power_overwhelming.oscilloscope_acquisition')
-  - [#ctor()](#M-visus-power_overwhelming-oscilloscope_acquisition-#ctor 'visus.power_overwhelming.oscilloscope_acquisition.#ctor')
-  - [automatic_points()](#M-visus-power_overwhelming-oscilloscope_acquisition-automatic_points 'visus.power_overwhelming.oscilloscope_acquisition.automatic_points')
-  - [count(count)](#M-visus-power_overwhelming-oscilloscope_acquisition-count-System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_acquisition.count(System.UInt32!System.Runtime.CompilerServices.IsConst)')
-  - [count()](#M-visus-power_overwhelming-oscilloscope_acquisition-count 'visus.power_overwhelming.oscilloscope_acquisition.count')
-  - [enable_automatic_points()](#M-visus-power_overwhelming-oscilloscope_acquisition-enable_automatic_points 'visus.power_overwhelming.oscilloscope_acquisition.enable_automatic_points')
-  - [points(points)](#M-visus-power_overwhelming-oscilloscope_acquisition-points-System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_acquisition.points(System.UInt32!System.Runtime.CompilerServices.IsConst)')
-  - [points()](#M-visus-power_overwhelming-oscilloscope_acquisition-points 'visus.power_overwhelming.oscilloscope_acquisition.points')
-  - [segmented(segmented)](#M-visus-power_overwhelming-oscilloscope_acquisition-segmented-System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_acquisition.segmented(System.Boolean!System.Runtime.CompilerServices.IsConst)')
-  - [segmented()](#M-visus-power_overwhelming-oscilloscope_acquisition-segmented 'visus.power_overwhelming.oscilloscope_acquisition.segmented')
-  - [state(state)](#M-visus-power_overwhelming-oscilloscope_acquisition-state-visus-power_overwhelming-oscilloscope_acquisition_state!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_acquisition.state(visus.power_overwhelming.oscilloscope_acquisition_state!System.Runtime.CompilerServices.IsConst)')
-  - [state()](#M-visus-power_overwhelming-oscilloscope_acquisition-state 'visus.power_overwhelming.oscilloscope_acquisition.state')
-- [oscilloscope_acquisition,false,false}](#T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-oscilloscope_acquisition,false,false} 'visus.power_overwhelming.detail.json_serialiser{visus.power_overwhelming.oscilloscope_acquisition,false,false}')
-- [oscilloscope_acquisition_state](#T-visus-power_overwhelming-oscilloscope_acquisition_state 'visus.power_overwhelming.oscilloscope_acquisition_state')
-- [oscilloscope_channel](#T-visus-power_overwhelming-oscilloscope_channel 'visus.power_overwhelming.oscilloscope_channel')
-  - [#ctor(channel,channel_template)](#M-visus-power_overwhelming-oscilloscope_channel-#ctor-System-UInt32!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_channel.#ctor(System.UInt32!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [#ctor(channel)](#M-visus-power_overwhelming-oscilloscope_channel-#ctor-System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_channel.#ctor(System.UInt32!System.Runtime.CompilerServices.IsConst)')
-  - [attenuation(attenuation)](#M-visus-power_overwhelming-oscilloscope_channel-attenuation-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_channel.attenuation(visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [attenuation()](#M-visus-power_overwhelming-oscilloscope_channel-attenuation 'visus.power_overwhelming.oscilloscope_channel.attenuation')
-  - [bandwidth(bandwidth)](#M-visus-power_overwhelming-oscilloscope_channel-bandwidth-visus-power_overwhelming-oscilloscope_channel_bandwidth!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_channel.bandwidth(visus.power_overwhelming.oscilloscope_channel_bandwidth!System.Runtime.CompilerServices.IsConst)')
-  - [bandwidth()](#M-visus-power_overwhelming-oscilloscope_channel-bandwidth 'visus.power_overwhelming.oscilloscope_channel.bandwidth')
-  - [channel()](#M-visus-power_overwhelming-oscilloscope_channel-channel 'visus.power_overwhelming.oscilloscope_channel.channel')
-  - [coupling(coupling)](#M-visus-power_overwhelming-oscilloscope_channel-coupling-visus-power_overwhelming-oscilloscope_channel_coupling!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_channel.coupling(visus.power_overwhelming.oscilloscope_channel_coupling!System.Runtime.CompilerServices.IsConst)')
-  - [coupling()](#M-visus-power_overwhelming-oscilloscope_channel-coupling 'visus.power_overwhelming.oscilloscope_channel.coupling')
-  - [decimation_mode(decimation_mode)](#M-visus-power_overwhelming-oscilloscope_channel-decimation_mode-visus-power_overwhelming-oscilloscope_decimation_mode!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_channel.decimation_mode(visus.power_overwhelming.oscilloscope_decimation_mode!System.Runtime.CompilerServices.IsConst)')
-  - [decimation_mode()](#M-visus-power_overwhelming-oscilloscope_channel-decimation_mode 'visus.power_overwhelming.oscilloscope_channel.decimation_mode')
-  - [label(label)](#M-visus-power_overwhelming-oscilloscope_channel-label-visus-power_overwhelming-oscilloscope_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_channel.label(visus.power_overwhelming.oscilloscope_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [label()](#M-visus-power_overwhelming-oscilloscope_channel-label 'visus.power_overwhelming.oscilloscope_channel.label')
-  - [offset(offset)](#M-visus-power_overwhelming-oscilloscope_channel-offset-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_channel.offset(visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [offset()](#M-visus-power_overwhelming-oscilloscope_channel-offset 'visus.power_overwhelming.oscilloscope_channel.offset')
-  - [polarity(polarity)](#M-visus-power_overwhelming-oscilloscope_channel-polarity-visus-power_overwhelming-oscilloscope_channel_polarity!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_channel.polarity(visus.power_overwhelming.oscilloscope_channel_polarity!System.Runtime.CompilerServices.IsConst)')
-  - [polarity()](#M-visus-power_overwhelming-oscilloscope_channel-polarity 'visus.power_overwhelming.oscilloscope_channel.polarity')
-  - [range(offset)](#M-visus-power_overwhelming-oscilloscope_channel-range-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_channel.range(visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [range()](#M-visus-power_overwhelming-oscilloscope_channel-range 'visus.power_overwhelming.oscilloscope_channel.range')
-  - [show_label(visible)](#M-visus-power_overwhelming-oscilloscope_channel-show_label-System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_channel.show_label(System.Boolean!System.Runtime.CompilerServices.IsConst)')
-  - [skew(offset)](#M-visus-power_overwhelming-oscilloscope_channel-skew-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_channel.skew(visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [skew()](#M-visus-power_overwhelming-oscilloscope_channel-skew 'visus.power_overwhelming.oscilloscope_channel.skew')
-  - [state(enable)](#M-visus-power_overwhelming-oscilloscope_channel-state-System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_channel.state(System.Boolean!System.Runtime.CompilerServices.IsConst)')
-  - [state()](#M-visus-power_overwhelming-oscilloscope_channel-state 'visus.power_overwhelming.oscilloscope_channel.state')
-  - [zero_offset()](#M-visus-power_overwhelming-oscilloscope_channel-zero_offset-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_channel.zero_offset(visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [zero_offset()](#M-visus-power_overwhelming-oscilloscope_channel-zero_offset 'visus.power_overwhelming.oscilloscope_channel.zero_offset')
-- [oscilloscope_channel,false,false}](#T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-oscilloscope_channel,false,false} 'visus.power_overwhelming.detail.json_serialiser{visus.power_overwhelming.oscilloscope_channel,false,false}')
-- [oscilloscope_channel_bandwidth](#T-visus-power_overwhelming-oscilloscope_channel_bandwidth 'visus.power_overwhelming.oscilloscope_channel_bandwidth')
-- [oscilloscope_channel_coupling](#T-visus-power_overwhelming-oscilloscope_channel_coupling 'visus.power_overwhelming.oscilloscope_channel_coupling')
-- [oscilloscope_channel_polarity](#T-visus-power_overwhelming-oscilloscope_channel_polarity 'visus.power_overwhelming.oscilloscope_channel_polarity')
-- [oscilloscope_channel_unit](#T-visus-power_overwhelming-oscilloscope_channel_unit 'visus.power_overwhelming.oscilloscope_channel_unit')
-- [oscilloscope_decimation_mode](#T-visus-power_overwhelming-oscilloscope_decimation_mode 'visus.power_overwhelming.oscilloscope_decimation_mode')
-- [oscilloscope_edge_trigger](#T-visus-power_overwhelming-oscilloscope_edge_trigger 'visus.power_overwhelming.oscilloscope_edge_trigger')
-  - [#ctor(source)](#M-visus-power_overwhelming-oscilloscope_edge_trigger-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.oscilloscope_edge_trigger.#ctor(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)')
-  - [_coupling](#F-visus-power_overwhelming-oscilloscope_edge_trigger-_coupling 'visus.power_overwhelming.oscilloscope_edge_trigger._coupling')
-  - [coupling(coupling)](#M-visus-power_overwhelming-oscilloscope_edge_trigger-coupling-visus-power_overwhelming-oscilloscope_trigger_coupling- 'visus.power_overwhelming.oscilloscope_edge_trigger.coupling(visus.power_overwhelming.oscilloscope_trigger_coupling)')
-  - [coupling(rhs,rhs)](#M-visus-power_overwhelming-oscilloscope_edge_trigger-coupling 'visus.power_overwhelming.oscilloscope_edge_trigger.coupling')
-  - [external(level,slope)](#M-visus-power_overwhelming-oscilloscope_edge_trigger-external-System-Single!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_edge_trigger.external(System.Single!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst)')
-  - [external(level,slope)](#M-visus-power_overwhelming-oscilloscope_edge_trigger-external-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_edge_trigger.external(visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst)')
-  - [hysteresis(hysteresis)](#M-visus-power_overwhelming-oscilloscope_edge_trigger-hysteresis-visus-power_overwhelming-oscilloscope_trigger_hysteresis- 'visus.power_overwhelming.oscilloscope_edge_trigger.hysteresis(visus.power_overwhelming.oscilloscope_trigger_hysteresis)')
-  - [hysteresis()](#M-visus-power_overwhelming-oscilloscope_edge_trigger-hysteresis 'visus.power_overwhelming.oscilloscope_edge_trigger.hysteresis')
-  - [input()](#M-visus-power_overwhelming-oscilloscope_edge_trigger-input 'visus.power_overwhelming.oscilloscope_edge_trigger.input')
-  - [level(level)](#M-visus-power_overwhelming-oscilloscope_edge_trigger-level-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_edge_trigger.level(visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [level(input,level)](#M-visus-power_overwhelming-oscilloscope_edge_trigger-level-System-UInt16!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_edge_trigger.level(System.UInt16!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [level()](#M-visus-power_overwhelming-oscilloscope_edge_trigger-level 'visus.power_overwhelming.oscilloscope_edge_trigger.level')
-  - [slope(slope)](#M-visus-power_overwhelming-oscilloscope_edge_trigger-slope-visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_edge_trigger.slope(visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst)')
-  - [slope()](#M-visus-power_overwhelming-oscilloscope_edge_trigger-slope 'visus.power_overwhelming.oscilloscope_edge_trigger.slope')
-  - [type()](#M-visus-power_overwhelming-oscilloscope_edge_trigger-type 'visus.power_overwhelming.oscilloscope_edge_trigger.type')
-- [oscilloscope_edge_trigger,false,false}](#T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-oscilloscope_edge_trigger,false,false} 'visus.power_overwhelming.detail.json_serialiser{visus.power_overwhelming.oscilloscope_edge_trigger,false,false}')
-- [oscilloscope_label](#T-visus-power_overwhelming-oscilloscope_label 'visus.power_overwhelming.oscilloscope_label')
-  - [#ctor(rhs)](#M-visus-power_overwhelming-oscilloscope_label-#ctor-visus-power_overwhelming-oscilloscope_label*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_label.#ctor(visus.power_overwhelming.oscilloscope_label*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [#ctor(rhs)](#M-visus-power_overwhelming-oscilloscope_label-#ctor-visus-power_overwhelming-oscilloscope_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_label.#ctor(visus.power_overwhelming.oscilloscope_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [#ctor(text,visible)](#M-visus-power_overwhelming-oscilloscope_label-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_label.#ctor(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.Boolean!System.Runtime.CompilerServices.IsConst)')
-  - [#ctor(text,visible)](#M-visus-power_overwhelming-oscilloscope_label-#ctor-System-Char!System-Runtime-CompilerServices-IsConst*,System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_label.#ctor(System.Char!System.Runtime.CompilerServices.IsConst*,System.Boolean!System.Runtime.CompilerServices.IsConst)')
-  - [#ctor()](#M-visus-power_overwhelming-oscilloscope_label-#ctor 'visus.power_overwhelming.oscilloscope_label.#ctor')
-  - [Dispose()](#M-visus-power_overwhelming-oscilloscope_label-Dispose 'visus.power_overwhelming.oscilloscope_label.Dispose')
-  - [op_Assign(rhs)](#M-visus-power_overwhelming-oscilloscope_label-op_Assign-visus-power_overwhelming-oscilloscope_label*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_label.op_Assign(visus.power_overwhelming.oscilloscope_label*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [op_Assign(rhs)](#M-visus-power_overwhelming-oscilloscope_label-op_Assign-visus-power_overwhelming-oscilloscope_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_label.op_Assign(visus.power_overwhelming.oscilloscope_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [text(text)](#M-visus-power_overwhelming-oscilloscope_label-text-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.oscilloscope_label.text(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)')
-  - [text(text)](#M-visus-power_overwhelming-oscilloscope_label-text-System-Char!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.oscilloscope_label.text(System.Char!System.Runtime.CompilerServices.IsConst*)')
-  - [text()](#M-visus-power_overwhelming-oscilloscope_label-text 'visus.power_overwhelming.oscilloscope_label.text')
-  - [visible(visible)](#M-visus-power_overwhelming-oscilloscope_label-visible-System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_label.visible(System.Boolean!System.Runtime.CompilerServices.IsConst)')
-  - [visible()](#M-visus-power_overwhelming-oscilloscope_label-visible 'visus.power_overwhelming.oscilloscope_label.visible')
-- [oscilloscope_label,false,false}](#T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-oscilloscope_label,false,false} 'visus.power_overwhelming.detail.json_serialiser{visus.power_overwhelming.oscilloscope_label,false,false}')
-- [oscilloscope_quantity](#T-visus-power_overwhelming-oscilloscope_quantity 'visus.power_overwhelming.oscilloscope_quantity')
-  - [#ctor(rhs)](#M-visus-power_overwhelming-oscilloscope_quantity-#ctor-visus-power_overwhelming-oscilloscope_quantity*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_quantity.#ctor(visus.power_overwhelming.oscilloscope_quantity*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [#ctor(rhs)](#M-visus-power_overwhelming-oscilloscope_quantity-#ctor-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_quantity.#ctor(visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [#ctor(value,unit)](#M-visus-power_overwhelming-oscilloscope_quantity-#ctor-System-Single!System-Runtime-CompilerServices-IsConst,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.oscilloscope_quantity.#ctor(System.Single!System.Runtime.CompilerServices.IsConst,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)')
-  - [#ctor(value,unit)](#M-visus-power_overwhelming-oscilloscope_quantity-#ctor-System-Single!System-Runtime-CompilerServices-IsConst,System-Char!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.oscilloscope_quantity.#ctor(System.Single!System.Runtime.CompilerServices.IsConst,System.Char!System.Runtime.CompilerServices.IsConst*)')
-  - [Dispose()](#M-visus-power_overwhelming-oscilloscope_quantity-Dispose 'visus.power_overwhelming.oscilloscope_quantity.Dispose')
-  - [op_Assign(rhs)](#M-visus-power_overwhelming-oscilloscope_quantity-op_Assign-visus-power_overwhelming-oscilloscope_quantity*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_quantity.op_Assign(visus.power_overwhelming.oscilloscope_quantity*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [op_Assign(rhs)](#M-visus-power_overwhelming-oscilloscope_quantity-op_Assign-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_quantity.op_Assign(visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [unit()](#M-visus-power_overwhelming-oscilloscope_quantity-unit 'visus.power_overwhelming.oscilloscope_quantity.unit')
-  - [value()](#M-visus-power_overwhelming-oscilloscope_quantity-value 'visus.power_overwhelming.oscilloscope_quantity.value')
-- [oscilloscope_quantity,false,false}](#T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-oscilloscope_quantity,false,false} 'visus.power_overwhelming.detail.json_serialiser{visus.power_overwhelming.oscilloscope_quantity,false,false}')
-- [oscilloscope_reference_point](#T-visus-power_overwhelming-oscilloscope_reference_point 'visus.power_overwhelming.oscilloscope_reference_point')
-- [oscilloscope_sample](#T-visus-power_overwhelming-oscilloscope_sample 'visus.power_overwhelming.oscilloscope_sample')
-  - [#ctor(rhs)](#M-visus-power_overwhelming-oscilloscope_sample-#ctor-visus-power_overwhelming-oscilloscope_sample*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_sample.#ctor(visus.power_overwhelming.oscilloscope_sample*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [#ctor(waveforms,cnt)](#M-visus-power_overwhelming-oscilloscope_sample-#ctor-visus-power_overwhelming-oscilloscope_sample-channel_waveform*,System-UInt64!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_sample.#ctor(visus.power_overwhelming.oscilloscope_sample.channel_waveform*,System.UInt64!System.Runtime.CompilerServices.IsConst)')
-  - [#ctor(channels,waveforms,cnt)](#M-visus-power_overwhelming-oscilloscope_sample-#ctor-System-UInt32!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_waveform*,System-UInt64!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_sample.#ctor(System.UInt32!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.oscilloscope_waveform*,System.UInt64!System.Runtime.CompilerServices.IsConst)')
-  - [#ctor()](#M-visus-power_overwhelming-oscilloscope_sample-#ctor 'visus.power_overwhelming.oscilloscope_sample.#ctor')
-  - [begin()](#M-visus-power_overwhelming-oscilloscope_sample-begin 'visus.power_overwhelming.oscilloscope_sample.begin')
-  - [clear()](#M-visus-power_overwhelming-oscilloscope_sample-clear 'visus.power_overwhelming.oscilloscope_sample.clear')
-  - [empty()](#M-visus-power_overwhelming-oscilloscope_sample-empty 'visus.power_overwhelming.oscilloscope_sample.empty')
-  - [op_Assign(rhs)](#M-visus-power_overwhelming-oscilloscope_sample-op_Assign-visus-power_overwhelming-oscilloscope_sample*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_sample.op_Assign(visus.power_overwhelming.oscilloscope_sample*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [op_Subscript(index)](#M-visus-power_overwhelming-oscilloscope_sample-op_Subscript-System-Int32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_sample.op_Subscript(System.Int32!System.Runtime.CompilerServices.IsConst)')
-  - [size()](#M-visus-power_overwhelming-oscilloscope_sample-size 'visus.power_overwhelming.oscilloscope_sample.size')
-- [oscilloscope_trigger](#T-visus-power_overwhelming-oscilloscope_trigger 'visus.power_overwhelming.oscilloscope_trigger')
-  - [#ctor(source)](#M-visus-power_overwhelming-oscilloscope_trigger-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.oscilloscope_trigger.#ctor(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)')
-  - [_hold_off](#F-visus-power_overwhelming-oscilloscope_trigger-_hold_off 'visus.power_overwhelming.oscilloscope_trigger._hold_off')
-  - [hold_off(n)](#M-visus-power_overwhelming-oscilloscope_trigger-hold_off-<unknown type>!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_trigger.hold_off(<unknown type>!System.Runtime.CompilerServices.IsConst)')
-  - [hold_off(hold_off_time)](#M-visus-power_overwhelming-oscilloscope_trigger-hold_off-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.oscilloscope_trigger.hold_off(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)')
-  - [hold_off(hold_off_time)](#M-visus-power_overwhelming-oscilloscope_trigger-hold_off-System-Char!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.oscilloscope_trigger.hold_off(System.Char!System.Runtime.CompilerServices.IsConst*)')
-  - [hold_off()](#M-visus-power_overwhelming-oscilloscope_trigger-hold_off 'visus.power_overwhelming.oscilloscope_trigger.hold_off')
-  - [mode(mode)](#M-visus-power_overwhelming-oscilloscope_trigger-mode-visus-power_overwhelming-oscilloscope_trigger_mode!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_trigger.mode(visus.power_overwhelming.oscilloscope_trigger_mode!System.Runtime.CompilerServices.IsConst)')
-  - [mode()](#M-visus-power_overwhelming-oscilloscope_trigger-mode 'visus.power_overwhelming.oscilloscope_trigger.mode')
-  - [source(source)](#M-visus-power_overwhelming-oscilloscope_trigger-source-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.oscilloscope_trigger.source(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)')
-  - [source(source)](#M-visus-power_overwhelming-oscilloscope_trigger-source-System-Char!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.oscilloscope_trigger.source(System.Char!System.Runtime.CompilerServices.IsConst*)')
-  - [source()](#M-visus-power_overwhelming-oscilloscope_trigger-source 'visus.power_overwhelming.oscilloscope_trigger.source')
-  - [type()](#M-visus-power_overwhelming-oscilloscope_trigger-type 'visus.power_overwhelming.oscilloscope_trigger.type')
-- [oscilloscope_trigger_coupling](#T-visus-power_overwhelming-oscilloscope_trigger_coupling 'visus.power_overwhelming.oscilloscope_trigger_coupling')
-- [oscilloscope_trigger_hysteresis](#T-visus-power_overwhelming-oscilloscope_trigger_hysteresis 'visus.power_overwhelming.oscilloscope_trigger_hysteresis')
-- [oscilloscope_trigger_mode](#T-visus-power_overwhelming-oscilloscope_trigger_mode 'visus.power_overwhelming.oscilloscope_trigger_mode')
-- [oscilloscope_trigger_output](#T-visus-power_overwhelming-oscilloscope_trigger_output 'visus.power_overwhelming.oscilloscope_trigger_output')
-- [oscilloscope_trigger_slope](#T-visus-power_overwhelming-oscilloscope_trigger_slope 'visus.power_overwhelming.oscilloscope_trigger_slope')
-- [oscilloscope_waveform](#T-visus-power_overwhelming-oscilloscope_waveform 'visus.power_overwhelming.oscilloscope_waveform')
-  - [#ctor(rhs)](#M-visus-power_overwhelming-oscilloscope_waveform-#ctor-visus-power_overwhelming-oscilloscope_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_waveform.#ctor(visus.power_overwhelming.oscilloscope_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [#ctor(header,segment_offset,samples)](#M-visus-power_overwhelming-oscilloscope_waveform-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-blob*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_waveform.#ctor(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.blob*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [#ctor()](#M-visus-power_overwhelming-oscilloscope_waveform-#ctor 'visus.power_overwhelming.oscilloscope_waveform.#ctor')
-  - [begin()](#M-visus-power_overwhelming-oscilloscope_waveform-begin 'visus.power_overwhelming.oscilloscope_waveform.begin')
-  - [empty()](#M-visus-power_overwhelming-oscilloscope_waveform-empty 'visus.power_overwhelming.oscilloscope_waveform.empty')
-  - [end()](#M-visus-power_overwhelming-oscilloscope_waveform-end 'visus.power_overwhelming.oscilloscope_waveform.end')
-  - [op_Assign(rhs)](#M-visus-power_overwhelming-oscilloscope_waveform-op_Assign-visus-power_overwhelming-oscilloscope_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.oscilloscope_waveform.op_Assign(visus.power_overwhelming.oscilloscope_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [record_length()](#M-visus-power_overwhelming-oscilloscope_waveform-record_length 'visus.power_overwhelming.oscilloscope_waveform.record_length')
-  - [sample(i)](#M-visus-power_overwhelming-oscilloscope_waveform-sample-System-UInt64!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.oscilloscope_waveform.sample(System.UInt64!System.Runtime.CompilerServices.IsConst)')
-  - [sample_distance()](#M-visus-power_overwhelming-oscilloscope_waveform-sample_distance 'visus.power_overwhelming.oscilloscope_waveform.sample_distance')
-  - [samples()](#M-visus-power_overwhelming-oscilloscope_waveform-samples 'visus.power_overwhelming.oscilloscope_waveform.samples')
-  - [segment_offset()](#M-visus-power_overwhelming-oscilloscope_waveform-segment_offset 'visus.power_overwhelming.oscilloscope_waveform.segment_offset')
-  - [size()](#M-visus-power_overwhelming-oscilloscope_waveform-size 'visus.power_overwhelming.oscilloscope_waveform.size')
-  - [time_begin()](#M-visus-power_overwhelming-oscilloscope_waveform-time_begin 'visus.power_overwhelming.oscilloscope_waveform.time_begin')
-  - [time_end()](#M-visus-power_overwhelming-oscilloscope_waveform-time_end 'visus.power_overwhelming.oscilloscope_waveform.time_end')
-- [oscilloscope_waveform_points](#T-visus-power_overwhelming-oscilloscope_waveform_points 'visus.power_overwhelming.oscilloscope_waveform_points')
+- [rtx_acquisition](#T-visus-power_overwhelming-rtx_acquisition 'visus.power_overwhelming.rtx_acquisition')
+  - [#ctor()](#M-visus-power_overwhelming-rtx_acquisition-#ctor 'visus.power_overwhelming.rtx_acquisition.#ctor')
+  - [automatic_points()](#M-visus-power_overwhelming-rtx_acquisition-automatic_points 'visus.power_overwhelming.rtx_acquisition.automatic_points')
+  - [count(count)](#M-visus-power_overwhelming-rtx_acquisition-count-System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_acquisition.count(System.UInt32!System.Runtime.CompilerServices.IsConst)')
+  - [count()](#M-visus-power_overwhelming-rtx_acquisition-count 'visus.power_overwhelming.rtx_acquisition.count')
+  - [enable_automatic_points()](#M-visus-power_overwhelming-rtx_acquisition-enable_automatic_points 'visus.power_overwhelming.rtx_acquisition.enable_automatic_points')
+  - [points(points)](#M-visus-power_overwhelming-rtx_acquisition-points-System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_acquisition.points(System.UInt32!System.Runtime.CompilerServices.IsConst)')
+  - [points()](#M-visus-power_overwhelming-rtx_acquisition-points 'visus.power_overwhelming.rtx_acquisition.points')
+  - [segmented(segmented)](#M-visus-power_overwhelming-rtx_acquisition-segmented-System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_acquisition.segmented(System.Boolean!System.Runtime.CompilerServices.IsConst)')
+  - [segmented()](#M-visus-power_overwhelming-rtx_acquisition-segmented 'visus.power_overwhelming.rtx_acquisition.segmented')
+  - [state(state)](#M-visus-power_overwhelming-rtx_acquisition-state-visus-power_overwhelming-rtx_acquisition_state!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_acquisition.state(visus.power_overwhelming.rtx_acquisition_state!System.Runtime.CompilerServices.IsConst)')
+  - [state()](#M-visus-power_overwhelming-rtx_acquisition-state 'visus.power_overwhelming.rtx_acquisition.state')
+- [rtx_acquisition,false,false}](#T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-rtx_acquisition,false,false} 'visus.power_overwhelming.detail.json_serialiser{visus.power_overwhelming.rtx_acquisition,false,false}')
+- [rtx_acquisition_state](#T-visus-power_overwhelming-rtx_acquisition_state 'visus.power_overwhelming.rtx_acquisition_state')
+- [rtx_channel](#T-visus-power_overwhelming-rtx_channel 'visus.power_overwhelming.rtx_channel')
+  - [#ctor(channel,channel_template)](#M-visus-power_overwhelming-rtx_channel-#ctor-System-UInt32!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_channel.#ctor(System.UInt32!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [#ctor(channel)](#M-visus-power_overwhelming-rtx_channel-#ctor-System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_channel.#ctor(System.UInt32!System.Runtime.CompilerServices.IsConst)')
+  - [attenuation(attenuation)](#M-visus-power_overwhelming-rtx_channel-attenuation-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_channel.attenuation(visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [attenuation()](#M-visus-power_overwhelming-rtx_channel-attenuation 'visus.power_overwhelming.rtx_channel.attenuation')
+  - [bandwidth(bandwidth)](#M-visus-power_overwhelming-rtx_channel-bandwidth-visus-power_overwhelming-rtx_channel_bandwidth!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_channel.bandwidth(visus.power_overwhelming.rtx_channel_bandwidth!System.Runtime.CompilerServices.IsConst)')
+  - [bandwidth()](#M-visus-power_overwhelming-rtx_channel-bandwidth 'visus.power_overwhelming.rtx_channel.bandwidth')
+  - [channel()](#M-visus-power_overwhelming-rtx_channel-channel 'visus.power_overwhelming.rtx_channel.channel')
+  - [coupling(coupling)](#M-visus-power_overwhelming-rtx_channel-coupling-visus-power_overwhelming-rtx_channel_coupling!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_channel.coupling(visus.power_overwhelming.rtx_channel_coupling!System.Runtime.CompilerServices.IsConst)')
+  - [coupling()](#M-visus-power_overwhelming-rtx_channel-coupling 'visus.power_overwhelming.rtx_channel.coupling')
+  - [decimation_mode(decimation_mode)](#M-visus-power_overwhelming-rtx_channel-decimation_mode-visus-power_overwhelming-rtx_decimation_mode!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_channel.decimation_mode(visus.power_overwhelming.rtx_decimation_mode!System.Runtime.CompilerServices.IsConst)')
+  - [decimation_mode()](#M-visus-power_overwhelming-rtx_channel-decimation_mode 'visus.power_overwhelming.rtx_channel.decimation_mode')
+  - [label(label)](#M-visus-power_overwhelming-rtx_channel-label-visus-power_overwhelming-rtx_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_channel.label(visus.power_overwhelming.rtx_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [label()](#M-visus-power_overwhelming-rtx_channel-label 'visus.power_overwhelming.rtx_channel.label')
+  - [offset(offset)](#M-visus-power_overwhelming-rtx_channel-offset-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_channel.offset(visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [offset()](#M-visus-power_overwhelming-rtx_channel-offset 'visus.power_overwhelming.rtx_channel.offset')
+  - [polarity(polarity)](#M-visus-power_overwhelming-rtx_channel-polarity-visus-power_overwhelming-rtx_channel_polarity!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_channel.polarity(visus.power_overwhelming.rtx_channel_polarity!System.Runtime.CompilerServices.IsConst)')
+  - [polarity()](#M-visus-power_overwhelming-rtx_channel-polarity 'visus.power_overwhelming.rtx_channel.polarity')
+  - [range(offset)](#M-visus-power_overwhelming-rtx_channel-range-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_channel.range(visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [range()](#M-visus-power_overwhelming-rtx_channel-range 'visus.power_overwhelming.rtx_channel.range')
+  - [show_label(visible)](#M-visus-power_overwhelming-rtx_channel-show_label-System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_channel.show_label(System.Boolean!System.Runtime.CompilerServices.IsConst)')
+  - [skew(offset)](#M-visus-power_overwhelming-rtx_channel-skew-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_channel.skew(visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [skew()](#M-visus-power_overwhelming-rtx_channel-skew 'visus.power_overwhelming.rtx_channel.skew')
+  - [state(enable)](#M-visus-power_overwhelming-rtx_channel-state-System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_channel.state(System.Boolean!System.Runtime.CompilerServices.IsConst)')
+  - [state()](#M-visus-power_overwhelming-rtx_channel-state 'visus.power_overwhelming.rtx_channel.state')
+  - [zero_offset()](#M-visus-power_overwhelming-rtx_channel-zero_offset-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_channel.zero_offset(visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [zero_offset()](#M-visus-power_overwhelming-rtx_channel-zero_offset 'visus.power_overwhelming.rtx_channel.zero_offset')
+- [rtx_channel,false,false}](#T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-rtx_channel,false,false} 'visus.power_overwhelming.detail.json_serialiser{visus.power_overwhelming.rtx_channel,false,false}')
+- [rtx_channel_bandwidth](#T-visus-power_overwhelming-rtx_channel_bandwidth 'visus.power_overwhelming.rtx_channel_bandwidth')
+- [rtx_channel_coupling](#T-visus-power_overwhelming-rtx_channel_coupling 'visus.power_overwhelming.rtx_channel_coupling')
+- [rtx_channel_polarity](#T-visus-power_overwhelming-rtx_channel_polarity 'visus.power_overwhelming.rtx_channel_polarity')
+- [rtx_channel_unit](#T-visus-power_overwhelming-rtx_channel_unit 'visus.power_overwhelming.rtx_channel_unit')
+- [rtx_decimation_mode](#T-visus-power_overwhelming-rtx_decimation_mode 'visus.power_overwhelming.rtx_decimation_mode')
+- [rtx_edge_trigger](#T-visus-power_overwhelming-rtx_edge_trigger 'visus.power_overwhelming.rtx_edge_trigger')
+  - [#ctor(source)](#M-visus-power_overwhelming-rtx_edge_trigger-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_edge_trigger.#ctor(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)')
+  - [_coupling](#F-visus-power_overwhelming-rtx_edge_trigger-_coupling 'visus.power_overwhelming.rtx_edge_trigger._coupling')
+  - [coupling(coupling)](#M-visus-power_overwhelming-rtx_edge_trigger-coupling-visus-power_overwhelming-rtx_trigger_coupling- 'visus.power_overwhelming.rtx_edge_trigger.coupling(visus.power_overwhelming.rtx_trigger_coupling)')
+  - [coupling(rhs,rhs)](#M-visus-power_overwhelming-rtx_edge_trigger-coupling 'visus.power_overwhelming.rtx_edge_trigger.coupling')
+  - [external(level,slope)](#M-visus-power_overwhelming-rtx_edge_trigger-external-System-Single!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_edge_trigger.external(System.Single!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst)')
+  - [external(level,slope)](#M-visus-power_overwhelming-rtx_edge_trigger-external-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_edge_trigger.external(visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst)')
+  - [hysteresis(hysteresis)](#M-visus-power_overwhelming-rtx_edge_trigger-hysteresis-visus-power_overwhelming-rtx_trigger_hysteresis- 'visus.power_overwhelming.rtx_edge_trigger.hysteresis(visus.power_overwhelming.rtx_trigger_hysteresis)')
+  - [hysteresis()](#M-visus-power_overwhelming-rtx_edge_trigger-hysteresis 'visus.power_overwhelming.rtx_edge_trigger.hysteresis')
+  - [input()](#M-visus-power_overwhelming-rtx_edge_trigger-input 'visus.power_overwhelming.rtx_edge_trigger.input')
+  - [level(level)](#M-visus-power_overwhelming-rtx_edge_trigger-level-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_edge_trigger.level(visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [level(input,level)](#M-visus-power_overwhelming-rtx_edge_trigger-level-System-UInt16!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_edge_trigger.level(System.UInt16!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [level()](#M-visus-power_overwhelming-rtx_edge_trigger-level 'visus.power_overwhelming.rtx_edge_trigger.level')
+  - [slope(slope)](#M-visus-power_overwhelming-rtx_edge_trigger-slope-visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_edge_trigger.slope(visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst)')
+  - [slope()](#M-visus-power_overwhelming-rtx_edge_trigger-slope 'visus.power_overwhelming.rtx_edge_trigger.slope')
+  - [type()](#M-visus-power_overwhelming-rtx_edge_trigger-type 'visus.power_overwhelming.rtx_edge_trigger.type')
+- [rtx_edge_trigger,false,false}](#T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-rtx_edge_trigger,false,false} 'visus.power_overwhelming.detail.json_serialiser{visus.power_overwhelming.rtx_edge_trigger,false,false}')
+- [rtx_label](#T-visus-power_overwhelming-rtx_label 'visus.power_overwhelming.rtx_label')
+  - [#ctor(rhs)](#M-visus-power_overwhelming-rtx_label-#ctor-visus-power_overwhelming-rtx_label*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_label.#ctor(visus.power_overwhelming.rtx_label*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [#ctor(rhs)](#M-visus-power_overwhelming-rtx_label-#ctor-visus-power_overwhelming-rtx_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_label.#ctor(visus.power_overwhelming.rtx_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [#ctor(text,visible)](#M-visus-power_overwhelming-rtx_label-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_label.#ctor(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.Boolean!System.Runtime.CompilerServices.IsConst)')
+  - [#ctor(text,visible)](#M-visus-power_overwhelming-rtx_label-#ctor-System-Char!System-Runtime-CompilerServices-IsConst*,System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_label.#ctor(System.Char!System.Runtime.CompilerServices.IsConst*,System.Boolean!System.Runtime.CompilerServices.IsConst)')
+  - [#ctor()](#M-visus-power_overwhelming-rtx_label-#ctor 'visus.power_overwhelming.rtx_label.#ctor')
+  - [Dispose()](#M-visus-power_overwhelming-rtx_label-Dispose 'visus.power_overwhelming.rtx_label.Dispose')
+  - [op_Assign(rhs)](#M-visus-power_overwhelming-rtx_label-op_Assign-visus-power_overwhelming-rtx_label*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_label.op_Assign(visus.power_overwhelming.rtx_label*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [op_Assign(rhs)](#M-visus-power_overwhelming-rtx_label-op_Assign-visus-power_overwhelming-rtx_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_label.op_Assign(visus.power_overwhelming.rtx_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [text(text)](#M-visus-power_overwhelming-rtx_label-text-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_label.text(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)')
+  - [text(text)](#M-visus-power_overwhelming-rtx_label-text-System-Char!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_label.text(System.Char!System.Runtime.CompilerServices.IsConst*)')
+  - [text()](#M-visus-power_overwhelming-rtx_label-text 'visus.power_overwhelming.rtx_label.text')
+  - [visible(visible)](#M-visus-power_overwhelming-rtx_label-visible-System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_label.visible(System.Boolean!System.Runtime.CompilerServices.IsConst)')
+  - [visible()](#M-visus-power_overwhelming-rtx_label-visible 'visus.power_overwhelming.rtx_label.visible')
+- [rtx_label,false,false}](#T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-rtx_label,false,false} 'visus.power_overwhelming.detail.json_serialiser{visus.power_overwhelming.rtx_label,false,false}')
+- [rtx_quantity](#T-visus-power_overwhelming-rtx_quantity 'visus.power_overwhelming.rtx_quantity')
+  - [#ctor(rhs)](#M-visus-power_overwhelming-rtx_quantity-#ctor-visus-power_overwhelming-rtx_quantity*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_quantity.#ctor(visus.power_overwhelming.rtx_quantity*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [#ctor(rhs)](#M-visus-power_overwhelming-rtx_quantity-#ctor-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_quantity.#ctor(visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [#ctor(value,unit)](#M-visus-power_overwhelming-rtx_quantity-#ctor-System-Single!System-Runtime-CompilerServices-IsConst,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_quantity.#ctor(System.Single!System.Runtime.CompilerServices.IsConst,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)')
+  - [#ctor(value,unit)](#M-visus-power_overwhelming-rtx_quantity-#ctor-System-Single!System-Runtime-CompilerServices-IsConst,System-Char!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_quantity.#ctor(System.Single!System.Runtime.CompilerServices.IsConst,System.Char!System.Runtime.CompilerServices.IsConst*)')
+  - [Dispose()](#M-visus-power_overwhelming-rtx_quantity-Dispose 'visus.power_overwhelming.rtx_quantity.Dispose')
+  - [op_Assign(rhs)](#M-visus-power_overwhelming-rtx_quantity-op_Assign-visus-power_overwhelming-rtx_quantity*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_quantity.op_Assign(visus.power_overwhelming.rtx_quantity*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [op_Assign(rhs)](#M-visus-power_overwhelming-rtx_quantity-op_Assign-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_quantity.op_Assign(visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [unit()](#M-visus-power_overwhelming-rtx_quantity-unit 'visus.power_overwhelming.rtx_quantity.unit')
+  - [value()](#M-visus-power_overwhelming-rtx_quantity-value 'visus.power_overwhelming.rtx_quantity.value')
+- [rtx_quantity,false,false}](#T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-rtx_quantity,false,false} 'visus.power_overwhelming.detail.json_serialiser{visus.power_overwhelming.rtx_quantity,false,false}')
+- [rtx_reference_point](#T-visus-power_overwhelming-rtx_reference_point 'visus.power_overwhelming.rtx_reference_point')
+- [rtx_sample](#T-visus-power_overwhelming-rtx_sample 'visus.power_overwhelming.rtx_sample')
+  - [#ctor(rhs)](#M-visus-power_overwhelming-rtx_sample-#ctor-visus-power_overwhelming-rtx_sample*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_sample.#ctor(visus.power_overwhelming.rtx_sample*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [#ctor(waveforms,cnt)](#M-visus-power_overwhelming-rtx_sample-#ctor-visus-power_overwhelming-rtx_sample-channel_waveform*,System-UInt64!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sample.#ctor(visus.power_overwhelming.rtx_sample.channel_waveform*,System.UInt64!System.Runtime.CompilerServices.IsConst)')
+  - [#ctor(channels,waveforms,cnt)](#M-visus-power_overwhelming-rtx_sample-#ctor-System-UInt32!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_waveform*,System-UInt64!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sample.#ctor(System.UInt32!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.rtx_waveform*,System.UInt64!System.Runtime.CompilerServices.IsConst)')
+  - [#ctor()](#M-visus-power_overwhelming-rtx_sample-#ctor 'visus.power_overwhelming.rtx_sample.#ctor')
+  - [begin()](#M-visus-power_overwhelming-rtx_sample-begin 'visus.power_overwhelming.rtx_sample.begin')
+  - [clear()](#M-visus-power_overwhelming-rtx_sample-clear 'visus.power_overwhelming.rtx_sample.clear')
+  - [empty()](#M-visus-power_overwhelming-rtx_sample-empty 'visus.power_overwhelming.rtx_sample.empty')
+  - [op_Assign(rhs)](#M-visus-power_overwhelming-rtx_sample-op_Assign-visus-power_overwhelming-rtx_sample*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_sample.op_Assign(visus.power_overwhelming.rtx_sample*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [op_Subscript(index)](#M-visus-power_overwhelming-rtx_sample-op_Subscript-System-Int32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sample.op_Subscript(System.Int32!System.Runtime.CompilerServices.IsConst)')
+  - [size()](#M-visus-power_overwhelming-rtx_sample-size 'visus.power_overwhelming.rtx_sample.size')
+- [rtx_trigger](#T-visus-power_overwhelming-rtx_trigger 'visus.power_overwhelming.rtx_trigger')
+  - [#ctor(source)](#M-visus-power_overwhelming-rtx_trigger-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_trigger.#ctor(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)')
+  - [_hold_off](#F-visus-power_overwhelming-rtx_trigger-_hold_off 'visus.power_overwhelming.rtx_trigger._hold_off')
+  - [hold_off(n)](#M-visus-power_overwhelming-rtx_trigger-hold_off-<unknown type>!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_trigger.hold_off(<unknown type>!System.Runtime.CompilerServices.IsConst)')
+  - [hold_off(hold_off_time)](#M-visus-power_overwhelming-rtx_trigger-hold_off-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_trigger.hold_off(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)')
+  - [hold_off(hold_off_time)](#M-visus-power_overwhelming-rtx_trigger-hold_off-System-Char!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_trigger.hold_off(System.Char!System.Runtime.CompilerServices.IsConst*)')
+  - [hold_off()](#M-visus-power_overwhelming-rtx_trigger-hold_off 'visus.power_overwhelming.rtx_trigger.hold_off')
+  - [mode(mode)](#M-visus-power_overwhelming-rtx_trigger-mode-visus-power_overwhelming-rtx_trigger_mode!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_trigger.mode(visus.power_overwhelming.rtx_trigger_mode!System.Runtime.CompilerServices.IsConst)')
+  - [mode()](#M-visus-power_overwhelming-rtx_trigger-mode 'visus.power_overwhelming.rtx_trigger.mode')
+  - [source(source)](#M-visus-power_overwhelming-rtx_trigger-source-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_trigger.source(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)')
+  - [source(source)](#M-visus-power_overwhelming-rtx_trigger-source-System-Char!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_trigger.source(System.Char!System.Runtime.CompilerServices.IsConst*)')
+  - [source()](#M-visus-power_overwhelming-rtx_trigger-source 'visus.power_overwhelming.rtx_trigger.source')
+  - [type()](#M-visus-power_overwhelming-rtx_trigger-type 'visus.power_overwhelming.rtx_trigger.type')
+- [rtx_trigger_coupling](#T-visus-power_overwhelming-rtx_trigger_coupling 'visus.power_overwhelming.rtx_trigger_coupling')
+- [rtx_trigger_hysteresis](#T-visus-power_overwhelming-rtx_trigger_hysteresis 'visus.power_overwhelming.rtx_trigger_hysteresis')
+- [rtx_trigger_mode](#T-visus-power_overwhelming-rtx_trigger_mode 'visus.power_overwhelming.rtx_trigger_mode')
+- [rtx_trigger_output](#T-visus-power_overwhelming-rtx_trigger_output 'visus.power_overwhelming.rtx_trigger_output')
+- [rtx_trigger_slope](#T-visus-power_overwhelming-rtx_trigger_slope 'visus.power_overwhelming.rtx_trigger_slope')
+- [rtx_waveform](#T-visus-power_overwhelming-rtx_waveform 'visus.power_overwhelming.rtx_waveform')
+  - [#ctor(rhs)](#M-visus-power_overwhelming-rtx_waveform-#ctor-visus-power_overwhelming-rtx_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_waveform.#ctor(visus.power_overwhelming.rtx_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [#ctor(header,segment_offset,samples)](#M-visus-power_overwhelming-rtx_waveform-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-blob*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_waveform.#ctor(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.blob*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [#ctor()](#M-visus-power_overwhelming-rtx_waveform-#ctor 'visus.power_overwhelming.rtx_waveform.#ctor')
+  - [begin()](#M-visus-power_overwhelming-rtx_waveform-begin 'visus.power_overwhelming.rtx_waveform.begin')
+  - [empty()](#M-visus-power_overwhelming-rtx_waveform-empty 'visus.power_overwhelming.rtx_waveform.empty')
+  - [end()](#M-visus-power_overwhelming-rtx_waveform-end 'visus.power_overwhelming.rtx_waveform.end')
+  - [op_Assign(rhs)](#M-visus-power_overwhelming-rtx_waveform-op_Assign-visus-power_overwhelming-rtx_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_waveform.op_Assign(visus.power_overwhelming.rtx_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [record_length()](#M-visus-power_overwhelming-rtx_waveform-record_length 'visus.power_overwhelming.rtx_waveform.record_length')
+  - [sample(i)](#M-visus-power_overwhelming-rtx_waveform-sample-System-UInt64!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_waveform.sample(System.UInt64!System.Runtime.CompilerServices.IsConst)')
+  - [sample_distance()](#M-visus-power_overwhelming-rtx_waveform-sample_distance 'visus.power_overwhelming.rtx_waveform.sample_distance')
+  - [samples()](#M-visus-power_overwhelming-rtx_waveform-samples 'visus.power_overwhelming.rtx_waveform.samples')
+  - [segment_offset()](#M-visus-power_overwhelming-rtx_waveform-segment_offset 'visus.power_overwhelming.rtx_waveform.segment_offset')
+  - [size()](#M-visus-power_overwhelming-rtx_waveform-size 'visus.power_overwhelming.rtx_waveform.size')
+  - [time_begin()](#M-visus-power_overwhelming-rtx_waveform-time_begin 'visus.power_overwhelming.rtx_waveform.time_begin')
+  - [time_end()](#M-visus-power_overwhelming-rtx_waveform-time_end 'visus.power_overwhelming.rtx_waveform.time_end')
+- [rtx_waveform_points](#T-visus-power_overwhelming-rtx_waveform_points 'visus.power_overwhelming.rtx_waveform_points')
 - [parallel_port_pin](#T-visus-power_overwhelming-parallel_port_pin 'visus.power_overwhelming.parallel_port_pin')
 - [parallel_port_trigger](#T-visus-power_overwhelming-parallel_port_trigger 'visus.power_overwhelming.parallel_port_trigger')
   - [#ctor(rhs)](#M-visus-power_overwhelming-parallel_port_trigger-#ctor-visus-power_overwhelming-parallel_port_trigger*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.parallel_port_trigger.#ctor(visus.power_overwhelming.parallel_port_trigger*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
@@ -1795,12 +1795,12 @@
   - [set_thread_affinity(logical_cpu)](#M-visus-power_overwhelming-set_thread_affinity-System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.set_thread_affinity(System.UInt32!System.Runtime.CompilerServices.IsConst)')
   - [to_string(domain)](#M-visus-power_overwhelming-to_string-visus-power_overwhelming-rapl_domain!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.to_string(visus.power_overwhelming.rapl_domain!System.Runtime.CompilerServices.IsConst)')
   - [to_string(point,source,source)](#M-visus-power_overwhelming-to_string-<unknown type>!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.to_string(<unknown type>!System.Runtime.CompilerServices.IsConst)')
-  - [to_string(point)](#M-visus-power_overwhelming-to_string-visus-power_overwhelming-oscilloscope_trigger_coupling!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.to_string(visus.power_overwhelming.oscilloscope_trigger_coupling!System.Runtime.CompilerServices.IsConst)')
-  - [to_string(mode)](#M-visus-power_overwhelming-to_string-visus-power_overwhelming-oscilloscope_decimation_mode!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.to_string(visus.power_overwhelming.oscilloscope_decimation_mode!System.Runtime.CompilerServices.IsConst)')
-  - [to_string(polarity)](#M-visus-power_overwhelming-to_string-visus-power_overwhelming-oscilloscope_channel_polarity!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.to_string(visus.power_overwhelming.oscilloscope_channel_polarity!System.Runtime.CompilerServices.IsConst)')
-  - [to_string(coupling)](#M-visus-power_overwhelming-to_string-visus-power_overwhelming-oscilloscope_channel_coupling!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.to_string(visus.power_overwhelming.oscilloscope_channel_coupling!System.Runtime.CompilerServices.IsConst)')
-  - [to_string(bandwidth)](#M-visus-power_overwhelming-to_string-visus-power_overwhelming-oscilloscope_channel_bandwidth!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.to_string(visus.power_overwhelming.oscilloscope_channel_bandwidth!System.Runtime.CompilerServices.IsConst)')
-  - [to_string(state)](#M-visus-power_overwhelming-to_string-visus-power_overwhelming-oscilloscope_acquisition_state!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.to_string(visus.power_overwhelming.oscilloscope_acquisition_state!System.Runtime.CompilerServices.IsConst)')
+  - [to_string(point)](#M-visus-power_overwhelming-to_string-visus-power_overwhelming-rtx_trigger_coupling!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.to_string(visus.power_overwhelming.rtx_trigger_coupling!System.Runtime.CompilerServices.IsConst)')
+  - [to_string(mode)](#M-visus-power_overwhelming-to_string-visus-power_overwhelming-rtx_decimation_mode!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.to_string(visus.power_overwhelming.rtx_decimation_mode!System.Runtime.CompilerServices.IsConst)')
+  - [to_string(polarity)](#M-visus-power_overwhelming-to_string-visus-power_overwhelming-rtx_channel_polarity!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.to_string(visus.power_overwhelming.rtx_channel_polarity!System.Runtime.CompilerServices.IsConst)')
+  - [to_string(coupling)](#M-visus-power_overwhelming-to_string-visus-power_overwhelming-rtx_channel_coupling!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.to_string(visus.power_overwhelming.rtx_channel_coupling!System.Runtime.CompilerServices.IsConst)')
+  - [to_string(bandwidth)](#M-visus-power_overwhelming-to_string-visus-power_overwhelming-rtx_channel_bandwidth!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.to_string(visus.power_overwhelming.rtx_channel_bandwidth!System.Runtime.CompilerServices.IsConst)')
+  - [to_string(state)](#M-visus-power_overwhelming-to_string-visus-power_overwhelming-rtx_acquisition_state!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.to_string(visus.power_overwhelming.rtx_acquisition_state!System.Runtime.CompilerServices.IsConst)')
   - [wait_event(event,timeout)](#M-visus-power_overwhelming-wait_event-System-Void*,System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.wait_event(System.Void*,System.UInt32!System.Runtime.CompilerServices.IsConst)')
   - [wait_event(event)](#M-visus-power_overwhelming-wait_event-System-Void*- 'visus.power_overwhelming.wait_event(System.Void*)')
 - [rapl_domain](#T-visus-power_overwhelming-rapl_domain 'visus.power_overwhelming.rapl_domain')
@@ -1812,13 +1812,13 @@
   - [#ctor(path,timeout)](#M-visus-power_overwhelming-rtx_instrument-#ctor-System-Char!System-Runtime-CompilerServices-IsConst*,System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.#ctor(System.Char!System.Runtime.CompilerServices.IsConst*,System.UInt32!System.Runtime.CompilerServices.IsConst)')
   - [#ctor()](#M-visus-power_overwhelming-rtx_instrument-#ctor 'visus.power_overwhelming.rtx_instrument.#ctor')
   - [product_id](#F-visus-power_overwhelming-rtx_instrument-product_id 'visus.power_overwhelming.rtx_instrument.product_id')
-  - [acquisition(state,wait)](#M-visus-power_overwhelming-rtx_instrument-acquisition-visus-power_overwhelming-oscilloscope_acquisition_state!System-Runtime-CompilerServices-IsConst,System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.acquisition(visus.power_overwhelming.oscilloscope_acquisition_state!System.Runtime.CompilerServices.IsConst,System.Boolean!System.Runtime.CompilerServices.IsConst)')
-  - [acquisition(acquisition,wait)](#M-visus-power_overwhelming-rtx_instrument-acquisition-visus-power_overwhelming-oscilloscope_acquisition!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.acquisition(visus.power_overwhelming.oscilloscope_acquisition!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Boolean!System.Runtime.CompilerServices.IsConst)')
+  - [acquisition(state,wait)](#M-visus-power_overwhelming-rtx_instrument-acquisition-visus-power_overwhelming-rtx_acquisition_state!System-Runtime-CompilerServices-IsConst,System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.acquisition(visus.power_overwhelming.rtx_acquisition_state!System.Runtime.CompilerServices.IsConst,System.Boolean!System.Runtime.CompilerServices.IsConst)')
+  - [acquisition(acquisition,wait)](#M-visus-power_overwhelming-rtx_instrument-acquisition-visus-power_overwhelming-rtx_acquisition!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.acquisition(visus.power_overwhelming.rtx_acquisition!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Boolean!System.Runtime.CompilerServices.IsConst)')
   - [acquisition()](#M-visus-power_overwhelming-rtx_instrument-acquisition 'visus.power_overwhelming.rtx_instrument.acquisition')
   - [all(dst,cnt,timeout)](#M-visus-power_overwhelming-rtx_instrument-all-visus-power_overwhelming-rtx_instrument*,System-UInt64,System-Int32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.all(visus.power_overwhelming.rtx_instrument*,System.UInt64,System.Int32!System.Runtime.CompilerServices.IsConst)')
   - [automatic_roll(enable)](#M-visus-power_overwhelming-rtx_instrument-automatic_roll-System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.automatic_roll(System.Boolean!System.Runtime.CompilerServices.IsConst)')
   - [automatic_roll()](#M-visus-power_overwhelming-rtx_instrument-automatic_roll 'visus.power_overwhelming.rtx_instrument.automatic_roll')
-  - [automatic_roll_time(min_time_base)](#M-visus-power_overwhelming-rtx_instrument-automatic_roll_time-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument.automatic_roll_time(visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [automatic_roll_time(min_time_base)](#M-visus-power_overwhelming-rtx_instrument-automatic_roll_time-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument.automatic_roll_time(visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
   - [automatic_roll_time()](#M-visus-power_overwhelming-rtx_instrument-automatic_roll_time 'visus.power_overwhelming.rtx_instrument.automatic_roll_time')
   - [beep(cnt)](#M-visus-power_overwhelming-rtx_instrument-beep-System-UInt64!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.beep(System.UInt64!System.Runtime.CompilerServices.IsConst)')
   - [beep_on_error(enable)](#M-visus-power_overwhelming-rtx_instrument-beep_on_error-System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.beep_on_error(System.Boolean!System.Runtime.CompilerServices.IsConst)')
@@ -1826,7 +1826,7 @@
   - [beep_on_trigger(enable)](#M-visus-power_overwhelming-rtx_instrument-beep_on_trigger-System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.beep_on_trigger(System.Boolean!System.Runtime.CompilerServices.IsConst)')
   - [beep_on_trigger()](#M-visus-power_overwhelming-rtx_instrument-beep_on_trigger 'visus.power_overwhelming.rtx_instrument.beep_on_trigger')
   - [binary_data(channel)](#M-visus-power_overwhelming-rtx_instrument-binary_data-System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.binary_data(System.UInt32!System.Runtime.CompilerServices.IsConst)')
-  - [channel(channel)](#M-visus-power_overwhelming-rtx_instrument-channel-visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument.channel(visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [channel(channel)](#M-visus-power_overwhelming-rtx_instrument-channel-visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument.channel(visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
   - [channel(channel)](#M-visus-power_overwhelming-rtx_instrument-channel-System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.channel(System.UInt32!System.Runtime.CompilerServices.IsConst)')
   - [channels()](#M-visus-power_overwhelming-rtx_instrument-channels-System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.channels(System.UInt32!System.Runtime.CompilerServices.IsConst)')
   - [copy_file_from_instrument(name,path)](#M-visus-power_overwhelming-rtx_instrument-copy_file_from_instrument-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_instrument.copy_file_from_instrument(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)')
@@ -1837,8 +1837,8 @@
   - [create(path,on_new,context,timeout)](#M-visus-power_overwhelming-rtx_instrument-create-System-Char!System-Runtime-CompilerServices-IsConst*,=FUNC-System-Void-visus-power_overwhelming-rtx_instrument*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Void*-,System-Void*,System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.create(System.Char!System.Runtime.CompilerServices.IsConst*,=FUNC:System.Void(visus.power_overwhelming.rtx_instrument*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Void*),System.Void*,System.UInt32!System.Runtime.CompilerServices.IsConst)')
   - [create_and_reset_new(path,timeout)](#M-visus-power_overwhelming-rtx_instrument-create_and_reset_new-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.create_and_reset_new(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.UInt32!System.Runtime.CompilerServices.IsConst)')
   - [create_and_reset_new(path,timeout)](#M-visus-power_overwhelming-rtx_instrument-create_and_reset_new-System-Char!System-Runtime-CompilerServices-IsConst*,System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.create_and_reset_new(System.Char!System.Runtime.CompilerServices.IsConst*,System.UInt32!System.Runtime.CompilerServices.IsConst)')
-  - [data(points)](#M-visus-power_overwhelming-rtx_instrument-data-visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.data(visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst)')
-  - [data(channel,points)](#M-visus-power_overwhelming-rtx_instrument-data-System-UInt32!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.data(System.UInt32!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst)')
+  - [data(points)](#M-visus-power_overwhelming-rtx_instrument-data-visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.data(visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst)')
+  - [data(channel,points)](#M-visus-power_overwhelming-rtx_instrument-data-System-UInt32!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.data(System.UInt32!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst)')
   - [edge_trigger()](#M-visus-power_overwhelming-rtx_instrument-edge_trigger 'visus.power_overwhelming.rtx_instrument.edge_trigger')
   - [expression(channel,expression,unit)](#M-visus-power_overwhelming-rtx_instrument-expression-System-UInt32!System-Runtime-CompilerServices-IsConst,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_instrument.expression(System.UInt32!System.Runtime.CompilerServices.IsConst,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)')
   - [expression(channel,expression,unit)](#M-visus-power_overwhelming-rtx_instrument-expression-System-UInt32!System-Runtime-CompilerServices-IsConst,System-Char!System-Runtime-CompilerServices-IsConst*,System-Char!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_instrument.expression(System.UInt32!System.Runtime.CompilerServices.IsConst,System.Char!System.Runtime.CompilerServices.IsConst*,System.Char!System.Runtime.CompilerServices.IsConst*)')
@@ -1856,15 +1856,15 @@
   - [reference_position()](#M-visus-power_overwhelming-rtx_instrument-reference_position 'visus.power_overwhelming.rtx_instrument.reference_position')
   - [save_state_to_instrument(name,path)](#M-visus-power_overwhelming-rtx_instrument-save_state_to_instrument-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_instrument.save_state_to_instrument(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)')
   - [save_state_to_instrument(name,path)](#M-visus-power_overwhelming-rtx_instrument-save_state_to_instrument-System-Char!System-Runtime-CompilerServices-IsConst*,System-Char!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_instrument.save_state_to_instrument(System.Char!System.Runtime.CompilerServices.IsConst*,System.Char!System.Runtime.CompilerServices.IsConst*)')
-  - [time_range(scale)](#M-visus-power_overwhelming-rtx_instrument-time_range-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument.time_range(visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [time_range(scale)](#M-visus-power_overwhelming-rtx_instrument-time_range-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument.time_range(visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
   - [time_range()](#M-visus-power_overwhelming-rtx_instrument-time_range 'visus.power_overwhelming.rtx_instrument.time_range')
-  - [time_scale(scale)](#M-visus-power_overwhelming-rtx_instrument-time_scale-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument.time_scale(visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [time_scale(scale)](#M-visus-power_overwhelming-rtx_instrument-time_scale-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument.time_scale(visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
   - [time_scale()](#M-visus-power_overwhelming-rtx_instrument-time_scale 'visus.power_overwhelming.rtx_instrument.time_scale')
   - [trigger(wait)](#M-visus-power_overwhelming-rtx_instrument-trigger-System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.trigger(System.Boolean!System.Runtime.CompilerServices.IsConst)')
-  - [trigger(trigger)](#M-visus-power_overwhelming-rtx_instrument-trigger-visus-power_overwhelming-oscilloscope_trigger!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument.trigger(visus.power_overwhelming.oscilloscope_trigger!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [trigger_output(output)](#M-visus-power_overwhelming-rtx_instrument-trigger_output-visus-power_overwhelming-oscilloscope_trigger_output!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.trigger_output(visus.power_overwhelming.oscilloscope_trigger_output!System.Runtime.CompilerServices.IsConst)')
+  - [trigger(trigger)](#M-visus-power_overwhelming-rtx_instrument-trigger-visus-power_overwhelming-rtx_trigger!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument.trigger(visus.power_overwhelming.rtx_trigger!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [trigger_output(output)](#M-visus-power_overwhelming-rtx_instrument-trigger_output-visus-power_overwhelming-rtx_trigger_output!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.trigger_output(visus.power_overwhelming.rtx_trigger_output!System.Runtime.CompilerServices.IsConst)')
   - [trigger_output()](#M-visus-power_overwhelming-rtx_instrument-trigger_output 'visus.power_overwhelming.rtx_instrument.trigger_output')
-  - [trigger_position(offset)](#M-visus-power_overwhelming-rtx_instrument-trigger_position-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument.trigger_position(visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [trigger_position(offset)](#M-visus-power_overwhelming-rtx_instrument-trigger_position-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument.trigger_position(visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
   - [unit(dst,cnt,channel)](#M-visus-power_overwhelming-rtx_instrument-unit-<unknown type>,System-UInt64!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.unit(<unknown type>,System.UInt64!System.Runtime.CompilerServices.IsConst,System.UInt32!System.Runtime.CompilerServices.IsConst)')
   - [unit(channel,unit)](#M-visus-power_overwhelming-rtx_instrument-unit-System-UInt32!System-Runtime-CompilerServices-IsConst,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_instrument.unit(System.UInt32!System.Runtime.CompilerServices.IsConst,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*)')
   - [unit(dst,cnt,channel)](#M-visus-power_overwhelming-rtx_instrument-unit-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte*,System-UInt64!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.unit(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte*,System.UInt64!System.Runtime.CompilerServices.IsConst,System.UInt32!System.Runtime.CompilerServices.IsConst)')
@@ -1872,8 +1872,8 @@
   - [unit(dst,cnt,channel)](#M-visus-power_overwhelming-rtx_instrument-unit-System-Char*,System-UInt64!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument.unit(System.Char*,System.UInt64!System.Runtime.CompilerServices.IsConst,System.UInt32!System.Runtime.CompilerServices.IsConst)')
 - [rtx_instrument_configuration](#T-visus-power_overwhelming-rtx_instrument_configuration 'visus.power_overwhelming.rtx_instrument_configuration')
   - [#ctor(instrument,ignore_channels)](#M-visus-power_overwhelming-rtx_instrument_configuration-#ctor-visus-power_overwhelming-rtx_instrument!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.#ctor(visus.power_overwhelming.rtx_instrument!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Boolean!System.Runtime.CompilerServices.IsConst)')
-  - [#ctor(time_range,acquisition,trigger,timeout)](#M-visus-power_overwhelming-rtx_instrument_configuration-#ctor-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_acquisition!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_edge_trigger!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-UInt32- 'visus.power_overwhelming.rtx_instrument_configuration.#ctor(visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.oscilloscope_acquisition!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.oscilloscope_edge_trigger!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.UInt32)')
-  - [#ctor(time_range,samples,timeout)](#M-visus-power_overwhelming-rtx_instrument_configuration-#ctor-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst,System-UInt32- 'visus.power_overwhelming.rtx_instrument_configuration.#ctor(visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst,System.UInt32!System.Runtime.CompilerServices.IsConst,System.UInt32)')
+  - [#ctor(time_range,acquisition,trigger,timeout)](#M-visus-power_overwhelming-rtx_instrument_configuration-#ctor-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_acquisition!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_edge_trigger!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-UInt32- 'visus.power_overwhelming.rtx_instrument_configuration.#ctor(visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_acquisition!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.rtx_edge_trigger!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.UInt32)')
+  - [#ctor(time_range,samples,timeout)](#M-visus-power_overwhelming-rtx_instrument_configuration-#ctor-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst,System-UInt32- 'visus.power_overwhelming.rtx_instrument_configuration.#ctor(visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst,System.UInt32!System.Runtime.CompilerServices.IsConst,System.UInt32)')
   - [#ctor(rhs)](#M-visus-power_overwhelming-rtx_instrument_configuration-#ctor-visus-power_overwhelming-rtx_instrument_configuration*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument_configuration.#ctor(visus.power_overwhelming.rtx_instrument_configuration*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
   - [#ctor(rhs)](#M-visus-power_overwhelming-rtx_instrument_configuration-#ctor-visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument_configuration.#ctor(visus.power_overwhelming.rtx_instrument_configuration!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
   - [#ctor()](#M-visus-power_overwhelming-rtx_instrument_configuration-#ctor 'visus.power_overwhelming.rtx_instrument_configuration.#ctor')
@@ -1881,18 +1881,18 @@
   - [acquisition()](#M-visus-power_overwhelming-rtx_instrument_configuration-acquisition 'visus.power_overwhelming.rtx_instrument_configuration.acquisition')
   - [apply(instrument)](#M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument_configuration.apply(visus.power_overwhelming.rtx_instrument*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
   - [apply(instruments,cnt,path)](#M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,System-Char!System-Runtime-CompilerServices-IsConst*- 'visus.power_overwhelming.rtx_instrument_configuration.apply(visus.power_overwhelming.rtx_instrument*,System.UInt64!System.Runtime.CompilerServices.IsConst,System.Char!System.Runtime.CompilerServices.IsConst*)')
-  - [apply(instruments,cnt,configuration,master,level,slope)](#M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.apply(visus.power_overwhelming.rtx_instrument*,System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_instrument_configuration!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst)')
-  - [apply(instruments,cnt,configuration,master,level,slope)](#M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.apply(visus.power_overwhelming.rtx_instrument*,System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_instrument_configuration!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Char!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst)')
-  - [apply(instruments,cnt,configuration,master_slave,level,slope)](#M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Boolean!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.apply(visus.power_overwhelming.rtx_instrument*,System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_instrument_configuration!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Boolean!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst)')
-  - [as_slave(beep,level,slope)](#M-visus-power_overwhelming-rtx_instrument_configuration-as_slave-System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.as_slave(System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst)')
+  - [apply(instruments,cnt,configuration,master,level,slope)](#M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.apply(visus.power_overwhelming.rtx_instrument*,System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_instrument_configuration!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst)')
+  - [apply(instruments,cnt,configuration,master,level,slope)](#M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.apply(visus.power_overwhelming.rtx_instrument*,System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_instrument_configuration!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Char!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst)')
+  - [apply(instruments,cnt,configuration,master_slave,level,slope)](#M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Boolean!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.apply(visus.power_overwhelming.rtx_instrument*,System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_instrument_configuration!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Boolean!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst)')
+  - [as_slave(beep,level,slope)](#M-visus-power_overwhelming-rtx_instrument_configuration-as_slave-System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.as_slave(System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst)')
   - [beep_on_apply(count)](#M-visus-power_overwhelming-rtx_instrument_configuration-beep_on_apply-System-UInt64!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.beep_on_apply(System.UInt64!System.Runtime.CompilerServices.IsConst)')
   - [beep_on_apply()](#M-visus-power_overwhelming-rtx_instrument_configuration-beep_on_apply 'visus.power_overwhelming.rtx_instrument_configuration.beep_on_apply')
   - [beep_on_error(enable)](#M-visus-power_overwhelming-rtx_instrument_configuration-beep_on_error-System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.beep_on_error(System.Boolean!System.Runtime.CompilerServices.IsConst)')
   - [beep_on_error()](#M-visus-power_overwhelming-rtx_instrument_configuration-beep_on_error 'visus.power_overwhelming.rtx_instrument_configuration.beep_on_error')
   - [beep_on_trigger(enable)](#M-visus-power_overwhelming-rtx_instrument_configuration-beep_on_trigger-System-Boolean!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.beep_on_trigger(System.Boolean!System.Runtime.CompilerServices.IsConst)')
   - [beep_on_trigger()](#M-visus-power_overwhelming-rtx_instrument_configuration-beep_on_trigger 'visus.power_overwhelming.rtx_instrument_configuration.beep_on_trigger')
-  - [channel(channel)](#M-visus-power_overwhelming-rtx_instrument_configuration-channel-visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument_configuration.channel(visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
-  - [channels(dst,cnt)](#M-visus-power_overwhelming-rtx_instrument_configuration-channels-visus-power_overwhelming-oscilloscope_channel*,System-UInt64!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.channels(visus.power_overwhelming.oscilloscope_channel*,System.UInt64!System.Runtime.CompilerServices.IsConst)')
+  - [channel(channel)](#M-visus-power_overwhelming-rtx_instrument_configuration-channel-visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_instrument_configuration.channel(visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
+  - [channels(dst,cnt)](#M-visus-power_overwhelming-rtx_instrument_configuration-channels-visus-power_overwhelming-rtx_channel*,System-UInt64!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.channels(visus.power_overwhelming.rtx_channel*,System.UInt64!System.Runtime.CompilerServices.IsConst)')
   - [disable_automatic_roll()](#M-visus-power_overwhelming-rtx_instrument_configuration-disable_automatic_roll 'visus.power_overwhelming.rtx_instrument_configuration.disable_automatic_roll')
   - [enable_automatic_roll()](#M-visus-power_overwhelming-rtx_instrument_configuration-enable_automatic_roll 'visus.power_overwhelming.rtx_instrument_configuration.enable_automatic_roll')
   - [ignore_all_channels()](#M-visus-power_overwhelming-rtx_instrument_configuration-ignore_all_channels 'visus.power_overwhelming.rtx_instrument_configuration.ignore_all_channels')
@@ -1921,7 +1921,7 @@
   - [decimation_method()](#M-visus-power_overwhelming-rtx_sensor-decimation_method 'visus.power_overwhelming.rtx_sensor.decimation_method')
   - [for_all(dst ,cnt,time_range,samples,decimation_method,timeout)](#M-visus-power_overwhelming-rtx_sensor-for_all-visus-power_overwhelming-rtx_sensor*,System-UInt64,System-UInt32!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-waveform_decimation_method!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sensor.for_all(visus.power_overwhelming.rtx_sensor*,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsConst,System.UInt32!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.waveform_decimation_method!System.Runtime.CompilerServices.IsConst,System.UInt32!System.Runtime.CompilerServices.IsConst)')
   - [get_definitions(dst,cnt,voltage_attenuation,current_attenuation,decimation_method,timeout)](#M-visus-power_overwhelming-rtx_sensor-get_definitions-visus-power_overwhelming-rtx_sensor_definition*,System-UInt64!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-UInt64!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sensor.get_definitions(visus.power_overwhelming.rtx_sensor_definition*,System.UInt64!System.Runtime.CompilerServices.IsConst,System.Single!System.Runtime.CompilerServices.IsConst,System.Single!System.Runtime.CompilerServices.IsConst,System.UInt64!System.Runtime.CompilerServices.IsConst,System.UInt32!System.Runtime.CompilerServices.IsConst)')
-  - [get_definitions(dst,cnt,voltage_channel,current_channel,force_cannels,timeout)](#M-visus-power_overwhelming-rtx_sensor-get_definitions-visus-power_overwhelming-rtx_sensor_definition*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-UInt64!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sensor.get_definitions(visus.power_overwhelming.rtx_sensor_definition*,System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.UInt64!System.Runtime.CompilerServices.IsConst,System.UInt32!System.Runtime.CompilerServices.IsConst)')
+  - [get_definitions(dst,cnt,voltage_channel,current_channel,force_cannels,timeout)](#M-visus-power_overwhelming-rtx_sensor-get_definitions-visus-power_overwhelming-rtx_sensor_definition*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-UInt64!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sensor.get_definitions(visus.power_overwhelming.rtx_sensor_definition*,System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.UInt64!System.Runtime.CompilerServices.IsConst,System.UInt32!System.Runtime.CompilerServices.IsConst)')
   - [instrument()](#M-visus-power_overwhelming-rtx_sensor-instrument 'visus.power_overwhelming.rtx_sensor.instrument')
   - [name()](#M-visus-power_overwhelming-rtx_sensor-name 'visus.power_overwhelming.rtx_sensor.name')
   - [path()](#M-visus-power_overwhelming-rtx_sensor-path 'visus.power_overwhelming.rtx_sensor.path')
@@ -1929,10 +1929,10 @@
   - [sample_async()](#M-visus-power_overwhelming-rtx_sensor-sample_async-visus-power_overwhelming-async_sampling*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_sensor.sample_async(visus.power_overwhelming.async_sampling*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
   - [sample_sync()](#M-visus-power_overwhelming-rtx_sensor-sample_sync-visus-power_overwhelming-timestamp_resolution!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sensor.sample_sync(visus.power_overwhelming.timestamp_resolution!System.Runtime.CompilerServices.IsConst)')
 - [rtx_sensor_definition](#T-visus-power_overwhelming-rtx_sensor_definition 'visus.power_overwhelming.rtx_sensor_definition')
-  - [#ctor(path,channel_voltage,attenuation_voltage,channel_current,attenuation_current,description,waveform_points)](#M-visus-power_overwhelming-rtx_sensor_definition-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-UInt32!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sensor_definition.#ctor(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.UInt32!System.Runtime.CompilerServices.IsConst,System.Single!System.Runtime.CompilerServices.IsConst,System.UInt32!System.Runtime.CompilerServices.IsConst,System.Single!System.Runtime.CompilerServices.IsConst,System.Char!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst)')
-  - [#ctor(path,channel_voltage,attenuation_voltage,channel_current,attenuation_current,description,waveform_points)](#M-visus-power_overwhelming-rtx_sensor_definition-#ctor-System-Char!System-Runtime-CompilerServices-IsConst*,System-UInt32!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sensor_definition.#ctor(System.Char!System.Runtime.CompilerServices.IsConst*,System.UInt32!System.Runtime.CompilerServices.IsConst,System.Single!System.Runtime.CompilerServices.IsConst,System.UInt32!System.Runtime.CompilerServices.IsConst,System.Single!System.Runtime.CompilerServices.IsConst,System.Char!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst)')
-  - [#ctor(path,voltage_channel,current_channel,description,waveform_points)](#M-visus-power_overwhelming-rtx_sensor_definition-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sensor_definition.#ctor(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Char!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst)')
-  - [#ctor(path,description,voltage_channel,current_channel,waveform_points)](#M-visus-power_overwhelming-rtx_sensor_definition-#ctor-System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sensor_definition.#ctor(System.Char!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Char!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst)')
+  - [#ctor(path,channel_voltage,attenuation_voltage,channel_current,attenuation_current,description,waveform_points)](#M-visus-power_overwhelming-rtx_sensor_definition-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-UInt32!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sensor_definition.#ctor(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,System.UInt32!System.Runtime.CompilerServices.IsConst,System.Single!System.Runtime.CompilerServices.IsConst,System.UInt32!System.Runtime.CompilerServices.IsConst,System.Single!System.Runtime.CompilerServices.IsConst,System.Char!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst)')
+  - [#ctor(path,channel_voltage,attenuation_voltage,channel_current,attenuation_current,description,waveform_points)](#M-visus-power_overwhelming-rtx_sensor_definition-#ctor-System-Char!System-Runtime-CompilerServices-IsConst*,System-UInt32!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sensor_definition.#ctor(System.Char!System.Runtime.CompilerServices.IsConst*,System.UInt32!System.Runtime.CompilerServices.IsConst,System.Single!System.Runtime.CompilerServices.IsConst,System.UInt32!System.Runtime.CompilerServices.IsConst,System.Single!System.Runtime.CompilerServices.IsConst,System.Char!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst)')
+  - [#ctor(path,voltage_channel,current_channel,description,waveform_points)](#M-visus-power_overwhelming-rtx_sensor_definition-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sensor_definition.#ctor(System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Char!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst)')
+  - [#ctor(path,description,voltage_channel,current_channel,waveform_points)](#M-visus-power_overwhelming-rtx_sensor_definition-#ctor-System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sensor_definition.#ctor(System.Char!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Char!System.Runtime.CompilerServices.IsConst*,visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst)')
   - [apply(instrument)](#M-visus-power_overwhelming-rtx_sensor_definition-apply-visus-power_overwhelming-rtx_instrument*!System-Runtime-CompilerServices-IsImplicitlyDereferenced- 'visus.power_overwhelming.rtx_sensor_definition.apply(visus.power_overwhelming.rtx_instrument*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)')
   - [attenuation_current()](#M-visus-power_overwhelming-rtx_sensor_definition-attenuation_current 'visus.power_overwhelming.rtx_sensor_definition.attenuation_current')
   - [attenuation_voltage()](#M-visus-power_overwhelming-rtx_sensor_definition-attenuation_voltage 'visus.power_overwhelming.rtx_sensor_definition.attenuation_voltage')
@@ -7055,12 +7055,12 @@ Specialisation for Unicode characters.
 
 visus.power_overwhelming.blob.op_Implicit~System.Void!System.Runtime
 
-<a name='T-visus-power_overwhelming-oscilloscope_sample-channel_waveform-op_Implicit~visus-power_overwhelming-oscilloscope_waveform!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices'></a>
+<a name='T-visus-power_overwhelming-rtx_sample-channel_waveform-op_Implicit~visus-power_overwhelming-rtx_waveform!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices'></a>
 ## CompilerServices `type`
 
 ##### Namespace
 
-visus.power_overwhelming.oscilloscope_sample.channel_waveform.op_Implicit~visus.power_overwhelming.oscilloscope_waveform!System.Runtime.CompilerServices.IsConst*!System.Runtime
+visus.power_overwhelming.rtx_sample.channel_waveform.op_Implicit~visus.power_overwhelming.rtx_waveform!System.Runtime.CompilerServices.IsConst*!System.Runtime
 
 <a name='M-visus-power_overwhelming-blob-op_Implicit~System-Void!System-Runtime-CompilerServices-IsConst*'></a>
 ### IsConst*() `method`
@@ -7085,7 +7085,7 @@ refers to.
 A blob can be empty, wherefore the data pointer can be
 `nullptr`.
 
-<a name='M-visus-power_overwhelming-oscilloscope_sample-channel_waveform-op_Implicit~visus-power_overwhelming-oscilloscope_waveform!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced'></a>
+<a name='M-visus-power_overwhelming-rtx_sample-channel_waveform-op_Implicit~visus-power_overwhelming-rtx_waveform!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced'></a>
 ### IsImplicitlyDereferenced() `method`
 
 ##### Summary
@@ -8957,18 +8957,18 @@ Although this method is called [truncate](#M-visus-power_overwhelming-blob-trunc
 it can also increase the capacity of the blob. Any new data behind
 the existing range of content will remain uninitialised.
 
-<a name='T-visus-power_overwhelming-oscilloscope_sample-channel_waveform'></a>
+<a name='T-visus-power_overwhelming-rtx_sample-channel_waveform'></a>
 ## channel_waveform `type`
 
 ##### Namespace
 
-visus.power_overwhelming.oscilloscope_sample
+visus.power_overwhelming.rtx_sample
 
 ##### Summary
 
 Container for the waveform of a single channel.
 
-<a name='M-visus-power_overwhelming-oscilloscope_sample-channel_waveform-#ctor-System-UInt32!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_sample-channel_waveform-#ctor-System-UInt32!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### #ctor(channel,waveform) `constructor`
 
 ##### Summary
@@ -8981,10 +8981,10 @@ Initialises a new instance.
 | ---- | ---- | ----------- |
 | channel | [System.UInt32!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.UInt32!System.Runtime.CompilerServices.IsConst 'System.UInt32!System.Runtime.CompilerServices.IsConst') | The number of the channel the waveform was
 obtained from. |
-| waveform | [visus.power_overwhelming.oscilloscope_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The waveform holding the samples for the
+| waveform | [visus.power_overwhelming.rtx_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The waveform holding the samples for the
 channel. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_sample-channel_waveform-#ctor'></a>
+<a name='M-visus-power_overwhelming-rtx_sample-channel_waveform-#ctor'></a>
 ### #ctor() `constructor`
 
 ##### Summary
@@ -8995,9 +8995,9 @@ Initialises a new instance.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-|  | [M:visus.power_overwhelming.oscilloscope_sample.channel_waveform.#ctor](#T-M-visus-power_overwhelming-oscilloscope_sample-channel_waveform-#ctor 'M:visus.power_overwhelming.oscilloscope_sample.channel_waveform.#ctor') |  |
+|  | [M:visus.power_overwhelming.rtx_sample.channel_waveform.#ctor](#T-M-visus-power_overwhelming-rtx_sample-channel_waveform-#ctor 'M:visus.power_overwhelming.rtx_sample.channel_waveform.#ctor') |  |
 
-<a name='M-visus-power_overwhelming-oscilloscope_sample-channel_waveform-channel'></a>
+<a name='M-visus-power_overwhelming-rtx_sample-channel_waveform-channel'></a>
 ### channel() `method`
 
 ##### Summary
@@ -9012,7 +9012,7 @@ The one-based number of the channel.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_sample-channel_waveform-waveform'></a>
+<a name='M-visus-power_overwhelming-rtx_sample-channel_waveform-waveform'></a>
 ### waveform() `method`
 
 ##### Summary
@@ -14827,12 +14827,12 @@ visus.power_overwhelming.msr_sensor
 
 visus.power_overwhelming.nvml_sensor
 
-<a name='T-visus-power_overwhelming-oscilloscope_quantity-op_Implicit~System'></a>
+<a name='T-visus-power_overwhelming-rtx_quantity-op_Implicit~System'></a>
 ## op_Implicit~System `type`
 
 ##### Namespace
 
-visus.power_overwhelming.oscilloscope_quantity
+visus.power_overwhelming.rtx_quantity
 
 <a name='T-visus-power_overwhelming-parallel_port_trigger-op_Implicit~System'></a>
 ## op_Implicit~System `type`
@@ -15204,7 +15204,7 @@ This method has no parameters.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_quantity-op_Implicit~System-Single'></a>
+<a name='M-visus-power_overwhelming-rtx_quantity-op_Implicit~System-Single'></a>
 ### Single() `method`
 
 ##### Summary
@@ -15385,8 +15385,8 @@ This method has no parameters.
 An instrument is considered valid until it has been disposed by a
 move operation.
 
-<a name='T-visus-power_overwhelming-oscilloscope_acquisition'></a>
-## oscilloscope_acquisition `type`
+<a name='T-visus-power_overwhelming-rtx_acquisition'></a>
+## rtx_acquisition `type`
 
 ##### Namespace
 
@@ -15404,7 +15404,7 @@ For programmatic measurements, callers should typically configure
 a single acquisition (possibly with multiple segments) as free running
 acquisitions cannot be safely synchronised with the application logic.
 
-<a name='M-visus-power_overwhelming-oscilloscope_acquisition-#ctor'></a>
+<a name='M-visus-power_overwhelming-rtx_acquisition-#ctor'></a>
 ### #ctor() `constructor`
 
 ##### Summary
@@ -15415,7 +15415,7 @@ Initialises a new instance.
 
 This constructor has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_acquisition-automatic_points'></a>
+<a name='M-visus-power_overwhelming-rtx_acquisition-automatic_points'></a>
 ### automatic_points() `method`
 
 ##### Summary
@@ -15432,7 +15432,7 @@ length, `false` otherwise.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_acquisition-count-System-UInt32!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_acquisition-count-System-UInt32!System-Runtime-CompilerServices-IsConst-'></a>
 ### count(count) `method`
 
 ##### Summary
@@ -15450,7 +15450,7 @@ trigger.
 | ---- | ---- | ----------- |
 | count | [System.UInt32!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.UInt32!System.Runtime.CompilerServices.IsConst 'System.UInt32!System.Runtime.CompilerServices.IsConst') | The number of waveforms to acquire. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_acquisition-count'></a>
+<a name='M-visus-power_overwhelming-rtx_acquisition-count'></a>
 ### count() `method`
 
 ##### Summary
@@ -15465,7 +15465,7 @@ The number of waveforms to be acquired.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_acquisition-enable_automatic_points'></a>
+<a name='M-visus-power_overwhelming-rtx_acquisition-enable_automatic_points'></a>
 ### enable_automatic_points() `method`
 
 ##### Summary
@@ -15481,7 +15481,7 @@ waveform by itself.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_acquisition-points-System-UInt32!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_acquisition-points-System-UInt32!System-Runtime-CompilerServices-IsConst-'></a>
 ### points(points) `method`
 
 ##### Summary
@@ -15500,7 +15500,7 @@ Set the number of points per waveform.
 enumerated value and if it is not matched excatly, the instrument
 will choose the closest one. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_acquisition-points'></a>
+<a name='M-visus-power_overwhelming-rtx_acquisition-points'></a>
 ### points() `method`
 
 ##### Summary
@@ -15520,7 +15520,7 @@ This method has no parameters.
 If this value is zero, the device should be configured to
 compute the appropriate record length on its own.
 
-<a name='M-visus-power_overwhelming-oscilloscope_acquisition-segmented-System-Boolean!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_acquisition-segmented-System-Boolean!System-Runtime-CompilerServices-IsConst-'></a>
 ### segmented(segmented) `method`
 
 ##### Summary
@@ -15548,7 +15548,7 @@ processed and the latest waveform is displayed. Older waveforms are
 
 This setting is primarily for single acqusition mode.
 
-<a name='M-visus-power_overwhelming-oscilloscope_acquisition-segmented'></a>
+<a name='M-visus-power_overwhelming-rtx_acquisition-segmented'></a>
 ### segmented() `method`
 
 ##### Summary
@@ -15564,7 +15564,7 @@ otherwise.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_acquisition-state-visus-power_overwhelming-oscilloscope_acquisition_state!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_acquisition-state-visus-power_overwhelming-rtx_acquisition_state!System-Runtime-CompilerServices-IsConst-'></a>
 ### state(state) `method`
 
 ##### Summary
@@ -15579,7 +15579,7 @@ Sets the desired acquisition state.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| state | [visus.power_overwhelming.oscilloscope_acquisition_state!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_acquisition_state!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_acquisition_state!System.Runtime.CompilerServices.IsConst') | The desired acquisition state. If this parameter
+| state | [visus.power_overwhelming.rtx_acquisition_state!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_acquisition_state!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_acquisition_state!System.Runtime.CompilerServices.IsConst') | The desired acquisition state. If this parameter
 is [unknown](#F-unknown 'unknown'), the state
 will remain unchanged if the object is used to configure an
 instrument. |
@@ -15591,7 +15591,7 @@ The default acquisition state is
 the state untouched when this object is used to configure an
 instrument.
 
-<a name='M-visus-power_overwhelming-oscilloscope_acquisition-state'></a>
+<a name='M-visus-power_overwhelming-rtx_acquisition-state'></a>
 ### state() `method`
 
 ##### Summary
@@ -15609,11 +15609,11 @@ This method has no parameters.
 ##### Remarks
 
 This member only reflects the actual state of the instrument
-if the [oscilloscope_acquisition](#T-visus-power_overwhelming-oscilloscope_acquisition 'visus.power_overwhelming.oscilloscope_acquisition') was obtained from the
+if the [rtx_acquisition](#T-visus-power_overwhelming-rtx_acquisition 'visus.power_overwhelming.rtx_acquisition') was obtained from the
 instrument.
 
-<a name='T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-oscilloscope_acquisition,false,false}'></a>
-## oscilloscope_acquisition,false,false} `type`
+<a name='T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-rtx_acquisition,false,false}'></a>
+## rtx_acquisition,false,false} `type`
 
 ##### Namespace
 
@@ -15621,10 +15621,10 @@ visus.power_overwhelming.detail.json_serialiser{visus.power_overwhelming
 
 ##### Summary
 
-Specialisation for [oscilloscope_acquisition](#T-visus-power_overwhelming-oscilloscope_acquisition 'visus.power_overwhelming.oscilloscope_acquisition').
+Specialisation for [rtx_acquisition](#T-visus-power_overwhelming-rtx_acquisition 'visus.power_overwhelming.rtx_acquisition').
 
-<a name='T-visus-power_overwhelming-oscilloscope_acquisition_state'></a>
-## oscilloscope_acquisition_state `type`
+<a name='T-visus-power_overwhelming-rtx_acquisition_state'></a>
+## rtx_acquisition_state `type`
 
 ##### Namespace
 
@@ -15635,8 +15635,8 @@ visus.power_overwhelming
 Specifies possible acquisition states of a Rohde & Schwarz
 oscilloscope.
 
-<a name='T-visus-power_overwhelming-oscilloscope_channel'></a>
-## oscilloscope_channel `type`
+<a name='T-visus-power_overwhelming-rtx_channel'></a>
+## rtx_channel `type`
 
 ##### Namespace
 
@@ -15647,7 +15647,7 @@ visus.power_overwhelming
 A container for the configuration of a single analog channel of an
 oscilloscope.
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-#ctor-System-UInt32!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-#ctor-System-UInt32!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### #ctor(channel,channel_template) `constructor`
 
 ##### Summary
@@ -15659,10 +15659,10 @@ Initialises a new intance.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | channel | [System.UInt32!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.UInt32!System.Runtime.CompilerServices.IsConst 'System.UInt32!System.Runtime.CompilerServices.IsConst') | The one-based index of the channel. |
-| channel_template | [visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | An existing channel configuration
+| channel_template | [visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | An existing channel configuration
 that is being copied to `channel`. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-#ctor-System-UInt32!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-#ctor-System-UInt32!System-Runtime-CompilerServices-IsConst-'></a>
 ### #ctor(channel) `constructor`
 
 ##### Summary
@@ -15676,7 +15676,7 @@ Initialises a new instance.
 | channel | [System.UInt32!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.UInt32!System.Runtime.CompilerServices.IsConst 'System.UInt32!System.Runtime.CompilerServices.IsConst') | The one-based index of the channel. This
 parameter defaults to zero, which will create an unusable instance. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-attenuation-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-attenuation-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### attenuation(attenuation) `method`
 
 ##### Summary
@@ -15691,7 +15691,7 @@ Sets the attenuation of the probe.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| attenuation | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The attenuation and unit of the probe.
+| attenuation | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The attenuation and unit of the probe.
 Note that this parameter must have set a unit and does not work
 with the default unit unless the value is zero, in which case the
 instrument will ignore this setting and leave whatever the device
@@ -15705,7 +15705,7 @@ configuration reports to the instrument). |
 | [std::invalid_argument](#!-std--invalid_argument 'std::invalid_argument') | If the unit of the quantity
 is not set while the value is not zero. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-attenuation'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-attenuation'></a>
 ### attenuation() `method`
 
 ##### Summary
@@ -15720,7 +15720,7 @@ The attenuation and unit of the probe.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-bandwidth-visus-power_overwhelming-oscilloscope_channel_bandwidth!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-bandwidth-visus-power_overwhelming-rtx_channel_bandwidth!System-Runtime-CompilerServices-IsConst-'></a>
 ### bandwidth(bandwidth) `method`
 
 ##### Summary
@@ -15735,9 +15735,9 @@ Sets the bandwith limit for the channel.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| bandwidth | [visus.power_overwhelming.oscilloscope_channel_bandwidth!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_channel_bandwidth!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_channel_bandwidth!System.Runtime.CompilerServices.IsConst') | The bandwidth limit if any. |
+| bandwidth | [visus.power_overwhelming.rtx_channel_bandwidth!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_channel_bandwidth!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_channel_bandwidth!System.Runtime.CompilerServices.IsConst') | The bandwidth limit if any. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-bandwidth'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-bandwidth'></a>
 ### bandwidth() `method`
 
 ##### Summary
@@ -15752,7 +15752,7 @@ The bandwidth limit of the channel.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-channel'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-channel'></a>
 ### channel() `method`
 
 ##### Summary
@@ -15767,7 +15767,7 @@ The index of the channel.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-coupling-visus-power_overwhelming-oscilloscope_channel_coupling!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-coupling-visus-power_overwhelming-rtx_channel_coupling!System-Runtime-CompilerServices-IsConst-'></a>
 ### coupling(coupling) `method`
 
 ##### Summary
@@ -15782,9 +15782,9 @@ Sets the channel signal coupling and termination.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| coupling | [visus.power_overwhelming.oscilloscope_channel_coupling!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_channel_coupling!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_channel_coupling!System.Runtime.CompilerServices.IsConst') | The signal coupling for the channel. |
+| coupling | [visus.power_overwhelming.rtx_channel_coupling!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_channel_coupling!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_channel_coupling!System.Runtime.CompilerServices.IsConst') | The signal coupling for the channel. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-coupling'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-coupling'></a>
 ### coupling() `method`
 
 ##### Summary
@@ -15799,7 +15799,7 @@ The channel signal coupling and termination.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-decimation_mode-visus-power_overwhelming-oscilloscope_decimation_mode!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-decimation_mode-visus-power_overwhelming-rtx_decimation_mode!System-Runtime-CompilerServices-IsConst-'></a>
 ### decimation_mode(decimation_mode) `method`
 
 ##### Summary
@@ -15814,9 +15814,9 @@ Sets the method to reduce the data stream of the ADC.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| decimation_mode | [visus.power_overwhelming.oscilloscope_decimation_mode!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_decimation_mode!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_decimation_mode!System.Runtime.CompilerServices.IsConst') | The desired decimation mode. |
+| decimation_mode | [visus.power_overwhelming.rtx_decimation_mode!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_decimation_mode!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_decimation_mode!System.Runtime.CompilerServices.IsConst') | The desired decimation mode. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-decimation_mode'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-decimation_mode'></a>
 ### decimation_mode() `method`
 
 ##### Summary
@@ -15832,7 +15832,7 @@ The desired decimation mode.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-label-visus-power_overwhelming-oscilloscope_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-label-visus-power_overwhelming-rtx_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### label(label) `method`
 
 ##### Summary
@@ -15847,10 +15847,10 @@ Sets the channel label.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| label | [visus.power_overwhelming.oscilloscope_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The label for the channel and its visibility
+| label | [visus.power_overwhelming.rtx_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The label for the channel and its visibility
 state. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-label'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-label'></a>
 ### label() `method`
 
 ##### Summary
@@ -15865,7 +15865,7 @@ The channel label.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-offset-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-offset-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### offset(offset) `method`
 
 ##### Summary
@@ -15881,9 +15881,9 @@ offset-affected signal.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| offset | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The offset value. |
+| offset | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The offset value. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-offset'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-offset'></a>
 ### offset() `method`
 
 ##### Summary
@@ -15899,7 +15899,7 @@ The offset voltage.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-polarity-visus-power_overwhelming-oscilloscope_channel_polarity!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-polarity-visus-power_overwhelming-rtx_channel_polarity!System-Runtime-CompilerServices-IsConst-'></a>
 ### polarity(polarity) `method`
 
 ##### Summary
@@ -15914,9 +15914,9 @@ Sets the inversion state of the channel.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| polarity | [visus.power_overwhelming.oscilloscope_channel_polarity!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_channel_polarity!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_channel_polarity!System.Runtime.CompilerServices.IsConst') | The signal inversion state. |
+| polarity | [visus.power_overwhelming.rtx_channel_polarity!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_channel_polarity!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_channel_polarity!System.Runtime.CompilerServices.IsConst') | The signal inversion state. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-polarity'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-polarity'></a>
 ### polarity() `method`
 
 ##### Summary
@@ -15931,7 +15931,7 @@ The state of the signal inversion.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-range-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-range-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### range(offset) `method`
 
 ##### Summary
@@ -15946,9 +15946,9 @@ Sets the voltage range across all vertical divisions of the diagram.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| offset | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The voltage range. |
+| offset | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The voltage range. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-range'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-range'></a>
 ### range() `method`
 
 ##### Summary
@@ -15963,7 +15963,7 @@ The voltage range to be displayed.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-show_label-System-Boolean!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-show_label-System-Boolean!System-Runtime-CompilerServices-IsConst-'></a>
 ### show_label(visible) `method`
 
 ##### Summary
@@ -15981,7 +15981,7 @@ Changes the visibility of the channel label.
 | visible | [System.Boolean!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.Boolean!System.Runtime.CompilerServices.IsConst 'System.Boolean!System.Runtime.CompilerServices.IsConst') | `true` for showing the label,
 `false` for hiding it. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-skew-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-skew-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### skew(offset) `method`
 
 ##### Summary
@@ -15996,7 +15996,7 @@ Sets the delay for the selected channel.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| offset | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The delay for the selected channel. |
+| offset | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The delay for the selected channel. |
 
 ##### Remarks
 
@@ -16004,7 +16004,7 @@ Deskew compensates delay differences between channels caused by the
 different length of cables, probes, andother sources. Correct deskew
 values are important for accurate triggering.
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-skew'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-skew'></a>
 ### skew() `method`
 
 ##### Summary
@@ -16019,7 +16019,7 @@ The delay for the selected channel.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-state-System-Boolean!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-state-System-Boolean!System-Runtime-CompilerServices-IsConst-'></a>
 ### state(enable) `method`
 
 ##### Summary
@@ -16037,7 +16037,7 @@ Enables or disables the channel.
 | enable | [System.Boolean!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.Boolean!System.Runtime.CompilerServices.IsConst 'System.Boolean!System.Runtime.CompilerServices.IsConst') | `true` for enabling the channel,
 `false` for disabling it. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-state'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-state'></a>
 ### state() `method`
 
 ##### Summary
@@ -16053,7 +16053,7 @@ otherwise.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-zero_offset-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-zero_offset-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### zero_offset() `method`
 
 ##### Summary
@@ -16078,7 +16078,7 @@ error andsets the probe to the zero level.
 You can assess the zero error by measuring the mean value of
 a signal that should return zero.
 
-<a name='M-visus-power_overwhelming-oscilloscope_channel-zero_offset'></a>
+<a name='M-visus-power_overwhelming-rtx_channel-zero_offset'></a>
 ### zero_offset() `method`
 
 ##### Summary
@@ -16093,8 +16093,8 @@ The zero offset.
 
 This method has no parameters.
 
-<a name='T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-oscilloscope_channel,false,false}'></a>
-## oscilloscope_channel,false,false} `type`
+<a name='T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-rtx_channel,false,false}'></a>
+## rtx_channel,false,false} `type`
 
 ##### Namespace
 
@@ -16102,10 +16102,10 @@ visus.power_overwhelming.detail.json_serialiser{visus.power_overwhelming
 
 ##### Summary
 
-Specialisation for [oscilloscope_channel](#T-visus-power_overwhelming-oscilloscope_channel 'visus.power_overwhelming.oscilloscope_channel').
+Specialisation for [rtx_channel](#T-visus-power_overwhelming-rtx_channel 'visus.power_overwhelming.rtx_channel').
 
-<a name='T-visus-power_overwhelming-oscilloscope_channel_bandwidth'></a>
-## oscilloscope_channel_bandwidth `type`
+<a name='T-visus-power_overwhelming-rtx_channel_bandwidth'></a>
+## rtx_channel_bandwidth `type`
 
 ##### Namespace
 
@@ -16115,8 +16115,8 @@ visus.power_overwhelming
 
 Defines possible values for the channel bandwidth
 
-<a name='T-visus-power_overwhelming-oscilloscope_channel_coupling'></a>
-## oscilloscope_channel_coupling `type`
+<a name='T-visus-power_overwhelming-rtx_channel_coupling'></a>
+## rtx_channel_coupling `type`
 
 ##### Namespace
 
@@ -16126,8 +16126,8 @@ visus.power_overwhelming
 
 Defines possible values for channel coupling and termination.
 
-<a name='T-visus-power_overwhelming-oscilloscope_channel_polarity'></a>
-## oscilloscope_channel_polarity `type`
+<a name='T-visus-power_overwhelming-rtx_channel_polarity'></a>
+## rtx_channel_polarity `type`
 
 ##### Namespace
 
@@ -16137,8 +16137,8 @@ visus.power_overwhelming
 
 Defines possible values for the channel polarity.
 
-<a name='T-visus-power_overwhelming-oscilloscope_channel_unit'></a>
-## oscilloscope_channel_unit `type`
+<a name='T-visus-power_overwhelming-rtx_channel_unit'></a>
+## rtx_channel_unit `type`
 
 ##### Namespace
 
@@ -16148,8 +16148,8 @@ visus.power_overwhelming
 
 Defines possible units for a channel of the oscilloscope.
 
-<a name='T-visus-power_overwhelming-oscilloscope_decimation_mode'></a>
-## oscilloscope_decimation_mode `type`
+<a name='T-visus-power_overwhelming-rtx_decimation_mode'></a>
+## rtx_decimation_mode `type`
 
 ##### Namespace
 
@@ -16160,8 +16160,8 @@ visus.power_overwhelming
 Selects the method to reduce the data stream of the ADS to a stream of
 waveform points with lower sample rate.
 
-<a name='T-visus-power_overwhelming-oscilloscope_edge_trigger'></a>
-## oscilloscope_edge_trigger `type`
+<a name='T-visus-power_overwhelming-rtx_edge_trigger'></a>
+## rtx_edge_trigger `type`
 
 ##### Namespace
 
@@ -16171,7 +16171,7 @@ visus.power_overwhelming
 
 Defines the interface of possible triggers for oscilloscopes.
 
-<a name='M-visus-power_overwhelming-oscilloscope_edge_trigger-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*-'></a>
+<a name='M-visus-power_overwhelming-rtx_edge_trigger-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*-'></a>
 ### #ctor(source) `constructor`
 
 ##### Summary
@@ -16184,7 +16184,7 @@ Initialises a new instance.
 | ---- | ---- | ----------- |
 | source | [System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst* 'System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*') | The name of the trigger source. |
 
-<a name='F-visus-power_overwhelming-oscilloscope_edge_trigger-_coupling'></a>
+<a name='F-visus-power_overwhelming-rtx_edge_trigger-_coupling'></a>
 ### _coupling `constants`
 
 ##### Summary
@@ -16199,9 +16199,9 @@ Assignment.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| rhs | [F:visus.power_overwhelming.oscilloscope_edge_trigger._coupling](#T-F-visus-power_overwhelming-oscilloscope_edge_trigger-_coupling 'F:visus.power_overwhelming.oscilloscope_edge_trigger._coupling') | The right hand side operand. |
+| rhs | [F:visus.power_overwhelming.rtx_edge_trigger._coupling](#T-F-visus-power_overwhelming-rtx_edge_trigger-_coupling 'F:visus.power_overwhelming.rtx_edge_trigger._coupling') | The right hand side operand. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_edge_trigger-coupling-visus-power_overwhelming-oscilloscope_trigger_coupling-'></a>
+<a name='M-visus-power_overwhelming-rtx_edge_trigger-coupling-visus-power_overwhelming-rtx_trigger_coupling-'></a>
 ### coupling(coupling) `method`
 
 ##### Summary
@@ -16216,9 +16216,9 @@ Sets the coupling for the trigger source.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| coupling | [visus.power_overwhelming.oscilloscope_trigger_coupling](#T-visus-power_overwhelming-oscilloscope_trigger_coupling 'visus.power_overwhelming.oscilloscope_trigger_coupling') | The coupling for the trigger source. |
+| coupling | [visus.power_overwhelming.rtx_trigger_coupling](#T-visus-power_overwhelming-rtx_trigger_coupling 'visus.power_overwhelming.rtx_trigger_coupling') | The coupling for the trigger source. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_edge_trigger-coupling'></a>
+<a name='M-visus-power_overwhelming-rtx_edge_trigger-coupling'></a>
 ### coupling(rhs,rhs) `method`
 
 ##### Summary
@@ -16233,9 +16233,9 @@ The coupling for the trigger source.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| rhs | [M:visus.power_overwhelming.oscilloscope_edge_trigger.coupling](#T-M-visus-power_overwhelming-oscilloscope_edge_trigger-coupling 'M:visus.power_overwhelming.oscilloscope_edge_trigger.coupling') | The object to be cloned. |
+| rhs | [M:visus.power_overwhelming.rtx_edge_trigger.coupling](#T-M-visus-power_overwhelming-rtx_edge_trigger-coupling 'M:visus.power_overwhelming.rtx_edge_trigger.coupling') | The object to be cloned. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_edge_trigger-external-System-Single!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_edge_trigger-external-System-Single!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst-'></a>
 ### external(level,slope) `method`
 
 ##### Summary
@@ -16252,10 +16252,10 @@ Configues the trigger as an external trigger on the given level.
 | ---- | ---- | ----------- |
 | level | [System.Single!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.Single!System.Runtime.CompilerServices.IsConst 'System.Single!System.Runtime.CompilerServices.IsConst') | The trigger level in Volts. This parameter
 defaults to 2.5 V. |
-| slope | [visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst') | The slope on which to trigger. This parameter
+| slope | [visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst') | The slope on which to trigger. This parameter
 defaults to [rising](#F-rising 'rising'). |
 
-<a name='M-visus-power_overwhelming-oscilloscope_edge_trigger-external-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_edge_trigger-external-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst-'></a>
 ### external(level,slope) `method`
 
 ##### Summary
@@ -16270,11 +16270,11 @@ Configues the trigger as an external trigger on the given level.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| level | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The trigger level. |
-| slope | [visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst') | The slope on which to trigger. This parameter
+| level | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The trigger level. |
+| slope | [visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst') | The slope on which to trigger. This parameter
 defaults to [rising](#F-rising 'rising'). |
 
-<a name='M-visus-power_overwhelming-oscilloscope_edge_trigger-hysteresis-visus-power_overwhelming-oscilloscope_trigger_hysteresis-'></a>
+<a name='M-visus-power_overwhelming-rtx_edge_trigger-hysteresis-visus-power_overwhelming-rtx_trigger_hysteresis-'></a>
 ### hysteresis(hysteresis) `method`
 
 ##### Summary
@@ -16289,9 +16289,9 @@ Sets the hysteresis range around the trigger level.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| hysteresis | [visus.power_overwhelming.oscilloscope_trigger_hysteresis](#T-visus-power_overwhelming-oscilloscope_trigger_hysteresis 'visus.power_overwhelming.oscilloscope_trigger_hysteresis') | The hysteresis range. |
+| hysteresis | [visus.power_overwhelming.rtx_trigger_hysteresis](#T-visus-power_overwhelming-rtx_trigger_hysteresis 'visus.power_overwhelming.rtx_trigger_hysteresis') | The hysteresis range. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_edge_trigger-hysteresis'></a>
+<a name='M-visus-power_overwhelming-rtx_edge_trigger-hysteresis'></a>
 ### hysteresis() `method`
 
 ##### Summary
@@ -16306,7 +16306,7 @@ The enumerated hysteresis range.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_edge_trigger-input'></a>
+<a name='M-visus-power_overwhelming-rtx_edge_trigger-input'></a>
 ### input() `method`
 
 ##### Summary
@@ -16323,9 +16323,9 @@ This method has no parameters.
 
 ##### Remarks
 
-Use [level](#M-visus-power_overwhelming-oscilloscope_edge_trigger-level 'visus.power_overwhelming.oscilloscope_edge_trigger.level') to set this property.
+Use [level](#M-visus-power_overwhelming-rtx_edge_trigger-level 'visus.power_overwhelming.rtx_edge_trigger.level') to set this property.
 
-<a name='M-visus-power_overwhelming-oscilloscope_edge_trigger-level-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_edge_trigger-level-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### level(level) `method`
 
 ##### Summary
@@ -16340,9 +16340,9 @@ Configures the trigger level for all channels.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| level | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The trigger level. |
+| level | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The trigger level. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_edge_trigger-level-System-UInt16!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_edge_trigger-level-System-UInt16!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### level(input,level) `method`
 
 ##### Summary
@@ -16360,9 +16360,9 @@ Configures the trigger level.
 | input | [System.UInt16!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.UInt16!System.Runtime.CompilerServices.IsConst 'System.UInt16!System.Runtime.CompilerServices.IsConst') | Selects the trigger input within [1, 5]. Valid
 values depend on the hardware. Channel 5 is the external trigger
 input. |
-| level | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The trigger level. |
+| level | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The trigger level. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_edge_trigger-level'></a>
+<a name='M-visus-power_overwhelming-rtx_edge_trigger-level'></a>
 ### level() `method`
 
 ##### Summary
@@ -16382,7 +16382,7 @@ This method has no parameters.
 If the unit is `nullptr` or empty, the default unit of the
 instrument should be used.
 
-<a name='M-visus-power_overwhelming-oscilloscope_edge_trigger-slope-visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_edge_trigger-slope-visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst-'></a>
 ### slope(slope) `method`
 
 ##### Summary
@@ -16397,9 +16397,9 @@ Sets the slop on which the trigger becomes active.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| slope | [visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst') | The slope for the edge trigger. |
+| slope | [visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst') | The slope for the edge trigger. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_edge_trigger-slope'></a>
+<a name='M-visus-power_overwhelming-rtx_edge_trigger-slope'></a>
 ### slope() `method`
 
 ##### Summary
@@ -16414,7 +16414,7 @@ The slope for the edge trigger.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_edge_trigger-type'></a>
+<a name='M-visus-power_overwhelming-rtx_edge_trigger-type'></a>
 ### type() `method`
 
 ##### Summary
@@ -16425,8 +16425,8 @@ This method has no parameters.
 
 This method has no parameters.
 
-<a name='T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-oscilloscope_edge_trigger,false,false}'></a>
-## oscilloscope_edge_trigger,false,false} `type`
+<a name='T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-rtx_edge_trigger,false,false}'></a>
+## rtx_edge_trigger,false,false} `type`
 
 ##### Namespace
 
@@ -16434,10 +16434,10 @@ visus.power_overwhelming.detail.json_serialiser{visus.power_overwhelming
 
 ##### Summary
 
-Specialisation for [oscilloscope_edge_trigger](#T-visus-power_overwhelming-oscilloscope_edge_trigger 'visus.power_overwhelming.oscilloscope_edge_trigger').
+Specialisation for [rtx_edge_trigger](#T-visus-power_overwhelming-rtx_edge_trigger 'visus.power_overwhelming.rtx_edge_trigger').
 
-<a name='T-visus-power_overwhelming-oscilloscope_label'></a>
-## oscilloscope_label `type`
+<a name='T-visus-power_overwhelming-rtx_label'></a>
+## rtx_label `type`
 
 ##### Namespace
 
@@ -16448,7 +16448,7 @@ visus.power_overwhelming
 Represents a label that can be optionally attached to items on the
 oscilloscope, eg to a channel.
 
-<a name='M-visus-power_overwhelming-oscilloscope_label-#ctor-visus-power_overwhelming-oscilloscope_label*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_label-#ctor-visus-power_overwhelming-rtx_label*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### #ctor(rhs) `constructor`
 
 ##### Summary
@@ -16459,9 +16459,9 @@ Move `rhs`.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| rhs | [visus.power_overwhelming.oscilloscope_label*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_label*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_label*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The object to be moved. |
+| rhs | [visus.power_overwhelming.rtx_label*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_label*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_label*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The object to be moved. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_label-#ctor-visus-power_overwhelming-oscilloscope_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_label-#ctor-visus-power_overwhelming-rtx_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### #ctor(rhs) `constructor`
 
 ##### Summary
@@ -16472,9 +16472,9 @@ Clone `rhs`.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| rhs | [visus.power_overwhelming.oscilloscope_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The object to be cloned. |
+| rhs | [visus.power_overwhelming.rtx_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The object to be cloned. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_label-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-Boolean!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_label-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-Boolean!System-Runtime-CompilerServices-IsConst-'></a>
 ### #ctor(text,visible) `constructor`
 
 ##### Summary
@@ -16494,7 +16494,7 @@ hidden. This parameter defaults to `false`. |
 This constructor allows for implicit conversion from strings to
 labels.
 
-<a name='M-visus-power_overwhelming-oscilloscope_label-#ctor-System-Char!System-Runtime-CompilerServices-IsConst*,System-Boolean!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_label-#ctor-System-Char!System-Runtime-CompilerServices-IsConst*,System-Boolean!System-Runtime-CompilerServices-IsConst-'></a>
 ### #ctor(text,visible) `constructor`
 
 ##### Summary
@@ -16514,7 +16514,7 @@ hidden. This parameter defaults to `true`. |
 This constructor allows for implicit conversion from strings to
 labels.
 
-<a name='M-visus-power_overwhelming-oscilloscope_label-#ctor'></a>
+<a name='M-visus-power_overwhelming-rtx_label-#ctor'></a>
 ### #ctor() `constructor`
 
 ##### Summary
@@ -16525,7 +16525,7 @@ Initialises a new instance.
 
 This constructor has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_label-Dispose'></a>
+<a name='M-visus-power_overwhelming-rtx_label-Dispose'></a>
 ### Dispose() `method`
 
 ##### Summary
@@ -16536,7 +16536,7 @@ Finalises the instance.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_label-op_Assign-visus-power_overwhelming-oscilloscope_label*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_label-op_Assign-visus-power_overwhelming-rtx_label*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### op_Assign(rhs) `method`
 
 ##### Summary
@@ -16551,9 +16551,9 @@ Move assignment.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| rhs | [visus.power_overwhelming.oscilloscope_label*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_label*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_label*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The right hand side operand. |
+| rhs | [visus.power_overwhelming.rtx_label*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_label*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_label*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The right hand side operand. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_label-op_Assign-visus-power_overwhelming-oscilloscope_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_label-op_Assign-visus-power_overwhelming-rtx_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### op_Assign(rhs) `method`
 
 ##### Summary
@@ -16568,9 +16568,9 @@ Assignment.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| rhs | [visus.power_overwhelming.oscilloscope_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The right hand side operand. |
+| rhs | [visus.power_overwhelming.rtx_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_label!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_label!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The right hand side operand. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_label-text-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*-'></a>
+<a name='M-visus-power_overwhelming-rtx_label-text-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*-'></a>
 ### text(text) `method`
 
 ##### Summary
@@ -16587,7 +16587,7 @@ Sets the text to be displayed.
 | ---- | ---- | ----------- |
 | text | [System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst* 'System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*') | The text to be displayed. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_label-text-System-Char!System-Runtime-CompilerServices-IsConst*-'></a>
+<a name='M-visus-power_overwhelming-rtx_label-text-System-Char!System-Runtime-CompilerServices-IsConst*-'></a>
 ### text(text) `method`
 
 ##### Summary
@@ -16604,7 +16604,7 @@ Sets the text to be displayed.
 | ---- | ---- | ----------- |
 | text | [System.Char!System.Runtime.CompilerServices.IsConst*](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.Char!System.Runtime.CompilerServices.IsConst* 'System.Char!System.Runtime.CompilerServices.IsConst*') | The text to be displayed. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_label-text'></a>
+<a name='M-visus-power_overwhelming-rtx_label-text'></a>
 ### text() `method`
 
 ##### Summary
@@ -16619,7 +16619,7 @@ The label to be shown.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_label-visible-System-Boolean!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_label-visible-System-Boolean!System-Runtime-CompilerServices-IsConst-'></a>
 ### visible(visible) `method`
 
 ##### Summary
@@ -16637,7 +16637,7 @@ Changes the visibility of the label.
 | visible | [System.Boolean!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.Boolean!System.Runtime.CompilerServices.IsConst 'System.Boolean!System.Runtime.CompilerServices.IsConst') | `true` for showing the label,
 `false` for hiding it. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_label-visible'></a>
+<a name='M-visus-power_overwhelming-rtx_label-visible'></a>
 ### visible() `method`
 
 ##### Summary
@@ -16653,8 +16653,8 @@ otherwise..
 
 This method has no parameters.
 
-<a name='T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-oscilloscope_label,false,false}'></a>
-## oscilloscope_label,false,false} `type`
+<a name='T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-rtx_label,false,false}'></a>
+## rtx_label,false,false} `type`
 
 ##### Namespace
 
@@ -16662,10 +16662,10 @@ visus.power_overwhelming.detail.json_serialiser{visus.power_overwhelming
 
 ##### Summary
 
-Specialisation for [oscilloscope_label](#T-visus-power_overwhelming-oscilloscope_label 'visus.power_overwhelming.oscilloscope_label').
+Specialisation for [rtx_label](#T-visus-power_overwhelming-rtx_label 'visus.power_overwhelming.rtx_label').
 
-<a name='T-visus-power_overwhelming-oscilloscope_quantity'></a>
-## oscilloscope_quantity `type`
+<a name='T-visus-power_overwhelming-rtx_quantity'></a>
+## rtx_quantity `type`
 
 ##### Namespace
 
@@ -16675,7 +16675,7 @@ visus.power_overwhelming
 
 Represents a quantity for configuring oscilloscope parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_quantity-#ctor-visus-power_overwhelming-oscilloscope_quantity*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_quantity-#ctor-visus-power_overwhelming-rtx_quantity*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### #ctor(rhs) `constructor`
 
 ##### Summary
@@ -16686,9 +16686,9 @@ Move `rhs`.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| rhs | [visus.power_overwhelming.oscilloscope_quantity*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The object to be moved. |
+| rhs | [visus.power_overwhelming.rtx_quantity*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The object to be moved. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_quantity-#ctor-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_quantity-#ctor-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### #ctor(rhs) `constructor`
 
 ##### Summary
@@ -16699,9 +16699,9 @@ Clone `rhs`.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| rhs | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The object to be cloned. |
+| rhs | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The object to be cloned. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_quantity-#ctor-System-Single!System-Runtime-CompilerServices-IsConst,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*-'></a>
+<a name='M-visus-power_overwhelming-rtx_quantity-#ctor-System-Single!System-Runtime-CompilerServices-IsConst,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*-'></a>
 ### #ctor(value,unit) `constructor`
 
 ##### Summary
@@ -16723,7 +16723,7 @@ This constructor allows for implicit conversion of `float` to
 a quantity of the default unit of the variable the instance is used
 for.
 
-<a name='M-visus-power_overwhelming-oscilloscope_quantity-#ctor-System-Single!System-Runtime-CompilerServices-IsConst,System-Char!System-Runtime-CompilerServices-IsConst*-'></a>
+<a name='M-visus-power_overwhelming-rtx_quantity-#ctor-System-Single!System-Runtime-CompilerServices-IsConst,System-Char!System-Runtime-CompilerServices-IsConst*-'></a>
 ### #ctor(value,unit) `constructor`
 
 ##### Summary
@@ -16739,7 +16739,7 @@ Initialises a new instance.
 `nullptr`, in which case the instrument should assume its
 default unit for the parameter in question. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_quantity-Dispose'></a>
+<a name='M-visus-power_overwhelming-rtx_quantity-Dispose'></a>
 ### Dispose() `method`
 
 ##### Summary
@@ -16750,7 +16750,7 @@ Finalises the instance.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_quantity-op_Assign-visus-power_overwhelming-oscilloscope_quantity*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_quantity-op_Assign-visus-power_overwhelming-rtx_quantity*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### op_Assign(rhs) `method`
 
 ##### Summary
@@ -16765,9 +16765,9 @@ Move assignment.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| rhs | [visus.power_overwhelming.oscilloscope_quantity*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The right hand side operand. |
+| rhs | [visus.power_overwhelming.rtx_quantity*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The right hand side operand. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_quantity-op_Assign-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_quantity-op_Assign-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### op_Assign(rhs) `method`
 
 ##### Summary
@@ -16782,9 +16782,9 @@ Assignment.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| rhs | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The right hand side operand. |
+| rhs | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The right hand side operand. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_quantity-unit'></a>
+<a name='M-visus-power_overwhelming-rtx_quantity-unit'></a>
 ### unit() `method`
 
 ##### Summary
@@ -16800,7 +16800,7 @@ instrument should use the default unit for the quantity.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_quantity-value'></a>
+<a name='M-visus-power_overwhelming-rtx_quantity-value'></a>
 ### value() `method`
 
 ##### Summary
@@ -16815,8 +16815,8 @@ The value of the quantity.
 
 This method has no parameters.
 
-<a name='T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-oscilloscope_quantity,false,false}'></a>
-## oscilloscope_quantity,false,false} `type`
+<a name='T-visus-power_overwhelming-detail-json_serialiser{visus-power_overwhelming-rtx_quantity,false,false}'></a>
+## rtx_quantity,false,false} `type`
 
 ##### Namespace
 
@@ -16824,10 +16824,10 @@ visus.power_overwhelming.detail.json_serialiser{visus.power_overwhelming
 
 ##### Summary
 
-Specialisation for [oscilloscope_quantity](#T-visus-power_overwhelming-oscilloscope_quantity 'visus.power_overwhelming.oscilloscope_quantity').
+Specialisation for [rtx_quantity](#T-visus-power_overwhelming-rtx_quantity 'visus.power_overwhelming.rtx_quantity').
 
-<a name='T-visus-power_overwhelming-oscilloscope_reference_point'></a>
-## oscilloscope_reference_point `type`
+<a name='T-visus-power_overwhelming-rtx_reference_point'></a>
+## rtx_reference_point `type`
 
 ##### Namespace
 
@@ -16846,8 +16846,8 @@ operations.
 The values of the enumeration fields are the magic numbers for
 Rohde & Schwarz oscilloscopes multiplied by 100.
 
-<a name='T-visus-power_overwhelming-oscilloscope_sample'></a>
-## oscilloscope_sample `type`
+<a name='T-visus-power_overwhelming-rtx_sample'></a>
+## rtx_sample `type`
 
 ##### Namespace
 
@@ -16862,7 +16862,7 @@ Defines a raw sample that is obtained from an oscilloscope.
 The raw sample comprises the waveforms of all channels that are active
 when obtaining the sample.
 
-<a name='M-visus-power_overwhelming-oscilloscope_sample-#ctor-visus-power_overwhelming-oscilloscope_sample*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_sample-#ctor-visus-power_overwhelming-rtx_sample*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### #ctor(rhs) `constructor`
 
 ##### Summary
@@ -16873,9 +16873,9 @@ Initialise from move.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| rhs | [visus.power_overwhelming.oscilloscope_sample*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_sample*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_sample*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The object to be moved. |
+| rhs | [visus.power_overwhelming.rtx_sample*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_sample*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_sample*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The object to be moved. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_sample-#ctor-visus-power_overwhelming-oscilloscope_sample-channel_waveform*,System-UInt64!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_sample-#ctor-visus-power_overwhelming-rtx_sample-channel_waveform*,System-UInt64!System-Runtime-CompilerServices-IsConst-'></a>
 ### #ctor(waveforms,cnt) `constructor`
 
 ##### Summary
@@ -16886,7 +16886,7 @@ Initialises a new instance.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| waveforms | [visus.power_overwhelming.oscilloscope_sample.channel_waveform*](#T-visus-power_overwhelming-oscilloscope_sample-channel_waveform* 'visus.power_overwhelming.oscilloscope_sample.channel_waveform*') | An array of `cnt`
+| waveforms | [visus.power_overwhelming.rtx_sample.channel_waveform*](#T-visus-power_overwhelming-rtx_sample-channel_waveform* 'visus.power_overwhelming.rtx_sample.channel_waveform*') | An array of `cnt`
 per-channel waveforms. For performance reasons, the waveforms are
 moved into the sample. The caller, however, remains owner of the
 memory of the array. |
@@ -16899,7 +16899,7 @@ memory of the array. |
 | [std.bad_alloc](#T-std-bad_alloc 'std.bad_alloc') | If the allocation of the buffer for
 the waveforms failed. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_sample-#ctor-System-UInt32!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_waveform*,System-UInt64!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_sample-#ctor-System-UInt32!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_waveform*,System-UInt64!System-Runtime-CompilerServices-IsConst-'></a>
 ### #ctor(channels,waveforms,cnt) `constructor`
 
 ##### Summary
@@ -16912,7 +16912,7 @@ Initialises a new instance.
 | ---- | ---- | ----------- |
 | channels | [System.UInt32!System.Runtime.CompilerServices.IsConst*](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.UInt32!System.Runtime.CompilerServices.IsConst* 'System.UInt32!System.Runtime.CompilerServices.IsConst*') | An array of `cnt` channel
 IDs. |
-| waveforms | [visus.power_overwhelming.oscilloscope_waveform*](#T-visus-power_overwhelming-oscilloscope_waveform* 'visus.power_overwhelming.oscilloscope_waveform*') | An array of `cnt`
+| waveforms | [visus.power_overwhelming.rtx_waveform*](#T-visus-power_overwhelming-rtx_waveform* 'visus.power_overwhelming.rtx_waveform*') | An array of `cnt`
 waveforms that are in the same order as the
 `channels`. For performance reasons, the waveforms
 are moved into the sample. The caller, however, remains owner of the
@@ -16927,7 +16927,7 @@ provided. |
 | [std.bad_alloc](#T-std-bad_alloc 'std.bad_alloc') | If the allocation of the buffer for
 the waveforms failed. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_sample-#ctor'></a>
+<a name='M-visus-power_overwhelming-rtx_sample-#ctor'></a>
 ### #ctor() `constructor`
 
 ##### Summary
@@ -16938,7 +16938,7 @@ Initialises a new instance.
 
 This constructor has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_sample-begin'></a>
+<a name='M-visus-power_overwhelming-rtx_sample-begin'></a>
 ### begin() `method`
 
 ##### Summary
@@ -16954,7 +16954,7 @@ sample is empty.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_sample-clear'></a>
+<a name='M-visus-power_overwhelming-rtx_sample-clear'></a>
 ### clear() `method`
 
 ##### Summary
@@ -16965,7 +16965,7 @@ Clears all data in the sample.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_sample-empty'></a>
+<a name='M-visus-power_overwhelming-rtx_sample-empty'></a>
 ### empty() `method`
 
 ##### Summary
@@ -16981,7 +16981,7 @@ Answer whether the sample is empty.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_sample-op_Assign-visus-power_overwhelming-oscilloscope_sample*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_sample-op_Assign-visus-power_overwhelming-rtx_sample*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### op_Assign(rhs) `method`
 
 ##### Summary
@@ -16996,9 +16996,9 @@ Move assignment.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| rhs | [visus.power_overwhelming.oscilloscope_sample*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_sample*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_sample*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The right-hand side operand. |
+| rhs | [visus.power_overwhelming.rtx_sample*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_sample*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_sample*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The right-hand side operand. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_sample-op_Subscript-System-Int32!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_sample-op_Subscript-System-Int32!System-Runtime-CompilerServices-IsConst-'></a>
 ### op_Subscript(index) `method`
 
 ##### Summary
@@ -17013,7 +17013,7 @@ The waveform at the specified position.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| index | [System.Int32!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.Int32!System.Runtime.CompilerServices.IsConst 'System.Int32!System.Runtime.CompilerServices.IsConst') | An index between [0, [size](#M-visus-power_overwhelming-oscilloscope_sample-size 'visus.power_overwhelming.oscilloscope_sample.size')[. |
+| index | [System.Int32!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.Int32!System.Runtime.CompilerServices.IsConst 'System.Int32!System.Runtime.CompilerServices.IsConst') | An index between [0, [size](#M-visus-power_overwhelming-rtx_sample-size 'visus.power_overwhelming.rtx_sample.size')[. |
 
 ##### Exceptions
 
@@ -17022,7 +17022,7 @@ The waveform at the specified position.
 | [std::range_error](#!-std--range_error 'std::range_error') | If `index`
 is invalid. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_sample-size'></a>
+<a name='M-visus-power_overwhelming-rtx_sample-size'></a>
 ### size() `method`
 
 ##### Summary
@@ -17038,8 +17038,8 @@ The number of channels stored in the sample.
 
 This method has no parameters.
 
-<a name='T-visus-power_overwhelming-oscilloscope_trigger'></a>
-## oscilloscope_trigger `type`
+<a name='T-visus-power_overwhelming-rtx_trigger'></a>
+## rtx_trigger `type`
 
 ##### Namespace
 
@@ -17054,7 +17054,7 @@ Defines the interface of possible triggers for oscilloscopes.
 This base class cannot be used directly. It only defines the minimum
 parameters shared by all types of triggers.
 
-<a name='M-visus-power_overwhelming-oscilloscope_trigger-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*-'></a>
+<a name='M-visus-power_overwhelming-rtx_trigger-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*-'></a>
 ### #ctor(source) `constructor`
 
 ##### Summary
@@ -17067,7 +17067,7 @@ Initialises a new instance.
 | ---- | ---- | ----------- |
 | source | [System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst* 'System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*') | The name of the trigger source. |
 
-<a name='F-visus-power_overwhelming-oscilloscope_trigger-_hold_off'></a>
+<a name='F-visus-power_overwhelming-rtx_trigger-_hold_off'></a>
 ### _hold_off `constants`
 
 ##### Summary
@@ -17082,9 +17082,9 @@ Clone `rhs`.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| rhs | [F:visus.power_overwhelming.oscilloscope_trigger._hold_off](#T-F-visus-power_overwhelming-oscilloscope_trigger-_hold_off 'F:visus.power_overwhelming.oscilloscope_trigger._hold_off') | The object to be cloned. |
+| rhs | [F:visus.power_overwhelming.rtx_trigger._hold_off](#T-F-visus-power_overwhelming-rtx_trigger-_hold_off 'F:visus.power_overwhelming.rtx_trigger._hold_off') | The object to be cloned. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_trigger-hold_off-<unknown type>!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_trigger-hold_off-<unknown type>!System-Runtime-CompilerServices-IsConst-'></a>
 ### hold_off(n) `method`
 
 ##### Summary
@@ -17101,7 +17101,7 @@ Disables the hold-off for the trigger.
 | ---- | ---- | ----------- |
 | n | [<unknown type>!System.Runtime.CompilerServices.IsConst](#T-<unknown type>!System-Runtime-CompilerServices-IsConst '<unknown type>!System.Runtime.CompilerServices.IsConst') | `nullptr`. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_trigger-hold_off-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*-'></a>
+<a name='M-visus-power_overwhelming-rtx_trigger-hold_off-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*-'></a>
 ### hold_off(hold_off_time) `method`
 
 ##### Summary
@@ -17120,7 +17120,7 @@ it has triggered.
 | hold_off_time | [System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst* 'System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*') | The hold-off time or `nullptr` to
 disable hold off |
 
-<a name='M-visus-power_overwhelming-oscilloscope_trigger-hold_off-System-Char!System-Runtime-CompilerServices-IsConst*-'></a>
+<a name='M-visus-power_overwhelming-rtx_trigger-hold_off-System-Char!System-Runtime-CompilerServices-IsConst*-'></a>
 ### hold_off(hold_off_time) `method`
 
 ##### Summary
@@ -17139,7 +17139,7 @@ it has triggered.
 | hold_off_time | [System.Char!System.Runtime.CompilerServices.IsConst*](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.Char!System.Runtime.CompilerServices.IsConst* 'System.Char!System.Runtime.CompilerServices.IsConst*') | The hold-off time or `nullptr` to
 disable hold off |
 
-<a name='M-visus-power_overwhelming-oscilloscope_trigger-hold_off'></a>
+<a name='M-visus-power_overwhelming-rtx_trigger-hold_off'></a>
 ### hold_off() `method`
 
 ##### Summary
@@ -17155,7 +17155,7 @@ hold-off is configured.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_trigger-mode-visus-power_overwhelming-oscilloscope_trigger_mode!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_trigger-mode-visus-power_overwhelming-rtx_trigger_mode!System-Runtime-CompilerServices-IsConst-'></a>
 ### mode(mode) `method`
 
 ##### Summary
@@ -17172,9 +17172,9 @@ and triggers automatically if no real trigger happens.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| mode | [visus.power_overwhelming.oscilloscope_trigger_mode!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_trigger_mode!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_trigger_mode!System.Runtime.CompilerServices.IsConst') | The new mode. |
+| mode | [visus.power_overwhelming.rtx_trigger_mode!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_trigger_mode!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_trigger_mode!System.Runtime.CompilerServices.IsConst') | The new mode. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_trigger-mode'></a>
+<a name='M-visus-power_overwhelming-rtx_trigger-mode'></a>
 ### mode() `method`
 
 ##### Summary
@@ -17189,7 +17189,7 @@ The trigger mode.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_trigger-source-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*-'></a>
+<a name='M-visus-power_overwhelming-rtx_trigger-source-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*-'></a>
 ### source(source) `method`
 
 ##### Summary
@@ -17209,7 +17209,7 @@ oscilloscopes, this can be "CH1" to "CH4",
 "EXT" for the external analogue trigger and several other
 modes which you can find in the manual. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_trigger-source-System-Char!System-Runtime-CompilerServices-IsConst*-'></a>
+<a name='M-visus-power_overwhelming-rtx_trigger-source-System-Char!System-Runtime-CompilerServices-IsConst*-'></a>
 ### source(source) `method`
 
 ##### Summary
@@ -17229,7 +17229,7 @@ oscilloscopes, this can be "CH1" to "CH4",
 "EXT" for the external analogue trigger and several other
 modes which you can find in the manual. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_trigger-source'></a>
+<a name='M-visus-power_overwhelming-rtx_trigger-source'></a>
 ### source() `method`
 
 ##### Summary
@@ -17244,7 +17244,7 @@ The name of the trigger source.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_trigger-type'></a>
+<a name='M-visus-power_overwhelming-rtx_trigger-type'></a>
 ### type() `method`
 
 ##### Summary
@@ -17264,8 +17264,8 @@ This method has no parameters.
 Trigger classes must implement this method and return the type of
 the trigger, which is passed directly VISA API.
 
-<a name='T-visus-power_overwhelming-oscilloscope_trigger_coupling'></a>
-## oscilloscope_trigger_coupling `type`
+<a name='T-visus-power_overwhelming-rtx_trigger_coupling'></a>
+## rtx_trigger_coupling `type`
 
 ##### Namespace
 
@@ -17275,8 +17275,8 @@ visus.power_overwhelming
 
 Defines possible couplings for trigger sources.
 
-<a name='T-visus-power_overwhelming-oscilloscope_trigger_hysteresis'></a>
-## oscilloscope_trigger_hysteresis `type`
+<a name='T-visus-power_overwhelming-rtx_trigger_hysteresis'></a>
+## rtx_trigger_hysteresis `type`
 
 ##### Namespace
 
@@ -17287,8 +17287,8 @@ visus.power_overwhelming
 Defines possible hysteresis ranges around trigger levels on
 oscilloscopes.
 
-<a name='T-visus-power_overwhelming-oscilloscope_trigger_mode'></a>
-## oscilloscope_trigger_mode `type`
+<a name='T-visus-power_overwhelming-rtx_trigger_mode'></a>
+## rtx_trigger_mode `type`
 
 ##### Namespace
 
@@ -17298,8 +17298,8 @@ visus.power_overwhelming
 
 Defines possible modes how the oscilloscope triggers.
 
-<a name='T-visus-power_overwhelming-oscilloscope_trigger_output'></a>
-## oscilloscope_trigger_output `type`
+<a name='T-visus-power_overwhelming-rtx_trigger_output'></a>
+## rtx_trigger_output `type`
 
 ##### Namespace
 
@@ -17309,8 +17309,8 @@ visus.power_overwhelming
 
 Defines possible modes for the auxilliary trigger output port.
 
-<a name='T-visus-power_overwhelming-oscilloscope_trigger_slope'></a>
-## oscilloscope_trigger_slope `type`
+<a name='T-visus-power_overwhelming-rtx_trigger_slope'></a>
+## rtx_trigger_slope `type`
 
 ##### Namespace
 
@@ -17320,8 +17320,8 @@ visus.power_overwhelming
 
 Defines possible slopes for edge triggers on an oscillosope.
 
-<a name='T-visus-power_overwhelming-oscilloscope_waveform'></a>
-## oscilloscope_waveform `type`
+<a name='T-visus-power_overwhelming-rtx_waveform'></a>
+## rtx_waveform `type`
 
 ##### Namespace
 
@@ -17336,7 +17336,7 @@ Defines a container for data obtained from an oscilloscope channel.
 The waveform is not copyable, but only movable for performance
 reasons.
 
-<a name='M-visus-power_overwhelming-oscilloscope_waveform-#ctor-visus-power_overwhelming-oscilloscope_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_waveform-#ctor-visus-power_overwhelming-rtx_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### #ctor(rhs) `constructor`
 
 ##### Summary
@@ -17347,9 +17347,9 @@ Initialise from move.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| rhs | [visus.power_overwhelming.oscilloscope_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The object to be moved. |
+| rhs | [visus.power_overwhelming.rtx_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The object to be moved. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_waveform-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-blob*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_waveform-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-blob*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### #ctor(header,segment_offset,samples) `constructor`
 
 ##### Summary
@@ -17378,7 +17378,7 @@ the waveform. |
 format, or if the number of samples specified in the header does
 not match the size of `samples`. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_waveform-#ctor'></a>
+<a name='M-visus-power_overwhelming-rtx_waveform-#ctor'></a>
 ### #ctor() `constructor`
 
 ##### Summary
@@ -17389,7 +17389,7 @@ Initialises a new instance.
 
 This constructor has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_waveform-begin'></a>
+<a name='M-visus-power_overwhelming-rtx_waveform-begin'></a>
 ### begin() `method`
 
 ##### Summary
@@ -17404,7 +17404,7 @@ A pointer to the first sample.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_waveform-empty'></a>
+<a name='M-visus-power_overwhelming-rtx_waveform-empty'></a>
 ### empty() `method`
 
 ##### Summary
@@ -17420,7 +17420,7 @@ Answer whether the waveform is empty.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_waveform-end'></a>
+<a name='M-visus-power_overwhelming-rtx_waveform-end'></a>
 ### end() `method`
 
 ##### Summary
@@ -17435,7 +17435,7 @@ A pointer to invalid memory past the last sample.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_waveform-op_Assign-visus-power_overwhelming-oscilloscope_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_waveform-op_Assign-visus-power_overwhelming-rtx_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### op_Assign(rhs) `method`
 
 ##### Summary
@@ -17450,9 +17450,9 @@ Move assignment.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| rhs | [visus.power_overwhelming.oscilloscope_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The right-hand side operand. |
+| rhs | [visus.power_overwhelming.rtx_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_waveform*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_waveform*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The right-hand side operand. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_waveform-record_length'></a>
+<a name='M-visus-power_overwhelming-rtx_waveform-record_length'></a>
 ### record_length() `method`
 
 ##### Summary
@@ -17467,7 +17467,7 @@ The number of samples in the waveform.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_waveform-sample-System-UInt64!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_waveform-sample-System-UInt64!System-Runtime-CompilerServices-IsConst-'></a>
 ### sample(i) `method`
 
 ##### Summary
@@ -17492,7 +17492,7 @@ The value of the `i`th sample.
 empty waveform (one that has no samples), or if
 `i` is too large. |
 
-<a name='M-visus-power_overwhelming-oscilloscope_waveform-sample_distance'></a>
+<a name='M-visus-power_overwhelming-rtx_waveform-sample_distance'></a>
 ### sample_distance() `method`
 
 ##### Summary
@@ -17508,7 +17508,7 @@ The distance between two samples in seconds.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_waveform-samples'></a>
+<a name='M-visus-power_overwhelming-rtx_waveform-samples'></a>
 ### samples() `method`
 
 ##### Summary
@@ -17523,7 +17523,7 @@ A pointer to the first sample.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_waveform-segment_offset'></a>
+<a name='M-visus-power_overwhelming-rtx_waveform-segment_offset'></a>
 ### segment_offset() `method`
 
 ##### Summary
@@ -17539,7 +17539,7 @@ The offset of the segment.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_waveform-size'></a>
+<a name='M-visus-power_overwhelming-rtx_waveform-size'></a>
 ### size() `method`
 
 ##### Summary
@@ -17554,7 +17554,7 @@ The number of samples in the waveform.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_waveform-time_begin'></a>
+<a name='M-visus-power_overwhelming-rtx_waveform-time_begin'></a>
 ### time_begin() `method`
 
 ##### Summary
@@ -17570,7 +17570,7 @@ origin of the time axis, in seconds.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-oscilloscope_waveform-time_end'></a>
+<a name='M-visus-power_overwhelming-rtx_waveform-time_end'></a>
 ### time_end() `method`
 
 ##### Summary
@@ -17585,8 +17585,8 @@ The end of the time axis in seconds.
 
 This method has no parameters.
 
-<a name='T-visus-power_overwhelming-oscilloscope_waveform_points'></a>
-## oscilloscope_waveform_points `type`
+<a name='T-visus-power_overwhelming-rtx_waveform_points'></a>
+## rtx_waveform_points `type`
 
 ##### Namespace
 
@@ -18607,7 +18607,7 @@ valid and therefore could not be converted. |
 | [std.invalid_argument](#T-std-invalid_argument 'std.invalid_argument') | If the source is not
 valid and therefore could not be converted. |
 
-<a name='M-visus-power_overwhelming-to_string-visus-power_overwhelming-oscilloscope_trigger_coupling!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-to_string-visus-power_overwhelming-rtx_trigger_coupling!System-Runtime-CompilerServices-IsConst-'></a>
 ### to_string(point) `method`
 
 ##### Summary
@@ -18623,7 +18623,7 @@ The string representation of the value.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| point | [visus.power_overwhelming.oscilloscope_trigger_coupling!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_trigger_coupling!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_trigger_coupling!System.Runtime.CompilerServices.IsConst') | The value to be converted. |
+| point | [visus.power_overwhelming.rtx_trigger_coupling!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_trigger_coupling!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_trigger_coupling!System.Runtime.CompilerServices.IsConst') | The value to be converted. |
 
 ##### Exceptions
 
@@ -18632,7 +18632,7 @@ The string representation of the value.
 | [std::invalid_argument](#!-std--invalid_argument 'std::invalid_argument') | If the input is not
 valid and therefore could not be converted. |
 
-<a name='M-visus-power_overwhelming-to_string-visus-power_overwhelming-oscilloscope_decimation_mode!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-to_string-visus-power_overwhelming-rtx_decimation_mode!System-Runtime-CompilerServices-IsConst-'></a>
 ### to_string(mode) `method`
 
 ##### Summary
@@ -18648,7 +18648,7 @@ The string representation of the value.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| mode | [visus.power_overwhelming.oscilloscope_decimation_mode!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_decimation_mode!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_decimation_mode!System.Runtime.CompilerServices.IsConst') | The value to be converted. |
+| mode | [visus.power_overwhelming.rtx_decimation_mode!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_decimation_mode!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_decimation_mode!System.Runtime.CompilerServices.IsConst') | The value to be converted. |
 
 ##### Exceptions
 
@@ -18657,7 +18657,7 @@ The string representation of the value.
 | [std::invalid_argument](#!-std--invalid_argument 'std::invalid_argument') | If the input is not
 valid and therefore could not be converted. |
 
-<a name='M-visus-power_overwhelming-to_string-visus-power_overwhelming-oscilloscope_channel_polarity!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-to_string-visus-power_overwhelming-rtx_channel_polarity!System-Runtime-CompilerServices-IsConst-'></a>
 ### to_string(polarity) `method`
 
 ##### Summary
@@ -18673,7 +18673,7 @@ The string representation of the value.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| polarity | [visus.power_overwhelming.oscilloscope_channel_polarity!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_channel_polarity!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_channel_polarity!System.Runtime.CompilerServices.IsConst') | The value to be converted. |
+| polarity | [visus.power_overwhelming.rtx_channel_polarity!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_channel_polarity!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_channel_polarity!System.Runtime.CompilerServices.IsConst') | The value to be converted. |
 
 ##### Exceptions
 
@@ -18682,7 +18682,7 @@ The string representation of the value.
 | [std::invalid_argument](#!-std--invalid_argument 'std::invalid_argument') | If the input is not
 valid and therefore could not be converted. |
 
-<a name='M-visus-power_overwhelming-to_string-visus-power_overwhelming-oscilloscope_channel_coupling!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-to_string-visus-power_overwhelming-rtx_channel_coupling!System-Runtime-CompilerServices-IsConst-'></a>
 ### to_string(coupling) `method`
 
 ##### Summary
@@ -18698,7 +18698,7 @@ The string representation of the value.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| coupling | [visus.power_overwhelming.oscilloscope_channel_coupling!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_channel_coupling!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_channel_coupling!System.Runtime.CompilerServices.IsConst') | The value to be converted. |
+| coupling | [visus.power_overwhelming.rtx_channel_coupling!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_channel_coupling!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_channel_coupling!System.Runtime.CompilerServices.IsConst') | The value to be converted. |
 
 ##### Exceptions
 
@@ -18707,7 +18707,7 @@ The string representation of the value.
 | [std::invalid_argument](#!-std--invalid_argument 'std::invalid_argument') | If the input is not
 valid and therefore could not be converted. |
 
-<a name='M-visus-power_overwhelming-to_string-visus-power_overwhelming-oscilloscope_channel_bandwidth!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-to_string-visus-power_overwhelming-rtx_channel_bandwidth!System-Runtime-CompilerServices-IsConst-'></a>
 ### to_string(bandwidth) `method`
 
 ##### Summary
@@ -18723,7 +18723,7 @@ The string representation of the value.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| bandwidth | [visus.power_overwhelming.oscilloscope_channel_bandwidth!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_channel_bandwidth!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_channel_bandwidth!System.Runtime.CompilerServices.IsConst') | The value to be converted. |
+| bandwidth | [visus.power_overwhelming.rtx_channel_bandwidth!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_channel_bandwidth!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_channel_bandwidth!System.Runtime.CompilerServices.IsConst') | The value to be converted. |
 
 ##### Exceptions
 
@@ -18732,7 +18732,7 @@ The string representation of the value.
 | [std::invalid_argument](#!-std--invalid_argument 'std::invalid_argument') | If the input is not
 valid and therefore could not be converted. |
 
-<a name='M-visus-power_overwhelming-to_string-visus-power_overwhelming-oscilloscope_acquisition_state!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-to_string-visus-power_overwhelming-rtx_acquisition_state!System-Runtime-CompilerServices-IsConst-'></a>
 ### to_string(state) `method`
 
 ##### Summary
@@ -18748,7 +18748,7 @@ The string representation of the value.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| state | [visus.power_overwhelming.oscilloscope_acquisition_state!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_acquisition_state!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_acquisition_state!System.Runtime.CompilerServices.IsConst') | The value to be converted. |
+| state | [visus.power_overwhelming.rtx_acquisition_state!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_acquisition_state!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_acquisition_state!System.Runtime.CompilerServices.IsConst') | The value to be converted. |
 
 ##### Exceptions
 
@@ -19033,7 +19033,7 @@ VISUS. If this does not work, use the RsVisaTester tool and discover
 the device via the "Find Resource" functionality. Do not
 forget to put the device in USB mode if discovering via USB.
 
-<a name='M-visus-power_overwhelming-rtx_instrument-acquisition-visus-power_overwhelming-oscilloscope_acquisition_state!System-Runtime-CompilerServices-IsConst,System-Boolean!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument-acquisition-visus-power_overwhelming-rtx_acquisition_state!System-Runtime-CompilerServices-IsConst,System-Boolean!System-Runtime-CompilerServices-IsConst-'></a>
 ### acquisition(state,wait) `method`
 
 ##### Summary
@@ -19048,7 +19048,7 @@ Changes the acquisition state of the instrument.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| state | [visus.power_overwhelming.oscilloscope_acquisition_state!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_acquisition_state!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_acquisition_state!System.Runtime.CompilerServices.IsConst') | The new state of the instrument. |
+| state | [visus.power_overwhelming.rtx_acquisition_state!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_acquisition_state!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_acquisition_state!System.Runtime.CompilerServices.IsConst') | The new state of the instrument. |
 | wait | [System.Boolean!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.Boolean!System.Runtime.CompilerServices.IsConst 'System.Boolean!System.Runtime.CompilerServices.IsConst') | If the `state` parameter is
 [single](#F-single 'single') and this
 parameter is `true`, the method will issue an `*OPC?`
@@ -19067,7 +19067,7 @@ acquisition actually ended. |
 disposed by a move. |
 | [visa_exception](#!-visa_exception 'visa_exception') | If a VISA call failed. |
 
-<a name='M-visus-power_overwhelming-rtx_instrument-acquisition-visus-power_overwhelming-oscilloscope_acquisition!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Boolean!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument-acquisition-visus-power_overwhelming-rtx_acquisition!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Boolean!System-Runtime-CompilerServices-IsConst-'></a>
 ### acquisition(acquisition,wait) `method`
 
 ##### Summary
@@ -19082,8 +19082,8 @@ Configures acquisition-related settings on the instrument.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| acquisition | [visus.power_overwhelming.oscilloscope_acquisition!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_acquisition!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_acquisition!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The configuration of single acquisition
-mode. If the state in [oscilloscope_acquisition](#T-visus-power_overwhelming-oscilloscope_acquisition 'visus.power_overwhelming.oscilloscope_acquisition') is
+| acquisition | [visus.power_overwhelming.rtx_acquisition!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_acquisition!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_acquisition!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The configuration of single acquisition
+mode. If the state in [rtx_acquisition](#T-visus-power_overwhelming-rtx_acquisition 'visus.power_overwhelming.rtx_acquisition') is
 set to [unknown](#F-unknown 'unknown'), the
 state will not be changed. Otherwise, the configured state is
 established at the end of the method. It is recommended using this
@@ -19135,7 +19135,7 @@ instrument failed. |
 
 ##### Remarks
 
-An unmodified [oscilloscope_acquisition](#T-visus-power_overwhelming-oscilloscope_acquisition 'visus.power_overwhelming.oscilloscope_acquisition') with unknown
+An unmodified [rtx_acquisition](#T-visus-power_overwhelming-rtx_acquisition 'visus.power_overwhelming.rtx_acquisition') with unknown
 state is returned if the library was compiled without support for
 VISA.
 
@@ -19228,7 +19228,7 @@ instrument failed. |
 It is safe to call this method if the library was compiled without
 support for VISA. The result will always be `false` then.
 
-<a name='M-visus-power_overwhelming-rtx_instrument-automatic_roll_time-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument-automatic_roll_time-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### automatic_roll_time(min_time_base) `method`
 
 ##### Summary
@@ -19244,7 +19244,7 @@ it, automatic roll is enabled.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| min_time_base | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The limit for enabling roll
+| min_time_base | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The limit for enabling roll
 mode. |
 
 ##### Exceptions
@@ -19476,7 +19476,7 @@ instrument failed. |
 | [std::logic_error](#!-std--logic_error 'std::logic_error') | If the method is called while
 the library was compiled without support for VISA. |
 
-<a name='M-visus-power_overwhelming-rtx_instrument-channel-visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument-channel-visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### channel(channel) `method`
 
 ##### Summary
@@ -19491,7 +19491,7 @@ Apply the specified channel configuration.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| channel | [visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The channel configuration to apply. |
+| channel | [visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The channel configuration to apply. |
 
 ##### Exceptions
 
@@ -19836,7 +19836,7 @@ loaded. |
 | [visa_exception](#!-visa_exception 'visa_exception') | If the sensor could not be
 initialised. |
 
-<a name='M-visus-power_overwhelming-rtx_instrument-data-visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument-data-visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst-'></a>
 ### data(points) `method`
 
 ##### Summary
@@ -19851,7 +19851,7 @@ The waveforms of all active channels.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| points | [visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst') | Specifies which sample points should be
+| points | [visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst') | Specifies which sample points should be
 transferred. |
 
 ##### Exceptions
@@ -19865,7 +19865,7 @@ instrument failed. |
 | [std::logic_error](#!-std--logic_error 'std::logic_error') | If the method is called while
 the library was compiled without support for VISA. |
 
-<a name='M-visus-power_overwhelming-rtx_instrument-data-System-UInt32!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument-data-System-UInt32!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst-'></a>
 ### data(channel,points) `method`
 
 ##### Summary
@@ -19882,7 +19882,7 @@ The waveform for the specified channel.
 | ---- | ---- | ----------- |
 | channel | [System.UInt32!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.UInt32!System.Runtime.CompilerServices.IsConst 'System.UInt32!System.Runtime.CompilerServices.IsConst') | The one-based index of the channel to retrieve
 the waveform for. |
-| points | [visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst') | Specifies which sample points should be
+| points | [visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst') | Specifies which sample points should be
 transferred. |
 
 ##### Exceptions
@@ -20414,7 +20414,7 @@ instrument failed. |
 It is safe to call the method if the library was built without
 support for VISA, in which case nothing will happen.
 
-<a name='M-visus-power_overwhelming-rtx_instrument-time_range-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument-time_range-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### time_range(scale) `method`
 
 ##### Summary
@@ -20430,7 +20430,7 @@ divisions.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| scale | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | Time range within [250e-12, 500]. |
+| scale | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | Time range within [250e-12, 500]. |
 
 ##### Exceptions
 
@@ -20468,7 +20468,7 @@ instrument failed. |
 | [std::logic_error](#!-std--logic_error 'std::logic_error') | If the method is called while
 the library was compiled without support for VISA. |
 
-<a name='M-visus-power_overwhelming-rtx_instrument-time_scale-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument-time_scale-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### time_scale(scale) `method`
 
 ##### Summary
@@ -20484,7 +20484,7 @@ division.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| scale | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | Time scale within [1e-9, 50]. |
+| scale | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | Time scale within [1e-9, 50]. |
 
 ##### Exceptions
 
@@ -20549,7 +20549,7 @@ object that has been disposed by moving it. |
 | [visa_exception](#!-visa_exception 'visa_exception') | If any of the API calls to the
 instrument failed. |
 
-<a name='M-visus-power_overwhelming-rtx_instrument-trigger-visus-power_overwhelming-oscilloscope_trigger!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument-trigger-visus-power_overwhelming-rtx_trigger!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### trigger(trigger) `method`
 
 ##### Summary
@@ -20564,7 +20564,7 @@ Configures the trigger.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| trigger | [visus.power_overwhelming.oscilloscope_trigger!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_trigger!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_trigger!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The trigger configuration. |
+| trigger | [visus.power_overwhelming.rtx_trigger!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_trigger!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_trigger!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The trigger configuration. |
 
 ##### Exceptions
 
@@ -20575,7 +20575,7 @@ object that has been disposed by moving it. |
 | [visa_exception](#!-visa_exception 'visa_exception') | If any of the API calls to the
 instrument failed. |
 
-<a name='M-visus-power_overwhelming-rtx_instrument-trigger_output-visus-power_overwhelming-oscilloscope_trigger_output!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument-trigger_output-visus-power_overwhelming-rtx_trigger_output!System-Runtime-CompilerServices-IsConst-'></a>
 ### trigger_output(output) `method`
 
 ##### Summary
@@ -20591,7 +20591,7 @@ output.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| output | [visus.power_overwhelming.oscilloscope_trigger_output!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_trigger_output!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_trigger_output!System.Runtime.CompilerServices.IsConst') | The behaviour of the trigger output. |
+| output | [visus.power_overwhelming.rtx_trigger_output!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_trigger_output!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_trigger_output!System.Runtime.CompilerServices.IsConst') | The behaviour of the trigger output. |
 
 ##### Exceptions
 
@@ -20630,9 +20630,9 @@ instrument failed. |
 the library was compiled without support for VISA. |
 | [std::range_error](#!-std--range_error 'std::range_error') | If the response of the instrument
 did not fall into the range of states that can be expressed by the
-[oscilloscope_trigger_output](#T-visus-power_overwhelming-oscilloscope_trigger_output 'visus.power_overwhelming.oscilloscope_trigger_output') enumeration. |
+[rtx_trigger_output](#T-visus-power_overwhelming-rtx_trigger_output 'visus.power_overwhelming.rtx_trigger_output') enumeration. |
 
-<a name='M-visus-power_overwhelming-rtx_instrument-trigger_position-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument-trigger_position-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### trigger_position(offset) `method`
 
 ##### Summary
@@ -20648,7 +20648,7 @@ trigger point to the reference point.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| offset | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The offset of the trigger point. |
+| offset | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The offset of the trigger point. |
 
 ##### Exceptions
 
@@ -20903,7 +20903,7 @@ it fails. It may therefore take significant time to complete as the
 instrument must hit a timeout to detect that the final channel was
 opened.
 
-<a name='M-visus-power_overwhelming-rtx_instrument_configuration-#ctor-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_acquisition!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_edge_trigger!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-UInt32-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument_configuration-#ctor-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_acquisition!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_edge_trigger!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-UInt32-'></a>
 ### #ctor(time_range,acquisition,trigger,timeout) `constructor`
 
 ##### Summary
@@ -20914,11 +20914,11 @@ Initialises a new instance.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| time_range | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst') | The time range the oscilloscope should
+| time_range | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst') | The time range the oscilloscope should
 acquire after it has been triggers. |
-| acquisition | [visus.power_overwhelming.oscilloscope_acquisition!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_acquisition!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_acquisition!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The acquisition configuration to be
+| acquisition | [visus.power_overwhelming.rtx_acquisition!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_acquisition!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_acquisition!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The acquisition configuration to be
 applied to the instrument. |
-| trigger | [visus.power_overwhelming.oscilloscope_edge_trigger!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_edge_trigger!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_edge_trigger!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | Configures how the instrument will be
+| trigger | [visus.power_overwhelming.rtx_edge_trigger!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_edge_trigger!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_edge_trigger!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | Configures how the instrument will be
 triggered. |
 | timeout | [System.UInt32](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.UInt32 'System.UInt32') | The timeout of the instrument (for connections
 and for I/O operations including `*OPC?` queries. If this value
@@ -20927,7 +20927,7 @@ aware that you must be able to wait for acqusitions to complete, so
 the timeout should be larger than the time range you intend to
 acquire. |
 
-<a name='M-visus-power_overwhelming-rtx_instrument_configuration-#ctor-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst,System-UInt32-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument_configuration-#ctor-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst,System-UInt32-'></a>
 ### #ctor(time_range,samples,timeout) `constructor`
 
 ##### Summary
@@ -20938,7 +20938,7 @@ Initialises a new instance.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| time_range | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst') | The time range the oscilloscope should
+| time_range | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst') | The time range the oscilloscope should
 acquire after it has been triggers. |
 | samples | [System.UInt32!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.UInt32!System.Runtime.CompilerServices.IsConst 'System.UInt32!System.Runtime.CompilerServices.IsConst') | The number of samples to be acquired during
 `time_range`. If this is zero, which is the
@@ -20954,8 +20954,8 @@ acquire. |
 ##### Remarks
 
 The default configuration uses the defaults of the
-[](#!-oscilloscope_single_acquisition 'oscilloscope_single_acquisition') and
-[oscilloscope_edge_trigger](#T-visus-power_overwhelming-oscilloscope_edge_trigger 'visus.power_overwhelming.oscilloscope_edge_trigger') with the following changes:
+[](#!-rtx_single_acquisition 'rtx_single_acquisition') and
+[rtx_edge_trigger](#T-visus-power_overwhelming-rtx_edge_trigger 'visus.power_overwhelming.rtx_edge_trigger') with the following changes:
 On the acquisition, fast-segmentation is enabled and the number of
 points is computed automatically. The rationally for that is that we
 want the instrument to be as fast as possible in production mode.
@@ -21103,7 +21103,7 @@ applied to one or more of the instruments. |
 If no matching configuration could be found for any of the
 given instruments, the first one from the file will be used.
 
-<a name='M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst-'></a>
 ### apply(instruments,cnt,configuration,master,level,slope) `method`
 
 ##### Summary
@@ -21135,10 +21135,10 @@ nothing will happen. |
 instrument. All other instruments will receive a slave configuration
 derived from this object. |
 | master | [System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst* 'System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*') | The instrument name of the master instrument. |
-| level | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The trigger level of the external trigger of the
+| level | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The trigger level of the external trigger of the
 slave instruments. The external trigger usually uses 5V if passed on
 via the AUX output, so the default of 2.5 V is a safe bet. |
-| slope | [visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst') | The slope on which to trigger, which is the
+| slope | [visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst') | The slope on which to trigger, which is the
 rising one by default. |
 
 ##### Exceptions
@@ -21153,7 +21153,7 @@ operation. |
 | [visa_exception](#!-visa_exception 'visa_exception') | If any of the API calls to the
 instrument failed. |
 
-<a name='M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst-'></a>
 ### apply(instruments,cnt,configuration,master,level,slope) `method`
 
 ##### Summary
@@ -21185,10 +21185,10 @@ nothing will happen. |
 instrument. All other instruments will receive a slave configuration
 derived from this object. |
 | master | [System.Char!System.Runtime.CompilerServices.IsConst*](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.Char!System.Runtime.CompilerServices.IsConst* 'System.Char!System.Runtime.CompilerServices.IsConst*') | The instrument name of the master instrument. |
-| level | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The trigger level of the external trigger of the
+| level | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The trigger level of the external trigger of the
 slave instruments. The external trigger usually uses 5V if passed on
 via the AUX output, so the default of 2.5 V is a safe bet. |
-| slope | [visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst') | The slope on which to trigger, which is the
+| slope | [visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst') | The slope on which to trigger, which is the
 rising one by default. |
 
 ##### Exceptions
@@ -21203,7 +21203,7 @@ operation. |
 | [visa_exception](#!-visa_exception 'visa_exception') | If any of the API calls to the
 instrument failed. |
 
-<a name='M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Boolean!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Boolean!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst-'></a>
 ### apply(instruments,cnt,configuration,master_slave,level,slope) `method`
 
 ##### Summary
@@ -21232,10 +21232,10 @@ have been configured at the end |
 configuration only to the first instrument and a slave configuration
 derived from it to all subsequent ones. If `false`, which is
 the default, apply the given configuration to all instruments. |
-| level | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The trigger level of the external trigger of the
+| level | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The trigger level of the external trigger of the
 slave instruments. The external trigger usually uses 5V if passed on
 via the AUX output, so the default of 2.5 V is a safe bet. |
-| slope | [visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst') | The slope on which to trigger, which is the
+| slope | [visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst') | The slope on which to trigger, which is the
 rising one by default. |
 
 ##### Exceptions
@@ -21248,7 +21248,7 @@ operation. |
 | [visa_exception](#!-visa_exception 'visa_exception') | If any of the API calls to the
 instrument failed. |
 
-<a name='M-visus-power_overwhelming-rtx_instrument_configuration-as_slave-System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument_configuration-as_slave-System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst-'></a>
 ### as_slave(beep,level,slope) `method`
 
 ##### Summary
@@ -21267,10 +21267,10 @@ the first one that is triggered as configured by the user.
 | ---- | ---- | ----------- |
 | beep | [System.UInt64!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.UInt64!System.Runtime.CompilerServices.IsConst 'System.UInt64!System.Runtime.CompilerServices.IsConst') | Instructs the slave configuration to make the
 instrument beep `beep` times once it was applied. |
-| level | [visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The trigger level of the external trigger of the
+| level | [visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The trigger level of the external trigger of the
 slave instruments. The external trigger usually uses 5V if passed on
 via the AUX output, so the default of 2.5 V is a safe bet. |
-| slope | [visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst') | The slope on which to trigger, which is the
+| slope | [visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst') | The slope on which to trigger, which is the
 rising one by default. |
 
 <a name='M-visus-power_overwhelming-rtx_instrument_configuration-beep_on_apply-System-UInt64!System-Runtime-CompilerServices-IsConst-'></a>
@@ -21279,7 +21279,7 @@ rising one by default. |
 ##### Summary
 
 Configures object to make the instrument beep
-`count` times once the [apply](#M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Boolean!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.apply(visus.power_overwhelming.rtx_instrument*,System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_instrument_configuration!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Boolean!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst)') method
+`count` times once the [apply](#M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Boolean!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.apply(visus.power_overwhelming.rtx_instrument*,System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_instrument_configuration!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Boolean!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst)') method
 finishes.
 
 ##### Returns
@@ -21299,7 +21299,7 @@ instrument will not beep. |
 ##### Summary
 
 Answer how often the instrument should beep once
-[apply](#M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Boolean!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.apply(visus.power_overwhelming.rtx_instrument*,System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_instrument_configuration!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Boolean!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst)') completed.
+[apply](#M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Boolean!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.apply(visus.power_overwhelming.rtx_instrument*,System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_instrument_configuration!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Boolean!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst)') completed.
 
 ##### Returns
 
@@ -21379,7 +21379,7 @@ otherwise.
 
 This method has no parameters.
 
-<a name='M-visus-power_overwhelming-rtx_instrument_configuration-channel-visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument_configuration-channel-visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced-'></a>
 ### channel(channel) `method`
 
 ##### Summary
@@ -21394,12 +21394,12 @@ Configures the given channel.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| channel | [visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The channel configuration to apply. Please
+| channel | [visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The channel configuration to apply. Please
 note that each channel can only be configured once. Subsequent
 calls with the name channel number will overwrite any existing
 configuration. |
 
-<a name='M-visus-power_overwhelming-rtx_instrument_configuration-channels-visus-power_overwhelming-oscilloscope_channel*,System-UInt64!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_instrument_configuration-channels-visus-power_overwhelming-rtx_channel*,System-UInt64!System-Runtime-CompilerServices-IsConst-'></a>
 ### channels(dst,cnt) `method`
 
 ##### Summary
@@ -21414,7 +21414,7 @@ The number of channels configured.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| dst | [visus.power_overwhelming.oscilloscope_channel*](#T-visus-power_overwhelming-oscilloscope_channel* 'visus.power_overwhelming.oscilloscope_channel*') | Receives at most `cnt` channels
+| dst | [visus.power_overwhelming.rtx_channel*](#T-visus-power_overwhelming-rtx_channel* 'visus.power_overwhelming.rtx_channel*') | Receives at most `cnt` channels
 if not `nullptr`. |
 | cnt | [System.UInt64!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.UInt64!System.Runtime.CompilerServices.IsConst 'System.UInt64!System.Runtime.CompilerServices.IsConst') | The number of elements that can be written to
 `dst`. |
@@ -21714,7 +21714,7 @@ In contrast to the method overload accepting
 preserve the identity of the instrument along the configuration.
 Files from this method can therefore be used to restore the state
 of multiple known instruments at once. It is the preferred way of
-storing setups for future use with the [apply](#M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Boolean!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.apply(visus.power_overwhelming.rtx_instrument*,System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_instrument_configuration!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Boolean!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.oscilloscope_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.oscilloscope_trigger_slope!System.Runtime.CompilerServices.IsConst)') method.
+storing setups for future use with the [apply](#M-visus-power_overwhelming-rtx_instrument_configuration-apply-visus-power_overwhelming-rtx_instrument*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Boolean!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_quantity!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_trigger_slope!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_instrument_configuration.apply(visus.power_overwhelming.rtx_instrument*,System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_instrument_configuration!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.Boolean!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_quantity!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.rtx_trigger_slope!System.Runtime.CompilerServices.IsConst)') method.
 
 <a name='M-visus-power_overwhelming-rtx_instrument_configuration-save-visus-power_overwhelming-rtx_instrument_configuration!System-Runtime-CompilerServices-IsConst*,System-UInt64!System-Runtime-CompilerServices-IsConst,System-Char!System-Runtime-CompilerServices-IsConst*-'></a>
 ### save(configs,cnt,path) `method`
@@ -22043,8 +22043,8 @@ channels at the end are unused.
 
 Aside from the channel index and the quantity (voltage or
 current), the default configuration of
-[oscilloscope_channel](#T-visus-power_overwhelming-oscilloscope_channel 'visus.power_overwhelming.oscilloscope_channel') is applied to each channel. If
-you need to customise the probes, use [get_definitions](#M-visus-power_overwhelming-rtx_sensor-get_definitions-visus-power_overwhelming-rtx_sensor_definition*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-UInt64!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sensor.get_definitions(visus.power_overwhelming.rtx_sensor_definition*,System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.UInt64!System.Runtime.CompilerServices.IsConst,System.UInt32!System.Runtime.CompilerServices.IsConst)')
+[rtx_channel](#T-visus-power_overwhelming-rtx_channel 'visus.power_overwhelming.rtx_channel') is applied to each channel. If
+you need to customise the probes, use [get_definitions](#M-visus-power_overwhelming-rtx_sensor-get_definitions-visus-power_overwhelming-rtx_sensor_definition*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-UInt64!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst- 'visus.power_overwhelming.rtx_sensor.get_definitions(visus.power_overwhelming.rtx_sensor_definition*,System.UInt64!System.Runtime.CompilerServices.IsConst,visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,System.UInt64!System.Runtime.CompilerServices.IsConst,System.UInt32!System.Runtime.CompilerServices.IsConst)')
 with a custom template and create the sensors from there.
 
 The method will apply the default
@@ -22090,7 +22090,7 @@ a waveform into a single sample. |
 connecting to the instrument. This parameter defaults to
 [default_timeout](#F-visus-power_overwhelming-visa_instrument-default_timeout 'visus.power_overwhelming.visa_instrument.default_timeout'). |
 
-<a name='M-visus-power_overwhelming-rtx_sensor-get_definitions-visus-power_overwhelming-rtx_sensor_definition*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-UInt64!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_sensor-get_definitions-visus-power_overwhelming-rtx_sensor_definition*,System-UInt64!System-Runtime-CompilerServices-IsConst,visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-UInt64!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst-'></a>
 ### get_definitions(dst,cnt,voltage_channel,current_channel,force_cannels,timeout) `method`
 
 ##### Summary
@@ -22113,10 +22113,10 @@ is safe to pass `nullptr`, in which case nothing will be
 written. |
 | cnt | [System.UInt64!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.UInt64!System.Runtime.CompilerServices.IsConst 'System.UInt64!System.Runtime.CompilerServices.IsConst') | The number of elements that can be written to
 `dst`. |
-| voltage_channel | [visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | A configuration template for the
+| voltage_channel | [visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | A configuration template for the
 voltage channels. The method will copy this template except for
 the channel indices, which will be created on the fly. |
-| current_channel | [visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | A configuration template for the
+| current_channel | [visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | A configuration template for the
 current channels. The method will copy this template except for
 the channel indices, which will be created on the fly. |
 | force_cannels | [System.UInt64!System.Runtime.CompilerServices.IsConst](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.UInt64!System.Runtime.CompilerServices.IsConst 'System.UInt64!System.Runtime.CompilerServices.IsConst') | If not zero, make the method assume that
@@ -22198,7 +22198,7 @@ Obtains two or more waveforms from the given instrument.
 
 ##### Returns
 
-The [oscilloscope_sample](#T-visus-power_overwhelming-oscilloscope_sample 'visus.power_overwhelming.oscilloscope_sample') obtained from the
+The [rtx_sample](#T-visus-power_overwhelming-rtx_sample 'visus.power_overwhelming.rtx_sample') obtained from the
 instrument.
 
 ##### Parameters
@@ -22241,7 +22241,7 @@ visus.power_overwhelming
 Defines a power sensor using a voltage and a current probe of an
 R & S RTA/RTB oscilloscope.
 
-<a name='M-visus-power_overwhelming-rtx_sensor_definition-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-UInt32!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_sensor_definition-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,System-UInt32!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst-'></a>
 ### #ctor(path,channel_voltage,attenuation_voltage,channel_current,attenuation_current,description,waveform_points) `constructor`
 
 ##### Summary
@@ -22265,7 +22265,7 @@ is attached. |
 probe in [A]. Consult the manual of the instrument on which values
 are valid for this parameter. |
 | description | [System.Char!System.Runtime.CompilerServices.IsConst*](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.Char!System.Runtime.CompilerServices.IsConst* 'System.Char!System.Runtime.CompilerServices.IsConst*') | The description of the sensor. |
-| waveform_points | [visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst') | Specifies which points of the waveform
+| waveform_points | [visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst') | Specifies which points of the waveform
 are downloaded from the instrument to the sensor. This parameter
 defaults to the maximum resolution available in the memory of the
 instrument. |
@@ -22281,7 +22281,7 @@ instrument. |
 | [std.bad_alloc](#T-std-bad_alloc 'std.bad_alloc') | If the memory for storing the
 description could not be allocated. |
 
-<a name='M-visus-power_overwhelming-rtx_sensor_definition-#ctor-System-Char!System-Runtime-CompilerServices-IsConst*,System-UInt32!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_sensor_definition-#ctor-System-Char!System-Runtime-CompilerServices-IsConst*,System-UInt32!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-UInt32!System-Runtime-CompilerServices-IsConst,System-Single!System-Runtime-CompilerServices-IsConst,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst-'></a>
 ### #ctor(path,channel_voltage,attenuation_voltage,channel_current,attenuation_current,description,waveform_points) `constructor`
 
 ##### Summary
@@ -22305,7 +22305,7 @@ is attached. |
 probe in [A]. Consult the manual of the instrument on which values
 are valid for this parameter. |
 | description | [System.Char!System.Runtime.CompilerServices.IsConst*](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.Char!System.Runtime.CompilerServices.IsConst* 'System.Char!System.Runtime.CompilerServices.IsConst*') | The description of the sensor. |
-| waveform_points | [visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst') | Specifies which points of the waveform
+| waveform_points | [visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst') | Specifies which points of the waveform
 are downloaded from the instrument to the sensor. This parameter
 defaults to the maximum resolution available in the memory of the
 instrument. |
@@ -22322,7 +22322,7 @@ is `nullptr` or an empty string. |
 | [std.bad_alloc](#T-std-bad_alloc 'std.bad_alloc') | If the memory for storing the
 description could not be allocated. |
 
-<a name='M-visus-power_overwhelming-rtx_sensor_definition-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_sensor_definition-#ctor-System-SByte!System-Runtime-CompilerServices-IsSignUnspecifiedByte!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst-'></a>
 ### #ctor(path,voltage_channel,current_channel,description,waveform_points) `constructor`
 
 ##### Summary
@@ -22335,12 +22335,12 @@ Initialises a new instance.
 | ---- | ---- | ----------- |
 | path | [System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst* 'System.SByte!System.Runtime.CompilerServices.IsSignUnspecifiedByte!System.Runtime.CompilerServices.IsConst*') | The path to the VISA instrument to be used for
 the sensor, which must not be `nullptr`. |
-| voltage_channel | [visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The configuration of the channel to
+| voltage_channel | [visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The configuration of the channel to
 which the voltage probe is attached. |
-| current_channel | [visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The configuration of the channel to
+| current_channel | [visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The configuration of the channel to
 which the current probe is attached. |
 | description | [System.Char!System.Runtime.CompilerServices.IsConst*](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.Char!System.Runtime.CompilerServices.IsConst* 'System.Char!System.Runtime.CompilerServices.IsConst*') | The description of the sensor. |
-| waveform_points | [visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst') | Specifies which points of the waveform
+| waveform_points | [visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst') | Specifies which points of the waveform
 are downloaded from the instrument to the sensor. This parameter
 defaults to the maximum resolution available in the memory of the
 instrument. |
@@ -22358,7 +22358,7 @@ measured by any of the channels is not what their intended use is. |
 | [std.bad_alloc](#T-std-bad_alloc 'std.bad_alloc') | If the memory for storing the
 description could not be allocated. |
 
-<a name='M-visus-power_overwhelming-rtx_sensor_definition-#ctor-System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst-'></a>
+<a name='M-visus-power_overwhelming-rtx_sensor_definition-#ctor-System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced,System-Char!System-Runtime-CompilerServices-IsConst*,visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst-'></a>
 ### #ctor(path,description,voltage_channel,current_channel,waveform_points) `constructor`
 
 ##### Summary
@@ -22371,13 +22371,13 @@ Initialises a new instance.
 | ---- | ---- | ----------- |
 | path | [System.Char!System.Runtime.CompilerServices.IsConst*](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.Char!System.Runtime.CompilerServices.IsConst* 'System.Char!System.Runtime.CompilerServices.IsConst*') | The path to the VISA instrument to be used for
 the sensor, which must not be `nullptr`. |
-| description | [visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The description of the sensor, which must
+| description | [visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The description of the sensor, which must
 not be `nullptr`. |
-| voltage_channel | [visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-oscilloscope_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.oscilloscope_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The configuration of the channel to
+| voltage_channel | [visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced](#T-visus-power_overwhelming-rtx_channel!System-Runtime-CompilerServices-IsConst*!System-Runtime-CompilerServices-IsImplicitlyDereferenced 'visus.power_overwhelming.rtx_channel!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced') | The configuration of the channel to
 which the voltage probe is attached. |
 | current_channel | [System.Char!System.Runtime.CompilerServices.IsConst*](http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k:System.Char!System.Runtime.CompilerServices.IsConst* 'System.Char!System.Runtime.CompilerServices.IsConst*') | The configuration of the channel to
 which the current probe is attached. |
-| waveform_points | [visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-oscilloscope_waveform_points!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.oscilloscope_waveform_points!System.Runtime.CompilerServices.IsConst') | Specifies which points of the waveform
+| waveform_points | [visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst](#T-visus-power_overwhelming-rtx_waveform_points!System-Runtime-CompilerServices-IsConst 'visus.power_overwhelming.rtx_waveform_points!System.Runtime.CompilerServices.IsConst') | Specifies which points of the waveform
 are downloaded from the instrument to the sensor. This parameter
 defaults to the maximum resolution available in the memory of the
 instrument. |

@@ -1,43 +1,53 @@
-// <copyright file="tokenise.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2018 - 2021 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="tokenise.inl" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2018 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licenced under the MIT License. See LICENCE.txt for further details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 
 /*
- * visus::power_overwhelming::detail::tokenise_if
+ * PWROWG_DETAIL_NAMESPACE::tokenise_range_if
  */
-template<class C, class P>
-std::vector<std::basic_string<C>> visus::power_overwhelming::detail::tokenise_if(
-        const std::basic_string<C>& str, const P predicate,
-        const bool omitEmpty) {
-    typedef typename std::decay<decltype(str)>::type StringType;
+template<class TChar, class TPredicate>
+std::vector<std::basic_string<TChar>>
+PWROWG_DETAIL_NAMESPACE::tokenise_range_if(
+        _In_opt_ const TChar *begin,
+        _In_opt_ const TChar *end,
+        _In_ const TPredicate predicate,
+        _In_ const bool omit_empty) {
+    auto is_end = [end](const TChar *c) {
+        return (((end != nullptr) && (c >= end)) || (*c == 0));
+    };
 
-    auto s = str.data();
-    std::vector<StringType> retval;
+    std::vector<std::basic_string<TChar>> retval;
 
-    do {
-        auto begin = s;
+    if (begin != nullptr) {
+        auto cur = begin;
 
-        while ((*s != 0) && !predicate(*s)) {
-            ++s;
+        while (!is_end(cur)) {
+            auto b = cur;
+
+            while (!is_end(cur) && !predicate(*cur)) {
+                ++cur;
+            }
+
+            if (!omit_empty || ((cur - b) > 0)) {
+                retval.emplace_back(b, cur);
+            }
+
+            ++cur;
         }
-
-        if (!omitEmpty || ((s - begin) > 0)) {
-            retval.emplace_back(begin, s);
-        }
-    } while (*s++ != 0);
+    }
 
     return retval;
 }
 
 
 /*
- * visus::power_overwhelming::detail::tokenise
+ * PWROWG_DETAIL_NAMESPACE::tokenise
  */
 template<class C>
-std::vector<std::basic_string<C>> visus::power_overwhelming::detail::tokenise(
+std::vector<std::basic_string<C>> PWROWG_DETAIL_NAMESPACE::tokenise(
         const std::basic_string<C>& str, const std::basic_string<C>& delim,
         const bool omitEmpty) {
     typedef typename std::decay<decltype(str)>::type StringType;
@@ -61,10 +71,10 @@ std::vector<std::basic_string<C>> visus::power_overwhelming::detail::tokenise(
 
 
 /*
- * visus::power_overwhelming::detail::tokenise
+ * PWROWG_DETAIL_NAMESPACE::tokenise
  */
 template<class C>
-std::vector<std::basic_string<C>> visus::power_overwhelming::detail::tokenise(
+std::vector<std::basic_string<C>> PWROWG_DETAIL_NAMESPACE::tokenise(
         const std::basic_string<C>& str, const C *delim, const bool omitEmpty) {
     if (delim != nullptr) {
         return tokenise(str, std::basic_string<C>(delim), omitEmpty);

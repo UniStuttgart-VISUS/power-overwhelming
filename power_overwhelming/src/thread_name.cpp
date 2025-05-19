@@ -1,10 +1,10 @@
 // <copyright file="set_thread_name.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2022 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "thread_name.h"
+#include "visus/pwrowg/thread_name.h"
 
 // See https://msdn.microsoft.com/de-de/library/xcb2z8hs.aspx?f=255&MSPPError=-2147217396
 
@@ -24,10 +24,11 @@ typedef struct tagTHREADNAME_INFO {
 
 
 /*
- * visus::power_overwhelming::detail::set_thread_name
+ * PWROWG_NAMESPACE::set_thread_name
  */
-void visus::power_overwhelming::detail::set_thread_name(
-		const native_thread_id thread_id, const char* thread_name) {
+void PWROWG_NAMESPACE::set_thread_name(
+        _In_ const native_thread_id thread_id,
+        _In_z_ const char *thread_name) {
 #if defined(_WIN32)
     if (thread_name != nullptr) {
         THREADNAME_INFO info;
@@ -41,7 +42,7 @@ void visus::power_overwhelming::detail::set_thread_name(
         __try {
             ::RaiseException(MS_VC_EXCEPTION, 0,
                 sizeof(info) / sizeof(ULONG_PTR),
-                reinterpret_cast<ULONG_PTR*>(&info));
+                reinterpret_cast<ULONG_PTR *>(&info));
         } __except (EXCEPTION_EXECUTE_HANDLER) {}
 #pragma warning(pop)
     }
@@ -50,10 +51,10 @@ void visus::power_overwhelming::detail::set_thread_name(
 
 
 /*
- * visus::power_overwhelming::detail::set_thread_name
+ * PWROWG_NAMESPACE::set_thread_name
  */
-void visus::power_overwhelming::detail::set_thread_name(
-        const char* thread_name) {
+void PWROWG_NAMESPACE::set_thread_name(
+        _In_z_ const char *thread_name) {
 #if defined(_WIN32)
     set_thread_name(::GetCurrentThreadId(), thread_name);
 #endif /* defined(_WIN32) */

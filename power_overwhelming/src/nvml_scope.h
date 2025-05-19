@@ -1,45 +1,47 @@
-// <copyright file="nvml_scope.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="nvml_scope.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
+#if !defined(_PWROWG_NVML_SCOPE_H)
+#define _PWROWG_NVML_SCOPE_H
 #pragma once
 
+#include "visus/pwrowg/api.h"
 
-namespace visus {
-namespace power_overwhelming {
-namespace detail {
+
+PWROWG_DETAIL_NAMESPACE_BEGIN
+
+/// <summary>
+/// A RAII container for the NVML library.
+/// </summary>
+/// <remarks>
+/// As NVML uses an internal reference counter, multiple scopes can be used
+/// by an application. NVML will not be unloaded unless the last scope was
+/// destroyed.
+/// </remarks>
+class PWROWG_TEST_API nvml_scope final {
+
+public:
 
     /// <summary>
-    /// A RAII container for the NVML library.
+    /// Initialises a new instance.
     /// </summary>
-    /// <remarks>
-    /// As NVML uses an internal reference counter, multiple scopes can be used
-    /// by an application. NVML will not be unloaded unless the last scope was
-    /// destroyed.
-    /// </remarks>
-    class nvml_scope final {
+    /// <exception cref="nvml_exception">If the NVML could not be loaded.
+    /// </exception>
+    nvml_scope(void);
 
-    public:
+    nvml_scope(const nvml_scope&) = delete;
 
-        /// <summary>
-        /// Initialises a new instance.
-        /// </summary>
-        /// <exception cref="nvml_exception">If the NVML could not be loaded.
-        /// </exception>
-        nvml_scope(void);
+    /// <summary>
+    /// Finalises the instance.
+    /// </summary>
+    ~nvml_scope(void);
 
-        nvml_scope(const nvml_scope&) = delete;
+    nvml_scope& operator =(const nvml_scope&) = delete;
+};
 
-        /// <summary>
-        /// Finalises the instance.
-        /// </summary>
-        ~nvml_scope(void);
+PWROWG_DETAIL_NAMESPACE_END
 
-        nvml_scope& operator =(const nvml_scope&) = delete;
-    };
-
-} /* namespace detail */
-} /* namespace power_overwhelming */
-} /* namespace visus */
+#endif /* !defined(_PWROWG_NVML_SCOPE_H) */

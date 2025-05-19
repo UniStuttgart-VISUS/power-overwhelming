@@ -1,5 +1,5 @@
 ﻿// <copyright file="rohde_und_schwarz.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -7,26 +7,28 @@
 #include "pch.h"
 #include "rohde_und_schwarz.h"
 
-#include "power_overwhelming/event.h"
+#include "visus/pwrowg/event.h"
+
 
 
 /*
  * ::query_hmc8015
  */
 void query_hmc8015(void) {
-    using namespace visus::power_overwhelming;
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    using namespace visus::pwrowg;
 
     try {
-        std::vector<hmc8015_sensor> sensors;
-        sensors.resize(hmc8015_sensor::for_all(nullptr, 0));
-        hmc8015_sensor::for_all(sensors.data(), sensors.size(), 10000);
+        std::vector<hmc8015_instrument> sensors;
+        sensors.resize(hmc8015_instrument::for_all(nullptr, 0));
+        hmc8015_instrument::for_all(sensors.data(), sensors.size(), 10000);
 
         for (auto& s : sensors) {
             s.display("Die Kraft ist überwältigend!");
             s.synchronise_clock();
             s.log_file("podump.csv", true, true);
-            s.current_range(instrument_range::maximum);
-            s.voltage_range(instrument_range::explicitly, 300);
+            s.current_range(hmc8015_instrument_range::maximum);
+            s.voltage_range(hmc8015_instrument_range::explicitly, 300);
 
             {
                 std::vector<char> f(s.functions(nullptr, 0));
@@ -47,7 +49,7 @@ void query_hmc8015(void) {
             //    log_mode::time_span, 5, now.wYear, now.wMonth,
             //    now.wDay, now.wHour, now.wMinute, now.wSecond + 5);
             s.log_behaviour(std::numeric_limits<float>::lowest(),
-                log_mode::duration);
+                hmc8015_log_mode::duration);
             s.log(true);
             std::wcout << s.logging() << std::endl;
 
@@ -71,12 +73,17 @@ void query_hmc8015(void) {
             std::this_thread::sleep_for(std::chrono::seconds(6));
             s.log(false);
 
-            std::wcout << s.name() << L":" << std::endl;
-            s.default_functions();
-            auto m = s.sample();
-            std::wcout << m.timestamp() << L": " << m.voltage() << " V * "
-                << m.current() << " A = " << m.power() << L" W"
-                << std::endl;
+            std::vector<char> name(1024);
+            name.resize(s.name(nullptr, 0));
+            s.name(name.data(), name.size());
+            std::wcout << name.data() << L":" << std::endl;
+
+            // Not supported on instrument
+            //s.default_functions();
+            //auto m = s.sample();
+            //std::wcout << m.timestamp() << L": " << m.voltage() << " V * "
+            //    << m.current() << " A = " << m.power() << L" W"
+            //    << std::endl;
 
             auto log_data = s.copy_file_from_instrument("podump.csv", true);
             std::string log(log_data.begin(), log_data.end());
@@ -88,138 +95,17 @@ void query_hmc8015(void) {
     } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
-
-/*
- * ::sample_hmc8015
- */
-void sample_hmc8015(void) {
-    using namespace visus::power_overwhelming;
-
-    try {
-        std::vector<hmc8015_sensor> sensors;
-        sensors.resize(hmc8015_sensor::for_all(nullptr, 0));
-        hmc8015_sensor::for_all(sensors.data(), sensors.size());
-
-        for (auto& s : sensors) {
-            auto m = s.sample();
-            std::wcout << m.timestamp()
-                << L" (" << m.sensor() << L"): "
-                << m.voltage() << L" V, "
-                << m.current() << L" A, "
-                << m.power() << L" W" << std::endl;
-        }
-    } catch (std::exception &ex) {
-        std::cerr << ex.what() << std::endl;
-    }
-}
-
-
-/*
- * ::sample_hmc8015_async
- */
-void sample_hmc8015_async(const unsigned int dt) {
-    using namespace visus::power_overwhelming;
-
-    try {
-        std::vector<hmc8015_sensor> sensors;
-        sensors.resize(hmc8015_sensor::for_all(nullptr, 0));
-        hmc8015_sensor::for_all(sensors.data(), sensors.size());
-
-        // Enable asynchronous sampling.
-        for (auto& s : sensors) {
-            s.sample(async_sampling()
-                .delivers_measurements_to([](const measurement& m, void *) {
-                    std::wcout << m.timestamp() << L" ("
-                        << m.sensor() << L"): "
-                        << m.power() << L" W" << std::endl;
-                })
-                .as_rvalue());
-        }
-
-        // Wait for the requested number of seconds.
-        std::this_thread::sleep_for(std::chrono::seconds(dt));
-
-        // Disable asynchronous sampling.
-        for (auto& s : sensors) {
-            s.sample(async_sampling());
-        }
-
-    } catch (std::exception& ex) {
-        std::cerr << ex.what() << std::endl;
-    }
-}
-
-
-/*
- * ::query_rtx
- */
-void query_rtx(void) {
-    using namespace visus::power_overwhelming;
-
-    try {
-        std::vector<rtx_sensor_definition> definitions;
-        definitions.resize(rtx_sensor::get_definitions(nullptr, 0));
-        definitions.resize(rtx_sensor::get_definitions(definitions.data(), definitions.size()));
-
-        std::cout << "Sensor definitions found:" << std::endl;
-        for (auto& d : definitions) {
-            std::wcout << d.description() << std::endl;
-        }
-
-        std::vector<rtx_sensor> sensors(definitions.size());
-        for (std::size_t i = 0; i < definitions.size(); ++i) {
-            sensors[i] = rtx_sensor(definitions[i]);
-            std::wcout << L"Created " << sensors[i].name() << std::endl;
-        }
-    } catch (std::exception& ex) {
-        std::cerr << ex.what() << std::endl;
-    }
-
-    try {
-        std::vector<rtx_sensor> sensors;
-        sensors.resize(rtx_sensor::for_all(nullptr, 0));
-        rtx_sensor::for_all(sensors.data(), sensors.size());
-
-        for (auto& s : sensors) {
-            std::wcout << L"Enumerated " << s.name() << std::endl;
-        }
-
-        for (auto& s : sensors) {
-            auto waveform = s.acquire();
-            std::wcout << L"Acquired " << waveform.size()
-                << " samples from " << waveform.sensor()
-                << std::endl;
-
-            for (std::size_t i = 0; (i < 8) && (i < waveform.size()); ++i) {
-                auto& s = waveform.sample(i);
-                std::wcout << s.timestamp() << L": "
-                    << s.voltage() << L"V, "
-                    << s.current() << L"A, "
-                    << s.power() << L"W"
-                    << std::endl;
-            }
-
-            auto sample = s.sample();
-            std::wcout << sample.sensor() << L"@"
-                << sample.timestamp() << L": "
-                << sample.voltage() << L"V, "
-                << sample.current() << L"A, "
-                << sample.power() << L"W"
-                << std::endl;
-        }
-    } catch (std::exception& ex) {
-        std::cerr << ex.what() << std::endl;
-    }
-}
 
 
 /*
  * ::query_rtx_instrument
  */
 void query_rtx_instrument(void) {
-    using namespace visus::power_overwhelming;
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    using namespace visus::pwrowg;
 
     try {
         std::vector<rtx_instrument> devices(rtx_instrument::all(nullptr, 0));
@@ -330,39 +216,39 @@ void query_rtx_instrument(void) {
                     << convert_string<wchar_t>(t.type()) << std::endl;
             }
 
-            i.reference_position(oscilloscope_reference_point::left);
-            i.time_scale(oscilloscope_quantity(10, "ms"));
+            i.reference_position(rtx_reference_point::left);
+            i.time_scale(rtx_quantity(10, "ms"));
 
-            i.channel(oscilloscope_channel(1)
-                .label(oscilloscope_label("podump#1"))
+            i.channel(rtx_channel(1)
+                .label(rtx_label("podump#1"))
                 .state(true)
-                .attenuation(oscilloscope_quantity(10, "V"))
-                .range(oscilloscope_quantity(7)));
+                .attenuation(rtx_quantity(10, "V"))
+                .range(rtx_quantity(7)));
 
-            //i.channel(oscilloscope_channel(2)
-            //    .label(oscilloscope_label("podump#2"))
+            //i.channel(rtx_channel(2)
+            //    .label(rtx_label("podump#2"))
             //    .state(true)
-            //    .attenuation(oscilloscope_quantity(1, "V"))
-            //    .range(oscilloscope_quantity(5)));
+            //    .attenuation(rtx_quantity(1, "V"))
+            //    .range(rtx_quantity(5)));
 
             std::cout << "Main " << std::this_thread::get_id() << std::endl;
-            auto event = visus::power_overwhelming::create_event();
+            auto event = visus::pwrowg::create_event();
             i.on_operation_complete([](visa_instrument &i, void *) {
                 std::cout << "OPC in thread #" << std::this_thread::get_id() << std::endl;
             }, &i);
             i.on_operation_complete_ex([&event](visa_instrument& i) {
                 std::cout << "OPC in thread #" << std::this_thread::get_id() << std::endl;
-                visus::power_overwhelming::set_event(event);
+                visus::pwrowg::set_event(event);
             });
             i.operation_complete_async();
-            visus::power_overwhelming::wait_event(event);
+            visus::pwrowg::wait_event(event);
             i.on_operation_complete(nullptr);
 
-            i.trigger_position(oscilloscope_quantity(0.0f, "ms"));
-            i.trigger(oscilloscope_trigger::edge("EXT")
-                .level(5, oscilloscope_quantity(2000.0f, "mV"))
-                .slope(oscilloscope_trigger_slope::rising)
-                .mode(oscilloscope_trigger_mode::automatic))
+            i.trigger_position(rtx_quantity(0.0f, "ms"));
+            i.trigger(rtx_trigger::edge("EXT")
+                .level(5, rtx_quantity(2000.0f, "mV"))
+                .slope(rtx_trigger_slope::rising)
+                .mode(rtx_trigger_mode::automatic))
                 .operation_complete();
             i.throw_on_system_error();
 
@@ -379,7 +265,7 @@ void query_rtx_instrument(void) {
                 << static_cast<int>(i.event_status())
                 << std::endl;
 
-            i.acquisition(oscilloscope_acquisition()
+            i.acquisition(rtx_acquisition()
                 .points(100000)
                 .count(2)
                 .segmented(false))
@@ -387,7 +273,7 @@ void query_rtx_instrument(void) {
             i.throw_on_system_error();
 
             i.save_state_to_instrument(L"_PODUMP.SET").operation_complete();
-            i.reset(visus::power_overwhelming::rtx_instrument_reset::all);
+            i.reset(visus::pwrowg::rtx_instrument_reset::all);
             i.load_state_from_instrument(L"_PODUMP.SET").operation_complete();
             i.delete_file_from_instrument(L"_PODUMP.SET", L"/INT/SETTINGS");
 
@@ -397,11 +283,11 @@ void query_rtx_instrument(void) {
                 of.open("podump.set", std::ios::binary | std::ios::trunc);
                 of.write(state.as<char>(), state.size());
                 of.close();
-                i.reset(visus::power_overwhelming::rtx_instrument_reset::reset);
+                i.reset(visus::pwrowg::rtx_instrument_reset::reset);
                 i.copy_state_to_instrument(state);
             }
 
-            i.acquisition(oscilloscope_acquisition_state::single)
+            i.acquisition(rtx_acquisition_state::single)
                 .operation_complete()
                 .throw_on_system_error();
 
@@ -416,7 +302,7 @@ void query_rtx_instrument(void) {
                     << std::endl;
                 
                 auto b = std::chrono::high_resolution_clock::now();
-                auto segment = i.data(1, oscilloscope_waveform_points::maximum);
+                auto segment = i.data(1, rtx_waveform_points::maximum);
                 auto e = std::chrono::high_resolution_clock::now();
                 std::cout << "Download took "
                     << std::chrono::duration_cast<std::chrono::milliseconds>(e - b).count()
@@ -432,82 +318,16 @@ void query_rtx_instrument(void) {
                     << "Timestamp: " << segment.segment_timestamp() << std::endl;
             }
 
-            i.channel(oscilloscope_channel(2).state(true));
-            i.acquisition(oscilloscope_acquisition_state::single);
-            auto sample = i.data(oscilloscope_waveform_points::maximum);
+            i.channel(rtx_channel(2).state(true));
+            i.acquisition(rtx_acquisition_state::single);
+            auto sample = i.data(rtx_waveform_points::maximum);
             std::cout << "Sample size: " << sample.size() << std::endl;
         }
 
     } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
-}
-
-
-/*
- * ::sample_rtx
- */
-void sample_rtx(void) {
-    using namespace visus::power_overwhelming;
-
-    try {
-        std::vector<rtx_sensor> sensors;
-        sensors.resize(rtx_sensor::for_all(nullptr, 0));
-        rtx_sensor::for_all(sensors.data(), sensors.size());
-
-        for (auto& s : sensors) {
-            std::wcout << s.name() << L":" << std::endl;
-            auto m = s.sample();
-            std::wcout << m.timestamp() << L": "
-                << m.voltage() << " V * "
-                << m.current() << " A = "
-                << m.power() << L" W"
-                << std::endl;
-        }
-
-    } catch (std::exception& ex) {
-        std::cerr << ex.what() << std::endl;
-    }
-}
-
-
-/*
- * ::sample_rtx_async
- */
-void sample_rtx_async(const unsigned int dt) {
-    using namespace visus::power_overwhelming;
-
-    try {
-        std::vector<rtx_sensor> sensors;
-        sensors.resize(rtx_sensor::for_all(nullptr, 0));
-        rtx_sensor::for_all(sensors.data(), sensors.size());
-
-        // Enable asynchronous sampling.
-        for (auto& s : sensors) {
-            async_sampling config;
-            s.sample(config.delivers_measurement_data_to(
-                    [](const wchar_t *s, const measurement_data *m, const std::size_t c, void *) {
-                for (std::size_t i = 0; i < c; ++i) {
-                    std::wcout << m[i].timestamp() << L" (" << s << L"): "
-                        << m[i].voltage() << " V * "
-                        << m[i].current() << " A = "
-                        << m[i].power() << L" W"
-                        << std::endl;
-                } })
-                .must_sleep_at_least(std::chrono::nanoseconds(100000))
-                .as_rvalue());
-        }
-
-        // Wait for the requested number of seconds.
-        std::this_thread::sleep_for(std::chrono::seconds(dt));
-
-        // Disable asynchronous sampling.
-        for (auto& s : sensors) {
-            s.sample(async_sampling());
-        }
-    } catch (std::exception& ex) {
-        std::cerr << ex.what() << std::endl;
-    }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -515,15 +335,16 @@ void sample_rtx_async(const unsigned int dt) {
  * ::configure_rtx_instrument
  */
 void configure_rtx_instrument(void) {
-    using namespace visus::power_overwhelming;
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    using namespace visus::pwrowg;
 
     try {
         std::vector<rtx_instrument> devices(rtx_instrument::all(nullptr, 0));
         rtx_instrument::all(devices.data(), devices.size());
 
         rtx_instrument_configuration config(12,
-            oscilloscope_acquisition().points(12000).segmented(true),
-            oscilloscope_trigger::edge("CH1"));
+            rtx_acquisition().points(12000).segmented(true),
+            rtx_trigger::edge("CH1"));
         config.prevent_automatic_roll();
 
         for (auto& i : devices) {
@@ -540,8 +361,8 @@ void configure_rtx_instrument(void) {
                 << "time_range: " << actual.time_range().value() << std::endl;
         }
 
-    } catch (std::exception &ex) {
+    } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
- 

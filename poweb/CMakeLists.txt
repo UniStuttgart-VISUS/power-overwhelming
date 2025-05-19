@@ -43,6 +43,7 @@ if (NOT ${PWROWG_NoPackageRestore})
 endif()
 
 # Configure the compiler.
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE _UNICODE)
 target_include_directories(${PROJECT_NAME} PRIVATE ${WebView2Dir}/include)
 
@@ -62,12 +63,6 @@ target_link_libraries(${PROJECT_NAME}
     # I can't believe that actually worked ...
     ${WebView2Dir}/Microsoft.Windows.ImplementationLibrary.targets
     ${WebView2Dir}/${EffectivePlatform}/WebView2LoaderStatic.lib)
-
-
-
-
-
-
 
 
 # Deploy DLLs with the executable.

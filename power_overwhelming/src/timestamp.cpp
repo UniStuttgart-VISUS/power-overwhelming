@@ -1,19 +1,19 @@
-// <copyright file="timestamp.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="timestamp.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
-#include "power_overwhelming/timestamp.h"
+#include "visus/pwrowg/timestamp.h"
 
 #include "zero_memory.h"
 
 
 /*
- * visus::power_overwhelming::detail::create
+ * PWROWG_NAMESPACE::detail::create
  */
-visus::power_overwhelming::timestamp
-visus::power_overwhelming::timestamp::create(
+PWROWG_NAMESPACE::timestamp
+PWROWG_NAMESPACE::timestamp::create(
         _In_ const int year,
         _In_ const int month,
         _In_ const int day,
@@ -50,28 +50,28 @@ visus::power_overwhelming::timestamp::create(
 
 
 /*
- * visus::power_overwhelming::detail::from_system_clock
+ * PWROWG_NAMESPACE::detail::from_system_clock
  */
-visus::power_overwhelming::timestamp
-visus::power_overwhelming::timestamp::from_system_clock(void) {
+PWROWG_NAMESPACE::timestamp
+PWROWG_NAMESPACE::timestamp::from_system_clock(void) {
     return std::chrono::system_clock::now();
 }
 
 
 /*
- * visus::power_overwhelming::timestamp::from_time_t
+ * PWROWG_NAMESPACE::timestamp::from_time_t
  */
-visus::power_overwhelming::timestamp
-visus::power_overwhelming::timestamp::from_time_t(_In_ const std::time_t t) {
+PWROWG_NAMESPACE::timestamp
+PWROWG_NAMESPACE::timestamp::from_time_t(_In_ const std::time_t t) {
     return std::chrono::system_clock::from_time_t(t);
 }
 
 
 /*
- * visus::power_overwhelming::detail::create
+ * PWROWG_NAMESPACE::detail::create
  */
-visus::power_overwhelming::timestamp
-visus::power_overwhelming::timestamp::from_tm(_In_ std::tm& t) {
+PWROWG_NAMESPACE::timestamp
+PWROWG_NAMESPACE::timestamp::from_tm(_In_ std::tm& t) {
 #if defined(_WIN32)
     const auto time = ::_mkgmtime(&t);
 #else /* defined(_WIN32) */
@@ -83,21 +83,37 @@ visus::power_overwhelming::timestamp::from_tm(_In_ std::tm& t) {
 
 
 /*
- * visus::power_overwhelming::timestamp::zero
+ * PWROWG_NAMESPACE::timestamp::today
  */
-const visus::power_overwhelming::timestamp
-visus::power_overwhelming::timestamp::zero(0);
+PWROWG_NAMESPACE::timestamp PWROWG_NAMESPACE::timestamp::today(void) {
+    std::time_t now;
+    std::time(&now);
+
+    std::tm tm = *std::gmtime(&now);
+    tm.tm_hour = 0;
+    tm.tm_min = 0;
+    tm.tm_sec = 0;
+
+    return from_tm(tm);
+}
 
 
 /*
- * visus::power_overwhelming::timestamp::unix_offset
+ * PWROWG_NAMESPACE::timestamp::zero
  */
-const visus::power_overwhelming::timestamp::value_type
-visus::power_overwhelming::timestamp::tick_rate;
+const PWROWG_NAMESPACE::timestamp
+PWROWG_NAMESPACE::timestamp::zero(0);
 
 
 /*
- * visus::power_overwhelming::timestamp::unix_offset
+ * PWROWG_NAMESPACE::timestamp::unix_offset
  */
-const visus::power_overwhelming::timestamp::value_type
-visus::power_overwhelming::timestamp::unix_offset;
+const PWROWG_NAMESPACE::timestamp::value_type
+PWROWG_NAMESPACE::timestamp::tick_rate;
+
+
+/*
+ * PWROWG_NAMESPACE::timestamp::unix_offset
+ */
+const PWROWG_NAMESPACE::timestamp::value_type
+PWROWG_NAMESPACE::timestamp::unix_offset;

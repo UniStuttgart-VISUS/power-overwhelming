@@ -1,40 +1,35 @@
-// <copyright file="cpu_vendor_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="cpu_vendor_test.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2023 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #include "pch.h"
-#include "CppUnitTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 
-namespace visus {
-namespace power_overwhelming {
-namespace test {
+PWROWG_TEST_NAMESPACE_BEGIN
 
-    TEST_CLASS(cpu_info_test) {
+TEST_CLASS(cpu_info_test) {
 
-    public:
+public:
 
-        TEST_METHOD(test_cpu_affinity) {
-            thread_affinity_scope scope(0);
-        }
+    TEST_METHOD(test_cpu_affinity) {
+        thread_affinity_scope scope(0);
+    }
 
-        TEST_METHOD(test_cpu_model) {
-            cpu_info vendor_and_model[2];
-            Assert::IsTrue(get_cpu_info(vendor_and_model, 2) >= 2, L"Vendor and model available", LINE_INFO());
-            auto vendor = extract_cpu_vendor(vendor_and_model[1]);
-            auto model = extract_cpu_model(vendor_and_model);
-        }
+    TEST_METHOD(test_cpu_model) {
+        cpu_info vendor_and_model[2];
+        Assert::IsTrue(get_cpu_info(vendor_and_model, 2) >= 2, L"Vendor and model available", LINE_INFO());
+        auto vendor = extract_cpu_vendor(vendor_and_model[1]);
+        auto model = extract_cpu_model(vendor_and_model);
+    }
 
-        TEST_METHOD(test_get_cpu_vendor) {
-            const auto actual = get_cpu_vendor();
-            Assert::AreNotEqual(int(cpu_vendor::unknown), int(actual), L"CPU vendor identified", LINE_INFO());
-        }
-    };
+    TEST_METHOD(test_get_cpu_vendor) {
+        const auto actual = get_cpu_vendor();
+        Assert::AreNotEqual(int(cpu_vendor::unknown), int(actual), L"CPU vendor identified", LINE_INFO());
+    }
+};
 
-} /* namespace test */
-} /* namespace power_overwhelming */
-} /* namespace visus */
+PWROWG_TEST_NAMESPACE_END

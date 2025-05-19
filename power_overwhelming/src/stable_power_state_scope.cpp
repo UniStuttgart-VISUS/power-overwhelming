@@ -1,10 +1,10 @@
 ﻿// <copyright file="stable_power_state_scope.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2022 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/stable_power_state_scope.h"
+#include "visus/pwrowg/stable_power_state_scope.h"
 
 #include <cassert>
 #include <stdexcept>
@@ -16,10 +16,10 @@
 
 
 /*
- * visus::power_overwhelming::stable_power_state_scope::stable_power_state_scope
+ * PWROWG_NAMESPACE::stable_power_state_scope::stable_power_state_scope
  */
-visus::power_overwhelming::stable_power_state_scope::stable_power_state_scope(
-        void) : _cnt_devices(0), _devices(nullptr) {
+PWROWG_NAMESPACE::stable_power_state_scope::stable_power_state_scope(void)
+        : _cnt_devices(0), _devices(nullptr) {
     std::vector<graphics_device> devices;
     devices.resize(graphics_device::all(nullptr, 0, true));
     graphics_device::all(devices.data(), devices.size(), true);
@@ -41,9 +41,9 @@ visus::power_overwhelming::stable_power_state_scope::stable_power_state_scope(
 
 
 /*
- * visus::power_overwhelming::stable_power_state_scope::stable_power_state_scope
+ * PWROWG_NAMESPACE::stable_power_state_scope::stable_power_state_scope
  */
-visus::power_overwhelming::stable_power_state_scope::stable_power_state_scope(
+PWROWG_NAMESPACE::stable_power_state_scope::stable_power_state_scope(
         _In_ graphics_device& device) : _cnt_devices(0), _devices(nullptr) {
     if (device != nullptr) {
         this->enable(device);
@@ -56,18 +56,18 @@ visus::power_overwhelming::stable_power_state_scope::stable_power_state_scope(
 
 
 /*
- * visus::power_overwhelming::stable_power_state_scope::~stable_power_state_scope
+ * PWROWG_NAMESPACE::stable_power_state_scope::~stable_power_state_scope
  */
-visus::power_overwhelming::stable_power_state_scope::~stable_power_state_scope(
+PWROWG_NAMESPACE::stable_power_state_scope::~stable_power_state_scope(
         void) {
     delete[] this->_devices;
 }
 
 
 /*
- * visus::power_overwhelming::stable_power_state_scope::enable
+ * PWROWG_NAMESPACE::stable_power_state_scope::enable
  */
-void visus::power_overwhelming::stable_power_state_scope::enable(
+void PWROWG_NAMESPACE::stable_power_state_scope::enable(
         _In_ graphics_device::device_type *device) {
 #if (POWER_OVERWHELMING_GPU_ABSTRACTION == 12)
     if (device == nullptr) {

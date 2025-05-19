@@ -1,8 +1,11 @@
-// <copyright file="library_base.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="library_base.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2021 - 2025 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
+
+#if !defined(_PWROWG_LIBRARY_BASE_H)
+#define _PWROWG_LIBRARY_BASE_H
 
 #pragma once
 
@@ -15,95 +18,93 @@
 #include <dlfcn.h>
 #endif /* defined(_WIN32) */
 
+#include "visus/pwrowg/api.h"
 
-namespace visus {
-namespace power_overwhelming {
-namespace detail {
 
-    /// <summary>
-    /// Base class for managing libraries that are lazily loaded.
-    /// </summary>
-    /// <remarks>
-    /// Rationale: If we statically link against vendor-specific management
-    /// libraries, applications will only work if all of these libraries are
-    /// available on the system, ie. if the system has NVIDIA and AMD GPUs. This
-    /// is highly unlikely. Explicitly loading the libraries on demand solves
-    /// this issue.
-    /// </remarks>
-    class library_base {
+PWROWG_DETAIL_NAMESPACE_BEGIN
 
-    public:
+/// <summary>
+/// Base class for managing libraries that are lazily loaded.
+/// </summary>
+/// <remarks>
+/// Rationale: If we statically link against vendor-specific management
+/// libraries, applications will only work if all of these libraries are
+/// available on the system, ie. if the system has NVIDIA and AMD GPUs. This is
+/// highly unlikely. Explicitly loading the libraries on demand solves this
+/// issue.
+/// </remarks>
+class PWROWG_TEST_API library_base {
+
+public:
 
 #if defined(_WIN32)
-        typedef TCHAR char_type;
+    typedef TCHAR char_type;
 #else /* defined(_WIN32) */
-        typedef char char_type;
+    typedef char char_type;
 #endif /* defined(_WIN32) */
 
 #if defined(_WIN32)
-        typedef FARPROC function_type;
+    typedef FARPROC function_type;
 #else /* defined(_WIN32) */
-        typedef void *function_type;
+    typedef void *function_type;
 #endif /* defined(_WIN32) */
 
 #if defined(_WIN32)
-        typedef HMODULE handle_type;
+    typedef HMODULE handle_type;
 #else /* defined(_WIN32) */
-        typedef void *handle_type;
+    typedef void *handle_type;
 #endif /* defined(_WIN32) */
 
-        static constexpr handle_type invalid_handle
+    static constexpr handle_type invalid_handle
 #if defined(_WIN32)
-            = NULL;
+        = NULL;
 #else /* defined(_WIN32) */
-            = nullptr;
+        = nullptr;
 #endif /* defined(_WIN32) */
 
-        library_base(const library_base&) = delete;
+    library_base(const library_base&) = delete;
 
-        library_base(library_base&& rhs) noexcept;
+    library_base(library_base&& rhs) noexcept;
 
-        ~library_base(void);
+    ~library_base(void);
 
-        library_base& operator =(const library_base& rhs) = delete;
+    library_base& operator =(const library_base& rhs) = delete;
 
-        library_base& operator =(library_base&& rhs) noexcept;
+    library_base& operator =(library_base&& rhs) noexcept;
 
-        inline operator bool(void) const noexcept {
+    inline operator bool(void) const noexcept {
             return (this->_handle != invalid_handle);
-        }
+    }
 
-    protected:
+protected:
 
-        library_base(handle_type && handle);
+    explicit library_base(handle_type&& handle);
 
-        library_base(const char_type *path);
+    explicit library_base(const char_type *path);
 
-        template<class... TPaths> library_base(TPaths&&... paths);
+    template<class... TPaths> library_base(TPaths&&... paths);
 
-        function_type get_function(const char *name);
+    function_type get_function(const char *name);
 
-        template<class TFunction>
-        inline TFunction get_function(const char *name) {
+    template<class TFunction>
+    inline TFunction get_function(const char *name) {
             return reinterpret_cast<TFunction>(this->get_function(name));
-        }
+    }
 
-    private:
+private:
 
-        handle_type _handle;
-    };
+    handle_type _handle;
+};
 
-} /* namespace detail */
-} /* namespace power_overwhelming */
-} /* namespace visus */
+PWROWG_DETAIL_NAMESPACE_END
 
 
 /*
- * visus::power_overwhelming::detail::library_base::library_base
+ * PWROWG_DETAIL_NAMESPACE::library_base::library_base
  */
 template<class... TPaths>
-visus::power_overwhelming::detail::library_base::library_base(
-        TPaths&&... paths) : _handle(invalid_handle) {
+PWROWG_DETAIL_NAMESPACE::library_base::library_base(TPaths&&... paths)
+        : _handle(invalid_handle) {
     std::array<const char_type *, sizeof...(TPaths)> ps = { paths... };
 
     for (auto& p : ps) {
@@ -125,3 +126,5 @@ visus::power_overwhelming::detail::library_base::library_base(
 #endif /* defined(_WIN32) */
     }
 }
+
+#endif /* !defined(_PWROWG_LIBRARY_BASE_H) */

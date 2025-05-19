@@ -1,5 +1,5 @@
 ﻿# CMakeLists.txt
-# Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+# Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 # Licensed under the MIT licence. See LICENCE file for details.
 
 include(FetchContent)
@@ -73,7 +73,7 @@ endif ()
 
 # Windows Implementation Library
 FetchContent_Declare(wil
-    URL "https://github.com/microsoft/wil/archive/v1.0.230202.1.tar.gz"
+    URL "https://github.com/microsoft/wil/archive/refs/tags/v1.0.250325.1.zip"
 )
 option(FAST_BUILD "" OFF)
 option(WIL_BUILD_PACKAGING "" OFF)
@@ -89,3 +89,58 @@ mark_as_advanced(FORCE
     FAST_BUILD
     WIL_BUILD_PACKAGING
     WIL_BUILD_TESTS)
+
+# Powenetics (the "Greek device")
+FetchContent_Declare(libpowenetics
+    URL "https://github.com/UniStuttgart-VISUS/libpowenetics/archive/refs/tags/v1.1.zip"
+)
+option(POWENETICS_BuildTests "" OFF)
+option(POWENETICS_BuildCclient "" OFF)
+option(POWENETICS_BuildExcellentPowenetics "" OFF)
+FetchContent_GetProperties(libpowenetics)
+if (NOT libpowenetics_POPULATED)
+    FetchContent_Populate(libpowenetics)
+    add_subdirectory(${libpowenetics_SOURCE_DIR} ${libpowenetics_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif ()
+mark_as_advanced(FORCE
+    libpowenetics_SOURCE_DIR
+    POWENETICS_BuildTests
+    POWENETICS_BuildCclient
+    POWENETICS_BuildExcellentPowenetics)
+
+# Benchlab
+FetchContent_Declare(libbenchlab
+    URL "https://github.com/UniStuttgart-VISUS/libbenchlab/archive/refs/tags/v0.2.zip"
+)
+option(BENCHLAB_BuildTests "" OFF)
+option(BENCHLAB_BuildCclient "" OFF)
+option(BENCHLAB_BuildCppClient "" OFF)
+option(BENCHLAB_BuildExcellentPowenetics "" OFF)
+FetchContent_GetProperties(libbenchlab)
+if (NOT libbenchlab_POPULATED)
+    FetchContent_Populate(libbenchlab)
+    add_subdirectory(${libbenchlab_SOURCE_DIR} ${libbenchlab_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif ()
+mark_as_advanced(FORCE
+    libbenchlab_SOURCE_DIR
+    BENCHLAB_BuildTests
+    BENCHLAB_BuildCclient
+    BENCHLAB_BuildExcellentPowenetics)
+
+# Passmark USB PD tester
+add_library(usbpdtesterdriver INTERFACE IMPORTED GLOBAL)
+if (WIN32)
+set_target_properties(usbpdtesterdriver PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/usbpdtesterdriver_2.12.28")
+else ()
+set_target_properties(usbpdtesterdriver PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/libftd2xx-linux-x86_64-1.4.33")
+endif ()
+
+# rapidcsv
+FetchContent_Declare(rapidcsv
+    URL "https://codeload.github.com/d99kris/rapidcsv/zip/refs/tags/v8.84"
+)
+FetchContent_MakeAvailable(rapidcsv)
+mark_as_advanced(FORCE
+    RAPIDCSV_BUILD_TESTS)

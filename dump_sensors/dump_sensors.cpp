@@ -1,11 +1,10 @@
 ﻿// <copyright file="dump_sensors.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2025  Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "power_overwhelming/collector.h"
-#include "power_overwhelming/dump_sensors.h"
+#include "visus/pwrowg/dump_sensors.h"
 
 #include <algorithm>
 #include <iostream>
@@ -31,10 +30,10 @@
 /// <param name="argv"></param>
 /// <returns></returns>
 int _tmain(const int argc, const TCHAR **argv) {
-    using namespace visus::power_overwhelming;
+    using namespace visus::pwrowg;
 
     std::wcout << L"dump_sensors" << std::endl;
-    std::wcout << L"© 2023 Visualisierungsinstitut der Universität Stuttgart."
+    std::wcout << L"© 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart."
         << std::endl << L"All rights reserved."
         << std::endl << std::endl;
 
@@ -62,11 +61,11 @@ int _tmain(const int argc, const TCHAR **argv) {
     // save the sensor definitions.
     try {
         if (collector != cmd_line.end()) {
-            const auto path0 = *(collector + 1);
-            const auto path = convert_string<wchar_t>(path0);
-            collector::make_configuration_template(path.c_str());
-            std::wcout << L"Collector configuration template dumped to \""
-                << path << L"\"." << std::endl;
+            //const auto path0 = *(collector + 1);
+            //const auto path = convert_string<wchar_t>(path0);
+            //collector::make_configuration_template(path.c_str());
+            //std::wcout << L"Collector configuration template dumped to \""
+            //    << path << L"\"." << std::endl;
 
         } else {
             const auto path = cmd_line[1];
