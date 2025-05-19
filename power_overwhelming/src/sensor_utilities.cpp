@@ -8,6 +8,7 @@
 
 #include <stdexcept>
 
+#include "json_serialiser.h"
 #include "sensor_array_configuration_impl.h"
 #include "sensor_array_impl.h"
 
@@ -123,15 +124,6 @@
 //} /* namespace visus */
 //
 //
-///*
-// * visus::power_overwhelming::detail::get_all_sensor_descs
-// */
-//nlohmann::json visus::power_overwhelming::detail::get_all_sensor_descs(void) {
-//    auto retval = nlohmann::json::array();
-//    add_descs(retval, sensor_list());
-//    return retval;
-//}
-//
 //
 ///*
 // * visus::power_overwhelming::detail::get_all_sensors
@@ -232,6 +224,21 @@
 //    s << json.dump(4);
 //    s.flush();
 //}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::get_all_sensor_descs
+ */
+nlohmann::json PWROWG_DETAIL_NAMESPACE::get_all_sensor_descs(
+        _In_ const sensor_array& sensors) {
+    auto retval = nlohmann::json::array();
+
+    for (auto& s : sensors) {
+        retval.push_back(json_serialise(s));
+    }
+
+    return retval;
+}
 
 
 /*

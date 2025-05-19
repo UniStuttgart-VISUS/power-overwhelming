@@ -16,6 +16,7 @@
 #include <nlohmann/json.hpp>
 
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/sensor_array.h"
 #include "visus/pwrowg/sensor_description.h"
 
 #include "sensor_state.h"
@@ -24,31 +25,15 @@
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
-/* Forward declarations. */
-struct sensor_array_configuration_impl;
-struct sensor_array_impl;
-
-
 /// <summary>
 /// Get all serialised sensor descriptions for sensors on the current
 /// machine.
 /// </summary>
+/// <param name="sensors">The sensor array to get the descriptors from.</param>
 /// <returns>A JSON array holding all the descriptors.</returns>
-PWROWG_TEST_API nlohmann::json get_all_sensor_descs(void);
+nlohmann::json PWROWG_TEST_API get_all_sensor_descs(
+    _In_ const sensor_array& sensors);
 
-/// <summary>
-/// Gets all sensors of the specified type.
-/// </summary>
-/// <typeparam name="TSensor">The type of the sensor to retrieve, which must
-/// have the standard static <c>for_all</c> method for retrieval.</typeparam>
-/// <returns>A list of all sensors of the specified type, which are
-/// available on the system.</returns>
-template<class TSensor> inline std::vector<TSensor> get_all_sensors_of(void) {
-    std::vector<TSensor> retval;
-    retval.resize(TSensor::for_all(nullptr, 0));
-    TSensor::for_all(retval.data(), retval.size());
-    return retval;
-}
 
 /// <summary>
 /// Retrieves the sampling interval from the given array configuration.
@@ -137,22 +122,6 @@ inline void sort_by_path(_In_ TIterator begin, _In_ TIterator end) {
             return (compare(lhs.path(), rhs.path()) < 0);
         });
 }
-
-/// <summary>
-/// Write JSON configuration to a file.
-/// </summary>
-/// <param name="path">The path to the JSON file.</param>
-/// <param name="json">The JSON content to write</param>
-void PWROWG_TEST_API write_json(_In_z_ const char *path,
-    _In_ const nlohmann::json& json);
-
-/// <summary>
-/// Write JSON configuration to a file.
-/// </summary>
-/// <param name="path">The path to the JSON file.</param>
-/// <param name="json">The JSON content to write</param>
-void PWROWG_TEST_API write_json(_In_z_ const wchar_t *path,
-    _In_ const nlohmann::json& json);
 
 PWROWG_DETAIL_NAMESPACE_END
 

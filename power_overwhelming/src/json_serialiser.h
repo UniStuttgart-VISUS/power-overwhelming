@@ -8,12 +8,14 @@
 #define _PWROWG_JSON_SERIALISER_H
 #pragma once
 
+#include <iostream>
 #include <type_traits>
 
 #include <nlohmann/json.hpp>
 
 #include "visus/pwrowg/api.h"
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/sensor_description.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -151,6 +153,19 @@ struct json_serialiser<char (&)[Length], false, false> final {
 };
 
 /// <summary>
+/// Serialisation of <see cref="sensor_description" />s.
+/// </summary>
+template<>
+struct json_serialiser<sensor_description, false, false> final {
+    typedef sensor_description value_type;
+
+    static value_type deserialise(_In_ const nlohmann::json& json);
+
+    static  nlohmann::json serialise(_In_ const value_type& value);
+};
+
+
+/// <summary>
 /// Redirect references to <see cref="json_serialiser" /> for
 /// <typeparamref name="TType" />.
 /// </summary>
@@ -168,6 +183,7 @@ struct json_serialiser<TType&, IsArithmetic, IsEnum> final {
         return serialiser::serialise(value);
     }
 };
+
 
 /// <summary>
 /// Deserialise the contents of a JSON field as
@@ -208,16 +224,32 @@ template<class TType> inline nlohmann::json json_serialise(
 /// <summary>
 /// Loads JSON from the file at the specified location.
 /// </summary>
-/// <param name="path"></param>
-extern nlohmann::json load_json(_In_z_ const wchar_t *path);
+/// <param name="path">The location of the JSON file to load from.</param>
+/// <returns>The JSON object obtained from the file.</returns>
+nlohmann::json PWROWG_TEST_API load_json(_In_z_ const wchar_t *path);
+
+/// <summary>
+/// Loads JSON from the file at the specified location.
+/// </summary>
+/// <param name="path">The location of the JSON file to load from.</param>
+/// <returns>The JSON object obtained from the file.</returns>
+nlohmann::json PWROWG_TEST_API load_json(_In_z_ const char *path);
 
 /// <summary>
 /// Saves the given JSON to the file at the specified location.
 /// </summary>
 /// <param name="json"></param>
 /// <param name="path"></param>
-extern void save_json(_In_ const nlohmann::json& json,
+void PWROWG_TEST_API save_json(_In_ const nlohmann::json& json,
     _In_z_ const wchar_t *path);
+
+/// <summary>
+/// Saves the given JSON to the file at the specified location.
+/// </summary>
+/// <param name="json"></param>
+/// <param name="path"></param>
+void PWROWG_TEST_API save_json(_In_ const nlohmann::json& json,
+    _In_z_ const char *path);
 
 PWROWG_DETAIL_NAMESPACE_END
 

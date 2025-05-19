@@ -1,0 +1,11 @@
+{
+    "poweb": {
+        "blankPage": "about:blank",
+        "coolDown": 2000,
+        "initialWait": 1000,
+        "iterations": 4,
+        "urls": [ "https://observablehq.com/@mbostock/hertzsprung-russell-diagram" ],
+        "visiblePeriod": 5000,
+        "writeInterval": 500
+    }
+}

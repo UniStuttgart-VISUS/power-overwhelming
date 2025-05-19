@@ -6,17 +6,19 @@
 
 #include "visus/pwrowg/dump_sensors.h"
 
+#include "json_serialiser.h"
 #include "sensor_utilities.h"
 
 
 /*
  * PWROWG_NAMESPACE::dump_sensors
  */
-std::size_t PWROWG_NAMESPACE::dump_sensors(_In_z_ const char *path) {
-    throw "TODO";
-    //const auto descs = detail::get_all_sensor_descs();
-    //detail::write_json(path, descs);
-    //return descs.size();
+std::size_t PWROWG_NAMESPACE::dump_sensors(
+        _In_ const sensor_array& sensors,
+        _In_z_ const char *path) {
+    auto descs = detail::get_all_sensor_descs(sensors);
+    detail::save_json(descs, path);
+    return descs.size();
 }
 
 
@@ -24,9 +26,9 @@ std::size_t PWROWG_NAMESPACE::dump_sensors(_In_z_ const char *path) {
  * PWROWG_NAMESPACE::dump_sensors
  */
 std::size_t PWROWG_NAMESPACE::dump_sensors(
+        _In_ const sensor_array& sensors,
         _In_z_ const wchar_t *path) {
-    throw "TODO";
-    //const auto descs = detail::get_all_sensor_descs();
-    //detail::write_json(path, descs);
-    //return descs.size();
+    auto descs = detail::get_all_sensor_descs(sensors);
+    detail::save_json(descs, path);
+    return descs.size();
 }

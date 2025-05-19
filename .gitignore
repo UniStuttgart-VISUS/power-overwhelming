@@ -373,4 +373,4 @@ third_party/*-build/
 third_party/*-subbuild/
 /.vscode
 /build
-/poweb/demo.json.csv
+/poweb/demo.json*.csv
