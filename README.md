@@ -164,6 +164,49 @@ dump_sensors(sensors, "sensors.json");
 // stream << setcsvcolumns(csv_column::label | csv_column::name);
 ```
 
+### Injecting markers
+Sometimes, you might want to inject custom markers in the sensor stream that allow for correlating software events with measurements. The library provides a "marker_sensor" for that, which can be controlled via the `sensor_array::marker` method. In order for this to work, you need to register the markers you want to generate when configuring the sensor array:
+```c++
+using namespace visus::pwrowg;
+
+// This vector will receive the IDs of the markers we can emit.
+std::vector<int> markers;
+
+// Configure the sensor array and have samples delivered to the  built-in
+// callback. The sink must be passed as the user pointer to the callback.
+sensor_array_configuration config;
+config.sample_every(std::chrono::milliseconds(5))
+    .deliver_to(/* ... */)
+    .configure<marker_configuration>([&markers](marker_configuration& c) {
+        markers.push_back(c += L"preparing");
+        markers.push_back(c += L"start");
+        markers.push_back(c += L"stop");
+    });
+
+// Create an array for all available sensors.
+auto sensors = sensor_array::for_all(std::move(config));
+
+sensors.start();
+
+sensors.marker(markers[0]);
+// Prepare stuff.
+
+for (std::size_t i = 0; i < 42; ++i) {
+    sensors.marker(markers[1]);
+    // Do work.
+    sensors.marker(markers[2]);
+    sensors.stop();
+```
+
+> **Note**
+> The sensor array will not record any markers if the `marker_configuration` has not been configured with at least one marker.
+
+> **Note**
+> The sensor array will not record any markers that have an invalid ID.
+
+> **Note**
+> The sensor array will not record any markers unless it is running.
+
 ## Extending the library
 The main motivation for modifying the library is to add additional sensors. The new design of the API directly changes how sensors are implemented and, most importantly, drastically reduces the amount of code typically required to implement a sensor.
 
@@ -172,7 +215,7 @@ The main changes when implementing a sensor are
 * Sensors are now fully opaque to the user of the library. There is no need for using the [PIMPL pattern](https://learn.microsoft.com/en-us/cpp/cpp/pimpl-for-compile-time-encapsulation-modern-cpp) anymore. You can use all template classes you desire when implementing your sensor.
 * A sensor is no longer a source of a single type of data, but can produce multiple data streams. For instance, the ADL sensor for AMD GPUs wraps a single GPU and produces all the data we can get from it. This way, handles and other resources required to produce different data from the same origin can be easily shared.
 * Each sensor has a configuration class which allows for specifying implementation-specific data. Typically, these configuration objects do not configure a specific sensor instance, but the whole sensor class. For instance, users can configure the hosts where to look for Tinkerforge bricklets, but they cannot configure individual bricklets in different ways. However, you are in principle free to provide means to address individual sensors in your configuration object.
-* Each sensor produces one or more data streams (data of the same type from the same source) which are described via a [sensor_description](power_overwhelming/include/visus/pwrowg/sensor_description.h). The sensor description allows for uniquely identifying a sensor and provides information about the data the sensor produces. One sensor class might have multiple sensor descriptions. For instance, a single ADL sensor provides different power and temperature readings for the GPU it is responsible for. Sensor descriptions are mandatory and can be used by the library to reflect on all available sensors. There is no longer a need to provide special metadata objects, but it is sufficient to fill all the required descriptions.
+* Each sensor produces one or more data streams (data of the same type from the same source) which are described via a [sensor_description](power_overwhelming/include/visus/pwrowg/sensor_description.h). The sensor description allows for uniquely identifying a sensor and provides information about the data the sensor produces. One sensor class might have multiple sensor descriptions. For instance, a single ADL sensor provides different power and temperature readings for the GPU it is responsible for. Sensor descriptions are mandatory and can be used by the library to reflect on all available sensors. There is no longer a need to provide special metadata objects, but it is sufficient to fill in all the required descriptions.
 * A sensor can either produce samples synchronously (by polling) or asynchronously (pushing). The framework will detect the type of sensor via the signature of its `sample` method and automatically poll synchronous sensors. There is no longer a need for sensors to implement synchronous and asynchronous sampling methods.
 * A sensor class must be able to enumerate [sensor_descriptions](power_overwhelming/include/visus/pwrowg/sensor_description.h) for all of the data it produces and create actual sensor instances from a list of such descriptions.
 
