@@ -7,7 +7,7 @@ This project provides a library for measuring the power consumption of GPUs (and
 > If you are here for the [instructions for building a bench table for measuring GPU power consumption](docs/HARDWARE.md), look in the `docs` folder. Over there, you also find some [lessons we learned about measuring power with Tinkerforge bricklets.](docs/TINKERFORGE.md)
 
 > **Note**
-> The papers "Power Overwhelming: Quantifying the Energy Cost of Visualisation" and "Power overwhelming: The One With the Oscilloscopes", for which this software was written, can be found on [IEEEXplore](https://doi.org/10.1109/BELIV57783.2022.00009) and on [Springer Link](https://dx.doi.org/10.1007/s12650-024-01001-0) respectively.
+> The papers "Power Overwhelming: Quantifying the Energy Cost of Visualisation" and "Power Overwhelming: The One With the Oscilloscopes", for which this software was written, can be found on [IEEEXplore](https://doi.org/10.1109/BELIV57783.2022.00009) and on [Springer Link](https://dx.doi.org/10.1007/s12650-024-01001-0) respectively.
 
 ## What's new in version 2.x?
 1. The namespace of the library has been changed from `visus::power_overwhelming` to `visus::pwrowg`. Furthermore, ABI versioning via an `inline` namespace has been added.
@@ -24,9 +24,9 @@ The library is self-contained and most optional external dependencies are in the
 SDKs included in the repository are the [AMD Display Library (ADL)](https://github.com/GPUOpen-LibrariesAndSDKs/display-library), the [NVIDIA Management Library (NVML)](https://developer.nvidia.com/nvidia-management-library-nvml), support for [Tinkerforge](https://github.com/Tinkerforge) bricks and bricklets and support of the [Cybenetics Powenetics v2 power measurement device](https://www.cybenetics.com/index.php?option=powenetics) via our own [libpowenetics](https://github.com/UniStuttgart-VISUS/libpowenetics/). On Windows 11, the [Energy Meter Interface](https://learn.microsoft.com/en-us/windows-hardware/drivers/powermeter/energy-meter-interface) can be used to query the RAPL (Running Average Power Limit Energy Reporting) registers of the system. This sensor might be available on certain Windows 10  installations, but according to a [presentation by the Firefox team](https://fosdem.org/2023/schedule/event/energy_power_profiling_firefox/attachments/slides/5537/export/events/attachments/energy_power_profiling_firefox/slides/5537/FOSDEM_2023_Power_profiling_with_the_Firefox_Profiler.pdf), specialised hardware is required for that. The `msr_sensor` provides access to the RAPL registers on Linux and on Windows systems that run our own [pwrowgrapldrv driver](pwrowgrapldrv/README.md).
 
 ### Support for Rohde & Schwarz instruments
-The library supports reading Rohde & Schwarz oscilloscopes of the RTB 2000 family and HMC8015 power analysers. In order for this to work, VISA must be installed on the development machine. You can download the drivers from https://www.rohde-schwarz.com/de/driver-pages/fernsteuerung/3-visa-and-tools_231388.html. The VISA installation is automatically detected by CMAKE. If VISA was found `POWER_OVERWHELMING_WITH_VISA` will be defined. Otherwise, VISA will not be supported and using it will fail at runtime.
+The library supports reading Rohde & Schwarz oscilloscopes of the RTB 2000 family and HMC8015 power analysers. In order for this to work, VISA must be installed on the development machine. You can download the drivers from https://www.rohde-schwarz.com/de/driver-pages/fernsteuerung/3-visa-and-tools_231388.html. The VISA installation is automatically detected by CMAKE. If VISA was found, `POWER_OVERWHELMING_WITH_VISA` will be defined. Otherwise, VISA will not be supported and using it will fail at runtime.
 
-Only the power analyser is currently ready to use, **support for oscilloscopes as automated sensors is work in progress,** but they can be controlled programmatically to perform automated measurements.
+Only the power analyser is currently ready to use, **support for oscilloscopes as automated sensors is a work in progress,** but they can be controlled programmatically to perform automated measurements.
 
 ## Using the library
 In order to sample current, voltage and power samples, create a `sensor_array` for the sensors you are interested in. You can retrieve `sensor_description`s for all available sensors as follows:
@@ -67,6 +67,7 @@ sensor_array sensors(std::move(config), descs.data(), (std::min)(descs.size(), c
 > [!NOTE]
 > Note that the `sensor_array` takes ownership of the `sensor_array_configuration`. You cannot use it anymore once the array has been created from it.
 
+### Filtering sensors
 If you want to limit the sensors in your sensor array, you can filter `descs` before creating the array. Alternatively, there is a convenience method that does this for you by means of a unary predicate on the descriptions:
 ```c++
 using namespace visus::pwrowg;
@@ -94,7 +95,7 @@ using namespace visus::pwrowg;
 }
 ```
 
-
+### Using all available sensors
 Instead of using a filter that allows all sensors, you can use the following shortcut:
 ```c++
 using namespace visus::pwrowg;
@@ -106,11 +107,28 @@ sensor_array_configuration config;
 auto sensors = sensor_array::for_all(std::move(config));
 ```
 
-Once you have created a sensor array, you can start receving samples to the configured callback:
+### Starting and stopping the sensors
+Once you have created a sensor array, you can start receiving samples in the configured callback:
 ```c++
 sensors.start();
 // Perform the work you want to benchmark and stop the sensors afterwards.
 sensors.stop();
+```
+
+### Collecting data
+Typically, your data callback will persist the data to disk for further analysis. The library provides a built-in mechanism to decouple the samples being dropped to the callback and potentially lengthy I/O in a lock-free manner by means of the [`atomic_collector`](power_overwhelming/include/visus/pwrowg/atomic_collector.h), which can be combined with the  [`csv_sink`](power_overwhelming/include/visus/pwrowg/csv_sink.h) like this:
+```c++
+using namespace visus::pwrowg;
+
+// Create a CSV sink.
+atomic_sink<csv_sink<std::ofstream>> sink;
+
+// Configure the sensor array and have samples delivered to the
+// built-in callback. The sink must be passed as the user
+// pointer to the callback.
+sensor_array_configuration config;
+config.sample_every(std::chrono::milliseconds(5))
+    .deliver_to(decltype(sink)::sample_callback, &sink);
 ```
 
 > [!NOTE]
@@ -137,7 +155,7 @@ auto sensors = sensor_array::for_all(std::move(config));
 
 
 ## Extending the library
-The main motivation for modifying the library is adding additional sensors. The new design of the API directly changes how sensors are implemented and most importantly drastically reduces the amount of code typically required to implement a sensor.
+The main motivation for modifying the library is to add additional sensors. The new design of the API directly changes how sensors are implemented and, most importantly, drastically reduces the amount of code typically required to implement a sensor.
 
 ### What's new?
 The main changes when implementing a sensor are
