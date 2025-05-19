@@ -186,6 +186,7 @@ config.sample_every(std::chrono::milliseconds(5))
 // Create an array for all available sensors.
 auto sensors = sensor_array::for_all(std::move(config));
 
+// Start the measurements.
 sensors.start();
 
 sensors.marker(markers[0]);
@@ -195,7 +196,10 @@ for (std::size_t i = 0; i < 42; ++i) {
     sensors.marker(markers[1]);
     // Do work.
     sensors.marker(markers[2]);
-    sensors.stop();
+}
+
+// End the measurements.
+sensors.stop();
 ```
 
 > **Note**
