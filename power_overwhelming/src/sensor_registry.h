@@ -317,7 +317,9 @@ typedef basic_sensor_registry<
     hmc8015_sensor,
     marker_sensor,
     msr_sensor,
+#if defined(POWER_OVERWHELMING_WITH_NVML)
     nvml_sensor,
+#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */
 #if defined(POWER_OVERWHELMING_WITH_POWENETICS)
     powenetics_sensor,
 #endif /* defined(POWER_OVERWHELMING_WITH_POWENETICS) */

@@ -65,8 +65,10 @@ public:
     }
 
     TEST_METHOD(test_sampler_detection) {
+#if defined(POWER_OVERWHELMING_WITH_NVML)
         Assert::IsTrue(detail::has_sync_sample<detail::nvml_sensor>::type::value, L"NVML is synchronous", LINE_INFO());
         Assert::IsFalse(detail::has_async_sample<detail::nvml_sensor>::type::value, L"NVML is not asynchronous", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */
         Assert::IsTrue(detail::has_async_sample<detail::tinkerforge_sensor>::type::value, L"Tinkerforge is asynchronous", LINE_INFO());
         Assert::IsFalse(detail::has_sync_sample<detail::tinkerforge_sensor>::type::value, L"Tinkerforge is not synchronous", LINE_INFO());
     }

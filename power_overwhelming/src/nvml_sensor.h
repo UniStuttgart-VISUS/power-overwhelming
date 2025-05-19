@@ -7,6 +7,7 @@
 #if !defined(_PWROWG_NVML_SENSOR_H)
 #define _PWROWG_NVML_SENSOR_H
 #pragma once
+#if defined(POWER_OVERWHELMING_WITH_NVML)
 
 #include <cassert>
 #include <list>
@@ -22,7 +23,6 @@
 #include "visus/pwrowg/sensor_filters.h"
 
 #include "nvidia_management_library.h"
-#include "nvml_exception.h"
 #include "nvml_scope.h"
 #include "sensor_description_builder.h"
 #include "sensor_utilities.h"
@@ -116,7 +116,7 @@ public:
     /// </summary>
     /// <param name="guid"></param>
     /// <returns></returns>
-    /// <exception cref="nvml_exception">If the specified device was not
+    /// <exception cref="std::system_error">If the specified device was not
     /// found, is not unique or another error occurred in NVML.</exception>
     static std::shared_ptr<nvml_sensor> from_guid(_In_z_ const char *guid,
         _In_ const std::size_t index);
@@ -132,7 +132,7 @@ public:
     /// </remarks>
     /// <param name="idx"></param>
     /// <returns></returns>
-    /// <exception cref="nvml_exception">If the specified device was not
+    /// <exception cref="std::system_error">If the specified device was not
     /// found, is not unique or another error occurred in NVML.</exception>
     static std::shared_ptr<nvml_sensor> from_index(_In_ const unsigned int idx,
         _In_ const std::size_t index);
@@ -143,7 +143,7 @@ public:
     /// </summary>
     /// <param name="serial"></param>
     /// <returns></returns>
-    /// <exception cref="nvml_exception">If the specified device was not
+    /// <exception cref="std::system_error">If the specified device was not
     /// found, is not unique or another error occurred in NVML.</exception>
     static std::shared_ptr<nvml_sensor> from_serial(_In_z_ const char *serial,
         _In_ const std::size_t index);
@@ -185,4 +185,5 @@ PWROWG_DETAIL_NAMESPACE_END
 
 #include "nvml_sensor.inl"
 
+#endif /*^defined(POWER_OVERWHELMING_WITH_NVML) */
 #endif /* defined(_PWROWG_NVML_SENSOR_H) */

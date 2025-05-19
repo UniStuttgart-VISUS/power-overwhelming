@@ -4,10 +4,11 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
+#if defined(POWER_OVERWHELMING_WITH_NVML)
 #include "nvml_scope.h"
 
 #include "nvidia_management_library.h"
-#include "nvml_exception.h"
+#include "nvml_error_category.h"
 
 
 /*
@@ -15,9 +16,7 @@
  */
 PWROWG_DETAIL_NAMESPACE::nvml_scope::nvml_scope(void) {
     auto status = nvidia_management_library::instance().nvmlInit();
-    if (status != NVML_SUCCESS) {
-        throw nvml_exception(status);
-    }
+    throw_if_nvml_failed(status);
 }
 
 
@@ -27,3 +26,4 @@ PWROWG_DETAIL_NAMESPACE::nvml_scope::nvml_scope(void) {
 PWROWG_DETAIL_NAMESPACE::nvml_scope::~nvml_scope(void) {
     nvidia_management_library::instance().nvmlShutdown();
 }
+#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */

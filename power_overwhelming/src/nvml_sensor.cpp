@@ -4,10 +4,13 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
+#if defined(POWER_OVERWHELMING_WITH_NVML)
 #include "nvml_sensor.h"
 
 #include <array>
 #include <stdexcept>
+
+#include "nvml_error_category.h"
 
 
 /*
@@ -32,9 +35,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
         {
             auto status = nvidia_management_library::instance()
                 .nvmlDeviceGetCount(&cnt_devices);
-            if (status != NVML_SUCCESS) {
-                throw nvml_exception(status);
-            }
+            throw_if_nvml_failed(status);
         }
 
         // Create descriptors for each device.
@@ -47,9 +48,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
             {
                 auto status = nvidia_management_library::instance()
                     .nvmlDeviceGetHandleByIndex(retval, &device);
-                if (status != NVML_SUCCESS) {
-                    throw nvml_exception(status);
-                }
+                throw_if_nvml_failed(status);
 
                 builder.with_private_data(device);
             }
@@ -58,9 +57,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
                 auto status = nvidia_management_library::instance()
                     .nvmlDeviceGetName(device, name.data(),
                         static_cast<unsigned int>(name.size()));
-                if (status != NVML_SUCCESS) {
-                    throw nvml_exception(status);
-                }
+                throw_if_nvml_failed(status);
             }
 
             //{
@@ -75,9 +72,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
             {
                 auto status = nvidia_management_library::instance()
                     .nvmlDeviceGetPciInfo(device, &pci_info);
-                if (status != NVML_SUCCESS) {
-                    throw nvml_exception(status);
-                }
+                throw_if_nvml_failed(status);
 
                 builder.with_path(pci_info.busId);
                 builder.with_id("NVML/%s", pci_info.busId);
@@ -109,9 +104,7 @@ PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_bus_id(
 
     auto status = nvidia_management_library::instance()
         .nvmlDeviceGetHandleByPciBusId(pciBusId, &device);
-    if (status != NVML_SUCCESS) {
-        throw nvml_exception(status);
-    }
+    throw_if_nvml_failed(status);
 
     return std::make_shared<nvml_sensor>(device, index);
 }
@@ -127,9 +120,7 @@ PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_guid(_In_z_ const char *guid,
 
     auto status = nvidia_management_library::instance()
         .nvmlDeviceGetHandleByUUID(guid, &device);
-    if (status != NVML_SUCCESS) {
-        throw nvml_exception(status);
-    }
+    throw_if_nvml_failed(status);
 
     return std::make_shared<nvml_sensor>(device, index);
 }
@@ -146,9 +137,7 @@ PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_index(
 
     auto status = nvidia_management_library::instance()
         .nvmlDeviceGetHandleByIndex(idx, &device);
-    if (status != NVML_SUCCESS) {
-        throw nvml_exception(status);
-    }
+    throw_if_nvml_failed(status);
 
     return std::make_shared<nvml_sensor>(device, index);
 }
@@ -165,9 +154,7 @@ PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_serial(
 
     auto status = nvidia_management_library::instance()
         .nvmlDeviceGetHandleBySerial(serial, &device);
-    if (status != NVML_SUCCESS) {
-        throw nvml_exception(status);
-    }
+    throw_if_nvml_failed(status);
 
     return std::make_shared<nvml_sensor>(device, index);
 }
@@ -191,12 +178,12 @@ void PWROWG_DETAIL_NAMESPACE::nvml_sensor::sample(
     unsigned int mw = 0;
     auto status = nvidia_management_library::instance()
         .nvmlDeviceGetPowerUsage(this->_device, &mw);
-    if (status != NVML_SUCCESS) {
-        throw nvml_exception(status);
-    }
+    throw_if_nvml_failed(status);
 
     // Convert to Watts.
     s.reading.floating_point = static_cast<value_type>(mw) / thousand;
 
     callback(&s, 1, sensors, context);
 }
+
+#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */

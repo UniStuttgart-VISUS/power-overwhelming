@@ -45,7 +45,7 @@
 #include <marker_sensor.h>
 #include <msr_magic.h>
 #include <msr_sensor.h>
-#include <nvml_exception.h>
+#include <nvml_error_category.h>
 #include <nvml_scope.h>
 #include <nvml_sensor.h>
 #include <rtx_serialisation.h>

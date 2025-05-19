@@ -17,11 +17,14 @@ TEST_CLASS(nvml_test) {
 public:
 
     TEST_METHOD(test_scope) {
+#if defined(POWER_OVERWHELMING_WITH_NVML)
         detail::nvml_scope scope;
         Assert::IsTrue(true, L"Not crashed in scope ctor.", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */
     }
 
     TEST_METHOD(test_descriptions) {
+#if defined(POWER_OVERWHELMING_WITH_NVML)
         typedef detail::nvml_sensor type;
 
         type::configuration_type config;
@@ -40,9 +43,11 @@ public:
             Assert::AreNotEqual(std::size_t(0), ::wcslen(d.name()), L"Name not empty", LINE_INFO());
             Assert::AreNotEqual(std::size_t(0), ::wcslen(d.path()), L"Path not empty", LINE_INFO());
         }
+#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */
     }
 
     TEST_METHOD(test_sensor_creation) {
+#if defined(POWER_OVERWHELMING_WITH_NVML)
         typedef detail::nvml_sensor type;
 
         type::configuration_type config;
@@ -62,6 +67,7 @@ public:
                 Assert::AreEqual(std::size_t(1), cnt, L"NVML creates single sample", LINE_INFO());
             }, descs.data());
         }
+#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */
     }
 };
 

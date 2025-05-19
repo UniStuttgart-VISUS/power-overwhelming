@@ -7,6 +7,7 @@
 #if !defined(_PWROWG_NVML_SCOPE_H)
 #define _PWROWG_NVML_SCOPE_H
 #pragma once
+#if defined(POWER_OVERWHELMING_WITH_NVML)
 
 #include "visus/pwrowg/api.h"
 
@@ -44,4 +45,5 @@ public:
 
 PWROWG_DETAIL_NAMESPACE_END
 
+#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */
 #endif /* !defined(_PWROWG_NVML_SCOPE_H) */

@@ -17,8 +17,13 @@ public:
 
     TEST_METHOD(test_configuration) {
         sensor_array_configuration config;
+#if defined(POWER_OVERWHELMING_WITH_NVML)
         config.configure<nvml_configuration>([](nvml_configuration& c) {
             Assert::IsTrue(true, L"NVML configure called.", LINE_INFO());
+        });
+#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */
+        config.configure<msr_configuration>([](msr_configuration& c) {
+            Assert::IsTrue(true, L"MSR configure called.", LINE_INFO());
         });
     }
 
@@ -85,7 +90,9 @@ public:
     TEST_METHOD(test_exclude) {
         sensor_array_configuration config;
         config.exclude<hmc8015_configuration>()
+#if defined(POWER_OVERWHELMING_WITH_NVML)
             .exclude<nvml_configuration>()
+#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */
             .exclude<tinkerforge_configuration>();
 
         std::vector<sensor_description> descs;
