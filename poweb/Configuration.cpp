@@ -59,7 +59,7 @@ Configuration::Configuration(const std::wstring& path) {
     {
         sensor_array_configuration cfg;
         cfg.configure<marker_configuration>(
-            [this](marker_configuration &c) {
+            [this](marker_configuration& c) {
             this->_markerBlank = c += L"blank";
 
             for (auto &u : this->_urls) {
