@@ -95,6 +95,28 @@ using namespace visus::pwrowg;
 }
 ```
 
+> [!NOTE]
+> Filtering the `sensor_description`s before creating the `sensor_array` from them does not prevent the library from trying to enumerate sensors that do not exist on your system. This may cause the initialisation to run into potentially long timeouts.
+
+If you know that you do not have sensors that potentially take a significant time to enumerate (this includes Tinkerforge bricklets, all kinds of VISA devices and other hardware connected via USB), you can tell the sensor array to exclude the whole class of sensors via the `sensor_array_configuration`:
+```c++
+using namespace visus::pwrowg;
+
+sensor_array_configuration config;
+// Exclude all sensors from enumeration that use 'hmc8015_configuration'.
+config.exclude<hmc8015_configuration>();
+// Exclude all sensors from enumeration that use 'powenetics_configuration'.
+config.exclude<powenetics_configuration>();
+// Exclude all sensors from enumeration that use 'tinkerforge_configuration'.
+config.exclude<tinkerforge_configuration>();
+// Exclude all sensors from enumeration that use 'usb_pd_configuration'.
+config.exclude<usb_pd_configuration>();
+
+// Configure behaviour of other sensors here as necessary.
+
+auto sensors = sensor_array::for_all(std::move(config));
+```
+
 ### Using all available sensors
 Instead of using a filter that allows all sensors, you can use the following shortcut:
 ```c++
@@ -130,29 +152,6 @@ sensor_array_configuration config;
 config.sample_every(std::chrono::milliseconds(5))
     .deliver_to(decltype(sink)::sample_callback, &sink);
 ```
-
-> [!NOTE]
-> Filtering the `sensor_description`s before creating the `sensor_array` from them does not prevent the library from trying to enumerate sensors that do not exist on your system. This may cause the initialisation to run into potentially long timeouts.
-
-If you know that you do not have sensors that potentially take a significant time to enumerate (this includes Tinkerforge bricklets, all kinds of VISA devices and other hardware connected via USB), you can tell the sensor array to exclude the whole class of sensors via the `sensor_array_configuration`:
-```c++
-using namespace visus::pwrowg;
-
-sensor_array_configuration config;
-// Exclude all sensors from enumeration that use 'hmc8015_configuration'.
-config.exclude<hmc8015_configuration>();
-// Exclude all sensors from enumeration that use 'powenetics_configuration'.
-config.exclude<powenetics_configuration>();
-// Exclude all sensors from enumeration that use 'tinkerforge_configuration'.
-config.exclude<tinkerforge_configuration>();
-// Exclude all sensors from enumeration that use 'usb_pd_configuration'.
-config.exclude<usb_pd_configuration>();
-
-// Configure behaviour of other sensors here as necessary.
-
-auto sensors = sensor_array::for_all(std::move(config));
-```
-
 
 ## Extending the library
 The main motivation for modifying the library is to add additional sensors. The new design of the API directly changes how sensors are implemented and, most importantly, drastically reduces the amount of code typically required to implement a sensor.
