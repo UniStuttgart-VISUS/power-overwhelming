@@ -46,7 +46,7 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::create(
                 &retval->resource_manager);
             if (status < VI_SUCCESS) {
                 delete retval;
-                throw visa_exception(status, "The VISA default resource "
+                throw_if_visa_failed(status, "The VISA default resource "
                     "manager could not be opened.");
             }
         }
@@ -57,7 +57,7 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::create(
                 &retval->session);
             if (status < VI_SUCCESS) {
                 delete retval;
-                throw visa_exception(status);
+                throw_if_visa_failed(status);
             }
         }
 
@@ -85,7 +85,7 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::create(
         }
 
         // Determine the termination character for commands and responses.
-        visa_exception::throw_on_error(visa_library::instance().viGetAttribute(
+        throw_if_visa_failed(visa_library::instance().viGetAttribute(
             retval->session, VI_ATTR_TERMCHAR, &retval->terminal_character));
 
         retval->_path = path;
@@ -189,7 +189,7 @@ void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::check_system_error(
  */
 void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::disable_event(
         _In_ const ViEventType event_type, _In_ const ViUInt16 mechanism) {
-    visa_exception::throw_on_error(visa_library::instance().viDisableEvent(
+    throw_if_visa_failed(visa_library::instance().viDisableEvent(
         this->session, event_type, mechanism));
 }
 
@@ -202,7 +202,7 @@ void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::enable_event(
         _In_ const ViUInt16 mechanism,
         _In_ const ViEventFilter context) {
     // Cf. https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vienableevent.html
-    visa_exception::throw_on_error(visa_library::instance().viEnableEvent(
+    throw_if_visa_failed(visa_library::instance().viEnableEvent(
         this->session, event_type, mechanism, context));
 }
 
@@ -226,7 +226,7 @@ void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::flush_data(void) {
         auto have_more = (status == VI_SUCCESS_MAX_CNT);
 
         if (!have_more) {
-            visa_exception::throw_on_error(status);
+            throw_if_visa_failed(status);
             // I honestly do not know why one would do that, but R&s are doing
             // it in their code and as it works more reliably then ours, I guess
             // it is beneficial somehow ...
@@ -266,7 +266,7 @@ void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::install_handler(
         _In_ const ViEventType event_type,
         _In_ const ViHndlr handler,
         _In_ ViAddr context) {
-    visa_exception::throw_on_error(visa_library::instance().viInstallHandler(
+    throw_if_visa_failed(visa_library::instance().viInstallHandler(
         this->session, event_type, handler, context));
     this->check_system_error();
 }
@@ -279,7 +279,7 @@ std::uint16_t
 PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::interface_type(
         void) const {
     std::uint16_t retval = 0;
-    visa_exception::throw_on_error(detail::visa_library::instance()
+    throw_if_visa_failed(detail::visa_library::instance()
         .viGetAttribute(this->session, VI_ATTR_INTF_TYPE, &retval));
     return retval;
 }
@@ -293,7 +293,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read(
         _In_ const std::size_t cnt) const {
     assert(buffer != nullptr);
     ViUInt32 retval = 0;
-    visa_exception::throw_on_error(detail::visa_library::instance()
+    throw_if_visa_failed(detail::visa_library::instance()
         .viRead(this->session,
             buffer,
             static_cast<ViUInt32>(cnt),
@@ -324,7 +324,7 @@ PWROWG_NAMESPACE::blob& PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_all(
         offset += read;
 
         // Terminate in case of any error.
-        visa_exception::throw_on_error(status);
+        throw_if_visa_failed(status);
 
         if (status != VI_SUCCESS) {
             // Increase the buffer size if the message was not completely read.
@@ -447,7 +447,7 @@ std::string
 PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::resource_class(
         void) const {
     ViChar retval[256];
-    visa_exception::throw_on_error(detail::visa_library::instance()
+    throw_if_visa_failed(detail::visa_library::instance()
         .viGetAttribute(this->session, VI_ATTR_RSRC_CLASS, retval));
     retval[sizeof(retval) - 1] = 0;
     return retval;
@@ -504,7 +504,7 @@ void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::throw_on_system_error(
     // First of all, determine the instrument status to check whether there i
     // something in the queue to retrieve.
     ViUInt16 status;
-    visa_exception::throw_on_error(detail::visa_library::instance()
+    throw_if_visa_failed(detail::visa_library::instance()
         .viReadSTB(this->session, &status));
 
     if ((status & have_error) == 0) {
@@ -541,7 +541,7 @@ void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::uninstall_handler(
         _In_ const ViEventType event_type,
         _In_ const ViHndlr handler,
         _In_ ViAddr context) {
-    visa_exception::throw_on_error(visa_library::instance().viUninstallHandler(
+    throw_if_visa_failed(visa_library::instance().viUninstallHandler(
         this->session, event_type, handler, context));
     this->check_system_error();
 }
@@ -555,7 +555,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::write(
         _In_ const std::size_t cnt) const {
     assert(buffer != nullptr);
     ViUInt32 retval = 0;
-    visa_exception::throw_on_error(detail::visa_library::instance()
+    throw_if_visa_failed(detail::visa_library::instance()
         .viWrite(this->session,
             buffer,
             static_cast<ViUInt32>(cnt),
@@ -594,7 +594,7 @@ void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::write_all(
     ViUInt32 total = 0;
 
     while (total < cnt) {
-        visa_exception::throw_on_error(detail::visa_library::instance()
+        throw_if_visa_failed(detail::visa_library::instance()
             .viWrite(this->session,
                 buffer + total,
                 cnt - total,

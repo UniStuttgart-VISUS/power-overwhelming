@@ -10,7 +10,7 @@
 
 #include "visus/pwrowg/visa_instrument.h"
 
-#include "visa_exception.h"
+#include "visa_error_category.h"
 #include "visa_library.h"
 
 
@@ -38,10 +38,10 @@ public:
             _In_ const visa_instrument::timeout_type timeout)
         : _session(session),
             _timeout(0) {
-        visa_exception::throw_on_error(visa_library::instance()
+        throw_if_visa_failed(visa_library::instance()
             .viGetAttribute(this->_session, VI_ATTR_TMO_VALUE,
                 &this->_timeout));
-        visa_exception::throw_on_error(visa_library::instance()
+        throw_if_visa_failed(visa_library::instance()
             .viSetAttribute(this->_session, VI_ATTR_TMO_VALUE,
                 timeout));
     }

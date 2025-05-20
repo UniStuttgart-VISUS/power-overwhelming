@@ -24,7 +24,6 @@
 #include "sensor_description_builder.h"
 #include "sensor_state.h"
 #include "sensor_utilities.h"
-#include "visa_exception.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN

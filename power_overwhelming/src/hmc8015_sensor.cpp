@@ -292,7 +292,7 @@ void PWROWG_DETAIL_NAMESPACE::hmc8015_sensor::sample(_In_ const bool enable) {
         try {
            log_data = this->_instrument.copy_file_from_instrument_or_usb(
                 this->_log.data());
-        } catch (visa_exception) {
+        } catch (std::system_error) {
             // Second chance ...
             std::this_thread::sleep_for(this->configuration()
                 .timeout_as<std::chrono::milliseconds>());

@@ -9,7 +9,7 @@
 
 #include "visus/pwrowg/on_exit.h"
 
-#include "visa_exception.h"
+#include "visa_error_category.h"
 
 #define __POWER_OVERWHELMING_GET_VISA_FUNC(n) \
     this->n = this->get_function<decltype(this->n)>(#n)
@@ -76,15 +76,13 @@ PWROWG_DETAIL_NAMESPACE::visa_library::find_resource(
 
     {
         auto status = viOpenDefaultRM(&rm);
-        if (status < VI_SUCCESS) {
-            throw visa_exception(status, "Could not open resource manager.");
-        }
+        throw_if_visa_failed(status, "Could not open resource manager.");
     }
     auto gRm = on_exit([this, rm](void) { viClose(rm); });
 
     {
         auto status = viFindRsrc(rm, expression, &hFind, &cnt, desc);
-        visa_exception::throw_on_error(status);
+        throw_if_visa_failed(status);
     }
 
     retval.reserve(cnt);
@@ -96,7 +94,7 @@ PWROWG_DETAIL_NAMESPACE::visa_library::find_resource(
         if (status == VI_ERROR_RSRC_NFOUND) {
             break;
         } else {
-            visa_exception::throw_on_error(status);
+            throw_if_visa_failed(status);
             retval.push_back(desc);
         }
     }

@@ -21,7 +21,6 @@
 #include "visus/pwrowg/convert_string.h"
 
 #include "no_visa_error_msg.h"
-#include "visa_exception.h"
 #include "visa_instrument_impl.h"
 #include "visa_library.h"
 
@@ -267,7 +266,7 @@ bool PWROWG_NAMESPACE::visa_instrument::alias_of(
 const PWROWG_NAMESPACE::visa_instrument &
 PWROWG_NAMESPACE::visa_instrument::attribute(
         _Out_ void *dst, _In_ ViAttr name) const {
-    PWROWG_DETAIL_NAMESPACE::visa_exception::throw_on_error(
+    detail::throw_if_visa_failed(
         detail::visa_library::instance().viGetAttribute(
             this->check_not_disposed().session, name, dst));
     return *this;
@@ -280,7 +279,7 @@ PWROWG_NAMESPACE::visa_instrument::attribute(
 PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::attribute(_In_ ViAttr name,
         _In_ ViAttrState value) {
-    PWROWG_DETAIL_NAMESPACE::visa_exception::throw_on_error(
+    detail::throw_if_visa_failed(
         detail::visa_library::instance().viSetAttribute(
             this->check_not_disposed().session, name, value));
     return *this;
@@ -329,7 +328,7 @@ PWROWG_NAMESPACE::visa_instrument::beep_on_error(
 PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::buffer(
         _In_ const std::uint16_t mask, _In_ const std::uint32_t size) {
-    PWROWG_DETAIL_NAMESPACE::visa_exception::throw_on_error(
+    detail::throw_if_visa_failed(
         detail::visa_library::instance().viSetBuf(
             this->check_not_disposed().session, mask, size));
     return *this;
@@ -341,7 +340,7 @@ PWROWG_NAMESPACE::visa_instrument::buffer(
  */
 PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::clear(void) {
-    PWROWG_DETAIL_NAMESPACE::visa_exception::throw_on_error(
+    detail::throw_if_visa_failed(
         detail::visa_library::instance().viClear(
             this->check_not_disposed().session));
     return *this;
@@ -809,7 +808,7 @@ PWROWG_NAMESPACE::visa_instrument::synchronise_clock(
 PWROWG_NAMESPACE::visa_status_byte
 PWROWG_NAMESPACE::visa_instrument::status(void) const {
     ViUInt16 retval;
-    PWROWG_DETAIL_NAMESPACE::visa_exception::throw_on_error(
+    detail::throw_if_visa_failed(
         detail::visa_library::instance().viReadSTB(
             this->check_not_disposed().session, &retval));
     return static_cast<visa_status_byte>(retval);

@@ -72,19 +72,19 @@ void PWROWG_DETAIL_NAMESPACE::throw_if_visa_failed(
 }
 
 
-/*
- * PWROWG_DETAIL_NAMESPACE::throw_unles_visa_succeeded
- */
-void PWROWG_DETAIL_NAMESPACE::throw_unles_visa_succeeded(
-        _In_ const ViStatus status,
-        _In_opt_z_ const char *message) {
-    if (status != VI_SUCCESS) {
-        if (message == nullptr) {
-            throw std::system_error(status, visa_category());
-        } else {
-            throw std::system_error(status, visa_category(), message);
-        }
-    }
-}
+///*
+// * PWROWG_DETAIL_NAMESPACE::throw_unless_visa_succeeded
+// */
+//void PWROWG_DETAIL_NAMESPACE::throw_unless_visa_succeeded(
+//        _In_ const ViStatus status,
+//        _In_opt_z_ const char *message) {
+//    if (status != VI_SUCCESS) {
+//        if (message == nullptr) {
+//            throw std::system_error(status, visa_category());
+//        } else {
+//            throw std::system_error(status, visa_category(), message);
+//        }
+//    }
+//}
 
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */

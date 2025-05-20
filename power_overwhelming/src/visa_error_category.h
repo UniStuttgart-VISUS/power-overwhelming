@@ -72,18 +72,18 @@ PWROWG_TEST_API const std::error_category& visa_category(void) noexcept;
 PWROWG_TEST_API void throw_if_visa_failed(_In_ const ViStatus status,
     _In_opt_z_ const char *message = nullptr);
 
-/// <summary>
-/// Check whether <paramref name="status" /> is different from
-/// <c>VI_SUCCESS</c>, and if so, throw an exception.
-/// </summary>
-/// <param name="status">The status code to be checked.</param>
-/// <param name="message">An optional error message to be included in the
-/// exception.</param>
-/// <exception cref="std::system_error">If <paramref name="status" /> is not the
-/// success status, which might include insufficient buffers or the end of an
-/// enumeration.</exception>
-PWROWG_TEST_API void throw_unles_visa_succeeded(_In_ const ViStatus status,
-    _In_opt_z_ const char *message = nullptr);
+///// <summary>
+///// Check whether <paramref name="status" /> is different from
+///// <c>VI_SUCCESS</c>, and if so, throw an exception.
+///// </summary>
+///// <param name="status">The status code to be checked.</param>
+///// <param name="message">An optional error message to be included in the
+///// exception.</param>
+///// <exception cref="std::system_error">If <paramref name="status" /> is not the
+///// success status, which might include insufficient buffers or the end of an
+///// enumeration.</exception>
+//PWROWG_TEST_API void throw_unless_visa_succeeded(_In_ const ViStatus status,
+//    _In_opt_z_ const char *message = nullptr);
 
 PWROWG_DETAIL_NAMESPACE_END
 
