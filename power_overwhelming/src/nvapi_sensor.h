@@ -1,13 +1,13 @@
-﻿// <copyright file="nvml_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
+﻿// <copyright file="nvapi_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#if !defined(_PWROWG_NVML_SENSOR_H)
-#define _PWROWG_NVML_SENSOR_H
+#if !defined(_PWROWG_NVAPI_SENSOR_H)
+#define _PWROWG_NVAPI_SENSOR_H
 #pragma once
-#if defined(POWER_OVERWHELMING_WITH_NVML)
+#if defined(POWER_OVERWHELMING_WITH_NVAPI)
 
 #include <cassert>
 #include <list>
@@ -15,15 +15,15 @@
 #include <string>
 #include <vector>
 
-#include <nvml.h>
+#include <nvapi.h>
 
-#include "visus/pwrowg/nvml_configuration.h"
+#include "visus/pwrowg/nvapi_configuration.h"
 #include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_description.h"
 #include "visus/pwrowg/sensor_filters.h"
 
-#include "nvidia_management_library.h"
-#include "nvml_scope.h"
+#include "nvapi_library.h"
+#include "nvapi_scope.h"
 #include "sensor_description_builder.h"
 #include "sensor_utilities.h"
 
@@ -34,19 +34,19 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// Implementation of a power sensor using the NVIDIA management library to
 /// read the internal sensors of the GPU.
 /// </summary>
-class PWROWG_TEST_API nvml_sensor final {
+class PWROWG_TEST_API nvapi_sensor final {
 
 public:
 
     /// <summary>
     /// The type of sensor class configuration used by this sensor.
     /// </summary>
-    typedef nvml_configuration configuration_type;
+    typedef nvapi_configuration configuration_type;
 
     /// <summary>
     /// The type of a list of sensors of this type.
     /// </summary>
-    typedef std::list<nvml_sensor> list_type;
+    typedef std::list<nvapi_sensor> list_type;
 
     /// <summary>
     /// Create descriptions for all supported NVIDIA sensors in the system.
@@ -63,16 +63,6 @@ public:
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
         _In_ std::size_t cnt,
         _In_ const configuration_type& config);
-
-    /// <summary>
-    /// Create a new instance for the device with the specified PCI bus ID.
-    /// </summary>
-    /// <param name="bus_id"></param>
-    /// <returns></returns>
-    /// <exception cref="nvml_exception">If the specified device was not
-    /// found, is not unique or another error occurred in NVML.</exception>
-    static std::shared_ptr<nvml_sensor> from_bus_id(_In_z_ const char *bus_id,
-        _In_ const std::size_t index);
 
     /// <summary>
     /// Generate sensors for all matching configurations within
@@ -112,78 +102,36 @@ public:
         _In_ const configuration_type& config);
 
     /// <summary>
-    /// Create a new instance for the device with the specified unique ID.
-    /// </summary>
-    /// <param name="guid"></param>
-    /// <returns></returns>
-    /// <exception cref="std::system_error">If the specified device was not
-    /// found, is not unique or another error occurred in NVML.</exception>
-    static std::shared_ptr<nvml_sensor> from_guid(_In_z_ const char *guid,
-        _In_ const std::size_t index);
-
-    /// <summary>
-    /// Create a new instance from a device index.
-    /// </summary>
-    /// <remarks>
-    /// <para>Device indices start at zero and go up to the number of
-    /// supported NVIDIA cards minus one.</para>
-    /// <para>Please note that the indices may not match the indices of
-    /// CUDA devices and/or DXGI adapters.</para>
-    /// </remarks>
-    /// <param name="idx"></param>
-    /// <returns></returns>
-    /// <exception cref="std::system_error">If the specified device was not
-    /// found, is not unique or another error occurred in NVML.</exception>
-    static std::shared_ptr<nvml_sensor> from_index(_In_ const unsigned int idx,
-        _In_ const std::size_t index);
-
-    /// <summary>
-    /// Create a new instance for a specific device serial number printed on
-    /// the board.
-    /// </summary>
-    /// <param name="serial"></param>
-    /// <returns></returns>
-    /// <exception cref="std::system_error">If the specified device was not
-    /// found, is not unique or another error occurred in NVML.</exception>
-    static std::shared_ptr<nvml_sensor> from_serial(_In_z_ const char *serial,
-        _In_ const std::size_t index);
-
-    /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    /// <param name="device>The NVML device to obtain the power readings from.
-    /// </param>
+    /// <param name="handle>The NVAPI physical GPU handle for the device to
+    /// retrieve the data from.</param>
     /// <param name="index>The index of the descriptor of this sensor.</param>
-    inline nvml_sensor(_In_ const nvmlDevice_t device,
+    inline nvapi_sensor(_In_ const NvPhysicalGpuHandle handle,
             _In_ const std::size_t index)
-        : _device(device), _index(index) { }
+        : _handle(handle), _index(index) { }
 
-    nvml_sensor(const nvml_sensor& rhs) = delete;
+    nvapi_sensor(const nvapi_sensor& rhs) = delete;
 
     /// <summary>
-    /// Deliver a sample to the given <paramref name="callback" />.
+    /// Starts or stops sampling the sensor.
     /// </summary>
-    /// <param name="callback">The callback to be invoked.</param>
-    /// <param name="sensors">The sensor descriptions passed to the
-    /// <paramref name="callback" />.</param>
-    /// <param name="context">An optional context pointer passed to the
-    /// <paramref name="callback" />.</param>
-    void sample(_In_ const sensor_array_callback callback,
-        _In_ const sensor_description *sensors,
-        _In_opt_ void *context = nullptr);
+    /// <param name="enable"><c>true</c> for enabling the sensor,
+    /// <c>false</c> for disabling it.</param>
+    void sample(_In_ const bool enable);
 
-    nvml_sensor& operator =(const nvml_sensor& rhs) = delete;
+    nvapi_sensor& operator =(const nvapi_sensor& rhs) = delete;
 
 private:
 
-    nvmlDevice_t _device;
+    NvPhysicalGpuHandle _handle;
     std::size_t _index;
-    nvml_scope _scope;
+    nvapi_scope _scope;
 };
 
 PWROWG_DETAIL_NAMESPACE_END
 
-#include "nvml_sensor.inl"
+#include "nvapi_sensor.inl"
 
-#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */
-#endif /* defined(_PWROWG_NVML_SENSOR_H) */
+#endif /* defined(POWER_OVERWHELMING_WITH_NVAPI) */
+#endif /* defined(_PWROWG_NVAPI_SENSOR_H) */

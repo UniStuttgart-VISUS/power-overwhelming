@@ -191,6 +191,16 @@ inline bool is_none_of(_In_ const sensor_description& desc) {
 
 /// <summary>
 /// Answer whether the given <see cref="sensor_description" /> describes an
+/// NVAPI-based sensor.
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><c>true</c> if the sensor is NVAPI-based, <c>false</c> otherwise.
+/// </returns>
+extern POWER_OVERWHELMING_API bool is_nvapi_sensor(
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes an
 /// NVML-based sensor.
 /// </summary>
 /// <param name="desc">The sensor to check.</param>

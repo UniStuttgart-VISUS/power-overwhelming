@@ -28,6 +28,7 @@
 #include "hmc8015_sensor.h"
 #include "marker_sensor.h"
 #include "msr_sensor.h"
+#include "nvapi_sensor.h"
 #include "nvml_sensor.h"
 #include "powenetics_sensor.h"
 #include "sensor_array_configuration_impl.h"
@@ -309,8 +310,8 @@ typedef basic_sensor_registry<
 #if defined(_WIN32)
     // Windows-specific sensors
     emi_sensor,
+    nvapi_sensor,
     usb_pd_sensor,
-    //nvapi_sensor,
 #endif  /* defined(_WIN32) */
 
 #if defined(POWER_OVERWHELMING_WITH_ADL)

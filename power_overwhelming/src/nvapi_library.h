@@ -35,7 +35,13 @@ public:
     /// </exception>
     static const nvapi_library& instance(void);
 
+    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_EnumPhysicalGPUs);
     __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GetErrorMessage);
+    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GetGPUIDfromPhysicalGPU);
+    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GetPhysicalGPUFromGPUID);
+    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GPU_GetBusId);
+    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GPU_GetFullName);
+    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GPU_GetPCIIdentifiers);
     __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_Initialize);
     __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_Unload);
 

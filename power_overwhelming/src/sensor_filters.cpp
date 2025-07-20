@@ -107,6 +107,15 @@ bool PWROWG_NAMESPACE::is_msr_sensor(
 
 
 /*
+ * PWROWG_NAMESPACE::is_nvapi_sensor
+ */
+bool PWROWG_NAMESPACE::is_nvapi_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    return detail::starts_with(desc.id(), L"NVAPI/");
+}
+
+
+/*
  * PWROWG_NAMESPACE::is_nvml_sensor
  */
 bool PWROWG_NAMESPACE::is_nvml_sensor(

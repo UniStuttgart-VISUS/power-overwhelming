@@ -45,6 +45,13 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     power_overwhelming
     usbpdtesterdriver)
 
+# The test requires access to the NVAPI headers to test the sensor.
+if (PWROWG_WithNvapi)
+    find_package(NVAPI REQUIRED)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_NVAPI)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${NVAPI_INCLUDE_DIR})
+endif ()
+
 # The test requires access to the Powenetics headers to test the sensor.
 if (PWROWG_WithPowenetics)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_POWENETICS)
