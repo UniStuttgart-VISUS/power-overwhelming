@@ -35,7 +35,9 @@ PWROWG_DETAIL_NAMESPACE::tokenise_range_if(
                 retval.emplace_back(b, cur);
             }
 
-            ++cur;
+            if (!is_end(cur)) {
+                ++cur;
+            }
         }
     }
 

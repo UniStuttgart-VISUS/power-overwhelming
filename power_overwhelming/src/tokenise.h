@@ -73,6 +73,8 @@ inline std::vector<std::basic_string<TChar>> tokenise_if(
 /// excluded from the tokens.
 /// </summary>
 /// <typeparam name="TChar">The character type.</typeparam>
+/// <typeparam name="TTraits">The character traits.</typeparam>
+/// <typeparam name="TAlloc">The allocator of the string.</typeparam>
 /// <typeparam name="TPredicate">The type of the predicate, which must be a
 /// functor accepting <typeparamref name="TChar" /> and returnig <c>bool</c>.
 /// </typeparam>
@@ -83,9 +85,9 @@ inline std::vector<std::basic_string<TChar>> tokenise_if(
 /// defaults to <c>false</c>.</param>
 /// <returns>A vector holding the tokens (or the whole string if no
 /// occurrence of the delimiter characters was found).</returns>
-template<class TChar, class TPredicate>
+template<class TChar, class TTraits, class TAlloc, class TPredicate>
 inline std::vector<std::basic_string<TChar>> tokenise_if(
-        _In_ const std::basic_string<TChar>& str,
+        _In_ const std::basic_string<TChar, TTraits, TAlloc>& str,
         _In_ const TPredicate predicate,
         _In_ const bool omit_emtpy = false) {
     return tokenise_range_if(str.c_str(),
@@ -139,21 +141,6 @@ inline std::vector<std::wstring> tokenise_range(
 /// <summary>
 /// Splits a string between whitespace characters.
 /// </summary>
-/// <param name="str">The string to be split. It is safe to pass <c>nullptr</c>,
-/// in which case the return value will be empty.</param>
-/// <param name="omit_empty">If <c>true</c>, removes empty tokens. This
-/// defaults to <c>false</c>.</param>
-/// <returns>A vector holding the tokens (or the whole string if no
-/// occurrence of the delimiter characters was found).</returns>
-inline std::vector<std::wstring> tokenise(
-        _In_opt_z_ const wchar_t *str,
-        _In_ const bool omit_empty = false) {
-    return tokenise_range(str, nullptr, omit_empty);
-}
-
-/// <summary>
-/// Splits a string between whitespace characters.
-/// </summary>
 /// <typeparam name="TChar">The character type.</typeparam>
 /// <param name="str">The string to be split.</param>
 /// <param name="omit_empty">If <c>true</c>, removes empty tokens. This
@@ -166,33 +153,6 @@ inline std::vector<std::basic_string<TChar>> tokenise(
         _In_ const bool omit_empty = false) {
     return tokenise_range(str.c_str(), nullptr, omit_empty);
 }
-
-///// <summary>
-///// Splits a string at the given delimiters <paramref name="beginDelim" />
-///// to <paramref name="endDelim" /> and returns a vector of the tokens.
-///// </summary>
-///// <typeparam name="TChar">The character type.</typeparam>
-///// <typeparam name="I">An iterator over <typeparamref name="TChar" />.
-///// </typeparam>
-///// <param name="str">The string to be split.</param>
-///// <param name="beginDelim">The begin of the range of delimiter
-///// characters.</param>
-///// <param name="endDelim">The end of the range of delimiter characters.
-///// </param>
-///// <param name="omit_empty">If <c>true</c>, removes empty tokens. This
-///// defaults to <c>false</c>.</param>
-///// <returns>A vector holding the tokens (or the whole string if no
-///// occurrence of the delimiter characters was found).</returns>
-//template<class TChar, class I>
-//inline std::vector<std::basic_string<TChar>> tokenise(
-//        const std::basic_string<TChar>& str,
-//        I beginDelim,
-//        I endDelim,
-//        const bool omit_empty = false) {
-//    return tokenise(str, [beginDelim, endDelim](const TChar c) {
-//            return Contains(beginDelim, endDelim, c); 
-//        }, omit_empty);
-//}
 
 /// <summary>
 /// Splits a string at the given separator 'sep' and returns a vector of the
@@ -266,33 +226,41 @@ inline std::vector<std::basic_string<TChar>> tokenise(
 /// and returns a vector of the tokens.
 /// </summary>
 /// <typeparam name="TChar">The character type.</typeparam>
+/// <typeparam name="TTraits">The character traits.</typeparam>
+/// <typeparam name="TAlloc">The allocator of the string.</typeparam>
 /// <param name="str">The string to be split.</param>
 /// <param name="delim">The delimiter.</param>
 /// <param name="omit_empty">If <c>true</c>, removes empty tokens. This
 /// defaults to <c>false</c>.</param>
 /// <returns>A vector holding the tokens (or the whole string if no
 /// occurrence of the delimiter characters was found).</returns>
-template<class C>
-std::vector<std::basic_string<C>> tokenise(const std::basic_string<C>& str,
-    const std::basic_string<C>& delim, const bool omitEmpty = false);
+template<class TChar, class TTraits, class TAlloc>
+std::vector<std::basic_string<TChar, TTraits, TAlloc>> tokenise(
+    _In_ const std::basic_string<TChar, TTraits, TAlloc>& str,
+    _In_ const std::basic_string<TChar, TTraits, TAlloc>& delim,
+    _In_ const bool omitEmpty = false);
 
 /// <summary>
 /// Splits a string at the given separator string <paramref name="delim" />
 /// and returns a vector of the tokens.
 /// </summary>
 /// <typeparam name="TChar">The character type.</typeparam>
+/// <typeparam name="TTraits">The character traits.</typeparam>
+/// <typeparam name="TAlloc">The allocator of the string.</typeparam>
 /// <param name="str">The string to be split.</param>
 /// <param name="delim">The delimiter.</param>
 /// <param name="omit_empty">If <c>true</c>, removes empty tokens. This
 /// defaults to <c>false</c>.</param>
 /// <returns>A vector holding the tokens (or the whole string if no
 /// occurrence of the delimiter characters was found).</returns>
-template<class C>
-std::vector<std::basic_string<C>> tokenise(const std::basic_string<C>& str,
-    const C *delim, const bool omitEmpty = false);
+template<class TChar, class TTraits, class TAlloc>
+std::vector<std::basic_string<TChar, TTraits, TAlloc>> tokenise(
+    _In_ const std::basic_string<TChar, TTraits, TAlloc>& str,
+    _In_z_ const TChar *delim,
+    _In_ const bool omitEmpty = false);
 
 PWROWG_DETAIL_NAMESPACE_END
 
-#include "tokenise.inl"
+#include "trrojan/tokenise.inl"
 
 #endif /* !defined(_PWROWG_TOKENISE_H) */
