@@ -261,6 +261,6 @@ std::vector<std::basic_string<TChar, TTraits, TAlloc>> tokenise(
 
 PWROWG_DETAIL_NAMESPACE_END
 
-#include "trrojan/tokenise.inl"
+#include "tokenise.inl"
 
 #endif /* !defined(_PWROWG_TOKENISE_H) */

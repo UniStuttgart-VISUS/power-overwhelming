@@ -48,10 +48,12 @@ PWROWG_DETAIL_NAMESPACE::tokenise_range_if(
 /*
  * PWROWG_DETAIL_NAMESPACE::tokenise
  */
-template<class C>
-std::vector<std::basic_string<C>> PWROWG_DETAIL_NAMESPACE::tokenise(
-        const std::basic_string<C>& str, const std::basic_string<C>& delim,
-        const bool omitEmpty) {
+template<class TChar, class TTraits, class TAlloc>
+std::vector<std::basic_string<TChar, TTraits, TAlloc>>
+PWROWG_DETAIL_NAMESPACE::tokenise(
+        _In_ const std::basic_string<TChar, TTraits, TAlloc>& str,
+        _In_ const std::basic_string<TChar, TTraits, TAlloc>& delim,
+        _In_ const bool omitEmpty) {
     typedef typename std::decay<decltype(str)>::type StringType;
 
     std::vector<StringType> retval;
@@ -75,11 +77,16 @@ std::vector<std::basic_string<C>> PWROWG_DETAIL_NAMESPACE::tokenise(
 /*
  * PWROWG_DETAIL_NAMESPACE::tokenise
  */
-template<class C>
-std::vector<std::basic_string<C>> PWROWG_DETAIL_NAMESPACE::tokenise(
-        const std::basic_string<C>& str, const C *delim, const bool omitEmpty) {
+template<class TChar, class TTraits, class TAlloc>
+std::vector<std::basic_string<TChar, TTraits, TAlloc>>
+PWROWG_DETAIL_NAMESPACE::tokenise(
+        _In_ const std::basic_string<TChar, TTraits, TAlloc>& str,
+        _In_z_ const TChar *delim,
+        _In_ const bool omitEmpty) {
     if (delim != nullptr) {
-        return tokenise(str, std::basic_string<C>(delim), omitEmpty);
+        return tokenise(str,
+            std::basic_string<TChar, TTraits, TAlloc>(delim),
+            omitEmpty);
     } else {
         return { str };
     }

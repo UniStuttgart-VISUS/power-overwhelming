@@ -505,20 +505,7 @@ template<> struct POWER_OVERWHELMING_API std::hash<PWROWG_NAMESPACE::guid> {
     /// </summary>
     /// <param name="guid">The GUID to compute the hash for.</param>
     /// <returns>The hash for <paramref name="guid" />.</returns>
-    inline std::size_t operator ()(
-            _In_ const PWROWG_NAMESPACE::guid& guid) const noexcept {
-        typedef PWROWG_NAMESPACE::guid::value_type value_type;
-        auto g = static_cast<const value_type *>(guid);
-        auto h = reinterpret_cast<const std::uint8_t *>(g);
-
-        // DJB2 hash function.
-        std::size_t retval = 0;
-        for (std::size_t i = 0; i < sizeof(value_type); ++i) {
-            retval = ((retval << 5) + retval) + static_cast<std::size_t>(h[i]);
-        }
-
-        return retval;
-    }
+    std::size_t operator ()(_In_ const PWROWG_NAMESPACE::guid& guid) const;
 };
 
 #endif /* !defined(_PWROWG_GUID_H) */

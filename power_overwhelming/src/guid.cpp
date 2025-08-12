@@ -52,6 +52,7 @@
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/on_exit.h"
 
+#include "fnv1a.h"
 #include "zero_memory.h"
 
 
@@ -478,4 +479,18 @@ bool PWROWG_NAMESPACE::guid::operator <=(_In_ const guid& rhs) const noexcept {
     return (::memcmp(std::addressof(this->_value),
         std::addressof(rhs._value),
         sizeof(this->_value)) <= 0);
+}
+
+
+/*
+ * std::hash<PWROWG_NAMESPACE::guid>::operator ()
+ */
+std::size_t std::hash<PWROWG_NAMESPACE::guid>::operator ()(
+        const PWROWG_NAMESPACE::guid& guid) const {
+    PWROWG_DETAIL_NAMESPACE::fnv1a<std::size_t> h;
+    auto value = static_cast<const PWROWG_NAMESPACE::guid::value_type *>(guid);
+    auto begin = reinterpret_cast<const std::uint8_t *>(value);
+    auto end = begin + sizeof(PWROWG_NAMESPACE::guid::value_type);
+    h(begin, end);
+    return h;
 }

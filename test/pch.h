@@ -41,6 +41,7 @@
 #include <adl_error_category.h>
 #include <detect_sample.h>
 #include <emi_device.h>
+#include <fnv1a.h>
 #include <io_util.h>
 #include <marker_sensor.h>
 #include <msr_magic.h>
