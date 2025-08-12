@@ -12,7 +12,7 @@ template<class TIterator>
 void PWROWG_DETAIL_NAMESPACE::fnv1a<std::uint32_t>::operator ()(
         _In_ const TIterator begin,
         _In_ const TIterator end) noexcept {
-    typedef std::iterator_traits<TIterator>::value_type byte_type;
+    typedef typename std::iterator_traits<TIterator>::value_type byte_type;
     static_assert(sizeof(byte_type) == 1, "The input iterator must iterate "
         "over single bytes.");
     // Cf. https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
@@ -31,7 +31,7 @@ template<class TIterator>
 void PWROWG_DETAIL_NAMESPACE::fnv1a<std::uint64_t>::operator ()(
         _In_ const TIterator begin,
         _In_ const TIterator end) noexcept {
-    typedef std::iterator_traits<TIterator>::value_type byte_type;
+    typedef typename std::iterator_traits<TIterator>::value_type byte_type;
     static_assert(sizeof(byte_type) == 1, "The input iterator must iterate "
         "over single bytes.");
 https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
