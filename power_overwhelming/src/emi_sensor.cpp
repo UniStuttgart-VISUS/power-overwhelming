@@ -233,7 +233,7 @@ void PWROWG_DETAIL_NAMESPACE::emi_sensor::evaluate(
     auto de = data.AbsoluteEnergy - this->_last_energy.back();
     auto dt = data.AbsoluteTime - this->_last_time.back();
     this->_last_energy.back() = data.AbsoluteEnergy;
-    this->_last_time.back() = data.AbsoluteEnergy;
+    this->_last_time.back() = data.AbsoluteTime;
 
     // The unit currently is always pWh. See EMIv2 evaluation for details.
     auto value = static_cast<float>(de) * 0.036f;
@@ -267,7 +267,7 @@ void PWROWG_DETAIL_NAMESPACE::emi_sensor::evaluate(
         auto de = data.ChannelData[c].AbsoluteEnergy - this->_last_energy[c];
         auto dt = data.ChannelData[c].AbsoluteTime - this->_last_time[c];
         this->_last_energy[c] = data.ChannelData[c].AbsoluteEnergy;
-        this->_last_time[c] = data.ChannelData[c].AbsoluteEnergy;
+        this->_last_time[c] = data.ChannelData[c].AbsoluteTime;
 
         // The unit currently is always pWh.
         // de / dt [pWh / 100ns]
