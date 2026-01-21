@@ -1,5 +1,5 @@
 ﻿// <copyright file="marker_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -138,11 +138,35 @@ public:
     bool emit(_In_ const timestamp timestamp, _In_ const unsigned int id);
 
     /// <summary>
+    /// Answer the label of the specified <paramref name="marker" />.
+    /// </summary>
+    /// <param name="dst">If not <see langword="nullptr" />, receives the name
+    /// of the marker provided it exists and fits into <paramref name="cnt" />
+    /// characters.</param>
+    /// <param name="cnt">The size of the <paramref name="dst" /> array.</param>
+    /// <param name="marker">The ID of the marker to retrieve the label for.
+    /// </param>
+    /// <returns>The required buffer size to store the marker (including the
+    /// terminating NUL character), regardless of whether the name has been
+    /// written. If the <paramref name="marker" /> does not exist, the return
+    /// value is zero.</returns>
+    std::size_t marker(_Out_writes_opt_z_(cnt) wchar_t *dst,
+        _In_ const std::size_t cnt, _In_ const unsigned int marker);
+
+    /// <summary>
     /// Starts or stops sampling the sensor.
     /// </summary>
     /// <param name="enable"><c>true</c> for enabling the sensor,
     /// <c>false</c> for disabling it.</param>
     void sample(_In_ const bool enable);
+
+    /// <summary>
+    /// Answer the number of markers configured for this sensor.
+    /// </summary>
+    /// <returns>The number of markers.</returns>
+    inline std::size_t size(void) const noexcept {
+        return this->_markers.size();
+    }
 
     marker_sensor& operator =(const marker_sensor& rhs) = delete;
 

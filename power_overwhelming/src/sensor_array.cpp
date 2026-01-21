@@ -1,5 +1,5 @@
 ﻿// <copyright file="sensor_array.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -179,6 +179,64 @@ bool PWROWG_NAMESPACE::sensor_array::marker(_In_ const timestamp timestamp,
     }
 
     return retval;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::sensor_array::marker
+ */
+std::size_t PWROWG_NAMESPACE::sensor_array::marker(
+        _Out_writes_opt_z_(cnt) wchar_t *dst,
+        _In_ const std::size_t cnt,
+        _In_ const unsigned int marker) const {
+    typedef detail::marker_sensor::list_type type;
+    typedef detail::tuple_types_t<decltype(this->_impl->sensors)> types;
+    typedef detail::type_list_index_of<type, types> index;
+
+    volatile auto impl = this->_impl;  // sic!
+    auto& list = std::get<index::value>(this->_impl->sensors);
+
+    return ((impl != nullptr) && !list.empty())
+        ? list.begin()->marker(dst, cnt, marker)
+        : 0;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::sensor_array::marker
+ */
+std::size_t PWROWG_NAMESPACE::sensor_array::marker(
+        _Out_writes_opt_z_(cnt) char *dst,
+        _In_ const std::size_t cnt,
+        _In_ const unsigned int marker) const {
+    auto retval = this->marker(static_cast<wchar_t *>(nullptr), 0, marker);
+
+    if (retval == 0) {
+        // If the marker does not exist, we can bail out.
+        return retval;
+    }
+
+    // Get the marker and measure the required UTF-8 code units.
+    std::vector<wchar_t> buffer(retval);
+    this->marker(buffer.data(), buffer.size(), marker);
+    retval = detail::convert_string(dst, cnt, buffer.data(), retval);
+
+    return retval;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::sensor_array::markers
+ */
+std::size_t PWROWG_NAMESPACE::sensor_array::markers(void) const noexcept {
+    typedef detail::marker_sensor::list_type type;
+    typedef detail::tuple_types_t<decltype(this->_impl->sensors)> types;
+    typedef detail::type_list_index_of<type, types> index;
+
+    volatile auto impl = this->_impl;  // sic!
+    auto& list = std::get<index::value>(this->_impl->sensors);
+
+    return ((impl != nullptr) && !list.empty()) ? list.begin()->size() : 0;
 }
 
 

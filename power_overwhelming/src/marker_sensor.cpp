@@ -1,5 +1,5 @@
 ﻿// <copyright file="marker_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -44,12 +44,12 @@ bool PWROWG_DETAIL_NAMESPACE::marker_sensor::emit(
         _In_ const timestamp timestamp,
         _In_ const unsigned int id) {
     this->_emitting.store(true, std::memory_order_release);
-    pwrowg_on_exit([this](void) { 
+    pwrowg_on_exit([this](void) {
         this->_emitting.store(false, std::memory_order_release);
     });
 
     const auto retval = (id >= 0)
-        && (id < this->_markers.size())
+        && (id < this->size())
         && this->_state;
 
     if (retval) {
@@ -58,6 +58,30 @@ bool PWROWG_DETAIL_NAMESPACE::marker_sensor::emit(
         sample.source = this->_index;
         sample.timestamp = timestamp;
         sensor_array_impl::callback(this->_owner, &sample, 1);
+    }
+
+    return retval;
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::marker_sensor::marker
+ */
+std::size_t PWROWG_DETAIL_NAMESPACE::marker_sensor::marker(
+        _Out_writes_opt_z_(cnt) wchar_t *dst,
+        _In_ const std::size_t cnt,
+        _In_ const unsigned int marker) {
+    if ((marker < 0) || (marker >= this->size())) {
+        return 0;
+    }
+
+    const auto retval = this->_markers[marker].size() + 1;
+
+    if ((dst != nullptr) && (cnt >= retval)) {
+        std::copy(this->_markers[marker].begin(),
+            this->_markers[marker].end(),
+            dst);
+        assert(dst[retval - 1] == L'\0');
     }
 
     return retval;
