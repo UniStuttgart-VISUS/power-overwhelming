@@ -1,4 +1,4 @@
-// <copyright file="rtx_instrument_configuration.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+﻿// <copyright file="rtx_instrument_configuration.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
@@ -549,6 +549,13 @@ std::size_t PWROWG_NAMESPACE::rtx_instrument_configuration::serialise(
     return retval;
 }
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_instrument_configuration::id
+ */
+const PWROWG_NAMESPACE::guid PWROWG_NAMESPACE::rtx_instrument_configuration::id(
+    0x4dba2660, 0x1e1, 0x43e6, 0x93, 0x43, 0xd, 0x6e, 0xdc, 0xa7, 0xf4, 0xfb);
 
 
 /*
