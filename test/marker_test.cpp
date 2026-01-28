@@ -1,5 +1,5 @@
 // <copyright file="marker_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -47,6 +47,7 @@ public:
             .exclude<usb_pd_configuration>();
 
         auto sensors = sensor_array::for_matches(std::move(config), is_marker_sensor);
+        Assert::AreEqual(std::size_t(1), sensors.markers(), L"# of markers", LINE_INFO());
 
         std::vector<sensor_description> descs;
         descs.resize(sensors.descriptions(nullptr, 0));
@@ -63,6 +64,33 @@ public:
             Assert::IsTrue(sensors.marker(0));
             sensors.stop();
         }
+    }
+
+    TEST_METHOD(test_marker_name) {
+        typedef detail::marker_sensor type;
+
+        sensor_array_configuration config;
+        config.configure<marker_configuration>([](marker_configuration &c) { c += L"Erich"; })
+            .exclude<hmc8015_configuration>()
+            .exclude<tinkerforge_configuration>()
+            .exclude<usb_pd_configuration>();
+
+        auto sensors = sensor_array::for_matches(std::move(config), is_marker_sensor);
+
+        {
+            std::vector<wchar_t> name(sensors.marker(static_cast<wchar_t *>(nullptr), 0, 0));
+            Assert::AreEqual(std::size_t(6), sensors.marker(name.data(), name.size(), 0), L"Buffer length", LINE_INFO());
+            Assert::AreEqual(L"Erich", name.data(), L"Marker name", LINE_INFO());
+        }
+
+        {
+            std::vector<char> name(sensors.marker(static_cast<char *>(nullptr), 0, 0));
+            Assert::AreEqual(std::size_t(6), sensors.marker(name.data(), name.size(), 0), L"Buffer length", LINE_INFO());
+            Assert::AreEqual("Erich", name.data(), L"Marker name", LINE_INFO());
+        }
+
+        Assert::AreEqual(std::size_t(0), sensors.marker(static_cast<wchar_t *>(nullptr), 0, 42), L"Inexistent marker", LINE_INFO());
+        Assert::AreEqual(std::size_t(0), sensors.marker(static_cast<char *>(nullptr), 0, 42), L"Inexistent marker", LINE_INFO());
     }
 };
 

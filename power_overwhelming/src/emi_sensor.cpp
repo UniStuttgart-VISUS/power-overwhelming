@@ -233,12 +233,9 @@ void PWROWG_DETAIL_NAMESPACE::emi_sensor::evaluate(
     auto de = data.AbsoluteEnergy - this->_last_energy.back();
     auto dt = data.AbsoluteTime - this->_last_time.back();
     this->_last_energy.back() = data.AbsoluteEnergy;
-    this->_last_time.back() = data.AbsoluteEnergy;
+    this->_last_time.back() = data.AbsoluteTime;
 
-    // The unit currently is always pWh.
-    // de / dt [pWh / 100ns]
-    // 1 [pW] = 10^-12 [W]
-    // 100 [ns] = 10^-7 [s]
+    // The unit currently is always pWh. See EMIv2 evaluation for details.
     auto value = static_cast<float>(de) * 0.036f;
     value /= static_cast<float>(dt);
     auto time = data.AbsoluteTime - dt / 2 + this->_time_offset.back();
@@ -270,16 +267,26 @@ void PWROWG_DETAIL_NAMESPACE::emi_sensor::evaluate(
         auto de = data.ChannelData[c].AbsoluteEnergy - this->_last_energy[c];
         auto dt = data.ChannelData[c].AbsoluteTime - this->_last_time[c];
         this->_last_energy[c] = data.ChannelData[c].AbsoluteEnergy;
-        this->_last_time[c] = data.ChannelData[c].AbsoluteEnergy;
+        this->_last_time[c] = data.ChannelData[c].AbsoluteTime;
 
         // The unit currently is always pWh.
         // de / dt [pWh / 100ns]
         // 1 [pW] = 10^-12 [W]
         // 100 [ns] = 10^-7 [s]
+        // 1 [h] = 3.6 * 10^3 [s]
+        // dt [100ns] = dt * 10^-7 [s]
+        //            = (dt * 10^-7) / (3.6 * 10^3) [h]
+        //            = (dt / 3.6) * 10^-10 [h]
+        // de [pWh] / dt [100ns]
+        // = (de * 10^-12 [Wh]) / ((dt / 3.6) * 10^-10 [h])
+        // = (de / (dt / 3.6)) * 10^-12 [Wh] * 10^10 [1/h]
+        // = (de / (dt / 3.6)) * 10^-2 [W]
+        // = (de * (3.6 / dt)) * 10^-2 [W]
+        // = 0.036 * de / dt [W]
         auto value = static_cast<float>(de) * 0.036f;
         value /= static_cast<float>(dt);
         auto time = data.ChannelData[c].AbsoluteTime - dt / 2
-            + this->_time_offset.back();
+            + this->_time_offset[c];
 
         // TODO: filter out inactive channels.
 

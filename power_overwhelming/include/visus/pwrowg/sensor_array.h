@@ -1,5 +1,5 @@
 ﻿// <copyright file="sensor_array.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -207,6 +207,44 @@ public:
     inline bool marker(_In_ const int id) const {
         return this->marker(timestamp::now(), id);
     }
+
+    /// <summary>
+    /// Answer the label of the specified <paramref name="marker" />.
+    /// </summary>
+    /// <param name="dst">If not <see langword="nullptr" />, receives the name
+    /// of the marker provided it exists and fits into <paramref name="cnt" />
+    /// characters.</param>
+    /// <param name="cnt">The size of the <paramref name="dst" /> array.</param>
+    /// <param name="marker">The ID of the marker to retrieve the label for.
+    /// </param>
+    /// <returns>The required buffer size to store the marker (including the
+    /// terminating NUL character), regardless of whether the name has been
+    /// written. If the <paramref name="marker" /> does not exist, the return
+    /// value is zero.</returns>
+    std::size_t marker(_Out_writes_opt_z_(cnt) wchar_t *dst,
+        _In_ const std::size_t cnt, _In_ const unsigned int marker) const;
+
+    /// <summary>
+    /// Answer the label of the specified <paramref name="marker" />.
+    /// </summary>
+    /// <param name="dst">If not <see langword="nullptr" />, receives the name
+    /// of the marker provided it exists and fits into <paramref name="cnt" />
+    /// characters.</param>
+    /// <param name="cnt">The size of the <paramref name="dst" /> array.</param>
+    /// <param name="marker">The ID of the marker to retrieve the label for.
+    /// </param>
+    /// <returns>The required buffer size to store the marker (including the
+    /// terminating NUL character), regardless of whether the name has been
+    /// written. If the <paramref name="marker" /> does not exist, the return
+    /// value is zero.</returns>
+    std::size_t marker(_Out_writes_opt_z_(cnt) char *dst,
+        _In_ const std::size_t cnt, _In_ const unsigned int marker) const;
+
+    /// <summary>
+    /// Answer the number of markers configured in the array.
+    /// </summary>
+    /// <returns>The number of valid markers.</returns>
+    std::size_t markers(void) const noexcept;
 
     /// <summary>
     /// Starts sampling all sensors in the array.
