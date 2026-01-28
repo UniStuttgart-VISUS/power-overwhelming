@@ -1,4 +1,4 @@
-﻿// <copyright file="rtx_serialisation.h" company="Visualisierungsinstitut der Universität Stuttgart">
+// <copyright file="rtx_serialisation.h" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
@@ -225,7 +225,9 @@ template<> struct json_serialiser<rtx_instrument_configuration, false,
         return retval
             .beep_on_apply(beep_on_apply)
             .beep_on_error(beep_on_error)
-            .beep_on_trigger(beep_on_trigger);
+            .beep_on_trigger(beep_on_trigger)
+            .reference_position(reference_position)
+            .trigger_position(trigger_position);
     }
 
     static inline nlohmann::json serialise(_In_ const value_type& value) {
