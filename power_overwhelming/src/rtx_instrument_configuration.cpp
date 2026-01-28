@@ -552,6 +552,13 @@ std::size_t PWROWG_NAMESPACE::rtx_instrument_configuration::serialise(
 
 
 /*
+ * PWROWG_NAMESPACE::rtx_instrument_configuration::id
+ */
+const PWROWG_NAMESPACE::guid PWROWG_NAMESPACE::rtx_instrument_configuration::id(
+    0x4dba2660, 0x1e1, 0x43e6, 0x93, 0x43, 0xd, 0x6e, 0xdc, 0xa7, 0xf4, 0xfb);
+
+
+/*
  * ...::rtx_instrument_configuration::rtx_instrument_configuration
  */
 PWROWG_NAMESPACE::rtx_instrument_configuration::rtx_instrument_configuration(
@@ -792,9 +799,11 @@ void PWROWG_NAMESPACE::rtx_instrument_configuration::apply(
     // respective channel.
     instrument.time_range(this->_time_range)
         .trigger_output(rtx_trigger_output::pulse)
+        .reference_position(this->_reference_position)
         .automatic_roll(roll)
         .automatic_roll_time(mtim)
         .trigger(this->_trigger)
+        .trigger_position(this->_trigger_position)
         .acquisition(this->_acquisition, false);
 
     // Wait until the instrument has applied all of the before settings.
