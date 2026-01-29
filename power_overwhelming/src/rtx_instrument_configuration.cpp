@@ -1,4 +1,4 @@
-﻿// <copyright file="rtx_instrument_configuration.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+// <copyright file="rtx_instrument_configuration.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
@@ -792,9 +792,11 @@ void PWROWG_NAMESPACE::rtx_instrument_configuration::apply(
     // respective channel.
     instrument.time_range(this->_time_range)
         .trigger_output(rtx_trigger_output::pulse)
+        .reference_position(this->_reference_position)
         .automatic_roll(roll)
         .automatic_roll_time(mtim)
         .trigger(this->_trigger)
+        .trigger_position(this->_trigger_position)
         .acquisition(this->_acquisition, false);
 
     // Wait until the instrument has applied all of the before settings.
