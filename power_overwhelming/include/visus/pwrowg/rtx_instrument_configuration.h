@@ -15,6 +15,7 @@
 #include "visus/pwrowg/rtx_trigger.h"
 #include "visus/pwrowg/rtx_instrument.h"
 
+#include "visus/pwrowg/guid.h"
 
 PWROWG_NAMESPACE_BEGIN
 
@@ -454,6 +455,11 @@ public:
         _In_reads_(cnt_instruments) const rtx_instrument *instruments,
         _In_ const std::size_t cnt_instruments);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+    /// <summary>
+    /// A unique identifer for the <see cref="rtx_instrument_configuration" /> type.
+    /// </summary>
+    static const guid id;
 
     /// <summary>
     /// Initialises a new instance.
