@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_instrument_configuration.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -457,7 +457,7 @@ public:
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     /// <summary>
-    /// A unique identifer for the <see cref="rtx_instrument_configuration" /> type.
+    /// A unique identifier for the <see cref="rtx_instrument_configuration" /> type.
     /// </summary>
     static const guid id;
 

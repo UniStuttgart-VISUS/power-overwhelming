@@ -1,5 +1,5 @@
 ﻿// <copyright file="api.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -15,7 +15,7 @@
  * Update the ABI version (i.e. if something in the interface changes) here:  *
 \******************************************************************************/
 #define PWROWG_ABI_MAJOR 2
-#define PWROWG_ABI_MINOR 0
+#define PWROWG_ABI_MINOR 1
 
 
 /// <summary>

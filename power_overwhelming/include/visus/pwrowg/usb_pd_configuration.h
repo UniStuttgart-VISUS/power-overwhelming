@@ -1,5 +1,5 @@
 ﻿// <copyright file="usb_pd_configuration.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -25,7 +25,7 @@ class POWER_OVERWHELMING_API usb_pd_configuration final
 public:
 
     /// <summary>
-    /// A unique identifer for the <see cref="usb_pd_configuration" /> type.
+    /// A unique identifier for the <see cref="usb_pd_configuration" /> type.
     /// </summary>
     static const guid id;
 
