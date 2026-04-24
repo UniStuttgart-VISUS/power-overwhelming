@@ -155,17 +155,24 @@ public:
     /// <summary>
     /// The type of an iterator over the results.
     /// </summary>
-    class iterator : public std::iterator<std::forward_iterator_tag, TValue> {
+    class iterator final {
 
     public:
+
+        typedef std::ptrdiff_t difference_type;
+        typedef std::forward_iterator_tag iterator_category;
+        typedef TValue *pointer;
+        typedef TValue& reference;
+        typedef TValue value_type;
 
         /// <summary>
         /// Access the current value.
         /// </summary>
         /// <returns></returns>
-        inline const TValue& operator *(void) const noexcept {
+        inline const reference operator *(void) const noexcept {
             assert(this->_page != nullptr);
-            return this->_page->values()[this->_index];
+            auto values = this->_page->values();
+            return values[this->_index];
         }
 
         /// <summary>
@@ -173,9 +180,10 @@ public:
         /// </summary>
         /// <param name=""></param>
         /// <returns></returns>
-        inline const TValue *operator ->(void) noexcept {
+        inline const pointer operator ->(void) noexcept {
             assert(this->_page != nullptr);
-            return this->_page->values() + this->_index;
+            auto values = this->_page->values();
+            return values + this->_index;
         }
 
         /// <summary>

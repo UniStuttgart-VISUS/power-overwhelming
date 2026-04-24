@@ -26,9 +26,10 @@ PWROWG_NAMESPACE::collector_result<TValue, PageSize>::page::~page(
     // The following must hold here, because we must never free a page that is
     // still written to. If this assertion triggers, this is not a bug here, but
     // in the management of the page's life time.
-    assert(this->ready == this->used);
+    assert(this->ready.load() == this->used.load());
 
-    for (std::size_t i = 0; i < this->ready; ++i) {
+    for (std::size_t i = 0; i < this->ready.load(std::memory_order_acquire);
+            ++i) {
         this->value(i).~TValue();
     }
 
@@ -53,6 +54,13 @@ void PWROWG_NAMESPACE::collector_result<TValue, PageSize>::page::wait(
             != this->used.load(std::memory_order_acquire)) {
         std::this_thread::yield();
     }
+    // If this assertion triggers, the method was called on an active page
+    // that is still in the list of the collector. This is a bug in the
+    // collector, which must only wait for the page after the head of the
+    // list was swapped with a new one so that no thread can write to it
+    // anymore except for the ones that already reserved a slot before the
+    // swap.
+    assert(this->ready.load() == this->used.load());
 }
 
 
@@ -122,14 +130,15 @@ PWROWG_NAMESPACE::collector_result<TValue, PageSize>::collector_result(
     for (auto p = pages; p != nullptr; p = p->next) {
         // The atomic_collector should only construct the result from pages
         // that are not dirty.
-        assert(p->ready == p->used);
+        const auto ready = p->ready.load(std::memory_order_acquire);
+        assert(ready == p->used.load());
 
-        this->_size += p->ready;
+        this->_size += ready;
 
         // As the result collection is immutable, we can construct the end
         // iterator here and keep it forever.
         this->_end._page = p;
     }
 
-    this->_end._index = this->_end._page->ready;
+    this->_end._index = this->_end._page->ready.load(std::memory_order_acquire);
 }

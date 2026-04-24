@@ -54,14 +54,15 @@ void PWROWG_NAMESPACE::atomic_collector<TValue, PageSize>::reserve(
     page = this->_pages.load(std::memory_order_acquire);
 
     while (true) {
-        // Optimistically reserve a slot by incrementing the 'used' counter.
-        index = page->used.fetch_add(1);
+        // Check whether there is still space in the current page.
+        index = page->used.load(std::memory_order_acquire);
+        while ((index < PageSize) && !page->used.compare_exchange_weak(
+            index, index + 1));
+
         if (index < PageSize) {
+            // We got a spot on the current page.
             return;
         }
-
-        // Undo the increment, because the page would be dirty forever otherwise.
-        page->used.fetch_sub(1);
 
         // Under heavy load, there is a high chance that someone else has
         // allocated a new head already at this point, so we give it a second

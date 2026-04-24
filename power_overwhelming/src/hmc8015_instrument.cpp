@@ -613,11 +613,15 @@ PWROWG_NAMESPACE::hmc8015_instrument::log_file(
         throw std::invalid_argument("The path to the log file cannot be null.");
     }
 
+    const std::string p = use_usb
+        ? path
+        : detail::format_string("DATA/%s", path);
+
     if (overwrite) {
         auto cmd = use_usb
             ? detail::format_string("DATA:DEL \"%s%s.CSV\", EXT\n",
                 ext_log_directory, path)
-            : detail::format_string("DATA:DEL \"%s.CSV\", INT\n", path);
+            : detail::format_string("DATA:DEL \"DATA/%s.CSV\", INT\n", path);
         this->write(cmd);
         this->operation_complete();
         // Clear error in case file did not exist.

@@ -36,25 +36,26 @@ int _tmain(const int argc, const TCHAR **argv) {
 #endif
 
     // Rohde & Schwarz instruments
-#if false
+#if true
 #if true
     ::query_hmc8015();
 #endif
 
-#if true
+#if false
     ::query_rtx_instrument();
 #endif
 
-#if true
+#if false
     ::configure_rtx_instrument();
 #endif
 #endif
 
     // Utility APIs
-#if true
+#if false
     ::enumerate_graphics_devices();
 #endif
 
+#if false
     // Main sensor array.
     {
         sensor_array_configuration config;
@@ -107,6 +108,7 @@ int _tmain(const int argc, const TCHAR **argv) {
         //    sensors.stop();
         //}
     }
+#endif
 
     return 0;
 }

@@ -17,6 +17,7 @@
 void query_hmc8015(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     using namespace visus::pwrowg;
+    constexpr auto use_usb = false;
 
     try {
         std::vector<hmc8015_instrument> sensors;
@@ -26,7 +27,7 @@ void query_hmc8015(void) {
         for (auto& s : sensors) {
             s.display("Die Kraft ist überwältigend!");
             s.synchronise_clock();
-            s.log_file("podump.csv", true, true);
+            s.log_file("podump.csv", true, use_usb);
             s.current_range(hmc8015_instrument_range::maximum);
             s.voltage_range(hmc8015_instrument_range::explicitly, 300);
 
@@ -85,11 +86,11 @@ void query_hmc8015(void) {
             //    << m.current() << " A = " << m.power() << L" W"
             //    << std::endl;
 
-            auto log_data = s.copy_file_from_instrument("podump.csv", true);
+            auto log_data = s.copy_file_from_instrument("podump.csv", use_usb);
             std::string log(log_data.begin(), log_data.end());
             std::cout << log << std::endl;
 
-            s.delete_file_from_instrument("podump.csv", true);
+            s.delete_file_from_instrument("podump.csv", use_usb);
         }
 
     } catch (std::exception& ex) {
