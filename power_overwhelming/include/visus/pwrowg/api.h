@@ -15,7 +15,7 @@
  * Update the ABI version (i.e. if something in the interface changes) here:  *
 \******************************************************************************/
 #define PWROWG_ABI_MAJOR 2
-#define PWROWG_ABI_MINOR 1
+#define PWROWG_ABI_MINOR 2
 
 
 /// <summary>
