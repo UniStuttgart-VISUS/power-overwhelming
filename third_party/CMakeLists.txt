@@ -1,5 +1,5 @@
 ﻿# CMakeLists.txt
-# Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+# Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 # Licensed under the MIT licence. See LICENCE file for details.
 
 include(FetchContent)
@@ -14,6 +14,7 @@ mark_as_advanced(FORCE
 # AMD Display Library (this is a bit hacky ...)
 FetchContent_Declare(adl
     URL "https://github.com/GPUOpen-LibrariesAndSDKs/display-library/archive/17.1.tar.gz"
+    DOWNLOAD_EXTRACT_TIMESTAMP ON
 )
 FetchContent_MakeAvailable(adl)
 add_library(adl INTERFACE IMPORTED GLOBAL)
@@ -27,9 +28,24 @@ mark_as_advanced(FORCE
     FETCHCONTENT_SOURCE_DIR_ADL
     FETCHCONTENT_UPDATES_DISCONNECTED_ADL)
 
+# Intel Graphics Control Library (this is even more hacky, because Intel has no 
+# releases on GitHub atm.)
+FetchContent_Declare(igcl
+    URL "https://github.com/intel/drivers.gpu.control-library/archive/refs/heads/master.zip"
+    DOWNLOAD_EXTRACT_TIMESTAMP ON
+)
+FetchContent_MakeAvailable(igcl)
+add_library(igcl INTERFACE IMPORTED GLOBAL)
+set_target_properties(igcl PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${igcl_SOURCE_DIR}/include")
+mark_as_advanced(FORCE
+    FETCHCONTENT_SOURCE_DIR_IGCL
+    FETCHCONTENT_UPDATES_DISCONNECTED_IGCL)
+
 # JSON library
 FetchContent_Declare(nlohmann_json
     URL "https://github.com/nlohmann/json/archive/v3.11.3.tar.gz"
+    DOWNLOAD_EXTRACT_TIMESTAMP ON
 )
 FetchContent_MakeAvailable(nlohmann_json)
 mark_as_advanced(FORCE
@@ -74,6 +90,7 @@ endif ()
 # Windows Implementation Library
 FetchContent_Declare(wil
     URL "https://github.com/microsoft/wil/archive/refs/tags/v1.0.250325.1.zip"
+    DOWNLOAD_EXTRACT_TIMESTAMP ON
 )
 option(FAST_BUILD "" OFF)
 option(WIL_BUILD_PACKAGING "" OFF)
@@ -93,6 +110,7 @@ mark_as_advanced(FORCE
 # Powenetics (the "Greek device")
 FetchContent_Declare(libpowenetics
     URL "https://github.com/UniStuttgart-VISUS/libpowenetics/archive/refs/tags/v1.1.zip"
+    DOWNLOAD_EXTRACT_TIMESTAMP ON
 )
 option(POWENETICS_BuildTests "" OFF)
 option(POWENETICS_BuildCclient "" OFF)
@@ -111,6 +129,7 @@ mark_as_advanced(FORCE
 # Benchlab
 FetchContent_Declare(libbenchlab
     URL "https://github.com/UniStuttgart-VISUS/libbenchlab/archive/refs/tags/v0.2.zip"
+    DOWNLOAD_EXTRACT_TIMESTAMP ON
 )
 option(BENCHLAB_BuildTests "" OFF)
 option(BENCHLAB_BuildCclient "" OFF)
@@ -140,6 +159,7 @@ endif ()
 # rapidcsv
 FetchContent_Declare(rapidcsv
     URL "https://codeload.github.com/d99kris/rapidcsv/zip/refs/tags/v8.84"
+    DOWNLOAD_EXTRACT_TIMESTAMP ON
 )
 FetchContent_MakeAvailable(rapidcsv)
 mark_as_advanced(FORCE

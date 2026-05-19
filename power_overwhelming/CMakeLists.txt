@@ -1,5 +1,5 @@
 ﻿# CMakeLists.txt
-# Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+# Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 # Licensed under the MIT licence. See LICENCE file for details.
 
 # Search optional dependencies
@@ -9,6 +9,7 @@ find_package(NVAPI QUIET)
 # User-configurable options
 option(PWROWG_WithAdl "Build support for the AMD Display Library" ON)
 option(PWROWG_WithBenchlab "Build support for the Benchlab telemetry system" OFF)
+cmake_dependent_option(PWROWG_WithIgcl "Build support for IGCL" ON WIN32 OFF)
 cmake_dependent_option(PWROWG_WithNvapi "Build support for NVIDIA API" OFF WIN32 OFF)
 option(PWROWG_WithNvml "Build support for the NVIDIA Management Library" ON)
 option(PWROWG_WithPowenetics "Build support for Powenetics" ON)
@@ -43,6 +44,11 @@ endif ()
 if (PWROWG_WithBenchlab)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_BENCHLAB)
     target_link_libraries(${PROJECT_NAME} PRIVATE libbenchlab)
+endif ()
+
+if (PWROWG_WithIgcl)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_IGCL)
+    target_link_libraries(${PROJECT_NAME} PRIVATE igcl)
 endif ()
 
 if (PWROWG_WithNvapi)
