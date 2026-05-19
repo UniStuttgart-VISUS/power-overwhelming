@@ -26,6 +26,7 @@
 #include "detect_sample.h"
 #include "emi_sensor.h"
 #include "hmc8015_sensor.h"
+#include "igcl_sensor.h"
 #include "marker_sensor.h"
 #include "msr_sensor.h"
 #include "nvapi_sensor.h"
@@ -318,6 +319,9 @@ typedef basic_sensor_registry<
     adl_sensor,
 #endif /* defined(POWER_OVERWHELMING_WITH_ADL) */
     hmc8015_sensor,
+#if defined(POWER_OVERWHELMING_WITH_IGCL)
+    igcl_sensor,
+#endif /* defined(POWER_OVERWHELMING_WITH_IGCL) */
     marker_sensor,
     msr_sensor,
 #if defined(POWER_OVERWHELMING_WITH_NVML)

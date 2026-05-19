@@ -1,5 +1,5 @@
 ﻿// <copyright file="sensor_filters.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -85,6 +85,15 @@ bool PWROWG_NAMESPACE::is_hmc8015_sensor(
 #else /* defined(POWER_OVERWHELMING_WITH_VISA) */
     return false;
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * PWROWG_NAMESPACE::is_igcl_sensor
+ */
+bool PWROWG_NAMESPACE::is_igcl_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    return detail::starts_with(desc.id(), L"IGCL/");
 }
 
 

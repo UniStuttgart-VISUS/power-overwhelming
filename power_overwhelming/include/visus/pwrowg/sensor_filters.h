@@ -1,5 +1,5 @@
 ﻿// <copyright file="sensor_filters.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -151,7 +151,17 @@ extern POWER_OVERWHELMING_API bool is_gpu_sensor(
 /// <returns><c>true</c> if the sensor is a HMC 8015 sensor, <c>false</c>
 /// otherwise.</returns>
 extern POWER_OVERWHELMING_API bool is_hmc8015_sensor(
-    _In_ const sensor_description &desc) noexcept;
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes a
+/// sensor based on the Intel Graphics Control Library (IGCL).
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><see langword="true" /> if the sensor is an IGCL sensor,
+/// <see langword="false" /> otherwise.</returns>
+extern POWER_OVERWHELMING_API bool is_igcl_sensor(
+    _In_ const sensor_description& desc) noexcept;
 
 /// <summary>
 /// Answer whether the given <see cref="sensor_description" /> describes the

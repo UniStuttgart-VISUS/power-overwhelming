@@ -39,6 +39,22 @@ public:
 
     igcl_scope& operator =(const igcl_scope&) = delete;
 
+    /// <summary>
+    /// Exposes the initialisation arguments provided by the library.
+    /// </summary>
+    /// <returns></returns>
+    inline operator const ctl_init_args_t&(void) const noexcept {
+        return this->_args;
+    }
+
+    /// <summary>
+    /// Exposes the native library handle.
+    /// </summary>
+    /// <returns></returns>
+    inline operator ctl_api_handle_t(void) const noexcept {
+        return this->_handle;
+    }
+
 private:
 
     ctl_init_args_t _args;

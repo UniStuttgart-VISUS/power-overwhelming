@@ -28,7 +28,13 @@ PWROWG_DETAIL_NAMESPACE::igcl_library::instance(void) {
 PWROWG_DETAIL_NAMESPACE::igcl_library::igcl_library(void)
         : library_base(TEXT("ControlLib.dll"), TEXT("ControlLib32.dll")) {
     __POWER_OVERWHELMING_IGCL_FUNC(ctlClose);
+    __POWER_OVERWHELMING_IGCL_FUNC(ctlEnumerateDevices);
+    __POWER_OVERWHELMING_IGCL_FUNC(ctlEnumPowerDomains);
+    __POWER_OVERWHELMING_IGCL_FUNC(ctlGetDeviceProperties);
     __POWER_OVERWHELMING_IGCL_FUNC(ctlInit);
+    __POWER_OVERWHELMING_IGCL_FUNC(ctlPowerGetProperties);
+    __POWER_OVERWHELMING_IGCL_FUNC(ctlPowerGetEnergyCounter);
+    __POWER_OVERWHELMING_IGCL_FUNC(ctlPowerGetLimits);
     __POWER_OVERWHELMING_IGCL_FUNC(ctlPowerTelemetryGet);
 }
 
