@@ -42,3 +42,11 @@ find_library(NVAPI_LIBRARY
 mark_as_advanced(NVAPI_LIBRARY)
 
 find_package_handle_standard_args(NVAPI REQUIRED_VARS NVAPI_INCLUDE_DIR NVAPI_LIBRARY)
+
+# Declare an imported target for ease of use. The NDA version of NVAPI must be
+# linked, because it would be effectively unusable otherwise. This is why we
+# create a wrapper library to fail if the NDA version is not found.
+add_library(nvapi SHARED IMPORTED)
+set_target_properties(nvapi PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${NVAPI_INCLUDE_DIR}"
+    IMPORTED_IMPLIB "${NVAPI_LIBRARY}")

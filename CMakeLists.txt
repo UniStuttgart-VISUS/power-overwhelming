@@ -22,10 +22,24 @@ mark_as_advanced(PWROWG_NoPackageRestore)
 set(PWROWG_CustomTinkerforgeFirmwareMajor "" CACHE STRING "The major firmware version that identifies our custom changes")
 set(PWROWG_CustomTinkerforgeFirmwareMinor "" CACHE STRING "The minor firmware version that identifies our custom changes")
 set(PWROWG_CustomTinkerforgeFirmwareRev "" CACHE STRING "The firmware revision that identifies our custom changes")
+option(PWROWG_WithAdl "Build support for the AMD Display Library" ON)
+option(PWROWG_WithBenchlab "Build support for the Benchlab telemetry system" OFF)
+cmake_dependent_option(PWROWG_WithIgcl "Build support for IGCL" ON WIN32 OFF)
+cmake_dependent_option(PWROWG_WithNvapi "Build support for NVIDIA API" OFF WIN32 OFF)
+option(PWROWG_WithNvml "Build support for the NVIDIA Management Library" ON)
+option(PWROWG_WithPowenetics "Build support for Powenetics" ON)
+option(PWROWG_WithTimeSynchronisation "Build support for Cristian's algorithm" OFF)
+option(PWROWG_WithVisa "Build support for the VISA-based instruments" ${VISA_FOUND})
+
 
 # Dependencies
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/third_party)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party)
+
+# NVAPI Wrapper
+if (PWROWG_WithNvapi)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/pwrovrnvapi)
+endif ()
 
 # The library
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/power_overwhelming)

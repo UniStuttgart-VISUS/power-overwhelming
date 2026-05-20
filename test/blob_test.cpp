@@ -6,6 +6,8 @@
 
 #include "pch.h"
 
+#include <visus/pwrowg/blob.h>
+
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 

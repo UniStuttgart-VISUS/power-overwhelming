@@ -150,10 +150,17 @@ public:
     /// <summary>
     /// Creates a new timestamp from the given <c>time_t</c>.
     /// </summary>
-    /// <param name="t">The time to represent the timestamp.</param>
+    /// <param name="t">The time to represent the timestamp, which is in seconds
+    /// since the begin of the Unix epoch.</param>
+    /// <param name="millis">The milliseconds part of the timestamp. This
+    /// parameter is added to the result as <paramref name="t" /> is in seconds.
+    /// </param>
+    /// <param name="micros">The microseconds part of the timestamp. This
+    /// parameter is added to the result as <paramref name="t" /> is in seconds.
     /// <returns>The timestamp representing the given value
     /// <paramref name="t" />.</returns>
-    static timestamp from_time_t(_In_ const std::time_t t);
+    static timestamp from_time_t(_In_ const std::time_t t,
+        _In_ const int millis = 0, _In_ const int micros = 0);
 
     /// <summary>
     /// Creates a new timestamp from the given <c>std::tm</c>.

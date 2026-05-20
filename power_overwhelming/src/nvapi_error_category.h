@@ -13,7 +13,7 @@
 #include "visus/pwrowg/api.h"
 
 #if defined(POWER_OVERWHELMING_WITH_NVAPI)
-#include <nvapi.h>
+#include "nvapi_library.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN

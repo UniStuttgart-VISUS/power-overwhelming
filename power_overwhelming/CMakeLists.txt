@@ -4,19 +4,12 @@
 
 # Search optional dependencies
 find_package(VISA QUIET)
-find_package(NVAPI QUIET)
 
-# User-configurable options
-option(PWROWG_WithAdl "Build support for the AMD Display Library" ON)
-option(PWROWG_WithBenchlab "Build support for the Benchlab telemetry system" OFF)
-cmake_dependent_option(PWROWG_WithIgcl "Build support for IGCL" ON WIN32 OFF)
-cmake_dependent_option(PWROWG_WithNvapi "Build support for NVIDIA API" OFF WIN32 OFF)
-option(PWROWG_WithNvml "Build support for the NVIDIA Management Library" ON)
-option(PWROWG_WithPowenetics "Build support for Powenetics" ON)
-option(PWROWG_WithTimeSynchronisation "Build support for Cristian's algorithm" OFF)
-option(PWROWG_WithVisa "Build support for the VISA-based instruments" ${VISA_FOUND})
+
+# User-configurable options.
 cmake_dependent_option(PWROWG_ForceDirect3D11 "Force GPU enumeration via Direct3D 11" OFF WIN32 OFF)
 mark_as_advanced(FORCE PWROWG_ForceDirect3D11)
+
 
 # Collect source files.
 set(IncludeDir "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -54,7 +47,13 @@ endif ()
 if (PWROWG_WithNvapi)
     find_package(NVAPI REQUIRED)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_NVAPI)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${PWROVRNVAPI_INCLUDE_DIR})
     target_include_directories(${PROJECT_NAME} PRIVATE ${NVAPI_INCLUDE_DIR})
+
+    # Grab the wrapper DLL and copy it to the output directory.
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy ${PWROVRNVAPI_BINARY} $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND_EXPAND_LISTS)
 endif ()
 
 if (PWROWG_WithNvml)

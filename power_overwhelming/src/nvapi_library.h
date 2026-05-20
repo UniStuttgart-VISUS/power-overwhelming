@@ -1,5 +1,5 @@
 ﻿// <copyright file="nvapi_library.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -9,7 +9,7 @@
 #pragma once
 #if defined(POWER_OVERWHELMING_WITH_NVAPI)
 
-#include <nvapi.h>
+#include <pwrovrnvapi.h>
 
 #include "library_base.h"
 
@@ -21,6 +21,16 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <summary>
 /// Wrapper for lazily loading NVAPI.
 /// </summary>
+/// <remarks>
+/// All of this is a giant hack as we do not lod NVAPI directly, but our own
+/// warpper that passes all calls through to NVAPI. The reason is that NVAPI
+/// does not export the symbols of its APIs, so we cannot load them dynamically.
+/// However, as we have the NDA version of NVAPI, including the required import
+/// library, our wrapper can do so. Then, we can dynamically load our wrapper
+/// and use the symbols exported from there. It is no solution linking against
+/// NVAPI directly, because this would Power Overwhelming prevent from running
+/// on machines without an NVIDIA GPU.
+/// </remarks>
 class PWROWG_TEST_API nvapi_library final : library_base {
 
 public:
@@ -35,20 +45,20 @@ public:
     /// </exception>
     static const nvapi_library& instance(void);
 
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_EnumPhysicalGPUs);
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GetErrorMessage);
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GetGPUIDfromPhysicalGPU);
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GetPhysicalGPUFromGPUID);
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GPU_GetBusId);
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GPU_GetFullName);
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GPU_GetPCIIdentifiers);
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_Initialize);
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_Unload);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_enumerate_physical_gpus);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_finalise);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_error_message);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_bus_id);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_from_id);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_id);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_name);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_pci_identifiers);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_initialise);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_register_power_callback);
 
 private:
 
     nvapi_library(void);
-
 };
 
 #undef __POWER_OVERWHELMING_NVAPI_FUNC

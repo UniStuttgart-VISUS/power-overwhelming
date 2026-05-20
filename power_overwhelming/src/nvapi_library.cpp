@@ -27,19 +27,18 @@ PWROWG_DETAIL_NAMESPACE::nvapi_library::instance(void) {
  */
 PWROWG_DETAIL_NAMESPACE::nvapi_library::nvapi_library(void)
 #if defined(_WIN32)
-        : library_base(TEXT("nvapi64.dll"), TEXT("nvapi.dll")) {
-#else /* defined(_WIN32) */
-        : library_base("libnvapi.so") {
+        : library_base(TEXT("pwrovrnvapi.dll")) {
 #endif /* defined(_WIN32) */
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_EnumPhysicalGPUs);
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GetErrorMessage);
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GetGPUIDfromPhysicalGPU);
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GetPhysicalGPUFromGPUID);
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GPU_GetBusId);
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GPU_GetFullName);
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_GPU_GetPCIIdentifiers);
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_Initialize);
-    __POWER_OVERWHELMING_NVAPI_FUNC(NvAPI_Unload);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_enumerate_physical_gpus);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_finalise);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_error_message);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_bus_id);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_from_id);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_id);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_name);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_pci_identifiers);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_initialise);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_register_power_callback);
 }
 
 #undef __POWER_OVERWHELMING_NVAPI_FUNC

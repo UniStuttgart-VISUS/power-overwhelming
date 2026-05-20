@@ -38,7 +38,7 @@ public:
     /// <summary>
     /// Finalises the instance.
     /// </summary>
-    ~nvapi_scope(void);
+    ~nvapi_scope(void) noexcept;
 
     nvapi_scope& operator =(const nvapi_scope&) = delete;
 };

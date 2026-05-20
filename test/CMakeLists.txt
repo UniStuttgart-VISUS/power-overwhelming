@@ -55,7 +55,13 @@ endif ()
 if (PWROWG_WithNvapi)
     find_package(NVAPI REQUIRED)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_NVAPI)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${PWROVRNVAPI_INCLUDE_DIR})
     target_include_directories(${PROJECT_NAME} PRIVATE ${NVAPI_INCLUDE_DIR})
+
+    # Grab the wrapper DLL and copy it to the output directory.
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy ${PWROVRNVAPI_BINARY} $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND_EXPAND_LISTS)
 endif ()
 
 # The test requires access to the Powenetics headers to test the sensor.

@@ -6,6 +6,8 @@
 
 #include "pch.h"
 
+#include <visus/pwrowg/atomic_collector.h>
+
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 

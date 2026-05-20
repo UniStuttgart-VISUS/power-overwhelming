@@ -61,9 +61,21 @@ PWROWG_NAMESPACE::timestamp::from_system_clock(void) {
 /*
  * PWROWG_NAMESPACE::timestamp::from_time_t
  */
-PWROWG_NAMESPACE::timestamp
-PWROWG_NAMESPACE::timestamp::from_time_t(_In_ const std::time_t t) {
-    return std::chrono::system_clock::from_time_t(t);
+PWROWG_NAMESPACE::timestamp PWROWG_NAMESPACE::timestamp::from_time_t(
+        _In_ const std::time_t t,
+        _In_ const int millis,
+        _In_ const int micros) {
+    timestamp retval(std::chrono::system_clock::from_time_t(t));
+
+    if (millis != 0) {
+        retval += std::chrono::milliseconds(millis);
+    }
+
+    if (micros != 0) {
+        retval += std::chrono::microseconds(micros);
+    }
+
+    return retval;
 }
 
 

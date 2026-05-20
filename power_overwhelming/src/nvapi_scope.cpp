@@ -7,7 +7,6 @@
 #if defined(POWER_OVERWHELMING_WITH_NVAPI)
 #include "nvapi_scope.h"
 
-#include "nvapi_error_category.h"
 #include "nvapi_library.h"
 
 
@@ -15,15 +14,14 @@
  * PWROWG_DETAIL_NAMESPACE::nvapi_scope::nvapi_scope
  */
 PWROWG_DETAIL_NAMESPACE::nvapi_scope::nvapi_scope(void) {
-    auto status = nvapi_library::instance().NvAPI_Initialize();
-    throw_if_nvapi_failed(status);
+    nvapi_library::instance().nvapi_initialise();
 }
 
 
 /*
  * PWROWG_DETAIL_NAMESPACE::nvapi_scope::~nvapi_scope
  */
-PWROWG_DETAIL_NAMESPACE::nvapi_scope::~nvapi_scope(void) {
-    nvapi_library::instance().NvAPI_Unload();
+PWROWG_DETAIL_NAMESPACE::nvapi_scope::~nvapi_scope(void) noexcept {
+    nvapi_library::instance().nvapi_finalise();
 }
 #endif /* defined(POWER_OVERWHELMING_WITH_NVAPI) */

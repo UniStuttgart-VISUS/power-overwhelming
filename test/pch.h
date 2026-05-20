@@ -12,8 +12,6 @@
 #include <sstream>
 #include <thread>
 
-#include <visus/pwrowg/atomic_collector.h>
-#include <visus/pwrowg/blob.h>
 #include <visus/pwrowg/convert_string.h>
 #include <visus/pwrowg/computer_name.h>
 #include <visus/pwrowg/cpu_affinity.h>
@@ -46,9 +44,6 @@
 #include <marker_sensor.h>
 #include <msr_magic.h>
 #include <msr_sensor.h>
-#include <nvml_error_category.h>
-#include <nvml_scope.h>
-#include <nvml_sensor.h>
 #include <rtx_serialisation.h>
 #include <sensor_array_impl.h>
 #include <sensor_description_builder.h>

@@ -1,5 +1,5 @@
 ﻿// <copyright file="nvml_sensor.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -21,7 +21,8 @@ TInput PWROWG_DETAIL_NAMESPACE::nvapi_sensor::from_descriptions(
     for (auto it = begin; it != retval; ++it) {
         dst.emplace_back(
             *sensor_description_builder::private_data<NvPhysicalGpuHandle>(*it),
-            index++);
+            index++,
+            owner);
     }
 
     return retval;

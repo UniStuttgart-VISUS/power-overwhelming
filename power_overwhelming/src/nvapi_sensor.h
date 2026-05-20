@@ -1,5 +1,5 @@
 ﻿// <copyright file="nvapi_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -14,8 +14,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-
-#include <nvapi.h>
 
 #include "visus/pwrowg/nvapi_configuration.h"
 #include "visus/pwrowg/sensor_array_callback.h"
@@ -108,8 +106,9 @@ public:
     /// retrieve the data from.</param>
     /// <param name="index>The index of the descriptor of this sensor.</param>
     inline nvapi_sensor(_In_ const NvPhysicalGpuHandle handle,
-            _In_ const std::size_t index)
-        : _handle(handle), _index(index) { }
+            _In_ const std::size_t index,
+            _In_ const sensor_array_impl *owner)
+        : _handle(handle), _index(index), _owner(owner) { }
 
     nvapi_sensor(const nvapi_sensor& rhs) = delete;
 
@@ -124,8 +123,12 @@ public:
 
 private:
 
+    static void on_sample(_In_ NvPhysicalGpuHandle handle,
+        _In_ NV_GPU_CLIENT_CALLBACK_POWER_DATA_V1* data);
+
     NvPhysicalGpuHandle _handle;
     std::size_t _index;
+    const sensor_array_impl *_owner;
     nvapi_scope _scope;
 };
 
