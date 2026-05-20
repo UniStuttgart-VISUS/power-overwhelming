@@ -22,6 +22,7 @@
 
 #include "igcl_library.h"
 #include "igcl_scope.h"
+#include "igcl_telemetry.h"
 #include "sensor_description_builder.h"
 #include "sensor_utilities.h"
 
@@ -99,17 +100,10 @@ public:
         _In_ const sensor_array_impl *owner,
         _In_ const configuration_type& config);
 
-#if 0
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    /// <param name="device>The NVML device to obtain the power readings from.
-    /// </param>
-    /// <param name="index>The index of the descriptor of this sensor.</param>
-    inline igcl_sensor(_In_ const nvmlDevice_t device,
-            _In_ const std::size_t index)
-        : _device(device), _index(index) { }
-#endif
+    igcl_sensor(_In_ const std::size_t index);
 
     igcl_sensor(const igcl_sensor& rhs) = delete;
 
@@ -129,7 +123,11 @@ public:
 
 private:
 
+    std::vector<igctl_telemetry_disp<timestamp, std::size_t,
+        const sensor_array_callback, const sensor_description *,
+        void *>> _deliver_sample;
     ctl_device_adapter_handle_t _device;
+    std::vector<igctl_telemetry_disp<timestamp&>> _make_timestamp;
     std::size_t _index;
     igcl_scope _scope;
 };

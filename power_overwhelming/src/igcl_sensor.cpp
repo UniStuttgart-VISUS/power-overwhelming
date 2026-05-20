@@ -11,7 +11,6 @@
 #include <stdexcept>
 
 #include "igcl_error_category.h"
-#include "igcl_telemetry.h"
 
 
 /*
@@ -79,6 +78,28 @@ std::size_t PWROWG_DETAIL_NAMESPACE::igcl_sensor::descriptions(
 }
 
 
+/*
+ * PWROWG_DETAIL_NAMESPACE::igcl_sensor::igcl_sensor
+ */
+PWROWG_DETAIL_NAMESPACE::igcl_sensor::igcl_sensor(_In_ const std::size_t index) {
+    // Create a dispatcher for delivering a sample from telemetry data.
+    this->_deliver_sample = make_igcl_telemetry_disps<timestamp, std::size_t,
+            const sensor_array_callback, const sensor_description *, void *>(
+        [](auto value, const ctl_units_t, timestamp timestamp,
+                const std::size_t index, const sensor_array_callback callback,
+                const sensor_description *sensors, void *context) {
+            PWROWG_NAMESPACE::sample s(index, timestamp);
+            callback(&s, 1, sensors, context);
+        });
+
+    // Create a dispatcher for extracting the timestamp from telemetry data.
+    this->_make_timestamp = make_igcl_telemetry_disps<timestamp&>(
+        [](auto value, const ctl_units_t, timestamp& retval) {
+            retval = timestamp::from_time_t(value);
+        });
+}
+
+
 
 /*
  * PWROWG_DETAIL_NAMESPACE::igcl_sensor::sample
@@ -87,27 +108,19 @@ void PWROWG_DETAIL_NAMESPACE::igcl_sensor::sample(
         _In_ const sensor_array_callback callback,
         _In_ const sensor_description *sensors,
         _In_opt_ void *context) {
-    typedef PWROWG_NAMESPACE::sample sample_type;
-    static constexpr auto lut = make_igcl_data_type_list();
-    const auto make_sample = make_igcl_telemetry_disps<sample_type&>(
-        [](auto value, ctl_units_t units, sample_type& sample) {
-            sample = sample_type(0, timestamp::from_time_t(value));
-        });
-    assert(callback != nullptr);
-
-
-
     // Get the telemetry data from the device.
     ctl_power_telemetry_t telemetry { };
     telemetry.Size = sizeof(telemetry);
 
-    auto status = igcl_library::instance()
-        .ctlPowerTelemetryGet(this->_device, &telemetry);
-    throw_if_igcl_failed(status);
+    {
+        auto status = igcl_library::instance()
+            .ctlPowerTelemetryGet(this->_device, &telemetry);
+        throw_if_igcl_failed(status);
+    }
 
-    sample_type sample;
-    auto i = find_igcl_telemetry_disp(lut, telemetry.gpuEnergyCounter);
-    make_sample[i](telemetry.timeStamp, sample);
+    timestamp timestamp;
+    find_igcl_telemetry_disp(this->_make_timestamp, telemetry.timeStamp)(
+        telemetry.timeStamp, timestamp);
 
     //PWROWG_NAMESPACE::sample s(this->_index, timestamp::from_time_t(
     //    telemetry.timeStamp.value));

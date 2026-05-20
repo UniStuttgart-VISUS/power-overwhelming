@@ -10,7 +10,9 @@
 #if defined(POWER_OVERWHELMING_WITH_IGCL)
 
 #include <array>
+#include <cassert>
 #include <functional>
+#include <limits>
 #include <type_traits>
 #include <vector>
 
@@ -238,6 +240,25 @@ template<class... TCtxs> using igctl_telemetry_disp
 
 
 /// <summary>
+/// Searches the position of the data type of the given telemetry
+/// <paramref name="item" /> in the given dispatcher list
+/// <paramref name="disps" />.
+/// </summary>
+/// <typeparam name="TContainer">The type of the container holding the
+/// dispatchers, which must be a vector or an array of the same size as the
+/// LUT created by <see cref="make_igcl_data_type_list" />.</typeparam>
+/// <param name="lut"></param>
+/// <param name="item"></param>
+/// <returns></returns>
+/// <exception cref="std::invalid_argument">If the data type of the given
+/// telemetry item is unsupported.</exception>
+template<class TContainer>
+typename const TContainer::value_type& find_igcl_telemetry_disp(
+    _In_ const TContainer& disps,
+    _In_ const ctl_oc_telemetry_item_t& item);
+
+
+/// <summary>
 /// Creates a vector of dispatcher functions invoking the given
 /// <paramref name="callback" /> for each of the given data
 /// <paramref name="Types" />.
@@ -266,6 +287,7 @@ inline std::vector<igctl_telemetry_disp<TCtxs...>> make_igcl_telemetry_disps(
     };
 }
 
+
 /// <summary>
 /// Creates a vector of dispatcher functions for all data types in
 /// <see cref="igcl_telemetry_data_type_dispatch_list" />.
@@ -293,6 +315,7 @@ make_igcl_data_type_list(const igcl_data_type_dispatch_list<Types...>) {
     return std::array<ctl_data_type_t, sizeof...(Types)> { Types... };
 }
 
+
 /// <summary>
 /// Creates a LUT indexing all data types in
 /// <see cref="igcl_telemetry_data_type_dispatch_list" />.
@@ -304,19 +327,9 @@ inline constexpr auto make_igcl_data_type_list(void)
     return make_igcl_data_type_list(igcl_telemetry_data_type_dispatch_list());
 }
 
-/// <summary>
-/// Searches the position of the data type of the given telemetry
-/// <paramref name="item" /> in the given <paramref name="lut" />.
-/// </summary>
-/// <param name="lut"></param>
-/// <param name="item"></param>
-/// <returns></returns>
-PWROWG_TEST_API std::size_t find_igcl_telemetry_disp(
-    _In_ const decltype(make_igcl_data_type_list())& lut,
-    _In_ const ctl_oc_telemetry_item_t& item);
-
-
 PWROWG_DETAIL_NAMESPACE_END
+
+#include "igcl_telemetry.inl"
 
 #endif /* defined(POWER_OVERWHELMING_WITH_IGCL) */
 #endif /* defined(_PWROWG_IGCL_TELEMETRY_H) */
