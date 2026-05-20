@@ -135,7 +135,7 @@ PWROVRNVAPI_API NvAPI_Status nvapi_initialise(void);
 /// </returns>
 PWROVRNVAPI_API NvAPI_Status nvapi_register_power_callback(
     _In_ NvPhysicalGpuHandle handle, 
-    _In_ NV_GPU_CLIENT_POWER_PERIODIC_CALLBACK_SETTINGS* settings);
+    _In_ NV_GPU_CLIENT_POWER_PERIODIC_CALLBACK_SETTINGS *settings);
 
 #if defined(__cplusplus)
 }
