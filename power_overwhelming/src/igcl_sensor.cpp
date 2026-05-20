@@ -87,9 +87,15 @@ void PWROWG_DETAIL_NAMESPACE::igcl_sensor::sample(
         _In_ const sensor_array_callback callback,
         _In_ const sensor_description *sensors,
         _In_opt_ void *context) {
-    typedef decltype(reading::floating_point) value_type;
-    static constexpr auto thousand = static_cast<value_type>(1000);
+    typedef PWROWG_NAMESPACE::sample sample_type;
+    static constexpr auto lut = make_igcl_data_type_list();
+    const auto make_sample = make_igcl_telemetry_disps<sample_type&>(
+        [](auto value, ctl_units_t units, sample_type& sample) {
+            sample = sample_type(0, timestamp::from_time_t(value));
+        });
     assert(callback != nullptr);
+
+
 
     // Get the telemetry data from the device.
     ctl_power_telemetry_t telemetry { };
@@ -99,14 +105,18 @@ void PWROWG_DETAIL_NAMESPACE::igcl_sensor::sample(
         .ctlPowerTelemetryGet(this->_device, &telemetry);
     throw_if_igcl_failed(status);
 
+    sample_type sample;
+    auto i = find_igcl_telemetry_disp(lut, telemetry.gpuEnergyCounter);
+    make_sample[i](telemetry.timeStamp, sample);
+
     //PWROWG_NAMESPACE::sample s(this->_index, timestamp::from_time_t(
     //    telemetry.timeStamp.value));
-    visit(telemetry.gpuEnergyCounter,
-            [&callback, &sensors, &context](auto value, auto units) {
-        //PWROWG_NAMESPACE::sample s(this->_index, timestamp::from_time_t(
-        //    telemetry.timeStamp.value), value / thousand);
-        //callback(&s, 1, sensors, context);
-    });
+    //visit(telemetry.gpuEnergyCounter,
+    //        [&callback, &sensors, &context](auto value, auto units) {
+    //    //PWROWG_NAMESPACE::sample s(this->_index, timestamp::from_time_t(
+    //    //    telemetry.timeStamp.value), value / thousand);
+    //    //callback(&s, 1, sensors, context);
+    //});
 
     throw "TODO";
     //callback(&s, 1, sensors, context);

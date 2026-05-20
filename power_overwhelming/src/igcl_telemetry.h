@@ -227,62 +227,96 @@ typedef igcl_data_type_dispatch_list<
 
 
 /// <summary>
+/// Creates a telemetry callback type using the given context parameters, which
+/// is used to wrap user defined callbacks (typically lambdas) to be invoked
+/// for telemetry items.
+/// </summary>
+/// <typeparam name="TCtxs">An optional set of context types passed to the
+/// callback following the telemetry item.</typeparam>
+template<class... TCtxs> using igctl_telemetry_disp
+    = std::function<void(const ctl_oc_telemetry_item_t&, TCtxs&&...)>;
+
+
+/// <summary>
 /// Creates a vector of dispatcher functions invoking the given
 /// <paramref name="callback" /> for each of the given data
 /// <paramref name="Types" />.
 /// </summary>
 /// <typeparam name="TCallback">The type of the callback to be invoked. This
 /// callback must accept an <see langword="auto" /> parameter as its first
-/// parameter and <see cref="ctl_units_t" /> as its second one.</typeparam>
+/// parameter and <see cref="ctl_units_t" /> as its second one. If any
+/// <typeparamref nmae="TCtxs" /> is specified, these context parameters follow
+/// in that order.</typeparam>
+/// <typeparam name="TCtxs">The types of a set of optional parameters passed to
+/// the callback.</typeparam>
 /// <typeparam name="Types">The types to consider when dispatching.</typeparam>
 /// <param name="callback">The callback (template) to be invoked.</param>
 /// <returns>The list of dispatchers in order of <typeparamref name="Types" />.
 /// </returns>
-template<class TCallback, ctl_data_type_t... Types>
-inline std::vector<std::function<void(const ctl_oc_telemetry_item_t&)>>
-make_igcl_data_type_dispatchers(
+template<class... TCtxs, class TCallback, ctl_data_type_t... Types>
+inline std::vector<igctl_telemetry_disp<TCtxs...>> make_igcl_telemetry_disps(
         _In_ const TCallback callback,
         const igcl_data_type_dispatch_list<Types...>) {
-    return std::vector<std::function<void(const ctl_oc_telemetry_item_t&)>> {
-        ([callback](const ctl_oc_telemetry_item_t& item) {
-            callback(igcl_data_type_traits<Types>::get(item), item.units);
+    return std::vector<igctl_telemetry_disp<TCtxs...>> {
+        ([callback](const ctl_oc_telemetry_item_t& item, TCtxs&&... ctxs) {
+            callback(igcl_data_type_traits<Types>::get(item),
+                item.units,
+                std::forward<TCtxs>(ctxs)...);
         })...
     };
 }
 
-
 /// <summary>
-/// Checks whether <paramref name="item" /> is supported and if it contains
-/// any of the <typeparamref name="Types" />, invoke
-/// <paramref name="callback" /> for that type.
+/// Creates a vector of dispatcher functions for all data types in
+/// <see cref="igcl_telemetry_data_type_dispatch_list" />.
 /// </summary>
 /// <typeparam name="TCallback"></typeparam>
-/// <typeparam name="Types"></typeparam>
-/// <param name="item"></param>
+/// <typeparam name="TCtxs"></typeparam>
 /// <param name="callback"></param>
 /// <returns></returns>
-template<class TCallback, ctl_data_type_t... Types>
-bool visit(_In_ const ctl_oc_telemetry_item_t& item,
-    _In_ const TCallback callback,
-    const igcl_data_type_dispatch_list<Types...>);
-
-/// <summary>
-/// Invokes <paramref name="callback" /> for the data type in
-/// <paramref name="item" /> if it contains valid data.
-/// </summary>
-/// <typeparam name="TCallback"></typeparam>
-/// <param name="item"></param>
-/// <param name="callback"></param>
-/// <returns></returns>
-template<class TCallback> inline bool visit(
-        _In_ const ctl_oc_telemetry_item_t& item,
-        _In_ const TCallback callback) {
-    return visit(item, callback, igcl_telemetry_data_type_dispatch_list());
+template<class... TCtxs, class TCallback>
+inline std::vector<igctl_telemetry_disp<TCtxs...>> make_igcl_telemetry_disps(
+        _In_ TCallback&& callback) {
+    return make_igcl_telemetry_disps<TCtxs...>(
+        std::forward<TCallback>(callback),
+        igcl_telemetry_data_type_dispatch_list());
 }
 
-PWROWG_DETAIL_NAMESPACE_END
 
-#include "igcl_telemetry.inl"
+/// <summary>
+/// Create a LUT indexing <typeparamref name="Types" /> by the order they are
+/// given.
+/// </summary>
+template<ctl_data_type_t... Types>
+inline constexpr std::array<ctl_data_type_t, sizeof...(Types)>
+make_igcl_data_type_list(const igcl_data_type_dispatch_list<Types...>) {
+    return std::array<ctl_data_type_t, sizeof...(Types)> { Types... };
+}
+
+/// <summary>
+/// Creates a LUT indexing all data types in
+/// <see cref="igcl_telemetry_data_type_dispatch_list" />.
+/// </summary>
+/// <returns></returns>
+inline constexpr auto make_igcl_data_type_list(void)
+        -> decltype(make_igcl_data_type_list(
+        igcl_telemetry_data_type_dispatch_list())) {
+    return make_igcl_data_type_list(igcl_telemetry_data_type_dispatch_list());
+}
+
+/// <summary>
+/// Searches the position of the data type of the given telemetry
+/// <paramref name="item" /> in the given <paramref name="lut" />.
+/// </summary>
+/// <param name="lut"></param>
+/// <param name="item"></param>
+/// <returns></returns>
+PWROWG_TEST_API std::size_t find_igcl_telemetry_disp(
+    _In_ const decltype(make_igcl_data_type_list())& lut,
+    _In_ const ctl_oc_telemetry_item_t& item);
+
+
+PWROWG_DETAIL_NAMESPACE_END
 
 #endif /* defined(POWER_OVERWHELMING_WITH_IGCL) */
 #endif /* defined(_PWROWG_IGCL_TELEMETRY_H) */
