@@ -36,13 +36,20 @@ std::size_t PWROWG_DETAIL_NAMESPACE::igcl_sensor::descriptions(
         for (std::size_t i = 0; i < devices.size(); ++i) {
             ctl_device_adapter_properties_t dev_props { };
             dev_props.Size = sizeof(dev_props);
+            dev_props.Version = 2;
             //ctl_pci_properties_t pci_props { };
             //pci_props.Size = sizeof(pci_props);
+            ctl_power_telemetry_t telemetry { };
+            telemetry.Size = sizeof(telemetry);
+            telemetry.Version = 1;
 
             throw_if_igcl_failed(igcl_library::instance()
                 .ctlGetDeviceProperties(devices[i], &dev_props));
             //throw_if_igcl_failed(igcl_library::instance()
             //    .ctlPciGetProperties(devices[i], &pci_props));
+
+            throw_if_igcl_failed(igcl_library::instance()
+                .ctlPowerTelemetryGet(devices[i], &telemetry));
 
             builder.with_name("%s (IGCL)", dev_props.name);
             builder.with_private_data(hash(dev_props));
@@ -80,6 +87,7 @@ PWROWG_DETAIL_NAMESPACE::igcl_sensor::igcl_sensor(
     for (auto& d : devices) {
         ctl_device_adapter_properties_t dev_props { };
         dev_props.Size = sizeof(dev_props);
+        dev_props.Version = 2;
         throw_if_igcl_failed(igcl_library::instance()
             .ctlGetDeviceProperties(d, &dev_props));
         const auto p = igcl_sensor::path(dev_props);
@@ -119,6 +127,7 @@ void PWROWG_DETAIL_NAMESPACE::igcl_sensor::sample(
     // Get the telemetry data from the device.
     ctl_power_telemetry_t telemetry { };
     telemetry.Size = sizeof(telemetry);
+    telemetry.Version = 1;
 
     {
         auto status = igcl_library::instance()

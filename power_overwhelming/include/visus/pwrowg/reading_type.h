@@ -1,5 +1,5 @@
 ﻿// <copyright file="reading_type.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -19,7 +19,8 @@ PWROWG_NAMESPACE_BEGIN
 enum class reading_type {
 
     /// <summary>
-    /// The reading is an IEE-754 floating point number (<c>double</c>).
+    /// The reading is an IEE-754 floating point number
+    ///  (<see langword="float" />).
     /// </summary>
     floating_point,
 
