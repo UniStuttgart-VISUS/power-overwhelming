@@ -67,6 +67,22 @@ add_library(nvml INTERFACE IMPORTED GLOBAL)
 set_target_properties(nvml PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/gdk_wddm_amd64_release/nvml/include")
 
+## oneAPI Level Zero
+#FetchContent_Declare(oneapi
+#    URL "https://github.com/oneapi-src/level-zero/archive/refs/tags/v1.28.6.zip"
+#    DOWNLOAD_EXTRACT_TIMESTAMP ON
+#)
+#option(BUILD_L0_LOADER_TESTS "" OFF)
+#option(BUILD_INSTALLER "" OFF)
+#FetchContent_MakeAvailable(oneapi)
+#add_library(oneapi INTERFACE IMPORTED GLOBAL)
+#set_target_properties(oneapi PROPERTIES
+#    INTERFACE_INCLUDE_DIRECTORIES "${oneapi_SOURCE_DIR}/include")
+#mark_as_advanced(FORCE
+#    FETCHCONTENT_SOURCE_DIR_ONEAPI
+#    FETCHCONTENT_UPDATES_DISCONNECTED_ONEAPI)
+
+
 # Rohde & Schwarz HMC 8015
 set(RsHmc8015Dir ${CMAKE_CURRENT_SOURCE_DIR}/rshmc8015-cvi-1.0.3)
 set(RsHmc8015Include ${RsHmc8015Dir} PARENT_SCOPE)

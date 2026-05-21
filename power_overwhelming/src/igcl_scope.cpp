@@ -16,7 +16,7 @@
  */
 PWROWG_DETAIL_NAMESPACE::igcl_scope::igcl_scope(void) : _args { } {
     this->_args.Size = sizeof(this->_args);
-    this->_args.Version = CTL_IMPL_VERSION;
+    this->_args.AppVersion= CTL_IMPL_VERSION;
     auto status = igcl_library::instance().ctlInit(&this->_args,
         &this->_handle);
     throw_if_igcl_failed(status);

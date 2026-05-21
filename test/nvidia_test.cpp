@@ -1,5 +1,5 @@
-// <copyright file="nvml_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+// <copyright file="nvidia_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -15,13 +15,6 @@ PWROWG_TEST_NAMESPACE_BEGIN
 TEST_CLASS(nvida_test) {
 
 public:
-
-#if defined(POWER_OVERWHELMING_WITH_NVAPI)
-    TEST_METHOD(test_nvapi_scope) {
-        detail::nvapi_scope scope;
-        Assert::IsTrue(true, L"Not crashed in scope ctor.", LINE_INFO());
-    }
-#endif /* defined(POWER_OVERWHELMING_WITH_NVAPI) */
 
 #if defined(POWER_OVERWHELMING_WITH_NVAPI)
     TEST_METHOD(test_nvapi_descriptions) {
@@ -72,12 +65,6 @@ public:
     }
 #endif /* defined(POWER_OVERWHELMING_WITH_NVAPI) */
 
-#if defined(POWER_OVERWHELMING_WITH_NVML)
-    TEST_METHOD(test_nvml_scope) {
-        detail::nvml_scope scope;
-        Assert::IsTrue(true, L"Not crashed in scope ctor.", LINE_INFO());
-    }
-#endif /* defined(POWER_OVERWHELMING_WITH_NVML) */
 
 #if defined(POWER_OVERWHELMING_WITH_NVML)
     TEST_METHOD(test_nvml_descriptions) {

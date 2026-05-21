@@ -63,8 +63,8 @@ PWROWG_NAMESPACE::timestamp::from_system_clock(void) {
  */
 PWROWG_NAMESPACE::timestamp PWROWG_NAMESPACE::timestamp::from_time_t(
         _In_ const std::time_t t,
-        _In_ const int millis,
-        _In_ const int micros) {
+        _In_ const std::time_t millis,
+        _In_ const std::time_t micros) {
     timestamp retval(std::chrono::system_clock::from_time_t(t));
 
     if (millis != 0) {

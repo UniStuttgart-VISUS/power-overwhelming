@@ -84,6 +84,22 @@ public:
         _In_ const int micros = 0,
         _In_ const int nanos = 0);
 
+    /// <summary>
+    /// Create a new timestamp from the time elapsed since 1st January 1601 UTC.
+    /// </summary>
+    /// <typeparam name="TRep">The type used to represent the ticks of the
+    /// duration.</typeparam>
+    /// <typeparam name="TPeriod">The number of fractions of a second per
+    /// tick.</typeparam>
+    /// <param name="duration">The time elapsed since 1st January 1601 UTC (the
+    /// start of the FILETIME epoch).</param>
+    /// <returns>A timestamp representing the duration since the start of the
+    /// FILETIME epoch.</returns>
+    template<class TRep, class TPeriod> static timestamp from_duration(
+            _In_ std::chrono::duration<TRep, TPeriod> duration) {
+        return timestamp(to_ticks(duration));
+    }
+
 #if defined(_WIN32)
     /// <summary>
     /// Convert the given time in 100 ns units since 1st January 1601 UTC
@@ -157,10 +173,11 @@ public:
     /// </param>
     /// <param name="micros">The microseconds part of the timestamp. This
     /// parameter is added to the result as <paramref name="t" /> is in seconds.
+    /// </param>
     /// <returns>The timestamp representing the given value
     /// <paramref name="t" />.</returns>
     static timestamp from_time_t(_In_ const std::time_t t,
-        _In_ const int millis = 0, _In_ const int micros = 0);
+        _In_ const std::time_t millis = 0, _In_ const std::time_t micros = 0);
 
     /// <summary>
     /// Creates a new timestamp from the given <c>std::tm</c>.

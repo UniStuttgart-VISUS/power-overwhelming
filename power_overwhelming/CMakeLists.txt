@@ -42,6 +42,7 @@ endif ()
 if (PWROWG_WithIgcl)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_IGCL)
     target_link_libraries(${PROJECT_NAME} PRIVATE igcl)
+    #target_link_libraries(${PROJECT_NAME} PRIVATE oneapi)
 endif ()
 
 if (PWROWG_WithNvapi)

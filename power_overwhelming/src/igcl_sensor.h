@@ -10,9 +10,11 @@
 #if defined(POWER_OVERWHELMING_WITH_IGCL)
 
 #include <cassert>
+#include <cmath>
 #include <list>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "visus/pwrowg/igcl_configuration.h"
@@ -103,7 +105,7 @@ public:
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    igcl_sensor(_In_ const std::size_t index);
+    igcl_sensor(_In_ const std::wstring& path, _In_ const std::size_t index);
 
     igcl_sensor(const igcl_sensor& rhs) = delete;
 
@@ -123,12 +125,55 @@ public:
 
 private:
 
+    /// <summary>
+    /// Retrieves all devices handles from the given library scope.
+    /// </summary>
+    static std::vector<ctl_device_adapter_handle_t> devices(
+        _In_ igcl_scope& scope);
+
+    /// <summary>
+    /// Compute a hash of the given adapter properties (except for the reserved
+    /// part at the end of the structure).
+    /// </summary>
+    static std::uint64_t hash(_In_ const ctl_device_adapter_properties_t& p);
+
+    /// <summary>
+    /// Generates a unique ID for the given adapter.
+    /// </summary>
+    static std::wstring path(_In_ const ctl_device_adapter_properties_t& p);
+
+    /// <summary>
+    /// Convert Intel's floating-point Unix time to a timestamp.
+    /// </summary>
+    template<class TType>
+    std::enable_if_t<std::is_floating_point_v<TType>, timestamp>
+    make_timestamp(_In_ const TType value);
+
+    /// <summary>
+    /// A fallback for unexpected changes in Intel's API.
+    /// </summary>
+    template<class TType>
+    std::enable_if_t<!std::is_floating_point_v<TType>, timestamp>
+    make_timestamp(_In_ const TType value) {
+        assert(false);
+        return timestamp::now();
+    }
+
+    /// <summary>
+    /// Computes the <see cref="_start" /> offset between the tick count and the
+    /// current wall clock time. This is required because contratry to the
+    /// documentation, IGCL does not provide a Unix timestamp, but the uptime in
+    /// (decimal) seconds as timestamp.
+    /// </summary>
+    void time_sync(_In_ std::size_t samples = 16);
+
     std::vector<igctl_telemetry_disp<timestamp, std::size_t,
         const sensor_array_callback, const sensor_description *,
         void *>> _deliver_sample;
     ctl_device_adapter_handle_t _device;
     std::vector<igctl_telemetry_disp<timestamp&>> _make_timestamp;
     std::size_t _index;
+    std::chrono::duration<double> _offset;
     igcl_scope _scope;
 };
 

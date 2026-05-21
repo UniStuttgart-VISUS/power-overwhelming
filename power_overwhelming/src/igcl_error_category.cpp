@@ -237,7 +237,7 @@ const std::error_category& PWROWG_DETAIL_NAMESPACE::igcl_category(
 void PWROWG_DETAIL_NAMESPACE::throw_if_igcl_failed(
         _In_ const ctl_result_t status,
         _In_opt_z_ const char *message) {
-    if (status < CTL_RESULT_ERROR_SUCCESS_END) {
+    if (status > CTL_RESULT_ERROR_SUCCESS_END) {
         if (message == nullptr) {
             throw std::system_error(status, igcl_category());
         } else {
