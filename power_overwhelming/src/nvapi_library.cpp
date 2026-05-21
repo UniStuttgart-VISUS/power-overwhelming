@@ -33,10 +33,9 @@ PWROWG_DETAIL_NAMESPACE::nvapi_library::nvapi_library(void)
     __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_finalise);
     __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_error_message);
     __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_bus_id);
-    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_from_id);
-    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_id);
     __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_name);
     __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_pci_identifiers);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_slot_id);
     __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_initialise);
     __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_register_power_callback);
 }

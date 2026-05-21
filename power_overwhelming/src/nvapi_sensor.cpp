@@ -40,17 +40,30 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvapi_sensor::descriptions(
 
         // Create descriptors for each device.
         for (retval = 0; (retval < cnt_gpus); ++retval) {
-            NvU32 gpu_id;
+            NvU32 bus_id = 0;
+            NvU32 device_id = 0;
+            NvU32 ext_device_id = 0;
             NvAPI_ShortString name;
+            NvU32 revision_id = 0;
+            NvU32 sub_system_id = 0;
+            NvU32 slot_id = 0;
 
             // Pass on the handle to the sensor.
             builder.with_private_data(gpu_handles[retval]);
 
             // Get some info about the GPU to create a unique ID.
             throw_if_nvapi_failed(nvapi_library::instance()
-                .nvapi_get_gpu_id(&gpu_id, gpu_handles[retval]));
-            builder.with_path(L"0x%u", gpu_id);
-            builder.with_id(L"NVAPI/0x%u", gpu_id);
+                .nvapi_get_gpu_bus_id(&bus_id, gpu_handles[retval]));
+            throw_if_nvapi_failed(nvapi_library::instance()
+                .nvapi_get_gpu_pci_identifiers(&device_id, &sub_system_id,
+                &revision_id, &ext_device_id, gpu_handles[retval]));
+            throw_if_nvapi_failed(nvapi_library::instance()
+                .nvapi_get_gpu_slot_id(&slot_id, gpu_handles[retval]));
+
+            builder.with_path(L"%x.%x.%x.%x:%u.%u", device_id,
+                ext_device_id, revision_id, sub_system_id, slot_id, bus_id);
+            builder.with_id(L"NVAPI/%x.%x.%x.%x:%u.%u", device_id,
+                ext_device_id, revision_id, sub_system_id, slot_id, bus_id);
 
             // Add a friendly name to the sensor.
             throw_if_nvapi_failed(nvapi_library::instance()

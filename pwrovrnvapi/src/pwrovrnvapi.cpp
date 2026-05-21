@@ -48,26 +48,6 @@ NvAPI_Status nvapi_get_gpu_bus_id(
 
 
 /*
- * ::nvapi_get_gpu_from_id
- */
-NvAPI_Status nvapi_get_gpu_from_id(
-        _Out_ NvPhysicalGpuHandle *dst,
-        _In_ NvU32 id) {
-    return ::NvAPI_GetPhysicalGPUFromGPUID(id, dst);
-}
-
-
-/*
- * ::nvapi_get_gpu_id
- */
-NvAPI_Status nvapi_get_gpu_id(
-        _Out_ NvU32 *dst,
-    _In_ NvPhysicalGpuHandle handle) {
-    return ::NvAPI_GetGPUIDfromPhysicalGPU(handle, dst);
-}
-
-
-/*
  * ::nvapi_get_gpu_name
  */
 NvAPI_Status nvapi_get_gpu_name(
@@ -87,6 +67,16 @@ NvAPI_Status nvapi_get_gpu_pci_identifiers(_Out_ NvU32 *device_id,
         _In_ NvPhysicalGpuHandle handle) {
     return ::NvAPI_GPU_GetPCIIdentifiers(handle, device_id,
         sub_system_id, revision_id, ext_device_id);
+}
+
+
+/*
+ * nvapi_get_gpu_slot_id
+ */
+NvAPI_Status nvapi_get_gpu_slot_id(
+        _Out_ NvU32 *dst,
+        _In_ NvPhysicalGpuHandle handle) {
+    return ::NvAPI_GPU_GetBusSlotId(handle, dst);
 }
 
 
