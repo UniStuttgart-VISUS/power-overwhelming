@@ -16,6 +16,8 @@
 #include <type_traits>
 #include <vector>
 
+#include "visus/pwrowg/sensor_type.h"
+
 #include "dispatch_list.h"
 #include "igcl_library.h"
 
@@ -326,6 +328,125 @@ inline constexpr auto make_igcl_data_type_list(void)
         igcl_telemetry_data_type_dispatch_list())) {
     return make_igcl_data_type_list(igcl_telemetry_data_type_dispatch_list());
 }
+
+
+/// <summary>
+/// A traits type that allows for dispatching IGCL units. All units without a
+/// template specialisation are unsupported by Power Overwhelming.
+/// </summary>
+/// <typeparam name="Unit">The unit being described.</typeparam>
+template<ctl_units_t Unit> struct igcl_unit_traits final { 
+    static constexpr auto supported = false;
+};
+
+/// <summary>
+/// Specialisation for <see cref="CTL_UNITS_VOLTAGE_VOLTS" />.
+/// </summary>
+template<> struct igcl_unit_traits<CTL_UNITS_VOLTAGE_VOLTS> final {
+    static constexpr auto supported = true;
+    static constexpr auto type = sensor_type::voltage;
+
+    template<class TType>
+    static constexpr TType convert(_In_ const TType value) noexcept {
+        return value;
+    }
+};
+
+/// <summary>
+/// Specialisation for <see cref="CTL_UNITS_VOLTAGE_MILLIVOLTS" />.
+/// </summary>
+template<> struct igcl_unit_traits<CTL_UNITS_VOLTAGE_MILLIVOLTS> final {
+    static constexpr auto supported = true;
+    static constexpr auto type = sensor_type::voltage;
+
+    template<class TType>
+    static constexpr TType convert(_In_ const TType value) noexcept {
+        return value / static_cast<TType>(1000);
+    }
+};
+
+/// <summary>
+/// Specialisation for <see cref="CTL_UNITS_POWER_WATTS" />.
+/// </summary>
+template<> struct igcl_unit_traits<CTL_UNITS_POWER_WATTS> final {
+    static constexpr auto supported = true;
+    static constexpr auto type = sensor_type::power;
+
+    template<class TType>
+    static constexpr TType convert(_In_ const TType value) noexcept {
+        return value;
+    }
+};
+
+/// <summary>
+/// Specialisation for <see cref="CTL_UNITS_POWER_MILLIWATTS" />.
+/// </summary>
+template<> struct igcl_unit_traits<CTL_UNITS_POWER_MILLIWATTS> final {
+    static constexpr auto supported = true;
+    static constexpr auto type = sensor_type::power;
+
+    template<class TType>
+    static constexpr TType convert(_In_ const TType value) noexcept {
+        return value / static_cast<TType>(1000);
+    }
+};
+
+/// <summary>
+/// Specialisation for <see cref="CTL_UNITS_ENERGY_JOULES" />.
+/// </summary>
+template<> struct igcl_unit_traits<CTL_UNITS_ENERGY_JOULES> final {
+    static constexpr auto supported = true;
+    static constexpr auto type = sensor_type::energy;
+
+    template<class TType>
+    static constexpr TType convert(_In_ const TType value) noexcept {
+        return value;
+    }
+};
+
+/// <summary>
+/// Specialisation for <see cref="CTL_UNITS_TEMPERATURE_CELSIUS" />.
+/// </summary>
+template<> struct igcl_unit_traits<CTL_UNITS_TEMPERATURE_CELSIUS> final {
+    static constexpr auto supported = true;
+    static constexpr auto type = sensor_type::temperature;
+
+    template<class TType>
+    static constexpr TType convert(_In_ const TType value) noexcept {
+        return value;
+    }
+};
+
+
+/// <summary>
+/// A dispatch list for IGCL units.
+/// </summary>
+/// <typeparam name="Units">The unitsto be dispatched.</typeparam>
+template<ctl_units_t... Units>
+using igcl_unit_dispatch_list = dispatch_list<ctl_units_t, Units...>;
+
+
+/// <summary>
+/// A dispatch list for all units used in IGCL telemetry items.
+/// </summary>
+typedef igcl_unit_dispatch_list <
+    CTL_UNITS_FREQUENCY_MHZ,
+    CTL_UNITS_OPERATIONS_GTS,
+    CTL_UNITS_OPERATIONS_MTS,
+    CTL_UNITS_VOLTAGE_VOLTS,
+    CTL_UNITS_POWER_WATTS,
+    CTL_UNITS_TEMPERATURE_CELSIUS,
+    CTL_UNITS_ENERGY_JOULES,
+    CTL_UNITS_TIME_SECONDS,
+    CTL_UNITS_MEMORY_BYTES,
+    CTL_UNITS_ANGULAR_SPEED_RPM,
+    CTL_UNITS_POWER_MILLIWATTS,
+    CTL_UNITS_PERCENT,
+    CTL_UNITS_MEM_SPEED_GBPS,
+    CTL_UNITS_VOLTAGE_MILLIVOLTS,
+    CTL_UNITS_BANDWIDTH_MBPS,
+    CTL_UNITS_UNKNOWN>
+    igcl_units_dispatch_list;
 
 PWROWG_DETAIL_NAMESPACE_END
 
