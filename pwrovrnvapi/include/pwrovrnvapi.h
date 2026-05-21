@@ -67,28 +67,6 @@ PWROVRNVAPI_API NvAPI_Status nvapi_get_gpu_bus_id(
     _In_ NvPhysicalGpuHandle handle);
 
 /// <summary>
-/// Calls <see cref="NvAPI_GetPhysicalGPUFromGPUID" /> to get a handle for the
-/// GPU with the given ID.
-/// </summary>
-/// <param name="id"></param>
-/// <returns>A status code indicating whether the operation was successful.
-/// </returns>
-PWROVRNVAPI_API NvAPI_Status nvapi_get_gpu_from_id(
-    _Out_ NvPhysicalGpuHandle *dst,
-    _In_ NvU32 id);
-
-/// <summary>
-/// Calls <see cref="NvAPI_GetGPUIDfromPhysicalGPU" /> to get the GPU ID of the
-/// GPU associated with the given handle.
-/// </summary>
-/// <param name="handle">A handle for a physical GPU.</param>
-/// <returns>A status code indicating whether the operation was successful.
-/// </returns>
-PWROVRNVAPI_API NvAPI_Status nvapi_get_gpu_id(
-    _Out_ NvU32 *dst,
-    _In_ NvPhysicalGpuHandle handle);
-
-/// <summary>
 /// Calls <see cref="NvAPI_GPU_GetFullName" /> to get the name of the GPU
 /// associated with the given handle.
 /// </summary>
@@ -107,8 +85,8 @@ PWROVRNVAPI_API NvAPI_Status nvapi_get_gpu_name(
 /// <param name="device_id">Receives the device ID.</param>
 /// <param name="sub_system_id">Receives the sub-system ID.</param>
 /// <param name="revision_id">Receives the revision ID.</param>
-/// <param name="ext_device_id">Receives the extended device ID.</param>
-/// <param name="handle">A handloe for a physical GPU.</param>
+/// <param name="ext_device_id">Receives the external device ID.</param>
+/// <param name="handle">A handle for a physical GPU.</param>
 /// <returns>A status code indicating whether the operation was successful.
 /// </returns>
 PWROVRNVAPI_API NvAPI_Status nvapi_get_gpu_pci_identifiers(
@@ -116,6 +94,20 @@ PWROVRNVAPI_API NvAPI_Status nvapi_get_gpu_pci_identifiers(
     _Out_ NvU32 *sub_system_id,
     _Out_ NvU32 *revision_id,
     _Out_ NvU32 *ext_device_id,
+    _In_ NvPhysicalGpuHandle handle);
+
+
+/// <summary>
+/// Gets the ID of the PCI slot of the GPU associated with the given handle by
+/// calling <see cref="NvAPI_GPU_GetBusSlotId" />.
+/// </summary>
+/// <param name="dst">A pointer to a variable that receives the PCI slot ID.
+/// </param>
+/// <param name="handle">A handle for a physical GPU.</param>
+/// <returns>A status code indicating whether the operation was successful.
+/// </returns>
+PWROVRNVAPI_API NvAPI_Status nvapi_get_gpu_slot_id(
+    _Out_ NvU32 *dst,
     _In_ NvPhysicalGpuHandle handle);
 
 /// <summary>
