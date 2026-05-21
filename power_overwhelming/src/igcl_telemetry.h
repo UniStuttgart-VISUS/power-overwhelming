@@ -337,6 +337,13 @@ inline constexpr auto make_igcl_data_type_list(void)
 /// <typeparam name="Unit">The unit being described.</typeparam>
 template<ctl_units_t Unit> struct igcl_unit_traits final { 
     static constexpr auto supported = false;
+    static constexpr auto type = sensor_type::unknown;
+    static constexpr auto unit = Unit;
+
+    template<class TType>
+    static constexpr TType convert(_In_ const TType value) noexcept {
+        return value;
+    }
 };
 
 /// <summary>
@@ -345,6 +352,7 @@ template<ctl_units_t Unit> struct igcl_unit_traits final {
 template<> struct igcl_unit_traits<CTL_UNITS_VOLTAGE_VOLTS> final {
     static constexpr auto supported = true;
     static constexpr auto type = sensor_type::voltage;
+    static constexpr auto unit = CTL_UNITS_VOLTAGE_VOLTS;
 
     template<class TType>
     static constexpr TType convert(_In_ const TType value) noexcept {
@@ -358,6 +366,7 @@ template<> struct igcl_unit_traits<CTL_UNITS_VOLTAGE_VOLTS> final {
 template<> struct igcl_unit_traits<CTL_UNITS_VOLTAGE_MILLIVOLTS> final {
     static constexpr auto supported = true;
     static constexpr auto type = sensor_type::voltage;
+    static constexpr auto unit = CTL_UNITS_VOLTAGE_MILLIVOLTS;
 
     template<class TType>
     static constexpr TType convert(_In_ const TType value) noexcept {
@@ -371,6 +380,7 @@ template<> struct igcl_unit_traits<CTL_UNITS_VOLTAGE_MILLIVOLTS> final {
 template<> struct igcl_unit_traits<CTL_UNITS_POWER_WATTS> final {
     static constexpr auto supported = true;
     static constexpr auto type = sensor_type::power;
+    static constexpr auto unit = CTL_UNITS_POWER_WATTS;
 
     template<class TType>
     static constexpr TType convert(_In_ const TType value) noexcept {
@@ -384,6 +394,7 @@ template<> struct igcl_unit_traits<CTL_UNITS_POWER_WATTS> final {
 template<> struct igcl_unit_traits<CTL_UNITS_POWER_MILLIWATTS> final {
     static constexpr auto supported = true;
     static constexpr auto type = sensor_type::power;
+    static constexpr auto unit = CTL_UNITS_POWER_MILLIWATTS;
 
     template<class TType>
     static constexpr TType convert(_In_ const TType value) noexcept {
@@ -397,6 +408,7 @@ template<> struct igcl_unit_traits<CTL_UNITS_POWER_MILLIWATTS> final {
 template<> struct igcl_unit_traits<CTL_UNITS_ENERGY_JOULES> final {
     static constexpr auto supported = true;
     static constexpr auto type = sensor_type::energy;
+    static constexpr auto unit = CTL_UNITS_ENERGY_JOULES;
 
     template<class TType>
     static constexpr TType convert(_In_ const TType value) noexcept {
@@ -410,6 +422,7 @@ template<> struct igcl_unit_traits<CTL_UNITS_ENERGY_JOULES> final {
 template<> struct igcl_unit_traits<CTL_UNITS_TEMPERATURE_CELSIUS> final {
     static constexpr auto supported = true;
     static constexpr auto type = sensor_type::temperature;
+    static constexpr auto unit = CTL_UNITS_TEMPERATURE_CELSIUS;
 
     template<class TType>
     static constexpr TType convert(_In_ const TType value) noexcept {
@@ -447,6 +460,44 @@ typedef igcl_unit_dispatch_list <
     CTL_UNITS_BANDWIDTH_MBPS,
     CTL_UNITS_UNKNOWN>
     igcl_units_dispatch_list;
+
+
+/// <summary>
+/// Dispatches a traits pointer for the given <paramref name="unit" /> to the
+/// given <typeparamref name="TCallback" /> template.
+/// </summary>
+template<class TCallback, ctl_units_t... Units>
+bool dispatch_igcl_unit_traits(_In_ const ctl_units_t unit,
+    _In_ const TCallback callback,
+    igcl_unit_dispatch_list<Units...>);
+
+
+/// <summary>
+/// Dispatches a traits pointer for the given <paramref name="unit" /> to the
+/// given <typeparamref name="TCallback" /> template.
+/// </summary>
+template<class TCallback> bool dispatch_igcl_unit_traits(
+        _In_ const ctl_units_t unit,
+        _In_ const TCallback callback) {
+    return dispatch_igcl_unit_traits(unit, callback,
+        igcl_units_dispatch_list());
+}
+
+/// <summary>
+/// Dispatches a traits pointer for the unit of the given
+///  <paramref name="telemetry" /> data to the given
+///  <typeparamref name="TCllback" /> template.
+/// </summary>
+/// <typeparam name="TCallback"></typeparam>
+/// <param name="telemetry"></param>
+/// <param name="callback"></param>
+/// <returns></returns>
+template<class TCallback> bool dispatch_igcl_unit_traits(
+        _In_ const ctl_oc_telemetry_item_t& telemetry,
+        _In_ const TCallback callback) {
+    return dispatch_igcl_unit_traits(telemetry.units, callback,
+        igcl_units_dispatch_list());
+}
 
 PWROWG_DETAIL_NAMESPACE_END
 

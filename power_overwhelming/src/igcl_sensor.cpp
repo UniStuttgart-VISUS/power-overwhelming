@@ -51,6 +51,12 @@ std::size_t PWROWG_DETAIL_NAMESPACE::igcl_sensor::descriptions(
             throw_if_igcl_failed(igcl_library::instance()
                 .ctlPowerTelemetryGet(devices[i], &telemetry));
 
+            dispatch_igcl_unit_traits(telemetry.gpuCurrentTemperature,
+                [](auto t) {
+                    typedef std::remove_pointer_t<decltype(t)> traits;
+                    auto xxx = traits::supported;
+                });
+
             builder.with_name("%s (IGCL)", dev_props.name);
             builder.with_private_data(hash(dev_props));
 
