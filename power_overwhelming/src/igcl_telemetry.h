@@ -16,10 +16,12 @@
 #include <type_traits>
 #include <vector>
 
+#include "visus/pwrowg/reading_type.h"
 #include "visus/pwrowg/sensor_type.h"
 
 #include "dispatch_list.h"
 #include "igcl_library.h"
+#include "struct_traits.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -36,6 +38,7 @@ template<ctl_data_type_t Type> struct igcl_data_type_traits;
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_INT8> final {
     typedef std::int8_t type;
+    static constexpr auto reading_type = reading_type::signed_integer;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
         return item.value.data8;
@@ -51,6 +54,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_INT8> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_UINT8> final {
     typedef std::uint8_t type;
+    static constexpr auto reading_type = reading_type::unsigned_integer;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
         return item.value.datau8;
@@ -66,6 +70,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_UINT8> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_INT16> final {
     typedef std::int16_t type;
+    static constexpr auto reading_type = reading_type::signed_integer;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
         return item.value.data16;
@@ -81,6 +86,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_INT16> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_UINT16> final {
     typedef std::uint16_t type;
+    static constexpr auto reading_type = reading_type::unsigned_integer;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
         return item.value.datau16;
@@ -96,6 +102,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_UINT16> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_INT32> final {
     typedef std::int32_t type;
+    static constexpr auto reading_type = reading_type::signed_integer;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
         return item.value.data32;
@@ -111,6 +118,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_INT32> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_UINT32> final {
     typedef std::uint32_t type;
+    static constexpr auto reading_type = reading_type::unsigned_integer;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
         return item.value.datau32;
@@ -126,6 +134,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_UINT32> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_INT64> final {
     typedef std::int64_t type;
+    static constexpr auto reading_type = reading_type::signed_integer;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
         return item.value.data64;
@@ -141,6 +150,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_INT64> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_UINT64> final {
     typedef std::uint64_t type;
+    static constexpr auto reading_type = reading_type::unsigned_integer;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
         return item.value.datau64;
@@ -156,6 +166,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_UINT64> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_FLOAT> final {
     typedef float type;
+    static constexpr auto reading_type = reading_type::floating_point;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
         return item.value.datafloat;
@@ -171,6 +182,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_FLOAT> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_DOUBLE> final {
     typedef double type;
+    static constexpr auto reading_type = reading_type::floating_point;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
         return item.value.datadouble;
@@ -239,6 +251,41 @@ typedef igcl_data_type_dispatch_list<
 /// callback following the telemetry item.</typeparam>
 template<class... TCtxs> using igctl_telemetry_disp
     = std::function<void(const ctl_oc_telemetry_item_t&, TCtxs&&...)>;
+
+
+/// <summary>
+/// Dispatches a traits pointer for the given IGCL <paramref name="type" /> to
+/// the given <typeparamref name="TCallback" /> template.
+/// </summary>
+template<class TCallback, ctl_data_type_t... Types>
+bool dispatch_igcl_data_type_traits(_In_ const ctl_data_type_t type,
+    _In_ const TCallback callback,
+    igcl_data_type_dispatch_list<Types...>);
+
+/// <summary>
+/// Dispatches a traits pointer for the given IGCL <paramref name="type" /> to
+/// the given <typeparamref name="TCallback" /> template.
+/// </summary>
+template<class TCallback> inline bool dispatch_igcl_data_type_traits(
+        _In_ const ctl_data_type_t type,
+        _In_ TCallback&& callback) {
+    return dispatch_igcl_data_type_traits(type,
+        std::forward<TCallback>(callback),
+        igcl_telemetry_data_type_dispatch_list());
+}
+
+/// <summary>
+/// Dispatches a traits pointer for data type of the given
+///  <paramref name="telemetry" /> data to the given
+///  <typeparamref name="TCallback" /> template.
+/// </summary>
+template<class TCallback> inline bool dispatch_igcl_data_type_traits(
+        _In_ const ctl_oc_telemetry_item_t& telemetry,
+        _In_ TCallback&& callback) {
+    return dispatch_igcl_data_type_traits(telemetry.type,
+        std::forward<TCallback>(callback),
+        igcl_telemetry_data_type_dispatch_list());
+}
 
 
 /// <summary>
@@ -338,7 +385,8 @@ inline constexpr auto make_igcl_data_type_list(void)
 template<ctl_units_t Unit> struct igcl_unit_traits final { 
     static constexpr auto supported = false;
     static constexpr auto type = sensor_type::unknown;
-    static constexpr auto unit = Unit;
+    static constexpr auto unit = reading_unit::unknown;
+    static constexpr auto value = Unit;
 
     template<class TType>
     static constexpr TType convert(_In_ const TType value) noexcept {
@@ -352,7 +400,8 @@ template<ctl_units_t Unit> struct igcl_unit_traits final {
 template<> struct igcl_unit_traits<CTL_UNITS_VOLTAGE_VOLTS> final {
     static constexpr auto supported = true;
     static constexpr auto type = sensor_type::voltage;
-    static constexpr auto unit = CTL_UNITS_VOLTAGE_VOLTS;
+    static constexpr auto unit = reading_unit::volt;
+    static constexpr auto value = CTL_UNITS_VOLTAGE_VOLTS;
 
     template<class TType>
     static constexpr TType convert(_In_ const TType value) noexcept {
@@ -366,7 +415,8 @@ template<> struct igcl_unit_traits<CTL_UNITS_VOLTAGE_VOLTS> final {
 template<> struct igcl_unit_traits<CTL_UNITS_VOLTAGE_MILLIVOLTS> final {
     static constexpr auto supported = true;
     static constexpr auto type = sensor_type::voltage;
-    static constexpr auto unit = CTL_UNITS_VOLTAGE_MILLIVOLTS;
+    static constexpr auto unit = reading_unit::volt;
+    static constexpr auto value = CTL_UNITS_VOLTAGE_MILLIVOLTS;
 
     template<class TType>
     static constexpr TType convert(_In_ const TType value) noexcept {
@@ -380,7 +430,8 @@ template<> struct igcl_unit_traits<CTL_UNITS_VOLTAGE_MILLIVOLTS> final {
 template<> struct igcl_unit_traits<CTL_UNITS_POWER_WATTS> final {
     static constexpr auto supported = true;
     static constexpr auto type = sensor_type::power;
-    static constexpr auto unit = CTL_UNITS_POWER_WATTS;
+    static constexpr auto unit = reading_unit::watt;
+    static constexpr auto value = CTL_UNITS_POWER_WATTS;
 
     template<class TType>
     static constexpr TType convert(_In_ const TType value) noexcept {
@@ -394,7 +445,8 @@ template<> struct igcl_unit_traits<CTL_UNITS_POWER_WATTS> final {
 template<> struct igcl_unit_traits<CTL_UNITS_POWER_MILLIWATTS> final {
     static constexpr auto supported = true;
     static constexpr auto type = sensor_type::power;
-    static constexpr auto unit = CTL_UNITS_POWER_MILLIWATTS;
+    static constexpr auto unit = reading_unit::watt;
+    static constexpr auto value = CTL_UNITS_POWER_MILLIWATTS;
 
     template<class TType>
     static constexpr TType convert(_In_ const TType value) noexcept {
@@ -408,7 +460,8 @@ template<> struct igcl_unit_traits<CTL_UNITS_POWER_MILLIWATTS> final {
 template<> struct igcl_unit_traits<CTL_UNITS_ENERGY_JOULES> final {
     static constexpr auto supported = true;
     static constexpr auto type = sensor_type::energy;
-    static constexpr auto unit = CTL_UNITS_ENERGY_JOULES;
+    static constexpr auto unit = reading_unit::joule;
+    static constexpr auto value = CTL_UNITS_ENERGY_JOULES;
 
     template<class TType>
     static constexpr TType convert(_In_ const TType value) noexcept {
@@ -422,7 +475,8 @@ template<> struct igcl_unit_traits<CTL_UNITS_ENERGY_JOULES> final {
 template<> struct igcl_unit_traits<CTL_UNITS_TEMPERATURE_CELSIUS> final {
     static constexpr auto supported = true;
     static constexpr auto type = sensor_type::temperature;
-    static constexpr auto unit = CTL_UNITS_TEMPERATURE_CELSIUS;
+    static constexpr auto unit = reading_unit::celsius;
+    static constexpr auto value = CTL_UNITS_TEMPERATURE_CELSIUS;
 
     template<class TType>
     static constexpr TType convert(_In_ const TType value) noexcept {
@@ -478,8 +532,9 @@ bool dispatch_igcl_unit_traits(_In_ const ctl_units_t unit,
 /// </summary>
 template<class TCallback> bool dispatch_igcl_unit_traits(
         _In_ const ctl_units_t unit,
-        _In_ const TCallback callback) {
-    return dispatch_igcl_unit_traits(unit, callback,
+        _In_ TCallback&& callback) {
+    return dispatch_igcl_unit_traits(unit,
+        std::forward(callback),
         igcl_units_dispatch_list());
 }
 
@@ -488,14 +543,11 @@ template<class TCallback> bool dispatch_igcl_unit_traits(
 ///  <paramref name="telemetry" /> data to the given
 ///  <typeparamref name="TCllback" /> template.
 /// </summary>
-/// <typeparam name="TCallback"></typeparam>
-/// <param name="telemetry"></param>
-/// <param name="callback"></param>
-/// <returns></returns>
-template<class TCallback> bool dispatch_igcl_unit_traits(
+template<class TCallback> inline bool dispatch_igcl_unit_traits(
         _In_ const ctl_oc_telemetry_item_t& telemetry,
-        _In_ const TCallback callback) {
-    return dispatch_igcl_unit_traits(telemetry.units, callback,
+        _In_ TCallback&& callback) {
+    return dispatch_igcl_unit_traits(telemetry.units,
+        std::forward<TCallback>(callback),
         igcl_units_dispatch_list());
 }
 

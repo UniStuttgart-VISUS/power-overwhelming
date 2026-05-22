@@ -16,11 +16,35 @@ TInput PWROWG_DETAIL_NAMESPACE::igcl_sensor::from_descriptions(
         _In_ const TInput end,
         _In_ const sensor_array_impl *owner,
         _In_ const configuration_type& config) {
+    typedef sensor_description_builder builder_type;
+    typedef sensor_description desc_type;
     auto retval = move_front_if(begin, end, is_igcl_sensor);
 
-    for (auto it = begin; it != retval; ++it) {
-        dst.emplace_back(it->path(), index++);
+    // Group the sensors by their adapter, which is identified by the path.
+    std::sort(begin, retval, [](const desc_type& lhs, const desc_type& rhs) {
+        return (lhs.path() < rhs.path());
+    });
+
+    // Create the sensor instances. The 'it' iterator always marks the begin
+    // of a sensor group, whereas 'jt' goes over the members of the group and
+    // adds their sample builder to 'builders'. Once all builders for a single
+    // device are collected, create the sensor for that device.
+    for (auto it = begin, jt = begin; it != retval; it = jt) {
+        std::vector<sample_builder> builders;
+
+        for (; (jt != end) && (it->path() == jt->path()); ++jt) {
+            auto pd = builder_type::private_data<sample_builder>(*jt);
+            assert(pd != nullptr);
+            builders.emplace_back(*pd);
+        }
+
+        const auto di = builders.size();
+        assert(di > 0);
+        dst.emplace_back(it->path(), index, std::move(builders));
+        assert(!dst.empty());
         dst.back().time_sync();
+
+        index += di;
     }
 
     return retval;

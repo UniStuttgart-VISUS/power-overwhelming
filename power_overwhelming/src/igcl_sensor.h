@@ -50,6 +50,14 @@ public:
     typedef std::list<igcl_sensor> list_type;
 
     /// <summary>
+    /// A functor that creates a sample from telemetry.
+    /// </summary>
+    typedef std::function<PWROWG_NAMESPACE::sample(
+        PWROWG_NAMESPACE::sample::source_type,
+        const timestamp,
+        const ctl_power_telemetry_t&)> sample_builder;
+
+    /// <summary>
     /// Create descriptions for all supported NVIDIA sensors in the system.
     /// </summary>
     /// <remarks>
@@ -105,7 +113,15 @@ public:
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    igcl_sensor(_In_ const std::wstring& path, _In_ const std::size_t index);
+    /// <param name="path">The path of the device, which identifies the hardware
+    /// that is sampled in one go.</param>
+    /// <param name="index">The index of the first element in
+    /// <paramref name="builders" />. All other sensors will be created by
+    /// adding to this base index.</param>
+    /// <param name="builders">The sample builders that create a sample from the
+    /// IGCL telemetry.</param>
+    igcl_sensor(_In_ const std::wstring& path, _In_ const std::size_t index,
+        _Inout_ std::vector<sample_builder>&& builders);
 
     igcl_sensor(const igcl_sensor& rhs) = delete;
 
@@ -124,23 +140,6 @@ public:
     igcl_sensor& operator =(const igcl_sensor& rhs) = delete;
 
 private:
-
-    /// <summary>
-    /// Retrieves all devices handles from the given library scope.
-    /// </summary>
-    static std::vector<ctl_device_adapter_handle_t> devices(
-        _In_ igcl_scope& scope);
-
-    /// <summary>
-    /// Compute a hash of the given adapter properties (except for the reserved
-    /// part at the end of the structure).
-    /// </summary>
-    static std::uint64_t hash(_In_ const ctl_device_adapter_properties_t& p);
-
-    /// <summary>
-    /// Generates a unique ID for the given adapter.
-    /// </summary>
-    static std::wstring path(_In_ const ctl_device_adapter_properties_t& p);
 
     /// <summary>
     /// Convert Intel's floating-point Unix time to a timestamp.
@@ -167,6 +166,7 @@ private:
     /// </summary>
     void time_sync(_In_ std::size_t samples = 16);
 
+    std::vector<sample_builder> _builders;
     std::vector<igctl_telemetry_disp<timestamp, std::size_t,
         const sensor_array_callback, const sensor_description *,
         void *>> _deliver_sample;
@@ -174,6 +174,7 @@ private:
     std::vector<igctl_telemetry_disp<timestamp&>> _make_timestamp;
     std::size_t _index;
     std::chrono::duration<double> _offset;
+    std::vector<PWROWG_NAMESPACE::sample> _samples;
     igcl_scope _scope;
 };
 

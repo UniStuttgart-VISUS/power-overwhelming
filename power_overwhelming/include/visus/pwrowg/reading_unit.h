@@ -57,7 +57,17 @@ enum class reading_unit {
     /// <summary>
     /// Ampere-hours, an alternative non-SI unit for electric charge.
     /// </summary>
-    ampere_hour
+    ampere_hour,
+
+    /// <summary>
+    /// Degrees Ceclius for temperature.
+    /// </summary>
+    celsius,
+
+    /// <summary>
+    /// Kelvin for temperature.
+    /// </summary>
+    kelvin
 };
 
 PWROWG_NAMESPACE_END

@@ -8,10 +8,230 @@
 #include "igcl_sensor.h"
 
 #include <array>
+#include <limits>
 #include <stdexcept>
 
 #include "igcl_error_category.h"
 #include "fnv1a.h"
+
+
+/// <summary>
+/// Creates a sample from IGCL data, possibly narrowing the precision. This
+/// builder class is required to coerce the types used by Intel, which are
+/// more than what we support, into one of the supported reading types.
+/// </summary>
+template<class TType,
+    bool Float = std::is_floating_point_v<TType>,
+    bool Unsigned = std::is_unsigned_v<TType>>
+struct sample_builder;
+
+/// <summary>
+/// Specialisation for floating-point samples.
+/// </summary>
+template<class TType>
+struct sample_builder<TType, true, false> final {
+    static inline PWROWG_NAMESPACE::sample build(
+            _In_ const PWROWG_NAMESPACE::sample::source_type source,
+            _In_ const PWROWG_NAMESPACE::timestamp time,
+            _In_ const TType value) {
+        return PWROWG_NAMESPACE::sample(source, time,
+            static_cast<float>(value));
+    }
+};
+
+/// <summary>
+/// Specialisation for signed integer samples.
+/// </summary>
+template<class TType>
+struct sample_builder<TType, false, false> final {
+    static inline PWROWG_NAMESPACE::sample build(
+            _In_ const PWROWG_NAMESPACE::sample::source_type source,
+            _In_ const PWROWG_NAMESPACE::timestamp time,
+            _In_ const TType value) {
+        typedef std::int32_t sample_type;
+        assert(value >= (std::numeric_limits<sample_type>::min)());
+        assert(value <= (std::numeric_limits<sample_type>::max)());
+        return PWROWG_NAMESPACE::sample(source, time,
+            static_cast<sample_type>(value));
+    }
+};
+
+/// <summary>
+/// Specialisation for unsigned integer samples.
+/// </summary>
+template<class TType>
+struct sample_builder<TType, false, true> final {
+    static inline PWROWG_NAMESPACE::sample build(
+            _In_ const PWROWG_NAMESPACE::sample::source_type source,
+            _In_ const PWROWG_NAMESPACE::timestamp time,
+            _In_ const TType value) {
+        typedef std::uint32_t sample_type;
+        assert(value >= (std::numeric_limits<sample_type>::min)());
+        assert(value <= (std::numeric_limits<sample_type>::max)());
+        return PWROWG_NAMESPACE::sample(source, time,
+            static_cast<sample_type>(value));
+    }
+};
+
+
+/// <summary>
+/// Retrieves all devices handles from the given library scope.
+/// </summary>
+static std::vector<ctl_device_adapter_handle_t> devices(
+        _In_ PWROWG_DETAIL_NAMESPACE::igcl_scope& scope) {
+    using namespace PWROWG_DETAIL_NAMESPACE;
+    std::uint32_t cnt = 0;
+    throw_if_igcl_failed(igcl_library::instance()
+        .ctlEnumerateDevices(scope, &cnt, nullptr));
+
+    std::vector<ctl_device_adapter_handle_t> retval(cnt);
+    throw_if_igcl_failed(igcl_library::instance()
+        .ctlEnumerateDevices(scope, &cnt, retval.data()));
+
+    return retval;
+}
+
+
+/// <summary>
+/// Adds, if available and representable in Power Overwhelming, the descrption
+/// of the given telementry <paramref name="item" /> to the builder and returns
+/// whether it should be emitted or not. The pointer to the
+/// <paramref name="item" /> must point to an element of the given
+/// <paramref name="telemetry" /> for the function to work correctly.
+/// </summary>
+static bool describe(
+        _Inout_ PWROWG_DETAIL_NAMESPACE::sensor_description_builder& builder,
+        _In_ const std::wstring& path,
+        _In_z_ const char *dev_name,
+        _In_z_ const wchar_t *sensor_name,
+        _In_z_ const wchar_t *sensor_id,
+        _In_ const ctl_power_telemetry_t* telemetry,
+        _In_ const ctl_oc_telemetry_item_t* item) {
+    assert(dev_name != nullptr);
+    assert(sensor_name != nullptr);
+    assert(sensor_id != nullptr);
+    assert(telemetry != nullptr);
+    assert(item != nullptr);
+    using namespace PWROWG_NAMESPACE;
+    using namespace PWROWG_DETAIL_NAMESPACE;
+    typedef std::decay_t<decltype(*item)> item_type;
+    auto retval = false;
+
+    // Dispatch the unit measured first, which tells us whether we can support
+    // the telemetry.
+    dispatch_igcl_unit_traits(*item, [&](auto tag) {
+        typedef std::remove_pointer_t<decltype(tag)> unit_traits;
+        if (!(retval = unit_traits::supported)) {
+            return;
+        }
+
+        if (!(retval = item->bSupported)) {
+            return;
+        }
+
+        builder.with_name(L"%hs %s (IGCL)", dev_name, sensor_name);
+        builder.with_id(L"IGCL/%s/%s", path.c_str(), sensor_id);
+        builder.with_type(sensor_type::gpu  | sensor_type::software
+            | unit_traits::type);
+        builder.measured_in(unit_traits::unit);
+
+        // Next, we need to find out what kind of values we get. This allows for
+        // intantiating the correct conversion from IGCL telemetry to our sample
+        // type.
+        dispatch_igcl_data_type_traits(*item, [&](auto tag) {
+            typedef std::remove_pointer_t<decltype(tag)> type_traits;
+            const auto o = member_offset(telemetry, item);
+
+            builder.produces(type_traits::reading_type);
+
+            builder.with_new_private_data<igcl_sensor::sample_builder>([o](
+                    const sample::source_type source,
+                    const timestamp time,
+                    const ctl_power_telemetry_t& data) {
+                auto v = type_traits::get(member_at<item_type>(data, o));
+                typedef std::decay_t<decltype(v)> value_type;
+                return sample_builder<value_type>::build(source, time, v);
+            });
+        });
+    });
+
+    return retval;
+}
+
+
+/// <summary>
+/// Adds a Boolean telemetry item to the <paramref name="builder" />, which is
+/// used for the throttling states of the card. The pointer to the
+///  <paramref name="item" /> must point to an element of the given
+/// <paramref name="telemetry" /> for the function to work correctly.
+/// </summary>
+static bool describe(
+        _Inout_ PWROWG_DETAIL_NAMESPACE::sensor_description_builder& builder,
+        _In_ const std::wstring& path,
+        _In_z_ const char *dev_name,
+        _In_z_ const wchar_t *sensor_name,
+        _In_z_ const wchar_t *sensor_id,
+        _In_ const PWROWG_NAMESPACE::sensor_type type,
+        _In_ const ctl_power_telemetry_t* telemetry,
+        _In_ const bool* item) {
+    assert(dev_name != nullptr);
+    assert(sensor_name != nullptr);
+    assert(sensor_id != nullptr);
+    assert(telemetry != nullptr);
+    assert(item != nullptr);
+    using namespace PWROWG_NAMESPACE;
+    using namespace PWROWG_DETAIL_NAMESPACE;
+    typedef std::decay_t<decltype(*item)> item_type;
+
+    builder.with_name(L"%hs %s (IGCL)", dev_name, sensor_name);
+    builder.with_id(L"IGCL/%s/%s", path.c_str(), sensor_id);
+    builder.with_type(sensor_type::gpu | sensor_type::software | type);
+    builder.produces(reading_type::unsigned_integer);
+    builder.measured_in(reading_unit::unknown);
+
+    const auto o = member_offset(telemetry, item);
+    builder.with_new_private_data<igcl_sensor::sample_builder>([o](
+            const sample::source_type source,
+            const timestamp time,
+            const ctl_power_telemetry_t& data) {
+        auto v = static_cast<std::uint32_t>(member_at<item_type>(data, o));
+        return sample(source, time, v);
+    });
+
+    return true;
+}
+
+
+/// <summary>
+/// Compute a hash of the given adapter properties (except for the reserved
+/// part at the end of the structure).
+/// </summary>
+static std::uint64_t hash(_In_ const ctl_device_adapter_properties_t& p) {
+    PWROWG_DETAIL_NAMESPACE::fnv1a<std::uint64_t> retval;
+    retval(reinterpret_cast<const std::uint8_t*>(&p),
+        reinterpret_cast<const std::uint8_t*>(&p.reserved));
+    return retval;
+}
+
+
+/// <summary>
+/// Generates a unique ID for the given adapter.
+/// </summary>
+static std::wstring path(_In_ const ctl_device_adapter_properties_t& p) {
+    if ((p.adapter_bdf.bus == 0)
+            && (p.adapter_bdf.device == 0)
+            && (p.adapter_bdf.function == 0)) {
+        // IGCL is too old, we cannot use the PCI location. We generate a hash
+        // which hopefully uniquely identifies the GPU.
+        return std::to_wstring(hash(p));
+
+    }
+    else {
+        return std::to_wstring(p.adapter_bdf.bus) + L":"
+            + std::to_wstring(p.adapter_bdf.device) + L"."
+            + std::to_wstring(p.adapter_bdf.function);
+    }
+}
 
 
 /*
@@ -22,54 +242,144 @@ std::size_t PWROWG_DETAIL_NAMESPACE::igcl_sensor::descriptions(
         _In_ std::size_t cnt,
         _In_ const configuration_type& config) {
     auto builder = sensor_description_builder::create()
-        .with_vendor(L"Intel")
-        .with_type(sensor_type::gpu | sensor_type::power | sensor_type::software)
-        .produces(reading_type::floating_point)
-        .measured_in(reading_unit::watt);
+        .with_vendor(L"Intel");
 
     try {
         // Get handles for all devices.
         igcl_scope scope;
-        auto devices = igcl_sensor::devices(scope);
+        auto devices = ::devices(scope);
+        std::size_t retval = 0;
+
+        // Add the current content of the 'builder' to 'dst' if there is enough
+        // space for another item and unconditionally count the number of
+        // elements in 'retval'
+        const auto output = [&retval, dst, cnt, &builder](void) {
+            if ((dst != nullptr) && (retval < cnt)) {
+                dst[retval] = builder.build();
+            }
+            ++retval;
+        };
 
         // Create descriptors for each device.
-        for (std::size_t i = 0; i < devices.size(); ++i) {
+        for (auto& d : devices) {
             ctl_device_adapter_properties_t dev_props { };
             dev_props.Size = sizeof(dev_props);
             dev_props.Version = 2;
-            //ctl_pci_properties_t pci_props { };
-            //pci_props.Size = sizeof(pci_props);
             ctl_power_telemetry_t telemetry { };
             telemetry.Size = sizeof(telemetry);
             telemetry.Version = 1;
 
             throw_if_igcl_failed(igcl_library::instance()
-                .ctlGetDeviceProperties(devices[i], &dev_props));
-            //throw_if_igcl_failed(igcl_library::instance()
-            //    .ctlPciGetProperties(devices[i], &pci_props));
-
+                .ctlGetDeviceProperties(d, &dev_props));
             throw_if_igcl_failed(igcl_library::instance()
-                .ctlPowerTelemetryGet(devices[i], &telemetry));
+                .ctlPowerTelemetryGet(d, &telemetry));
 
-            dispatch_igcl_unit_traits(telemetry.gpuCurrentTemperature,
-                [](auto t) {
-                    typedef std::remove_pointer_t<decltype(t)> traits;
-                    auto xxx = traits::supported;
-                });
+            // The path is the same for all devices as we use it to group all
+            // telemetry from a single source into one sensor.
+            const auto dev_path = ::path(dev_props);
+            builder.with_path(dev_path);
 
-            builder.with_name("%s (IGCL)", dev_props.name);
-            builder.with_private_data(hash(dev_props));
+            // Describes the specified telemetry item 't' and answers whether
+            // it should be added to the output.
+            const auto describe_telemetry = [&](const wchar_t *n,
+                    const wchar_t *i,
+                    const ctl_oc_telemetry_item_t *t) {
+                return ::describe(builder, dev_path, dev_props.name, n, i,
+                    &telemetry, t);
+            };
 
-            const auto path = igcl_sensor::path(dev_props);
-            builder.with_path(path);
-            builder.with_id(L"IGCL/%s", path.c_str());
+            // Describes the specified throttling indicator 't' and answers
+            // whether it should be added to the output.
+            const auto describe_throttling = [&](const wchar_t *n,
+                    const wchar_t *i,
+                    const bool *t) {
+                return ::describe(builder, dev_path, dev_props.name, n, i,
+                    sensor_type::throttling, &telemetry, t);
+            };
 
-            if ((dst != nullptr) && (i < cnt)) {
-                dst[i] = builder.build();
+            // Add the raw data coming from the API.
+            if (describe_telemetry(L"GPU Energy Counter", L"GPU-Energy",
+                    &telemetry.gpuEnergyCounter)) {
+                output();
             }
-        }
 
-        return devices.size();
+            if (describe_telemetry(L"GPU Voltage", L"GPU-Voltage",
+                    &telemetry.gpuVoltage)) {
+                output();
+            }
+
+            if (describe_telemetry(L"GPU Temperature", L"GPU-Temperature",
+                    &telemetry.gpuCurrentTemperature)) {
+                output();
+            }
+
+            if (describe_telemetry(L"VRAM Energy Counter", L"VRAM-Energy",
+                    &telemetry.vramEnergyCounter)) {
+                output();
+            }
+
+            if (describe_telemetry(L"VRAMVoltage", L"VRAM-Voltage",
+                    &telemetry.vramVoltage)) {
+                output();
+            }
+
+            if (describe_telemetry(L"VRAM Temperature", L"VRAM-Temperature",
+                    &telemetry.vramCurrentTemperature)) {
+                output();
+            }
+
+            for (std::size_t p = 0; p < CTL_PSU_COUNT; ++p) {
+                std::wstring psu(L"PSU");
+                psu += std::to_wstring(p);
+
+                auto name = psu + L" Energy Counter";
+                auto id = psu + L"-Energy";
+                if (describe_telemetry(name.c_str(), id.c_str(),
+                        &telemetry.psu[p].energyCounter)) {
+                    output();
+                }
+
+                name = psu + L" Voltage";
+                id = psu + L"-Voltage";
+                if (describe_telemetry(name.c_str(), id.c_str(),
+                        &telemetry.psu[p].voltage)) {
+                    output();
+                }
+            } /* for (std::size_t p = 0; p < CTL_PSU_COUNT; ++p) */
+
+            // Add all the throttling indicators.
+            if (describe_throttling(L"GPU Power-Limited",
+                    L"GPU-Power-Limited",
+                    &telemetry.gpuPowerLimited)) {
+                output();
+            }
+
+            if (describe_throttling(L"GPU Temperature-Limited",
+                    L"GPU-Temperature-Limited",
+                    &telemetry.gpuTemperatureLimited)) {
+                output();
+            }
+
+            if (describe_throttling(L"GPU Current-Limited",
+                    L"GPU-Current-Limited",
+                    &telemetry.gpuCurrentLimited)) {
+                output();
+            }
+
+            if (describe_throttling(L"GPU Voltage-Limited",
+                    L"GPU-Voltage-Limited",
+                    &telemetry.gpuVoltageLimited)) {
+                output();
+            }
+
+            if (describe_throttling(L"GPU Utilisation-Limited",
+                    L"GPU-Utilisation-Limited",
+                    &telemetry.gpuUtilizationLimited)) {
+                output();
+            }
+        } /* for (auto& d : devices) */
+
+        return retval;
     } catch (...) {
         // Probably no Intel GPU, ignore it.
         return 0;
@@ -83,20 +393,24 @@ std::size_t PWROWG_DETAIL_NAMESPACE::igcl_sensor::descriptions(
  */
 PWROWG_DETAIL_NAMESPACE::igcl_sensor::igcl_sensor(
         _In_ const std::wstring& path,
-        _In_ const std::size_t index)
-        : _device(nullptr), _index(index), _offset(0) {
+        _In_ const std::size_t index,
+        _Inout_ std::vector<sample_builder>&& builders)
+    : _builders(std::move(builders)),
+        _device(nullptr),
+        _index(index),
+        _offset(0) {
     // Search for the adapter that produces the specified hash for its
     // properties. The reason for this implementation is that the device handle
     // is tied to the igcl_scope taht was used to enumerate it. As each sensor
     // has its own scope, we need to re-open the devices here.
-    const auto devices = igcl_sensor::devices(this->_scope);
+    const auto devices = ::devices(this->_scope);
     for (auto& d : devices) {
         ctl_device_adapter_properties_t dev_props { };
         dev_props.Size = sizeof(dev_props);
         dev_props.Version = 2;
         throw_if_igcl_failed(igcl_library::instance()
             .ctlGetDeviceProperties(d, &dev_props));
-        const auto p = igcl_sensor::path(dev_props);
+        const auto p = ::path(dev_props);
         if (path == p) {
             this->_device = d;
             break;
@@ -106,7 +420,7 @@ PWROWG_DETAIL_NAMESPACE::igcl_sensor::igcl_sensor(
     // Create a dispatcher for delivering a sample from telemetry data.
     this->_deliver_sample = make_igcl_telemetry_disps<timestamp, std::size_t,
             const sensor_array_callback, const sensor_description *, void *>(
-        [](auto value, const ctl_units_t, timestamp timestamp,
+        [this](auto value, const ctl_units_t, timestamp timestamp,
                 const std::size_t index, const sensor_array_callback callback,
                 const sensor_description *sensors, void *context) {
             PWROWG_NAMESPACE::sample s(index, timestamp);
@@ -119,6 +433,10 @@ PWROWG_DETAIL_NAMESPACE::igcl_sensor::igcl_sensor(
             assert(std::is_floating_point_v<std::decay_t<decltype(value)>>);
             retval = this->make_timestamp(value);
         });
+
+    // Allocate a buffer to collect the samples that are delivered at once. The
+    // size of this buffer never changes; there is always one for each builder.
+    this->_samples.resize(this->_builders.size());
 }
 
 
@@ -135,77 +453,24 @@ void PWROWG_DETAIL_NAMESPACE::igcl_sensor::sample(
     telemetry.Size = sizeof(telemetry);
     telemetry.Version = 1;
 
-    {
-        auto status = igcl_library::instance()
-            .ctlPowerTelemetryGet(this->_device, &telemetry);
-        throw_if_igcl_failed(status);
-    }
+    throw_if_igcl_failed(igcl_library::instance()
+        .ctlPowerTelemetryGet(this->_device, &telemetry));
 
-    // Convert the timestamp of the sample.
+    // Convert the timestamp of the sample. This is the same for all data
+    // points, so we do it only once.
     timestamp timestamp;
     find_igcl_telemetry_disp(this->_make_timestamp, telemetry.timeStamp)(
         telemetry.timeStamp, timestamp);
 
-    //PWROWG_NAMESPACE::sample s(this->_index, timestamp::from_time_t(
-    //    telemetry.timeStamp.value));
-    //visit(telemetry.gpuEnergyCounter,
-    //        [&callback, &sensors, &context](auto value, auto units) {
-    //    //PWROWG_NAMESPACE::sample s(this->_index, timestamp::from_time_t(
-    //    //    telemetry.timeStamp.value), value / thousand);
-    //    //callback(&s, 1, sensors, context);
-    //});
-
-    throw "TODO";
-    //callback(&s, 1, sensors, context);
-}
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::igcl_sensor::devices
- */
-std::vector<ctl_device_adapter_handle_t>
-PWROWG_DETAIL_NAMESPACE::igcl_sensor::devices(_In_ igcl_scope& scope) {
-    std::uint32_t cnt = 0;
-    throw_if_igcl_failed(igcl_library::instance()
-        .ctlEnumerateDevices(scope, &cnt, nullptr));
-
-    std::vector<ctl_device_adapter_handle_t> retval(cnt);
-    throw_if_igcl_failed(igcl_library::instance()
-        .ctlEnumerateDevices(scope, &cnt, retval.data()));
-
-    return retval;
-}
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::igcl_sensor::hash
- */
-std::uint64_t PWROWG_DETAIL_NAMESPACE::igcl_sensor::hash(
-        _In_ const ctl_device_adapter_properties_t& p) {
-    fnv1a<std::uint64_t> retval;
-    retval(reinterpret_cast<const std::uint8_t *>(&p),
-        reinterpret_cast<const std::uint8_t*>(&p.reserved));
-    return retval;
-}
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::igcl_sensor::path
- */
-std::wstring PWROWG_DETAIL_NAMESPACE::igcl_sensor::path(
-        _In_ const ctl_device_adapter_properties_t& p) {
-    if ((p.adapter_bdf.bus == 0)
-            && (p.adapter_bdf.device == 0)
-            && (p.adapter_bdf.function == 0)) {
-        // IGCL is too old, we cannot use the PCI location. We generate a hash
-        // which hopefully uniquely identifies the GPU.
-        return std::to_wstring(hash(p));
-
-    } else {
-        return std::to_wstring(p.adapter_bdf.bus) + L":"
-            + std::to_wstring(p.adapter_bdf.device) + L"."
-            + std::to_wstring(p.adapter_bdf.function);
+    // Collect the samples for all reading enabled via the '_builders'.
+    assert(this->_samples.size() == this->_builders.size());
+    for (std::size_t i = 0; i < this->_builders.size(); ++i) {
+        this->_samples[i] = this->_builders[i](this->_index + i, timestamp,
+            telemetry);
     }
+
+    // Deliver the data.
+    callback(this->_samples.data(), this->_samples.size(), sensors, context);
 }
 
 

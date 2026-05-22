@@ -45,6 +45,7 @@ PWROWG_NAMESPACE::type_erased_storage::~type_erased_storage(void) noexcept {
  */
 void PWROWG_NAMESPACE::type_erased_storage::reset(void) noexcept {
     if (this->_dtor != nullptr) {
+        assert(*this);
         this->_dtor(this->_data);
         this->_cp = nullptr;
         this->_data = nullptr;
@@ -65,6 +66,7 @@ PWROWG_NAMESPACE::type_erased_storage::operator =(
         // going to assign are the same, we first need to destruct any existing
         // data before we can assign the input.
         this->reset();
+        assert(!*this);
 
         // Copy the operations next, which will ensure that we only copy stuff
         // that is copyable.
@@ -94,12 +96,14 @@ PWROWG_NAMESPACE::type_erased_storage::operator =(
         _Inout_ type_erased_storage&& rhs) noexcept {
     if (this != std::addressof(rhs)) {
         this->reset();
+        assert(!*this);
         this->_cp = rhs._cp;
         rhs._cp = nullptr;
         this->_data = rhs._data;
         rhs._data = nullptr;
         this->_dtor = rhs._dtor;
         rhs._dtor = nullptr;
+        assert(!rhs);
     }
 
     return *this;

@@ -29,15 +29,9 @@ public:
         type::descriptions(descs.data(), descs.size(), config);
 
         for (auto& d : descs) {
-            //Assert::AreEqual(int(reading_unit::watt), int(d.reading_unit()), L"produces watts", LINE_INFO());
-            //Assert::AreEqual(int(reading_type::floating_point), int(d.reading_type()), L"produces floats", LINE_INFO());
             Assert::AreEqual(L"Intel", d.vendor(), L"Vendor name", LINE_INFO());
             Assert::IsTrue((d.sensor_type() & sensor_type::gpu) == sensor_type::gpu, L"GPU sensor", LINE_INFO());
             Assert::IsTrue((d.sensor_type() & sensor_type::software) == sensor_type::software, L"Software sensor", LINE_INFO());
-            //Assert::IsTrue((d.sensor_type() & sensor_type::power) == sensor_type::power, L"Power sensor", LINE_INFO());
-            //Assert::AreNotEqual(std::size_t(0), ::wcslen(d.id()), L"ID not empty", LINE_INFO());
-            //Assert::AreNotEqual(std::size_t(0), ::wcslen(d.name()), L"Name not empty", LINE_INFO());
-            //Assert::AreNotEqual(std::size_t(0), ::wcslen(d.path()), L"Path not empty", LINE_INFO());
         }
     }
 #endif /* defined(POWER_OVERWHELMING_WITH_IGCL) */
@@ -61,7 +55,30 @@ public:
 
         for (auto& s : sensors) {
             s.sample([](const sample *samples, const std::size_t cnt, const sensor_description *sensors, void *context) {
-                //Assert::AreEqual(std::size_t(1), cnt, L"NVML creates single sample", LINE_INFO());
+                Assert::IsTrue(cnt > 0, L"IGCL creates at least one sample in default config.", LINE_INFO());
+
+                for (std::size_t i = 0; i < cnt; ++i) {
+                    auto& sample = samples[i];
+                    std::wstring dump(sensors[sample.source].name());
+                    dump += L": ";
+
+                    switch (sensors[sample.source].reading_type()) {
+                        case reading_type::floating_point:
+                            dump += std::to_wstring(sample.reading.floating_point);
+                            break;
+
+                        case reading_type::signed_integer:
+                            dump += std::to_wstring(sample.reading.signed_integer);
+                            break;
+
+                        case reading_type::unsigned_integer:
+                            dump += std::to_wstring(sample.reading.unsigned_integer);
+                            break;
+                    }
+
+                    dump += L"\r\n";
+                    ::OutputDebugStringW(dump.c_str());
+                }
             }, descs.data());
         }
     }

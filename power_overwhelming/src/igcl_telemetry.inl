@@ -6,6 +6,33 @@
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE::dispatch_igcl_data_type_traits
+ */
+template<class TCallback, ctl_data_type_t... Types>
+bool PWROWG_DETAIL_NAMESPACE::dispatch_igcl_data_type_traits(
+        _In_ const ctl_data_type_t type,
+        _In_ const TCallback callback,
+        igcl_data_type_dispatch_list<Types...>) {
+    constexpr std::array<ctl_data_type_t, sizeof...(Types)> lut = { Types... };
+    std::vector<std::function<void(void)>> dispatchers = {
+        [callback](void) {
+            typedef igcl_data_type_traits<Types> traits;
+            callback(static_cast<traits *>(nullptr));
+        }...
+    };
+
+    for (std::size_t i = 0; i < lut.size(); ++i) {
+        if (lut[i] == type) {
+            dispatchers[i]();
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+/*
  * PWROWG_DETAIL_NAMESPACE::find_igcl_telemetry_disp
  */
 template<class TContainer>
@@ -36,7 +63,7 @@ bool PWROWG_DETAIL_NAMESPACE::dispatch_igcl_unit_traits(
         igcl_unit_dispatch_list<Units...>) {
     constexpr std::array<ctl_units_t, sizeof...(Units)> lut = { Units... };
     std::vector<std::function<void(void)>> dispatchers = {
-        [unit, callback](void) {
+        [callback](void) {
             typedef igcl_unit_traits<Units> traits;
             callback(static_cast<traits *>(nullptr));
         }...
