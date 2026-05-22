@@ -1,5 +1,5 @@
 ﻿// <copyright file="type_erased_storage.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -9,7 +9,7 @@
  * PWROWG_NAMESPACE::type_erased_storage::emplace
  */
 template<class TType, class... TArgs>
-std::enable_if_t<std::is_copy_constructible_v<TType>, TType &>
+std::enable_if_t<std::is_copy_constructible_v<TType>, TType&>
 PWROWG_NAMESPACE::type_erased_storage::emplace(TArgs&&... args) {
     // We do not know what is already stored, so we must destruct it.
     this->reset();
@@ -24,6 +24,29 @@ PWROWG_NAMESPACE::type_erased_storage::emplace(TArgs&&... args) {
         assert(dst == nullptr);
         dst = new TType(*static_cast<const TType *>(src));
     };
+
+    this->_dtor = [](void *obj) {
+        delete static_cast<TType *>(obj);
+    };
+
+    return *retval;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::type_erased_storage::emplace_non_copyable
+ */
+template<class TType, class... TArgs>
+TType& PWROWG_NAMESPACE::type_erased_storage::emplace_non_copyable(
+        TArgs&&... args) {
+    // We do not know what is already stored, so we must destruct it.
+    this->reset();
+    assert(!*this);
+    assert(this->_cp == nullptr);
+
+    // Construct the new object in place.
+    auto retval = new TType(std::forward<TArgs>(args)...);
+    this->_data = retval;
 
     this->_dtor = [](void *obj) {
         delete static_cast<TType *>(obj);

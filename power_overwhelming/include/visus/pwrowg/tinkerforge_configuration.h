@@ -139,7 +139,7 @@ public:
     }
 
     /// <summary>
-    /// Answer the conversio time of teh current sensor.
+    /// Answer the conversion time of the current sensor.
     /// </summary>
     /// <returns>The configured conversion time.</returns>
     inline tinkerforge_conversion_time current_conversion_time(

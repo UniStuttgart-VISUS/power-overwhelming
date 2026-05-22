@@ -64,8 +64,8 @@ public:
     /// Emplaces an object of type <typeparamref name="TType" />.
     /// </summary>
     /// <remarks>
-    /// It is safe to call the method on a valid object, in which case this
-    /// object will be destroyed before emplacing a new one.
+    /// <para>It is safe to call the method on a valid object, in which case
+    /// this object will be destroyed before emplacing a new one.</para>
     /// </remarks>
     /// <typeparam name="TType">The type of the new object.</typeparam>
     /// <typeparam name="TArgs">The type of the arguments passed to the
@@ -75,6 +75,50 @@ public:
     template<class TType, class... TArgs>
     std::enable_if_t<std::is_copy_constructible_v<TType>, TType&> emplace(
         TArgs&&... args);
+
+    /// <summary>
+    /// Emplaces an object of type <typeparamref name="TType" />.
+    /// </summary>
+    /// <remarks>
+    /// <para>It is safe to call the method on a valid object, in which case
+    /// this object will be destroyed before emplacing a new one.</para>
+    /// <para>This overload will only be used if a type is not copy
+    /// constructible. Any attempt to copy the type-erased storage of such an
+    /// object will result in a runtime error.</para>
+    /// </remarks>
+    /// <typeparam name="TType">The type of the new object.</typeparam>
+    /// <typeparam name="TArgs">The type of the arguments passed to the
+    /// constructor.</typeparam>
+    /// <param name="args">The arguments passed to the constuctor.</param>
+    /// <returns>A reference for the newly created object.</returns>
+    template<class TType, class... TArgs>
+    inline std::enable_if_t<!std::is_copy_constructible_v<TType>, TType&>
+    emplace(TArgs&&... args) {
+        return this->emplace_non_copyable(std::forward<TArgs>(args)...);
+    }
+
+    /// <summary>
+    /// Emplaces an object of type <typeparamref name="TType" /> without
+    /// registering a copy operation.
+    /// </summary>
+    /// <remarks>
+    /// <para>It is safe to call the method on a valid object, in which case
+    /// this object will be destroyed before emplacing a new one.</para>
+    /// <para>This method forces the object to be non-copyable by not
+    /// registering a copy callback, regardless of whether
+    /// <typeparamref name="TType" /> is actually copyable. Such a behaviour
+    /// is required to create type-erased vectors of non-copyable elements as
+    /// this cannot be detected by <see cref="std::is_copy_constructible_v" />.
+    /// Any attempt to copy the type-erased storage of such an object will
+    /// result in a runtime error.</para>
+    /// </remarks>
+    /// <typeparam name="TType">The type of the new object.</typeparam>
+    /// <typeparam name="TArgs">The type of the arguments passed to the
+    /// constructor.</typeparam>
+    /// <param name="args">The arguments passed to the constuctor.</param>
+    /// <returns>A reference for the newly created object.</returns>
+    template<class TType, class... TArgs>
+    TType& emplace_non_copyable(TArgs&&... args);
 
     /// <summary>
     /// Gets the data in form of a pointer to <typeparamref name="TType" />.

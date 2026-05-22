@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_instrument.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -286,6 +286,13 @@ public:
     rtx_instrument(_Out_ bool& is_new_connection,
         _In_z_ const char *path,
         _In_ const timeout_type timeout = default_timeout);
+
+    /// <summary>
+    /// Construct from move.
+    /// </summary>
+    /// <param name="rhs">The object to be moved.</param>
+    inline rtx_instrument(_Inout_ rtx_instrument&& rhs)
+        : visa_instrument(std::move(rhs)) { }
 
     /// <summary>
     /// Answer the part of the configuration of the instrument that is
@@ -1183,6 +1190,16 @@ public:
     std::size_t unit(_In_opt_ std::nullptr_t dst,
         _In_ const std::size_t cnt,
         _In_ const channel_type channel) const;
+
+    /// <summary>
+    /// Assignfrom move.
+    /// </summary>
+    /// <param name="rhs">The right-hand-side operand.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline rtx_instrument& operator =(_Inout_ rtx_instrument&& rhs) {
+        visa_instrument::operator =(std::move(rhs));
+        return *this;
+    }
 };
 
 PWROWG_NAMESPACE_END

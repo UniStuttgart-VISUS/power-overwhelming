@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_acquisition.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -55,7 +55,7 @@ public:
     /// Sets the number of waveforms (segments) to be acquired on a single
     /// trigger.
     /// </summary>
-    /// <para>This setting is only relevant for single acqusition mode.
+    /// <para>This setting is only relevant for single acquisition mode.
     /// </para>
     /// <param name="count">The number of waveforms to acquire.</param>
     /// <returns><c>*this</c>.</returns>
@@ -91,7 +91,7 @@ public:
     /// Set the number of points per waveform.
     /// </summary>
     /// <param name="points">The number of waveforms to acquire. This is an
-    /// enumerated value and if it is not matched excatly, the instrument
+    /// enumerated value and if it is not matched exactly, the instrument
     /// will choose the closest one.</param>
     /// <returns><c>*this</c>.</returns>
     inline rtx_acquisition& points(
@@ -118,7 +118,7 @@ public:
     /// waveforms. Once the acquisition has been stopped, the data is
     /// processed and the latest waveform is displayed. Older waveforms are
     ///  stored in segments.</para>
-    /// <para>This setting is primarily for single acqusition mode.</para>
+    /// <para>This setting is primarily for single acquisition mode.</para>
     /// </remarks>
     /// <param name="segmented"><c>true</c> to enable fast segmentation,
     /// <c>false</c> to disable it.</param>
@@ -130,7 +130,7 @@ public:
     }
 
     /// <summary>
-    /// Answer the current or requested state of the acquistion.
+    /// Answer the current or requested state of the acquisition.
     /// </summary>
     /// <remarks>
     /// <para>This member only reflects the actual state of the instrument
