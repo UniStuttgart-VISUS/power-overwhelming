@@ -75,6 +75,77 @@ struct sample_builder<TType, false, true> final {
 
 
 /// <summary>
+/// A specialised builder that keeps track of the sample history of an energy
+/// counter to compute the instantaneous power draw.
+/// </summary>
+template<class TTraits> struct power_sample_builder final {
+
+    /// <summary>
+    /// The type to represent fractional seconds when computing power from the
+    /// energy and time difference.
+    /// </summary>
+    typedef std::chrono::duration<float> seconds_type;
+
+    /// <summary>
+    /// The type traits extracting the energy values.
+    /// </summary>
+    typedef TTraits type_traits;
+
+    /// <summary>
+    /// The offset of the field holding the energy in the telemetry.
+    /// </summary>
+    std::size_t offset;
+
+    /// <summary>
+    /// The previous energy reading.
+    /// </summary>
+    float previous_energy;
+
+    /// <summary>
+    /// The timestamp of the previous sample.
+    /// </summary>
+    PWROWG_NAMESPACE::timestamp previous_time;
+
+    /// <summary>
+    /// Initialses a new instance.
+    /// </summary>
+    inline power_sample_builder(_In_ const std::size_t offset) noexcept
+        : offset(offset), previous_time(0) { }
+
+    /// <summary>
+    /// Computes the next sample from the given energy sample
+    /// </summary>
+    inline PWROWG_NAMESPACE::sample operator ()(
+            PWROWG_NAMESPACE::sample::source_type source,
+            const PWROWG_NAMESPACE::timestamp timestamp,
+            const ctl_power_telemetry_t& telemetry) {
+        auto& v = PWROWG_DETAIL_NAMESPACE::member_at<ctl_oc_telemetry_item_t>(
+            telemetry, this->offset);
+        assert(v.bSupported);
+        assert(v.units == CTL_UNITS_ENERGY_JOULES);
+
+        const auto energy = type_traits::get(v);
+        auto value = 0.0f;
+        auto time = timestamp;
+
+        if (this->previous_time != PWROWG_NAMESPACE::timestamp::zero) {
+            assert(this->previous_time <= timestamp);
+            const auto dt = timestamp - this->previous_time;
+            const auto de = std::abs(energy - this->previous_energy);
+            const auto i = std::chrono::duration_cast<seconds_type>(dt);
+            time = this->previous_time + 0.5f * dt;
+            value = de / i.count();
+        }
+
+        this->previous_time = timestamp;
+        this->previous_energy = static_cast<float>(energy);
+
+        return PWROWG_NAMESPACE::sample(source, time, value);
+    }
+};
+
+
+/// <summary>
 /// Retrieves all devices handles from the given library scope.
 /// </summary>
 static std::vector<ctl_device_adapter_handle_t> devices(
@@ -203,6 +274,65 @@ static bool describe(
 
 
 /// <summary>
+/// Adds the description of a power sensor that is derived from the given energy
+/// counter.
+/// </summary>
+static bool describe_power(
+        _Inout_ PWROWG_DETAIL_NAMESPACE::sensor_description_builder& builder,
+        _In_ const std::wstring& path,
+        _In_z_ const char *dev_name,
+        _In_z_ const wchar_t *sensor_name,
+        _In_z_ const wchar_t *sensor_id,
+        _In_ const ctl_power_telemetry_t* telemetry,
+        _In_ const ctl_oc_telemetry_item_t* item) {
+    assert(dev_name != nullptr);
+    assert(sensor_name != nullptr);
+    assert(sensor_id != nullptr);
+    assert(telemetry != nullptr);
+    assert(item != nullptr);
+    using namespace PWROWG_NAMESPACE;
+    using namespace PWROWG_DETAIL_NAMESPACE;
+    typedef std::decay_t<decltype(*item)> item_type;
+    auto retval = false;
+
+    // Dispatch the unit measured first, which tells us whether we can support
+    // the telemetry.
+    dispatch_igcl_unit_traits(*item, [&](auto tag) {
+        typedef std::remove_pointer_t<decltype(tag)> unit_traits;
+        if (!(retval = unit_traits::supported)) {
+            return;
+        }
+
+        if (!(retval = (unit_traits::type == sensor_type::energy))) {
+            // Power sensors can only be derived from energy counters.
+            return;
+        }
+
+        if (!(retval = item->bSupported)) {
+            return;
+        }
+
+        builder.with_name(L"%hs %s (IGCL)", dev_name, sensor_name);
+        builder.with_id(L"IGCL/%s/%s", path.c_str(), sensor_id);
+        builder.with_type(sensor_type::gpu  | sensor_type::software
+            | sensor_type::power);
+        builder.produces(reading_type::floating_point);
+        builder.measured_in(reading_unit::watt);
+
+        // Next, we need to find out what kind of values we get. This allows for
+        // intantiating a power_sample_builder performing the correct conversion.
+        dispatch_igcl_data_type_traits(*item, [&](auto tag) {
+            typedef std::remove_pointer_t<decltype(tag)> type_traits;
+            const auto o = member_offset(telemetry, item);
+            builder.with_new_private_data<igcl_sensor::sample_builder>(
+                power_sample_builder<type_traits>(o));
+        });
+    });
+
+    return retval;
+}
+
+/// <summary>
 /// Compute a hash of the given adapter properties (except for the reserved
 /// part at the end of the structure).
 /// </summary>
@@ -288,6 +418,15 @@ std::size_t PWROWG_DETAIL_NAMESPACE::igcl_sensor::descriptions(
                     &telemetry, t);
             };
 
+            // Tries to construct a power sensor from an energy counter and
+            // answers whether this was successful.
+            const auto describe_power = [&](const wchar_t *n,
+                    const wchar_t *i,
+                    const ctl_oc_telemetry_item_t *t) {
+                return ::describe_power(builder, dev_path, dev_props.name, n, i,
+                    &telemetry, t);
+            };
+
             // Describes the specified throttling indicator 't' and answers
             // whether it should be added to the output.
             const auto describe_throttling = [&](const wchar_t *n,
@@ -297,8 +436,13 @@ std::size_t PWROWG_DETAIL_NAMESPACE::igcl_sensor::descriptions(
                     sensor_type::throttling, &telemetry, t);
             };
 
-            // Add the raw data coming from the API.
+            // Add the telemetry data.
             if (describe_telemetry(L"GPU Energy Counter", L"GPU-Energy",
+                    &telemetry.gpuEnergyCounter)) {
+                output();
+            }
+
+            if (describe_power(L"GPU Power", L"GPU-Power",
                     &telemetry.gpuEnergyCounter)) {
                 output();
             }
@@ -314,6 +458,11 @@ std::size_t PWROWG_DETAIL_NAMESPACE::igcl_sensor::descriptions(
             }
 
             if (describe_telemetry(L"VRAM Energy Counter", L"VRAM-Energy",
+                    &telemetry.vramEnergyCounter)) {
+                output();
+            }
+
+            if (describe_power(L"VRAM Power", L"VRAM-Power",
                     &telemetry.vramEnergyCounter)) {
                 output();
             }
@@ -335,6 +484,13 @@ std::size_t PWROWG_DETAIL_NAMESPACE::igcl_sensor::descriptions(
                 auto name = psu + L" Energy Counter";
                 auto id = psu + L"-Energy";
                 if (describe_telemetry(name.c_str(), id.c_str(),
+                        &telemetry.psu[p].energyCounter)) {
+                    output();
+                }
+
+                name = psu + L" Power";
+                id = psu + L"-Power";
+                if (describe_power(name.c_str(), id.c_str(),
                         &telemetry.psu[p].energyCounter)) {
                     output();
                 }
@@ -436,9 +592,11 @@ PWROWG_DETAIL_NAMESPACE::igcl_sensor::igcl_sensor(
 
     // Allocate a buffer to collect the samples that are delivered at once. The
     // size of this buffer never changes; there is always one for each builder.
+    // As we need the history of the last sample to compute the instantaneous
+    // power draw, allocate twice the size of what we need to preserve the last
+    // result.
     this->_samples.resize(this->_builders.size());
 }
-
 
 
 /*
@@ -463,7 +621,7 @@ void PWROWG_DETAIL_NAMESPACE::igcl_sensor::sample(
         telemetry.timeStamp, timestamp);
 
     // Collect the samples for all reading enabled via the '_builders'.
-    assert(this->_samples.size() == this->_builders.size());
+    assert(this->_samples.size() >= this->_builders.size());
     for (std::size_t i = 0; i < this->_builders.size(); ++i) {
         this->_samples[i] = this->_builders[i](this->_index + i, timestamp,
             telemetry);

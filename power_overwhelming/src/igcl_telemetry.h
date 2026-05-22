@@ -38,6 +38,7 @@ template<ctl_data_type_t Type> struct igcl_data_type_traits;
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_INT8> final {
     typedef std::int8_t type;
+    static constexpr auto data_type = CTL_DATA_TYPE_INT8;
     static constexpr auto reading_type = reading_type::signed_integer;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
@@ -54,6 +55,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_INT8> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_UINT8> final {
     typedef std::uint8_t type;
+    static constexpr auto data_type = CTL_DATA_TYPE_UINT8;
     static constexpr auto reading_type = reading_type::unsigned_integer;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
@@ -70,6 +72,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_UINT8> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_INT16> final {
     typedef std::int16_t type;
+    static constexpr auto data_type = CTL_DATA_TYPE_INT16;
     static constexpr auto reading_type = reading_type::signed_integer;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
@@ -86,6 +89,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_INT16> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_UINT16> final {
     typedef std::uint16_t type;
+    static constexpr auto data_type = CTL_DATA_TYPE_UINT16;
     static constexpr auto reading_type = reading_type::unsigned_integer;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
@@ -102,6 +106,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_UINT16> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_INT32> final {
     typedef std::int32_t type;
+    static constexpr auto data_type = CTL_DATA_TYPE_INT32;
     static constexpr auto reading_type = reading_type::signed_integer;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
@@ -118,6 +123,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_INT32> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_UINT32> final {
     typedef std::uint32_t type;
+    static constexpr auto data_type = CTL_DATA_TYPE_UINT32;
     static constexpr auto reading_type = reading_type::unsigned_integer;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
@@ -134,6 +140,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_UINT32> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_INT64> final {
     typedef std::int64_t type;
+    static constexpr auto data_type = CTL_DATA_TYPE_INT64;
     static constexpr auto reading_type = reading_type::signed_integer;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
@@ -150,6 +157,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_INT64> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_UINT64> final {
     typedef std::uint64_t type;
+    static constexpr auto data_type = CTL_DATA_TYPE_UINT64;
     static constexpr auto reading_type = reading_type::unsigned_integer;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
@@ -166,6 +174,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_UINT64> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_FLOAT> final {
     typedef float type;
+    static constexpr auto data_type = CTL_DATA_TYPE_FLOAT;
     static constexpr auto reading_type = reading_type::floating_point;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
@@ -182,6 +191,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_FLOAT> final {
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_DOUBLE> final {
     typedef double type;
+    static constexpr auto data_type = CTL_DATA_TYPE_DOUBLE;
     static constexpr auto reading_type = reading_type::floating_point;
 
     static inline type get(_In_ const ctl_oc_telemetry_item_t& item) noexcept {
@@ -197,6 +207,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_DOUBLE> final {
 /// Specialisation for <see cref="CTL_DATA_TYPE_STRING_ASCII" />.
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_STRING_ASCII> final {
+    static constexpr auto data_type = CTL_DATA_TYPE_STRING_ASCII;
     typedef char type;
 };
 
@@ -204,6 +215,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_STRING_ASCII> final {
 /// Specialisation for <see cref="CTL_DATA_TYPE_STRING_UTF16" />.
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_STRING_UTF16> final {
+    static constexpr auto data_type = CTL_DATA_TYPE_STRING_UTF16;
     typedef char16_t type;
 };
 
@@ -211,6 +223,7 @@ template<> struct igcl_data_type_traits<CTL_DATA_TYPE_STRING_UTF16> final {
 /// Specialisation for <see cref="CTL_DATA_TYPE_STRING_UTF132" />.
 /// </summary>
 template<> struct igcl_data_type_traits<CTL_DATA_TYPE_STRING_UTF132> final {
+    static constexpr auto data_type = CTL_DATA_TYPE_STRING_UTF132;
     typedef char32_t type;
 };
 

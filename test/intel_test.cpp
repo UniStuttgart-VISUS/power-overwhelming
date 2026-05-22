@@ -53,33 +53,35 @@ public:
         Assert::AreEqual(descs.size(), sensors.size(), L"Sensors created", LINE_INFO());
         Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
 
-        for (auto& s : sensors) {
-            s.sample([](const sample *samples, const std::size_t cnt, const sensor_description *sensors, void *context) {
-                Assert::IsTrue(cnt > 0, L"IGCL creates at least one sample in default config.", LINE_INFO());
+        for (std::size_t i = 0; i < 2; ++i) {
+            for (auto& s : sensors) {
+                s.sample([](const sample *samples, const std::size_t cnt, const sensor_description *sensors, void *context) {
+                    Assert::IsTrue(cnt > 0, L"IGCL creates at least one sample in default config.", LINE_INFO());
 
-                for (std::size_t i = 0; i < cnt; ++i) {
-                    auto& sample = samples[i];
-                    std::wstring dump(sensors[sample.source].name());
-                    dump += L": ";
+                    for (std::size_t i = 0; i < cnt; ++i) {
+                        auto& sample = samples[i];
+                        std::wstring dump(sensors[sample.source].name());
+                        dump += L": ";
 
-                    switch (sensors[sample.source].reading_type()) {
-                        case reading_type::floating_point:
-                            dump += std::to_wstring(sample.reading.floating_point);
-                            break;
+                        switch (sensors[sample.source].reading_type()) {
+                            case reading_type::floating_point:
+                                dump += std::to_wstring(sample.reading.floating_point);
+                                break;
 
-                        case reading_type::signed_integer:
-                            dump += std::to_wstring(sample.reading.signed_integer);
-                            break;
+                            case reading_type::signed_integer:
+                                dump += std::to_wstring(sample.reading.signed_integer);
+                                break;
 
-                        case reading_type::unsigned_integer:
-                            dump += std::to_wstring(sample.reading.unsigned_integer);
-                            break;
+                            case reading_type::unsigned_integer:
+                                dump += std::to_wstring(sample.reading.unsigned_integer);
+                                break;
+                        }
+
+                        dump += L"\r\n";
+                        ::OutputDebugStringW(dump.c_str());
                     }
-
-                    dump += L"\r\n";
-                    ::OutputDebugStringW(dump.c_str());
-                }
-            }, descs.data());
+                    }, descs.data());
+            }
         }
     }
 #endif /* defined(POWER_OVERWHELMING_WITH_IGCL) */
