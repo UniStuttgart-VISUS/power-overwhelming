@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_trigger_mode.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 
@@ -19,13 +19,13 @@ enum class rtx_trigger_mode {
 
     /// <summary>
     /// The instrument triggers repeatedly after a time interval if the
-    /// configured tigger conditions are not fulfiled. If a real trigger
-    /// occurs, it takses precedence.
+    /// configured trigger conditions are not fulfilled. If a real trigger
+    /// occurs, it takes precedence.
     /// </summary>
     automatic,
 
     /// <summary>
-    /// The instrument only aquires tata if a real tigger occurs.
+    /// The instrument only acquires data if a real trigger occurs.
     /// </summary>
     normal
 };

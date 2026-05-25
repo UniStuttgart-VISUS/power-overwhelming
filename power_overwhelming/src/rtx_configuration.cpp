@@ -6,6 +6,7 @@
 
 #include "visus/pwrowg/rtx_configuration.h"
 
+#include <iterator>
 #include <memory>
 #include <vector>
 
@@ -21,9 +22,6 @@ const PWROWG_NAMESPACE::guid PWROWG_NAMESPACE::rtx_configuration::id(
  * PWROWG_NAMESPACE::rtx_configuration::rtx_configuration
  */
 PWROWG_NAMESPACE::rtx_configuration::rtx_configuration(void) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    this->_instruments.emplace_non_copyable<std::vector<rtx_instrument>>();
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     this->_sensors.emplace<std::vector<rtx_sensor_definition>>();
 }
 

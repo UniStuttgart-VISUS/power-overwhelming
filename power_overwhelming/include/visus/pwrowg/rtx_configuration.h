@@ -98,7 +98,6 @@ public:
 private:
 
     rtx_instrument_configuration _instrument_configuration;
-    type_erased_storage _instruments;
     type_erased_storage _sensors;
     type_erased_storage _trigger_callback;
 };

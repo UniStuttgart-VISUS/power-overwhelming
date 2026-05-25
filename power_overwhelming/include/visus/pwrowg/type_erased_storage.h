@@ -76,6 +76,7 @@ public:
     std::enable_if_t<std::is_copy_constructible_v<TType>, TType&> emplace(
         TArgs&&... args);
 
+#if false
     /// <summary>
     /// Emplaces an object of type <typeparamref name="TType" />.
     /// </summary>
@@ -119,6 +120,7 @@ public:
     /// <returns>A reference for the newly created object.</returns>
     template<class TType, class... TArgs>
     TType& emplace_non_copyable(TArgs&&... args);
+#endif
 
     /// <summary>
     /// Gets the data in form of a pointer to <typeparamref name="TType" />.

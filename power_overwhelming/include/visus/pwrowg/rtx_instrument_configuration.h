@@ -17,6 +17,7 @@
 
 #include "visus/pwrowg/guid.h"
 
+
 PWROWG_NAMESPACE_BEGIN
 
 /// <summary>

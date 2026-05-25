@@ -33,6 +33,7 @@ PWROWG_NAMESPACE::type_erased_storage::emplace(TArgs&&... args) {
 }
 
 
+#if false
 /*
  * PWROWG_NAMESPACE::type_erased_storage::emplace_non_copyable
  */
@@ -54,3 +55,4 @@ TType& PWROWG_NAMESPACE::type_erased_storage::emplace_non_copyable(
 
     return *retval;
 }
+#endif
