@@ -8,6 +8,7 @@
 #define _PWROWG_RTX_SENSOR_TRIGGER_H
 #pragma once
 
+#include "visus/pwrowg/rtx_acquisition.h"
 #include "visus/pwrowg/rtx_trigger.h"
 
 
@@ -47,12 +48,18 @@ public:
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
+    rtx_sensor_trigger(void);
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
     /// <param name="path">The VISA path to the oscilloscope to be configured
     /// as the trigger source.</param>
     /// <param name="trigger">The trigger configuration to apply to the
     /// oscilloscope identified by the specified VISA <paramref name="path" />.
     /// </param>
-    rtx_sensor_trigger(_In_z_ const char *path, _In_ const rtx_trigger trigger);
+    rtx_sensor_trigger(_In_z_ const char *path,
+        _In_ const rtx_trigger& trigger);
 
     /// <summary>
     /// Initialises a new instance.
@@ -63,7 +70,18 @@ public:
     /// oscilloscope identified by the specified VISA <paramref name="path" />.
     /// </param>
     rtx_sensor_trigger(_In_z_ const wchar_t *path,
-        _In_ const rtx_trigger trigger);
+        _In_ const rtx_trigger& trigger);
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="path">The VISA path to the oscilloscope to be configured
+    /// as the trigger source.</param>
+    /// <param name="trigger">The trigger configuration to apply to the
+    /// oscilloscope identified by the specified VISA <paramref name="path" />.
+    /// </param>
+    rtx_sensor_trigger(_In_z_ const char *path,
+        _Inout_ rtx_trigger&& trigger);
 
     /// <summary>
     /// Clone <paramref name="other" />.
@@ -85,6 +103,16 @@ public:
     }
 
     /// <summary>
+    /// Triggers the oscilloscope manually and blocks the calling thread until
+    /// the oscilloscope has acknowledged the trigger.
+    /// </summary>
+    /// <remarks>
+    /// <para>This method must not be called on moved instances. The
+    /// implementation will only assert this in debug builds.</para>
+    /// </remarks>
+    void acquire(void);
+
+    /// <summary>
     /// Answer the path the oscilloscope to be configured as the trigger source.
     /// </summary>
     /// <returns>The VISA path to the oscilloscope.</returns>
@@ -94,8 +122,10 @@ public:
     /// Answer the trigger configuration to be applied to the oscilloscope
     /// identified by the specified VISA <see cref="path" />.
     /// </summary>
-    /// <returns>The trigger configuration.</returns>
-    const rtx_trigger& trigger(void) noexcept;
+    /// <returns>The trigger configuration. This might be
+    /// <see langword="nullptr "/> if the instrument is to be triggered manually
+    /// via a single acquisition button press.</returns>
+    _Ret_maybenull_ const rtx_trigger *trigger(void) const noexcept;
 
     /// <summary>
     /// Assignment.

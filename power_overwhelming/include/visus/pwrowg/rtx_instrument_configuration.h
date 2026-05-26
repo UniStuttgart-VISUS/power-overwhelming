@@ -518,7 +518,7 @@ public:
     /// <param name="timeout">The timeout of the instrument (for connections
     /// and for I/O operations including <c>*OPC?</c> queries. If this value
     /// is zero, which is the default, the timeout will not be modified. Be
-    /// aware that you must be able to wait for acqusitions to complete, so
+    /// aware that you must be able to wait for acquisitions to complete, so
     /// the timeout should be larger than the time range you intend to
     /// acquire.</param>
     explicit rtx_instrument_configuration(
@@ -538,7 +538,7 @@ public:
     /// <param name="timeout">The timeout of the instrument (for connections
     /// and for I/O operations including <c>*OPC?</c> queries. If this value
     /// is zero, which is the default, the timeout will not be modified. Be
-    /// aware that you must be able to wait for acqusitions to complete, so
+    /// aware that you must be able to wait for acquisitions to complete, so
     /// the timeout should be larger than the time range you intend to
     /// acquire.</param>
     rtx_instrument_configuration(

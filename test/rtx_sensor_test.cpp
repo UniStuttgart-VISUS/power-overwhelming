@@ -1,214 +1,104 @@
-//// <copyright file="rtx_sensor_test.cpp" company="Visualisierungsinstitut der Universit�t Stuttgart">
-//// Copyright � 2021 Visualisierungsinstitut der Universit�t Stuttgart.
-//// Licensed under the MIT licence. See LICENCE file for details.
-//// </copyright>
-//// <author>Christoph M�ller</author>
-//
-//#include "pch.h"
-//
-//using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-//using namespace PWROWG_NAMESPACE;
-//
-//
-//namespace visus {
-//namespace power_overwhelming {
-//namespace test {
-//
-//    TEST_CLASS(rtx_sensor_test) {
-//
-//    public:
-//
-//        TEST_METHOD(test_sensor_definition_ctor) {
-//            Assert::ExpectException<std::invalid_argument>([](void) {
-//                rtx_sensor_definition d((wchar_t *) nullptr, rtx_channel(0), rtx_channel(1));
-//            }, L"Invalid path", LINE_INFO());
-//
-//            Assert::ExpectException<std::invalid_argument>([](void) {
-//                rtx_sensor_definition d((wchar_t *) nullptr, 0, 0.1f, 1, 0.2f);
-//            }, L"Invalid path", LINE_INFO());
-//
-//            Assert::ExpectException<std::invalid_argument>([](void) {
-//                rtx_sensor_definition d((char *) nullptr, rtx_channel(0), rtx_channel(1));
-//            }, L"Invalid path", LINE_INFO());
-//
-//            Assert::ExpectException<std::invalid_argument>([](void) {
-//                rtx_sensor_definition d((char *) nullptr, 0, 0.1f, 1, 0.2f);
-//            }, L"Invalid path", LINE_INFO());
-//
-//            Assert::ExpectException<std::invalid_argument>([](void) {
-//                rtx_sensor_definition d(L"bla", rtx_channel(0), rtx_channel(0));
-//            }, L"Invalid channels", LINE_INFO());
-//
-//            Assert::ExpectException<std::invalid_argument>([](void) {
-//                rtx_sensor_definition d(L"bla", 0, 0.1f, 0, 0.2f);
-//            }, L"Invalid channels", LINE_INFO());
-//
-//            {
-//                rtx_sensor_definition d(L"bla",
-//                    rtx_channel(1).attenuation(rtx_quantity(0.1f, "V")),
-//                    rtx_channel(2).attenuation(rtx_quantity(0.2f, "A")),
-//                    L"Horst",
-//                    rtx_waveform_points::visible);
-//                Assert::AreEqual("bla", d.path(), L"Path is \"bla\"", LINE_INFO());
-//                Assert::AreEqual(L"Horst", d.description(), L"Description is \"Horst\"", LINE_INFO());
-//                Assert::AreEqual(std::uint32_t(1), d.channel_voltage(), L"Channel for voltage", LINE_INFO());
-//                Assert::AreEqual(std::uint32_t(2), d.channel_current(), L"Channel for current", LINE_INFO());
-//                Assert::AreEqual(0.1f, d.attenuation_voltage().value(), L"Attenuation of voltage", LINE_INFO());
-//                Assert::AreEqual(0.2f, d.attenuation_current().value(), L"Attenuation of current", LINE_INFO());
-//                Assert::AreEqual(int(rtx_waveform_points::visible), int(d.waveform_points()), L"Waveform points", LINE_INFO());
-//            }
-//
-//            {
-//                rtx_sensor_definition d("bla",
-//                    rtx_channel(1).attenuation(rtx_quantity(0.1f, "V")),
-//                    rtx_channel(2).attenuation(rtx_quantity(0.2f, "A")),
-//                    L"Horst",
-//                    rtx_waveform_points::visible);
-//                Assert::AreEqual("bla", d.path(), L"Path is \"bla\"", LINE_INFO());
-//                Assert::AreEqual(L"Horst", d.description(), L"Description is \"Horst\"", LINE_INFO());
-//                Assert::AreEqual(std::uint32_t(1), d.channel_voltage(), L"Channel for voltage", LINE_INFO());
-//                Assert::AreEqual(std::uint32_t(2), d.channel_current(), L"Channel for current", LINE_INFO());
-//                Assert::AreEqual(0.1f, d.attenuation_voltage().value(), L"Attenuation of voltage", LINE_INFO());
-//                Assert::AreEqual(0.2f, d.attenuation_current().value(), L"Attenuation of current", LINE_INFO());
-//                Assert::AreEqual(int(rtx_waveform_points::visible), int(d.waveform_points()), L"Waveform points", LINE_INFO());
-//            }
-//
-//            {
-//                rtx_sensor_definition d(L"bla", 1, 0.1f, 2, 0.2f, L"Horst", rtx_waveform_points::visible);
-//                Assert::AreEqual("bla", d.path(), L"Path is \"bla\"", LINE_INFO());
-//                Assert::AreEqual(L"Horst", d.description(), L"Description is \"Horst\"", LINE_INFO());
-//                Assert::AreEqual(std::uint32_t(1), d.channel_voltage(), L"Channel for voltage", LINE_INFO());
-//                Assert::AreEqual(std::uint32_t(2), d.channel_current(), L"Channel for current", LINE_INFO());
-//                Assert::AreEqual(0.1f, d.attenuation_voltage().value(), L"Attenuation of voltage", LINE_INFO());
-//                Assert::AreEqual(0.2f, d.attenuation_current().value(), L"Attenuation of current", LINE_INFO());
-//                Assert::AreEqual(int(rtx_waveform_points::visible), int(d.waveform_points()), L"Waveform points", LINE_INFO());
-//            }
-//
-//            {
-//                rtx_sensor_definition d("bla", 1, 0.1f, 2, 0.2f, L"Horst", rtx_waveform_points::visible);
-//                Assert::AreEqual("bla", d.path(), L"Path is \"bla\"", LINE_INFO());
-//                Assert::AreEqual(L"Horst", d.description(), L"Description is \"Horst\"", LINE_INFO());
-//                Assert::AreEqual(std::uint32_t(1), d.channel_voltage(), L"Channel for voltage", LINE_INFO());
-//                Assert::AreEqual(std::uint32_t(2), d.channel_current(), L"Channel for current", LINE_INFO());
-//                Assert::AreEqual(0.1f, d.attenuation_voltage().value(), L"Attenuation of voltage", LINE_INFO());
-//                Assert::AreEqual(0.2f, d.attenuation_current().value(), L"Attenuation of current", LINE_INFO());
-//                Assert::AreEqual(int(rtx_waveform_points::visible), int(d.waveform_points()), L"Waveform points", LINE_INFO());
-//            }
-//        }
-//
-//        TEST_METHOD(test_sensor_definition_copy) {
-//            {
-//                rtx_sensor_definition d(L"bla",
-//                    rtx_channel(1).attenuation(rtx_quantity(0.1f, "V")),
-//                    rtx_channel(2).attenuation(rtx_quantity(0.2f, "A")),
-//                    L"Horst");
-//                Assert::AreEqual("bla", d.path(), L"Path is \"bla\"", LINE_INFO());
-//                Assert::AreEqual(L"Horst", d.description(), L"Description is \"Horst\"", LINE_INFO());
-//                Assert::AreEqual(std::uint32_t(1), d.channel_voltage(), L"Channel for voltage", LINE_INFO());
-//                Assert::AreEqual(std::uint32_t(2), d.channel_current(), L"Channel for current", LINE_INFO());
-//                Assert::AreEqual(0.1f, d.attenuation_voltage().value(), L"Attenuation of voltage", LINE_INFO());
-//                Assert::AreEqual(0.2f, d.attenuation_current().value(), L"Attenuation of current", LINE_INFO());
-//                Assert::AreEqual(int(rtx_waveform_points::maximum), int(d.waveform_points()), L"Waveform points", LINE_INFO());
-//
-//                rtx_sensor_definition dd(L"foo",
-//                    rtx_channel(3),
-//                    rtx_channel(4),
-//                    L"Hugo",
-//                    rtx_waveform_points::visible);
-//                Assert::AreEqual("foo", dd.path(), L"Path is \"foo\"", LINE_INFO());
-//                Assert::AreEqual(L"Hugo", dd.description(), L"Description is \"Hugo\"", LINE_INFO());
-//                Assert::AreEqual(std::uint32_t(3), dd.channel_voltage(), L"Channel for voltage", LINE_INFO());
-//                Assert::AreEqual(std::uint32_t(4), dd.channel_current(), L"Channel for current", LINE_INFO());
-//                Assert::AreEqual(0.0f, dd.attenuation_voltage().value(), L"Attenuation of voltage", LINE_INFO());
-//                Assert::AreEqual(0.0f, dd.attenuation_current().value(), L"Attenuation of current", LINE_INFO());
-//                Assert::AreEqual(int(rtx_waveform_points::visible), int(dd.waveform_points()), L"Waveform points", LINE_INFO());
-//
-//                dd = d;
-//                Assert::AreEqual(d.path(), dd.path(), L"Path copied", LINE_INFO());
-//                Assert::AreEqual(d.description(), dd.description(), L"Description copied", LINE_INFO());
-//                Assert::AreEqual(d.channel_voltage(), dd.channel_voltage(), L"Channel for voltage copied", LINE_INFO());
-//                Assert::AreEqual(d.channel_current(), dd.channel_current(), L"Channel for current copied", LINE_INFO());
-//                Assert::AreEqual(d.attenuation_voltage().value(), dd.attenuation_voltage().value(), L"Attenuation of voltage copied", LINE_INFO());
-//                Assert::AreEqual(d.attenuation_current().value(), dd.attenuation_current().value(), L"Attenuation of current copied", LINE_INFO());
-//                Assert::AreEqual(int(d.waveform_points()), int(dd.waveform_points()), L"Waveform points", LINE_INFO());
-//            }
-//
-//            {
-//                rtx_sensor_definition d(L"bla",
-//                    rtx_channel(1).attenuation(rtx_quantity(0.1f, "V")),
-//                    rtx_channel(2).attenuation(rtx_quantity(0.2f, "A")),
-//                    L"Horst",
-//                    rtx_waveform_points::maximum_visible);
-//                Assert::AreEqual("bla", d.path(), L"Path is \"bla\"", LINE_INFO());
-//                Assert::AreEqual(L"Horst", d.description(), L"Description is \"Horst\"", LINE_INFO());
-//                Assert::AreEqual(std::uint32_t(1), d.channel_voltage(), L"Channel for voltage", LINE_INFO());
-//                Assert::AreEqual(std::uint32_t(2), d.channel_current(), L"Channel for current", LINE_INFO());
-//                Assert::AreEqual(0.1f, d.attenuation_voltage().value(), L"Attenuation of voltage", LINE_INFO());
-//                Assert::AreEqual(0.2f, d.attenuation_current().value(), L"Attenuation of current", LINE_INFO());
-//                Assert::AreEqual(int(rtx_waveform_points::maximum_visible), int(d.waveform_points()), L"Waveform points", LINE_INFO());
-//
-//
-//                rtx_sensor_definition dd(d);
-//                Assert::AreEqual(d.path(), dd.path(), L"Path copied", LINE_INFO());
-//                Assert::AreEqual(d.description(), dd.description(), L"Description copied", LINE_INFO());
-//                Assert::AreEqual(d.channel_voltage(), dd.channel_voltage(), L"Channel for voltage copied", LINE_INFO());
-//                Assert::AreEqual(d.channel_current(), dd.channel_current(), L"Channel for current copied", LINE_INFO());
-//                Assert::AreEqual(d.attenuation_voltage().value(), dd.attenuation_voltage().value(), L"Attenuation of voltage copied", LINE_INFO());
-//                Assert::AreEqual(d.attenuation_current().value(), dd.attenuation_current().value(), L"Attenuation of current copied", LINE_INFO());
-//                Assert::AreEqual(int(d.waveform_points()), int(dd.waveform_points()), L"Waveform points", LINE_INFO());
-//            }
-//        }
-//
-//        TEST_METHOD(test_instrument_configuration) {
-//            const auto trigger = rtx_trigger::edge("CH1").level(1, 2.0f);
-//            const rtx_quantity time_range(10, "s");
-//            const auto acquisition = rtx_acquisition().count(16).points(10000);
-//
-//            {
-//                const rtx_instrument_configuration c(time_range);
-//                Assert::IsTrue(c.acquisition().automatic_points(), L"Default acquisition.automatic_poits", LINE_INFO());
-//                Assert::AreEqual(std::size_t(0), c.beep_on_apply(), L"Default beep_on_apply", LINE_INFO());
-//                Assert::IsFalse(c.beep_on_error(), L"Default beep_on_error", LINE_INFO());
-//                Assert::IsFalse(c.beep_on_trigger(), L"Default beep_on_trigger", LINE_INFO());
-//                Assert::AreEqual(int(1), int(c.acquisition().count()), L"Default acquisition.count", LINE_INFO());
-//                Assert::IsTrue(c.acquisition().segmented(), L"Default acquisition.segmented", LINE_INFO());
-//                Assert::IsFalse(c.slave(), L"Default slave", LINE_INFO());
-//                Assert::AreEqual(int(0), int(c.timeout()), L"Default timeout", LINE_INFO());
-//                Assert::AreEqual(time_range.value(), c.time_range().value(), L"Default time_range.value", LINE_INFO());
-//                Assert::AreEqual(time_range.unit(), c.time_range().unit(), L"Default time_range.unit", LINE_INFO());
-//                Assert::AreEqual(int(5), int(c.trigger().input()), L"Default trigger.input", LINE_INFO());
-//            }
-//
-//            {
-//                const auto c = rtx_instrument_configuration(time_range, acquisition, trigger, 2000).beep_on_apply(42).beep_on_error(true).beep_on_trigger(true);
-//                Assert::AreEqual(std::size_t(42), c.beep_on_apply(), L"Explicit beep_on_apply", LINE_INFO());
-//                Assert::IsTrue(c.beep_on_error(), L"Explicit beep_on_error", LINE_INFO());
-//                Assert::IsTrue(c.beep_on_trigger(), L"Explicit beep_on_trigger", LINE_INFO());
-//                Assert::IsFalse(c.acquisition().automatic_points(), L"Explicit acquisition.automatic_poits", LINE_INFO());
-//                Assert::AreEqual(int(16), int(c.acquisition().count()), L"Explicit acquisition.count", LINE_INFO());
-//                Assert::IsFalse(c.acquisition().segmented(), L"Explicit acquisition.segmented", LINE_INFO());
-//                Assert::IsFalse(c.slave(), L"Explicit slave", LINE_INFO());
-//                Assert::AreEqual(int(2000), int(c.timeout()), L"Explicit timeout", LINE_INFO());
-//                Assert::AreEqual(time_range.value(), c.time_range().value(), L"Explicit time_range.value", LINE_INFO());
-//                Assert::AreEqual(time_range.unit(), c.time_range().unit(), L"Explicit time_range.unit", LINE_INFO());
-//                Assert::AreEqual(int(1), int(c.trigger().input()), L"Explicit trigger.input", LINE_INFO());
-//            }
-//
-//            {
-//                const auto c = rtx_instrument_configuration(time_range, acquisition, trigger, 2000).as_slave();
-//                Assert::IsFalse(c.acquisition().automatic_points(), L"as_slave acquisition.automatic_poits", LINE_INFO());
-//                Assert::AreEqual(int(16), int(c.acquisition().count()), L"as_slave acquisition.count", LINE_INFO());
-//                Assert::IsFalse(c.acquisition().segmented(), L"as_slave acquisition.segmented", LINE_INFO());
-//                Assert::IsTrue(c.slave(), L"as_slave slave", LINE_INFO());
-//                Assert::AreEqual(int(2000), int(c.timeout()), L"as_slave timeout", LINE_INFO());
-//                Assert::AreEqual(time_range.value(), c.time_range().value(), L"as_slave time_range.value", LINE_INFO());
-//                Assert::AreEqual(time_range.unit(), c.time_range().unit(), L"as_slave time_range.unit", LINE_INFO());
-//                Assert::AreEqual(int(5), int(c.trigger().input()), L"as_slave trigger.input", LINE_INFO());
-//            }
-//
-//        }
-//
-//    };
-//} /* namespace test */
-//} /* namespace power_overwhelming */
-//} /* namespace visus */
+﻿// <copyright file="rtx_sensor_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+// Copyright © 2026 Visualisierungsinstitut der Universität Stuttgart.
+// Licensed under the MIT licence. See LICENCE file for details.
+// </copyright>
+// <author>Christoph Müller</author>
+
+#include "pch.h"
+#include "CppUnitTest.h"
+
+#include "visus/pwrowg/rtx_configuration.h"
+
+#include "rtx_sensor.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+
+PWROWG_TEST_NAMESPACE_BEGIN
+
+TEST_CLASS(rtx_sensor_test) {
+
+public:
+
+    TEST_METHOD(test_sensor_config) {
+        rtx_configuration config;
+        Assert::AreEqual(std::size_t(0), config.count_sensors(), L"No sensors in list", LINE_INFO());
+        Assert::IsNull(config.sensors(), L"No sensors allocated", LINE_INFO());
+
+        auto trigger = rtx_trigger::edge("CH0");
+        config.trigger(rtx_sensor_trigger("hugo", trigger));
+        Assert::AreEqual("hugo", config.trigger().path(), L"Trigger path is set", LINE_INFO());
+        Assert::IsNotNull(config.trigger().trigger(), L"Trigger is set", LINE_INFO());
+        Assert::AreEqual(trigger.source(), config.trigger().trigger()->source(), L"Trigger source is set", LINE_INFO());
+
+        config.add_sensor(L"hugo", 1, 10.f, 2, 1.0f);
+        Assert::AreEqual(std::size_t(1), config.count_sensors(), L"One sensor in list", LINE_INFO());
+        Assert::IsNotNull(config.sensors(), L"Sensors allocated", LINE_INFO());
+        Assert::AreEqual("hugo", config.sensors()[0].path(), L"Sensor path is set", LINE_INFO());
+        Assert::AreEqual(std::uint32_t(1), config.sensors()[0].voltage_channel().channel(), L"Voltage channel is set", LINE_INFO());
+        Assert::AreEqual(10.f, config.sensors()[0].voltage_channel().attenuation().value(), L"Voltage attenuation is set", LINE_INFO());
+        Assert::AreEqual(std::uint32_t(2), config.sensors()[0].current_channel().channel(), L"Current channel is set", LINE_INFO());
+        Assert::AreEqual(1.f, config.sensors()[0].current_channel().attenuation().value(), L"Current attenuation is set", LINE_INFO());
+    }
+
+    TEST_METHOD(test_sensor_trigger) {
+        {
+            rtx_sensor_trigger trigger;
+            Assert::IsNotNull(trigger.path(), L"Default path is not null", LINE_INFO());
+            Assert::AreEqual("", trigger.path(), L"Default path is empty", LINE_INFO());
+            Assert::IsNull(trigger.trigger(), L"No trigger set", LINE_INFO());
+        }
+        {
+            rtx_sensor_trigger trigger("hugo", rtx_trigger::edge("CH0"));
+            Assert::AreEqual("hugo", trigger.path(), L"Path is set", LINE_INFO());
+            Assert::IsNotNull(trigger.trigger(), L"Trigger is set", LINE_INFO());
+        }
+        {
+            rtx_sensor_trigger trigger(L"hugo", rtx_trigger::edge("CH0"));
+            Assert::AreEqual("hugo", trigger.path(), L"Path is set", LINE_INFO());
+            Assert::IsNotNull(trigger.trigger(), L"Trigger is set", LINE_INFO());
+        }
+    }
+
+    TEST_METHOD(test_descriptions) {
+        typedef detail::rtx_sensor type;
+        constexpr auto device = "USB0::0x0AAD::0x01D6::103698::INSTR";
+
+        type::configuration_type config;
+        config.add_sensor(device, 1, 10.f, 2, 10.0f);
+        config.add_sensor(device, 3, 10.f, 0, 0.0f);
+        config.add_sensor(device, 0, 0.f, 4, 1.0f);
+
+        std::vector<sensor_description> descs;
+        descs.resize(type::descriptions(nullptr, 0, config));
+        Assert::AreEqual(std::size_t(3 + 1 + 1), descs.size(), L"Description for power sensor.", LINE_INFO());
+        type::descriptions(descs.data(), descs.size(), config);
+    }
+
+    TEST_METHOD(test_sensor_creation) {
+        typedef detail::rtx_sensor type;
+        constexpr auto device = "USB0::0x0AAD::0x01D6::103698::INSTR";
+
+        detail::sensor_array_impl owner;
+        owner.configuration = std::make_unique<detail::sensor_array_configuration_impl>();
+        owner.configuration->sensor_configs[type::configuration_type::id] = std::make_unique<type::configuration_type>();
+
+        auto sensor_config0 = owner.configuration->find_sensor_config(type::configuration_type::id);
+        Assert::IsNotNull(sensor_config0, L"Configuration is set", LINE_INFO());
+
+        auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
+        Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
+        sensor_config->add_sensor(device, 1, 10.f, 2, 10.0f);
+        sensor_config->add_sensor(device, 3, 1.f, 4, 1.0f);
+
+        std::vector<sensor_description> descs;
+        descs.resize(type::descriptions(nullptr, 0, *sensor_config));
+        type::descriptions(descs.data(), descs.size(), *sensor_config);
+
+        type::list_type sensors;
+        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), &owner, *sensor_config);
+        Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
+    }
+};
+
+PWROWG_TEST_NAMESPACE_END

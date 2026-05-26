@@ -1,5 +1,5 @@
 ﻿// <copyright file="visa_instrument.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -61,7 +61,7 @@ public:
     /// <remarks>
     /// <para>This method does nothing if the library was compiled without
     /// support for VISA.</para>
-    /// <para>The return value is a multi-sz string which can be procesed
+    /// <para>The return value is a multi-sz string which can be processed
     /// as follows:</para>
     /// <code>
     /// for (auto d = devices.as&lt;wchar_t&gt;();
@@ -90,7 +90,7 @@ public:
     /// <remarks>
     /// <para>This method does nothing if the library was compiled without
     /// support for VISA.</para>
-    /// <para>The return value is a multi-sz string which can be procesed
+    /// <para>The return value is a multi-sz string which can be processed
     /// as follows:</para>
     /// <code>
     /// for (auto d = devices.as&lt;char&gt;();
@@ -172,7 +172,7 @@ public:
     /// had returned <c>false</c>.</param>
     /// <param name="context">A user-defined context passed to the callback
     /// function.</param>
-    /// <returns>The number of times the callback has been sucessfully
+    /// <returns>The number of times the callback has been successfully
     /// invoked. If the callback always returns <c>true</c>, this is the
     /// number of active VISA instruments at the time of the call.</returns>
     /// <exception cref="std::invalid_argument">If

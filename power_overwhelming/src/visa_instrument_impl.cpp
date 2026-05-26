@@ -1,5 +1,5 @@
 ﻿// <copyright file="visa_instrument_impl.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -7,6 +7,7 @@
 #if defined(POWER_OVERWHELMING_WITH_VISA)
 #include "visa_instrument_impl.h"
 
+#include <memory>
 #include <stdexcept>
 
 #include "no_visa_error_msg.h"
@@ -23,12 +24,12 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::create(
         _In_ const std::uint32_t timeout,
         _Out_opt_ bool *is_new) {
     std::lock_guard<decltype(_lock_instruments)> l(_lock_instruments);
-    visa_instrument_impl *retval = nullptr;
+    std::unique_ptr<visa_instrument_impl> retval;
 
     auto it = _instruments.find(path);
     if (it != _instruments.end()) {
         // Reuse existing instrument for same connection.
-        retval = it->second;
+        retval.reset(it->second);
 
         if (is_new != nullptr) {
             *is_new = false;
@@ -39,13 +40,12 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::create(
     } else {
         // If no existing scope was found or if the previous scope has been
         // deleted, create a new one.
-        retval = new visa_instrument_impl();
+        retval.reset(new visa_instrument_impl());
 
         {
             auto status = visa_library::instance().viOpenDefaultRM(
                 &retval->resource_manager);
             if (status < VI_SUCCESS) {
-                delete retval;
                 throw_if_visa_failed(status, "The VISA default resource "
                     "manager could not be opened.");
             }
@@ -56,7 +56,6 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::create(
                 retval->resource_manager, path.c_str(), 0, timeout,
                 &retval->session);
             if (status < VI_SUCCESS) {
-                delete retval;
                 throw_if_visa_failed(status);
             }
         }
@@ -90,7 +89,7 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::create(
 
         retval->_path = path;
 
-        _instruments[path] = retval;
+        _instruments[path] = retval.get();
 
         if (is_new != nullptr) {
             *is_new = true;
@@ -100,7 +99,7 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::create(
     } /* if (it != _instruments.end()) */
 
     ++retval->_counter;
-    return retval;
+    return retval.release();
 }
 
 

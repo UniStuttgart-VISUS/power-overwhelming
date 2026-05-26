@@ -1,5 +1,5 @@
 ﻿// <copyright file="visa_instrument_impl.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -159,7 +159,7 @@ public:
 
     /// <summary>
     /// Checks for a system error if <see cref="enable_system_checks" />
-    /// is <c>true</c> and throws an exception if there is a system errror.
+    /// is <c>true</c> and throws an exception if there is a system error.
     /// </summary>
     void check_system_error(void) const;
 

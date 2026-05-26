@@ -1,12 +1,147 @@
 ﻿// <copyright file="rtx_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#if false
 #include "rtx_sensor.h"
 
+#include <unordered_map>
+
+#include "sensor_array_impl.h"
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions
+ */
+std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
+        _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
+        _In_ std::size_t cnt,
+        _In_ const configuration_type& config) {
+    auto builder = sensor_description_builder::create()
+        .with_vendor(L"Rohde & Schwarz")
+        .with_editable_type(sensor_type::cpu
+            | sensor_type::external
+            | sensor_type::gpu
+            | sensor_type::system)
+        .produces(reading_type::floating_point);
+    std::size_t retval = 0;
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    auto cnt_sensors = config.count_sensors();
+    std::vector<rtx_instrument> instruments;
+    auto sensors = config.sensors();
+
+    for (std::size_t i = 0; i < cnt_sensors; ++i) {
+        try {
+            std::string name("Rohde & Schwarz RTx");
+            const auto& sensor = sensors[i];
+
+            // Connect to the instrument.
+            rtx_instrument instrument(sensor.path(), config.timeout());
+
+            // Get the friendly name of the instrument the user might have
+            // configured. We use that in the friendly name of the sensor to
+            // facilitate identification of the instrument.
+            {
+                std::vector<char> buf(instrument.name(nullptr, 0), '\0');
+                if (!buf.empty()) {
+                    instrument.name(buf.data(), buf.size());
+                    name = buf.data();
+                }
+            }
+
+            // This function tries to configure the given channel and returns
+            // whether it succeeded, in which case we consider the channel to be
+            // enabled.
+            const auto try_configure = [&instrument](const rtx_channel& c) {
+                // Channels that can be measured range from 1 to 4. The
+                // instrument somehow accepts channel 0, but I have no idea what
+                // this channel is, so we manually reject it here.
+                if (c.channel() < 1) {
+                    return false;
+                }
+
+                try {
+                    PWROWG_TRACE("Configuring channel %u on instrument \"%s\".",
+                        c.channel(), instrument.path());
+                    instrument.channel(c.channel());
+                    return true;
+                } catch (...) {
+                    PWROWG_TRACE("Failed to configure channel %u on instrument "
+                        "\"%s\".", c.channel(), instrument.path());
+                    return false;
+                }
+            };
+
+            // Try to configure the voltage and current channels.
+            auto& cur = sensor.current_channel();
+            auto& vol = sensor.voltage_channel();
+            const auto have_cur = try_configure(cur);
+            const auto have_vol = try_configure(vol);
+
+            if (have_cur) {
+                if (retval < cnt) {
+                    dst[retval] = builder
+                        .with_path(sensor.path())
+                        .with_private_data(sensor)
+                        .with_id("RTX/%s/CH%u", sensor.path(), cur.channel())
+                        .with_name("%s Current (CH%u)", name.c_str(),
+                            cur.channel())
+                        .with_type(sensor_type::current)
+                        .measured_in(reading_unit::ampere)
+                        .build();
+                }
+                ++retval;
+            }
+
+            if (have_vol) {
+                if (retval < cnt) {
+                    dst[retval] = builder
+                        .with_path(sensor.path())
+                        .with_private_data(sensor)
+                        .with_id("RTX/%s/CH%u", sensor.path(), vol.channel())
+                        .with_name("%s Voltage (CH%u)", name.c_str(),
+                            vol.channel())
+                        .with_type(sensor_type::voltage)
+                        .measured_in(reading_unit::volt)
+                        .build();
+                }
+                ++retval;
+            }
+
+            if (have_cur && have_vol) {
+                if (retval < cnt) {
+                    dst[retval] = builder
+                        .with_path(sensor.path())
+                        .with_private_data(sensor)
+                        .with_id("RTX/%s/CH%u*CH%u", sensor.path(),
+                            cur.channel(), vol.channel())
+                        .with_name("%s Power (CH%u * CH%u)",
+                            name.c_str(), cur.channel(), vol.channel())
+                        .with_type(sensor_type::power)
+                        .measured_in(reading_unit::watt)
+                        .build();
+                }
+
+                ++retval;
+            }
+
+            // Keep the instrument alive until the end of the method because we
+            // want to reuse existing connections to the same instrument
+            // whenever possible.
+            instruments.push_back(std::move(instrument));
+        } catch (...) {
+            PWROWG_TRACE(_T("Skipping sensor due to a VISA error."));
+        }
+    } /* for (std::size_t i = 0; i < cnt_sensors; ++i) */
+#endif defined(POWER_OVERWHELMING_WITH_VISA)
+
+    return retval;
+}
+
+
+#if false
 #include <algorithm>
 #include <cassert>
 #include <cmath>

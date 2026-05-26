@@ -241,6 +241,17 @@ extern POWER_OVERWHELMING_API bool is_power_sensor(
 
 /// <summary>
 /// Answer whether the given <see cref="sensor_description" /> describes a
+/// sensor using a Rohde &amp; Schwarz RTA or RTB series oscilloscope as the
+/// measurement device.
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><c>true</c> if the sensor is RTA/RTB-based, <c>false</c> otherwise.
+/// </returns>
+extern POWER_OVERWHELMING_API bool is_rtx_sensor(
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes a
 /// Tinkerforge-based sensor.
 /// </summary>
 /// <param name="desc">The sensor to check.</param>

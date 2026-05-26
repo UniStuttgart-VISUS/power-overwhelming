@@ -21,8 +21,101 @@ const PWROWG_NAMESPACE::guid PWROWG_NAMESPACE::rtx_configuration::id(
 /*
  * PWROWG_NAMESPACE::rtx_configuration::rtx_configuration
  */
-PWROWG_NAMESPACE::rtx_configuration::rtx_configuration(void) {
+PWROWG_NAMESPACE::rtx_configuration::rtx_configuration(void)
+        : _timeout(rtx_instrument::default_timeout) {
     this->_sensors.emplace<std::vector<rtx_sensor_definition>>();
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_configuration::add_sensor
+ */
+PWROWG_NAMESPACE::rtx_configuration&
+PWROWG_NAMESPACE::rtx_configuration::add_sensor(
+        _In_ const rtx_sensor_definition& sensor) {
+    assert(this->_sensors);
+    const auto s = this->_sensors.get<std::vector<rtx_sensor_definition>>();
+    assert(s != nullptr);
+    s->push_back(sensor);
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_configuration::add_sensor
+ */
+PWROWG_NAMESPACE::rtx_configuration&
+PWROWG_NAMESPACE::rtx_configuration::add_sensor(
+        _Inout_ rtx_sensor_definition&& sensor) {
+    assert(this->_sensors);
+    const auto s = this->_sensors.get<std::vector<rtx_sensor_definition>>();
+    assert(s != nullptr);
+    s->push_back(std::move(sensor));
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_configuration::add_sensor
+ */
+PWROWG_NAMESPACE::rtx_configuration&
+PWROWG_NAMESPACE::rtx_configuration::add_sensor(
+        _In_z_ const wchar_t *path,
+        _In_ const rtx_channel& voltage_channel,
+        _In_ const rtx_channel& current_channel,
+        _In_ const rtx_waveform_points waveform_points) {
+    rtx_sensor_definition sensor(path, voltage_channel, current_channel,
+        nullptr, waveform_points);
+    return this->add_sensor(std::move(sensor));
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_configuration::add_sensor
+ */
+PWROWG_NAMESPACE::rtx_configuration&
+PWROWG_NAMESPACE::rtx_configuration::add_sensor(
+        _In_z_ const char *path,
+        _In_ const rtx_channel& voltage_channel,
+        _In_ const rtx_channel& current_channel,
+        _In_ const rtx_waveform_points waveform_points) {
+    rtx_sensor_definition sensor(path, voltage_channel, current_channel,
+        nullptr, waveform_points);
+    return this->add_sensor(std::move(sensor));
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_configuration::add_sensor
+ */
+PWROWG_NAMESPACE::rtx_configuration&
+PWROWG_NAMESPACE::rtx_configuration::add_sensor(
+        _In_z_ const wchar_t *path,
+        _In_ const std::uint32_t channel_voltage,
+        _In_ const float attenuation_voltage,
+        _In_ const std::uint32_t channel_current,
+        _In_ const float attenuation_current,
+        _In_ const rtx_waveform_points waveform_points) {
+    rtx_sensor_definition sensor(path, channel_voltage, attenuation_voltage,
+        channel_current, attenuation_current, nullptr, waveform_points);
+    return this->add_sensor(std::move(sensor));
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_configuration::add_sensor
+ */
+PWROWG_NAMESPACE::rtx_configuration&
+PWROWG_NAMESPACE::rtx_configuration::add_sensor(
+        _In_z_ const char *path,
+        _In_ const std::uint32_t channel_voltage,
+        _In_ const float attenuation_voltage,
+        _In_ const std::uint32_t channel_current,
+        _In_ const float attenuation_current,
+        _In_ const rtx_waveform_points waveform_points) {
+    rtx_sensor_definition sensor(path, channel_voltage, attenuation_voltage,
+        channel_current, attenuation_current, nullptr, waveform_points);
+    return this->add_sensor(std::move(sensor));
 }
 
 

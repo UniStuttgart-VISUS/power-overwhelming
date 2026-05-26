@@ -9,8 +9,10 @@
 #pragma once
 
 #include <atomic>
+#include <memory>
 #include <string>
 
+#include "visus/pwrowg/rtx_acquisition.h"
 #include "visus/pwrowg/rtx_trigger.h"
 
 
@@ -21,6 +23,11 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <see cref="rtx_sensor_trigger" />.
 /// </summary>
 struct rtx_sensor_trigger_impl final {
+
+    /// <summary>
+    /// Configures how the instrument will acquire data.
+    /// </summary>
+    rtx_acquisition acquisition;
 
     /// <summary>
     /// The path to the oscilloscope used for triggering.
@@ -37,17 +44,12 @@ struct rtx_sensor_trigger_impl final {
     /// The trigger configuration to apply to the oscilloscope identified by the
     /// specified VISA <see cref="path" />.
     /// </summary>
-    rtx_trigger trigger;
+    std::unique_ptr<rtx_trigger> trigger;
 
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    inline rtx_sensor_trigger_impl(
-            _In_ const std::string& path,
-            _In_ const rtx_trigger trigger)
-        : path(path),
-            references(1),
-            trigger(trigger) { }
+    inline rtx_sensor_trigger_impl(void) : references(1) { }
 };
 
 PWROWG_DETAIL_NAMESPACE_END

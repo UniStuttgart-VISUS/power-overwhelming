@@ -17,10 +17,21 @@
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger
  */
+PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(void)
+    : _impl(new detail::rtx_sensor_trigger_impl()) { }
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger
+ */
 PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
         _In_z_ const char *path,
-        _In_ const rtx_trigger trigger)
-    : _impl(new detail::rtx_sensor_trigger_impl(path, trigger)) { }
+        _In_ const rtx_trigger& trigger)
+        : rtx_sensor_trigger() {
+    assert(path != nullptr);
+    this->_impl->path = (path != nullptr) ? path : "";
+    this->_impl->trigger = std::make_unique<rtx_trigger>(trigger);
+}
 
 
 /*
@@ -28,9 +39,25 @@ PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
  */
 PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
         _In_z_ const wchar_t *path,
-        _In_ const rtx_trigger trigger)
-    : _impl(new detail::rtx_sensor_trigger_impl(convert_string<char>(path),
-        trigger)) { }
+        _In_ const rtx_trigger& trigger)
+        : rtx_sensor_trigger() {
+    assert(path != nullptr);
+    this->_impl->path = convert_string<char>(path);
+    this->_impl->trigger = std::make_unique<rtx_trigger>(trigger);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger
+ */
+PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
+        _In_z_ const char *path,
+        _Inout_ rtx_trigger&& trigger)
+        : rtx_sensor_trigger() {
+    assert(path != nullptr);
+    this->_impl->path = (path != nullptr) ? path : "";
+    this->_impl->trigger = std::make_unique<rtx_trigger>(std::move(trigger));
+}
 
 
 /*
@@ -56,6 +83,14 @@ PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
 
 
 /*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger::acquire
+ */
+void PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(void) {
+    assert(this->_impl != nullptr);
+}
+
+
+/*
  * PWROWG_NAMESPACE::rtx_sensor_trigger::path
  */
 _Ret_z_ const char *PWROWG_NAMESPACE::rtx_sensor_trigger::path(
@@ -68,15 +103,10 @@ _Ret_z_ const char *PWROWG_NAMESPACE::rtx_sensor_trigger::path(
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger::trigger
  */
-const PWROWG_NAMESPACE::rtx_trigger&
-PWROWG_NAMESPACE::rtx_sensor_trigger::trigger(void) noexcept {
+_Ret_maybenull_ const PWROWG_NAMESPACE::rtx_trigger *
+PWROWG_NAMESPACE::rtx_sensor_trigger::trigger(void) const noexcept {
     assert(this->_impl != nullptr);
-    if (this->_impl == nullptr) {
-        static const auto empty = rtx_trigger::edge("CH0");
-        return empty;
-    }
-
-    return this->_impl->trigger;
+    return (this->_impl != nullptr) ? this->_impl->trigger.get() : nullptr;
 }
 
 

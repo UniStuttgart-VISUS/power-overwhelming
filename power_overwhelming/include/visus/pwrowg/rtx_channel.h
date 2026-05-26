@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_channel.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -88,7 +88,7 @@ public:
     }
 
     /// <summary>
-    /// Sets the bandwith limit for the channel.
+    /// Sets the bandwidth limit for the channel.
     /// </summary>
     /// <param name="bandwidth">The bandwidth limit if any.</param>
     /// <returns><c>*this</c>.</returns>

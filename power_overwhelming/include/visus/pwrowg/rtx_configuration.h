@@ -12,6 +12,7 @@
 #include "visus/pwrowg/rtx_instrument.h"
 #include "visus/pwrowg/rtx_sensor_definition.h"
 #include "visus/pwrowg/rtx_instrument_configuration.h"
+#include "visus/pwrowg/rtx_sensor_trigger.h"
 #include "visus/pwrowg/sensor_configuration.h"
 #include "visus/pwrowg/type_erased_storage.h"
 
@@ -41,7 +42,87 @@ public:
     /// </summary>
     rtx_configuration(void);
 
-    rtx_configuration(_Inout_ rtx_configuration&& rhs) noexcept = default;
+    /// <summary>
+    /// Adds a new sensor definition to the configuration.
+    /// </summary>
+    /// <param name="sensor">The sensor to be added.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    rtx_configuration& add_sensor(_In_ const rtx_sensor_definition& sensor);
+
+    /// <summary>
+    /// Adds a new sensor definition to the configuration.
+    /// </summary>
+    /// <param name="sensor">The sensor to be added.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    rtx_configuration& add_sensor(_Inout_ rtx_sensor_definition&& sensor);
+
+    /// <summary>
+    /// Creates a new <see cref="rtx_sensor_definition" /> with the given parameters
+    /// and adds it to the configuration.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="voltage_channel"></param>
+    /// <param name="current_channel"></param>
+    /// <param name="waveform_points"></param>
+    /// <returns></returns>
+    rtx_configuration& add_sensor(_In_z_ const wchar_t *path,
+        _In_ const rtx_channel& voltage_channel,
+        _In_ const rtx_channel& current_channel,
+        _In_ const rtx_waveform_points waveform_points
+        = rtx_waveform_points::maximum);
+
+    /// <summary>
+    /// Creates a new <see cref="rtx_sensor_definition" /> with the given parameters
+    /// and adds it to the configuration.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="voltage_channel"></param>
+    /// <param name="current_channel"></param>
+    /// <param name="waveform_points"></param>
+    /// <returns></returns>
+    rtx_configuration& add_sensor(_In_z_ const char *path,
+        _In_ const rtx_channel& voltage_channel,
+        _In_ const rtx_channel& current_channel,
+        _In_ const rtx_waveform_points waveform_points
+        = rtx_waveform_points::maximum);
+
+    /// <summary>
+    /// Creates a new <see cref="rtx_sensor_definition" /> with the given parameters
+    /// and adds it to the configuration.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="channel_voltage"></param>
+    /// <param name="attenuation_voltage"></param>
+    /// <param name="channel_current"></param>
+    /// <param name="attenuation_current"></param>
+    /// <param name="waveform_points"></param>
+    /// <returns></returns>
+    rtx_configuration& add_sensor(_In_z_ const wchar_t *path,
+        _In_ const std::uint32_t channel_voltage,
+        _In_ const float attenuation_voltage,
+        _In_ const std::uint32_t channel_current,
+        _In_ const float attenuation_current,
+        _In_ const rtx_waveform_points waveform_points
+        = rtx_waveform_points::maximum);
+
+    /// <summary>
+    /// Creates a new <see cref="rtx_sensor_definition" /> with the given parameters
+    /// and adds it to the configuration.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="channel_voltage"></param>
+    /// <param name="attenuation_voltage"></param>
+    /// <param name="channel_current"></param>
+    /// <param name="attenuation_current"></param>
+    /// <param name="waveform_points"></param>
+    /// <returns></returns>
+    rtx_configuration& add_sensor(_In_z_ const char *path,
+        _In_ const std::uint32_t channel_voltage,
+        _In_ const float attenuation_voltage,
+        _In_ const std::uint32_t channel_current,
+        _In_ const float attenuation_current,
+        _In_ const rtx_waveform_points waveform_points
+        = rtx_waveform_points::maximum);
 
     /// <summary>
     /// Answer the number of sensors (voltage/current pairs) that have been
@@ -51,8 +132,9 @@ public:
     std::size_t count_sensors(void) const noexcept;
 
     /// <summary>
-    /// Gets the configuration that will be applied to the oscilloscopes on
-    /// startup.
+    /// Gets the configuration that will be applied to the oscilloscopes at
+    /// startup. Depending on the trigger configuration, the oscilloscope that
+    /// is triggering might be configured differently from the other ones.
     /// </summary>
     /// <returns>The instrument configuration.</returns>
     inline const rtx_instrument_configuration& instrument_configuration(
@@ -61,13 +143,38 @@ public:
     }
 
     /// <summary>
-    /// Gets the configuration that will be applied to the oscilloscopes on
-    /// startup.
+    /// Gets the configuration that will be applied to the oscilloscopes at
+    /// startup. Depending on the trigger configuration, the oscilloscope that
+    /// is triggering might be configured differently from the other ones.
     /// </summary>
     /// <returns>The instrument configuration.</returns>
     inline rtx_instrument_configuration& instrument_configuration(
             void) noexcept {
         return this->_instrument_configuration;
+    }
+
+    /// <summary>
+    /// Sets a new default instrument configuration that will be applied to the
+    /// oscilloscopes at startup.
+    /// </summary>
+    /// <param name="config"></param>
+    /// <returns></returns>
+    inline rtx_configuration& instrument_configuration(
+            _In_ const rtx_instrument_configuration& config) {
+        this->_instrument_configuration = config;
+        return *this;
+    }
+
+    /// <summary>
+    /// Sets a new default instrument configuration that will be applied to the
+    /// oscilloscopes at startup.
+    /// </summary>
+    /// <param name="config"></param>
+    /// <returns></returns>
+    inline rtx_configuration& instrument_configuration(
+            _Inout_ rtx_instrument_configuration&& config) noexcept {
+        this->_instrument_configuration = std::move(config);
+        return *this;
     }
 
     /// <summary>
@@ -92,14 +199,61 @@ public:
         _In_reads_opt_(cnt) rtx_sensor_definition *sensors,
         _In_ const std::size_t cnt);
 
-    rtx_configuration& operator =(
-        _Inout_ rtx_configuration&& rhs) noexcept = default;
+    /// <summary>
+    /// Gets the trigger configuration object.
+    /// </summary>
+    /// <returns>The sensor trigger configuration.</returns>
+    inline const rtx_sensor_trigger& trigger(void) const noexcept {
+        return this->_trigger;
+    }
+
+    /// <summary>
+    /// Sets the trigger configuration.
+    /// </summary>
+    /// <param name="trigger">The new trigger configuration which determines how
+    /// the underlying oscilloscopes are controlled.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    rtx_configuration& trigger(_In_ const rtx_sensor_trigger& trigger) {
+        this->_trigger = trigger;
+        return *this;
+    }
+
+    /// <summary>
+    /// Answer the timeout to be used for all VISA instruments.
+    /// </summary>
+    /// <returns>The timeout in milliseconds.</returns>
+    inline rtx_instrument::timeout_type timeout(void) const noexcept {
+        return this->_timeout;
+    }
+
+    /// <summary>
+    /// Sets the timeout to be used for all VISA instruments.
+    /// </summary>
+    /// <param name="timeout">The timeout, in milliseconds.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    rtx_configuration& timeout(
+            _In_ const rtx_instrument::timeout_type timeout) noexcept {
+        this->_timeout = timeout;
+        return *this;
+    }
+
+    /// <summary>
+    /// Sets the trigger configuration.
+    /// </summary>
+    /// <param name="trigger">The new trigger configuration which determines how
+    /// the underlying oscilloscopes are controlled.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    rtx_configuration& trigger(_Inout_ rtx_sensor_trigger&& trigger) noexcept {
+        this->_trigger = std::move(trigger);
+        return *this;
+    }
 
 private:
 
     rtx_instrument_configuration _instrument_configuration;
     type_erased_storage _sensors;
-    type_erased_storage _trigger_callback;
+    rtx_instrument::timeout_type _timeout;
+    rtx_sensor_trigger _trigger;
 };
 
 PWROWG_NAMESPACE_END

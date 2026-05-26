@@ -152,6 +152,15 @@ bool PWROWG_NAMESPACE::is_power_sensor(
 
 
 /*
+ * PWROWG_NAMESPACE::is_rtx_sensor
+ */
+bool PWROWG_NAMESPACE::is_rtx_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    return detail::starts_with(desc.id(), L"RTX/");
+}
+
+
+/*
  * PWROWG_NAMESPACE::is_tinkerforge_sensor
  */
 bool PWROWG_NAMESPACE::is_tinkerforge_sensor(
