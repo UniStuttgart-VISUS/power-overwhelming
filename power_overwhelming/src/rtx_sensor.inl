@@ -84,6 +84,10 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         if (it->is_sensor_type(sensor_type::current)) {
             instrument.channel(cur);
 
+            std::string name("CH");
+            name += std::to_string(cur.channel());
+            this->_channels.push_back(std::move(name));
+
         } else if (it->is_sensor_type(sensor_type::power)) {
             std::string expr("CH");
             expr += std::to_string(cur.channel());
@@ -91,9 +95,17 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
             expr += std::to_string(vol.channel());
             instrument.expression(++next_math, expr.c_str(), "VA");
 
+            std::string name("MATH");
+            name += std::to_string(next_math);
+            this->_channels.push_back(std::move(name));
+
         } else {
             assert(it->is_sensor_type(sensor_type::voltage));
             instrument.channel(vol);
+
+            std::string name("CH");
+            name += std::to_string(cur.channel());
+            this->_channels.push_back(std::move(name));
         }
     }
 

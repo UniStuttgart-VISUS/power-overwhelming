@@ -33,6 +33,15 @@ class POWER_OVERWHELMING_API rtx_configuration final
 public:
 
     /// <summary>
+    /// The type used to represent a device timeout.
+    /// </summary>
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    typedef rtx_instrument::timeout_type timeout_type;
+#else /* !defined(POWER_OVERWHELMING_WITH_VISA) */
+    typedef std::uint32_t timeout_type;
+#endif /* !defined(POWER_OVERWHELMING_WITH_VISA) */
+
+    /// <summary>
     /// A unique identifier for the <see cref="rtx_configuration" /> type.
     /// </summary>
     static const guid id;
@@ -222,7 +231,7 @@ public:
     /// Answer the timeout to be used for all VISA instruments.
     /// </summary>
     /// <returns>The timeout in milliseconds.</returns>
-    inline rtx_instrument::timeout_type timeout(void) const noexcept {
+    inline timeout_type timeout(void) const noexcept {
         return this->_timeout;
     }
 
@@ -231,8 +240,7 @@ public:
     /// </summary>
     /// <param name="timeout">The timeout, in milliseconds.</param>
     /// <returns><c>*<see langword="this" /></c>.</returns>
-    rtx_configuration& timeout(
-            _In_ const rtx_instrument::timeout_type timeout) noexcept {
+    rtx_configuration& timeout(_In_ const timeout_type timeout) noexcept {
         this->_timeout = timeout;
         return *this;
     }
@@ -252,7 +260,7 @@ private:
 
     rtx_instrument_configuration _instrument_configuration;
     type_erased_storage _sensors;
-    rtx_instrument::timeout_type _timeout;
+    timeout_type _timeout;
     rtx_sensor_trigger _trigger;
 };
 

@@ -7,6 +7,8 @@
 #pragma once
 
 #include <list>
+#include <string>
+#include <vector>
 
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/rtx_configuration.h"
@@ -110,6 +112,7 @@ public:
 
 private:
 
+    std::vector<std::string> _channels;
     std::size_t _index;
     std::vector<rtx_instrument> _instruments;
     const sensor_array_impl *_owner;

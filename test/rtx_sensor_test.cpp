@@ -93,6 +93,7 @@ public:
 
         std::vector<sensor_description> descs;
         descs.resize(type::descriptions(nullptr, 0, *sensor_config));
+        Assert::AreEqual(std::size_t(2 * 3), descs.size(), L"Descriptions for all sensors and the power sensor.", LINE_INFO());
         type::descriptions(descs.data(), descs.size(), *sensor_config);
 
         type::list_type sensors;
