@@ -466,7 +466,7 @@ std::size_t PWROWG_NAMESPACE::visa_instrument::name(
 #if (defined(_MSC_VER) && (_MSC_VER >= 1400))
         ::wcscpy_s(dst, cnt, name.c_str());
 #else /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
-        ::wcscpys(dst, name.c_str());
+        ::wcscpy(dst, name.c_str());
 #endif /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
     }
 

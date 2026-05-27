@@ -53,8 +53,8 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::create(
 
         {
             auto status = visa_library::instance()._viOpen(
-                retval->resource_manager, path.c_str(), 0, timeout,
-                &retval->session);
+                retval->resource_manager, const_cast<char *>(path.c_str()), 0,
+                timeout, &retval->session);
             if (status < VI_SUCCESS) {
                 throw_if_visa_failed(status);
             }
@@ -556,7 +556,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::write(
     ViUInt32 retval = 0;
     throw_if_visa_failed(detail::visa_library::instance()
         ._viWrite(this->session,
-            buffer,
+            const_cast<byte_type *>(buffer),
             static_cast<ViUInt32>(cnt),
             &retval));
     return retval;
@@ -595,7 +595,7 @@ void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::write_all(
     while (total < cnt) {
         throw_if_visa_failed(detail::visa_library::instance()
             ._viWrite(this->session,
-                buffer + total,
+                const_cast<byte_type *>(buffer + total),
                 cnt - total,
                 &last));
         total += last;
