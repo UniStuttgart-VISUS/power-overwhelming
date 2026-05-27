@@ -12,6 +12,7 @@
 
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/rtx_configuration.h"
+#include "visus/pwrowg/sensor_filters.h"
 #include "visus/pwrowg/trace.h"
 
 #include "sensor_description_builder.h"

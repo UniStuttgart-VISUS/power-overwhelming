@@ -135,7 +135,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
             PWROWG_TRACE(_T("Skipping sensor due to a VISA error."));
         }
     } /* for (std::size_t i = 0; i < cnt_sensors; ++i) */
-#endif defined(POWER_OVERWHELMING_WITH_VISA)
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
     return retval;
 }
