@@ -1,5 +1,5 @@
 ﻿// <copyright file="adl_utils.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2024 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2024 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 
@@ -20,7 +20,7 @@ std::vector<AdapterInfo> PWROWG_DETAIL_NAMESPACE::get_adapters(
     {
         int cnt;
         auto status = PWROWG_DETAIL_NAMESPACE::amd_display_library::instance()
-            .ADL2_Adapter_NumberOfAdapters_Get(scope, &cnt);
+            ._ADL2_Adapter_NumberOfAdapters_Get(scope, &cnt);
         throw_if_adl_failed(status);
         retval.resize(cnt);
     }
@@ -30,7 +30,7 @@ std::vector<AdapterInfo> PWROWG_DETAIL_NAMESPACE::get_adapters(
         ::ZeroMemory(retval.data(), size);
 
         auto status = PWROWG_DETAIL_NAMESPACE::amd_display_library::instance()
-            .ADL2_Adapter_AdapterInfo_Get(scope, retval.data(), size);
+            ._ADL2_Adapter_AdapterInfo_Get(scope, retval.data(), size);
         throw_if_adl_failed(status);
     }
 
@@ -45,7 +45,7 @@ bool PWROWG_DETAIL_NAMESPACE::is_active(_In_ adl_scope& scope,
         _In_ const AdapterInfo& adapter) {
     int retval = 0;
     auto status = PWROWG_DETAIL_NAMESPACE::amd_display_library::instance()
-        .ADL2_Adapter_Active_Get(scope, adapter.iAdapterIndex, &retval);
+        ._ADL2_Adapter_Active_Get(scope, adapter.iAdapterIndex, &retval);
     throw_if_adl_failed(status);
     return (retval == 0);
 }

@@ -1,5 +1,5 @@
 ﻿// <copyright file="usb_pd_library.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -16,7 +16,7 @@
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
-#define __PWROWG_USB_PD_FUNC(f) decltype(&::f) f
+#define __PWROWG_USB_PD_FUNC(f) decltype(&::f) _##f = nullptr
 
 /// <summary>
 /// Wrapper for lazily loading the wrapper around the Passmark USB-PD API.

@@ -1,5 +1,5 @@
 ﻿// <copyright file="usb_pd_library.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -7,8 +7,8 @@
 #include "usb_pd_library.h"
 
 
-#define __PWROWG_GET_USB_PD_FUNC(n) \
-    this->n = this->get_function<decltype(this->n)>(#n)
+#define __PWROWG_USB_PD_FUNC(f) \
+    this->_##f = this->get_function<decltype(this->_##f)>(#f)
 
 
 /*
@@ -30,12 +30,12 @@ PWROWG_DETAIL_NAMESPACE::usb_pd_library::usb_pd_library(void)
 #else /* defined(_WIN32) */
         : library_base("ftd2xx.so") {
 #endif /* defined(_WIN32) */
-    __PWROWG_GET_USB_PD_FUNC(FT_Close);
-    __PWROWG_GET_USB_PD_FUNC(FT_ListDevices);
-    __PWROWG_GET_USB_PD_FUNC(FT_OpenEx);
-    __PWROWG_GET_USB_PD_FUNC(FT_Read);
-    __PWROWG_GET_USB_PD_FUNC(FT_SetBaudRate);
-    __PWROWG_GET_USB_PD_FUNC(FT_SetDataCharacteristics);
-    __PWROWG_GET_USB_PD_FUNC(FT_SetTimeouts);
-    __PWROWG_GET_USB_PD_FUNC(FT_Write);
+    __PWROWG_USB_PD_FUNC(FT_Close);
+    __PWROWG_USB_PD_FUNC(FT_ListDevices);
+    __PWROWG_USB_PD_FUNC(FT_OpenEx);
+    __PWROWG_USB_PD_FUNC(FT_Read);
+    __PWROWG_USB_PD_FUNC(FT_SetBaudRate);
+    __PWROWG_USB_PD_FUNC(FT_SetDataCharacteristics);
+    __PWROWG_USB_PD_FUNC(FT_SetTimeouts);
+    __PWROWG_USB_PD_FUNC(FT_Write);
 }

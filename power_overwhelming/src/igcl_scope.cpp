@@ -17,7 +17,7 @@
 PWROWG_DETAIL_NAMESPACE::igcl_scope::igcl_scope(void) : _args { } {
     this->_args.Size = sizeof(this->_args);
     this->_args.AppVersion= CTL_IMPL_VERSION;
-    auto status = igcl_library::instance().ctlInit(&this->_args,
+    auto status = igcl_library::instance()._ctlInit(&this->_args,
         &this->_handle);
     throw_if_igcl_failed(status);
 }
@@ -27,6 +27,6 @@ PWROWG_DETAIL_NAMESPACE::igcl_scope::igcl_scope(void) : _args { } {
  * PWROWG_DETAIL_NAMESPACE::igcl_scope::~igcl_scope
  */
 PWROWG_DETAIL_NAMESPACE::igcl_scope::~igcl_scope(void) {
-    igcl_library::instance().ctlClose(this->_handle);
+    igcl_library::instance()._ctlClose(this->_handle);
 }
 #endif /* defined(POWER_OVERWHELMING_WITH_IGCL) */

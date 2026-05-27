@@ -16,7 +16,7 @@
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
-#define __POWER_OVERWHELMING_IGCL_FUNC(f) decltype(&::f) f = nullptr
+#define __POWER_OVERWHELMING_IGCL_FUNC(f) decltype(&::f) _##f = nullptr
 
 /// <summary>
 /// Wrapper for lazily loading the Intel Graphics Control Library.

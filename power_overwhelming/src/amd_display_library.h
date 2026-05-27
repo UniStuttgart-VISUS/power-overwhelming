@@ -1,5 +1,5 @@
 ﻿// <copyright file="amd_display_library.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -19,8 +19,8 @@
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
-#define __POWER_OVERWHELMING_ADL_FUNC(r, n, ...) \
-    r (*n)(__VA_ARGS__) = nullptr
+#define __POWER_OVERWHELMING_ADL_FUNC(r, f, ...) \
+    r (*_##f)(__VA_ARGS__) = nullptr
 
 /// <summary>
 /// Wrapper for dynamically loading the AMD Display Library.

@@ -8,8 +8,8 @@
 #include "igcl_library.h"
 
 
-#define __POWER_OVERWHELMING_IGCL_FUNC(n) \
-    this->n = this->get_function<decltype(this->n)>(#n)
+#define __POWER_OVERWHELMING_IGCL_FUNC(f) \
+    this->_##f = this->get_function<decltype(this->_##f)>(#f)
 
 
 /*

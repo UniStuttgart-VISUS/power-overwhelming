@@ -1,5 +1,5 @@
 ﻿// <copyright file="adl_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 
@@ -224,7 +224,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::adl_sensor::descriptions(
             // Second, find out whether the adapter supports PMLog.
             {
                 auto status = amd_display_library::instance()
-                    .ADL2_Adapter_PMLog_Support_Get(scope,
+                    ._ADL2_Adapter_PMLog_Support_Get(scope,
                         a.iAdapterIndex,
                         &support_info);
                 if (status != ADL_OK) {
@@ -302,7 +302,7 @@ PWROWG_DETAIL_NAMESPACE::adl_sensor::adl_sensor(
     // Get the PM log device.
     {
         auto status = amd_display_library::instance()
-            .ADL2_Device_PMLog_Device_Create(
+            ._ADL2_Device_PMLog_Device_Create(
                 this->_scope,
                 this->_adapter_index,
                 &this->_device);
@@ -324,7 +324,7 @@ PWROWG_DETAIL_NAMESPACE::adl_sensor::adl_sensor(
     // Start up ADL sample delivery.
     {
         auto status = amd_display_library::instance()
-            .ADL2_Adapter_PMLog_Start(this->_scope,
+            ._ADL2_Adapter_PMLog_Start(this->_scope,
                 this->_adapter_index,
                 &this->_start_input,
                 &this->_start_output,
@@ -339,7 +339,7 @@ PWROWG_DETAIL_NAMESPACE::adl_sensor::adl_sensor(
  */
 PWROWG_DETAIL_NAMESPACE::adl_sensor::~adl_sensor(void) noexcept {
     detail::amd_display_library::instance()
-        .ADL2_Adapter_PMLog_Stop(this->_scope,
+        ._ADL2_Adapter_PMLog_Stop(this->_scope,
             this->_adapter_index,
             this->_device);
 }

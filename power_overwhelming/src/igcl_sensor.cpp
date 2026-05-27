@@ -153,11 +153,11 @@ static std::vector<ctl_device_adapter_handle_t> devices(
     using namespace PWROWG_DETAIL_NAMESPACE;
     std::uint32_t cnt = 0;
     throw_if_igcl_failed(igcl_library::instance()
-        .ctlEnumerateDevices(scope, &cnt, nullptr));
+        ._ctlEnumerateDevices(scope, &cnt, nullptr));
 
     std::vector<ctl_device_adapter_handle_t> retval(cnt);
     throw_if_igcl_failed(igcl_library::instance()
-        .ctlEnumerateDevices(scope, &cnt, retval.data()));
+        ._ctlEnumerateDevices(scope, &cnt, retval.data()));
 
     return retval;
 }
@@ -400,9 +400,9 @@ std::size_t PWROWG_DETAIL_NAMESPACE::igcl_sensor::descriptions(
             telemetry.Version = 1;
 
             throw_if_igcl_failed(igcl_library::instance()
-                .ctlGetDeviceProperties(d, &dev_props));
+                ._ctlGetDeviceProperties(d, &dev_props));
             throw_if_igcl_failed(igcl_library::instance()
-                .ctlPowerTelemetryGet(d, &telemetry));
+                ._ctlPowerTelemetryGet(d, &telemetry));
 
             // The path is the same for all devices as we use it to group all
             // telemetry from a single source into one sensor.
@@ -565,7 +565,7 @@ PWROWG_DETAIL_NAMESPACE::igcl_sensor::igcl_sensor(
         dev_props.Size = sizeof(dev_props);
         dev_props.Version = 2;
         throw_if_igcl_failed(igcl_library::instance()
-            .ctlGetDeviceProperties(d, &dev_props));
+            ._ctlGetDeviceProperties(d, &dev_props));
         const auto p = ::path(dev_props);
         if (path == p) {
             this->_device = d;
@@ -612,7 +612,7 @@ void PWROWG_DETAIL_NAMESPACE::igcl_sensor::sample(
     telemetry.Version = 1;
 
     throw_if_igcl_failed(igcl_library::instance()
-        .ctlPowerTelemetryGet(this->_device, &telemetry));
+        ._ctlPowerTelemetryGet(this->_device, &telemetry));
 
     // Convert the timestamp of the sample. This is the same for all data
     // points, so we do it only once.

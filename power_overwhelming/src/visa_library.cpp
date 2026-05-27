@@ -11,8 +11,8 @@
 
 #include "visa_error_category.h"
 
-#define __POWER_OVERWHELMING_GET_VISA_FUNC(n) \
-    this->_##n = this->get_function<decltype(this->_##n)>(#n)
+#define __POWER_OVERWHELMING_VISA_FUNC(f) \
+    this->_##f = this->get_function<decltype(this->_##f)>(#f)
 
 
 /*
@@ -34,26 +34,26 @@ PWROWG_DETAIL_NAMESPACE::visa_library::visa_library(void)
 #else /* defined(_WIN32) */
         : library_base("librsvisa.so") {
 #endif /* defined(_WIN32) */
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viClear);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viClose);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viDisableEvent);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viDiscardEvents);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viEnableEvent);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viFindNext);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viFindRsrc);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viGetAttribute);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viInstallHandler);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viOpen);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viOpenDefaultRM);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viPrintf);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viRead);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viReadSTB);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viSetAttribute);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viSetBuf);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viStatusDesc);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viUninstallHandler);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viWaitOnEvent);
-    __POWER_OVERWHELMING_GET_VISA_FUNC(viWrite);
+    __POWER_OVERWHELMING_VISA_FUNC(viClear);
+    __POWER_OVERWHELMING_VISA_FUNC(viClose);
+    __POWER_OVERWHELMING_VISA_FUNC(viDisableEvent);
+    __POWER_OVERWHELMING_VISA_FUNC(viDiscardEvents);
+    __POWER_OVERWHELMING_VISA_FUNC(viEnableEvent);
+    __POWER_OVERWHELMING_VISA_FUNC(viFindNext);
+    __POWER_OVERWHELMING_VISA_FUNC(viFindRsrc);
+    __POWER_OVERWHELMING_VISA_FUNC(viGetAttribute);
+    __POWER_OVERWHELMING_VISA_FUNC(viInstallHandler);
+    __POWER_OVERWHELMING_VISA_FUNC(viOpen);
+    __POWER_OVERWHELMING_VISA_FUNC(viOpenDefaultRM);
+    __POWER_OVERWHELMING_VISA_FUNC(viPrintf);
+    __POWER_OVERWHELMING_VISA_FUNC(viRead);
+    __POWER_OVERWHELMING_VISA_FUNC(viReadSTB);
+    __POWER_OVERWHELMING_VISA_FUNC(viSetAttribute);
+    __POWER_OVERWHELMING_VISA_FUNC(viSetBuf);
+    __POWER_OVERWHELMING_VISA_FUNC(viStatusDesc);
+    __POWER_OVERWHELMING_VISA_FUNC(viUninstallHandler);
+    __POWER_OVERWHELMING_VISA_FUNC(viWaitOnEvent);
+    __POWER_OVERWHELMING_VISA_FUNC(viWrite);
 }
 
 

@@ -1,5 +1,5 @@
 ﻿// <copyright file="usb_pd_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -37,7 +37,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::descriptions(
         char path[64];
 
         {
-            auto status = usb_pd_library::instance().FT_ListDevices(&devices,
+            auto status = usb_pd_library::instance()._FT_ListDevices(&devices,
                 nullptr,
                 FT_LIST_NUMBER_ONLY);
             if (!FT_SUCCESS(status)) {
@@ -50,7 +50,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::descriptions(
             .produces(reading_type::floating_point);
 
         for (std::uintptr_t i = 0; i < devices; ++i) {
-            auto status = usb_pd_library::instance().FT_ListDevices(
+            auto status = usb_pd_library::instance()._FT_ListDevices(
                 reinterpret_cast<void *>(i),
                 path,
                 FT_LIST_BY_INDEX | FT_OPEN_BY_SERIAL_NUMBER);
@@ -125,7 +125,7 @@ PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::usb_pd_sensor(
 
     {
         auto s = PWROWG_NAMESPACE::convert_string<char>(serial);
-        auto status = usb_pd_library::instance().FT_OpenEx(
+        auto status = usb_pd_library::instance()._FT_OpenEx(
             const_cast<char *>(s.c_str()),
             FT_OPEN_BY_SERIAL_NUMBER,
             &this->_tester);
@@ -136,7 +136,7 @@ PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::usb_pd_sensor(
     }
 
     {
-        auto status = usb_pd_library::instance().FT_SetBaudRate(
+        auto status = usb_pd_library::instance()._FT_SetBaudRate(
             this->_tester,
             115200);
         if (!FT_SUCCESS(status)) {
@@ -146,7 +146,7 @@ PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::usb_pd_sensor(
     }
 
     {
-        auto status = usb_pd_library::instance().FT_SetDataCharacteristics(
+        auto status = usb_pd_library::instance()._FT_SetDataCharacteristics(
             this->_tester,
             FT_BITS_8,
             FT_STOP_BITS_1,
@@ -158,7 +158,7 @@ PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::usb_pd_sensor(
     }
 
     {
-        auto status = usb_pd_library::instance().FT_SetTimeouts(
+        auto status = usb_pd_library::instance()._FT_SetTimeouts(
             this->_tester,
             config.read_timeout(),
             config.write_timeout());
@@ -174,7 +174,7 @@ PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::usb_pd_sensor(
  * PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::~usb_pd_sensor
  */
 PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::~usb_pd_sensor(void) {
-    usb_pd_library::instance().FT_Close(this->_tester);
+    usb_pd_library::instance()._FT_Close(this->_tester);
 }
 
 
@@ -227,7 +227,7 @@ void PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::read(
 
     while (rem > 0) {
         DWORD read;
-        auto status = usb_pd_library::instance().FT_Read(this->_tester,
+        auto status = usb_pd_library::instance()._FT_Read(this->_tester,
             dst,
             rem,
             &read);
@@ -271,7 +271,7 @@ void PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::write(
 
     while (rem > 0) {
         DWORD written;
-        auto status = usb_pd_library::instance().FT_Write(this->_tester,
+        auto status = usb_pd_library::instance()._FT_Write(this->_tester,
             src,
             rem,
             &written);

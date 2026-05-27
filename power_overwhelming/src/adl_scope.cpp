@@ -1,5 +1,5 @@
 ﻿// <copyright file="adl_scope.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -36,7 +36,7 @@ void __stdcall PWROWG_DETAIL_NAMESPACE::adl_scope::deallocate(void **buffer) {
  * PWROWG_DETAIL_NAMESPACE::adl_scope::adl_scope
  */
 PWROWG_DETAIL_NAMESPACE::adl_scope::adl_scope(void) : _handle(0) {
-    auto status = amd_display_library::instance().ADL2_Main_Control_Create(
+    auto status = amd_display_library::instance()._ADL2_Main_Control_Create(
         adl_scope::allocate, 1, &this->_handle);
     throw_if_adl_failed(status);
 }
@@ -46,7 +46,7 @@ PWROWG_DETAIL_NAMESPACE::adl_scope::adl_scope(void) : _handle(0) {
  * PWROWG_DETAIL_NAMESPACE::adl_scope::~adl_scope
  */
 PWROWG_DETAIL_NAMESPACE::adl_scope::~adl_scope(void) {
-    amd_display_library::instance().ADL2_Main_Control_Destroy(this->_handle);
+    amd_display_library::instance()._ADL2_Main_Control_Destroy(this->_handle);
 }
 
 #endif /* defined(POWER_OVERWHELMING_WITH_ADL) */
