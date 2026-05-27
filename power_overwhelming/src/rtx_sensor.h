@@ -12,6 +12,7 @@
 
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/rtx_configuration.h"
+#include "visus/pwrowg/rtx_instrument.h"
 #include "visus/pwrowg/sensor_filters.h"
 #include "visus/pwrowg/trace.h"
 
@@ -115,7 +116,9 @@ private:
 
     std::vector<std::string> _channels;
     std::size_t _index;
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     std::vector<rtx_instrument> _instruments;
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     const sensor_array_impl *_owner;
 };
 

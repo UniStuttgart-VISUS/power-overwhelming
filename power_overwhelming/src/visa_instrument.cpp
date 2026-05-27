@@ -1,5 +1,5 @@
 ﻿// <copyright file="visa_instrument.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -267,7 +267,7 @@ const PWROWG_NAMESPACE::visa_instrument &
 PWROWG_NAMESPACE::visa_instrument::attribute(
         _Out_ void *dst, _In_ ViAttr name) const {
     detail::throw_if_visa_failed(
-        detail::visa_library::instance().viGetAttribute(
+        detail::visa_library::instance()._viGetAttribute(
             this->check_not_disposed().session, name, dst));
     return *this;
 }
@@ -280,7 +280,7 @@ PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::attribute(_In_ ViAttr name,
         _In_ ViAttrState value) {
     detail::throw_if_visa_failed(
-        detail::visa_library::instance().viSetAttribute(
+        detail::visa_library::instance()._viSetAttribute(
             this->check_not_disposed().session, name, value));
     return *this;
 }
@@ -329,7 +329,7 @@ PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::buffer(
         _In_ const std::uint16_t mask, _In_ const std::uint32_t size) {
     detail::throw_if_visa_failed(
-        detail::visa_library::instance().viSetBuf(
+        detail::visa_library::instance()._viSetBuf(
             this->check_not_disposed().session, mask, size));
     return *this;
 }
@@ -341,7 +341,7 @@ PWROWG_NAMESPACE::visa_instrument::buffer(
 PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::clear(void) {
     detail::throw_if_visa_failed(
-        detail::visa_library::instance().viClear(
+        detail::visa_library::instance()._viClear(
             this->check_not_disposed().session));
     return *this;
 }
@@ -809,7 +809,7 @@ PWROWG_NAMESPACE::visa_status_byte
 PWROWG_NAMESPACE::visa_instrument::status(void) const {
     ViUInt16 retval;
     detail::throw_if_visa_failed(
-        detail::visa_library::instance().viReadSTB(
+        detail::visa_library::instance()._viReadSTB(
             this->check_not_disposed().session, &retval));
     return static_cast<visa_status_byte>(retval);
 
@@ -896,7 +896,7 @@ PWROWG_NAMESPACE::visa_instrument::timeout(
  * PWROWG_NAMESPACE::visa_instrument::try_clear
  */
 bool PWROWG_NAMESPACE::visa_instrument::try_clear(void) {
-    auto status = detail::visa_library::instance().viClear(
+    auto status = detail::visa_library::instance()._viClear(
         this->check_not_disposed().session);
     return (status == VI_SUCCESS);
 }
@@ -1072,7 +1072,7 @@ ViStatus _VI_FUNCH PWROWG_NAMESPACE::visa_instrument::on_event(
             // If the event handler does not return, which is the case when we
             // throw an exception, we must free the event object manually. Cf.
             // https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vieventhandler.html
-            detail::visa_library::instance().viClose(event);
+            detail::visa_library::instance()._viClose(event);
             throw;
         }
     }

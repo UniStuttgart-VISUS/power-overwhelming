@@ -1,5 +1,5 @@
 ﻿// <copyright file="visa_library.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -19,7 +19,7 @@
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
-#define __POWER_OVERWHELMING_VISA_FUNC(f) decltype(&f) f = nullptr
+#define __POWER_OVERWHELMING_VISA_FUNC(f) decltype(&f) _##f = nullptr
 
 /// <summary>
 /// A wrapper around the Virtual Instrument Software Architecture API, which

@@ -1,5 +1,5 @@
 ﻿// <copyright file="visa_error_category.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -31,11 +31,11 @@ std::string PWROWG_DETAIL_NAMESPACE::visa_error_category::message(
     // Documentation says 256 would be OK, but most sample code uses 1K.
     ViChar retval[1024];
 
-    if (visa_library::instance().viOpenDefaultRM(&rm) == VI_SUCCESS) {
-        visa_library::instance().viStatusDesc(rm,
+    if (visa_library::instance()._viOpenDefaultRM(&rm) == VI_SUCCESS) {
+        visa_library::instance()._viStatusDesc(rm,
             static_cast<ViStatus>(status),
             retval);
-        visa_library::instance().viClose(rm);
+        visa_library::instance()._viClose(rm);
         // Documentation says that the error string is valid even if
         // viStatusDesc fails, so we just return whatever we get ...
         return retval;

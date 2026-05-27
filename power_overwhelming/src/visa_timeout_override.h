@@ -1,5 +1,5 @@
 ﻿// <copyright file="visa_timeout_override.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -39,10 +39,10 @@ public:
         : _session(session),
             _timeout(0) {
         throw_if_visa_failed(visa_library::instance()
-            .viGetAttribute(this->_session, VI_ATTR_TMO_VALUE,
+            ._viGetAttribute(this->_session, VI_ATTR_TMO_VALUE,
                 &this->_timeout));
         throw_if_visa_failed(visa_library::instance()
-            .viSetAttribute(this->_session, VI_ATTR_TMO_VALUE,
+            ._viSetAttribute(this->_session, VI_ATTR_TMO_VALUE,
                 timeout));
     }
 
@@ -52,7 +52,7 @@ public:
     /// Restores the initial timeout of the VISA session.
     /// </summary>
     inline ~visa_timeout_override(void) {
-        visa_library::instance().viSetAttribute(this->_session,
+        visa_library::instance()._viSetAttribute(this->_session,
             VI_ATTR_TMO_VALUE, this->_timeout);
     }
 

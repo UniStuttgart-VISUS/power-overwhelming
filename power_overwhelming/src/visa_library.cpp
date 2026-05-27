@@ -1,5 +1,5 @@
 ﻿// <copyright file="visa_library.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -12,7 +12,7 @@
 #include "visa_error_category.h"
 
 #define __POWER_OVERWHELMING_GET_VISA_FUNC(n) \
-    this->n = this->get_function<decltype(this->n)>(#n)
+    this->_##n = this->get_function<decltype(this->_##n)>(#n)
 
 
 /*
@@ -75,13 +75,13 @@ PWROWG_DETAIL_NAMESPACE::visa_library::find_resource(
     ViSession rm;
 
     {
-        auto status = viOpenDefaultRM(&rm);
+        auto status = this->_viOpenDefaultRM(&rm);
         throw_if_visa_failed(status, "Could not open resource manager.");
     }
-    auto gRm = on_exit([this, rm](void) { viClose(rm); });
+    auto gRm = on_exit([this, rm](void) { this->_viClose(rm); });
 
     {
-        auto status = viFindRsrc(rm, expression, &hFind, &cnt, desc);
+        auto status = this->_viFindRsrc(rm, expression, &hFind, &cnt, desc);
         throw_if_visa_failed(status);
     }
 
@@ -89,7 +89,7 @@ PWROWG_DETAIL_NAMESPACE::visa_library::find_resource(
     retval.push_back(desc);
 
     while (true) {
-        auto status = visa_library::instance().viFindNext(hFind, desc);
+        auto status = visa_library::instance()._viFindNext(hFind, desc);
 
         if (status == VI_ERROR_RSRC_NFOUND) {
             break;
