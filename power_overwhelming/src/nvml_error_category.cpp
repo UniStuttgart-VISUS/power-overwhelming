@@ -1,5 +1,5 @@
 ﻿// <copyright file="nvml_error_category.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2022 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -25,7 +25,7 @@ PWROWG_DETAIL_NAMESPACE::nvml_error_category::default_error_condition(
  */
 std::string PWROWG_DETAIL_NAMESPACE::nvml_error_category::message(
         int status) const {
-    return nvidia_management_library::instance().nvmlErrorString(
+    return nvidia_management_library::instance()._nvmlErrorString(
         static_cast<nvmlReturn_t>(status));
 }
 

@@ -1,5 +1,5 @@
 ﻿// <copyright file="nvml_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -34,7 +34,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
         // Find out the number of NVIDIA devices on the machine.
         {
             auto status = nvidia_management_library::instance()
-                .nvmlDeviceGetCount(&cnt_devices);
+                ._nvmlDeviceGetCount(&cnt_devices);
             throw_if_nvml_failed(status);
         }
 
@@ -47,7 +47,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
 
             {
                 auto status = nvidia_management_library::instance()
-                    .nvmlDeviceGetHandleByIndex(retval, &device);
+                    ._nvmlDeviceGetHandleByIndex(retval, &device);
                 throw_if_nvml_failed(status);
 
                 builder.with_private_data(device);
@@ -55,7 +55,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
 
             {
                 auto status = nvidia_management_library::instance()
-                    .nvmlDeviceGetName(device, name.data(),
+                    ._nvmlDeviceGetName(device, name.data(),
                         static_cast<unsigned int>(name.size()));
                 throw_if_nvml_failed(status);
             }
@@ -71,7 +71,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvml_sensor::descriptions(
 
             {
                 auto status = nvidia_management_library::instance()
-                    .nvmlDeviceGetPciInfo(device, &pci_info);
+                    ._nvmlDeviceGetPciInfo(device, &pci_info);
                 throw_if_nvml_failed(status);
 
                 builder.with_path(pci_info.busId);
@@ -103,7 +103,7 @@ PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_bus_id(
     nvmlDevice_t device;
 
     auto status = nvidia_management_library::instance()
-        .nvmlDeviceGetHandleByPciBusId(pciBusId, &device);
+        ._nvmlDeviceGetHandleByPciBusId(pciBusId, &device);
     throw_if_nvml_failed(status);
 
     return std::make_shared<nvml_sensor>(device, index);
@@ -119,7 +119,7 @@ PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_guid(_In_z_ const char *guid,
     nvmlDevice_t device;
 
     auto status = nvidia_management_library::instance()
-        .nvmlDeviceGetHandleByUUID(guid, &device);
+        ._nvmlDeviceGetHandleByUUID(guid, &device);
     throw_if_nvml_failed(status);
 
     return std::make_shared<nvml_sensor>(device, index);
@@ -136,7 +136,7 @@ PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_index(
     nvmlDevice_t device;
 
     auto status = nvidia_management_library::instance()
-        .nvmlDeviceGetHandleByIndex(idx, &device);
+        ._nvmlDeviceGetHandleByIndex(idx, &device);
     throw_if_nvml_failed(status);
 
     return std::make_shared<nvml_sensor>(device, index);
@@ -153,7 +153,7 @@ PWROWG_DETAIL_NAMESPACE::nvml_sensor::from_serial(
     nvmlDevice_t device;
 
     auto status = nvidia_management_library::instance()
-        .nvmlDeviceGetHandleBySerial(serial, &device);
+        ._nvmlDeviceGetHandleBySerial(serial, &device);
     throw_if_nvml_failed(status);
 
     return std::make_shared<nvml_sensor>(device, index);
@@ -177,7 +177,7 @@ void PWROWG_DETAIL_NAMESPACE::nvml_sensor::sample(
     // Get the power usage in milliwatts.
     unsigned int mw = 0;
     auto status = nvidia_management_library::instance()
-        .nvmlDeviceGetPowerUsage(this->_device, &mw);
+        ._nvmlDeviceGetPowerUsage(this->_device, &mw);
     throw_if_nvml_failed(status);
 
     // Convert to Watts.

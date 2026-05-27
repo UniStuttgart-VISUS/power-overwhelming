@@ -1,5 +1,5 @@
 ﻿// <copyright file="nvml_scope.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -15,7 +15,7 @@
  * PWROWG_DETAIL_NAMESPACE::nvml_scope::nvml_scope
  */
 PWROWG_DETAIL_NAMESPACE::nvml_scope::nvml_scope(void) {
-    auto status = nvidia_management_library::instance().nvmlInit();
+    auto status = nvidia_management_library::instance()._nvmlInit();
     throw_if_nvml_failed(status);
 }
 
@@ -24,6 +24,6 @@ PWROWG_DETAIL_NAMESPACE::nvml_scope::nvml_scope(void) {
  * PWROWG_DETAIL_NAMESPACE::nvml_scope::~nvml_scope
  */
 PWROWG_DETAIL_NAMESPACE::nvml_scope::~nvml_scope(void) {
-    nvidia_management_library::instance().nvmlShutdown();
+    nvidia_management_library::instance()._nvmlShutdown();
 }
 #endif /* defined(POWER_OVERWHELMING_WITH_NVML) */

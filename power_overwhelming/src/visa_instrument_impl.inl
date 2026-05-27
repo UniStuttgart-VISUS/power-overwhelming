@@ -12,6 +12,7 @@ template<class ...TArgs>
 void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::format(
         _In_z_ const char *format, TArgs&&... args) const {
     throw_if_visa_failed(detail::visa_library::instance()
-        ._viPrintf(this->session, format, std::forward<TArgs>(args)...));
+        ._viPrintf(this->session, const_cast<char *>(format),
+            std::forward<TArgs>(args)...));
     this->check_system_error();
 }
