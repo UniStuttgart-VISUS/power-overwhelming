@@ -18,6 +18,10 @@
 #include "visa_library.h"
 
 
+static constexpr auto error_no_visa = "Power Overwhelming was not compiled "
+    "with support for VISA instruments";
+
+
 /// <summary>
 /// Applies the defaults for the parallel port trigger.
 /// </summary>
@@ -272,6 +276,7 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::raise_pins(
 PWROWG_NAMESPACE::rtx_sensor_trigger_builder
 PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_first(
         _In_z_ const wchar_t *query) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     if (query == nullptr) {
         return for_first();
     }
@@ -285,6 +290,9 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_first(
 
 
     return for_path(path);
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::runtime_error(error_no_visa);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -294,6 +302,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_first(
 PWROWG_NAMESPACE::rtx_sensor_trigger_builder
 PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_first(
         _In_z_ const char *query) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     std::string q((query != nullptr) ? query : "?*::");
 
     if (query == nullptr) {
@@ -311,7 +320,11 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_first(
     }
 
     return for_path(path);
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::runtime_error(error_no_visa);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
+
 
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_name
@@ -340,6 +353,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_name(
         throw std::invalid_argument("A valid device name must be provided.");
     }
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     const auto devices = detail::visa_library::instance().find_resource();
     std::string dev_name(name);
     const auto cnt_name = dev_name.size() + 1;
@@ -379,6 +393,9 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_name(
     }
 
     return for_path(path.c_str());
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::runtime_error(error_no_visa);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -439,6 +456,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_serial(
         throw std::invalid_argument("A valid serial number must be provided.");
     }
 
+#if !defined(POWER_OVERWHELMING_WITH_VISA)
     std::string q("?*::?*::?*::");
     q += serial;
     q += "::INSTR";
@@ -452,6 +470,9 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_serial(
 
     assert(path != nullptr);
     return for_path(path);
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::runtime_error(error_no_visa);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
