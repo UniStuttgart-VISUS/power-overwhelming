@@ -32,6 +32,8 @@ namespace detail { struct rtx_sen_trg_bld_par3; }
 /// a power sensor.
 /// </summary>
 /// <remarks>
+/// <para>You cannot create useful instances of this class directly. Instead,
+/// use the fluent API of <see cref="rtx_sensor_trigger_builder" />.</para>
 /// <para>The <see cref="rtx_sensor_trigger" /> is a reference counted object
 /// that is shared between the application and the
 /// <see cref="detail::rtx_sensor" />. As such, it is immutable, i.e. it can
@@ -57,39 +59,6 @@ public:
     /// Initialises a new instance.
     /// </summary>
     rtx_sensor_trigger(void);
-
-    /// <summary>
-    /// Initialises a new instance.
-    /// </summary>
-    /// <param name="path">The VISA path to the oscilloscope to be configured
-    /// as the trigger source.</param>
-    /// <param name="trigger">The trigger configuration to apply to the
-    /// oscilloscope identified by the specified VISA <paramref name="path" />.
-    /// </param>
-    rtx_sensor_trigger(_In_z_ const char *path,
-        _In_ const rtx_trigger& trigger);
-
-    /// <summary>
-    /// Initialises a new instance.
-    /// </summary>
-    /// <param name="path">The VISA path to the oscilloscope to be configured
-    /// as the trigger source.</param>
-    /// <param name="trigger">The trigger configuration to apply to the
-    /// oscilloscope identified by the specified VISA <paramref name="path" />.
-    /// </param>
-    rtx_sensor_trigger(_In_z_ const wchar_t *path,
-        _In_ const rtx_trigger& trigger);
-
-    /// <summary>
-    /// Initialises a new instance.
-    /// </summary>
-    /// <param name="path">The VISA path to the oscilloscope to be configured
-    /// as the trigger source.</param>
-    /// <param name="trigger">The trigger configuration to apply to the
-    /// oscilloscope identified by the specified VISA <paramref name="path" />.
-    /// </param>
-    rtx_sensor_trigger(_In_z_ const char *path,
-        _Inout_ rtx_trigger&& trigger);
 
     /// <summary>
     /// Clone <paramref name="other" />.

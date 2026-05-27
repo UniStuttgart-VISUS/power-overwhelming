@@ -81,7 +81,8 @@ PWROWG_DETAIL_NAMESPACE::visa_library::find_resource(
     auto gRm = on_exit([this, rm](void) { this->_viClose(rm); });
 
     {
-        auto status = this->_viFindRsrc(rm, expression, &hFind, &cnt, desc);
+        auto status = this->_viFindRsrc(rm, const_cast<char *>(expression),
+            &hFind, &cnt, desc);
         throw_if_visa_failed(status);
     }
 

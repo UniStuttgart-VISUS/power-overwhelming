@@ -25,45 +25,6 @@ PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(void)
  * PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger
  */
 PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
-        _In_z_ const char *path,
-        _In_ const rtx_trigger& trigger)
-        : rtx_sensor_trigger() {
-    assert(path != nullptr);
-    this->_impl->path = (path != nullptr) ? path : "";
-    this->_impl->trigger = std::make_unique<rtx_trigger>(trigger);
-}
-
-
-/*
- * PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger
- */
-PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
-        _In_z_ const wchar_t *path,
-        _In_ const rtx_trigger& trigger)
-        : rtx_sensor_trigger() {
-    assert(path != nullptr);
-    this->_impl->path = convert_string<char>(path);
-    this->_impl->trigger = std::make_unique<rtx_trigger>(trigger);
-}
-
-
-/*
- * PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger
- */
-PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
-        _In_z_ const char *path,
-        _Inout_ rtx_trigger&& trigger)
-        : rtx_sensor_trigger() {
-    assert(path != nullptr);
-    this->_impl->path = (path != nullptr) ? path : "";
-    this->_impl->trigger = std::make_unique<rtx_trigger>(std::move(trigger));
-}
-
-
-/*
- * PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger
- */
-PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
         _In_ const rtx_sensor_trigger& other) : _impl(other._impl) {
     assert(this->_impl != nullptr);
     if (this->_impl != nullptr) {
