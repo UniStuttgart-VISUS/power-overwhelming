@@ -456,7 +456,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_serial(
         throw std::invalid_argument("A valid serial number must be provided.");
     }
 
-#if !defined(POWER_OVERWHELMING_WITH_VISA)
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     std::string q("?*::?*::?*::");
     q += serial;
     q += "::INSTR";
