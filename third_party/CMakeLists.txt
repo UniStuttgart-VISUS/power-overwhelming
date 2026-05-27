@@ -125,7 +125,7 @@ mark_as_advanced(FORCE
 
 # Powenetics (the "Greek device")
 FetchContent_Declare(libpowenetics
-    URL "https://github.com/UniStuttgart-VISUS/libpowenetics/archive/refs/tags/v1.1.zip"
+    URL "https://github.com/UniStuttgart-VISUS/libpowenetics/archive/refs/tags/v1.2.zip"
     DOWNLOAD_EXTRACT_TIMESTAMP ON
 )
 option(POWENETICS_BuildTests "" OFF)

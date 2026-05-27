@@ -15,11 +15,12 @@
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
+
 /// <summary>
 /// The last step in the builder stage which only allows for retrieving the
 /// final object.
 /// </summary>
-class POWER_OVERWHELMING_API rtx_sensor_trg_build_final {
+class POWER_OVERWHELMING_API rtx_sen_trg_bld_final {
 
 public:
 
@@ -27,7 +28,7 @@ public:
     /// Initialises a new instance.
     /// </summary>
     /// <param name="trigger">The trigger to be returned by the builder.</param>
-    rtx_sensor_trg_build_final(_In_ const rtx_sensor_trigger& trigger)
+    rtx_sen_trg_bld_final(_In_ const rtx_sensor_trigger& trigger)
         : _trigger(trigger) { }
 
     /// <summary>
@@ -46,10 +47,11 @@ protected:
 
 /// <summary>
 /// This builder allows for customising optional parts of a channel trigger, or
-/// for retrieving the trigger.
+/// for retrieving the trigger. It is the final stage of a builder chain that
+/// configures triggers on a channel of the oscilloscope.
 /// </summary>
-class POWER_OVERWHELMING_API rtx_sensor_trg_build_chan_final final
-        : public rtx_sensor_trg_build_final {
+class POWER_OVERWHELMING_API rtx_sen_trg_bld_chan1
+        : public rtx_sen_trg_bld_final {
 
 public:
 
@@ -57,8 +59,8 @@ public:
     /// Initialise a new instance.
     /// </summary>
     /// <param name="trigger">The trigger to be configured or retrieved.</param>
-    rtx_sensor_trg_build_chan_final(_In_ const rtx_sensor_trigger& trigger)
-        : rtx_sensor_trg_build_final(trigger) { }
+    rtx_sen_trg_bld_chan1(_In_ const rtx_sensor_trigger& trigger)
+        : rtx_sen_trg_bld_final(trigger) { }
 
 
     /// <summary>
@@ -74,7 +76,7 @@ public:
     /// </summary>
     /// <param name="coupling"></param>
     /// <returns></returns>
-    rtx_sensor_trg_build_chan_final& with_coupling(
+    rtx_sen_trg_bld_chan1& with_coupling(
         _In_ const rtx_trigger_coupling coupling);
 
     /// <summary>
@@ -82,21 +84,21 @@ public:
     /// </summary>
     /// <param name=""></param>
     /// <returns></returns>
-    rtx_sensor_trg_build_chan_final& without_hold_off(void);
+    rtx_sen_trg_bld_chan1& without_hold_off(void);
 
     /// <summary>
     /// Sets the trigger hold-off to the specified time span.
     /// </summary>
     /// <param name="time"></param>
     /// <returns></returns>
-    rtx_sensor_trg_build_chan_final& with_hold_off(_In_z_ const wchar_t *time);
+    rtx_sen_trg_bld_chan1& with_hold_off(_In_z_ const wchar_t *time);
 
     /// <summary>
     /// Sets the trigger hold-off to the specified time span.
     /// </summary>
     /// <param name="time"></param>
     /// <returns></returns>
-    rtx_sensor_trg_build_chan_final& with_hold_off(_In_z_ const char *time);
+    rtx_sen_trg_bld_chan1& with_hold_off(_In_z_ const char *time);
 };
 
 
@@ -104,9 +106,9 @@ public:
 /// This builder configures the mandatory parts of the trigger on an already
 /// selected channel, which are the edge and the trigger level. Once this
 /// information is provided, the trigger can be used or optional properties
-/// can be set via <see cref="rtx_sensor_trg_build_chan_final" />.
+/// can be set via <see cref="rtx_sen_trg_bld_chan1" />.
 /// </summary>
-class POWER_OVERWHELMING_API rtx_sensor_trg_build_chan final {
+class POWER_OVERWHELMING_API rtx_sen_trg_bld_chan0 final {
 
 public:
 
@@ -114,7 +116,7 @@ public:
     /// Initialise a new instance.
     /// </summary>
     /// <param name="trigger">The trigger to be configured.</param>
-    rtx_sensor_trg_build_chan(_In_ const rtx_sensor_trigger& trigger)
+    rtx_sen_trg_bld_chan0(_In_ const rtx_sensor_trigger& trigger)
         : _trigger(trigger) { }
 
     /// <summary>
@@ -123,7 +125,7 @@ public:
     /// <param name="level">The trigger level.</param>
     /// <returns>A builder that allows for configuring optional parts of the
     /// trigger or to retrieve the final result.</returns>
-    rtx_sensor_trg_build_chan_final falls_below(
+    rtx_sen_trg_bld_chan1 falls_below(
         _In_ const rtx_quantity& level);
 
     /// <summary>
@@ -133,7 +135,7 @@ public:
     /// <param name="unit">The unit of the channel.</param>
     /// <returns>A builder that allows for configuring optional parts of the
     /// trigger or to retrieve the final result.</returns>
-    rtx_sensor_trg_build_chan_final falls_below(
+    rtx_sen_trg_bld_chan1 falls_below(
             _In_ const float level, _In_z_ const wchar_t *unit) {
         return this->falls_below(rtx_quantity(level, unit));
     }
@@ -145,7 +147,7 @@ public:
     /// <param name="unit">The unit of the channel.</param>
     /// <returns>A builder that allows for configuring optional parts of the
     /// trigger or to retrieve the final result.</returns>
-    rtx_sensor_trg_build_chan_final falls_below(
+    rtx_sen_trg_bld_chan1 falls_below(
             _In_ const float level, _In_opt_z_ const char *unit = nullptr) {
         return this->falls_below(rtx_quantity(level, unit));
     }
@@ -157,7 +159,7 @@ public:
     /// <param name="level">The trigger level.</param>
     /// <returns>A builder that allows for configuring optional parts of the
     /// trigger or to retrieve the final result.</returns>
-    rtx_sensor_trg_build_chan_final passes_through(
+    rtx_sen_trg_bld_chan1 passes_through(
         _In_ const rtx_quantity& level);
 
     /// <summary>
@@ -168,7 +170,7 @@ public:
     /// <param name="unit">The unit of the channel.</param>
     /// <returns>A builder that allows for configuring optional parts of the
     /// trigger or to retrieve the final result.</returns>
-    rtx_sensor_trg_build_chan_final passes_through(
+    rtx_sen_trg_bld_chan1 passes_through(
             _In_ const float level, _In_z_ const wchar_t *unit) {
         return this->passes_through(rtx_quantity(level, unit));
     }
@@ -181,7 +183,7 @@ public:
     /// <param name="unit">The unit of the channel.</param>
     /// <returns>A builder that allows for configuring optional parts of the
     /// trigger or to retrieve the final result.</returns>
-    rtx_sensor_trg_build_chan_final passes_through(
+    rtx_sen_trg_bld_chan1 passes_through(
             _In_ const float level, _In_opt_z_ const char *unit = nullptr) {
         return this->passes_through(rtx_quantity(level, unit));
     }
@@ -192,7 +194,7 @@ public:
     /// <param name="level">The trigger level.</param>
     /// <returns>A builder that allows for configuring optional parts of the
     /// trigger or to retrieve the final result.</returns>
-    rtx_sensor_trg_build_chan_final rises_above(
+    rtx_sen_trg_bld_chan1 rises_above(
         _In_ const rtx_quantity& level);
 
     /// <summary>
@@ -202,7 +204,7 @@ public:
     /// <param name="unit">The unit of the channel.</param>
     /// <returns>A builder that allows for configuring optional parts of the
     /// trigger or to retrieve the final result.</returns>
-    rtx_sensor_trg_build_chan_final rises_above(
+    rtx_sen_trg_bld_chan1 rises_above(
             _In_ const float level, _In_z_ const wchar_t *unit) {
         return this->rises_above(rtx_quantity(level, unit));
     }
@@ -214,7 +216,7 @@ public:
     /// <param name="unit">The unit of the channel.</param>
     /// <returns>A builder that allows for configuring optional parts of the
     /// trigger or to retrieve the final result.</returns>
-    rtx_sensor_trg_build_chan_final rises_above(
+    rtx_sen_trg_bld_chan1 rises_above(
             _In_ const float level, _In_opt_z_ const char *unit = nullptr) {
         return this->rises_above(rtx_quantity(level, unit));
     }
@@ -226,9 +228,108 @@ private:
 
 
 /// <summary>
-/// Configures the details of the parallel port trigger.
+/// The final stage of building a parallel port trigger, which allows for
+/// configuring optional properties that have meaningful default values. It
+/// is the final stage of builder chain that configures a parallel port trigger
+/// that is measured by a channel of the oscilloscope.
 /// </summary>
-class POWER_OVERWHELMING_API rtx_sensor_trg_build_par final {
+class POWER_OVERWHELMING_API rtx_sen_trg_bld_par3 final
+        : public rtx_sen_trg_bld_chan1 {
+
+public:
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="trigger">The trigger to be modified.</param>
+    rtx_sen_trg_bld_par3(_In_ const rtx_sensor_trigger& trigger)
+        : rtx_sen_trg_bld_chan1(trigger) { }
+
+    /// <summary>
+    /// Changes the level at which the parallel port trigger is activated. The
+    /// default level of 2.5V should be OK for most applications.
+    /// </summary>
+    /// <param name="level">The trigger level.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    rtx_sen_trg_bld_par3& at_level(_In_ const rtx_quantity& level);
+
+    /// <summary>
+    /// Changes the level at which the parallel port trigger is activated. The
+    /// default level of 2.5V should be OK for most applications.
+    /// </summary>
+    /// <param name="level">The trigger level.</param>
+    /// <param name="unit">The unit of the trigger level.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    rtx_sen_trg_bld_par3& at_level(_In_ const float level,
+            _In_z_ const wchar_t *unit) {
+        return this->at_level(rtx_quantity(level, unit));
+    }
+
+    /// <summary>
+    /// Changes the level at which the parallel port trigger is activated. The
+    /// default level of 2.5V should be OK for most applications.
+    /// </summary>
+    /// <param name="level">The trigger level.</param>
+    /// <param name="unit">The unit of the trigger level.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    rtx_sen_trg_bld_par3& at_level(_In_ const float level,
+            _In_z_ const char *unit = nullptr) {
+        return this->at_level(rtx_quantity(level, unit));
+    }
+};
+
+
+/// <summary>
+/// Configures how the parallel port trigger is measured by the oscilloscope.
+/// </summary>
+class POWER_OVERWHELMING_API rtx_sen_trg_bld_par2 final {
+
+public:
+
+    /// <summary>
+    /// Initialise a new instance.
+    /// </summary>
+    /// <param name="trigger">The trigger to be configured.</param>
+    rtx_sen_trg_bld_par2(_In_ const rtx_sensor_trigger& trigger)
+        : _trigger(trigger) { }
+
+    /// <summary>
+    /// Creates a trigger on the specified channel.
+    /// </summary>
+    /// <param name="channel">The channel to trigger on, which must be the name
+    /// of a valid channel of the oscilloscope.</param>
+    /// <returns>A builder to configure the type of the trigger.</returns>
+    detail::rtx_sen_trg_bld_par3 measured_via_channel(
+        _In_z_ const wchar_t *channel);
+
+    /// <summary>
+    /// Creates a trigger on the specified channel.
+    /// </summary>
+    /// <param name="channel">The channel to trigger on, which must be the name
+    /// of a valid channel of the oscilloscope.</param>
+    /// <returns>A builder to configure the type of the trigger.</returns>
+    detail::rtx_sen_trg_bld_par3 measured_via_channel(
+        _In_z_ const char *channel);
+
+    /// <summary>
+    /// Creates a trigger on the specified channel.
+    /// </summary>
+    /// <param name="channel">The channel to trigger on, which must be the name
+    /// of a valid channel of the oscilloscope.</param>
+    /// <returns>A builder to configure the type of the trigger.</returns>
+    detail::rtx_sen_trg_bld_par3 measured_via_channel(
+        _In_ const rtx_trigger::input_type channel);
+
+private:
+
+    rtx_sensor_trigger _trigger;
+};
+
+
+/// <summary>
+/// Continues configuring the parallel port trigger.
+/// </summary>
+class POWER_OVERWHELMING_API rtx_sen_trg_bld_par1 final {
 
 public:
 
@@ -241,35 +342,9 @@ public:
     /// Initialise a new instance.
     /// </summary>
     /// <param name="trigger">The trigger to be configured.</param>
-    rtx_sensor_trg_build_par(_In_ const rtx_sensor_trigger& trigger)
-        : _trigger(trigger) { }
-
-    /// <summary>
-    /// Creates a trigger on the specified channel.
-    /// </summary>
-    /// <param name="channel">The channel to trigger on, which must be the name
-    /// of a valid channel of the oscilloscope.</param>
-    /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sensor_trg_build_chan_final measured_via_channel(
-        _In_z_ const wchar_t *channel);
-
-    /// <summary>
-    /// Creates a trigger on the specified channel.
-    /// </summary>
-    /// <param name="channel">The channel to trigger on, which must be the name
-    /// of a valid channel of the oscilloscope.</param>
-    /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sensor_trg_build_chan_final measured_via_channel(
-        _In_z_ const char *channel);
-
-    /// <summary>
-    /// Creates a trigger on the specified channel.
-    /// </summary>
-    /// <param name="channel">The channel to trigger on, which must be the name
-    /// of a valid channel of the oscilloscope.</param>
-    /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sensor_trg_build_chan_final measured_via_channel(
-        _In_ const rtx_trigger::input_type channel);
+    rtx_sen_trg_bld_par1(_In_ const rtx_sensor_trigger& trigger)
+        : _trigger(trigger) {
+    }
 
     /// <summary>
     /// Sets the time, in milliseconds, the signal on the parallel port will be
@@ -278,7 +353,7 @@ public:
     /// </summary>
     /// <param name="duration"></param>
     /// <returns></returns>
-    rtx_sensor_trg_build_par& raised_for(_In_ const milliseconds_type duration);
+    rtx_sen_trg_bld_par2 for_duration(_In_ const milliseconds_type duration);
 
     /// <summary>
     /// Sets the time, in the specified duration type, the signal on the parallel
@@ -289,25 +364,73 @@ public:
     /// <typeparam name="TRatio"></typeparam>
     /// <param name="duration"></param>
     /// <returns></returns>
-    template<class TRep, class TRatio> rtx_sensor_trg_build_par& raised_for(
+    template<class TRep, class TRatio> inline rtx_sen_trg_bld_par2 for_duration(
             _In_ const std::chrono::duration<TRep, TRatio>& duration) {
         using std::chrono::duration_cast;
         typedef std::chrono::duration<milliseconds_type, std::milli> millis;
-        return this->raised_for(duration_cast<millis>(duration).count());
+        return this->for_duration(duration_cast<millis>(duration).count());
     }
+
+private:
+
+    rtx_sensor_trigger _trigger;
+};
+
+
+/// <summary>
+/// Configures the details of the parallel port trigger.
+/// </summary>
+class POWER_OVERWHELMING_API rtx_sen_trg_bld_par0 final {
+
+public:
+
+    /// <summary>
+    /// Initialise a new instance.
+    /// </summary>
+    /// <param name="trigger">The trigger to be configured.</param>
+    rtx_sen_trg_bld_par0(_In_ const rtx_sensor_trigger& trigger)
+        : _trigger(trigger) { }
+
+    /// <summary>
+    /// Creates a trigger on the specified channel.
+    /// </summary>
+    /// <param name="channel">The channel to trigger on, which must be the name
+    /// of a valid channel of the oscilloscope.</param>
+    /// <returns>A builder to configure the type of the trigger.</returns>
+    detail::rtx_sen_trg_bld_par3 measured_via_channel(
+        _In_z_ const wchar_t *channel);
+
+    /// <summary>
+    /// Creates a trigger on the specified channel.
+    /// </summary>
+    /// <param name="channel">The channel to trigger on, which must be the name
+    /// of a valid channel of the oscilloscope.</param>
+    /// <returns>A builder to configure the type of the trigger.</returns>
+    detail::rtx_sen_trg_bld_par3 measured_via_channel(
+        _In_z_ const char *channel);
+
+    /// <summary>
+    /// Creates a trigger on the specified channel.
+    /// </summary>
+    /// <param name="channel">The channel to trigger on, which must be the name
+    /// of a valid channel of the oscilloscope.</param>
+    /// <returns>A builder to configure the type of the trigger.</returns>
+    detail::rtx_sen_trg_bld_par3 measured_via_channel(
+        _In_ const rtx_trigger::input_type channel);
 
     /// <summary>
     /// Tells the framework to only use the specified pins of the parallel port
     /// trigger. If not specified, all data pins will be used.
     /// </summary>
-    /// <param name="pins"></param>
-    /// <returns></returns>
-    rtx_sensor_trg_build_par& use_pins(_In_ const parallel_port_pin pins);
+    /// <param name="pins">The pins to be raised. This parameter defaults to all
+    /// data pins.</param>
+    /// <returns>A builder for the next stage.</returns>
+    rtx_sen_trg_bld_par1 raise_pins(_In_ const parallel_port_pin pins
+        = parallel_port_pin::data);
 
 private:
 
     rtx_sensor_trigger _trigger;
-
 };
 
 PWROWG_DETAIL_NAMESPACE_END
@@ -340,7 +463,7 @@ public:
     /// <param name="channel">The channel to trigger on, which must be the name
     /// of a valid channel of the oscilloscope.</param>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sensor_trg_build_chan when_channel(
+    detail::rtx_sen_trg_bld_chan0 when_channel(
         _In_z_ const wchar_t *channel);
 
     /// <summary>
@@ -349,7 +472,7 @@ public:
     /// <param name="channel">The channel to trigger on, which must be the name
     /// of a valid channel of the oscilloscope.</param>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sensor_trg_build_chan when_channel(
+    detail::rtx_sen_trg_bld_chan0 when_channel(
         _In_z_ const char *channel);
 
     /// <summary>
@@ -358,7 +481,7 @@ public:
     /// <param name="channel">The channel to trigger on, which must be the name
     /// of a valid channel of the oscilloscope.</param>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sensor_trg_build_chan when_channel(
+    detail::rtx_sen_trg_bld_chan0 when_channel(
         _In_ const rtx_trigger::input_type channel);
 
     /// <summary>
@@ -367,7 +490,7 @@ public:
     /// </summary>
     /// <param name="path">The path of the parallel port.</param>
     /// <returns>A builder to configure the parallel port trigger.</returns>
-    detail::rtx_sensor_trg_build_par when_parallel_port(
+    detail::rtx_sen_trg_bld_par0 when_parallel_port(
         _In_z_ const wchar_t *path);
 
     /// <summary>
@@ -376,7 +499,7 @@ public:
     /// </summary>
     /// <param name="path">The path of the parallel port.</param>
     /// <returns>A builder to configure the parallel port trigger.</returns>
-    detail::rtx_sensor_trg_build_par when_parallel_port(
+    detail::rtx_sen_trg_bld_par0 when_parallel_port(
         _In_z_ const char *path);
 
     /// <summary>
@@ -384,7 +507,7 @@ public:
     /// <see ref="rtx_sensor_trigger" /> interface returned by the builder.
     /// </summary>
     /// <returns>A builder for a manual trigger.</returns>
-    detail::rtx_sensor_trg_build_final when_software_triggered(void) noexcept;
+    detail::rtx_sen_trg_bld_final when_software_triggered(void) noexcept;
 
 private:
 

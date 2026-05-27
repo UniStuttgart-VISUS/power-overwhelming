@@ -104,11 +104,25 @@ public:
             Assert::AreEqual("hugo", trigger.path(), L"Path is set", LINE_INFO());
             Assert::IsNull(trigger.trigger(), L"Trigger is not set", LINE_INFO());
         }
+        // This test will only work if the port extension card is installed on the test machine.
+#if 0
+        {
+            auto trigger = rtx_sensor_trigger_builder::for_path("hugo")
+                .when_parallel_port("COM1")
+                .raise_pins(parallel_port_pin::all)
+                .for_duration(100)
+                .measured_via_channel("CH1")
+                .at_level(2.9f)
+                .build();
+            Assert::AreEqual("hugo", trigger.path(), L"Path is set", LINE_INFO());
+            Assert::IsNotNull(trigger.trigger(), L"Trigger is set", LINE_INFO());
+        }
         {
             auto trigger = rtx_sensor_trigger_builder::for_path("hugo").when_parallel_port("COM1").measured_via_channel("CH1").build();
             Assert::AreEqual("hugo", trigger.path(), L"Path is set", LINE_INFO());
             Assert::IsNotNull(trigger.trigger(), L"Trigger is set", LINE_INFO());
         }
+#endif
     }
 
 private:

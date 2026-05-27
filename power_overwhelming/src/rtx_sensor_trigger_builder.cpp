@@ -14,11 +14,53 @@
 #include "rtx_sensor_trigger_impl.h"
 
 
+/// <summary>
+/// Applies the defaults for the parallel port trigger.
+/// </summary>
+static void configure_par_default(
+        _In_ PWROWG_DETAIL_NAMESPACE::rtx_sensor_trigger_impl& impl,
+        _In_ const wchar_t *channel) {
+    using namespace PWROWG_NAMESPACE;
+    assert(impl.trigger == nullptr);
+    impl.trigger = std::make_unique<rtx_trigger>(channel, L"EDGE");
+    impl.trigger->level(rtx_quantity(2.5f, "V"));
+    impl.trigger->slope(rtx_trigger_slope::rising);
+}
+
+
+/// <summary>
+/// Applies the defaults for the parallel port trigger.
+/// </summary>
+static void configure_par_default(
+        _In_ PWROWG_DETAIL_NAMESPACE::rtx_sensor_trigger_impl& impl,
+        _In_ const char *channel) {
+    using namespace PWROWG_NAMESPACE;
+    assert(impl.trigger == nullptr);
+    impl.trigger = std::make_unique<rtx_trigger>(channel, "EDGE");
+    impl.trigger->level(rtx_quantity(2.5f, "V"));
+    impl.trigger->slope(rtx_trigger_slope::rising);
+}
+
+
+/// <summary>
+/// Applies the defaults for the parallel port trigger.
+/// </summary>
+static void configure_par_default(
+        _In_ PWROWG_DETAIL_NAMESPACE::rtx_sensor_trigger_impl& impl,
+        _In_ const PWROWG_NAMESPACE::rtx_trigger::input_type channel) {
+    using namespace PWROWG_NAMESPACE;
+    assert(impl.trigger == nullptr);
+    impl.trigger = std::make_unique<rtx_trigger>(channel, L"EDGE");
+    impl.trigger->level(rtx_quantity(2.5f, "V"));
+    impl.trigger->slope(rtx_trigger_slope::rising);
+}
+
+
 /*
- * PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final::with_coupling
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1::with_coupling
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final&
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final::with_coupling(
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1&
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1::with_coupling(
         _In_ const rtx_trigger_coupling coupling) {
     assert(this->_trigger._impl != nullptr);
     assert(this->_trigger._impl->trigger != nullptr);
@@ -28,11 +70,10 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final::with_coupling(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final::without_hold_off
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1::without_hold_off
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final&
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final::without_hold_off(
-        void) {
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1&
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1::without_hold_off(void) {
     assert(this->_trigger._impl != nullptr);
     assert(this->_trigger._impl->trigger != nullptr);
     this->_trigger._impl->trigger->hold_off(nullptr);
@@ -41,10 +82,10 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final::without_hold_off(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final::with_hold_off
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1::with_hold_off
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final&
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final::with_hold_off(
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1&
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1::with_hold_off(
         _In_z_ const wchar_t *time) {
     assert(this->_trigger._impl != nullptr);
     assert(this->_trigger._impl->trigger != nullptr);
@@ -54,10 +95,10 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final::with_hold_off(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final::with_hold_off
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1::with_hold_off
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final&
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final::with_hold_off(
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1&
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1::with_hold_off(
         _In_z_ const char *time) {
     assert(this->_trigger._impl != nullptr);
     assert(this->_trigger._impl->trigger != nullptr);
@@ -66,11 +107,12 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final::with_hold_off(
 }
 
 
+
 /*
- * PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan::falls_below
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0::falls_below
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan::falls_below(
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0::falls_below(
         _In_ const rtx_quantity& level) {
     assert(this->_trigger._impl != nullptr);
     assert(this->_trigger._impl->trigger != nullptr);
@@ -82,10 +124,10 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan::falls_below(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan::passes_through
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0::passes_through
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan::passes_through(
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0::passes_through(
         _In_ const rtx_quantity& level) {
     assert(this->_trigger._impl != nullptr);
     assert(this->_trigger._impl->trigger != nullptr);
@@ -97,10 +139,10 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan::passes_through(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan::rises_above
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0::rises_above
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan::rises_above(
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0::rises_above(
         _In_ const rtx_quantity& level) {
     assert(this->_trigger._impl != nullptr);
     assert(this->_trigger._impl->trigger != nullptr);
@@ -112,73 +154,111 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan::rises_above(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_par::measured_via_channel
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3::at_level
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_par::measured_via_channel(
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3&
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3::at_level(
+        _In_ const rtx_quantity& level) {
+    assert(this->_trigger._impl != nullptr);
+    assert(this->_trigger._impl->trigger != nullptr);
+    this->_trigger._impl->trigger->level(level);
+    return *this;
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par2::measured_via_channel
+ */
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par2::measured_via_channel(
         _In_z_ const wchar_t *channel) {
     assert(this->_trigger._impl != nullptr);
-    assert(this->_trigger._impl->trigger == nullptr);
-    this->_trigger._impl->trigger = std::make_unique<rtx_trigger>(channel,
-        L"EDGE");
-    this->_trigger._impl->trigger->slope(rtx_trigger_slope::rising)
-        .level(rtx_quantity(2.5f, "V"));
+    ::configure_par_default(*this->_trigger._impl, channel);
     return this->_trigger;
 }
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_par::measured_via_channel
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par2::measured_via_channel
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_par::measured_via_channel(
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par2::measured_via_channel(
         _In_z_ const char *channel) {
     assert(this->_trigger._impl != nullptr);
-    assert(this->_trigger._impl->trigger == nullptr);
-    this->_trigger._impl->trigger = std::make_unique<rtx_trigger>(channel,
-        "EDGE");
-    this->_trigger._impl->trigger->slope(rtx_trigger_slope::rising)
-        .level(rtx_quantity(2.5f, "V"));
+    ::configure_par_default(*this->_trigger._impl, channel);
     return this->_trigger;
 }
 
+
 /*
- * PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_par::measured_via_channel
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par2::measured_via_channel
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan_final
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_par::measured_via_channel(
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par2::measured_via_channel(
         _In_ const rtx_trigger::input_type channel) {
     assert(this->_trigger._impl != nullptr);
-    assert(this->_trigger._impl->trigger == nullptr);
-    this->_trigger._impl->trigger = std::make_unique<rtx_trigger>(channel,
-        L"EDGE");
-    this->_trigger._impl->trigger->slope(rtx_trigger_slope::rising)
-        .level(rtx_quantity(2.5f, "V"));
+    ::configure_par_default(*this->_trigger._impl, channel);
     return this->_trigger;
 }
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_par::raised_for
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par1::raised_for
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_par&
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_par::raised_for(
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par2
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par1::for_duration(
         _In_ const milliseconds_type duration) {
     assert(this->_trigger._impl != nullptr);
     this->_trigger._impl->external_trigger_duration = duration;
-    return *this;
+    return this->_trigger;
 }
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_par::use_pins
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_par&
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_par::use_pins(
-        _In_ const parallel_port_pin pins) {
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel(
+        _In_z_ const wchar_t *channel) {
+    assert(this->_trigger._impl != nullptr);
+    ::configure_par_default(*this->_trigger._impl, channel);
+    return this->_trigger;
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel
+ */
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel(
+        _In_z_ const char *channel) {
+    assert(this->_trigger._impl != nullptr);
+    ::configure_par_default(*this->_trigger._impl, channel);
+    return this->_trigger;
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel
+ */
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel(
+        _In_ const rtx_trigger::input_type channel) {
+    assert(this->_trigger._impl != nullptr);
+    ::configure_par_default(*this->_trigger._impl, channel);
+    return this->_trigger;
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::raise_pins
+ */
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par1
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::raise_pins(
+    _In_ const parallel_port_pin pins) {
     assert(this->_trigger._impl != nullptr);
     this->_trigger._impl->external_trigger_pins = pins;
-    return *this;
+    return this->_trigger;
 }
 
 
@@ -217,7 +297,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_path(
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_channel
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0
 PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_channel(
         _In_z_ const wchar_t *channel) {
     assert(this->_trigger._impl != nullptr);
@@ -231,7 +311,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_channel(
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_channel
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0
 PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_channel(
         _In_z_ const char *channel) {
     assert(this->_trigger._impl != nullptr);
@@ -245,7 +325,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_channel(
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_channel
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_chan
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0
 PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_channel(
         _In_ const rtx_trigger::input_type channel) {
     assert(this->_trigger._impl != nullptr);
@@ -259,7 +339,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_channel(
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_parallel_port
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_par
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0
 PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_parallel_port(
         _In_z_ const wchar_t *path) {
     assert(this->_trigger._impl != nullptr);
@@ -272,7 +352,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_parallel_port(
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_parallel_port
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_par
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0
 PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_parallel_port(
         _In_z_ const char *path) {
     assert(this->_trigger._impl != nullptr);
@@ -285,7 +365,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_parallel_port(
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_software_triggered
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sensor_trg_build_final
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_final
 PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_software_triggered(
         void) noexcept {
     assert(this->_trigger._impl != nullptr);

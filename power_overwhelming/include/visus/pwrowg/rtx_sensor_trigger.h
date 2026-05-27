@@ -17,10 +17,13 @@ PWROWG_NAMESPACE_BEGIN
 
 // Forward declarations.
 namespace detail { struct rtx_sensor_trigger_impl; }
-namespace detail { struct rtx_sensor_trg_build_final; }
-namespace detail { struct rtx_sensor_trg_build_chan_final; }
-namespace detail { struct rtx_sensor_trg_build_chan; }
-namespace detail { struct rtx_sensor_trg_build_par; }
+namespace detail { struct rtx_sen_trg_bld_final; }
+namespace detail { struct rtx_sen_trg_bld_chan0; }
+namespace detail { struct rtx_sen_trg_bld_chan1; }
+namespace detail { struct rtx_sen_trg_bld_par0; }
+namespace detail { struct rtx_sen_trg_bld_par1; }
+namespace detail { struct rtx_sen_trg_bld_par2; }
+namespace detail { struct rtx_sen_trg_bld_par3; }
 
 
 /// <summary>
@@ -152,10 +155,13 @@ private:
 
     detail::rtx_sensor_trigger_impl *_impl;
 
-    friend class detail::rtx_sensor_trg_build_final;
-    friend class detail::rtx_sensor_trg_build_chan_final;
-    friend class detail::rtx_sensor_trg_build_chan;
-    friend class detail::rtx_sensor_trg_build_par;
+    friend class detail::rtx_sen_trg_bld_final;
+    friend class detail::rtx_sen_trg_bld_chan0;
+    friend class detail::rtx_sen_trg_bld_chan1;
+    friend class detail::rtx_sen_trg_bld_par0;
+    friend class detail::rtx_sen_trg_bld_par1;
+    friend class detail::rtx_sen_trg_bld_par2;
+    friend class detail::rtx_sen_trg_bld_par3;
     friend class rtx_sensor_trigger_builder;
 };
 
