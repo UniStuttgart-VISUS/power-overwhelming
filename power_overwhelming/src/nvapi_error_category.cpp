@@ -31,7 +31,7 @@ std::string PWROWG_DETAIL_NAMESPACE::nvapi_error_category::message(
 
     try {
         throw_if_nvapi_failed(nvapi_library::instance()
-            .nvapi_get_error_message(msg, static_cast<NvAPI_Status>(status)));
+            ._nvapi_get_error_message(msg, static_cast<NvAPI_Status>(status)));
         return msg;
     } catch (...) {
         return std::to_string(status);

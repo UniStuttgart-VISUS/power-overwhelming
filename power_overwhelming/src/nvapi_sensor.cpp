@@ -36,7 +36,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvapi_sensor::descriptions(
 
         // Find out the number of NVIDIA devices on the machine.
         throw_if_nvapi_failed(nvapi_library::instance()
-            .nvapi_enumerate_physical_gpus(gpu_handles, &cnt_gpus));
+            ._nvapi_enumerate_physical_gpus(gpu_handles, &cnt_gpus));
 
         // Create descriptors for each device.
         for (retval = 0; (retval < cnt_gpus); ++retval) {
@@ -53,12 +53,12 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvapi_sensor::descriptions(
 
             // Get some info about the GPU to create a unique ID.
             throw_if_nvapi_failed(nvapi_library::instance()
-                .nvapi_get_gpu_bus_id(&bus_id, gpu_handles[retval]));
+                ._nvapi_get_gpu_bus_id(&bus_id, gpu_handles[retval]));
             throw_if_nvapi_failed(nvapi_library::instance()
-                .nvapi_get_gpu_pci_identifiers(&device_id, &sub_system_id,
+                ._nvapi_get_gpu_pci_identifiers(&device_id, &sub_system_id,
                 &revision_id, &ext_device_id, gpu_handles[retval]));
             throw_if_nvapi_failed(nvapi_library::instance()
-                .nvapi_get_gpu_slot_id(&slot_id, gpu_handles[retval]));
+                ._nvapi_get_gpu_slot_id(&slot_id, gpu_handles[retval]));
 
             builder.with_path(L"%x.%x.%x.%x:%u.%u", device_id,
                 ext_device_id, revision_id, sub_system_id, slot_id, bus_id);
@@ -67,7 +67,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvapi_sensor::descriptions(
 
             // Add a friendly name to the sensor.
             throw_if_nvapi_failed(nvapi_library::instance()
-                .nvapi_get_gpu_name(name, gpu_handles[retval]));
+                ._nvapi_get_gpu_name(name, gpu_handles[retval]));
             builder.with_name("%s (NVAPI)", name);
 
             // Remember the handle for the constructor.
@@ -101,7 +101,7 @@ void PWROWG_DETAIL_NAMESPACE::nvapi_sensor::sample(_In_ const bool enable) {
     }
 
     throw_if_nvapi_failed(nvapi_library::instance()
-        .nvapi_register_power_callback(this->_handle, &settings));
+        ._nvapi_register_power_callback(this->_handle, &settings));
 }
 
 
