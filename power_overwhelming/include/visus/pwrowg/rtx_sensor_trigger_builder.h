@@ -446,6 +446,32 @@ class POWER_OVERWHELMING_API rtx_sensor_trigger_builder final {
 public:
 
     /// <summary>
+    /// Creates a new builder for the first instrument matching the given query.
+    /// </summary>
+    /// <param name="query">The query to find the instrument, which should
+    /// select R &amp; S RTA/RTB oscilloscopes.</param>
+    /// <returns>A builder for configuring the trigger.</returns>
+    /// <exception cref="std::invalid_argument">If no device matches the given
+    /// <paramref name="query" />.</exception>
+    /// <exception cref="std::system_error">If the connection to the device
+    /// could not be established.</exception>
+    static rtx_sensor_trigger_builder for_first(
+        _In_opt_z_ const wchar_t *query);
+
+    /// <summary>
+    /// Creates a new builder for the first instrument matching the given query.
+    /// </summary>
+    /// <param name="query">The query to find the instrument, which should
+    /// select R &amp; S RTA/RTB oscilloscopes.</param>
+    /// <returns>A builder for configuring the trigger.</returns>
+    /// <exception cref="std::invalid_argument">If no device matches the given
+    /// <paramref name="query" />.</exception>
+    /// <exception cref="std::system_error">If the connection to the device
+    /// could not be established.</exception>
+    static rtx_sensor_trigger_builder for_first(
+        _In_opt_z_ const char *query = nullptr);
+
+    /// <summary>
     /// Creates a new builder for triggering the device that has the given name
     /// configured. The operation will fail if the name does not uniquely match.
     /// </summary>
@@ -500,6 +526,10 @@ public:
     /// <exception cref="std::invalid_argument">If <paramref name="path" /> is
     /// <see langword="nullptr" />.</exception>
     static rtx_sensor_trigger_builder for_path(_In_z_ const char *path);
+
+    static rtx_sensor_trigger_builder for_serial(_In_z_ const wchar_t *serial);
+
+    static rtx_sensor_trigger_builder for_serial(_In_z_ const char *serial);
 
     /// <summary>
     /// Creates a trigger on the specified channel.

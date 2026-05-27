@@ -10,6 +10,7 @@
 #include <stdexcept>
 
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/multi_sz.h"
 #include "visus/pwrowg/trace.h"
 #include "visus/pwrowg/rtx_instrument.h"
 
@@ -266,6 +267,53 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::raise_pins(
 
 
 /*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_first
+ */
+PWROWG_NAMESPACE::rtx_sensor_trigger_builder
+PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_first(
+        _In_z_ const wchar_t *query) {
+    if (query == nullptr) {
+        return for_first();
+    }
+
+    auto blob = rtx_instrument::find_resources(query);
+    auto path = blob.as<wchar_t>();
+    if (path == nullptr) {
+        throw std::invalid_argument("No instrument matching the query could be "
+            "found.");
+    }
+
+
+    return for_path(path);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_first
+ */
+PWROWG_NAMESPACE::rtx_sensor_trigger_builder
+PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_first(
+        _In_z_ const char *query) {
+    std::string q((query != nullptr) ? query : "?*::");
+
+    if (query == nullptr) {
+        q += visa_instrument::rohde_und_schwarz;    // Only R&S
+        q += "::";
+        q += rtx_instrument::product_id;            // Only RTA/RTB
+        q += "::?*::INSTR";                         // All serial numbers
+    }
+
+    auto blob = rtx_instrument::find_resources(q.c_str());
+    auto path = blob.as<char>();
+    if (path == nullptr) {
+        throw std::invalid_argument("No instrument matching the query could be "
+            "found.");
+    }
+
+    return for_path(path);
+}
+
+/*
  * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_name
  */
 PWROWG_NAMESPACE::rtx_sensor_trigger_builder
@@ -363,6 +411,47 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_path(
     rtx_sensor_trigger_builder retval;
     retval._trigger._impl->path = path;
     return retval;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_serial
+ */
+PWROWG_NAMESPACE::rtx_sensor_trigger_builder
+PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_serial(
+        _In_z_ const wchar_t *serial) {
+    if (serial == nullptr) {
+        throw std::invalid_argument("A valid serial number must be provided.");
+    }
+
+    auto s = convert_string<char>(serial);
+    return for_serial(s.c_str());
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_serial
+ */
+PWROWG_NAMESPACE::rtx_sensor_trigger_builder
+PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_serial(
+        _In_z_ const char *serial) {
+    if (serial == nullptr) {
+        throw std::invalid_argument("A valid serial number must be provided.");
+    }
+
+    std::string q("?*::?*::?*::");
+    q += serial;
+    q += "::INSTR";
+
+    auto blob = rtx_instrument::find_resources(q.c_str());
+    auto path = blob.as<char>();
+    if (multi_sz<char>::count(path) != 1) {
+        throw std::invalid_argument("No instrument uniquely matching the "
+            "serial number could be found.");
+    }
+
+    assert(path != nullptr);
+    return for_path(path);
 }
 
 
