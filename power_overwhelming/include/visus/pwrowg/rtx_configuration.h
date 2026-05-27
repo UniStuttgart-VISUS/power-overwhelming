@@ -134,6 +134,24 @@ public:
         = rtx_waveform_points::maximum);
 
     /// <summary>
+    /// Answer whether a non-default instrument configuration has been set that
+    /// should vbe applied to the oscilloscopes after resetting them.
+    /// </summary>
+    /// <remarks>
+    /// This property is <see langword="false" /> unless a configuration has
+    /// been set by the user. If no specific configuration has been set, the
+    /// instruments will remain in the default state after resetting, except for
+    /// the settings influenced by the sensor definition and the trigger
+    /// definition.
+    /// </remarks>
+    /// <returns><see langword="true" /> if the oscilloscopes should be
+    /// configured according to the provided user settings,
+    /// <see langword="false" /> otherwise.</returns>
+    inline bool configure_instruments(void) const noexcept {
+        return this->_configure_instruments;
+    }
+
+    /// <summary>
     /// Answer the number of sensors (voltage/current pairs) that have been
     /// configured.
     /// </summary>
@@ -171,6 +189,7 @@ public:
     inline rtx_configuration& instrument_configuration(
             _In_ const rtx_instrument_configuration& config) {
         this->_instrument_configuration = config;
+        this->_configure_instruments = true;
         return *this;
     }
 
@@ -183,6 +202,7 @@ public:
     inline rtx_configuration& instrument_configuration(
             _Inout_ rtx_instrument_configuration&& config) noexcept {
         this->_instrument_configuration = std::move(config);
+        this->_configure_instruments = true;
         return *this;
     }
 
@@ -258,6 +278,7 @@ public:
 
 private:
 
+    bool _configure_instruments;
     rtx_instrument_configuration _instrument_configuration;
     type_erased_storage _sensors;
     timeout_type _timeout;

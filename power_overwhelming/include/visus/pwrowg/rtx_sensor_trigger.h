@@ -8,6 +8,7 @@
 #define _PWROWG_RTX_SENSOR_TRIGGER_H
 #pragma once
 
+#include "visus/pwrowg/parallel_port_trigger.h"
 #include "visus/pwrowg/rtx_acquisition.h"
 #include "visus/pwrowg/rtx_trigger.h"
 
@@ -16,6 +17,10 @@ PWROWG_NAMESPACE_BEGIN
 
 // Forward declarations.
 namespace detail { struct rtx_sensor_trigger_impl; }
+namespace detail { struct rtx_sensor_trg_build_final; }
+namespace detail { struct rtx_sensor_trg_build_chan_final; }
+namespace detail { struct rtx_sensor_trg_build_chan; }
+namespace detail { struct rtx_sensor_trg_build_par; }
 
 
 /// <summary>
@@ -146,6 +151,12 @@ private:
     bool reset(_In_opt_ detail::rtx_sensor_trigger_impl *impl) noexcept;
 
     detail::rtx_sensor_trigger_impl *_impl;
+
+    friend class detail::rtx_sensor_trg_build_final;
+    friend class detail::rtx_sensor_trg_build_chan_final;
+    friend class detail::rtx_sensor_trg_build_chan;
+    friend class detail::rtx_sensor_trg_build_par;
+    friend class rtx_sensor_trigger_builder;
 };
 
 PWROWG_NAMESPACE_END

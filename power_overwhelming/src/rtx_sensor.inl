@@ -69,9 +69,25 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         if (next_instrument(*it)) {
             PWROWG_TRACE(L"Connecting to instrument \"%s\".", it->path());
             this->_instruments.emplace_back(it->path(), config.timeout());
+
             PWROWG_TRACE("Reset instrument \"%s\" before creating sensors.",
                 this->_instruments.back().path());
             this->_instruments.back().reset();
+
+            PWROWG_TRACE("Setting the timeout of \"%s\" to %u ms.",
+                this->_instruments.back().path(), config.timeout());
+            this->_instruments.back().timeout(config.timeout());
+
+            PWROWG_TRACE("Synchronising the clock of \"%s\" with the current "
+                "UTC.", this->_instruments.back().path());
+            this->_instruments.back().synchronise_clock(true);
+
+            if (config.configure_instruments()) {
+                PWROWG_TRACE("Applying the global instrument configuration to "
+                    "\"%s\".", this->_instruments.back().path());
+                config.instrument_configuration().apply(
+                    this->_instruments.back());
+            }
         }
         assert(!this->_instruments.empty());
         auto& instrument = this->_instruments.back();
@@ -104,11 +120,9 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
             instrument.channel(vol);
 
             std::string name("CH");
-            name += std::to_string(cur.channel());
+            name += std::to_string(vol.channel());
             this->_channels.push_back(std::move(name));
         }
     }
-
-    
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }

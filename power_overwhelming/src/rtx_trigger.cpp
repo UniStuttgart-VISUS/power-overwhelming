@@ -138,7 +138,7 @@ PWROWG_NAMESPACE::rtx_trigger& PWROWG_NAMESPACE::rtx_trigger::hold_off(
  * PWROWG_NAMESPACE::rtx_trigger::hold_off
  */
 PWROWG_NAMESPACE::rtx_trigger& PWROWG_NAMESPACE::rtx_trigger::hold_off(
-        _In_opt_z_ const std::nullptr_t n) {
+        _In_ const std::nullptr_t n) {
     detail::safe_assign(this->_hold_off, static_cast<char *>(nullptr));
     return *this;
 }

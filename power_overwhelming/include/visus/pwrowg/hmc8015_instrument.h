@@ -1,5 +1,5 @@
 ﻿// <copyright file="hmc8015_instrument.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -14,6 +14,7 @@
 #include <climits>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 
 #include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/hmc8015_function.h"

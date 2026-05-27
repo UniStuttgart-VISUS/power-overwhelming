@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_trigger.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -99,7 +99,7 @@ public:
     }
 
     /// <summary>
-    /// Configues the trigger as an external trigger on the given level.
+    /// Configures the trigger as an external trigger on the given level.
     /// </summary>
     /// <param name="level">The trigger level.</param>
     /// <param name="slope">The slope on which to trigger. This parameter
@@ -157,7 +157,7 @@ public:
     /// </summary>
     /// <param name="n"><c>nullptr</c>.</param>
     /// <returns><c>*this</c>.</returns>
-    rtx_trigger& hold_off(_In_opt_z_ const std::nullptr_t n);
+    rtx_trigger& hold_off(_In_ const std::nullptr_t n);
 
     /// <summary>
     /// Gets the hysteresis range around the trigger level.
