@@ -445,14 +445,58 @@ class POWER_OVERWHELMING_API rtx_sensor_trigger_builder final {
 
 public:
 
+    /// <summary>
+    /// Creates a new builder for triggering the device that has the given name
+    /// configured. The operation will fail if the name does not uniquely match.
+    /// </summary>
+    /// <param name="name">The name of the device. There must be exactly one
+    /// device with this name attached to the machine.</param>
+    /// <param name="timeout">The time, in milliseconds, for device discovery.
+    /// </param>
+    /// <returns>A builder for configuring the trigger.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="name" /> is
+    /// <see langword="nullptr" />, or if the name does not match a unique
+    /// device.</exception>
+    /// <exception cref="std::system_error">If the connection to the device
+    /// could not be established.</exception>
+    static rtx_sensor_trigger_builder for_name(_In_z_ const wchar_t *name,
+        _In_ const std::int32_t timeout = 5000);
+
+    /// <summary>
+    /// Creates a new builder for triggering the device that has the given name
+    /// configured. The operation will fail if the name does not uniquely match.
+    /// </summary>
+    /// <param name="name">The name of the device. There must be exactly one
+    /// device with this name attached to the machine.</param>
+    /// <param name="timeout">The time, in milliseconds, for device discovery.
+    /// </param>
+    /// <returns>A builder for configuring the trigger.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="name" /> is
+    /// <see langword="nullptr" />, or if the name does not match a unique
+    /// device.</exception>
+    /// <exception cref="std::system_error">If the connection to the device
+    /// could not be established.</exception>
+    static rtx_sensor_trigger_builder for_name(_In_z_ const char *name,
+        _In_ const std::int32_t timeout = 5000);
+
+    /// <summary>
+    /// Creates a new builder for triggering the device identified by the given
+    /// VISA path.
+    /// </summary>
+    /// <param name="path">The VISA path to the instrument used to trigger the
+    /// measurement.</param>
+    /// <returns>A builder for configuring the trigger.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="path" /> is
+    /// <see langword="nullptr" />.</exception>
     static rtx_sensor_trigger_builder for_path(_In_z_ const wchar_t *path);
 
     /// <summary>
     /// Creates a new builder for triggering the device identified by the given
     /// VISA path.
     /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
+    /// <param name="path">The VISA path to the instrument used to trigger the
+    /// measurement.</param>
+    /// <returns>A builder for configuring the trigger.</returns>
     /// <exception cref="std::invalid_argument">If <paramref name="path" /> is
     /// <see langword="nullptr" />.</exception>
     static rtx_sensor_trigger_builder for_path(_In_z_ const char *path);

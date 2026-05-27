@@ -43,11 +43,10 @@ public:
         Assert::AreEqual(std::size_t(0), config.count_sensors(), L"No sensors in list", LINE_INFO());
         Assert::IsNull(config.sensors(), L"No sensors allocated", LINE_INFO());
 
-        auto trigger = rtx_trigger::edge("CH0");
-        config.trigger(rtx_sensor_trigger("hugo", trigger));
+        config.trigger(rtx_sensor_trigger_builder::for_path("hugo").when_channel("CH0").rises_above(2.5f).build());
         Assert::AreEqual("hugo", config.trigger().path(), L"Trigger path is set", LINE_INFO());
         Assert::IsNotNull(config.trigger().trigger(), L"Trigger is set", LINE_INFO());
-        Assert::AreEqual(trigger.source(), config.trigger().trigger()->source(), L"Trigger source is set", LINE_INFO());
+        Assert::AreEqual("CH0", config.trigger().trigger()->source(), L"Trigger source is set", LINE_INFO());
 
         config.add_sensor(L"hugo", 1, 10.f, 2, 1.0f);
         Assert::AreEqual(std::size_t(1), config.count_sensors(), L"One sensor in list", LINE_INFO());
@@ -104,9 +103,15 @@ public:
             Assert::AreEqual("hugo", trigger.path(), L"Path is set", LINE_INFO());
             Assert::IsNull(trigger.trigger(), L"Trigger is not set", LINE_INFO());
         }
-        // This test will only work if the port extension card is installed on the test machine.
+        {
+            // This test will only work if the port extension card is installed on the test machine.
+            auto trigger = rtx_sensor_trigger_builder::for_name("rta01").when_channel("CH1").rises_above(2.5f).build();
+            Assert::IsNotNull(trigger.path(), L"Path is set", LINE_INFO());
+        }
+
 #if 0
         {
+            // This test will only work if the port extension card is installed on the test machine.
             auto trigger = rtx_sensor_trigger_builder::for_path("hugo")
                 .when_parallel_port("COM1")
                 .raise_pins(parallel_port_pin::all)
@@ -118,6 +123,7 @@ public:
             Assert::IsNotNull(trigger.trigger(), L"Trigger is set", LINE_INFO());
         }
         {
+            // This test will only work if the port extension card is installed on the test machine.
             auto trigger = rtx_sensor_trigger_builder::for_path("hugo").when_parallel_port("COM1").measured_via_channel("CH1").build();
             Assert::AreEqual("hugo", trigger.path(), L"Path is set", LINE_INFO());
             Assert::IsNotNull(trigger.trigger(), L"Trigger is set", LINE_INFO());
