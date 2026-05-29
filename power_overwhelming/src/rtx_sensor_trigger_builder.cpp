@@ -312,7 +312,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_first(
 
     return for_path(path);
 #else /* defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::runtime_error(error_no_visa);
+    throw std::runtime_error(detail::no_visa_error_msg);
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -342,7 +342,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_first(
 
     return for_path(path);
 #else /* defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::runtime_error(error_no_visa);
+    throw std::runtime_error(detail::no_visa_error_msg);
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -415,7 +415,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_name(
 
     return for_path(path.c_str());
 #else /* defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::runtime_error(error_no_visa);
+    throw std::runtime_error(detail::no_visa_error_msg);
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -492,7 +492,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_serial(
     assert(path != nullptr);
     return for_path(path);
 #else /* defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::runtime_error(error_no_visa);
+    throw std::runtime_error(detail::no_visa_error_msg);
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
