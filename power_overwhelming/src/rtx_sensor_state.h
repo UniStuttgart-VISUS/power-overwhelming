@@ -76,8 +76,7 @@ inline constexpr bool check_state(
 /// <param name="state"></param>
 /// <param name="check"></param>
 /// <returns></returns>
-inline constexpr bool check_state(
-        _In_ const std::atomic<rtx_sensor_state>& state,
+inline bool check_state(_In_ const std::atomic<rtx_sensor_state>& state,
         _In_ const rtx_sensor_state check) noexcept {
     return check_state(state.load(std::memory_order_acquire), check);
 }
