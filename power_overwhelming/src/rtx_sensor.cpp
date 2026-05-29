@@ -181,6 +181,7 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample(_In_ const bool enable) {
  */
 void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
     set_thread_name("PwrOwg RTX Sensor Controller");
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     assert(this->_trigger._impl != nullptr);
     auto& trigger = *this->_trigger._impl;
     PWROWG_TRACE(_T("The RTX sensor controller thread has started."));
@@ -232,6 +233,7 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
         //    return;
         //})
     }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
