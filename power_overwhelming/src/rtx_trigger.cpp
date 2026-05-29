@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_trigger.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -42,6 +42,35 @@ PWROWG_NAMESPACE::rtx_trigger PWROWG_NAMESPACE::rtx_trigger::edge(
         _In_ const input_type source) {
     const auto s = std::string("CH") + std::to_string(source);
     return rtx_trigger(s.c_str(), "EDGE");
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_trigger::external_edge
+ */
+PWROWG_NAMESPACE::rtx_trigger PWROWG_NAMESPACE::rtx_trigger::external_edge(
+        _In_ const rtx_quantity& level,
+        _In_ const rtx_trigger_slope slope) {
+    return edge(5).external(level, slope);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_trigger::external_edge
+ */
+PWROWG_NAMESPACE::rtx_trigger PWROWG_NAMESPACE::rtx_trigger::external_edge(
+        _In_ const float level,
+        _In_ const rtx_trigger_slope slope) {
+    return external_edge(rtx_quantity(level, "V"), slope);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_trigger::external_edge
+ */
+PWROWG_NAMESPACE::rtx_trigger PWROWG_NAMESPACE::rtx_trigger::external_edge(
+        _In_ const rtx_trigger_slope slope) {
+    return external_edge(rtx_quantity(external_level, "V"), slope);
 }
 
 

@@ -10,22 +10,25 @@
 #include <memory>
 
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/trace.h"
 
 #include "rtx_sensor_trigger_impl.h"
+#include "unique_lock.h"
 
 
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger
  */
 PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(void)
-    : _impl(new detail::rtx_sensor_trigger_impl()) { }
+    : _impl(new detail::rtx_sensor_trigger_impl()) {
+}
 
 
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger
  */
 PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
-        _In_ const rtx_sensor_trigger& other) : _impl(other._impl) {
+    _In_ const rtx_sensor_trigger& other) : _impl(other._impl) {
     assert(this->_impl != nullptr);
     if (this->_impl != nullptr) {
         ++this->_impl->references;
@@ -37,7 +40,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
  * PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger
  */
 PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
-        _Inout_ rtx_sensor_trigger&& other) noexcept : _impl(other._impl) {
+    _Inout_ rtx_sensor_trigger&& other) noexcept : _impl(other._impl) {
     assert(this->_impl != nullptr);
     other._impl = nullptr;
 }
@@ -48,6 +51,17 @@ PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
  */
 void PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(void) {
     assert(this->_impl != nullptr);
+
+    if ((this->_impl->trigger == nullptr) || this->_impl->external_trigger) {
+        PWROWG_TRACE(_T("Instructing the Sensor controller thread to "
+            "trigger the oscilloscopes."));
+        {
+            PWROWG_UNIQUE_LOCK(this->_impl->lock);
+            set_state(this->_impl->state, detail::rtx_sensor_state::trigger);
+            PWROWG_TRACE(_T("RTX trigger state is 0x%x."), this->_impl->state);
+        }
+        this->_impl->condition.notify_one();
+    }
 }
 
 

@@ -6,19 +6,24 @@
 
 #pragma once
 
+#include <limits>
 #include <list>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "visus/pwrowg/convert_string.h"
-#include "visus/pwrowg/rtx_configuration.h"
 #include "visus/pwrowg/rtx_instrument.h"
+#include "visus/pwrowg/rtx_configuration.h"
 #include "visus/pwrowg/sensor_filters.h"
+#include "visus/pwrowg/thread_name.h"
 #include "visus/pwrowg/trace.h"
 
+#include "rtx_sensor_trigger_impl.h"
 #include "sensor_description_builder.h"
 #include "sensor_utilities.h"
 #include "sensor_state.h"
+#include "string_functions.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -101,6 +106,21 @@ public:
         _In_ const sensor_array_impl *owner,
         _In_ const configuration_type& config);
 
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <typeparam name="TIterator">An iterator over
+    /// <see cref="sensor_description" />s.</typeparam>
+    /// <param name="begin">The begin of the range of sensor descriptions for
+    /// RTX sensors.</param>
+    /// <param name="end">The end of the range of sensor descriptions for
+    /// RTX sensors.</param>
+    /// <param name="index">The index for the sensor described by the
+    /// <paramref name="begin" /> iterator.</param>
+    /// <param name="owner">The sensor array owning the sensors to be created.
+    /// </param>
+    /// <param name="config">The configuration for the sensor class, obtained
+    /// from the <paramref name="owner" />.</param>
     template<class TIterator>
     rtx_sensor(_In_ const TIterator begin,
         _In_ const TIterator end,
@@ -110,9 +130,32 @@ public:
 
     rtx_sensor(const rtx_sensor&) = delete;
 
+    /// <summary>
+    /// Finalises the instance.
+    /// </summary>
+    inline ~rtx_sensor(void) noexcept {
+        this->sample(false);
+    }
+
+    /// <summary>
+    /// Starts or stops sampling the sensor.
+    /// </summary>
+    /// <param name="enable"><c>true</c> for enabling the sensor,
+    /// <c>false</c> for disabling it.</param>
+    void sample(_In_ const bool enable);
+
     rtx_sensor& operator =(const rtx_sensor&) = delete;
 
 private:
+
+    /// <summary>
+    /// The instrument controller thread that serialises all communication with
+    /// the oscilloscopes. This thread will check the
+    /// <see="rtx_sensor_trigger_impl::status" /> of <see cref="_trigger" /> and
+    /// perform the necessary operations to get data from the instruments to fulfil
+    /// the trigger requests.
+    /// </summary>
+    void control_instruments(void);
 
     std::vector<std::string> _channels;
     std::size_t _index;
@@ -120,6 +163,9 @@ private:
     std::vector<rtx_instrument> _instruments;
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     const sensor_array_impl *_owner;
+    std::thread _thread;
+    rtx_sensor_trigger _trigger;
+    std::size_t _trigger_index;
 };
 
 #include "rtx_sensor.inl"

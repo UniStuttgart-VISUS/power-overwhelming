@@ -1,5 +1,5 @@
 ﻿// <copyright file="visa_status_byte.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -39,20 +39,27 @@ enum class visa_status_byte : std::uint16_t {
     questionable_status = 0x08,
 
     /// <summary>
-    /// This bit is set if a message is available in the output buffer.
+    /// This bit is set if a message is available in the output buffer (MAV).
     /// </summary>
     message_available = 0x10,
 
     /// <summary>
-    /// This bit is set if the instrument has issues a service request.
+    /// This bit is set if the instrument has issued a service request (ESB).
     /// </summary>
     master_status = 0x20,
 
     /// <summary>
-    /// This bit is set while the instrument is busy performing an action.
+    /// This bit is set while the instrument is busy performing an action
+    /// (RQS/MSS).
     /// </summary>
-    operation_status = 0x40
+    operation_status = 0x40,
+
+    /// <summary>
+    /// One of the enabled bits in the operational status register is set.
+    /// </summary>
+    operation_summary = 0x80
 };
+
 
 /// <summary>
 /// Performs a bitwise combination of the given
@@ -69,6 +76,7 @@ inline visa_status_byte operator |(_In_ const visa_status_byte lhs,
     return static_cast<enum_type>(l | r);
 }
 
+
 /// <summary>
 /// Performs a bitwise intersection of the given
 /// <see cref="visa_status_byte" />s.
@@ -84,8 +92,9 @@ inline visa_status_byte operator &(_In_ const visa_status_byte lhs,
     return static_cast<enum_type>(l & r);
 }
 
+
 /// <summary>
-/// Invers the given <see cref="visa_status_byte" /> flags.
+/// Inverts the given <see cref="visa_status_byte" /> flags.
 /// </summary>
 /// <param name="status">The flags to invert.</param>
 /// <returns>The inverse of <paramref name="status" />.</returns>
@@ -94,6 +103,7 @@ inline visa_status_byte operator ~(_In_ const visa_status_byte status) {
     auto s = static_cast<std::underlying_type<enum_type>::type>(status);
     return static_cast<enum_type>(~s);
 }
+
 
 /// <summary>
 /// Answer whether the intersection between <paramref name="lhs" /> and

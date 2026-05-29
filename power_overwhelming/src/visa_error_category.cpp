@@ -62,7 +62,7 @@ const std::error_category& PWROWG_DETAIL_NAMESPACE::visa_category(
 void PWROWG_DETAIL_NAMESPACE::throw_if_visa_failed(
         _In_ const ViStatus status,
         _In_opt_z_ const char *message) {
-    if (status < VI_SUCCESS) {
+    if (visa_failed(status)) {
         if (message == nullptr) {
             throw std::system_error(status, visa_category());
         } else {

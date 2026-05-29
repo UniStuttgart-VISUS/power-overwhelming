@@ -33,6 +33,11 @@ public:
     typedef std::uint8_t input_type;
 
     /// <summary>
+    /// The default level for the external trigger input, in Volts.
+    /// </summary>
+    static constexpr auto external_level = 2.5f;
+
+    /// <summary>
     /// Configures an edge trigger on the specified source.
     /// </summary>
     /// <param name="source">The name of the trigger source.</param>
@@ -53,6 +58,37 @@ public:
     /// to configure.</param>
     /// <returns>An edge trigger.</returns>
     static rtx_trigger edge(_In_ const input_type source);
+
+    /// <summary>
+    /// Configures an edge trigger on the external trigger input.
+    /// </summary>
+    /// <param name="level">The trigger level.</param>
+    /// <param name="slope">The slope on which to trigger. This parameter
+    /// defaults to <see cref="rtx_trigger_slope::rising" />.
+    /// </param>
+    /// <returns>An edge trigger.</returns>
+    static rtx_trigger external_edge(_In_ const rtx_quantity& level,
+        _In_ const rtx_trigger_slope slope = rtx_trigger_slope::rising);
+
+    /// <summary>
+    /// Configures an edge trigger on the external trigger input.
+    /// </summary>
+    /// <param name="level">The trigger level in Volts. This parameter
+    /// defaults to <see cref="external_level" />.</param>
+    /// <param name="slope">The slope on which to trigger. This parameter
+    /// defaults to <see cref="rtx_trigger_slope::rising" />.
+    /// </param>
+    /// <returns>An edge trigger.</returns>
+    static rtx_trigger external_edge(_In_ const float level = external_level,
+        _In_ const rtx_trigger_slope slope = rtx_trigger_slope::rising);
+
+    /// <summary>
+    /// Configure an edge trigger on <see cref="external_level" /> on the
+    /// external trigger input.
+    /// </summary>
+    /// <param name="slope">The slope on which to trigger.
+    /// <returns>An edge trigger.</returns>
+    static rtx_trigger external_edge(_In_ const rtx_trigger_slope slope);
 
     /// <summary>
     /// Initialises a new instance.
@@ -115,12 +151,12 @@ public:
     /// Configues the trigger as an external trigger on the given level.
     /// </summary>
     /// <param name="level">The trigger level in Volts. This parameter
-    /// defaults to 2.5 V.</param>
+    /// defaults to <see cref="external_level" />.</param>
     /// <param name="slope">The slope on which to trigger. This parameter
     /// defaults to <see cref="rtx_trigger_slope::rising" />.
     /// </param>
     /// <returns><c>*this</c>.</returns>
-    rtx_trigger& external(_In_ const float level = 2.5f,
+    rtx_trigger& external(_In_ const float level = external_level,
         _In_ const rtx_trigger_slope slope
         = rtx_trigger_slope::rising);
 

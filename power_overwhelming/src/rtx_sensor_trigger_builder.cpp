@@ -14,12 +14,9 @@
 #include "visus/pwrowg/trace.h"
 #include "visus/pwrowg/rtx_instrument.h"
 
+#include "no_visa_error_msg.h"
 #include "rtx_sensor_trigger_impl.h"
 #include "visa_library.h"
-
-
-static constexpr auto error_no_visa = "Power Overwhelming was not compiled "
-    "with support for VISA instruments";
 
 
 /// <summary>
@@ -115,6 +112,17 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1::with_hold_off(
 }
 
 
+/*
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0::rtx_sen_trg_bld_chan0
+ */
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0::rtx_sen_trg_bld_chan0(
+        _In_ const rtx_sensor_trigger& trigger)
+        : _trigger(trigger) {
+    assert(this->_trigger._impl != nullptr);
+    assert(this->_trigger._impl->trigger != nullptr);
+    this->_trigger._impl->daisy_chain = 2.5f;
+}
+
 
 /*
  * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0::falls_below
@@ -122,8 +130,6 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1::with_hold_off(
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0::falls_below(
         _In_ const rtx_quantity& level) {
-    assert(this->_trigger._impl != nullptr);
-    assert(this->_trigger._impl->trigger != nullptr);
     this->_trigger._impl->trigger->type("EDGE")
         .slope(rtx_trigger_slope::falling)
         .level(level);
@@ -137,8 +143,6 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0::falls_below(
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0::passes_through(
         _In_ const rtx_quantity& level) {
-    assert(this->_trigger._impl != nullptr);
-    assert(this->_trigger._impl->trigger != nullptr);
     this->_trigger._impl->trigger->type("EDGE")
         .slope(rtx_trigger_slope::both)
         .level(level);
@@ -152,11 +156,21 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0::passes_through(
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0::rises_above(
         _In_ const rtx_quantity& level) {
-    assert(this->_trigger._impl != nullptr);
-    assert(this->_trigger._impl->trigger != nullptr);
     this->_trigger._impl->trigger->type("EDGE")
         .slope(rtx_trigger_slope::rising)
         .level(level);
+    return this->_trigger;
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_man0::with_daisy_chain
+ */
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_final
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_man0::with_daisy_chain(
+        _In_ const float level) {
+    assert(this->_trigger._impl != nullptr);
+    this->_trigger._impl->daisy_chain = (level > 0.0f) ? level : default_level;
     return this->_trigger;
 }
 
@@ -223,12 +237,22 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par1::for_duration(
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::rtx_sen_trg_bld_par0
+ */
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::rtx_sen_trg_bld_par0(
+        _In_ const rtx_sensor_trigger& trigger)
+        : _trigger(trigger) {
+    assert(this->_trigger._impl != nullptr);
+    this->_trigger._impl->daisy_chain = 2.5f;
+}
+
+
+/*
  * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel
  */
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel(
         _In_z_ const wchar_t *channel) {
-    assert(this->_trigger._impl != nullptr);
     ::configure_par_default(*this->_trigger._impl, channel);
     return this->_trigger;
 }
@@ -240,7 +264,6 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel(
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel(
         _In_z_ const char *channel) {
-    assert(this->_trigger._impl != nullptr);
     ::configure_par_default(*this->_trigger._impl, channel);
     return this->_trigger;
 }
@@ -252,7 +275,6 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel(
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel(
         _In_ const rtx_trigger::input_type channel) {
-    assert(this->_trigger._impl != nullptr);
     ::configure_par_default(*this->_trigger._impl, channel);
     return this->_trigger;
 }
@@ -264,7 +286,6 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel(
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par1
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::raise_pins(
     _In_ const parallel_port_pin pins) {
-    assert(this->_trigger._impl != nullptr);
     this->_trigger._impl->external_trigger_pins = pins;
     return this->_trigger;
 }
@@ -547,7 +568,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_parallel_port(
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_software_triggered
  */
-PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_final
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_man0
 PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_software_triggered(
         void) noexcept {
     assert(this->_trigger._impl != nullptr);

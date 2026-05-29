@@ -229,6 +229,9 @@ PWROWG_NAMESPACE::rtx_instrument::acquisition(void) const {
         retval.state(rtx_acquisition_state::run);
     } else if (detail::starts_with(state.as<char>(), "STOP")) {
         retval.state(rtx_acquisition_state::stop);
+    } else if (detail::starts_with(state.as<char>(), "COMP")) {
+        // COMPleted == STOP
+        retval.state(rtx_acquisition_state::stop);
     } else if (detail::starts_with(state.as<char>(), "SING")) {
         retval.state(rtx_acquisition_state::single);
     } else if (detail::starts_with(state.as<char>(), "BREAK")) {
@@ -1111,6 +1114,29 @@ PWROWG_NAMESPACE::rtx_instrument::load_state_from_instrument(
 }
 
 
+
+/*
+ * PWROWG_NAMESPACE::rtx_instrument::operation_status
+ */
+PWROWG_NAMESPACE::rtx_operation_status
+PWROWG_NAMESPACE::rtx_instrument::operation_status(void) const {
+    auto response = this->query("STAT:OPER:COND?\n");
+    auto r = response.as<char>();
+    assert(r != nullptr);
+    auto status = std::atoi(r);
+    return static_cast<rtx_operation_status>(status);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_instrument::operation_status
+ */
+bool PWROWG_NAMESPACE::rtx_instrument::operation_status(
+        _In_ const rtx_operation_status status) const {
+    return (this->operation_status() && status);
+}
+
+
 /*
  * PWROWG_NAMESPACE::rtx_instrument::reference_position
  */
@@ -1146,7 +1172,9 @@ PWROWG_NAMESPACE::rtx_instrument::reset(
         (flags & flags_type::status) == flags_type::status);
 
     if ((flags & flags_type::stop) == flags_type::stop) {
-        this->acquisition(rtx_acquisition_state::interrupt, true);
+        try {
+            this->acquisition(rtx_acquisition_state::interrupt, true);
+        } catch (...) { /* This is non-fatal if nothing was going on. */ }
     }
 
     return *this;

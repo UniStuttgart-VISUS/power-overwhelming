@@ -11,6 +11,7 @@
 
 #include "visus/pwrowg/rtx_acquisition.h"
 #include "visus/pwrowg/rtx_channel.h"
+#include "visus/pwrowg/rtx_operation_status.h"
 #include "visus/pwrowg/rtx_quantity.h"
 #include "visus/pwrowg/rtx_reference_point.h"
 #include "visus/pwrowg/rtx_sample.h"
@@ -20,6 +21,7 @@
 #include "visus/pwrowg/rtx_waveform_points.h"
 #include "visus/pwrowg/rtx_instrument_reset.h"
 #include "visus/pwrowg/visa_instrument.h"
+
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -331,7 +333,7 @@ public:
     /// <c>*OPC?</c> query and block the calling code until the acquisition
     /// has completed.</param>
     /// <returns><c>*this</c>.</returns>
-    /// <exception cref="std::runtime_error">If the instument has been
+    /// <exception cref="std::runtime_error">If the instrument has been
     /// disposed by a move.</exception>
     /// <exception cref="visa_exception">If a VISA call failed.</exception>
     rtx_instrument& acquisition(
@@ -352,7 +354,7 @@ public:
     /// query will be added causing the calling code to block until the
     /// acquisition actually ended.</param>
     /// <returns><c>*this</c>.</returns>
-    /// <exception cref="std::runtime_error">If the instument has been
+    /// <exception cref="std::runtime_error">If the instrument has been
     /// disposed by a move.</exception>
     /// <exception cref="visa_exception">If a VISA call failed.</exception>
     const rtx_instrument& acquisition(
@@ -833,10 +835,32 @@ public:
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="std::invalid_argument">If any of the parameters
     /// is <c>nullptr</c> or empty.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
-    /// instrument failed.</exception>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
     rtx_instrument& load_state_from_instrument(_In_z_ const char *name,
         _In_z_ const char *path = "/INT/SETTINGS");
+
+    /// <summary>
+    /// Reads the operation status condition register.
+    /// </summary>
+    /// <returns>The current value of the operation status register.</returns>
+    /// <exception cref="std::runtime_error">If the method is called on an
+    /// object that has been disposed by moving it.</exception>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
+    /// <exception cref="std::logic_error">If the library was compiled
+    /// without support for VISA.</exception>
+    rtx_operation_status operation_status(void) const;
+
+    /// <summary>
+    /// Checks whether the specified condition in the specified operation
+    /// <paramref name="status" />.
+    /// </summary>
+    /// <returns><see langword="true" /> if <i>any</i> of the bits of
+    /// <paramref name="status" /> are currently set in the operation status
+    /// register, <see langword="false" /> otherwise.</returns>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
+    /// <exception cref="std::logic_error">If the library was compiled
+    /// without support for VISA.</exception>
+    bool operation_status(_In_ const rtx_operation_status status) const;
 
     /// <summary>
     /// Sets the reference point in the diagram.
@@ -851,7 +875,6 @@ public:
     /// instrument failed.</exception>
     rtx_instrument& reference_position(
         _In_ const rtx_reference_point position);
-
 
     /// <summary>
     /// Gets the current position of the reference point in the diagram.

@@ -358,6 +358,16 @@ PWROWG_NAMESPACE::visa_instrument::clear_status(void) {
 
 
 /*
+ * PWROWG_NAMESPACE::visa_instrument::enable_event
+ */
+PWROWG_NAMESPACE::visa_instrument&
+PWROWG_NAMESPACE::visa_instrument::enable_event(_In_ const ViEventType type) {
+    this->check_not_disposed().enable_event(type, VI_QUEUE);
+    return *this;
+}
+
+
+/*
  * PWROWG_NAMESPACE::visa_instrument::enable_system_checks
  */
 PWROWG_NAMESPACE::visa_instrument&
@@ -612,9 +622,8 @@ PWROWG_NAMESPACE::visa_instrument::operation_complete_async(
 /*
  * PWROWG_NAMESPACE::visa_instrument::path
  */
-_Ret_maybenull_z_
-const char *
-PWROWG_NAMESPACE::visa_instrument::path(void) const noexcept {
+_Ret_maybenull_z_ const char *PWROWG_NAMESPACE::visa_instrument::path(
+        void) const noexcept {
     return (*this) ? this->_impl->path().c_str() : nullptr;
 }
 
@@ -728,7 +737,8 @@ PWROWG_NAMESPACE::visa_instrument::reset(
         this->write("*CLS\n");
     }
 
-    this->query("*RST;*OPC?\n");
+    this->write("*RST\n");
+    this->query("*OPC?\n");
     return *this;
 }
 
@@ -807,28 +817,7 @@ PWROWG_NAMESPACE::visa_instrument::synchronise_clock(
  */
 PWROWG_NAMESPACE::visa_status_byte
 PWROWG_NAMESPACE::visa_instrument::status(void) const {
-    ViUInt16 retval;
-    detail::throw_if_visa_failed(
-        detail::visa_library::instance()._viReadSTB(
-            this->check_not_disposed().session, &retval));
-    return static_cast<visa_status_byte>(retval);
-
-    // Note: R&S does the following, but NI's documentation suggests that
-    // viReadSTB will issue *STB? by itself as a fallback, so we try the easier
-    // one ...
-
-    //if (this->check_not_disposed().vxi) {
-    //    ViUInt16 retval;
-    //    visa_exception::throw_on_error(detail::visa_library::instance()
-    //        .viReadSTB(this->check_not_disposed().session, &retval));
-    //    return static_cast<std::int32_t>(retval);
-
-    //} else {
-    //    this->write("*STB?\n");
-    //    auto response = this->read_all();
-    //    *response.rend() = 0;
-    //    return std::atoi(response.as<char>());
-    //}
+    return this->check_not_disposed().read_status_byte();
 }
 
 
@@ -909,6 +898,26 @@ PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::wait(void) {
     this->query("*WAI\n");
     return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::visa_instrument::wait
+ */
+bool PWROWG_NAMESPACE::visa_instrument::wait(
+        _Out_opt_ ViEventType *actual,
+        _Out_opt_ visa_object *event,
+        _In_ const ViEventType requested,
+        _In_ const timeout_type timeout) {
+    auto status = detail::visa_library::instance()._viWaitOnEvent(
+        this->check_not_disposed().session, requested, timeout, actual,
+        (event != nullptr) ? event->put() : nullptr);
+
+    switch (status) {
+        case VI_SUCCESS: return true;
+        case VI_ERROR_TMO: return false;
+        default: throw std::system_error(status, detail::visa_category());
+    }
 }
 
 
@@ -1049,7 +1058,9 @@ PWROWG_NAMESPACE::visa_instrument::check_not_disposed(void) const {
  * PWROWG_NAMESPACE::visa_instrument::on_event
  */
 ViStatus _VI_FUNCH PWROWG_NAMESPACE::visa_instrument::on_event(
-        ViSession session, ViEventType event_type, ViEvent event,
+        ViSession session,
+        ViEventType event_type,
+        ViEvent event,
         ViAddr context) {
     auto that = static_cast<visa_instrument *>(context);
 

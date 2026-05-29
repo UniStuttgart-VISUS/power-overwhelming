@@ -23,6 +23,7 @@ const PWROWG_NAMESPACE::guid PWROWG_NAMESPACE::rtx_configuration::id(
  */
 PWROWG_NAMESPACE::rtx_configuration::rtx_configuration(void)
         : _configure_instruments(false),
+        _reset_on_enumerate(false),
 #if defined(POWER_OVERWHELMING_WITH_VISA)
         _timeout(rtx_instrument::default_timeout) {
 #else /* defined(POWER_OVERWHELMING_WITH_VISA) */

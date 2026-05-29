@@ -28,7 +28,7 @@ public:
     /// Initialises a new instance.
     /// </summary>
     /// <param name="trigger">The trigger to be returned by the builder.</param>
-    rtx_sen_trg_bld_final(_In_ const rtx_sensor_trigger& trigger)
+    inline rtx_sen_trg_bld_final(_In_ const rtx_sensor_trigger& trigger)
         : _trigger(trigger) { }
 
     /// <summary>
@@ -59,7 +59,7 @@ public:
     /// Initialise a new instance.
     /// </summary>
     /// <param name="trigger">The trigger to be configured or retrieved.</param>
-    rtx_sen_trg_bld_chan1(_In_ const rtx_sensor_trigger& trigger)
+    inline rtx_sen_trg_bld_chan1(_In_ const rtx_sensor_trigger& trigger)
         : rtx_sen_trg_bld_final(trigger) { }
 
 
@@ -116,8 +116,7 @@ public:
     /// Initialise a new instance.
     /// </summary>
     /// <param name="trigger">The trigger to be configured.</param>
-    rtx_sen_trg_bld_chan0(_In_ const rtx_sensor_trigger& trigger)
-        : _trigger(trigger) { }
+    rtx_sen_trg_bld_chan0(_In_ const rtx_sensor_trigger& trigger);
 
     /// <summary>
     /// Triggers on the falling edge at the specified <paramref name="level" />.
@@ -228,6 +227,43 @@ private:
 
 
 /// <summary>
+/// The only configuration step for manual triggers.
+/// </summary>
+class POWER_OVERWHELMING_API rtx_sen_trg_bld_man0 final
+        : public rtx_sen_trg_bld_final {
+
+public:
+
+    /// <summary>
+    /// The default trigger level for the external trigger signal.
+    /// </summary>
+    static constexpr auto default_level = 2.5f;
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="trigger">The trigger to be returned by the builder.</param>
+    inline rtx_sen_trg_bld_man0(_In_ const rtx_sensor_trigger& trigger)
+        : rtx_sen_trg_bld_final(trigger) { }
+
+    /// <summary>
+    /// Configures the trigger to be daisy-chained with the other triggers of
+    /// the other instruments of the sensor. If this is not set, a single
+    /// acquisition will be triggered by &quot;pressing&quot; the button on
+    /// each instrument, which will cause time differences between the
+    /// measurements. Therefore, it is recommended to daisy chain the
+    /// instruments via their external trigger input/output and set this flag.
+    /// </summary>
+    /// <param name="level">The trigger level for the daisy chain. If this
+    /// value is zero or less, It will be forced to the
+    /// <see cref="default_level" />.</param>
+    /// <returns>The builder of the next stage.</returns>
+    rtx_sen_trg_bld_final with_daisy_chain(
+        _In_ const float level = default_level);
+};
+
+
+/// <summary>
 /// The final stage of building a parallel port trigger, which allows for
 /// configuring optional properties that have meaningful default values. It
 /// is the final stage of builder chain that configures a parallel port trigger
@@ -242,7 +278,7 @@ public:
     /// Initialises a new instance.
     /// </summary>
     /// <param name="trigger">The trigger to be modified.</param>
-    rtx_sen_trg_bld_par3(_In_ const rtx_sensor_trigger& trigger)
+    inline rtx_sen_trg_bld_par3(_In_ const rtx_sensor_trigger& trigger)
         : rtx_sen_trg_bld_chan1(trigger) { }
 
     /// <summary>
@@ -290,7 +326,7 @@ public:
     /// Initialise a new instance.
     /// </summary>
     /// <param name="trigger">The trigger to be configured.</param>
-    rtx_sen_trg_bld_par2(_In_ const rtx_sensor_trigger& trigger)
+    inline rtx_sen_trg_bld_par2(_In_ const rtx_sensor_trigger& trigger)
         : _trigger(trigger) { }
 
     /// <summary>
@@ -342,9 +378,8 @@ public:
     /// Initialise a new instance.
     /// </summary>
     /// <param name="trigger">The trigger to be configured.</param>
-    rtx_sen_trg_bld_par1(_In_ const rtx_sensor_trigger& trigger)
-        : _trigger(trigger) {
-    }
+    inline rtx_sen_trg_bld_par1(_In_ const rtx_sensor_trigger& trigger)
+        : _trigger(trigger) { }
 
     /// <summary>
     /// Sets the time, in milliseconds, the signal on the parallel port will be
@@ -388,8 +423,7 @@ public:
     /// Initialise a new instance.
     /// </summary>
     /// <param name="trigger">The trigger to be configured.</param>
-    rtx_sen_trg_bld_par0(_In_ const rtx_sensor_trigger& trigger)
-        : _trigger(trigger) { }
+    rtx_sen_trg_bld_par0(_In_ const rtx_sensor_trigger& trigger);
 
     /// <summary>
     /// Creates a trigger on the specified channel.
@@ -527,8 +561,28 @@ public:
     /// <see langword="nullptr" />.</exception>
     static rtx_sensor_trigger_builder for_path(_In_z_ const char *path);
 
+    /// <summary>
+    /// Creates a new builder for triggering the instrument with the given
+    /// serial number. There must be exactly one device with matching the query
+    /// for the serial number for the method to succeed.
+    /// </summary>
+    /// <param name="serial">The serial number to look for.</param>
+    /// <returns>A builder for configuring the trigger.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="serial" />
+    /// is <see langword="nullptr" />, or if no unique instrument was found.
+    /// </exception>
     static rtx_sensor_trigger_builder for_serial(_In_z_ const wchar_t *serial);
 
+    /// <summary>
+    /// Creates a new builder for triggering the instrument with the given
+    /// serial number. There must be exactly one device with matching the query
+    /// for the serial number for the method to succeed.
+    /// </summary>
+    /// <param name="serial">The serial number to look for.</param>
+    /// <returns>A builder for configuring the trigger.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="serial" />
+    /// is <see langword="nullptr" />, or if no unique instrument was found.
+    /// </exception>
     static rtx_sensor_trigger_builder for_serial(_In_z_ const char *serial);
 
     /// <summary>
@@ -581,7 +635,7 @@ public:
     /// <see ref="rtx_sensor_trigger" /> interface returned by the builder.
     /// </summary>
     /// <returns>A builder for a manual trigger.</returns>
-    detail::rtx_sen_trg_bld_final when_software_triggered(void) noexcept;
+    detail::rtx_sen_trg_bld_man0 when_software_triggered(void) noexcept;
 
 private:
 

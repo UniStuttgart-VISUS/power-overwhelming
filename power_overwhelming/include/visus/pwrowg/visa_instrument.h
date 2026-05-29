@@ -19,6 +19,7 @@
 #include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/multi_sz.h"
 #include "visus/pwrowg/visa_event_status.h"
+#include "visus/pwrowg/visa_object.h"
 #include "visus/pwrowg/visa_status_byte.h"
 
 
@@ -451,9 +452,19 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If the operation failed.
-    /// </exception>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
     visa_instrument& clear_status(void);
+
+    /// <summary>
+    /// Enable delivery of events of the specified <paramref name="type" /> to
+    /// the event queue. Use the <see cref="wait" /> method to wait for the
+    /// event to occur.
+    /// </summary>
+    /// <param name="type">One or more event types to be delivered to the event
+    /// queue.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
+    visa_instrument& enable_event(_In_ const ViEventType type);
 
     /// <summary>
     /// Enables internal checks of the instrument's system state after
@@ -856,6 +867,27 @@ public:
         _In_ const std::size_t buffer_size = 1024) const;
 
     /// <summary>
+    /// Write the given query to the instrument and directly read the response
+    /// using a buffer size of <paramref name="buffer_size" /> bytes.
+    /// </summary>
+    /// <param name="query">The query to be sent to the instrument.</param>
+    /// <param name="buffer_size">The buffer size used to read the response.
+    /// This parameter defaults to 1024.</param>
+    /// <returns>The data received from the instrument.</returns>
+    /// <exception cref="std::runtime_error">If the method is called on an
+    /// object that has been disposed by moving it.</exception>
+    /// <exception cref="visa_exception">If the operation failed. Note that
+    /// a failure here only refers to the use of the API, ie the instrument
+    /// can be in a failed state even if the call succeeded. Use
+    /// <see cref="throw_on_system_error" /> to check the internal state of
+    /// the instrument after the call.</exception>
+    template<class TChar, class TTraits, class TAlloc> inline blob query(
+            _In_ const std::basic_string<TChar, TTraits, TAlloc>& query,
+            _In_ const std::size_t buffer_size = 1024) const {
+        return this->query(query.data(), buffer_size);
+    }
+
+    /// <summary>
     /// Read from the instrument into the given buffer.
     /// </summary>
     /// <remarks>
@@ -1080,9 +1112,85 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If the operation failed.
-    /// </exception>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
     visa_instrument& wait(void);
+
+    /// <summary>
+    /// Waits for the occurrence of any event of the specified
+    /// <paramref name="requested" /> types and (optionally) returns the type of
+    /// the actual event and its context handle to <paramref name="actual" />
+    /// and <paramref name="event" />, respectively.
+    /// </summary>
+    /// <param name="actual">A pointer to a variable to receive the type of the
+    /// event that actually was received. This parameter can be
+    /// <see langword="nullptr" /> if this information is not required.</param>
+    /// <param name="event">Receives a handle for the event data. This parameter
+    /// can be <see langword="nullptr" /> if this information is not required.
+    /// </param>
+    /// <param name="requested">A combination of one or more event types to wait
+    /// for. The first matching event will be returned to
+    /// <paramref name="actual" />. You can use <c>VI_ALL_ENABLED_EVENTS</c> to
+    /// wait for any of the enabled events.</para>
+    /// <param name="timeout">The timeout in milliseconds. If this parameter is
+    /// set to <c>VI_TMO_IMMEDIATE</c>, the method can be used to dequeue a
+    /// single event. If the parameter is <c>VI_TMO_INFINITE</c>, the method
+    /// blocks indefinitely. This is the default behaviour.</param>
+    /// <returns><see langword="true" /> if the event occurred within the
+    /// specified time limit, <see langword="false" /> otherwise (the operation
+    /// timed out).</returns>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
+    bool wait(_Out_opt_ ViEventType *actual,
+        _Out_opt_ visa_object *event,
+        _In_ const ViEventType requested,
+        _In_ const timeout_type timeout = VI_TMO_INFINITE);
+
+    /// <summary>
+    /// Waits for the occurrence of any event of the specified
+    /// <paramref name="requested" /> types and returns the type of the actual
+    /// event and its context handle to <paramref name="actual" /> and
+    /// <paramref name="event" />, respectively.
+    /// </summary>
+    /// <param name="actual">Receives the actual event that was awaited.</param>
+    /// <param name="event">Receives a handle for the event data.</param>
+    /// <param name="requested">A combination of one or more event types to wait
+    /// for. The first matching event will be returned to
+    /// <paramref name="actual" />. You can use <c>VI_ALL_ENABLED_EVENTS</c> to
+    /// wait for any of the enabled events.</para>
+    /// <param name="timeout">The timeout in milliseconds. If this parameter is
+    /// set to <c>VI_TMO_IMMEDIATE</c>, the method can be used to dequeue a
+    /// single event. If the parameter is <c>VI_TMO_INFINITE</c>, the method
+    /// blocks indefinitely. This is the default behaviour.</param>
+    /// <returns><see langword="true" /> if the event occurred within the
+    /// specified time limit, <see langword="false" /> otherwise (the operation
+    /// timed out).</returns>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
+    inline bool wait(_When_(return, _Out_) ViEventType& actual,
+            _When_(return, _Out_) visa_object& event,
+            _In_ const ViEventType requested,
+            _In_ const timeout_type timeout = VI_TMO_INFINITE) {
+        return this->wait(&actual, &event, requested, timeout);
+    }
+
+    /// <summary>
+    /// Waits for the occurrence of any event of the specified
+    /// <paramref name="requested" /> type.
+    /// </summary>
+    /// <param name="requested">>A combination of one or more event types to
+    /// wait for. If is recommended to specify only one event type for this
+    /// overload as it discards the type of the actual event that has occurred.
+    /// </param>
+    /// <param name="timeout">The timeout in milliseconds. If this parameter is
+    /// set to <c>VI_TMO_IMMEDIATE</c>, the method can be used to dequeue a
+    /// single event. If the parameter is <c>VI_TMO_INFINITE</c>, the method
+    /// blocks indefinitely. This is the default behaviour.</param>
+    /// <returns><see langword="true" /> if the event occurred within the
+    /// specified time limit, <see langword="false" /> otherwise (the operation
+    /// timed out).</returns>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
+    inline bool wait(_In_ const ViEventType requested,
+            _In_ const timeout_type timeout = VI_TMO_INFINITE) {
+        return this->wait(nullptr, nullptr, requested, timeout);
+    }
 
     /// <summary>
     /// Write at most <paramref name="cnt" /> bytes of the given data to the

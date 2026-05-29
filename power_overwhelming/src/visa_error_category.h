@@ -85,6 +85,16 @@ PWROWG_TEST_API void throw_if_visa_failed(_In_ const ViStatus status,
 //PWROWG_TEST_API void throw_unless_visa_succeeded(_In_ const ViStatus status,
 //    _In_opt_z_ const char *message = nullptr);
 
+/// <summary>
+/// Indicates whether the given VISA status code indicates failure
+/// </summary>
+/// <param name="status">The status code to check.</param>
+/// <returns><see langword="true" /> if <paramref name="status" /> indicates a
+/// failure, <see langword="false" /> otherwise.</returns>
+inline bool visa_failed(_In_ const ViStatus status) noexcept {
+    return (status < VI_SUCCESS);
+}
+
 PWROWG_DETAIL_NAMESPACE_END
 
 

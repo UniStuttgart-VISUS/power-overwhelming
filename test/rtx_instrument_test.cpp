@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_instrument_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -202,7 +202,6 @@ public:
             Assert::AreEqual(expected_channels[i].zero_offset().unit(), actual_channels[i].zero_offset().unit(), L"zero_offset.unit", LINE_INFO());
         }
     }
-
 
     TEST_METHOD(test_config_move_ctor) {
         const auto expected_acquisition = rtx_acquisition()
@@ -589,6 +588,19 @@ public:
         }
     }
 
+    TEST_METHOD(test_instrument) {
+        std::vector<rtx_instrument> instruments(rtx_instrument::all(nullptr, 0));
+        const auto cnt = rtx_instrument::all(instruments.data(), instruments.size());
+        instruments.resize((std::min)(instruments.size(), cnt));
+
+        if (!instruments.empty()) {
+            auto& instrument = instruments.front();
+            instrument.reset(rtx_instrument_reset::reset | rtx_instrument_reset::status);
+            Assert::AreEqual(0, int(instrument.status()), L"Status reset", LINE_INFO());
+
+            //instrument.event_status()
+        }
+    }
 };
 
 PWROWG_TEST_NAMESPACE_END

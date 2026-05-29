@@ -98,7 +98,7 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::create(
         assert(retval->_counter == 0);
     } /* if (it != _instruments.end()) */
 
-    ++retval->_counter;
+    retval->_counter.fetch_add(1, std::memory_order_acq_rel);
     return retval.release();
 }
 
@@ -139,30 +139,6 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::create(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::foreach
- */
-std::size_t PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::foreach(
-        _In_ const std::function<bool(visa_instrument_impl *)>& callback) {
-    if (!callback) {
-        throw std::invalid_argument("The enumeration callback for VISA "
-            "instruments must not be nullptr.");
-    }
-
-    std::size_t retval = 0;
-
-    std::lock_guard<decltype(_lock_instruments)> l(_lock_instruments);
-    for (auto& i : _instruments) {
-        ++retval;
-        if (!callback(i.second)) {
-            break;
-        }
-    }
-
-    return retval;
-}
-
-
-/*
  * PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::~visa_instrument_impl
  */
 PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::~visa_instrument_impl(
@@ -197,7 +173,7 @@ void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::disable_event(
  * PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::enable_event
  */
 void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::enable_event(
-        _In_  const ViEventType event_type,
+        _In_ const ViEventType event_type,
         _In_ const ViUInt16 mechanism,
         _In_ const ViEventFilter context) {
     // Cf. https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vienableevent.html
@@ -419,15 +395,42 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_binary(void) const {
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_status_byte
+ */
+PWROWG_NAMESPACE::visa_status_byte
+PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_status_byte(void) const {
+    ViUInt16 retval;
+    throw_if_visa_failed(detail::visa_library::instance()
+        ._viReadSTB(this->session, &retval));
+    return static_cast<visa_status_byte>(retval);
+
+    // Note: R&S does the following, but NI's documentation suggests that
+    // viReadSTB will issue *STB? by itself as a fallback, so we try the easier
+    // one ...
+
+    //if (this->check_not_disposed().vxi) {
+    //    ViUInt16 retval;
+    //    visa_exception::throw_on_error(detail::visa_library::instance()
+    //        .viReadSTB(this->check_not_disposed().session, &retval));
+    //    return static_cast<std::int32_t>(retval);
+
+    //} else {
+    //    this->write("*STB?\n");
+    //    auto response = this->read_all();
+    //    *response.rend() = 0;
+    //    return std::atoi(response.as<char>());
+    //}
+}
+
+
+/*
  * PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::release
  */
-std::size_t PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::release(
-        void) {
-    auto expected = this->_counter.load();
+std::size_t PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::release(void) {
+    auto retval = this->_counter.fetch_sub(1, std::memory_order_acq_rel);
+    assert(retval > 0);
 
-    while (!this->_counter.compare_exchange_weak(expected, expected - 1));
-
-    if (expected == 1) {
+    if (--retval == 0) {
         std::lock_guard<decltype(_lock_instruments)> l(_lock_instruments);
         _instruments.erase(this->_path);
         delete this;
@@ -435,15 +438,14 @@ std::size_t PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::release(
 
     // Note: Do not use counter at this point! Only local variables are still
     // alive after deleting the object!
-    return (expected - 1);
+    return retval;
 }
 
 
 /*
  * PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::resource_class
  */
-std::string
-PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::resource_class(
+std::string PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::resource_class(
         void) const {
     ViChar retval[256];
     throw_if_visa_failed(detail::visa_library::instance()
@@ -497,16 +499,12 @@ int PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::system_error(
  */
 void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::throw_on_system_error(
         void) const {
-    static const auto have_error = static_cast<ViUInt16>(
-        visa_status_byte::error_queue_not_empty);
-
     // First of all, determine the instrument status to check whether there i
     // something in the queue to retrieve.
-    ViUInt16 status;
-    throw_if_visa_failed(detail::visa_library::instance()
-        ._viReadSTB(this->session, &status));
+    const auto status = this->read_status_byte();
 
-    if ((status & have_error) == 0) {
+    if ((status & visa_status_byte::error_queue_not_empty)
+            == visa_status_byte::none) {
         // If the error queue is empty, do not retrieve the status.
         return;
     }
@@ -530,6 +528,22 @@ void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::throw_on_system_error(
     }
 
     throw std::runtime_error(message);
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::try_read_status_byte
+ */
+bool PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::try_read_status_byte(
+        _When_(return, _Out_) visa_status_byte& status) const noexcept {
+    ViUInt16 b;
+    const auto retval = !visa_failed(detail::visa_library::instance()
+        ._viReadSTB(this->session, &b));
+    if (retval) {
+        status = static_cast<visa_status_byte>(b);
+    }
+
+    return retval;
 }
 
 

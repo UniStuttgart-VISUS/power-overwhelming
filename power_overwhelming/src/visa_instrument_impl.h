@@ -110,11 +110,13 @@ public:
     /// removal of instances.</para>
     /// <para>The callback passed to the method should not throw.</para>
     /// </remarks>
+    /// <typeparam name="TCallback">The type of the callback to be invoked for
+    /// each instrument.</typeparam>
     /// <param name="callback">The callback to be invoked.</param>
     /// <returns>The number of times the callback has been invoked.
     /// </returns>
-    static std::size_t foreach(
-        _In_ const std::function<bool(visa_instrument_impl *)>& callback);
+    template<class TCallback>
+    static std::size_t foreach(_In_ const TCallback& callback);
 
     /// <summary>
     /// Enables internal checks of the instrument's status.
@@ -168,7 +170,7 @@ public:
     /// </summary>
     /// <returns></returns>
     inline std::size_t counter(void) const noexcept {
-        return this->_counter.load();
+        return this->_counter.load(std::memory_order_acquire);
     }
 
     /// <summary>
@@ -187,7 +189,7 @@ public:
     /// <param name="event_type"></param>
     /// <param name="mechanism"></param>
     /// <param name="context"></param>
-    void enable_event(_In_  const ViEventType event_type,
+    void enable_event(_In_ const ViEventType event_type,
         _In_ const ViUInt16 mechanism = VI_HNDLR,
         _In_ const ViEventFilter context = VI_NULL);
 
@@ -212,8 +214,7 @@ public:
     /// <param name="format">The <see cref="printf" />-style format string.
     /// </param>
     /// <param name="args">The list of arguments to format.</param>
-    /// <exception cref="visa_exception">If the operation failed.
-    /// </exception>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
     template<class... TArgs>
     void format(_In_z_ const char *format, TArgs&&... args) const;
 
@@ -222,8 +223,7 @@ public:
     /// return its response.
     /// </summary>
     /// <returns>The name of the instrument.</returns>
-    /// <exception cref="visa_exception">If the operation failed.
-    /// </exception>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
     std::string identify(void) const;
 
     /// <summary>
@@ -237,8 +237,7 @@ public:
     /// <param name="event_type"></param>
     /// <param name="handler"></param>
     /// <param name="context"></param>
-    /// <exception cref="visa_exception">If the operation failed.
-    /// </exception>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
     void install_handler(_In_ const ViEventType event_type,
         _In_ const ViHndlr handler, _In_ ViAddr context);
 
@@ -272,7 +271,7 @@ public:
     /// <returns>The number of bytes actually read. If this is equal to
     /// <see cref="cnt" />, the response has most likely not been read in
     /// total and you should call the method again.</returns>
-    /// <exception cref="visa_exception">If the operation failed.</exception>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
     std::size_t read(_Out_writes_bytes_(cnt) byte_type *buffer,
         _In_ const std::size_t cnt) const;
 
@@ -288,7 +287,7 @@ public:
     /// will grow it as necessary. You can preallocate the buffer with the
     /// suggested initial size.</param>
     /// <returns><paramref name="buffer" />.</returns>
-    /// <exception cref="visa_exception">If the operation failed.</exception>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
     blob& read_all(_Inout_ blob& buffer) const;
 
     /// <summary>
@@ -301,10 +300,18 @@ public:
     /// </para>
     /// </remarks>
     /// <returns>The binary data excluding the length marker.</returns>
-    /// <exception cref="visa_exception">If the operation failed.</exception>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
     /// <exception cref="std::runtime_error">If the data being read are not
     /// binary.</exception>
     blob read_binary(void) const;
+
+    /// <summary>
+    /// Reads the status byte of the instrument.
+    /// </summary>
+    /// <returns>The status byte.</returns>
+    /// <exception cref="std::system_error">If the status byte could not be
+    /// read.</exception>
+    visa_status_byte read_status_byte(void) const;
 
     /// <summary>
     /// Release the reference on the object and free it if this was the last
@@ -328,8 +335,7 @@ public:
     /// code returned.</param>
     /// <returns>The current system error, or zero if the system has no
     /// previous error.</returns>
-    /// <exception cref="visa_exception">If the current system state could
-    /// not be retrieved.</exception>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
     int system_error(_Out_ std::string& message) const;
 
     /// <summary>
@@ -346,6 +352,17 @@ public:
     void throw_on_system_error(void) const;
 
     /// <summary>
+    /// Tries reading the status byte of the instrument.
+    /// </summary>
+    /// <param name="status">In case of success, receives the status byte.
+    /// </param>
+    /// <returns><see langword="true" /> if <paramref name="status" /> has been
+    /// written, <see langword="false" /> if the information could not be
+    /// retrieved.</returns>
+    bool try_read_status_byte(
+        _When_(return, _Out_) visa_status_byte& status) const noexcept;
+
+    /// <summary>
     /// Uninstalls the specified callback.
     /// </summary>
     /// <remarks>
@@ -357,8 +374,7 @@ public:
     /// <param name="handler"></param>
     /// <param name="context"></param>
     /// <returns><c>*this</c>.</returns>
-    /// <exception cref="visa_exception">If the operation failed.
-    /// </exception>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
     void uninstall_handler(_In_ const ViEventType event_type,
         _In_ const ViHndlr handler, _In_ ViAddr context);
 
@@ -375,8 +391,7 @@ public:
     /// <param name="cnt">The size of <paramref name="buffer" /> in bytes.
     /// </param>
     /// <returns>The number of bytes actually written.</returns>
-    /// <exception cref="visa_exception">If the operation failed.</exception>
-    /// <
+    /// <exception cref="std::system_error">If the operation failed.</exception>
     std::size_t write(_In_reads_bytes_(cnt) const byte_type *buffer,
         _In_ const std::size_t cnt) const;
 
@@ -393,7 +408,7 @@ public:
     /// </remarks>
     /// <param name="str">A null-terminated string to write to the device.
     /// </param>
-    /// <exception cref="visa_exception">If the operation failed.</exception>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
     void write(_In_z_ const char *str) const;
 
     /// <summary>
@@ -408,8 +423,7 @@ public:
     /// <param name="cnt">The size of <paramref name="buffer" /> in bytes.
     /// </param>
     /// <returns><c>*this</c>.</returns>
-    /// <exception cref="visa_exception">If the operation failed.
-    /// </exception>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
     void write_all(_In_reads_bytes_(cnt) const byte_type *buffer,
         _In_ const std::size_t cnt) const;
 
@@ -423,9 +437,12 @@ private:
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    inline visa_instrument_impl(void) :
-        enable_system_checks(false), resource_manager(0), session(0),
-        terminal_character('\n'), vxi(false),
+    inline visa_instrument_impl(void)
+        : enable_system_checks(false),
+        resource_manager(0),
+        session(0),
+        terminal_character('\n'),
+        vxi(false),
         _counter(0) { }
 };
 

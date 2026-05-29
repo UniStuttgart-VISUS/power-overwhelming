@@ -71,6 +71,9 @@ public:
             Assert::IsNotNull(sensor_config0, L"Configuration is set", LINE_INFO());
 
             auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
+            auto trigger = rtx_sensor_trigger_builder::for_path(device.c_str()).when_software_triggered().build();
+            sensor_config->trigger(trigger);
+
             Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
             sensor_config->add_sensor(device.c_str(), 1, 10.f, 2, 10.0f);
             sensor_config->add_sensor(device.c_str(), 3, 1.f, 4, 1.0f);
@@ -83,6 +86,11 @@ public:
             type::list_type sensors;
             const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), &owner, *sensor_config);
             Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
+
+            sensors.front().sample(true);
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            trigger.acquire();
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     }
 
@@ -99,7 +107,7 @@ public:
             Assert::IsNotNull(trigger.trigger(), L"Trigger is set", LINE_INFO());
         }
         {
-            auto trigger = rtx_sensor_trigger_builder::for_path("hugo").when_software_triggered().build();
+            auto trigger = rtx_sensor_trigger_builder::for_path("hugo").when_software_triggered().with_daisy_chain().build();
             Assert::AreEqual("hugo", trigger.path(), L"Path is set", LINE_INFO());
             Assert::IsNull(trigger.trigger(), L"Trigger is not set", LINE_INFO());
         }
@@ -121,7 +129,7 @@ public:
         {
             // This test will only work if the port extension card is installed on the test machine.
             auto trigger = rtx_sensor_trigger_builder::for_path("hugo")
-                .when_parallel_port("COM1")
+                .when_parallel_port("LTP1")
                 .raise_pins(parallel_port_pin::all)
                 .for_duration(100)
                 .measured_via_channel("CH1")
@@ -153,14 +161,13 @@ private:
     static std::string test_instrument(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
         try {
-            auto result = rtx_instrument::find_resources("?*::0x0AAD::?*::?*::INSTR");
+            auto result = rtx_instrument::find_resources(rtx_instrument::rohde_und_schwarz, rtx_instrument::product_id);
             auto msz = result.as<char>();
             return (msz != nullptr) ? msz : "";
         } catch (...) { }
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
         return "";
     }
-
 };
 
 PWROWG_TEST_NAMESPACE_END

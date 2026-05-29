@@ -58,6 +58,7 @@ public:
     std::vector<std::string> find_resource(
         const char *expression = "?*") const;
 
+    __POWER_OVERWHELMING_VISA_FUNC(viAssertTrigger);
     __POWER_OVERWHELMING_VISA_FUNC(viClear);
     __POWER_OVERWHELMING_VISA_FUNC(viClose);
     __POWER_OVERWHELMING_VISA_FUNC(viDisableEvent);

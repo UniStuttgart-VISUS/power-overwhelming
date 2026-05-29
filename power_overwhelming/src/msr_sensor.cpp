@@ -14,7 +14,6 @@
 #include "visus/pwrowg/for_each_rapl_domain.h"
 
 #include "msr_magic.h"
-#include "msr_sensor_impl.h"
 #include "sensor_description_builder.h"
 #include "sensor_utilities.h"
 

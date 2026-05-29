@@ -34,6 +34,7 @@ PWROWG_DETAIL_NAMESPACE::visa_library::visa_library(void)
 #else /* defined(_WIN32) */
         : library_base("librsvisa.so") {
 #endif /* defined(_WIN32) */
+    __POWER_OVERWHELMING_VISA_FUNC(viAssertTrigger);
     __POWER_OVERWHELMING_VISA_FUNC(viClear);
     __POWER_OVERWHELMING_VISA_FUNC(viClose);
     __POWER_OVERWHELMING_VISA_FUNC(viDisableEvent);

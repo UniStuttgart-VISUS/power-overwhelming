@@ -16,10 +16,12 @@
 PWROWG_NAMESPACE_BEGIN
 
 // Forward declarations.
+namespace detail { struct rtx_sensor; }
 namespace detail { struct rtx_sensor_trigger_impl; }
 namespace detail { struct rtx_sen_trg_bld_final; }
 namespace detail { struct rtx_sen_trg_bld_chan0; }
 namespace detail { struct rtx_sen_trg_bld_chan1; }
+namespace detail { struct rtx_sen_trg_bld_man0; }
 namespace detail { struct rtx_sen_trg_bld_par0; }
 namespace detail { struct rtx_sen_trg_bld_par1; }
 namespace detail { struct rtx_sen_trg_bld_par2; }
@@ -118,15 +120,26 @@ public:
     /// <returns><c>*<see langword="this" /></c>.</returns>
     rtx_sensor_trigger& operator =(_Inout_ rtx_sensor_trigger&& rhs) noexcept;
 
+    /// <summary>
+    /// Answer whether this instance is valid.
+    /// </summary>
+    /// <returns><see langword="true" /> if this instance is valid, i.e. holds a
+    /// valid implementation, <see langword="false" /> otherwise.</returns>
+    inline operator bool(void) const noexcept {
+        return (this->_impl != nullptr);
+    }
+
 private:
 
     bool reset(_In_opt_ detail::rtx_sensor_trigger_impl *impl) noexcept;
 
     detail::rtx_sensor_trigger_impl *_impl;
 
+    friend class detail::rtx_sensor;
     friend class detail::rtx_sen_trg_bld_final;
     friend class detail::rtx_sen_trg_bld_chan0;
     friend class detail::rtx_sen_trg_bld_chan1;
+    friend class detail::rtx_sen_trg_bld_man0;
     friend class detail::rtx_sen_trg_bld_par0;
     friend class detail::rtx_sen_trg_bld_par1;
     friend class detail::rtx_sen_trg_bld_par2;

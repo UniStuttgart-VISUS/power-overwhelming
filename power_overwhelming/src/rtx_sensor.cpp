@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "sensor_array_impl.h"
+#include "unique_lock.h"
 
 
 /*
@@ -38,7 +39,11 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
             const auto& sensor = sensors[i];
 
             // Connect to the instrument.
-            rtx_instrument instrument(sensor.path(), config.timeout());
+            auto reset = false;
+            rtx_instrument instrument(reset, sensor.path(), config.timeout());
+            if (reset && config.reset_on_enumerate()) {
+                instrument.reset(rtx_instrument_reset::all);
+            }
 
             // Get the friendly name of the instrument the user might have
             // configured. We use that in the friendly name of the sensor to
@@ -51,10 +56,9 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
                 }
             }
 
-            // This function tries to configure the given channel and returns
-            // whether it succeeded, in which case we consider the channel to be
-            // enabled.
-            const auto try_configure = [&instrument](const rtx_channel& c) {
+            // This function tries to read the channel label in order to find
+            // out whether a channel exists.
+            const auto check_channel = [&instrument](const rtx_channel& c) {
                 // Channels that can be measured range from 1 to 4. The
                 // instrument somehow accepts channel 0, but I have no idea what
                 // this channel is, so we manually reject it here.
@@ -63,10 +67,10 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
                 }
 
                 try {
-                    PWROWG_TRACE("Configuring channel %u on instrument \"%s\".",
-                        c.channel(), instrument.path());
-                    instrument.channel(c.channel());
-                    return true;
+                    std::string query("CHAN");
+                    query += std::to_string(c.channel());
+                    query += ":LAB?\n";
+                    return !instrument.query(query).empty();
                 } catch (...) {
                     PWROWG_TRACE("Failed to configure channel %u on instrument "
                         "\"%s\".", c.channel(), instrument.path());
@@ -77,8 +81,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
             // Try to configure the voltage and current channels.
             auto& cur = sensor.current_channel();
             auto& vol = sensor.voltage_channel();
-            const auto have_cur = try_configure(cur);
-            const auto have_vol = try_configure(vol);
+            const auto have_cur = check_channel(cur);
+            const auto have_vol = check_channel(vol);
 
             if (have_cur) {
                 if (retval < cnt) {
@@ -138,6 +142,96 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
     return retval;
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample
+ */
+void PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample(_In_ const bool enable) {
+    assert(this->_trigger._impl != nullptr);
+
+    if (enable) {
+        if (!this->_thread.joinable()) {
+            PWROWG_TRACE(_T("Starting the RTX sensor controller thread."));
+            assert(!check_state(this->_trigger._impl->state,
+                rtx_sensor_state::stop));
+            this->_thread = std::thread(&rtx_sensor::control_instruments, this);
+        }
+
+    } else {
+        if (this->_thread.joinable()) {
+            PWROWG_TRACE(_T("Signalling the RTX sensor controller to exit."));
+            {
+                PWROWG_UNIQUE_LOCK(this->_trigger._impl->lock);
+                set_state(this->_trigger._impl->state, rtx_sensor_state::stop);
+            }
+            this->_trigger._impl->condition.notify_all();
+
+            PWROWG_TRACE(_T("Waiting for the RTX sensor controller to exit."));
+            this->_thread.join();
+            PWROWG_TRACE(_T("RTX sensor controller thread has exited."));
+        }
+    }
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments
+ */
+void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
+    set_thread_name("PwrOwg RTX Sensor Controller");
+    assert(this->_trigger._impl != nullptr);
+    auto& trigger = *this->_trigger._impl;
+    PWROWG_TRACE(_T("The RTX sensor controller thread has started."));
+
+    while (true) {
+        PWROWG_NAMED_UNIQUE_LOCK(lock, trigger.lock);
+        if (!check_state(trigger.state, rtx_sensor_state::passive)) {
+            PWROWG_TRACE(_T("RTX sensor controller waits to be signalled."));
+            trigger.condition.wait(lock);
+        }
+
+        if (check_state(trigger.state, rtx_sensor_state::stop)) {
+            PWROWG_TRACE(_T("RTX sensor controller thread is stopping."));
+            trigger.state = rtx_sensor_state::running;
+            return;
+        }
+
+        if (check_state(trigger.state, rtx_sensor_state::trigger)) {
+            if (trigger.external_trigger) {
+                PWROWG_TRACE(_T("Triggering by raising parallel port pins %u ")
+                    _T("for %u ms."), trigger.external_trigger_pins,
+                    trigger.external_trigger_duration);
+                trigger.external_trigger.pulse(
+                    trigger.external_trigger_pins,
+                    trigger.external_trigger_duration);
+
+            } else if (this->_trigger_index < this->_instruments.size()) {
+                PWROWG_TRACE(_T("Triggering manually via daisy chain."));
+                assert(trigger.daisy_chain > 0.0f);
+                this->_instruments[this->_trigger_index].acquisition(
+                    rtx_acquisition_state::single);
+
+            } else {
+                PWROWG_TRACE(_T("Triggering all instruments manually."));
+                for (auto& i : this->_instruments) {
+                    i.acquisition(rtx_acquisition_state::single);
+                }
+            }
+        }
+
+        for (auto& i : this->_instruments) {
+            if (!i.wait(VI_EVENT_TRIG, 1000)) {
+                continue;
+            }
+        }
+
+        //if (check_state(trigger.state, rtx_sensor_state::)) {
+        //    PWROWG_TRACE(_T("RTX sensor controller thread is stopping."));
+        //    return;
+        //})
+    }
 }
 
 

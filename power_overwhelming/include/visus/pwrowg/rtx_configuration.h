@@ -207,6 +207,33 @@ public:
     }
 
     /// <summary>
+    /// Indicates whether the oscilloscopes should be reset when enumerating the
+    /// sensor descriptions.
+    /// </summary>
+    /// <returns><see langword="true" /> if the instruments should be reset,
+    /// <see langword="false" /> (the default) otherwise.</returns>
+    inline bool reset_on_enumerate(void) const noexcept {
+        return this->_reset_on_enumerate;
+    }
+
+    /// <summary>
+    /// Instructs the sensor array on whether it should reset the oscilloscopes
+    /// when enumerating the sensor descriptions. This makes enumerating the
+    /// instruments significantly slower, but if it is unclear whether the
+    /// devices are in a defined state or not, it might be helpful to clear all
+    /// VISA buffers on start to make sure that the device names etc. can be
+    /// safely read or that the application fails early if this is not the case.
+    /// </summary>
+    /// <param name="reset">Controls whether the reset should be done or not.
+    /// </param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline rtx_configuration& reset_on_enumerate(
+            _In_ const bool reset) noexcept {
+        this->_reset_on_enumerate = reset;
+        return *this;
+    }
+
+    /// <summary>
     /// Answer the array of registered <see cref="rtx_sensor_definition" />s.
     /// </summary>
     /// <remarks>
@@ -280,6 +307,7 @@ private:
 
     bool _configure_instruments;
     rtx_instrument_configuration _instrument_configuration;
+    bool _reset_on_enumerate;
     type_erased_storage _sensors;
     timeout_type _timeout;
     rtx_sensor_trigger _trigger;
