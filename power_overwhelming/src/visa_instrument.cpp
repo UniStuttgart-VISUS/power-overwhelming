@@ -358,11 +358,27 @@ PWROWG_NAMESPACE::visa_instrument::clear_status(void) {
 
 
 /*
+ * PWROWG_NAMESPACE::visa_instrument::disable_event
+ */
+PWROWG_NAMESPACE::visa_instrument&
+PWROWG_NAMESPACE::visa_instrument::disable_event(_In_ const ViEventType type,
+        _In_ const ViUInt16 mechanism) {
+    detail::throw_if_visa_failed(detail::visa_library::instance()
+        ._viDisableEvent(this->check_not_disposed().session, type, mechanism));
+    return *this;
+}
+
+
+/*
  * PWROWG_NAMESPACE::visa_instrument::enable_event
  */
 PWROWG_NAMESPACE::visa_instrument&
-PWROWG_NAMESPACE::visa_instrument::enable_event(_In_ const ViEventType type) {
-    this->check_not_disposed().enable_event(type, VI_QUEUE);
+PWROWG_NAMESPACE::visa_instrument::enable_event(_In_ const ViEventType type,
+        _In_ const ViUInt16 mechanism) {
+    // Cf. https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vienableevent.html
+    detail::throw_if_visa_failed(detail::visa_library::instance()
+        ._viEnableEvent(this->check_not_disposed().session, type, mechanism,
+            VI_NULL));
     return *this;
 }
 
@@ -550,7 +566,7 @@ PWROWG_NAMESPACE::visa_instrument::name(_In_z_ const char *name) {
     return *this;
 }
 
-
+#if 0
 /*
  * PWROWG_NAMESPACE::visa_instrument::on_operation_complete
  */
@@ -593,6 +609,7 @@ PWROWG_NAMESPACE::visa_instrument::on_operation_complete(
 
     return *this;
 }
+#endif
 
 
 /*
@@ -892,6 +909,31 @@ bool PWROWG_NAMESPACE::visa_instrument::try_clear(void) {
 
 
 /*
+ * PWROWG_NAMESPACE::visa_instrument::uninstall
+ */
+PWROWG_NAMESPACE::visa_instrument&
+PWROWG_NAMESPACE::visa_instrument::uninstall(
+        detail::visa_event_handler *handler) {
+    auto& handlers = this->check_not_disposed().event_handlers;
+    auto end = std::remove_if(
+        handlers.begin(),
+        handlers.end(),
+        [handler](const std::unique_ptr<detail::visa_event_handler>& h) {
+            return (h.get() == handler);
+        });
+
+    for (auto it = end; it != handlers.end(); ++it) {
+        detail::visa_library::instance()._viUninstallHandler(
+            this->check_not_disposed().session, **it, **it, it->get());
+    }
+
+    handlers.erase(end, handlers.end());
+
+    return *this;
+}
+
+
+/*
  * PWROWG_NAMESPACE::visa_instrument::wait
  */
 PWROWG_NAMESPACE::visa_instrument&
@@ -1055,40 +1097,20 @@ PWROWG_NAMESPACE::visa_instrument::check_not_disposed(void) const {
 
 
 /*
- * PWROWG_NAMESPACE::visa_instrument::on_event
+ * PWROWG_NAMESPACE::visa_instrument::install
  */
-ViStatus _VI_FUNCH PWROWG_NAMESPACE::visa_instrument::on_event(
-        ViSession session,
-        ViEventType event_type,
-        ViEvent event,
-        ViAddr context) {
-    auto that = static_cast<visa_instrument *>(context);
-
-    if ((event_type == VI_EVENT_SERVICE_REQ)
-            && (that != nullptr)
-            && (that->_impl != nullptr)) {
-        try {
-            // According to
-            // https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vi_event_service_req.html,
-            // we must read the status byte here for the callback to work. We
-            // have to do that anyway, because this seems to be the only way
-            // to distinguish between OPC events and other status changes.
-            if (that->status() && visa_status_byte::operation_status) {
-                auto events = that->event_status();
-                if (events && visa_event_status::operation_complete) {
-                    that->_impl->opc_callback(*that);
-                }
-            }
-        } catch (...) {
-            // If the event handler does not return, which is the case when we
-            // throw an exception, we must free the event object manually. Cf.
-            // https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vieventhandler.html
-            detail::visa_library::instance()._viClose(event);
-            throw;
-        }
+PWROWG_DETAIL_NAMESPACE::visa_event_handler *
+PWROWG_NAMESPACE::visa_instrument::install(
+        _In_ detail::visa_event_handler *h) {
+    assert(h != nullptr);
+    if (h != nullptr) {
+        std::unique_ptr<detail::visa_event_handler> handler(h);
+        detail::throw_if_visa_failed(detail::visa_library::instance()
+            ._viInstallHandler(this->check_not_disposed().session, *h, *h, h));
+        auto& handlers = this->check_not_disposed().event_handlers;
+        handlers.push_back(std::move(handler));
     }
-
-    return VI_SUCCESS;
+    return h;
 }
 
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */

@@ -28,6 +28,15 @@ PWROWG_NAMESPACE::visa_object::visa_object(_Inout_ visa_object&& other) noexcept
 
 
 /*
+ * PWROWG_NAMESPACE::visa_object::visa_object
+ */
+PWROWG_NAMESPACE::visa_object::visa_object(_Inout_ ViObject&& object) noexcept
+        : _object(object) {
+    object = VI_NULL;
+}
+
+
+/*
  * PWROWG_NAMESPACE::visa_object::reset
  */
 void PWROWG_NAMESPACE::visa_object::reset(void) noexcept {
@@ -52,6 +61,14 @@ PWROWG_NAMESPACE::visa_object& PWROWG_NAMESPACE::visa_object::operator =(
     }
 
     return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::visa_object::operator bool
+ */
+PWROWG_NAMESPACE::visa_object::operator bool(void) const noexcept {
+    return (this->_object != VI_NULL);
 }
 
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */

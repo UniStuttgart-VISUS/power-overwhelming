@@ -19,6 +19,7 @@
 
 #include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/visa_event_handler.h"
 #include "visus/pwrowg/visa_instrument.h"
 
 #include "string_functions.h"
@@ -124,9 +125,9 @@ public:
     bool enable_system_checks;
 
     /// <summary>
-    /// A callback for asynchronous OPC queries.
+    /// Holds all event handlers that have been installed on the instrument.
     /// </summary>
-    visa_event_handler opc_callback;
+    std::vector<std::unique_ptr<visa_event_handler>> event_handlers;
 
     /// <summary>
     /// The default resource manager.
@@ -174,26 +175,6 @@ public:
     }
 
     /// <summary>
-    /// Prevents events of the specified type being delivered with the
-    /// specified mechanism.
-    /// </summary>
-    /// <param name="event_type"></param>
-    /// <param name="mechanism"></param>
-    void disable_event(_In_ const ViEventType event_type,
-        _In_ const ViUInt16 mechanism = VI_HNDLR);
-
-    /// <summary>
-    /// Enable delivery of events of the specified type using the specified
-    /// mechanism.
-    /// </summary>
-    /// <param name="event_type"></param>
-    /// <param name="mechanism"></param>
-    /// <param name="context"></param>
-    void enable_event(_In_ const ViEventType event_type,
-        _In_ const ViUInt16 mechanism = VI_HNDLR,
-        _In_ const ViEventFilter context = VI_NULL);
-
-    /// <summary>
     /// Reads and discards all data that are possibly in the input buffer of
     /// the instrument.
     /// </summary>
@@ -225,21 +206,6 @@ public:
     /// <returns>The name of the instrument.</returns>
     /// <exception cref="std::system_error">If the operation failed.</exception>
     std::string identify(void) const;
-
-    /// <summary>
-    /// Installs the given callback for the given type of event.
-    /// </summary>
-    /// <remarks>
-    /// <para>This method will perform a check of the system state on
-    /// completion if <see cref="enable_system_checks" /> is <c>true</c>.
-    /// </para>
-    /// </remarks>
-    /// <param name="event_type"></param>
-    /// <param name="handler"></param>
-    /// <param name="context"></param>
-    /// <exception cref="std::system_error">If the operation failed.</exception>
-    void install_handler(_In_ const ViEventType event_type,
-        _In_ const ViHndlr handler, _In_ ViAddr context);
 
     /// <summary>
     /// Gets the interface type of the underlying session.

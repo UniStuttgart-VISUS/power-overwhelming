@@ -18,13 +18,15 @@
 
 #include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/multi_sz.h"
+#include "visus/pwrowg/visa_event_handler.h"
 #include "visus/pwrowg/visa_event_status.h"
 #include "visus/pwrowg/visa_object.h"
 #include "visus/pwrowg/visa_status_byte.h"
 
 
-/* Forward declarations. */
+// Forward declarations.
 PWROWG_DETAIL_NAMESPACE_BEGIN
+class visa_event_handler;
 struct visa_instrument_impl;
 PWROWG_DETAIL_NAMESPACE_END
 
@@ -456,15 +458,30 @@ public:
     visa_instrument& clear_status(void);
 
     /// <summary>
+    /// Prevents events of the specified type being delivered with the
+    /// specified mechanism.
+    /// </summary>
+    /// <param name="event_type">One or more event types to be disabled.</param>
+    /// <param name="mechanism">The delivery mechanism to be disabled.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    /// <exception cref="std::system_error">If the operation failed.</exception>
+    visa_instrument& disable_event(_In_ const ViEventType type,
+        _In_ const ViUInt16 mechanism = VI_QUEUE);
+
+    /// <summary>
     /// Enable delivery of events of the specified <paramref name="type" /> to
     /// the event queue. Use the <see cref="wait" /> method to wait for the
     /// event to occur.
     /// </summary>
     /// <param name="type">One or more event types to be delivered to the event
     /// queue.</param>
+    /// <param name="mechanism">The mechanism to be used for event delivery.
+    /// This parameter defaults to <see cref="VI_QUEUE" />, which means that the
+    /// event can be queried by polling the instrument queue.</param>
     /// <returns><c>*<see langword="this" /></c>.</returns>
     /// <exception cref="std::system_error">If the operation failed.</exception>
-    visa_instrument& enable_event(_In_ const ViEventType type);
+    visa_instrument& enable_event(_In_ const ViEventType event_type,
+        _In_ const ViUInt16 mechanism = VI_QUEUE);
 
     /// <summary>
     /// Enables internal checks of the instrument's system state after
@@ -679,78 +696,68 @@ public:
     visa_instrument& name(_In_z_ const char *name);
 
     /// <summary>
-    /// Installs a <paramref name="callback" /> to be invoked if an
-    /// ansynchronous <c>*OPC</c> instruction was reached.
+    /// Installs an event handler for the given <paramref name="event_type" />.
     /// </summary>
     /// <remarks>
-    /// <para>This method does nothing if the library was compiled without
-    /// support for VISA.</para>
+    /// <para>Callers must enable delivery via the <see cref="VI_HNDLR" />
+    /// mechanism for the given event type using <see cref="enable_event" /> for
+    /// the handler to be invoked. This method does nothing except for
+    /// installing the handler.</para>
     /// </remarks>
-    /// <param name="callback">The callback to be invoked on an operation
-    /// completing. If this is <c>nullptr</c>, an existing callback will be
-    /// uninstalled.</param>
-    /// <param name="context">A user-defined context pointer to be passed
-    /// to the callback.</param>
-    /// <param name="context_deleter">If not <c>nullptr</c>, the object
-    /// takes ownership of the <paramref name="context" /> and will delete
-    /// it using this function when no longer needed.</param>
-    /// <returns><c>*this</c>.</returns>
+    /// <typeparam name="TCallback">A callable receiving a reference to the
+    /// <see cref="visa_instrument" />, the <see cref="ViEventType" /> and a
+    /// <see cref="visa_object" /> representing the event itself. As the
+    /// callback is wrapped in a heap-allocated, type-erased object, it is
+    /// recommended using lambdas with captures rather than
+    /// <see cref="std::functions" /> or <see cref="std::bind" /> to avoid any
+    /// additional allocation.</typeparam>
+    /// <param name="event_type">The type of event to subscribe to.</param>
+    /// <param name="callback">The callback to be invoked for the event.</param>
+    /// <returns>The RAII wrapper for the event handler. This should be
+    /// considered an opaque handle and never be freed by the caller. Use it
+    /// to unregister the handler via <see cref="uninstall" />. If not
+    /// uninstalled, the handler will be uninstalled and destroyed by the
+    /// instrument object when it gets destroyed.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If the operation failed.
-    /// </exception>
-    visa_instrument& on_operation_complete(
-        _In_opt_ void (*callback)(visa_instrument &, void *),
-        _In_opt_ void *context = nullptr,
-        _In_opt_ void (*context_deleter)(void *) = nullptr);
+    /// <exception cref="std::system_error">If the operation failed.</exception>
+    template<class TCallback> detail::visa_event_handler *on_event(
+            _In_ const ViEventType event_type,
+            _In_ TCallback&& callback) {
+        return this->install(detail::visa_event_handler::create(*this,
+            event_type, std::forward<TCallback>(callback)));
+    }
 
     /// <summary>
-    /// Installs a <paramref name="callback" /> to be invoked if an
-    /// asynchronous <c>*OPC</c> instruction was reached.
+    /// Installs a callable (lambda expressions, <see cref="std::function" />,
+    /// functor object or function pointers) to be invoked if an asynchronous
+    /// <c>*OPC</c> instruction was reached.
     /// </summary>
     /// <remarks>
-    /// <para>This method does nothing if the library was compiled without
-    /// support for VISA.</para>
-    /// <para>The <pararmef name="context" /> passed to the method will be
-    /// moved to newly allocated heap memory that lives as long as the
-    /// callback is active. The object will take care of destructing the
-    /// object and freeing the heap memory allocated for it.</para>
+    /// <para>This is a convenience method for creating a status event handler
+    /// using <see cref="on_event" /> while filtering the status events and
+    /// enabling all necessary event registers as well.</para>
     /// </remarks>
-    /// <typeparam name="TContext">The type of the context object passed to
-    /// the callback. This type must be movable.</typeparam>
-    /// <param name="callback">The callback to be invoked on an operation
-    /// completing. If this is <c>nullptr</c>, an existing callback will be
-    /// uninstalled.</param>
-    /// <param name="context">The context passed to the callback. The
-    /// instrument takes ownership of this object.</param>
-    /// <returns></returns>
-    /// <returns><c>*this</c>.</returns>
+    /// <typeparam name="TCallback">The type of the callable to register. This
+    /// callable must accept a reference to <see cref="visa_instrument" />. As
+    /// the callback is wrapped in a heap-allocated, type-erased object, it is
+    /// recommended using lambdas with captures rather than
+    /// <see cref="std::functions" /> or <see cref="std::bind" /> to avoid any
+    /// additional allocation.</typeparam>
+    /// <param name="callback">The callback to be invoked once the instrument
+    /// receives a service request indicating an operational status change and
+    /// the status is <see cref="visa_event_status::operation_complete" />.
+    /// </param>
+    /// <returns>The RAII wrapper for the event handler. This should be
+    /// considered an opaque handle and never be freed by the caller. Use it
+    /// to unregister the handler via <see cref="uninstall" />. If not
+    /// uninstalled, the handler will be uninstalled and destroyed by the
+    /// instrument object when it gets destroyed.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If the operation failed.
-    /// </exception>
-    template<class TContext> visa_instrument& on_operation_complete_ex(
-        _In_opt_ void (*callback)(visa_instrument&, void *),
-        _Inout_ TContext&& context);
-
-    /// <summary>
-    /// Installs a functional (<see cref="std::function" />, functor object
-    /// or lambda expression) to be invoked if an asynchronous <c>*OPC</c>
-    /// instruction was reached.
-    /// </summary>
-    /// <typeparam name="TFunctor">The type of the functor to register. This
-    /// functor must accept a reference to <see cref="visa_instrument" />.
-    /// Please note that you cannot use a custom context pointer with
-    /// functor objects. Use a closure if you need to capture the context of
-    /// a lambda expression.</typeparam>
-    /// <param name="callback"></param>
-    /// <returns><c>*this</c>.</returns>
-    /// <exception cref="std::runtime_error">If the method is called on an
-    /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If the operation failed.
-    /// </exception>
-    template<class TFunctor> visa_instrument& on_operation_complete_ex(
-        _In_ TFunctor&& callback);
+    /// <exception cref="std::system_error">If the operation failed.</exception>
+    template<class TCallback> detail::visa_event_handler *on_operation_complete(
+        _In_ const TCallback& callback);
 
     /// <summary>
     /// Issue and wait for an OPC query.
@@ -1103,6 +1110,13 @@ public:
     bool try_clear(void);
 
     /// <summary>
+    /// Uninstalls the given event handler if it belongs to this instrument.
+    /// </summary>
+    /// <param name="handler">The handle for the event handler.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    visa_instrument& uninstall(detail::visa_event_handler *handler);
+
+    /// <summary>
     /// Waits for all previous commands to complete before continuing with
     /// commands issued afterwards.
     /// </summary>
@@ -1344,10 +1358,16 @@ protected:
     /// released.</exception>
     const detail::visa_instrument_impl& check_not_disposed(void) const;
 
-private:
+    /// <summary>
+    /// Registers the given event handler to be destroyed with this instrument.
+    /// The object will take ownership of this handler.
+    /// </summary>
+    /// <param name="h">The event handler to register, which must be
+    /// non-<see langword="nullptr" /> and belong to this instrument.</param>
+    /// <returns><paramref name="h" />.</returns>
+    detail::visa_event_handler *install(_In_ detail::visa_event_handler *h);
 
-    static ViStatus _VI_FUNCH on_event(ViSession session,
-        ViEventType event_type, ViEvent event, ViAddr context);
+private:
 
     PWROWG_DETAIL_NAMESPACE::visa_instrument_impl *_impl;
 };

@@ -8,38 +8,38 @@
 /*
  * PWROWG_NAMESPACE::visa_instrument::on_operation_complete
  */
-template<class TContext>
-PWROWG_NAMESPACE::visa_instrument&
-PWROWG_NAMESPACE::visa_instrument::on_operation_complete_ex(
-        _In_opt_ void (*callback)(visa_instrument&, void *),
-        _Inout_ TContext&& context) {
-    // Allocate memory for the new context and move it in.
-    auto ctx = operator new(sizeof(TContext));
-    new (ctx) TContext(std::move(context));
+template<class TCallback>
+PWROWG_DETAIL_NAMESPACE::visa_event_handler *
+PWROWG_NAMESPACE::visa_instrument::on_operation_complete(
+        _In_ const TCallback& callback) {
+    auto es = this->event_status();
+    this->event_status(es | visa_event_status::operation_complete);
+    auto ss = this->service_request_status();
+    this->service_request_status(ss | visa_status_byte::master_status);
 
-    // Install the callback and context with a custom deleter.
-    this->on_operation_complete(callback, ctx, [](void *c) {
-        assert(c != nullptr);
-        static_cast<TContext *>(c)->~TContext();
-        operator delete(c);
+    auto retval = this->on_event(VI_EVENT_SERVICE_REQ, [callback](
+            visa_instrument& i, ViEventType t, const visa_object&) {
+        assert(t == VI_EVENT_SERVICE_REQ);
+        // According to
+        // https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vi_event_service_req.html,
+        // we must read the status byte here for the callback to work. We have
+        // to do that anyway, because this seems to be the only way to
+        // distinguish between OPC events and other status changes.
+        // It is not necessary for us to delete the event object, because the
+        // framework will wrap it into an RAII object for us that will
+        // automatically release it once this callback returns.
+        if (i.status() && visa_status_byte::operation_status) {
+            auto events = i.event_status();
+            if (events && visa_event_status::operation_complete) {
+                callback(i);
+            }
+        }
+
+        return VI_SUCCESS;
     });
 
-    return *this;
-}
-
-
-/*
- * PWROWG_NAMESPACE::visa_instrument::on_operation_complete_ex
- */
-template<class TFunctor>
-PWROWG_NAMESPACE::visa_instrument&
-PWROWG_NAMESPACE::visa_instrument::on_operation_complete_ex(
-        _In_ TFunctor&& callback) {
-    typedef std::function<void(visa_instrument&)> callback_type;
-    callback_type cb(std::forward<TFunctor>(callback));
-    return this->on_operation_complete_ex([](visa_instrument& i, void *c) {
-        (*static_cast<callback_type *>(c))(i);
-    }, std::move(cb));
+    this->enable_event(VI_EVENT_SERVICE_REQ, VI_HNDLR);
+    return retval;
 }
 
 

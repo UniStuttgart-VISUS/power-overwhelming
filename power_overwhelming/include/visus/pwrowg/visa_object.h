@@ -37,6 +37,12 @@ public:
     visa_object(_Inout_ visa_object&& other) noexcept;
 
     /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="object">The object to be wrapped.</param>
+    visa_object(_Inout_ ViObject&& object) noexcept;
+
+    /// <summary>
     /// Finalises the instance.
     /// </summary>
     inline ~visa_object(void) noexcept {
@@ -65,6 +71,13 @@ public:
     /// <param name="rhs">The right-hand-side operand.</param>
     /// <returns><c>*<see langword="this" /></c>.</returns>
     visa_object& operator =(_Inout_ visa_object&& rhs) noexcept;
+
+    /// <summary>
+    /// Answer whether the object is valid.
+    /// </summary>
+    /// <returns><see langword="true" /> if the object is valid,
+    /// <see langword="false" /> otherwise.</returns>
+    operator bool(void) const noexcept;
 
 private:
 

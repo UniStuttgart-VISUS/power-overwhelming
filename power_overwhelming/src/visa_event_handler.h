@@ -4,8 +4,9 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#if !defined(_PWROWG_VISA_EVENT_HANDLER_H)
-#define _PWROWG_VISA_EVENT_HANDLER_H
+#if 0
+#if !defined(_PWROWG_VISA_EVENT_HANDLER0_H)
+#define _PWROWG_VISA_EVENT_HANDLER0_H
 #pragma once
 
 #include "visus/pwrowg/api.h"
@@ -142,3 +143,4 @@ private:
 PWROWG_DETAIL_NAMESPACE_END
 
 #endif /* !defined(_PWROWG_VISA_EVENT_HANDLER_H) */
+#endif

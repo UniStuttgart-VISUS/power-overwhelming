@@ -143,6 +143,11 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::create(
  */
 PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::~visa_instrument_impl(
         void) {
+    for (auto& h : this->event_handlers) {
+        detail::visa_library::instance()._viUninstallHandler(this->session,
+            *h, *h, h.get());
+    }
+
     visa_library::instance()._viClose(this->session);
     visa_library::instance()._viClose(this->resource_manager);
 }
@@ -156,29 +161,6 @@ void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::check_system_error(
     if (this->enable_system_checks) {
         this->throw_on_system_error();
     }
-}
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::disable_event
- */
-void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::disable_event(
-        _In_ const ViEventType event_type, _In_ const ViUInt16 mechanism) {
-    throw_if_visa_failed(visa_library::instance()._viDisableEvent(
-        this->session, event_type, mechanism));
-}
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::enable_event
- */
-void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::enable_event(
-        _In_ const ViEventType event_type,
-        _In_ const ViUInt16 mechanism,
-        _In_ const ViEventFilter context) {
-    // Cf. https://www.ni.com/docs/de-DE/bundle/ni-visa/page/ni-visa/vienableevent.html
-    throw_if_visa_failed(visa_library::instance()._viEnableEvent(
-        this->session, event_type, mechanism, context));
 }
 
 
@@ -231,19 +213,6 @@ std::string PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::identify(
     *::strchr(retval, '\n') = 0;
 
     return retval;
-}
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::install_handler
- */
-void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::install_handler(
-        _In_ const ViEventType event_type,
-        _In_ const ViHndlr handler,
-        _In_ ViAddr context) {
-    throw_if_visa_failed(visa_library::instance()._viInstallHandler(
-        this->session, event_type, handler, context));
-    this->check_system_error();
 }
 
 

@@ -233,16 +233,13 @@ void query_rtx_instrument(void) {
 
             std::cout << "Main " << std::this_thread::get_id() << std::endl;
             auto event = visus::pwrowg::create_event();
-            i.on_operation_complete([](visa_instrument &i, void *) {
-                std::cout << "OPC in thread #" << std::this_thread::get_id() << std::endl;
-            }, &i);
-            i.on_operation_complete_ex([&event](visa_instrument& i) {
+            auto handler = i.on_operation_complete([&event](visa_instrument& i) {
                 std::cout << "OPC in thread #" << std::this_thread::get_id() << std::endl;
                 visus::pwrowg::set_event(event);
             });
             i.operation_complete_async();
             visus::pwrowg::wait_event(event);
-            i.on_operation_complete(nullptr);
+            i.uninstall(handler);
 
             i.trigger_position(rtx_quantity(0.0f, "ms"));
             i.trigger(rtx_trigger::edge("EXT")
