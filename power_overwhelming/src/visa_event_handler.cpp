@@ -4,6 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 #include "visus/pwrowg/visa_event_handler.h"
 
 #include "visus/pwrowg/visa_instrument.h"
@@ -28,6 +29,9 @@ PWROWG_DETAIL_NAMESPACE::visa_event_handler::visa_event_handler(
     assert(this->_handler != nullptr);
     assert(this->_instrument);
 }
+
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+
 
 #if 0
 /*
