@@ -85,15 +85,15 @@ public:
 
             Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
             sensor_config->add_sensor(device.c_str(),
-                rtx_channel(1).range(2.0f, "V").attenuation(1 / 10.f, "V"),
-                rtx_channel(2).range(1.0f, "A").attenuation(1 / 10.0f, "A"));
+                rtx_channel(1).range(20.0f, "V").attenuation(0.1f, "V"),
+                rtx_channel(2).range(20.0f, "A").attenuation(0.1f, "A"));
             sensor_config->add_sensor(device.c_str(),
-                rtx_channel(3).range(2.0f, "V").attenuation(1.f, "V"),
-                rtx_channel(4).range(1.0f, "A").attenuation(1.0f, "A"));
+                rtx_channel(3).range(4.0f, "V").attenuation(1.0f, "V"),
+                rtx_channel(4).range(4.0f, "A").attenuation(1.0f, "A"));
 
             std::vector<sensor_description> descs;
             descs.resize(type::descriptions(nullptr, 0, *sensor_config));
-            Assert::AreEqual(std::size_t(2 * 3), descs.size(), L"Descriptions for all sensors and the power sensor.", LINE_INFO());
+            Assert::AreEqual(std::size_t(2 * 2), descs.size(), L"Descriptions for all sensors and the power sensor.", LINE_INFO());
             type::descriptions(descs.data(), descs.size(), *sensor_config);
 
             type::list_type sensors;

@@ -32,7 +32,6 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <see cref="rtx_sensor_trigger" />.
 /// </summary>
 struct rtx_sensor_trigger_impl final {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
 
     /// <summary>
     /// Configures how the instrument will acquire data.
@@ -71,7 +70,13 @@ struct rtx_sensor_trigger_impl final {
     /// </summary>
     parallel_port_pin external_trigger_pins;
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    /// <summary>
+    /// The instruments used by the sensor. This list is stored in the trigger,
+    /// because it must have access to the instruments as well.
+    /// </summary>
     std::vector<rtx_instrument> instruments;
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 
     ///// <summary>
     ///// A lock for the <see cref="condition" />.
@@ -115,28 +120,28 @@ struct rtx_sensor_trigger_impl final {
     /// </summary>
     std::size_t trigger_instrument;
 
-    ///// <summary>
-    ///// Allocates aligned memory for a new object.
-    ///// </summary>
-    ///// <param name="size">The size of the block to align.</param>
-    ///// <returns>A pointer to the newly allocated block.</returns>
-    ///// <exception cref="std::bad_alloc">If the allocation fails.
-    ///// </exception>
-    //static inline void *operator new(_In_ const std::size_t size) {
-    //    assert(size >= sizeof(rtx_sensor_trigger_impl));
-    //    auto retval = allocate_for_atomic(size);
-    //    assert(reinterpret_cast<std::uintptr_t>(retval) % false_sharing_range
-    //        == 0);
-    //    return retval;
-    //}
+    /// <summary>
+    /// Allocates aligned memory for a new object.
+    /// </summary>
+    /// <param name="size">The size of the block to align.</param>
+    /// <returns>A pointer to the newly allocated block.</returns>
+    /// <exception cref="std::bad_alloc">If the allocation fails.
+    /// </exception>
+    static inline void *operator new(_In_ const std::size_t size) {
+        assert(size >= sizeof(rtx_sensor_trigger_impl));
+        auto retval = allocate_for_atomic(size);
+        assert(reinterpret_cast<std::uintptr_t>(retval)
+            % false_sharing_range == 0);
+        return retval;
+    }
 
-    ///// <summary>
-    ///// Frees the allocation of an aligned object.
-    ///// </summary>
-    //static inline void operator delete(_In_ void *ptr) noexcept {
-    //    assert(ptr != nullptr);
-    //    free_for_atomic(ptr);
-    //}
+    /// <summary>
+    /// Frees the allocation of an aligned object.
+    /// </summary>
+    static inline void operator delete(_In_ void *ptr) noexcept {
+        assert(ptr != nullptr);
+        free_for_atomic(ptr);
+    }
 
     /// <summary>
     /// Initialises a new instance.
@@ -149,7 +154,6 @@ struct rtx_sensor_trigger_impl final {
         state(rtx_sensor_state::running),
         trigger_instrument((std::numeric_limits<std::size_t>::max)()) { }
 
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 };
 
 PWROWG_DETAIL_NAMESPACE_END

@@ -773,7 +773,7 @@ PWROWG_NAMESPACE::rtx_instrument_configuration::as_slave(
  */
 void PWROWG_NAMESPACE::rtx_instrument_configuration::apply(
         _Inout_ rtx_instrument& instrument) const {
-    // Change the timeout before perfoming any operations that might time out.
+    // Change the timeout before performing any operations that might time out.
     if (this->_timeout > 0) {
         instrument.timeout(this->_timeout);
     }
