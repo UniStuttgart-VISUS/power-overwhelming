@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <string>
+
 #if defined(_WIN32)
 #include <Windows.h>
 #include <cfgmgr32.h>
