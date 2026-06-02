@@ -50,6 +50,7 @@ PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
  * PWROWG_NAMESPACE::rtx_sensor_trigger::acquire
  */
 void PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     assert(this->_impl != nullptr);
 
     while (check_state(this->_impl->state, detail::rtx_sensor_state::busy));
@@ -84,6 +85,7 @@ void PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(void) {
             }
         }
     } /* if (this->_impl->external_trigger) */
+#endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
