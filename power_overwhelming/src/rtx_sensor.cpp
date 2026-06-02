@@ -148,6 +148,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
  * PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample
  */
 void PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample(_In_ const bool enable) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     assert(this->_trigger._impl != nullptr);
 
     if (enable) {
@@ -173,6 +174,7 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample(_In_ const bool enable) {
             PWROWG_TRACE(_T("RTX sensor controller thread has exited."));
         }
     }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

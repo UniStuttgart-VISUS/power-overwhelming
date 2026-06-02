@@ -90,10 +90,9 @@ std::wstring PWROWG_DETAIL_NAMESPACE::format_string(
 
 #else /* (defined(_WIN32)) */
     // On Linux, we can use swprintf for counting.
-    std::wstring retval (::swprintf(nullptr, 0, format, arguments...) + 1,
-        L' ');
+    std::wstring retval (::swprintf(nullptr, 0, format, args...) + 1, L' ');
     ::swprintf(retval.data(), retval.size() + 1, format,
-        std::forward<TArguments>(arguments)...) < 0)
+        std::forward<TArgs>(args)...);
 #endif /* (defined(_WIN32)) */
 
     return retval;
@@ -126,9 +125,8 @@ std::string PWROWG_DETAIL_NAMESPACE::format_string(
 
 #else /* (defined(_WIN32)) */
     // On Linux, we can use snprintf for counting.
-    std::string retval(::snprintf(nullptr, 0, format, arguments...), ' ');
-    ::snprintf(buffer.data(), buffer.size(), format,
-        std::forward<TArguments>(arguments)...);
+    std::string retval(::snprintf(nullptr, 0, format, args...) + 1, ' ');
+    ::snprintf(&retval[0], retval.size(), format, std::forward<TArgs>(args)...);
 #endif /* (defined(_WIN32)) */
 
     return retval;
