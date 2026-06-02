@@ -93,40 +93,6 @@ PWROWG_NAMESPACE::rtx_configuration::add_sensor(
 
 
 /*
- * PWROWG_NAMESPACE::rtx_configuration::add_sensor
- */
-PWROWG_NAMESPACE::rtx_configuration&
-PWROWG_NAMESPACE::rtx_configuration::add_sensor(
-        _In_z_ const wchar_t *path,
-        _In_ const std::uint32_t channel_voltage,
-        _In_ const float attenuation_voltage,
-        _In_ const std::uint32_t channel_current,
-        _In_ const float attenuation_current,
-        _In_ const rtx_waveform_points waveform_points) {
-    rtx_sensor_definition sensor(path, channel_voltage, attenuation_voltage,
-        channel_current, attenuation_current, nullptr, waveform_points);
-    return this->add_sensor(std::move(sensor));
-}
-
-
-/*
- * PWROWG_NAMESPACE::rtx_configuration::add_sensor
- */
-PWROWG_NAMESPACE::rtx_configuration&
-PWROWG_NAMESPACE::rtx_configuration::add_sensor(
-        _In_z_ const char *path,
-        _In_ const std::uint32_t channel_voltage,
-        _In_ const float attenuation_voltage,
-        _In_ const std::uint32_t channel_current,
-        _In_ const float attenuation_current,
-        _In_ const rtx_waveform_points waveform_points) {
-    rtx_sensor_definition sensor(path, channel_voltage, attenuation_voltage,
-        channel_current, attenuation_current, nullptr, waveform_points);
-    return this->add_sensor(std::move(sensor));
-}
-
-
-/*
  * PWROWG_NAMESPACE::rtx_configuration::count_sensors
  */
 std::size_t PWROWG_NAMESPACE::rtx_configuration::count_sensors(

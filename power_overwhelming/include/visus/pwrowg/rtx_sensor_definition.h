@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_sensor_definition.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -97,78 +97,6 @@ public:
         = rtx_waveform_points::maximum);
 
     /// <summary>
-    /// Initialises a new instance.
-    /// </summary>
-    /// <param name="path">The path to the VISA instrument to be used for
-    /// the sensor, which must not be <c>nullptr</c>.</param>
-    /// <param name="channel_voltage">The channel which to the voltage probe
-    /// is attached.</param>
-    /// <param name="attenuation_voltage">The attenuation of the voltage
-    /// probe in [V]. Consult the manual of the instrument on which values
-    /// are valid for this parameter.</param>
-    /// <param name="channel_current">The channel which to the current probe
-    /// is attached.</param>
-    /// <param name="attenuation_current">The attenuation of the current
-    /// probe in [A]. Consult the manual of the instrument on which values
-    /// are valid for this parameter.</param>
-    /// <param name="description">The description of the sensor.</param>
-    /// <param name="waveform_points">Specifies which points of the waveform
-    /// are downloaded from the instrument to the sensor. This parameter
-    /// defaults to the maximum resolution available in the memory of the
-    /// instrument.</param>
-    /// <exception cref="std::invalid_argument">If <paramref name="path" />
-    /// is <c>nullptr</c> or an empty string.</exception>
-    /// <exception cref="std::invalid_argument">If
-    /// <paramref name="channel_voltage" /> and 
-    /// <paramref name="channel_current" /> are the same.</exception>
-    /// <exception cref="std::bad_alloc">If the memory for storing the
-    /// description could not be allocated.</exception>
-    rtx_sensor_definition(_In_z_ const wchar_t *path,
-        _In_ const std::uint32_t channel_voltage,
-        _In_ const float attenuation_voltage,
-        _In_ const std::uint32_t channel_current,
-        _In_ const float attenuation_current,
-        _In_opt_z_ const wchar_t *description = nullptr,
-        _In_ const rtx_waveform_points waveform_points
-        = rtx_waveform_points::maximum);
-
-    /// <summary>
-    /// Initialises a new instance.
-    /// </summary>
-    /// <param name="path">The path to the VISA instrument to be used for
-    /// the sensor, which must not be <c>nullptr</c>.</param>
-    /// <param name="channel_voltage">The channel which to the voltage probe
-    /// is attached.</param>
-    /// <param name="attenuation_voltage">The attenuation of the voltage
-    /// probe in [V]. Consult the manual of the instrument on which values
-    /// are valid for this parameter.</param>
-    /// <param name="channel_current">The channel which to the current probe
-    /// is attached.</param>
-    /// <param name="attenuation_current">The attenuation of the current
-    /// probe in [A]. Consult the manual of the instrument on which values
-    /// are valid for this parameter.</param>
-    /// <param name="description">The description of the sensor.</param>
-    /// <param name="waveform_points">Specifies which points of the waveform
-    /// are downloaded from the instrument to the sensor. This parameter
-    /// defaults to the maximum resolution available in the memory of the
-    /// instrument.</param>
-    /// <exception cref="std::invalid_argument">If <paramref name="path" />
-    /// <c>nullptr</c> or an empty string.</exception>
-    /// <exception cref="std::invalid_argument">If
-    /// <paramref name="channel_voltage" /> and 
-    /// <paramref name="channel_current" /> are the same.</exception>
-    /// <exception cref="std::bad_alloc">If the memory for storing the
-    /// description could not be allocated.</exception>
-    rtx_sensor_definition(_In_z_ const char *path,
-        _In_ const std::uint32_t channel_voltage,
-        _In_ const float attenuation_voltage,
-        _In_ const std::uint32_t channel_current,
-        _In_ const float attenuation_current,
-        _In_opt_z_ const wchar_t *description = nullptr,
-        _In_ const rtx_waveform_points waveform_points
-        = rtx_waveform_points::maximum);
-
-    /// <summary>
     /// Applies the channel configurations on the given instrument.
     /// </summary>
     /// <remarks>
@@ -184,8 +112,7 @@ public:
     /// </summary>
     /// <returns>The attenuation of the current probe if the current probe.
     /// </returns>
-    inline const rtx_quantity& attenuation_current(
-            void) const noexcept {
+    inline const rtx_quantity& attenuation_current(void) const noexcept {
         return this->_current_channel.attenuation();
     }
 
@@ -194,8 +121,7 @@ public:
     /// </summary>
     /// <returns>The attenuation of the voltage probe if the current probe.
     /// </returns>
-    inline const rtx_quantity& attenuation_voltage(
-            void) const noexcept {
+    inline const rtx_quantity& attenuation_voltage(void) const noexcept {
         return this->_voltage_channel.attenuation();
     }
 
@@ -248,7 +174,7 @@ public:
     /// <summary>
     /// Gets the VISA device path of the underlying instrument.
     /// </summary>
-    /// <returns>The VISA device path of the underlying instrumen. The
+    /// <returns>The VISA device path of the underlying instrument. The
     /// object remains owner of the string returned.</returns>
     inline _Ret_z_ const char *path(void) const noexcept {
         auto retval = this->_path.as<char>();

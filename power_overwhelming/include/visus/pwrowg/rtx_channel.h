@@ -76,8 +76,30 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::invalid_argument">If the unit of the quantity
     /// is not set while the value is not zero.</exception>
-    rtx_channel& attenuation(
-        _In_ const rtx_quantity& attenuation);
+    rtx_channel& attenuation(_In_ const rtx_quantity& attenuation);
+
+    /// <summary>
+    /// Sets the attenuation of the probe.
+    /// </summary>
+    /// <param name="value">The attenuation value.</param>
+    /// <param name="unit">The unit of the channel. This value cannot be empty
+    /// unless the <paramref name="value" /> is zero.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    rtx_channel& attenuation(_In_ const float value,
+            _In_z_ const wchar_t *unit) {
+        return this->attenuation(rtx_quantity(value, unit));
+    }
+
+    /// <summary>
+    /// Sets the attenuation of the probe.
+    /// </summary>
+    /// <param name="value">The attenuation value.</param>
+    /// <param name="unit">The unit of the channel. This value cannot be empty
+    /// unless the <paramref name="value" /> is zero.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    rtx_channel& attenuation(_In_ const float value, _In_z_ const char *unit) {
+        return this->attenuation(rtx_quantity(value, unit));
+    }
 
     /// <summary>
     /// Gets the bandwidth limit for the channel.
@@ -181,8 +203,7 @@ public:
     /// </summary>
     /// <param name="offset">The offset value.</param>
     /// <returns><c>*this</c>.</returns>
-    inline rtx_channel& offset(
-            _In_ const rtx_quantity& offset) noexcept {
+    inline rtx_channel& offset(_In_ const rtx_quantity& offset) noexcept {
         this->_offset = offset;
         return *this;
     }
@@ -201,7 +222,7 @@ public:
     /// <param name="polarity">The signal inversion state.</param>
     /// <returns><c>*this</c>.</returns>
     inline rtx_channel& polarity(
-        _In_ const rtx_channel_polarity polarity) noexcept {
+            _In_ const rtx_channel_polarity polarity) noexcept {
         this->_polarity = polarity;
         return *this;
     }
@@ -218,11 +239,33 @@ public:
     /// Sets the voltage range across all vertical divisions of the diagram.
     /// </summary>
     /// <param name="offset">The voltage range.</param>
-    /// <returns><c>*this</c>.</returns>
-    inline rtx_channel& range(
-        _In_ const rtx_quantity& range) noexcept {
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline rtx_channel& range(_In_ const rtx_quantity& range) noexcept {
         this->_range = range;
         return *this;
+    }
+
+    /// <summary>
+    /// Sets the range of the channel across all vertical divisions of the
+    /// diagram.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="unit">The unit.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline rtx_channel& range(_In_ const float value,
+            _In_z_ const wchar_t *unit) {
+        return this->range(rtx_quantity(value, unit));
+    }
+
+    /// <summary>
+    /// Sets the range of the channel across all vertical divisions of the
+    /// diagram.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="unit">The unit.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline rtx_channel& range(_In_ const float value, _In_z_ const char *unit) {
+        return this->range(rtx_quantity(value, unit));
     }
 
     /// <summary>
@@ -231,8 +274,7 @@ public:
     /// <param name="visible"><c>true</c> for showing the label,
     /// <c>false</c> for hiding it.</param>
     /// <returns><c>*this</c>.</returns>
-    inline rtx_channel& show_label(
-            _In_ const bool visible) noexcept {
+    inline rtx_channel& show_label(_In_ const bool visible) noexcept {
         this->_label.visible(visible);
         return *this;
     }
@@ -255,8 +297,7 @@ public:
     /// </remarks>
     /// <param name="offset">The delay for the selected channel.</param>
     /// <returns><c>*this</c>.</returns>
-    inline rtx_channel& skew(
-            _In_ const rtx_quantity& skew) noexcept {
+    inline rtx_channel& skew(_In_ const rtx_quantity& skew) noexcept {
         this->_skew = skew;
         return *this;
     }
@@ -302,8 +343,7 @@ public:
     /// <param name="enabled"><c>true</c> for enabling the function,
     /// <c>false</c> for disabling it.</param>
     /// <returns><c>*this</c>.</returns>
-    inline rtx_channel& zero_adjust(
-            _In_ const bool enabled) noexcept {
+    inline rtx_channel& zero_adjust(_In_ const bool enabled) noexcept {
         this->_zero_adjust = enabled;
         return *this;
     }
@@ -343,8 +383,7 @@ public:
     /// <param name="offset">The offset in percent, which will be clamped to
     /// [-100, 100].</param>
     /// <returns><c>*this</c>.</returns>
-    rtx_channel& zero_adjust_offset(
-        _In_ const float offset) noexcept;
+    rtx_channel& zero_adjust_offset(_In_ const float offset) noexcept;
 
     /// <summary>
     /// Gets the zero offset.

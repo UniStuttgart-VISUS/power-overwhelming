@@ -32,6 +32,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <see cref="rtx_sensor_trigger" />.
 /// </summary>
 struct rtx_sensor_trigger_impl final {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 
     /// <summary>
     /// Configures how the instrument will acquire data.
@@ -147,6 +148,8 @@ struct rtx_sensor_trigger_impl final {
         references(1),
         state(rtx_sensor_state::running),
         trigger_instrument((std::numeric_limits<std::size_t>::max)()) { }
+
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 };
 
 PWROWG_DETAIL_NAMESPACE_END

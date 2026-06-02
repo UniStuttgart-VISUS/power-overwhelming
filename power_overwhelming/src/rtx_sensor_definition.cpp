@@ -73,60 +73,6 @@ PWROWG_NAMESPACE::rtx_sensor_definition::rtx_sensor_definition(
 
 
 /*
- * PWROWG_NAMESPACE::rtx_sensor_definition::rtx_sensor_definition
- */
-PWROWG_NAMESPACE::rtx_sensor_definition::rtx_sensor_definition(
-        _In_z_ const wchar_t *path,
-        _In_ const std::uint32_t channel_voltage,
-        _In_ const float attenuation_voltage,
-        _In_ const std::uint32_t channel_current,
-        _In_ const float attenuation_current,
-        _In_opt_z_ const wchar_t *description,
-        _In_ const rtx_waveform_points waveform_points)
-    : _current_channel(rtx_channel(channel_current)
-        .attenuation(rtx_quantity(attenuation_current, "A"))),
-        _description(detail::safe_assign(blob(), description)),
-        _path(detail::safe_assign(blob(), convert_string<char>(path))),
-        _voltage_channel(rtx_channel(channel_voltage)
-        .attenuation(rtx_quantity(attenuation_voltage, "V"))),
-        _waveform_points(waveform_points) {
-    if (this->_path.empty() || (*this->path() == 0)) {
-        throw std::invalid_argument(::error_path);
-    }
-    if (this->channel_current() == this->channel_voltage()) {
-        throw std::invalid_argument(::error_same_channel);
-    }
-}
-
-
-/*
- * PWROWG_NAMESPACE::rtx_sensor_definition::rtx_sensor_definition
- */
-PWROWG_NAMESPACE::rtx_sensor_definition::rtx_sensor_definition(
-        _In_z_ const char *path,
-        _In_ const std::uint32_t channel_voltage,
-        _In_ const float attenuation_voltage,
-        _In_ const std::uint32_t channel_current,
-        _In_ const float attenuation_current,
-        _In_opt_z_ const wchar_t *description,
-        _In_ const rtx_waveform_points waveform_points)
-    : _current_channel(rtx_channel(channel_current)
-        .attenuation(rtx_quantity(attenuation_current, "A"))),
-        _description(detail::safe_assign(blob(), description)),
-        _path(detail::safe_assign(blob(), path)),
-        _voltage_channel(rtx_channel(channel_voltage)
-        .attenuation(rtx_quantity(attenuation_voltage, "V"))),
-        _waveform_points(waveform_points) {
-    if (this->_path.empty() || (*this->path() == 0)) {
-        throw std::invalid_argument(::error_path);
-    }
-    if (this->channel_current() == this->channel_voltage()) {
-        throw std::invalid_argument(::error_same_channel);
-    }
-}
-
-
-/*
  * PWROWG_NAMESPACE::rtx_sensor_definition::apply
  */
 void PWROWG_NAMESPACE::rtx_sensor_definition::apply(

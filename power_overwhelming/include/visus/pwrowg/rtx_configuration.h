@@ -137,50 +137,11 @@ public:
         = rtx_waveform_points::maximum);
 
     /// <summary>
-    /// Creates a new <see cref="rtx_sensor_definition" /> with the given parameters
-    /// and adds it to the configuration.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="channel_voltage"></param>
-    /// <param name="attenuation_voltage"></param>
-    /// <param name="channel_current"></param>
-    /// <param name="attenuation_current"></param>
-    /// <param name="waveform_points"></param>
-    /// <returns></returns>
-    rtx_configuration& add_sensor(_In_z_ const wchar_t *path,
-        _In_ const std::uint32_t channel_voltage,
-        _In_ const float attenuation_voltage,
-        _In_ const std::uint32_t channel_current,
-        _In_ const float attenuation_current,
-        _In_ const rtx_waveform_points waveform_points
-        = rtx_waveform_points::maximum);
-
-    /// <summary>
-    /// Creates a new <see cref="rtx_sensor_definition" /> with the given parameters
-    /// and adds it to the configuration.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="channel_voltage"></param>
-    /// <param name="attenuation_voltage"></param>
-    /// <param name="channel_current"></param>
-    /// <param name="attenuation_current"></param>
-    /// <param name="waveform_points"></param>
-    /// <returns></returns>
-    rtx_configuration& add_sensor(_In_z_ const char *path,
-        _In_ const std::uint32_t channel_voltage,
-        _In_ const float attenuation_voltage,
-        _In_ const std::uint32_t channel_current,
-        _In_ const float attenuation_current,
-        _In_ const rtx_waveform_points waveform_points
-        = rtx_waveform_points::maximum);
-
-    /// <summary>
     /// Answer the number of sensors (voltage/current pairs) that have been
     /// configured.
     /// </summary>
     /// <returns>The number of configured sensors.</returns>
     std::size_t count_sensors(void) const noexcept;
-
 
     /// <summary>
     /// Indicates whether the oscilloscopes should be reset when enumerating the

@@ -27,10 +27,15 @@ public:
 
         if (!device.empty()) {
             type::configuration_type config;
-            config.add_sensor(device.c_str(), 1, 10.f, 2, 10.0f);
-            config.add_sensor(device.c_str(), 3, 10.f, 0, 0.0f);
-            config.add_sensor(device.c_str(), 0, 0.f, 4, 1.0f);
-
+            config.add_sensor(device.c_str(),
+                rtx_channel(1).attenuation(0.1f, "V").range(1.0f),
+                rtx_channel(2).attenuation(0.1f, "A").range(2.0f));
+            config.add_sensor(device.c_str(), 
+                rtx_channel(3).attenuation(0.1f, "V").range(3.0f),
+                rtx_channel());
+            config.add_sensor(device.c_str(),
+                rtx_channel(),
+                rtx_channel(4).attenuation(1.0f, "A").range(4.0f));
             std::vector<sensor_description> descs;
             descs.resize(type::descriptions(nullptr, 0, config));
             Assert::AreEqual(std::size_t(3 + 1 + 1), descs.size(), L"Description for power sensor.", LINE_INFO());
@@ -48,7 +53,9 @@ public:
         Assert::IsNotNull(config.trigger().trigger(), L"Trigger is set", LINE_INFO());
         Assert::AreEqual("CH0", config.trigger().trigger()->source(), L"Trigger source is set", LINE_INFO());
 
-        config.add_sensor(L"hugo", 1, 10.f, 2, 1.0f);
+        config.add_sensor(L"hugo",
+            rtx_channel(1).attenuation(10.f, "V").range(1.0f),
+            rtx_channel(2).attenuation(1.f, "A").range(2.0f));
         Assert::AreEqual(std::size_t(1), config.count_sensors(), L"One sensor in list", LINE_INFO());
         Assert::IsNotNull(config.sensors(), L"Sensors allocated", LINE_INFO());
         Assert::AreEqual("hugo", config.sensors()[0].path(), L"Sensor path is set", LINE_INFO());
@@ -77,8 +84,12 @@ public:
             sensor_config->trigger(trigger);
 
             Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
-            sensor_config->add_sensor(device.c_str(), 1, 10.f, 2, 10.0f);
-            sensor_config->add_sensor(device.c_str(), 3, 1.f, 4, 1.0f);
+            sensor_config->add_sensor(device.c_str(),
+                rtx_channel(1).range(2.0f, "V").attenuation(1 / 10.f, "V"),
+                rtx_channel(2).range(1.0f, "A").attenuation(1 / 10.0f, "A"));
+            sensor_config->add_sensor(device.c_str(),
+                rtx_channel(3).range(2.0f, "V").attenuation(1.f, "V"),
+                rtx_channel(4).range(1.0f, "A").attenuation(1.0f, "A"));
 
             std::vector<sensor_description> descs;
             descs.resize(type::descriptions(nullptr, 0, *sensor_config));
