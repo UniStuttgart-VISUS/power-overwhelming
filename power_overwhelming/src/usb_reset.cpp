@@ -16,6 +16,7 @@
 #include "visus/pwrowg/string_functions.h"
 
 
+#if defined(_WIN32)
 /*
  * PWROWG_DETAIL_NAMESPACE::eject_device
  */
@@ -78,6 +79,7 @@ void PWROWG_DETAIL_NAMESPACE::eject_device(_In_ const DEVINST device) {
                 std::system_category());
     }
 }
+#endif /* defined(_WIN32) */
 
 
 #if defined(_WIN32)
