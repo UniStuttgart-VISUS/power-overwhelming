@@ -11,6 +11,7 @@
 #include <cfgmgr32.h>
 #endif /* defined(_WIN32) */
 
+#include "visus/pwrowg/api.h"   // Must be here for when VISA is disabled.
 #include "visus/pwrowg/visa_instrument.h"
 
 
