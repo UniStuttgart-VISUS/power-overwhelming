@@ -16,9 +16,9 @@
 
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/rtx_instrument.h"
+#include "visus/pwrowg/string_functions.h"
 
 #include "rtx_serialisation.h"
-#include "string_functions.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -804,7 +804,7 @@ void PWROWG_NAMESPACE::rtx_instrument_configuration::apply(
         .automatic_roll_time(mtim)
         .trigger(this->_trigger)
         .trigger_position(this->_trigger_position)
-        .acquisition(this->_acquisition, false);
+        .acquisition(this->_acquisition);
 
     // Wait until the instrument has applied all of the before settings.
     instrument.operation_complete();

@@ -9,8 +9,7 @@
 #include <stdexcept>
 
 #include "visus/pwrowg/convert_string.h"
-
-#include "string_functions.h"
+#include "visus/pwrowg/string_functions.h"
 
 
 /*

@@ -48,9 +48,7 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         _In_ std::size_t index,
         _In_ const sensor_array_impl *owner,
         _In_ const configuration_type& config)
-    : _index(index),
-        _owner(owner),
-        _trigger_index((std::numeric_limits<std::size_t>::max)()) {
+        : _index(index), _owner(owner) {
     typedef sensor_description_builder builder_type;
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
@@ -59,15 +57,16 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
     this->_trigger = config.trigger();
     assert(this->_trigger);
     assert(this->_trigger._impl != nullptr);
+    auto& instruments = this->_trigger._impl->instruments;
 
     rtx_instrument::channel_type next_math = 0;
-    const auto next_instrument = [this](const sensor_description& d) {
-        if (this->_instruments.empty()) {
+    const auto next_instrument = [&instruments](const sensor_description& d) {
+        if (instruments.empty()) {
             return true;
         }
 
         auto p = PWROWG_NAMESPACE::convert_string<char>(d.path());
-        return !equals(p, this->_instruments.back().path(), true);
+        return !equals(p, instruments.back().path(), true);
     };
 
     for (auto it = begin; it != end; ++it) {
@@ -75,34 +74,30 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
             // We found an instrument we do not yet know, so we connect to it
             // and configure it for use with the sensor.
             PWROWG_TRACE(L"Connecting to instrument \"%s\".", it->path());
-            this->_instruments.emplace_back(it->path(), config.timeout());
-            auto& i = this->_instruments.back();
+            instruments.emplace_back(it->path(), config.timeout());
+            auto& i = instruments.back();
 
             PWROWG_TRACE("Reset instrument \"%s\" before creating sensors.",
                 i.path());
             i.reset(rtx_instrument_reset::reset | rtx_instrument_reset::status);
 
-            if (config.configure_instruments()) {
-                PWROWG_TRACE("Applying the user-provided global instrument "
-                    "configuration to \"%s\".", i.path());
-                config.instrument_configuration().apply(i);
-            }
+            PWROWG_TRACE("Synchronising the clock of \"%s\" with the current "
+                "UTC.", i.path());
+            i.synchronise_clock(true);
 
             PWROWG_TRACE("Setting the timeout of \"%s\" to %u ms.", i.path(),
                 config.timeout());
             i.timeout(config.timeout());
 
-            PWROWG_TRACE("Synchronising the clock of \"%s\" with the current "
-                "UTC.", i.path());
-            i.synchronise_clock(true);
+            PWROWG_TRACE("Setting the acquisition range of \"%s\" to \"%s\".",
+                i.path(), config.acquisition_range());
+            i.time_range(config.acquisition_range());
 
-            PWROWG_TRACE("Applying ESE filter for OPC to instrument \"%s\".",
-                i.path());
+            PWROWG_TRACE("Configuring events for instrument \"%s\".", i.path());
             i.event_status(visa_event_status::operation_complete);
-
-            //PWROWG_TRACE("Configurating \"%s\" to deliver trigger events to "
-            //    "the queue.", i.path());
-            //i.enable_event(VI_EVENT_TRIG);
+            i.service_request_status(visa_status_byte::master_status
+                | visa_status_byte::message_available);
+            i.enable_event(VI_EVENT_SERVICE_REQ, VI_QUEUE);
 
             PWROWG_TRACE("Moving reference point of \"%s\" to the left.",
                 i.path());
@@ -113,14 +108,30 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
                 i.trigger_output(rtx_trigger_output::pulse);
 
                 if (equals(this->_trigger._impl->path, i.path(), true)) {
-                    this->_trigger_index = this->_instruments.size() - 1;
+                    assert(!instruments.empty());
+                    const auto idx_trig = instruments.size() - 1;
+                    this->_trigger._impl->trigger_instrument = idx_trig;
                     PWROWG_TRACE("\"%s\" at position %zu is the triggering "
-                        "instrument.", i.path(), this->_trigger_index);
+                        "instrument.", i.path(), idx_trig);
+
                 } else {
+                    const auto level = this->_trigger._impl->daisy_chain;
                     PWROWG_TRACE("Configuring \"%s\" to use the external "
-                        "trigger.", i.path());
-                    i.trigger(rtx_trigger::external_edge(
-                        this->_trigger._impl->daisy_chain));
+                        "trigger at %f V.", i.path(), level);
+                    i.trigger(rtx_trigger::external_edge(level)
+                        .mode(rtx_trigger_mode::normal));
+                }
+            }
+
+            if (this->_trigger._impl->trigger != nullptr) {
+                const auto& path = this->_trigger._impl->path;
+                PWROWG_TRACE("Path to triggering instrument is \"%s.\".",
+                    path.c_str());
+
+                if (path.empty() || equals(path, i.path(), true)) {
+                    PWROWG_TRACE("Configuring \"%s\" to use the trigger "
+                        "provided by the user.", i.path());
+                    i.trigger(*this->_trigger._impl->trigger);
                 }
             }
 
@@ -134,10 +145,12 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
 
             PWROWG_TRACE("Making sure that \"%s\" is not in an error state "
                 "after applying all configuration changes.", i.path());
+            i.operation_complete_async();
+            i.wait_status(visa_event_status::operation_complete);
             i.throw_on_system_error();
         }
-        assert(!this->_instruments.empty());
-        auto& instrument = this->_instruments.back();
+        assert(!instruments.empty());
+        auto& instrument = instruments.back();
 
         auto sd = builder_type::private_data<rtx_sensor_definition>(*it);
         assert(sd != nullptr);

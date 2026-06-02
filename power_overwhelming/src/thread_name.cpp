@@ -6,6 +6,15 @@
 
 #include "visus/pwrowg/thread_name.h"
 
+#if !defined(_WIN32)
+#include <unistd.h>
+
+#include <linux/prctl.h>
+
+#include <sys/prctl.h>
+#include <sys/types.h>
+#endif /* !defined(_WIN32) */
+
 // See https://msdn.microsoft.com/de-de/library/xcb2z8hs.aspx?f=255&MSPPError=-2147217396
 
 
@@ -57,5 +66,7 @@ void PWROWG_NAMESPACE::set_thread_name(
         _In_z_ const char *thread_name) {
 #if defined(_WIN32)
     set_thread_name(::GetCurrentThreadId(), thread_name);
+#else /* defined(_WIN32) */
+    ::prctl(PR_SET_NAME, thread_name);
 #endif /* defined(_WIN32) */
 }

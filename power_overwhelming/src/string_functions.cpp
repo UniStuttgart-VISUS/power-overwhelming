@@ -1,10 +1,10 @@
 // <copyright file="string_functions.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#include "string_functions.h"
+#include "visus/pwrowg/string_functions.h"
 
 #include <cmath>
 #include <cwchar>
@@ -15,7 +15,8 @@
 /*
  * PWROWG_DETAIL_NAMESPACE::compare
  */
-int PWROWG_DETAIL_NAMESPACE::compare(_In_opt_z_ const char *lhs,
+int PWROWG_DETAIL_NAMESPACE::compare(
+        _In_opt_z_ const char *lhs,
         _In_opt_z_ const char *rhs,
         _In_ const bool ignore_case) {
     if (lhs == rhs) {
@@ -46,7 +47,8 @@ int PWROWG_DETAIL_NAMESPACE::compare(_In_opt_z_ const char *lhs,
 /*
  * PWROWG_DETAIL_NAMESPACE::compare
  */
-int PWROWG_DETAIL_NAMESPACE::compare(_In_opt_z_ const wchar_t *lhs,
+int PWROWG_DETAIL_NAMESPACE::compare(
+        _In_opt_z_ const wchar_t *lhs,
         _In_opt_z_ const wchar_t *rhs,
         _In_ const bool ignore_case) {
     if (lhs == rhs) {
@@ -77,8 +79,10 @@ int PWROWG_DETAIL_NAMESPACE::compare(_In_opt_z_ const wchar_t *lhs,
 /*
  * PWROWG_DETAIL_NAMESPACE::contains
  */
-bool PWROWG_DETAIL_NAMESPACE::contains(_In_opt_z_ const wchar_t *haystack,
-        _In_opt_z_ const wchar_t *needle, _In_ const bool ignore_case) {
+bool PWROWG_DETAIL_NAMESPACE::contains(
+        _In_opt_z_ const wchar_t *haystack,
+        _In_opt_z_ const wchar_t *needle,
+        _In_ const bool ignore_case) {
     if (needle == nullptr) {
         return true;
     }
@@ -175,8 +179,10 @@ _Ret_maybenull_z_ char *PWROWG_DETAIL_NAMESPACE::safe_duplicate(
 /*
  * PWROWG_DETAIL_NAMESPACE::starts_with
  */
-bool PWROWG_DETAIL_NAMESPACE::starts_with(_In_opt_z_ const char *str,
-        _In_opt_z_ const char *start, _In_ const bool ignore_case) {
+bool PWROWG_DETAIL_NAMESPACE::starts_with(
+        _In_opt_z_ const char *str,
+        _In_opt_z_ const char *start,
+        _In_ const bool ignore_case) {
     if ((start == nullptr) || (*start == 0)) {
         // Trivial accept of empty prefix.
         return true;
@@ -209,8 +215,10 @@ bool PWROWG_DETAIL_NAMESPACE::starts_with(_In_opt_z_ const char *str,
 /*
  * PWROWG_DETAIL_NAMESPACE::starts_with
  */
-bool PWROWG_DETAIL_NAMESPACE::starts_with(_In_opt_z_ const wchar_t *str,
-        _In_opt_z_ const wchar_t *start, _In_ const bool ignore_case) {
+bool PWROWG_DETAIL_NAMESPACE::starts_with(
+        _In_opt_z_ const wchar_t *str,
+        _In_opt_z_ const wchar_t *start,
+        _In_ const bool ignore_case) {
     if ((start == nullptr) || (*start == 0)) {
         // Trivial accept of empty prefix.
         return true;

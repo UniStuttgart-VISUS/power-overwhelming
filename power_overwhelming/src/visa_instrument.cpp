@@ -19,6 +19,7 @@
 #endif /* !defined(_WIN32) */
 
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/trace.h"
 
 #include "no_visa_error_msg.h"
 #include "visa_instrument_impl.h"
@@ -566,58 +567,12 @@ PWROWG_NAMESPACE::visa_instrument::name(_In_z_ const char *name) {
     return *this;
 }
 
-#if 0
-/*
- * PWROWG_NAMESPACE::visa_instrument::on_operation_complete
- */
-PWROWG_NAMESPACE::visa_instrument&
-PWROWG_NAMESPACE::visa_instrument::on_operation_complete(
-        _In_opt_ void(*callback)(visa_instrument&, void *),
-        _In_opt_ void *context,
-        _In_opt_ void (*context_deleter)(void *)) {
-    auto& impl = this->check_not_disposed();
-
-    // Remember whether a callback was set before, which we need to know in
-    // order install or uninstall the handler and enabling the necessary
-    // service requests.
-    const auto was_on = static_cast<bool>(impl.opc_callback);
-
-    // Set or remove the callback and the context passed to it.
-    impl.opc_callback = callback;
-    impl.opc_callback.context(context, context_deleter);
-
-    if (impl.opc_callback && !was_on) {
-        auto es = this->event_status();
-        this->event_status(es | visa_event_status::operation_complete);
-        auto ss = this->service_request_status();
-        this->service_request_status(ss | visa_status_byte::master_status);
-
-        impl.install_handler(VI_EVENT_SERVICE_REQ, &on_event, this);
-        impl.enable_event(VI_EVENT_SERVICE_REQ);
-
-    } else if (!impl.opc_callback && was_on) {
-        impl.disable_event(VI_EVENT_SERVICE_REQ);
-        impl.uninstall_handler(VI_EVENT_SERVICE_REQ, &on_event, this);
-
-        auto es = this->event_status();
-        this->event_status(es | ~visa_event_status::operation_complete);
-        // Note: While we disable the OPC event flag, we do not disable
-        // the events on master status, because this could be used for
-        // something else. The caller must do that on his own if this is
-        // desired.
-    }
-
-    return *this;
-}
-#endif
-
 
 /*
  * PWROWG_NAMESPACE::visa_instrument::operation_complete
  */
 const PWROWG_NAMESPACE::visa_instrument&
-PWROWG_NAMESPACE::visa_instrument::operation_complete(
-        void) const {
+PWROWG_NAMESPACE::visa_instrument::operation_complete(void) const {
     // Cf. https://www.rohde-schwarz.com/at/driver-pages/fernsteuerung/measurements-synchronization_231248.html
     this->query("*OPC?\n");
     return *this;
@@ -628,8 +583,7 @@ PWROWG_NAMESPACE::visa_instrument::operation_complete(
  * PWROWG_NAMESPACE::visa_instrument::operation_complete_async
  */
 const PWROWG_NAMESPACE::visa_instrument&
-PWROWG_NAMESPACE::visa_instrument::operation_complete_async(
-        void) const {
+PWROWG_NAMESPACE::visa_instrument::operation_complete_async(void) const {
     // Cf. https://www.rohde-schwarz.com/at/driver-pages/fernsteuerung/measurements-synchronization_231248.html
     this->write("*OPC\n");
     return *this;
@@ -956,9 +910,47 @@ bool PWROWG_NAMESPACE::visa_instrument::wait(
         (event != nullptr) ? event->put() : nullptr);
 
     switch (status) {
-        case VI_SUCCESS: return true;
         case VI_ERROR_TMO: return false;
-        default: throw std::system_error(status, detail::visa_category());
+        default:
+            detail::throw_if_visa_failed(status);
+            return true;
+    }
+}
+
+
+/*
+ * PWROWG_NAMESPACE::visa_instrument::wait_status
+ */
+bool PWROWG_NAMESPACE::visa_instrument::wait_status(
+        _In_ const visa_event_status status,
+        _In_ const timeout_type timeout) {
+    while (true) {
+        if (!this->wait(VI_EVENT_SERVICE_REQ, timeout)) {
+            PWROWG_TRACE(_T("Waiting %u ms for service request timed out."),
+                timeout);
+            return false;
+        }
+
+        {
+            const auto actual = this->status();
+            if (!(actual && visa_status_byte::master_status)) {
+                PWROWG_TRACE(_T("Received service request, but master status ")
+                    _T("is not set. Status byte was %02x."), actual);
+                continue;
+            }
+        }
+
+        {
+            const auto evt_status = this->event_status();
+            if (!(evt_status && status)) {
+                PWROWG_TRACE(_T("Received service request with master status, ")
+                    _T("but a different event than the awaited %02x was ")
+                    _T("received. Event status was %02x."), status, evt_status);
+                continue;
+            }
+        }
+
+        return true;
     }
 }
 

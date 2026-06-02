@@ -10,14 +10,12 @@
 
 #include "visus/pwrowg/convert_string.h"
 
-#include "string_functions.h"
-
 
 /*
  * PWROWG_NAMESPACE::rtx_quantity::rtx_quantity
  */
 PWROWG_NAMESPACE::rtx_quantity::rtx_quantity(
-        _In_ const float value, _In_opt_z_ const wchar_t *unit) 
+        _In_ const float value, _In_opt_z_ const wchar_t *unit)
         : _unit(nullptr), _value(value) {
     const auto u = convert_string<char>(unit);
     detail::safe_assign(this->_unit, u);
@@ -31,14 +29,6 @@ PWROWG_NAMESPACE::rtx_quantity::rtx_quantity(
         _In_ const float value, _In_opt_z_ const char *unit)
         : _unit(nullptr), _value(value) {
     detail::safe_assign(this->_unit, unit);
-}
-
-
-/*
- * PWROWG_NAMESPACE::rtx_quantity::~rtx_quantity
- */
-PWROWG_NAMESPACE::rtx_quantity::~rtx_quantity(void) {
-    detail::safe_assign(this->_unit, nullptr);
 }
 
 
@@ -60,6 +50,14 @@ PWROWG_NAMESPACE::rtx_quantity::rtx_quantity(
         :_unit(rhs._unit), _value(rhs._value) {
     rhs._unit = nullptr;
     rhs._value = 0.0f;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_quantity::~rtx_quantity
+ */
+PWROWG_NAMESPACE::rtx_quantity::~rtx_quantity(void) {
+    detail::safe_assign(this->_unit, nullptr);
 }
 
 

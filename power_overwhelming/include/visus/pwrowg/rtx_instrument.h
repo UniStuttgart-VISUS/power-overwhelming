@@ -328,38 +328,31 @@ public:
     /// the acquisition state later using the overload that only starts
     /// the acquisition rather than configuring the whole instrument.
     /// </param>
-    /// <param name="wait">If <paramref name="run" /> is <c>true</c> and
-    /// this parameter is set <c>true</c> as well, the method will add an
-    /// <c>*OPC?</c> query and block the calling code until the acquisition
-    /// has completed.</param>
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the instrument has been
     /// disposed by a move.</exception>
     /// <exception cref="visa_exception">If a VISA call failed.</exception>
-    rtx_instrument& acquisition(
-        _In_ const rtx_acquisition& acquisition,
-        _In_ const bool wait = false);
+    rtx_instrument& acquisition(_In_ const rtx_acquisition& acquisition);
 
     /// <summary>
     /// Changes the acquisition state of the instrument.
     /// </summary>
     /// <param name="state">The new state of the instrument.</param>
-    /// <param name="wait">If the <paramref name="state" /> parameter is
-    /// <see cref="rtx_acquisition_state::single" /> and this
-    /// parameter is <c>true</c>, the method will issue an <c>*OPC?</c>
-    /// query after the single acquisition causing the calling code to block
-    /// until the acquisition completed. Likewise, if a continuous
-    /// acquisition is stopped gracefully by
-    /// <see cref="rtx_acquisition_state::stop" />, an <c>*OPC?</c>
-    /// query will be added causing the calling code to block until the
-    /// acquisition actually ended.</param>
-    /// <returns><c>*this</c>.</returns>
+     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the instrument has been
     /// disposed by a move.</exception>
-    /// <exception cref="visa_exception">If a VISA call failed.</exception>
+    /// <exception cref="std::system_error">If a VISA call failed.</exception>
     const rtx_instrument& acquisition(
-        _In_ const rtx_acquisition_state state,
-        _In_ const bool wait = false) const;
+        _In_ const rtx_acquisition_state state) const;
+
+    /// <summary>
+    /// Reads the acquisition state of the instrument.
+    /// </summary>
+    /// <returns>The current acquisition state.</returns>
+    /// <exception cref="std::runtime_error">If the instrument has been
+    /// disposed by a move.</exception>
+    /// <exception cref="std::system_error">If a VISA call failed.</exception>
+    rtx_acquisition_state acquisition_state(void) const;
 
 #if false
     /// <summary>
@@ -1037,23 +1030,19 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& trigger(_In_ const rtx_trigger& trigger);
 
     /// <summary>
     /// Forces a manual trigger.
     /// </summary>
-    /// <param name="wait">If <c>true</c>, the trigger is combined with an
-    /// <c>*OPC?</c> query that blocks the calling code until the instrument
-    /// has actually triggered. This parameter defaults to <c>false</c>.
-    /// </param>
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    rtx_instrument& trigger_manually(_In_ const bool wait = false);
+    rtx_instrument& trigger_manually(void);
 
     /// <summary>
     /// Gets what kind of trigger signal the instrument produces on the
@@ -1062,7 +1051,7 @@ public:
     /// <returns>THe behaviour of the trigger output.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     /// <exception cref="std::logic_error">If the method is called while
     /// the library was compiled without support for VISA.</exception>

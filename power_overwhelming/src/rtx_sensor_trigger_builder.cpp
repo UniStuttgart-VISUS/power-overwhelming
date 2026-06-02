@@ -28,6 +28,8 @@ static void configure_par_default(
     using namespace PWROWG_NAMESPACE;
     assert(impl.trigger == nullptr);
     impl.trigger = std::make_unique<rtx_trigger>(channel, L"EDGE");
+    // Cf. rtx_sen_trg_bld_chan0::rtx_sen_trg_bld_chan0
+    impl.trigger->mode(rtx_trigger_mode::normal);
     impl.trigger->level(rtx_quantity(2.5f, "V"));
     impl.trigger->slope(rtx_trigger_slope::rising);
 }
@@ -42,6 +44,8 @@ static void configure_par_default(
     using namespace PWROWG_NAMESPACE;
     assert(impl.trigger == nullptr);
     impl.trigger = std::make_unique<rtx_trigger>(channel, "EDGE");
+    // Cf. rtx_sen_trg_bld_chan0::rtx_sen_trg_bld_chan0
+    impl.trigger->mode(rtx_trigger_mode::normal);
     impl.trigger->level(rtx_quantity(2.5f, "V"));
     impl.trigger->slope(rtx_trigger_slope::rising);
 }
@@ -56,6 +60,8 @@ static void configure_par_default(
     using namespace PWROWG_NAMESPACE;
     assert(impl.trigger == nullptr);
     impl.trigger = std::make_unique<rtx_trigger>(channel, L"EDGE");
+    // Cf. rtx_sen_trg_bld_chan0::rtx_sen_trg_bld_chan0
+    impl.trigger->mode(rtx_trigger_mode::normal);
     impl.trigger->level(rtx_quantity(2.5f, "V"));
     impl.trigger->slope(rtx_trigger_slope::rising);
 }
@@ -120,6 +126,9 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0::rtx_sen_trg_bld_chan0(
         : _trigger(trigger) {
     assert(this->_trigger._impl != nullptr);
     assert(this->_trigger._impl->trigger != nullptr);
+    // Enforce "NORM" mode for the trigger, because "AUTO" will create spurious
+    // samples when the trigger timeout expires without a trigger event.
+    this->_trigger._impl->trigger->mode(rtx_trigger_mode::normal);
     this->_trigger._impl->daisy_chain = 2.5f;
 }
 
@@ -288,6 +297,15 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::raise_pins(
     _In_ const parallel_port_pin pins) {
     this->_trigger._impl->external_trigger_pins = pins;
     return this->_trigger;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_all
+ */
+PWROWG_NAMESPACE::rtx_sensor_trigger_builder
+PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_all(void) {
+    return rtx_sensor_trigger_builder();
 }
 
 

@@ -50,7 +50,6 @@
 #include <sensor_registry.h>
 #include <sensor_utilities.h>
 #include <setup_api.h>
-#include <string_functions.h>
 #include <tokenise.h>
 #include <transient_driver.h>
 

@@ -480,6 +480,12 @@ class POWER_OVERWHELMING_API rtx_sensor_trigger_builder final {
 public:
 
     /// <summary>
+    /// Creates a new builder for triggering all instruments similarly.
+    /// </summary>
+    /// <returns>A builder for configuring the trigger.</returns>
+    static rtx_sensor_trigger_builder for_all(void);
+
+    /// <summary>
     /// Creates a new builder for the first instrument matching the given query.
     /// </summary>
     /// <param name="query">The query to find the instrument, which should

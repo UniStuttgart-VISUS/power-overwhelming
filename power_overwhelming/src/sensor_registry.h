@@ -1,5 +1,5 @@
 ﻿// <copyright file="sensor_registry.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -21,6 +21,7 @@
 #include "visus/pwrowg/guid.h"
 #include "visus/pwrowg/sensor_array_configuration.h"
 #include "visus/pwrowg/sensor_description.h"
+#include "visus/pwrowg/string_functions.h"
 
 #include "adl_sensor.h"
 #include "detect_sample.h"
@@ -33,7 +34,6 @@
 #include "nvml_sensor.h"
 #include "powenetics_sensor.h"
 #include "sensor_array_configuration_impl.h"
-#include "string_functions.h"
 #include "tinkerforge_sensor.h"
 #include "type_list.h"
 #include "usb_pd_sensor.h"
@@ -311,7 +311,6 @@ typedef basic_sensor_registry<
 #if defined(_WIN32)
     // Windows-specific sensors
     emi_sensor,
-    //nvapi_sensor,
     usb_pd_sensor,
 #endif  /* defined(_WIN32) */
 
@@ -324,6 +323,9 @@ typedef basic_sensor_registry<
 #endif /* defined(POWER_OVERWHELMING_WITH_IGCL) */
     marker_sensor,
     msr_sensor,
+#if defined(POWER_OVERWHELMING_WITH_NVAPI)
+    nvapi_sensor,
+#endif /* defined(POWER_OVERWHELMING_WITH_NVAPI) */
 #if defined(POWER_OVERWHELMING_WITH_NVML)
     nvml_sensor,
 #endif /* defined(POWER_OVERWHELMING_WITH_NVML) */

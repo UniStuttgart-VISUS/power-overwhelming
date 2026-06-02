@@ -1,5 +1,5 @@
 // <copyright file="tinerforge_configuration.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -10,8 +10,8 @@
 #include <stdexcept>
 
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/string_functions.h"
 
-#include "string_functions.h"
 #include "tinkerforge_bricklet.h"
 #include "tinkerforge_scope.h"
 

@@ -35,20 +35,17 @@ enum class rtx_sensor_state : std::uint32_t {
     stop = 0x00000001,
 
     /// <summary>
-    /// Indicates that the trigger thread must not do anything, but that the
-    /// sensor is passively triggered by the configured signal on the
-    /// oscilloscope. This is typically not used, because it would measure
-    /// whenever the current or voltage exceeds a specific threshold. If this
-    /// flag is not set, the trigger thread will block on the condition variable
-    /// to wait for a trigger request from the user of the library.
+    /// Indicates that the worker thread should manually trigger a single
+    /// acquisition on the instrument(s).
     /// </summary>
-    passive = 0x00000002,
+    trigger = 0x00000002,
 
     /// <summary>
-    /// Indicates that the trigger thread should trigger the oscilloscope either
-    /// manually or via the parallel port.
+    /// Indicates that the instrument is busy retrieving the measurement data.
+    /// The instrument must not be manipulated by any other thread while this
+    /// flag is set.
     /// </summary>
-    trigger = 0x00000004
+    busy = 0x00000004
 };
 
 

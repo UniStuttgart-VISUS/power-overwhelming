@@ -8,12 +8,18 @@
 #define _PWROWG_RTX_CONFIGURATION_H
 #pragma once
 
+#include <chrono>
+#include <type_traits>
+
+#include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/guid.h"
 #include "visus/pwrowg/rtx_instrument.h"
+#include "visus/pwrowg/rtx_quantity.h"
 #include "visus/pwrowg/rtx_sensor_definition.h"
 #include "visus/pwrowg/rtx_instrument_configuration.h"
 #include "visus/pwrowg/rtx_sensor_trigger.h"
 #include "visus/pwrowg/sensor_configuration.h"
+#include "visus/pwrowg/string_functions.h"
 #include "visus/pwrowg/type_erased_storage.h"
 
 
@@ -50,6 +56,41 @@ public:
     /// Initialises a new instance.
     /// </summary>
     rtx_configuration(void);
+
+    /// <summary>
+    /// Answer the overall time range to be acquired when the sensor is
+    /// triggered.
+    /// </summary>
+    /// <returns>The string representation of the acquisition time range as it
+    /// is being set on the instrument.</returns>
+    const rtx_quantity& acquisition_range(void) const noexcept {
+        return this->_acquisition_range;
+    }
+
+    /// <summary>
+    /// Sets the overall time range to be acquired when the sensor is triggered.
+    /// </summary>
+    /// <param name="range">The acquisition time range in a form the instrument
+    /// accepts, for instance &quot;0.5 s&quot;.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    rtx_configuration& acquisition_range(_In_ const rtx_quantity& range) {
+        this->_acquisition_range = range;
+        return *this;
+    }
+
+    /// <summary>
+    /// Sets the overall time range to be acquired when the sensor is triggered.
+    /// </summary>
+    /// <typeparam name="TRep"></typeparam>
+    /// <typeparam name="TPeriod"></typeparam>
+    /// <param name="range"></param>
+    /// <returns></returns>
+    template<class TRep, class TPeriod>
+    inline rtx_configuration& acquisition_range(
+            _In_ const std::chrono::duration<TRep, TPeriod> range) {
+        this->_acquisition_range = range;
+        return *this;
+    }
 
     /// <summary>
     /// Adds a new sensor definition to the configuration.
@@ -134,77 +175,12 @@ public:
         = rtx_waveform_points::maximum);
 
     /// <summary>
-    /// Answer whether a non-default instrument configuration has been set that
-    /// should vbe applied to the oscilloscopes after resetting them.
-    /// </summary>
-    /// <remarks>
-    /// This property is <see langword="false" /> unless a configuration has
-    /// been set by the user. If no specific configuration has been set, the
-    /// instruments will remain in the default state after resetting, except for
-    /// the settings influenced by the sensor definition and the trigger
-    /// definition.
-    /// </remarks>
-    /// <returns><see langword="true" /> if the oscilloscopes should be
-    /// configured according to the provided user settings,
-    /// <see langword="false" /> otherwise.</returns>
-    inline bool configure_instruments(void) const noexcept {
-        return this->_configure_instruments;
-    }
-
-    /// <summary>
     /// Answer the number of sensors (voltage/current pairs) that have been
     /// configured.
     /// </summary>
     /// <returns>The number of configured sensors.</returns>
     std::size_t count_sensors(void) const noexcept;
 
-    /// <summary>
-    /// Gets the configuration that will be applied to the oscilloscopes at
-    /// startup. Depending on the trigger configuration, the oscilloscope that
-    /// is triggering might be configured differently from the other ones.
-    /// </summary>
-    /// <returns>The instrument configuration.</returns>
-    inline const rtx_instrument_configuration& instrument_configuration(
-            void) const noexcept {
-        return this->_instrument_configuration;
-    }
-
-    /// <summary>
-    /// Gets the configuration that will be applied to the oscilloscopes at
-    /// startup. Depending on the trigger configuration, the oscilloscope that
-    /// is triggering might be configured differently from the other ones.
-    /// </summary>
-    /// <returns>The instrument configuration.</returns>
-    inline rtx_instrument_configuration& instrument_configuration(
-            void) noexcept {
-        return this->_instrument_configuration;
-    }
-
-    /// <summary>
-    /// Sets a new default instrument configuration that will be applied to the
-    /// oscilloscopes at startup.
-    /// </summary>
-    /// <param name="config"></param>
-    /// <returns></returns>
-    inline rtx_configuration& instrument_configuration(
-            _In_ const rtx_instrument_configuration& config) {
-        this->_instrument_configuration = config;
-        this->_configure_instruments = true;
-        return *this;
-    }
-
-    /// <summary>
-    /// Sets a new default instrument configuration that will be applied to the
-    /// oscilloscopes at startup.
-    /// </summary>
-    /// <param name="config"></param>
-    /// <returns></returns>
-    inline rtx_configuration& instrument_configuration(
-            _Inout_ rtx_instrument_configuration&& config) noexcept {
-        this->_instrument_configuration = std::move(config);
-        this->_configure_instruments = true;
-        return *this;
-    }
 
     /// <summary>
     /// Indicates whether the oscilloscopes should be reset when enumerating the
@@ -305,8 +281,7 @@ public:
 
 private:
 
-    bool _configure_instruments;
-    rtx_instrument_configuration _instrument_configuration;
+    rtx_quantity _acquisition_range;
     bool _reset_on_enumerate;
     type_erased_storage _sensors;
     timeout_type _timeout;

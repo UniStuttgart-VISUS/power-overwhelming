@@ -19,10 +19,10 @@
 
 #include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/string_functions.h"
 #include "visus/pwrowg/visa_event_handler.h"
 #include "visus/pwrowg/visa_instrument.h"
 
-#include "string_functions.h"
 #include "visa_error_category.h"
 #include "visa_event_handler.h"
 #include "visa_library.h"
@@ -316,6 +316,14 @@ public:
     /// template is OK as it is not used here.</para>
     /// </remarks>
     void throw_on_system_error(void) const;
+
+    /// <summary>
+    /// Tries reading everything that is currently in the input buffer.
+    /// </summary>
+    /// <param name="buffer"></param>
+    /// <returns><see cref="true" /> if the read operation completed
+    /// successfully, <see cref="false" /> if an error occurred.</returns>
+    bool try_read_all(_Inout_ blob& buffer) const;
 
     /// <summary>
     /// Tries reading the status byte of the instrument.

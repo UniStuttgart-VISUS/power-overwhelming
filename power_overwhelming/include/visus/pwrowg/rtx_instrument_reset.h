@@ -50,6 +50,12 @@ enum class rtx_instrument_reset : std::uint64_t {
     stop = 0x0004,
 
     /// <summary>
+    /// Instructs the software to trigger the device before the reset to release
+    /// all threads potentially waiting for a trigger.
+    /// </summary>
+    trigger = 0x0008,
+
+    /// <summary>
     /// All possible things that we can reset right now and possibly in
     /// the future ...
     /// </summary>

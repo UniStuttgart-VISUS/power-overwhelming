@@ -7,6 +7,10 @@
 #if defined(POWER_OVERWHELMING_WITH_VISA)
 #include "pch.h"
 
+#include <visus/pwrowg/rtx_instrument.h>
+
+#include <usb_reset.h>
+
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 
@@ -601,6 +605,19 @@ public:
             //instrument.event_status()
         }
     }
+
+    // This cannot be tested as it requires elevation.
+    //TEST_METHOD(test_reset_usb_device) {
+    //    std::vector<rtx_instrument> instruments(rtx_instrument::all(nullptr, 0));
+    //    const auto cnt = rtx_instrument::all(instruments.data(), instruments.size());
+    //    instruments.resize((std::min)(instruments.size(), cnt));
+
+    //    if (!instruments.empty()) {
+    //        auto instance = detail::get_instance_id(instruments.front());
+    //        instruments.clear();
+    //        detail::reset_usb_device(instance.c_str());
+    //    }
+    //}
 };
 
 PWROWG_TEST_NAMESPACE_END

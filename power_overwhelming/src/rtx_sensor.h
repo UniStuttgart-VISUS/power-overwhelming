@@ -6,16 +6,15 @@
 
 #pragma once
 
-#include <limits>
 #include <list>
 #include <string>
 #include <thread>
 #include <vector>
 
 #include "visus/pwrowg/convert_string.h"
-#include "visus/pwrowg/rtx_instrument.h"
 #include "visus/pwrowg/rtx_configuration.h"
 #include "visus/pwrowg/sensor_filters.h"
+#include "visus/pwrowg/string_functions.h"
 #include "visus/pwrowg/thread_name.h"
 #include "visus/pwrowg/trace.h"
 
@@ -23,7 +22,6 @@
 #include "sensor_description_builder.h"
 #include "sensor_utilities.h"
 #include "sensor_state.h"
-#include "string_functions.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -159,13 +157,9 @@ private:
 
     std::vector<std::string> _channels;
     std::size_t _index;
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    std::vector<rtx_instrument> _instruments;
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     const sensor_array_impl *_owner;
     std::thread _thread;
     rtx_sensor_trigger _trigger;
-    std::size_t _trigger_index;
 };
 
 #include "rtx_sensor.inl"

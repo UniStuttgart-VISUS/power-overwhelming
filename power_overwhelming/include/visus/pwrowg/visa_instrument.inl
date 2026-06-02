@@ -46,9 +46,9 @@ PWROWG_NAMESPACE::visa_instrument::on_operation_complete(
 /*
  * PWROWG_NAMESPACE::visa_instrument::write
  */
-template<class TChar>
+template<class TChar, class TTraits, class TAlloc>
 const PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::write(
-        _In_ const std::basic_string<TChar>& str) const {
+        _In_ const std::basic_string<TChar, TTraits, TAlloc>& str) const {
     return this->write(str.c_str());
 }

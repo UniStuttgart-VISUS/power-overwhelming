@@ -6,7 +6,7 @@
 
 #include "visus/pwrowg/msr_configuration.h"
 
-#include "string_functions.h"
+#include "visus/pwrowg/string_functions.h"
 
 /*
  * PWROWG_NAMESPACE::msr_configuration::id

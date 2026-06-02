@@ -11,6 +11,7 @@
 #include <atomic>
 #include <cinttypes>
 #include <condition_variable>
+#include <limits>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -18,6 +19,7 @@
 #include "visus/pwrowg/atomic_utilities.h"
 #include "visus/pwrowg/parallel_port_trigger.h"
 #include "visus/pwrowg/rtx_acquisition.h"
+#include "visus/pwrowg/rtx_instrument.h"
 #include "visus/pwrowg/rtx_trigger.h"
 
 #include "rtx_sensor_state.h"
@@ -36,10 +38,10 @@ struct rtx_sensor_trigger_impl final {
     /// </summary>
     rtx_acquisition acquisition;
 
-    /// <summary>
-    /// A condition variable for signalling the worker thread.
-    /// </summary>
-    std::condition_variable condition;
+    ///// <summary>
+    ///// A condition variable for signalling the worker thread.
+    ///// </summary>
+    //std::condition_variable condition;
 
     /// <summary>
     /// If positive, the oscilloscopes will be assumed to be daisy-chained even
@@ -68,10 +70,12 @@ struct rtx_sensor_trigger_impl final {
     /// </summary>
     parallel_port_pin external_trigger_pins;
 
-    /// <summary>
-    /// A lock for the <see cref="condition" />.
-    /// </summary>
-    std::mutex lock;
+    std::vector<rtx_instrument> instruments;
+
+    ///// <summary>
+    ///// A lock for the <see cref="condition" />.
+    ///// </summary>
+    //std::mutex lock;
 
     /// <summary>
     /// The path to the oscilloscope used for triggering.
@@ -94,7 +98,7 @@ struct rtx_sensor_trigger_impl final {
     /// Therefore, the <see cref="rtx_sensor_trigger" /> must have access to the
     /// state.
     /// </remarks>
-    rtx_sensor_state state;
+    alignas(false_sharing_range) std::atomic<rtx_sensor_state> state;
 
     /// <summary>
     /// The trigger configuration to apply to the oscilloscope identified by the
@@ -102,7 +106,13 @@ struct rtx_sensor_trigger_impl final {
     /// <see langword="nullptr" />, the oscilloscope will be triggered
     /// programmatically by starting the acquisition manually.
     /// </summary>
-    std::unique_ptr<rtx_trigger> trigger;
+    alignas(false_sharing_range) std::unique_ptr<rtx_trigger> trigger;
+
+    /// <summary>
+    /// The index of the instrument to be triggered manually if there is a
+    /// daisy chain in place.
+    /// </summary>
+    std::size_t trigger_instrument;
 
     ///// <summary>
     ///// Allocates aligned memory for a new object.
@@ -135,7 +145,8 @@ struct rtx_sensor_trigger_impl final {
         external_trigger_duration(100),
         external_trigger_pins(parallel_port_pin::data),
         references(1),
-        state(rtx_sensor_state::running) { }
+        state(rtx_sensor_state::running),
+        trigger_instrument((std::numeric_limits<std::size_t>::max)()) { }
 };
 
 PWROWG_DETAIL_NAMESPACE_END

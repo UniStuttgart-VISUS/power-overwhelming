@@ -11,8 +11,7 @@
 
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/rtx_instrument.h"
-
-#include "string_functions.h"
+#include "visus/pwrowg/string_functions.h"
 
 
 static constexpr const char *error_description = "The description of an "

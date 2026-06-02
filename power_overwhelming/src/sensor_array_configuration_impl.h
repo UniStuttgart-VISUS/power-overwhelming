@@ -31,7 +31,7 @@ struct sensor_array_configuration_impl final {
     typedef std::unique_ptr<sensor_configuration> sensor_config;
 
     /// <summary>
-    /// An ampty sampler callback, which is user as the default, that does
+    /// An empty sampler callback, which is user as the default, that does
     /// nothing.
     /// </summary>
     /// <param name=""></param>

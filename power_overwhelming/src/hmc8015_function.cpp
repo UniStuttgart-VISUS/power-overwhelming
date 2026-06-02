@@ -1,5 +1,5 @@
 ﻿// <copyright file="hmc8015_function.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -9,8 +9,7 @@
 #include <stdexcept>
 
 #include "visus/pwrowg/convert_string.h"
-
-#include "string_functions.h"
+#include "visus/pwrowg/string_functions.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN

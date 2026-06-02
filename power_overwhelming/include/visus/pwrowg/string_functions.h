@@ -1,5 +1,5 @@
 // <copyright file="string_functions.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -45,7 +45,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <returns>A negative number, if <paramref name="lhs" /> is smaller, a
 /// positive number if it is larger and zero if both strings are the same.
 /// </returns>
-extern PWROWG_TEST_API int compare(_In_opt_z_ const char *lhs,
+extern POWER_OVERWHELMING_API int compare(_In_opt_z_ const char *lhs,
     _In_opt_z_ const char *rhs, _In_ const bool ignore_case = false);
 
 /// <summary>
@@ -64,7 +64,7 @@ extern PWROWG_TEST_API int compare(_In_opt_z_ const char *lhs,
 /// <returns>A negative number, if <paramref name="lhs" /> is smaller, a
 /// positive number if it is larger and zero if both strings are the same.
 /// </returns>
-extern PWROWG_TEST_API int compare(_In_opt_z_ const wchar_t *lhs,
+extern POWER_OVERWHELMING_API int compare(_In_opt_z_ const wchar_t *lhs,
     _In_opt_z_ const wchar_t *rhs, _In_ const bool ignore_case = false);
 
 /// <summary>
@@ -83,7 +83,7 @@ extern PWROWG_TEST_API int compare(_In_opt_z_ const wchar_t *lhs,
 /// both strings must match exactly.</param>
 /// <returns><c>true</c> if the string was found, <c>false</c> otherwise.
 /// </returns>
-extern PWROWG_TEST_API bool contains(_In_opt_z_ const wchar_t *haystack,
+extern POWER_OVERWHELMING_API bool contains(_In_opt_z_ const wchar_t *haystack,
     _In_opt_z_ const wchar_t *needle, _In_ const bool ignore_case = false);
 
 /// <summary>
@@ -125,8 +125,7 @@ bool copy_string(_When_(dst != nullptr, _Out_writes_opt_(cnt)) TChar *dst,
 /// strings must match exactly.</param>
 /// <returns><c>true</c> if both strings are equal, <c>false</c> otherwise.
 /// </returns>
-inline PWROWG_TEST_API bool equals(_In_opt_z_ const char *lhs,
-        _In_opt_z_ const char *rhs,
+inline bool equals(_In_opt_z_ const char *lhs, _In_opt_z_ const char *rhs,
         _In_ const bool ignore_case = false) {
     return (compare(lhs, rhs, ignore_case) == 0);
 }
@@ -150,8 +149,7 @@ inline PWROWG_TEST_API bool equals(_In_opt_z_ const char *lhs,
 /// strings must match exactly.</param>
 /// <returns><c>true</c> if both strings are equal, <c>false</c> otherwise.
 /// </returns>
-inline PWROWG_TEST_API bool equals(_In_opt_z_ const wchar_t *lhs,
-        _In_opt_z_ const wchar_t *rhs,
+inline bool equals(_In_opt_z_ const wchar_t *lhs, _In_opt_z_ const wchar_t *rhs,
         _In_ const bool ignore_case = false) {
     return (compare(lhs, rhs, ignore_case) == 0);
 }
@@ -261,7 +259,7 @@ std::string format_string(_In_z_ const char *format, TArgs&&... args);
 /// <param name="str">The string to be parsed.</param>
 /// <returns>The number represented by the given string or zero in case
 /// the string does not represent a number.</returns>
-extern PWROWG_TEST_API float parse_float(_In_opt_z_ const char *str);
+extern POWER_OVERWHELMING_API float parse_float(_In_opt_z_ const char *str);
 
 /// <summary>
 /// Parse the given text as signed integer number.
@@ -272,7 +270,7 @@ extern PWROWG_TEST_API float parse_float(_In_opt_z_ const char *str);
 /// <param name="str">The string to be parsed.</param>
 /// <returns>The number represented by the given string or zero in case
 /// the string does not represent a number.</returns>
-extern PWROWG_TEST_API  int parse_int(_In_opt_z_ const char *str);
+extern POWER_OVERWHELMING_API int parse_int(_In_opt_z_ const char *str);
 
 /// <summary>
 /// Parse the given text as unsigned integer number.
@@ -283,7 +281,8 @@ extern PWROWG_TEST_API  int parse_int(_In_opt_z_ const char *str);
 /// <param name="str">The string to be parsed.</param>
 /// <returns>The number represented by the given string or zero in case
 /// the string does not represent a number.</returns>
-extern PWROWG_TEST_API  unsigned int parse_uint(_In_opt_z_ const char *str);
+extern POWER_OVERWHELMING_API unsigned int parse_uint(
+    _In_opt_z_ const char *str);
 
 /// <summary>
 /// Remove all white-space characters from <paramref name="str" />.
@@ -458,7 +457,7 @@ template<class TChar> void safe_assign(_Inout_opt_z_ TChar *& dst,
 /// <c>nullptr</c>.</param>
 /// <exception cref="std::bad_alloc">If the memory for
 /// <paramref name="dst" /> could not be allocated.</exception>
-_Ret_maybenull_z_ PWROWG_TEST_API wchar_t *safe_duplicate(
+_Ret_maybenull_z_ POWER_OVERWHELMING_API wchar_t *safe_duplicate(
     _In_opt_z_ const wchar_t *src);
 
 /// <summary>
@@ -472,7 +471,7 @@ _Ret_maybenull_z_ PWROWG_TEST_API wchar_t *safe_duplicate(
 /// <c>nullptr</c>.</param>
 /// <exception cref="std::bad_alloc">If the memory for
 /// <paramref name="dst" /> could not be allocated.</exception>
-_Ret_maybenull_z_ PWROWG_TEST_API char *safe_duplicate(
+_Ret_maybenull_z_ POWER_OVERWHELMING_API char *safe_duplicate(
     _In_opt_z_ const char *src);
 
 /// <summary>
@@ -494,7 +493,8 @@ _Ret_maybenull_z_ PWROWG_TEST_API char *safe_duplicate(
 /// both strings must match exactly.</param>
 /// <returns><c>true</c> if both strings have the same prefix,
 /// <c>false</c> otherwise.</returns>
-PWROWG_TEST_API bool starts_with(_In_opt_z_ const char *str,
+POWER_OVERWHELMING_API bool starts_with(
+    _In_opt_z_ const char *str,
     _In_opt_z_ const char *start,
     _In_ const bool ignore_case = false);
 
@@ -517,7 +517,8 @@ PWROWG_TEST_API bool starts_with(_In_opt_z_ const char *str,
 /// both strings must match exactly.</param>
 /// <returns><c>true</c> if both strings have the same prefix,
 /// <c>false</c> otherwise.</returns>
-PWROWG_TEST_API bool starts_with(_In_opt_z_ const wchar_t *str,
+POWER_OVERWHELMING_API bool starts_with(
+    _In_opt_z_ const wchar_t *str,
     _In_opt_z_ const wchar_t *start,
     _In_ const bool ignore_case = false);
 

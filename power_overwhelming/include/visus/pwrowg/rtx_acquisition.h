@@ -9,7 +9,6 @@
 #pragma once
 
 #include "visus/pwrowg/rtx_acquisition_state.h"
-#include "visus/pwrowg/api.h"
 
 
 PWROWG_NAMESPACE_BEGIN

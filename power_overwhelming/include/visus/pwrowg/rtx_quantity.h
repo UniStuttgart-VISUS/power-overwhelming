@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_quantity.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -8,9 +8,11 @@
 #define _PWROWG_RTX_QUANTITY_H
 #pragma once
 
+#include <chrono>
 #include <cinttypes>
+#include <type_traits>
 
-#include "visus/pwrowg/api.h"
+#include "visus/pwrowg/string_functions.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -48,9 +50,16 @@ public:
         _In_opt_z_ const char *unit = nullptr);
 
     /// <summary>
-    /// Finalises the instance.
+    /// Initialises a new instance.
     /// </summary>
-    ~rtx_quantity(void);
+    /// <remarks>
+    /// This constructor allows for implicit conversion of STL durations.
+    /// </remarks>
+    /// <typeparam name="TRep"></typeparam>
+    /// <typeparam name="TPeriod"></typeparam>
+    /// <param name="value"></param>
+    template<class TRep, class TPeriod>
+    rtx_quantity(_In_ const std::chrono::duration<TRep, TPeriod> value);
 
     /// <summary>
     /// Clone <paramref name="rhs" />.
@@ -63,6 +72,11 @@ public:
     /// </summary>
     /// <param name="rhs">The object to be moved.</param>
     rtx_quantity(_Inout_ rtx_quantity&& rhs) noexcept;
+
+    /// <summary>
+    /// Finalises the instance.
+    /// </summary>
+    ~rtx_quantity(void);
 
     /// <summary>
     /// Gets the unit of the quantity.
@@ -111,5 +125,7 @@ private:
 };
 
 PWROWG_NAMESPACE_END
+
+#include "visus/pwrowg/rtx_quantity.inl"
 
 #endif /* !defined(_PWROWG_RTX_QUANTITY_H) */

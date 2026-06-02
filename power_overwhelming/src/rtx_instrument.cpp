@@ -14,8 +14,8 @@
 #include <random>
 
 #include "visus/pwrowg/on_exit.h"
+#include "visus/pwrowg/string_functions.h"
 
-#include "string_functions.h"
 #include "visa_instrument_impl.h"
 #include "visa_timeout_override.h"
 
@@ -224,21 +224,7 @@ PWROWG_NAMESPACE::rtx_instrument::acquisition(void) const {
     auto seg = this->query("ACQ:SEGM:STAT?\n");
     retval.segmented(!detail::starts_with(aut.as<char>(), "0"));
 
-    auto state = this->query("ACQ:STAT?\n");
-    if (detail::starts_with(state.as<char>(), "RUN")) {
-        retval.state(rtx_acquisition_state::run);
-    } else if (detail::starts_with(state.as<char>(), "STOP")) {
-        retval.state(rtx_acquisition_state::stop);
-    } else if (detail::starts_with(state.as<char>(), "COMP")) {
-        // COMPleted == STOP
-        retval.state(rtx_acquisition_state::stop);
-    } else if (detail::starts_with(state.as<char>(), "SING")) {
-        retval.state(rtx_acquisition_state::single);
-    } else if (detail::starts_with(state.as<char>(), "BREAK")) {
-        retval.state(rtx_acquisition_state::interrupt);
-    } else {
-        retval.state(rtx_acquisition_state::unknown);
-    }
+    retval.state(this->acquisition_state());
 
     return retval;
 }
@@ -249,8 +235,7 @@ PWROWG_NAMESPACE::rtx_instrument::acquisition(void) const {
  */
 PWROWG_NAMESPACE::rtx_instrument&
 PWROWG_NAMESPACE::rtx_instrument::acquisition(
-        _In_ const rtx_acquisition& acquisition,
-        _In_ const bool wait) {
+        _In_ const rtx_acquisition& acquisition) {
     auto& impl = this->check_not_disposed();
 
     if (acquisition.automatic_points()) {
@@ -264,7 +249,7 @@ PWROWG_NAMESPACE::rtx_instrument::acquisition(
     impl.format("ACQ:SEGM:STAT %s\n", acquisition.segmented() ? "ON" : "OFF");
 
     if (acquisition.state() != rtx_acquisition_state::unknown) {
-        this->acquisition(acquisition.state(), wait);
+        this->acquisition(acquisition.state());
     }
 
     return *this;
@@ -276,30 +261,18 @@ PWROWG_NAMESPACE::rtx_instrument::acquisition(
  */
 const PWROWG_NAMESPACE::rtx_instrument&
 PWROWG_NAMESPACE::rtx_instrument::acquisition(
-        _In_ const rtx_acquisition_state state,
-        _In_ const bool wait) const {
+        _In_ const rtx_acquisition_state state) const {
     switch (state) {
         case rtx_acquisition_state::run:
             this->write("ACQ:STAT RUN\n");
             break;
 
         case rtx_acquisition_state::stop:
-            if (wait) {
-                this->query("ACQ:STAT STOP; *OPC?\n");
-            } else {
-                this->write("ACQ:STAT STOP\n");
-            }
+            this->write("ACQ:STAT STOP\n");
             break;
 
         case rtx_acquisition_state::single:
-            if (wait) {
-                this->query("SING; *OPC?\n");
-            } else {
-                this->write("SING\n");
-            }
-            // TODO: The above does not work reliably.
-            //this->write("SING\n");
-            //this->query("*OPC?\n");
+            this->write("SING\n");
             break;
 
         case rtx_acquisition_state::interrupt:
@@ -311,6 +284,33 @@ PWROWG_NAMESPACE::rtx_instrument::acquisition(
     return *this;
 }
 
+
+/*
+ * PWROWG_NAMESPACE::rtx_instrument::acquisition_state
+ */
+PWROWG_NAMESPACE::rtx_acquisition_state
+PWROWG_NAMESPACE::rtx_instrument::acquisition_state(void) const {
+    auto state = this->query("ACQ:STAT?\n");
+    if (detail::starts_with(state.as<char>(), "RUN", true)) {
+        return rtx_acquisition_state::run;
+
+    } else if (detail::starts_with(state.as<char>(), "STOP", true)) {
+        return rtx_acquisition_state::stop;
+
+    } else if (detail::starts_with(state.as<char>(), "COMP", true)) {
+        // COMPleted == STOP
+        return rtx_acquisition_state::stop;
+
+    } else if (detail::starts_with(state.as<char>(), "SING")) {
+        return rtx_acquisition_state::single;
+
+    } else if (detail::starts_with(state.as<char>(), "BREAK")) {
+        return rtx_acquisition_state::interrupt;
+
+    } else {
+        return rtx_acquisition_state::unknown;
+    }
+}
 
 #if false
 // TODO: disabled, because long queries reproducibly cause an I/O error.
@@ -942,7 +942,7 @@ PWROWG_NAMESPACE::rtx_instrument::data(
             } catch (...) {
                 impl.write("*CLS; *OPC?\n");
                 blob junk;
-                impl.read_all(junk);
+                impl.try_read_all(junk);
                 has_next = false;
             }
         }
@@ -1167,13 +1167,20 @@ PWROWG_NAMESPACE::rtx_instrument&
 PWROWG_NAMESPACE::rtx_instrument::reset(
         _In_ const rtx_instrument_reset flags) {
     typedef rtx_instrument_reset flags_type;
+    if ((flags & flags_type::trigger) == flags_type::trigger) {
+        try {
+            this->trigger_manually();
+        } catch (...) { /* This might fail buffers are not clear. */ }
+    }
+
     visa_instrument::reset(
         (flags & flags_type::buffers) == flags_type::buffers,
         (flags & flags_type::status) == flags_type::status);
 
     if ((flags & flags_type::stop) == flags_type::stop) {
         try {
-            this->acquisition(rtx_acquisition_state::interrupt, true);
+            this->acquisition(rtx_acquisition_state::interrupt)
+                .operation_complete();
         } catch (...) { /* This is non-fatal if nothing was going on. */ }
     }
 
@@ -1518,14 +1525,8 @@ PWROWG_NAMESPACE::rtx_instrument::trigger_output(void) const {
  * PWROWG_NAMESPACE::rtx_instrument::trigger_manually
  */
 PWROWG_NAMESPACE::rtx_instrument&
-PWROWG_NAMESPACE::rtx_instrument::trigger_manually(
-        _In_ const bool wait) {
-    if (wait) {
-        this->query("*TRG; *OPC?\n");
-    } else {
-        this->check_not_disposed().write("*TRG\n");
-    }
-
+PWROWG_NAMESPACE::rtx_instrument::trigger_manually() {
+    this->check_not_disposed().write("*TRG\n");
     return *this;
 }
 

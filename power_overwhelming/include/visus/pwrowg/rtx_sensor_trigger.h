@@ -88,13 +88,17 @@ public:
     /// <remarks>
     /// <para>This method must not be called on moved instances. The
     /// implementation will only assert this in debug builds.</para>
+    /// <para>The operation happening here depends on the configuration of the
+    /// trigger:</para>
     /// </remarks>
     void acquire(void);
 
     /// <summary>
     /// Answer the path the oscilloscope to be configured as the trigger source.
     /// </summary>
-    /// <returns>The VISA path to the oscilloscope.</returns>
+    /// <returns>The VISA path to the oscilloscope. If this is an empty string,
+    /// all instruments should be set up similarly.
+    /// </returns>
     _Ret_z_ const char *path(void) const noexcept;
 
     /// <summary>

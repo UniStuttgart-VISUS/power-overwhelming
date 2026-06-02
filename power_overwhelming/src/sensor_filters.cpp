@@ -8,8 +8,8 @@
 
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/hmc8015_instrument.h"
+#include "visus/pwrowg/string_functions.h"
 
-#include "string_functions.h"
 
 
 /*

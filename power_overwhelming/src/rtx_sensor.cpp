@@ -67,10 +67,9 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
                 }
 
                 try {
-                    std::string query("CHAN");
-                    query += std::to_string(c.channel());
-                    query += ":LAB?\n";
-                    return !instrument.query(query).empty();
+                    auto label = instrument.write("CHAN%u:LAB?\n", c.channel())
+                        .read_all();
+                    return !label.empty();
                 } catch (...) {
                     PWROWG_TRACE("Failed to configure channel %u on instrument "
                         "\"%s\".", c.channel(), instrument.path());
@@ -160,13 +159,14 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample(_In_ const bool enable) {
         }
 
     } else {
+        PWROWG_TRACE(_T("Signalling the RTX sensor controller to stop."));
+        set_state(this->_trigger._impl->state, rtx_sensor_state::stop);
+
         if (this->_thread.joinable()) {
-            PWROWG_TRACE(_T("Signalling the RTX sensor controller to exit."));
-            {
-                PWROWG_UNIQUE_LOCK(this->_trigger._impl->lock);
-                set_state(this->_trigger._impl->state, rtx_sensor_state::stop);
+            for (auto& i : this->_trigger._impl->instruments) {
+                PWROWG_TRACE("Unlocking instrument \"%s\".", i.path());
+                i.operation_complete_async();
             }
-            this->_trigger._impl->condition.notify_all();
 
             PWROWG_TRACE(_T("Waiting for the RTX sensor controller to exit."));
             this->_thread.join();
@@ -184,49 +184,58 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     assert(this->_trigger._impl != nullptr);
     auto& trigger = *this->_trigger._impl;
+    auto& instruments = trigger.instruments;
     PWROWG_TRACE(_T("The RTX sensor controller thread has started."));
 
-    while (true) {
-        PWROWG_NAMED_UNIQUE_LOCK(lock, trigger.lock);
-        if (!check_state(trigger.state, rtx_sensor_state::passive)) {
-            PWROWG_TRACE(_T("RTX sensor controller waits to be signalled."));
-            trigger.condition.wait(lock);
-        }
-
-        if (check_state(trigger.state, rtx_sensor_state::stop)) {
-            PWROWG_TRACE(_T("RTX sensor controller thread is stopping."));
-            trigger.state = rtx_sensor_state::running;
-            return;
-        }
-
-        if (check_state(trigger.state, rtx_sensor_state::trigger)) {
-            if (trigger.external_trigger) {
-                PWROWG_TRACE(_T("Triggering by raising parallel port pins %u ")
-                    _T("for %u ms."), trigger.external_trigger_pins,
-                    trigger.external_trigger_duration);
-                trigger.external_trigger.pulse(
-                    trigger.external_trigger_pins,
-                    trigger.external_trigger_duration);
-
-            } else if (this->_trigger_index < this->_instruments.size()) {
-                PWROWG_TRACE(_T("Triggering manually via daisy chain."));
-                assert(trigger.daisy_chain > 0.0f);
-                this->_instruments[this->_trigger_index].acquisition(
-                    rtx_acquisition_state::single);
-
-            } else {
-                PWROWG_TRACE(_T("Triggering all instruments manually."));
-                for (auto& i : this->_instruments) {
-                    i.acquisition(rtx_acquisition_state::single);
+    while (!check_state(trigger.state, rtx_sensor_state::stop)) {
+        for (auto& i : instruments) {
+            try {
+                if (i.wait_status(visa_event_status::operation_complete)) {
+                    //i.data(rtx_waveform_points::maximum)
                 }
-            }
+            } catch (...) {}
+
+            //if (!i.wait(VI_EVENT_TRIG, 1000)) {
+            //    continue;
+            //}
         }
 
-        for (auto& i : this->_instruments) {
-            if (!i.wait(VI_EVENT_TRIG, 1000)) {
-                continue;
-            }
-        }
+        //PWROWG_NAMED_UNIQUE_LOCK(lock, trigger.lock);
+        //if (!check_state(trigger.state, rtx_sensor_state::passive)) {
+        //    PWROWG_TRACE(_T("RTX sensor controller waits to be signalled."));
+        //    trigger.condition.wait(lock);
+        //}
+
+        //if (check_state(trigger.state, rtx_sensor_state::stop)) {
+        //    PWROWG_TRACE(_T("RTX sensor controller thread is stopping."));
+        //    trigger.state = rtx_sensor_state::running;
+        //    return;
+        //}
+
+        //if (check_state(trigger.state, rtx_sensor_state::trigger)) {
+        //    if (trigger.external_trigger) {
+        //        PWROWG_TRACE(_T("Triggering by raising parallel port pins %u ")
+        //            _T("for %u ms."), trigger.external_trigger_pins,
+        //            trigger.external_trigger_duration);
+        //        trigger.external_trigger.pulse(
+        //            trigger.external_trigger_pins,
+        //            trigger.external_trigger_duration);
+
+        //    } else if (this->_trigger_index < this->_instruments.size()) {
+        //        PWROWG_TRACE(_T("Triggering manually via daisy chain."));
+        //        assert(trigger.daisy_chain > 0.0f);
+        //        this->_instruments[this->_trigger_index].acquisition(
+        //            rtx_acquisition_state::single);
+
+        //    } else {
+        //        PWROWG_TRACE(_T("Triggering all instruments manually."));
+        //        for (auto& i : this->_instruments) {
+        //            i.acquisition(rtx_acquisition_state::single);
+        //        }
+        //    }
+        //}
+
+
 
         //if (check_state(trigger.state, rtx_sensor_state::)) {
         //    PWROWG_TRACE(_T("RTX sensor controller thread is stopping."));

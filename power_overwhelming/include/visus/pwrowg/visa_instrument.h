@@ -18,6 +18,7 @@
 
 #include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/multi_sz.h"
+#include "visus/pwrowg/string_functions.h"
 #include "visus/pwrowg/visa_event_handler.h"
 #include "visus/pwrowg/visa_event_status.h"
 #include "visus/pwrowg/visa_object.h"
@@ -1207,6 +1208,29 @@ public:
     }
 
     /// <summary>
+    /// Blocks until the instrument signals a service request and repeats until
+    /// the service request indicates a
+    /// <see cref="visa_status_byte::master_status" /> event. If the specified
+    /// <paramref name="status" /> is not set in the STB, the operation is
+    /// repeated.
+    /// </summary>
+    /// <remarks>
+    /// The events in question must have been enabled before this method can be
+    /// called.
+    /// </remarks>
+    /// <param name="status">The status bit to wait for. If this is
+    /// <see cref="visa_event_status::none" /> or an event status that has not
+    /// been enabled, the method might never return.</param>
+    /// <param name="timeout">The timeout in milliseconds. If this parameter is
+    /// set to <c>VI_TMO_IMMEDIATE</c>, the method can be used to dequeue a
+    /// single event. If the parameter is <c>VI_TMO_INFINITE</c>, the method
+    /// blocks indefinitely. This is the default behaviour.</param>
+    /// <returns><see langword="true "/> if the OPC event was successuflly
+    /// awaited, <see langword="false" /> if the method timed out.</returns>
+    bool wait_status(_In_ const visa_event_status status,
+        _In_ const timeout_type timeout = VI_TMO_INFINITE);
+
+    /// <summary>
     /// Write at most <paramref name="cnt" /> bytes of the given data to the
     /// instrument.
     /// </summary>
@@ -1285,14 +1309,62 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If the operation failed. Note that
+    /// <exception cref="std::system_error">If the operation failed. Note that
     /// a failure here only refers to the use of the API, ie the instrument
     /// can be in a failed state even if the call succeeded. Use
     /// <see cref="throw_on_system_error" /> to check the internal state of
     /// the instrument after the call.</exception>
-    template<class TChar>
+    template<class TChar, class TTraits, class TAlloc>
     const visa_instrument& write(
-        _In_ const std::basic_string<TChar>& str) const;
+        _In_ const std::basic_string<TChar, TTraits, TAlloc>& str) const;
+
+    /// <summary>
+    /// Writes the given formatted data to the instrument.
+    /// </summary>
+    /// <typeparam name="TArgs">The types of the arguments to format.
+    /// </typeparam>
+    /// <param name="fmt">The format string.</param>
+    /// <param name="args">The arguments to format.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    /// <exception cref="sts::invalid_argument">If <paramref name="fmt" /> is
+    /// <see langword="nullptr" />.</exception>
+    /// <exception cref="std::runtime_error">If the method is called on an
+    /// object that has been disposed by moving it.</exception>
+    /// <exception cref="std::system_error">If the operation failed. Note that
+    /// a failure here only refers to the use of the API, ie the instrument
+    /// can be in a failed state even if the call succeeded. Use
+    /// <see cref="throw_on_system_error" /> to check the internal state of
+    /// the instrument after the call.</exception>
+    template<class... TArgs> inline const visa_instrument& write(
+            _In_z_ const char *fmt,
+            _In_ TArgs&&... args) const {
+        const auto s = detail::format_string(fmt, std::forward<TArgs>(args)...);
+        return this->write(s.c_str());
+    }
+
+    /// <summary>
+    /// Writes the given formatted data to the instrument.
+    /// </summary>
+    /// <typeparam name="TArgs">The types of the arguments to format.
+    /// </typeparam>
+    /// <param name="fmt">The format string.</param>
+    /// <param name="args">The arguments to format.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    /// <exception cref="sts::invalid_argument">If <paramref name="fmt" /> is
+    /// <see langword="nullptr" />.</exception>
+    /// <exception cref="std::runtime_error">If the method is called on an
+    /// object that has been disposed by moving it.</exception>
+    /// <exception cref="std::system_error">If the operation failed. Note that
+    /// a failure here only refers to the use of the API, ie the instrument
+    /// can be in a failed state even if the call succeeded. Use
+    /// <see cref="throw_on_system_error" /> to check the internal state of
+    /// the instrument after the call.</exception>
+    template<class... TArgs> inline const visa_instrument& write(
+            _In_z_ const wchar_t *fmt,
+            _In_ TArgs&&... args) const {
+        const auto s = detail::format_string(fmt, std::forward<TArgs>(args)...);
+        return this->write(s.c_str());
+    }
 
     /// <summary>
     /// Write the given data to the instrument.

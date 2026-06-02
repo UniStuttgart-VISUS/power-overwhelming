@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_waveform.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // <author>Christoph Müller</author>
 
@@ -10,7 +10,8 @@
 #include <ctime>
 #include <memory>
 
-#include "string_functions.h"
+#include "visus/pwrowg/string_functions.h"
+
 #include "tokenise.h"
 
 

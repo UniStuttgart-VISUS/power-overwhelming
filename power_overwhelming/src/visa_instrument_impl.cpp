@@ -472,8 +472,7 @@ void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::throw_on_system_error(
     // something in the queue to retrieve.
     const auto status = this->read_status_byte();
 
-    if ((status & visa_status_byte::error_queue_not_empty)
-            == visa_status_byte::none) {
+    if (!(status && visa_status_byte::error_queue_not_empty)) {
         // If the error queue is empty, do not retrieve the status.
         return;
     }
@@ -497,6 +496,20 @@ void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::throw_on_system_error(
     }
 
     throw std::runtime_error(message);
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::try_read_all
+ */
+bool PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::try_read_all(
+        _Inout_ blob& buffer) const {
+    try {
+        this->read_all(buffer);
+        return true;
+    } catch (...) {
+        return false;
+    }
 }
 
 

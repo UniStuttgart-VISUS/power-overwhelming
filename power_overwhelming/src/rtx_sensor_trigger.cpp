@@ -52,16 +52,38 @@ PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
 void PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(void) {
     assert(this->_impl != nullptr);
 
-    if ((this->_impl->trigger == nullptr) || this->_impl->external_trigger) {
-        PWROWG_TRACE(_T("Instructing the Sensor controller thread to "
-            "trigger the oscilloscopes."));
-        {
-            PWROWG_UNIQUE_LOCK(this->_impl->lock);
-            set_state(this->_impl->state, detail::rtx_sensor_state::trigger);
-            PWROWG_TRACE(_T("RTX trigger state is 0x%x."), this->_impl->state);
-        }
-        this->_impl->condition.notify_one();
+    while (check_state(this->_impl->state, detail::rtx_sensor_state::busy));
+
+    for (auto& i : this->_impl->instruments) {
+        PWROWG_TRACE("Arming single acquisition on \"%s\".", i.path());
+        i.acquisition(this->_impl->acquisition);
     }
+
+    if (this->_impl->external_trigger) {
+        PWROWG_TRACE(_T("Triggering by raising parallel port pins %u for ")
+            _T("%u ms."), this->_impl->external_trigger_pins,
+            this->_impl->external_trigger_duration);
+        this->_impl->external_trigger.pulse(
+            this->_impl->external_trigger_pins,
+            this->_impl->external_trigger_duration);
+
+    } else if (this->_impl->trigger != nullptr) {
+        PWROWG_TRACE(_T("Performing a manual single acquisition."));
+
+        if (this->_impl->trigger_instrument < this->_impl->instruments.size()) {
+            PWROWG_TRACE(_T("Triggering manually via daisy chain starting at ")
+                _T("%zu."), this->_impl->trigger_instrument);
+            assert(this->_impl->daisy_chain > 0.0f);
+            auto& i = this->_impl->instruments[this->_impl->trigger_instrument];
+            i.trigger_manually();
+
+        } else {
+            PWROWG_TRACE(_T("Triggering all instruments manually."));
+            for (auto& i : this->_impl->instruments) {
+                i.trigger_manually();
+            }
+        }
+    } /* if (this->_impl->external_trigger) */
 }
 
 
