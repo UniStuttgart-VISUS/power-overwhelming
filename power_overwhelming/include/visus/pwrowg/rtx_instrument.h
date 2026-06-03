@@ -23,7 +23,6 @@
 #include "visus/pwrowg/visa_instrument.h"
 
 
-
 PWROWG_NAMESPACE_BEGIN
 
 /// <summary>

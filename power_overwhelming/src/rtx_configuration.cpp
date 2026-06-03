@@ -24,12 +24,7 @@ const PWROWG_NAMESPACE::guid PWROWG_NAMESPACE::rtx_configuration::id(
  * PWROWG_NAMESPACE::rtx_configuration::rtx_configuration
  */
 PWROWG_NAMESPACE::rtx_configuration::rtx_configuration(void)
-        : _reset_on_enumerate(false),
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-        _timeout(rtx_instrument::default_timeout) {
-#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
-        _timeout(0) {
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+        : _reset_on_enumerate(false) {
     this->_sensors.emplace<std::vector<rtx_sensor_definition>>();
 }
 

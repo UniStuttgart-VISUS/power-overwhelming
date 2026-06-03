@@ -24,10 +24,28 @@ TInput PWROWG_DETAIL_NAMESPACE::rtx_sensor::from_descriptions(
     auto retval = move_front_if(begin, end, is_rtx_sensor);
 
     // Sort the RTA/RTB sensors such that sensors on the same instrument
-    // are grouped. The path of the sensors are the VISA paths to the
+    // are grouped. The paths of the sensors are the VISA paths to the
     // instruments.
     std::sort(begin, retval, [](const desc_type& lhs, const desc_type& rhs) {
-        return (lhs.path() < rhs.path());
+        assert(lhs.path() != nullptr);
+        assert(rhs.path() != nullptr);
+
+        const auto d = ::wcscmp(lhs.path(), rhs.path());
+        if (d == 0) {
+            // If we are on the same device, order the sensors voltage, current
+            // and power last.
+            auto map = [](const desc_type& d) {
+                if (d.is_sensor_type(sensor_type::voltage)) return 0;
+                if (d.is_sensor_type(sensor_type::current)) return 1;
+                assert(d.is_sensor_type(sensor_type::power));
+                return 2;
+            };
+            return (map(lhs) < map(rhs));
+
+        } else {
+            // Otherwise, the VISA path determines the order.
+            return (d < 0);
+        }
     });
 
     // Create the sensor, which is always one managing every sensor within
@@ -50,6 +68,7 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         _In_ const configuration_type& config)
         : _index(index), _owner(owner) {
     typedef sensor_description_builder builder_type;
+    typedef sensor_description desc_type;
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     assert(this->_owner != nullptr);
@@ -69,120 +88,168 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         return !equals(p, instruments.back().path(), true);
     };
 
-    for (auto it = begin; it != end; ++it) {
-        if (next_instrument(*it)) {
-            // We found an instrument we do not yet know, so we connect to it
-            // and configure it for use with the sensor.
-            PWROWG_TRACE(L"Connecting to instrument \"%s\".", it->path());
-            instruments.emplace_back(it->path(), config.timeout());
-            auto& i = instruments.back();
+    for (auto it = begin; it != end; /* [sic] */) {
+        // Scan through all sensors on the same instrument. These must be
+        // contiguous because we sort it this way.
+        auto b = it;
+        assert(b != end);
 
-            PWROWG_TRACE("Reset instrument \"%s\" before creating sensors.",
-                i.path());
-            i.reset(rtx_instrument_reset::reset | rtx_instrument_reset::status);
+        // Prepare the instrument configuration. This is the base configuration
+        // plus everything we need for the sensor to work.
+        auto icfg = config.base_configuration();
 
-            PWROWG_TRACE("Synchronising the clock of \"%s\" with the current "
-                "UTC.", i.path());
-            i.synchronise_clock(true);
-
-            PWROWG_TRACE("Setting the timeout of \"%s\" to %u ms.", i.path(),
-                config.timeout());
-            i.timeout(config.timeout());
-
-            PWROWG_TRACE("Setting the acquisition range of \"%s\" to \"%s\".",
-                i.path(), config.acquisition_range());
-            i.time_range(config.acquisition_range());
-
-            PWROWG_TRACE("Configuring events for instrument \"%s\".", i.path());
-            i.event_status(visa_event_status::operation_complete);
-            i.service_request_status(visa_status_byte::master_status
-                | visa_status_byte::message_available);
-            i.enable_event(VI_EVENT_SERVICE_REQ, VI_QUEUE);
-
-            PWROWG_TRACE("Moving reference point of \"%s\" to the left.",
-                i.path());
-            i.reference_position(rtx_reference_point::left);
-
-            if (this->_trigger._impl->daisy_chain > 0.0f) {
-                PWROWG_TRACE(_T("Setting up daisy chain for trigger."));
-                i.trigger_output(rtx_trigger_output::pulse);
-
-                if (equals(this->_trigger._impl->path, i.path(), true)) {
-                    assert(!instruments.empty());
-                    const auto idx_trig = instruments.size() - 1;
-                    this->_trigger._impl->trigger_instrument = idx_trig;
-                    PWROWG_TRACE("\"%s\" at position %zu is the triggering "
-                        "instrument.", i.path(), idx_trig);
-
-                } else {
-                    const auto level = this->_trigger._impl->daisy_chain;
-                    PWROWG_TRACE("Configuring \"%s\" to use the external "
-                        "trigger at %f V.", i.path(), level);
-                    i.trigger(rtx_trigger::external_edge(level)
-                        .mode(rtx_trigger_mode::normal));
-                }
-            }
-
-            if (this->_trigger._impl->trigger != nullptr) {
-                const auto& path = this->_trigger._impl->path;
-                PWROWG_TRACE("Path to triggering instrument is \"%s.\".",
-                    path.c_str());
-
-                if (path.empty() || equals(path, i.path(), true)) {
-                    PWROWG_TRACE("Configuring \"%s\" to use the trigger "
-                        "provided by the user.", i.path());
-                    i.trigger(*this->_trigger._impl->trigger);
-                }
-            }
-
-            PWROWG_TRACE("Configuring acquisition for instrument \"%s\" to "
-                "match the single acquisition mode expected by the rtx_sensor.",
-                i.path());
-            i.acquisition(rtx_acquisition()
-                .enable_automatic_points()
-                .count(1)
-                .segmented(true));
-
-            PWROWG_TRACE("Making sure that \"%s\" is not in an error state "
-                "after applying all configuration changes.", i.path());
-            i.operation_complete_async();
-            i.wait_status(visa_event_status::operation_complete);
-            i.throw_on_system_error();
-        }
+        PWROWG_TRACE(L"Connecting to instrument \"%s\".", b->path());
+        instruments.emplace_back(b->path(), icfg.timeout());
         assert(!instruments.empty());
-        auto& instrument = instruments.back();
+        auto& i = instruments.back();
 
-        auto sd = builder_type::private_data<rtx_sensor_definition>(*it);
-        assert(sd != nullptr);
-        auto& cur = sd->current_channel();
-        auto& vol = sd->voltage_channel();
+        // Proceed to the next instrument. After the end of the loop, [b, it[
+        // is the range of sensors on instrument 'i'. At the same time, we
+        // collect the sensor definitions.
+        std::map<std::wstring, rtx_sensor_definition *> cur_sensors;
+        std::map<std::wstring, rtx_sensor_definition *> pow_sensors;
+        std::map<std::wstring, rtx_sensor_definition *> vol_sensors;
+        for (; (it != end) && !next_instrument(*it); ++it) {
+            if (it->is_sensor_type(sensor_type::voltage)) {
+                auto d = builder_type::private_data<rtx_sensor_definition>(*it);
+                assert(d != nullptr);
+                vol_sensors[it->id()] = d;
 
-        if (it->is_sensor_type(sensor_type::current)) {
-            instrument.channel(cur);
+            } else if (it->is_sensor_type(sensor_type::current)) {
+                auto d = builder_type::private_data<rtx_sensor_definition>(*it);
+                assert(d != nullptr);
+                cur_sensors[it->id()] = d;
 
-            std::string name("CH");
-            name += std::to_string(cur.channel());
-            this->_channels.push_back(std::move(name));
-
-        } else if (it->is_sensor_type(sensor_type::power)) {
-            std::string expr("CH");
-            expr += std::to_string(cur.channel());
-            expr += "*CH";
-            expr += std::to_string(vol.channel());
-            instrument.expression(++next_math, expr.c_str(), "VA");
-
-            std::string name("MATH");
-            name += std::to_string(next_math);
-            this->_channels.push_back(std::move(name));
-
-        } else {
-            assert(it->is_sensor_type(sensor_type::voltage));
-            instrument.channel(vol);
-
-            std::string name("CH");
-            name += std::to_string(vol.channel());
-            this->_channels.push_back(std::move(name));
+            } else if (it->is_sensor_type(sensor_type::power)) {
+                auto d = builder_type::private_data<rtx_sensor_definition>(*it);
+                assert(d != nullptr);
+                pow_sensors[it->id()] = d;
+            }
         }
+        assert(b != it);
+        PWROWG_TRACE("Instrument \"%s\" has %zu sensor(s) configured on it.",
+            i.path(), std::distance(b, it));
+        PWROWG_TRACE("Instrument \"%s\" has %zu voltage sensor(s).",
+            i.path(), vol_sensors.size());
+        PWROWG_TRACE("Instrument \"%s\" has %zu current sensor(s).",
+            i.path(), cur_sensors.size());
+        PWROWG_TRACE("Instrument \"%s\" has %zu power sensor(s).",
+            i.path(), pow_sensors.size());
+
+        for (auto jt = b; jt != it; ++jt) {
+            //icfg.channel()
+
+        }
+
+        //for (auto s : cur_sensors) {
+        //    PWROWG_TRACE("Configuring current sensor \"%s\" on instrument "
+        //        "\"%s\".", s->id(), i.path());
+        //    i.channel(s->current_channel());
+        //    std::string name("CH");
+        //    name += std::to_string(s->current_channel().channel());
+        //    this->_channels.push_back(std::move(name));
+        //}
+
+
+        PWROWG_TRACE("Reset \"%s\" before creating sensors.", i.path());
+        i.reset(rtx_instrument_reset::reset | rtx_instrument_reset::status);
+
+
+
+        PWROWG_TRACE("Synchronising the clock of \"%s\" with the current UTC.",
+            i.path());
+        i.synchronise_clock(true);
+
+            //PWROWG_TRACE("Configuring events for instrument \"%s\".", i.path());
+            //i.event_status(visa_event_status::operation_complete);
+            //i.service_request_status(visa_status_byte::master_status
+            //    | visa_status_byte::message_available);
+            //i.enable_event(VI_EVENT_SERVICE_REQ, VI_QUEUE);
+
+            //PWROWG_TRACE("Moving reference point of \"%s\" to the left.",
+            //    i.path());
+            //i.reference_position(rtx_reference_point::left);
+
+            //if (this->_trigger._impl->daisy_chain > 0.0f) {
+            //    PWROWG_TRACE(_T("Setting up daisy chain for trigger."));
+            //    i.trigger_output(rtx_trigger_output::pulse);
+
+            //    if (equals(this->_trigger._impl->path, i.path(), true)) {
+            //        assert(!instruments.empty());
+            //        const auto idx_trig = instruments.size() - 1;
+            //        this->_trigger._impl->trigger_instrument = idx_trig;
+            //        PWROWG_TRACE("\"%s\" at position %zu is the triggering "
+            //            "instrument.", i.path(), idx_trig);
+
+            //    } else {
+            //        const auto level = this->_trigger._impl->daisy_chain;
+            //        PWROWG_TRACE("Configuring \"%s\" to use the external "
+            //            "trigger at %f V.", i.path(), level);
+            //        i.trigger(rtx_trigger::external_edge(level)
+            //            .mode(rtx_trigger_mode::normal));
+            //    }
+            //}
+
+            //if (this->_trigger._impl->trigger != nullptr) {
+            //    const auto& path = this->_trigger._impl->path;
+            //    PWROWG_TRACE("Path to triggering instrument is \"%s.\".",
+            //        path.c_str());
+
+            //    if (path.empty() || equals(path, i.path(), true)) {
+            //        PWROWG_TRACE("Configuring \"%s\" to use the trigger "
+            //            "provided by the user.", i.path());
+            //        i.trigger(*this->_trigger._impl->trigger);
+            //    }
+            //}
+
+            //PWROWG_TRACE("Configuring acquisition for instrument \"%s\" to "
+            //    "match the single acquisition mode expected by the rtx_sensor.",
+            //    i.path());
+            //i.acquisition(rtx_acquisition()
+            //    .enable_automatic_points()
+            //    .count(1)
+            //    .segmented(true));
+
+            //PWROWG_TRACE("Making sure that \"%s\" is not in an error state "
+            //    "after applying all configuration changes.", i.path());
+            //i.operation_complete_async();
+            //i.wait_status(visa_event_status::operation_complete);
+            //i.throw_on_system_error();
+        //}
+        //assert(!instruments.empty());
+        //auto& instrument = instruments.back();
+
+        //auto sd = builder_type::private_data<rtx_sensor_definition>(*it);
+        //assert(sd != nullptr);
+        //auto& cur = sd->current_channel();
+        //auto& vol = sd->voltage_channel();
+
+        //if (it->is_sensor_type(sensor_type::current)) {
+        //    instrument.channel(cur);
+
+        //    std::string name("CH");
+        //    name += std::to_string(cur.channel());
+        //    this->_channels.push_back(std::move(name));
+
+        //} else if (it->is_sensor_type(sensor_type::power)) {
+        //    std::string expr("CH");
+        //    expr += std::to_string(cur.channel());
+        //    expr += "*CH";
+        //    expr += std::to_string(vol.channel());
+        //    instrument.expression(++next_math, expr.c_str(), "VA");
+
+        //    std::string name("MATH");
+        //    name += std::to_string(next_math);
+        //    this->_channels.push_back(std::move(name));
+
+        //} else {
+        //    assert(it->is_sensor_type(sensor_type::voltage));
+        //    instrument.channel(vol);
+
+        //    std::string name("CH");
+        //    name += std::to_string(vol.channel());
+        //    this->_channels.push_back(std::move(name));
+        //}
     }
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }

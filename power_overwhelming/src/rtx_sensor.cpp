@@ -40,7 +40,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
 
             // Connect to the instrument.
             auto reset = false;
-            rtx_instrument instrument(reset, sensor.path(), config.timeout());
+            rtx_instrument instrument(reset, sensor.path(),
+                config.base_configuration().timeout());
             if (reset && config.reset_on_enumerate()) {
                 instrument.reset(rtx_instrument_reset::all);
             }
@@ -113,7 +114,6 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
                 ++retval;
             }
 
-#if 0
             if (have_cur && have_vol) {
                 if (retval < cnt) {
                     dst[retval] = builder
@@ -130,7 +130,6 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
 
                 ++retval;
             }
-#endif
 
             // Keep the instrument alive until the end of the method because we
             // want to reuse existing connections to the same instrument

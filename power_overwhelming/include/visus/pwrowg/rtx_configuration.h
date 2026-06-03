@@ -58,41 +58,6 @@ public:
     rtx_configuration(void);
 
     /// <summary>
-    /// Answer the overall time range to be acquired when the sensor is
-    /// triggered.
-    /// </summary>
-    /// <returns>The string representation of the acquisition time range as it
-    /// is being set on the instrument.</returns>
-    const rtx_quantity& acquisition_range(void) const noexcept {
-        return this->_acquisition_range;
-    }
-
-    /// <summary>
-    /// Sets the overall time range to be acquired when the sensor is triggered.
-    /// </summary>
-    /// <param name="range">The acquisition time range in a form the instrument
-    /// accepts, for instance &quot;0.5 s&quot;.</param>
-    /// <returns><c>*<see langword="this" /></c>.</returns>
-    rtx_configuration& acquisition_range(_In_ const rtx_quantity& range) {
-        this->_acquisition_range = range;
-        return *this;
-    }
-
-    /// <summary>
-    /// Sets the overall time range to be acquired when the sensor is triggered.
-    /// </summary>
-    /// <typeparam name="TRep"></typeparam>
-    /// <typeparam name="TPeriod"></typeparam>
-    /// <param name="range"></param>
-    /// <returns></returns>
-    template<class TRep, class TPeriod>
-    inline rtx_configuration& acquisition_range(
-            _In_ const std::chrono::duration<TRep, TPeriod> range) {
-        this->_acquisition_range = range;
-        return *this;
-    }
-
-    /// <summary>
     /// Adds a new sensor definition to the configuration.
     /// </summary>
     /// <param name="sensor">The sensor to be added.</param>
@@ -135,6 +100,52 @@ public:
         _In_ const rtx_channel& current_channel,
         _In_ const rtx_waveform_points waveform_points
         = rtx_waveform_points::maximum);
+
+    /// <summary>
+    /// Gets the base configuration to be applied to all instruments.
+    /// </summary>
+    /// <returns>The base configuration to be applied to all instruments.
+    /// </returns>
+    inline const rtx_instrument_configuration& base_configuration(
+            void) const noexcept {
+        return this->_base_configuration;
+    }
+
+    /// <summary>
+    /// Sets the base configuration to be applied to all instruments.
+    /// </summary>
+    /// <remarks>
+    /// This configuration is the baseline for all instruments, but the settings
+    /// for each instrument will be adjusted depending on the sensor definition
+    /// on said instrument. That means that settings that are relevant for the
+    /// sensor might be overwritten before applying the configuration to the
+    /// instrument.
+    /// </remarks>
+    /// <param name="config">The base configuration.</param>
+    /// <returns><c>*<see cref="this" /></c>.</returns>
+    inline rtx_configuration& base_configuration(
+            _In_ const rtx_instrument_configuration& config) noexcept {
+        this->_base_configuration = config;
+        return *this;
+    }
+
+    /// <summary>
+    /// Sets the base configuration to be applied to all instruments.
+    /// </summary>
+    /// <remarks>
+    /// This configuration is the baseline for all instruments, but the settings
+    /// for each instrument will be adjusted depending on the sensor definition
+    /// on said instrument. That means that settings that are relevant for the
+    /// sensor might be overwritten before applying the configuration to the
+    /// instrument.
+    /// </remarks>
+    /// <param name="config">The base configuration.</param>
+    /// <returns><c>*<see cref="this" /></c>.</returns>
+    inline rtx_configuration& base_configuration(
+            _Inout_ rtx_instrument_configuration&& config) noexcept {
+        this->_base_configuration = std::move(config);
+        return *this;
+    }
 
     /// <summary>
     /// Answer the number of sensors (voltage/current pairs) that have been
@@ -212,24 +223,6 @@ public:
     }
 
     /// <summary>
-    /// Answer the timeout to be used for all VISA instruments.
-    /// </summary>
-    /// <returns>The timeout in milliseconds.</returns>
-    inline timeout_type timeout(void) const noexcept {
-        return this->_timeout;
-    }
-
-    /// <summary>
-    /// Sets the timeout to be used for all VISA instruments.
-    /// </summary>
-    /// <param name="timeout">The timeout, in milliseconds.</param>
-    /// <returns><c>*<see langword="this" /></c>.</returns>
-    rtx_configuration& timeout(_In_ const timeout_type timeout) noexcept {
-        this->_timeout = timeout;
-        return *this;
-    }
-
-    /// <summary>
     /// Sets the trigger configuration.
     /// </summary>
     /// <param name="trigger">The new trigger configuration which determines how
@@ -242,10 +235,9 @@ public:
 
 private:
 
-    rtx_quantity _acquisition_range;
+    rtx_instrument_configuration _base_configuration;
     bool _reset_on_enumerate;
     type_erased_storage _sensors;
-    timeout_type _timeout;
     rtx_sensor_trigger _trigger;
 };
 

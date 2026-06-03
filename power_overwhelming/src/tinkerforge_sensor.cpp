@@ -104,6 +104,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::descriptions(
  */
 constexpr std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::invalid_index;
 
+
 /*
  * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::tinkerforge_sensor
  */

@@ -15,8 +15,9 @@
 
 PWROWG_NAMESPACE_BEGIN
 
-/* Forward declarations. */
+// Forward declarations.
 class rtx_instrument;
+
 
 /// <summary>
 /// Defines a power sensor using a voltage and a current probe of an
@@ -147,8 +148,7 @@ public:
     /// Gets the configuration of the channel measuring the current.
     /// </summary>
     /// <returns>The channel configuration object.</returns>
-    inline const rtx_channel& current_channel(
-            void) const noexcept {
+    inline const rtx_channel& current_channel(void) const noexcept {
         return this->_current_channel;
     }
 
@@ -168,8 +168,7 @@ public:
     /// </summary>
     /// <param name="description">The new description of the sensor.</param>
     /// <returns><c>*this</c>.</returns>
-    rtx_sensor_definition& description(
-        _In_opt_z_ const wchar_t *description);
+    rtx_sensor_definition& description(_In_opt_z_ const wchar_t *description);
 
     /// <summary>
     /// Gets the VISA device path of the underlying instrument.
@@ -186,8 +185,7 @@ public:
     /// Gets the configuration of the channel measuring the current.
     /// </summary>
     /// <returns>The channel configuration object.</returns>
-    inline const rtx_channel& voltage_channel(
-            void) const noexcept {
+    inline const rtx_channel& voltage_channel(void) const noexcept {
         return this->_voltage_channel;
     }
 
@@ -196,8 +194,7 @@ public:
     /// the channels of the are transferred to the computer.
     /// </summary>
     /// <returns>The waveform points to download.</returns>
-    inline rtx_waveform_points waveform_points(
-            void) const noexcept {
+    inline rtx_waveform_points waveform_points(void) const noexcept {
         return this->_waveform_points;
     }
 

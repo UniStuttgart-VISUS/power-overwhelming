@@ -13,7 +13,6 @@
 #include "visus/pwrowg/rtx_channel_bandwidth.h"
 #include "visus/pwrowg/rtx_channel_coupling.h"
 #include "visus/pwrowg/rtx_channel_polarity.h"
-#include "visus/pwrowg/rtx_channel_unit.h"
 #include "visus/pwrowg/rtx_decimation_mode.h"
 #include "visus/pwrowg/rtx_label.h"
 #include "visus/pwrowg/rtx_quantity.h"
@@ -182,8 +181,7 @@ public:
     /// <param name="label">The label for the channel and its visibility
     /// state.</param>
     /// <returns><c>*this</c>.</returns>
-    inline rtx_channel& label(
-            _In_ const rtx_label& label) noexcept {
+    inline rtx_channel& label(_In_ const rtx_label& label) noexcept {
         this->_label = label;
         return *this;
     }
