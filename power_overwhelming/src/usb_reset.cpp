@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "visus/pwrowg/string_functions.h"
+#include "visus/pwrowg/visa_instrument.h"
 
 
 #if defined(_WIN32)

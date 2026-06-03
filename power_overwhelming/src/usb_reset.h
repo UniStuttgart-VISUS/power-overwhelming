@@ -14,7 +14,11 @@
 #endif /* defined(_WIN32) */
 
 #include "visus/pwrowg/api.h"   // Must be here for when VISA is disabled.
-#include "visus/pwrowg/visa_instrument.h"
+
+
+PWROWG_NAMESPACE_BEGIN
+class visa_instrument;
+PWROWG_NAMESPACE_END
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
