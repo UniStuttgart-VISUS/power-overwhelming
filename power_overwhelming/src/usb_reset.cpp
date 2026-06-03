@@ -15,6 +15,8 @@
 #include "visus/pwrowg/string_functions.h"
 #include "visus/pwrowg/visa_instrument.h"
 
+#include "no_visa_error_msg.h"
+
 
 #if defined(_WIN32)
 /*
@@ -120,6 +122,7 @@ DEVINST PWROWG_DETAIL_NAMESPACE::eject_device(_In_z_ const char *instance) {
  */
 std::string PWROWG_DETAIL_NAMESPACE::get_instance_id(
         _In_ const visa_instrument& inst) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     static const std::regex rx_ids("USB.+::0x([0-9a-f]+)::"
         "0x([0-9a-f]+)::(?:0x)?([0-9a-f]+)::.+", std::regex::icase);
 
@@ -132,6 +135,9 @@ std::string PWROWG_DETAIL_NAMESPACE::get_instance_id(
 
     return detail::format_string("USB\\VID_%s&PID_%s\\%s", m[1].str().c_str(),
         m[2].str().c_str(), m[3].str().c_str());
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::invalid_argument(no_visa_error_msg);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 #endif /* defined(_WIN32) */
 
