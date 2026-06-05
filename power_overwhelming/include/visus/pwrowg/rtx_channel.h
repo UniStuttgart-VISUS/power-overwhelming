@@ -410,6 +410,26 @@ public:
         return *this;
     }
 
+    /// <summary>
+    /// Test for equality.
+    /// </summary>
+    /// <param name="rhs">The right-hand-side operand.</param>
+    /// <returns><see langword="true "/> if this object and
+    /// <paramref name="rhs" /> are equal, <see langword="false" /> otherwise.
+    /// </returns>
+    bool operator ==(_In_ const rtx_channel& rhs) const noexcept;
+
+    /// <summary>
+    /// Test for inequality.
+    /// </summary>
+    /// <param name="rhs">The right-hand-side operand.</param>
+    /// <returns><see langword="true "/> if this object and
+    /// <paramref name="rhs" /> are not equal, <see langword="false" />
+    /// otherwise.</returns>
+    inline bool operator !=(_In_ const rtx_channel& rhs) const noexcept {
+        return !(*this == rhs);
+    }
+
 private:
 
     rtx_quantity _attenuation;

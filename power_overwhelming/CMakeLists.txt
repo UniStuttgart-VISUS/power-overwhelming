@@ -61,6 +61,11 @@ if (PWROWG_WithNvml)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_NVML)
 endif ()
 
+if (PWROWG_WithParquet)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_PARQUET)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Arrow::arrow_static)
+endif ()
+
 if (PWROWG_WithPowenetics)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_POWENETICS)
     target_link_libraries(${PROJECT_NAME} PRIVATE libpowenetics)

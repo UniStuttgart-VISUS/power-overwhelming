@@ -579,6 +579,17 @@ public:
     const rtx_acquisition& acquisition(void) const noexcept;
 
     /// <summary>
+    /// Changes the way the instrument will acquire one or more samples.
+    /// </summary>
+    /// <param name="acquisition">The new acquisition configuration.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    rtx_instrument_configuration& acquisition(
+            _In_ const rtx_acquisition& acquisition) {
+        this->_acquisition = acquisition;
+        return *this;
+    }
+
+    /// <summary>
     /// Creates a copy of the configuration, but configured such that the
     /// instrument is triggered by the external trigger.
     /// </summary>
@@ -683,8 +694,7 @@ public:
     /// calls with the name channel number will overwrite any existing
     /// configuration.</param>
     /// <returns><c>*this</c>.</returns>
-    rtx_instrument_configuration& channel(
-        _In_ const rtx_channel& channel);
+    rtx_instrument_configuration& channel(_In_ const rtx_channel& channel);
 
     /// <summary>
     /// Counts or returns the channels configured.
@@ -788,8 +798,7 @@ public:
     /// instrument.
     /// </summary>
     /// <returns>The horizontal reference point.</returns>
-    inline rtx_reference_point reference_position(
-            void) const noexcept {
+    inline rtx_reference_point reference_position(void) const noexcept {
         return this->_reference_position;
     }
 
@@ -843,12 +852,23 @@ public:
     }
 
     /// <summary>
+    /// Changes the trigger on the instrument.
+    /// </summary>
+    /// <param name="trigger">The new trigger to be configured on the
+    /// instrument.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline rtx_instrument_configuration& trigger(
+            _In_ const rtx_trigger& trigger) {
+        this->_trigger = trigger;
+        return *this;
+    }
+
+    /// <summary>
     /// Answer the horizontal trigger position to be configured on the
     /// instrument.
     /// </summary>
     /// <returns>The trigger position to be configured.</returns>
-    inline const rtx_quantity& trigger_position(
-            void) const noexcept {
+    inline const rtx_quantity& trigger_position(void) const noexcept {
         return this->_trigger_position;
     }
 
@@ -859,7 +879,7 @@ public:
     /// <param name="pos">The new trigger position.</param>
     /// <returns><c>*this</c>.</returns>
     inline rtx_instrument_configuration& trigger_position(
-            const rtx_quantity& pos) {
+            _In_ const rtx_quantity& pos) {
         this->_trigger_position = pos;
         return *this;
     }

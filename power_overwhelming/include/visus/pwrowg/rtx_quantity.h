@@ -98,16 +98,34 @@ public:
     /// </summary>
     /// <param name="rhs">The right hand side operand.</param>
     /// <returns><c>*this</c>.</returns>
-    rtx_quantity& operator =(
-        _In_ const rtx_quantity& rhs);
+    rtx_quantity& operator =(_In_ const rtx_quantity& rhs);
 
     /// <summary>
     /// Move assignment.
     /// </summary>
     /// <param name="rhs">The right hand side operand.</param>
     /// <returns><c>*this</c>.</returns>
-    rtx_quantity& operator =(
-        _Inout_ rtx_quantity&& rhs) noexcept;
+    rtx_quantity& operator =(_Inout_ rtx_quantity&& rhs) noexcept;
+
+    /// <summary>
+    /// Test for equality.
+    /// </summary>
+    /// <param name="rhs">The right-hand-side operand.</param>
+    /// <returns><see langword="true "/> if this object and
+    /// <paramref name="rhs" /> are equal, <see langword="false" /> otherwise.
+    /// </returns>
+    bool operator ==(_In_ const rtx_quantity& rhs) const noexcept;
+
+    /// <summary>
+    /// Test for inequality.
+    /// </summary>
+    /// <param name="rhs">The right-hand-side operand.</param>
+    /// <returns><see langword="true "/> if this object and
+    /// <paramref name="rhs" /> are not equal, <see langword="false" />
+    /// otherwise.</returns>
+    inline bool operator !=(_In_ const rtx_quantity& rhs) const noexcept {
+        return !(*this == rhs);
+    }
 
     /// <summary>
     /// Allows for implicit conversion of the quantity into its numeric

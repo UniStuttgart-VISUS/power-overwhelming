@@ -6,6 +6,8 @@
 
 #include "visus/pwrowg/rtx_channel.h"
 
+#include <cassert>
+#include <memory>
 #include <stdexcept>
 
 #include "visus/pwrowg/string_functions.h"
@@ -74,4 +76,79 @@ PWROWG_NAMESPACE::rtx_channel::zero_adjust_offset(
     }
 
     return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_channel::operator ==
+ */
+bool PWROWG_NAMESPACE::rtx_channel::operator ==(
+        _In_ const rtx_channel& rhs) const noexcept {
+    if (this == std::addressof(rhs)) {
+        return true;
+    }
+
+    // Compare the channel ID first, because there might be channels that are
+    // identically configured. We do not want to compare all the other settings
+    // in this case.
+    if (this->_channel != rhs._channel) {
+        return false;
+    }
+
+    // All scalar properties are next, because they are fast to compare.
+    if (this->_bandwidth != rhs._bandwidth) {
+        return false;
+    }
+
+    if (this->_coupling != rhs._coupling) {
+        return false;
+    }
+
+    if (this->_decimation_mode != rhs._decimation_mode) {
+        return false;
+    }
+
+    if (this->_polarity != rhs._polarity) {
+        return false;
+    }
+
+    if (this->_state != rhs._state) {
+        return false;
+    }
+
+    if (this->_zero_adjust != rhs._zero_adjust) {
+        return false;
+    }
+
+    if (this->_zero_adjust_offset != rhs._zero_adjust_offset) {
+        return false;
+    }
+
+    // Finally, all compound properties, which are more expensive to compare.
+    if (this->_attenuation != rhs._attenuation) {
+        return false;
+    }
+
+    if (this->_label != rhs._label) {
+        return false;
+    }
+
+    if (this->_offset != rhs._offset) {
+        return false;
+    }
+
+    if (this->_range != rhs._range) {
+        return false;
+    }
+
+    if (this->_skew != rhs._skew) {
+        return false;
+    }
+
+    if (this->_zero_offset != rhs._zero_offset) {
+        return false;
+    }
+
+    // No difference found at this point.
+    return true;
 }

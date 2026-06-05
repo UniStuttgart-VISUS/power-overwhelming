@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_label.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -121,8 +121,27 @@ public:
     /// </summary>
     /// <param name="rhs">The right hand side operand.</param>
     /// <returns><c>*this</c>.</returns>
-    rtx_label& operator =(
-        _Inout_ rtx_label&& rhs) noexcept;
+    rtx_label& operator =(_Inout_ rtx_label&& rhs) noexcept;
+
+    /// <summary>
+    /// Test for equality.
+    /// </summary>
+    /// <param name="rhs">The right-hand-side operand.</param>
+    /// <returns><see langword="true "/> if this object and
+    /// <paramref name="rhs" /> are equal, <see langword="false" /> otherwise.
+    /// </returns>
+    bool operator ==(_In_ const rtx_label& rhs) const noexcept;
+
+    /// <summary>
+    /// Test for inequality.
+    /// </summary>
+    /// <param name="rhs">The right-hand-side operand.</param>
+    /// <returns><see langword="true "/> if this object and
+    /// <paramref name="rhs" /> are not equal, <see langword="false" />
+    /// otherwise.</returns>
+    inline bool operator !=(_In_ const rtx_label& rhs) const noexcept {
+        return !(*this == rhs);
+    }
 
 private:
 

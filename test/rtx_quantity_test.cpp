@@ -99,6 +99,28 @@ public:
         Assert::AreEqual(0.0f, q1.value(), L"Moved out value", LINE_INFO());
         Assert::AreEqual("", q1.unit(), L"Moved out unit", LINE_INFO());
     }
+
+    TEST_METHOD(test_equality) {
+        rtx_quantity lhs, rhs;
+        Assert::IsTrue(lhs == rhs, L"Labels should be equal", LINE_INFO());
+        Assert::IsFalse(lhs != rhs, L"Labels should not be unequal", LINE_INFO());
+
+        lhs = rtx_quantity(42.0f);
+        Assert::IsFalse(lhs == rhs, L"Labels should not be equal", LINE_INFO());
+        Assert::IsTrue(lhs != rhs, L"Labels should be unequal", LINE_INFO());
+
+        rhs = rtx_quantity(42.0f);
+        Assert::IsTrue(lhs == rhs, L"Labels should be equal", LINE_INFO());
+        Assert::IsFalse(lhs != rhs, L"Labels should not be unequal", LINE_INFO());
+
+        lhs = rtx_quantity(42.0f, "kV");
+        Assert::IsFalse(lhs == rhs, L"Labels should not be equal", LINE_INFO());
+        Assert::IsTrue(lhs != rhs, L"Labels should be unequal", LINE_INFO());
+
+        rhs = rtx_quantity(42.0f, "kV");
+        Assert::IsTrue(lhs == rhs, L"Labels should be equal", LINE_INFO());
+        Assert::IsFalse(lhs != rhs, L"Labels should not be unequal", LINE_INFO());
+    }
 };
 
 PWROWG_TEST_NAMESPACE_END

@@ -105,70 +105,78 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
 
         // Proceed to the next instrument. After the end of the loop, [b, it[
         // is the range of sensors on instrument 'i'. At the same time, we
-        // collect the sensor definitions.
-        std::map<std::wstring, rtx_sensor_definition *> cur_sensors;
-        std::map<std::wstring, rtx_sensor_definition *> pow_sensors;
-        std::map<std::wstring, rtx_sensor_definition *> vol_sensors;
+        // collect the channel configurations and make sure that they are
+        // consistently defined for all sensors on the same instrument.
+        std::map<rtx_channel::channel_type, rtx_channel> channels;
+        const auto collect_channel = [&channels](const rtx_channel& c) {
+            auto e = channels.find(c.channel());
+            if (e == channels.end()) {
+                channels[c.channel()] = c;
+            } else if (c != e->second) {
+                throw std::invalid_argument("A channel must be identically "
+                    "configured when used for multiple sensors.");
+            }
+        };
+
         for (; (it != end) && !next_instrument(*it); ++it) {
             if (it->is_sensor_type(sensor_type::voltage)) {
                 auto d = builder_type::private_data<rtx_sensor_definition>(*it);
                 assert(d != nullptr);
-                vol_sensors[it->id()] = d;
+                collect_channel(d->voltage_channel());
 
             } else if (it->is_sensor_type(sensor_type::current)) {
                 auto d = builder_type::private_data<rtx_sensor_definition>(*it);
                 assert(d != nullptr);
-                cur_sensors[it->id()] = d;
+                collect_channel(d->current_channel());
 
             } else if (it->is_sensor_type(sensor_type::power)) {
                 auto d = builder_type::private_data<rtx_sensor_definition>(*it);
                 assert(d != nullptr);
-                pow_sensors[it->id()] = d;
+                collect_channel(d->voltage_channel());
+                collect_channel(d->current_channel());
             }
         }
         assert(b != it);
         PWROWG_TRACE("Instrument \"%s\" has %zu sensor(s) configured on it.",
             i.path(), std::distance(b, it));
-        PWROWG_TRACE("Instrument \"%s\" has %zu voltage sensor(s).",
-            i.path(), vol_sensors.size());
-        PWROWG_TRACE("Instrument \"%s\" has %zu current sensor(s).",
-            i.path(), cur_sensors.size());
-        PWROWG_TRACE("Instrument \"%s\" has %zu power sensor(s).",
-            i.path(), pow_sensors.size());
+        PWROWG_TRACE("%zu channel(s) are used on instrument \"%s\".",
+            channels.size(), i.path());
 
-        for (auto jt = b; jt != it; ++jt) {
-            //icfg.channel()
-
+        // Modify the instrument configuration to match the needs of the sensor.
+        for (auto& c : channels) {
+            icfg.channel(c.second);
         }
 
-        //for (auto s : cur_sensors) {
-        //    PWROWG_TRACE("Configuring current sensor \"%s\" on instrument "
-        //        "\"%s\".", s->id(), i.path());
-        //    i.channel(s->current_channel());
-        //    std::string name("CH");
-        //    name += std::to_string(s->current_channel().channel());
-        //    this->_channels.push_back(std::move(name));
-        //}
+        icfg.acquisition(rtx_acquisition()
+            .enable_automatic_points()
+            .count(1)
+            .segmented(true));
 
+        icfg.reference_position(rtx_reference_point::left);
+
+        // TODO: Trigger
 
         PWROWG_TRACE("Reset \"%s\" before creating sensors.", i.path());
         i.reset(rtx_instrument_reset::reset | rtx_instrument_reset::status);
 
-
+        PWROWG_TRACE("Applying configuration to instrument \"%s\".", i.path());
+        icfg.apply(i);
 
         PWROWG_TRACE("Synchronising the clock of \"%s\" with the current UTC.",
             i.path());
         i.synchronise_clock(true);
 
-            //PWROWG_TRACE("Configuring events for instrument \"%s\".", i.path());
-            //i.event_status(visa_event_status::operation_complete);
-            //i.service_request_status(visa_status_byte::master_status
-            //    | visa_status_byte::message_available);
-            //i.enable_event(VI_EVENT_SERVICE_REQ, VI_QUEUE);
+        PWROWG_TRACE("Configuring events for instrument \"%s\".", i.path());
+        i.event_status(visa_event_status::operation_complete);
+        i.service_request_status(visa_status_byte::master_status
+            | visa_status_byte::message_available);
+        i.enable_event(VI_EVENT_SERVICE_REQ, VI_QUEUE);
 
-            //PWROWG_TRACE("Moving reference point of \"%s\" to the left.",
-            //    i.path());
-            //i.reference_position(rtx_reference_point::left);
+        PWROWG_TRACE("Making sure that \"%s\" is not in an error state "
+            "after applying all configuration changes.", i.path());
+        i.operation_complete_async();
+        i.wait_status(visa_event_status::operation_complete);
+        i.throw_on_system_error();
 
             //if (this->_trigger._impl->daisy_chain > 0.0f) {
             //    PWROWG_TRACE(_T("Setting up daisy chain for trigger."));
@@ -201,20 +209,6 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
             //        i.trigger(*this->_trigger._impl->trigger);
             //    }
             //}
-
-            //PWROWG_TRACE("Configuring acquisition for instrument \"%s\" to "
-            //    "match the single acquisition mode expected by the rtx_sensor.",
-            //    i.path());
-            //i.acquisition(rtx_acquisition()
-            //    .enable_automatic_points()
-            //    .count(1)
-            //    .segmented(true));
-
-            //PWROWG_TRACE("Making sure that \"%s\" is not in an error state "
-            //    "after applying all configuration changes.", i.path());
-            //i.operation_complete_async();
-            //i.wait_status(visa_event_status::operation_complete);
-            //i.throw_on_system_error();
         //}
         //assert(!instruments.empty());
         //auto& instrument = instruments.back();

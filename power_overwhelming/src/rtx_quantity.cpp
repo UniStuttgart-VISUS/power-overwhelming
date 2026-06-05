@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_quantity.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -96,4 +96,32 @@ PWROWG_NAMESPACE::rtx_quantity::operator =(
     }
 
     return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_quantity::operator ==
+ */
+bool PWROWG_NAMESPACE::rtx_quantity::operator ==(
+        _In_ const rtx_quantity& rhs) const noexcept {
+    if (this == std::addressof(rhs)) {
+        return true;
+    }
+
+    if (this->_value != rhs._value) {
+        return false;
+    }
+
+    if (this->_unit == rhs._unit) {
+        return true;
+    }
+
+    if ((this->_unit == nullptr) || (rhs._unit == nullptr)) {
+        return false;
+    }
+
+    assert(this->_value == rhs._value);
+    assert(this->_unit != nullptr);
+    assert(rhs._unit != nullptr);
+    return (::strcmp(this->_unit, rhs._unit) == 0);
 }
