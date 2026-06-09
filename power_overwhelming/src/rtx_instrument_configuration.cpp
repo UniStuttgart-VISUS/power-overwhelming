@@ -982,7 +982,11 @@ PWROWG_NAMESPACE::rtx_instrument_configuration::timeout_or_default(
         void) const noexcept {
     return (this->_timeout > 0)
         ? this->_timeout
+#if defined(POWER_OVERWHELMING_WITH_VISA)
         : rtx_instrument::default_timeout;
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+        : 0;
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
