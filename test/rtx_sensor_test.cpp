@@ -78,7 +78,7 @@ public:
             Assert::IsNotNull(sensor_config0, L"Configuration is set", LINE_INFO());
 
             auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
-            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(3)));
+            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(3)).beep_on_trigger(true));
             auto trigger = rtx_sensor_trigger_builder::for_path(device.c_str()).when_software_triggered().build();
             trigger = rtx_sensor_trigger_builder::for_all().when_channel("CH0").rises_above(0.1f).build();
             sensor_config->trigger(trigger);

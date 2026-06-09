@@ -194,6 +194,7 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
         for (auto& i : instruments) {
             try {
                 if (i.wait_status(visa_event_status::operation_complete)) {
+                    //i.data()
                     //i.data(rtx_waveform_points::maximum)
                 }
             } catch (...) {}

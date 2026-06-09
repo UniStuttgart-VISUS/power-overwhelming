@@ -63,7 +63,7 @@ public:
     /// in milliseconds.</param>
     /// <returns>The number of instruments attached to the machine.
     /// </returns>
-    /// <exception cref="visa_exception">If any of the API calls failed.
+    /// <exception cref="std::system_error">If any of the API calls failed.
     /// </exception>
     static std::size_t all(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) rtx_instrument *dst,
@@ -91,7 +91,7 @@ public:
     /// could not be allocated.</exception>
     /// <exception cref="std::system_error">If the VISA library could not be
     /// loaded.</exception>
-    /// <exception cref="visa_exception">If the instrument could not be
+    /// <exception cref="std::system_error">If the instrument could not be
     /// initialised.</exception>
     static rtx_instrument create(_In_z_ const wchar_t *path,
         _In_ void (*on_new)(rtx_instrument&, void *),
@@ -119,7 +119,7 @@ public:
     /// could not be allocated.</exception>
     /// <exception cref="std::system_error">If the VISA library could not be
     /// loaded.</exception>
-    /// <exception cref="visa_exception">If the sensor could not be
+    /// <exception cref="std::system_error">If the sensor could not be
     /// initialised.</exception>
     static rtx_instrument create(_In_z_ const char *path,
         _In_ void (*on_new)(rtx_instrument&, void *),
@@ -141,7 +141,7 @@ public:
     /// could not be allocated.</exception>
     /// <exception cref="std::system_error">If the VISA library could not be
     /// loaded.</exception>
-    /// <exception cref="visa_exception">If the sensor could not be
+    /// <exception cref="std::system_error">If the sensor could not be
     /// initialised.</exception>
     static rtx_instrument create_and_reset_new(_In_z_ const wchar_t *path,
         _In_ const timeout_type timeout = default_timeout);
@@ -161,7 +161,7 @@ public:
     /// could not be allocated.</exception>
     /// <exception cref="std::system_error">If the VISA library could not be
     /// loaded.</exception>
-    /// <exception cref="visa_exception">If the sensor could not be
+    /// <exception cref="std::system_error">If the sensor could not be
     /// initialised.</exception>
     static rtx_instrument create_and_reset_new(_In_z_ const char *path,
         _In_ const timeout_type timeout = default_timeout);
@@ -206,7 +206,7 @@ public:
     /// could not be allocated.</exception>
     /// <exception cref="std::system_error">If the VISA library could not be
     /// loaded.</exception>
-    /// <exception cref="visa_exception">If the sensor could not be
+    /// <exception cref="std::system_error">If the sensor could not be
     /// initialised.</exception>
     rtx_instrument(_In_z_ const wchar_t *path,
         _In_ const timeout_type timeout = default_timeout);
@@ -235,7 +235,7 @@ public:
     /// could not be allocated.</exception>
     /// <exception cref="std::system_error">If the VISA library could not be
     /// loaded.</exception>
-    /// <exception cref="visa_exception">If the sensor could not be
+    /// <exception cref="std::system_error">If the sensor could not be
     /// initialised.</exception>
     rtx_instrument(_In_z_ const char *path,
         _In_ const timeout_type timeout = default_timeout);
@@ -258,7 +258,7 @@ public:
     /// could not be allocated.</exception>
     /// <exception cref="std::system_error">If the VISA library could not be
     /// loaded.</exception>
-    /// <exception cref="visa_exception">If the sensor could not be
+    /// <exception cref="std::system_error">If the sensor could not be
     /// initialised.</exception>
     rtx_instrument(_Out_ bool& is_new_connection,
         _In_z_ const wchar_t *path,
@@ -282,7 +282,7 @@ public:
     /// could not be allocated.</exception>
     /// <exception cref="std::system_error">If the VISA library could not be
     /// loaded.</exception>
-    /// <exception cref="visa_exception">If the sensor could not be
+    /// <exception cref="std::system_error">If the sensor could not be
     /// initialised.</exception>
     rtx_instrument(_Out_ bool& is_new_connection,
         _In_z_ const char *path,
@@ -307,7 +307,7 @@ public:
     /// <returns>The current configuration and state.</returns>
     /// <exception cref="std::runtime_errpr">If the method was called on an
     /// instance that was disposed by moving it..</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_acquisition acquisition(void) const;
 
@@ -330,7 +330,7 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the instrument has been
     /// disposed by a move.</exception>
-    /// <exception cref="visa_exception">If a VISA call failed.</exception>
+    /// <exception cref="std::system_error">If a VISA call failed.</exception>
     rtx_instrument& acquisition(_In_ const rtx_acquisition& acquisition);
 
     /// <summary>
@@ -373,7 +373,7 @@ public:
     /// </returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     bool automatic_roll(void) const;
 
@@ -388,7 +388,7 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& automatic_roll(_In_ const bool enable);
 
@@ -399,10 +399,8 @@ public:
     /// <returns>The time limit for enabling automatic roll.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the library was compiled
-    /// without support for VISA.</exception>
     rtx_quantity automatic_roll_time(void) const;
 
     /// <summary>
@@ -419,7 +417,7 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& automatic_roll_time(
         _In_ const rtx_quantity& min_time_base);
@@ -435,7 +433,7 @@ public:
     /// </returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     bool beep_on_trigger(void);
 
@@ -452,9 +450,41 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& beep_on_trigger(_In_ const bool enable);
+
+    /// <summary>
+    /// Downloads the data of the specified channel as floating-point
+    /// numbers.
+    /// </summary>
+    /// <param name="channel">The name of the channel, typically something
+    /// like &quot;CHAN1&quot; or &quot;CALC:MATH1&quot;.</param>
+    /// <returns>The channel data as a series of <c>float</c> values.
+    /// </returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="channel" />
+    /// is <see langword="nullptr" />.</exception>
+    /// <exception cref="std::runtime_error">If the method is called on an
+    /// object that has been disposed by moving it.</exception>
+    /// <exception cref="sty::system_error">If any of the API calls to the
+    /// instrument failed.</exception>
+    blob binary_data(_In_z_ const wchar_t *channel) const;
+
+    /// <summary>
+    /// Downloads the data of the specified channel as floating-point
+    /// numbers.
+    /// </summary>
+    /// <param name="channel">The name of the channel, typically something
+    /// like &quot;CHAN1&quot; or &quot;CALC:MATH1&quot;.</param>
+    /// <returns>The channel data as a series of <c>float</c> values.
+    /// </returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="channel" />
+    /// is <see langword="nullptr" />.</exception>
+    /// <exception cref="std::runtime_error">If the method is called on an
+    /// object that has been disposed by moving it.</exception>
+    /// <exception cref="sty::system_error">If any of the API calls to the
+    /// instrument failed.</exception>
+    blob binary_data(_In_z_ const char *channel) const;
 
     /// <summary>
     /// Downloads the data of the specified channel as floating-point
@@ -466,10 +496,8 @@ public:
     /// </returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="sty::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the library was compiled without support for VISA.</exception>
     blob binary_data(_In_ const channel_type channel) const;
 
     /// <summary>
@@ -480,10 +508,8 @@ public:
     /// <returns>The configuration for the specified channel.</returns>
     /// <exception cref="std::runtime_error">If the instance was disposed
     /// by moving it.</exception>
-    /// <exception cref="visa_exception">If the sensor could not be
+    /// <exception cref="std::system_error">If the sensor could not be
     /// initialised.</exception>
-    /// <exception cref="std::logic_error">If the library was compiled
-    /// without support for VISA.</exception>
     rtx_channel channel(_In_ const channel_type channel) const;
 
     /// <summary>
@@ -497,7 +523,7 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the instance was disposed
     /// by moving it.</exception>
-    /// <exception cref="visa_exception">If the sensor could not be
+    /// <exception cref="std::system_error">If the sensor could not be
     /// initialised.</exception>
     rtx_instrument& channel(_In_ const rtx_channel& channel);
 
@@ -528,10 +554,8 @@ public:
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="std::invalid_argument">If <paramref name="name" />
     /// is <c>nullptr</c>.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the library was compiled without support for VISA.</exception>
     blob copy_file_from_instrument(_In_z_ const wchar_t *name,
         _In_opt_z_ const wchar_t *path = nullptr) const;
 
@@ -546,10 +570,8 @@ public:
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="std::invalid_argument">If <paramref name="name" />
     /// is <c>nullptr</c>.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the library was compiled without support for VISA.</exception>
     blob copy_file_from_instrument(_In_z_ const char *name,
         _In_opt_z_ const char *path = nullptr) const;
 
@@ -574,7 +596,7 @@ public:
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="std::invalid_argument">If any of the parameters
     /// is <c>nullptr</c>.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& copy_file_to_instrument(_In_z_ const wchar_t *name,
         _In_ const blob& content, _In_opt_z_ const wchar_t *path = nullptr);
@@ -600,7 +622,7 @@ public:
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="std::invalid_argument">If any of the parameters
     /// is <c>nullptr</c>.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& copy_file_to_instrument(_In_z_ const char *name,
         _In_ const blob& content, _In_opt_z_ const char *path = nullptr);
@@ -616,10 +638,8 @@ public:
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="std::invalid_argument">If any of the parameters
     /// is <c>nullptr</c>.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the library was compiled without support for VISA.</exception>
     blob copy_state_from_instrument(void);
 
     /// <summary>
@@ -633,9 +653,43 @@ public:
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="std::invalid_argument">If any of the parameters
     /// is <c>nullptr</c>.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& copy_state_to_instrument(_In_ const blob& state);
+
+    /// <summary>
+    /// Retrieves the waveform data for the specified channel.
+    /// </summary>
+    /// <param name="channel">The name of the channel, typically something
+    /// like &quot;CHAN1&quot; or &quot;CALC:MATH1&quot;.</param>
+    /// <param name="points">Specifies which sample points should be
+    /// transferred.</param>
+    /// <returns>The waveform for the specified channel.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="channel" />
+    /// is <see langword="nullptr" />.</exception>
+    /// <exception cref="std::runtime_error">If the method is called on an
+    /// object that has been disposed by moving it.</exception>
+    /// <exception cref="std::system_error">If any of the API calls to the
+    /// instrument failed.</exception>
+    rtx_waveform data(_In_z_ const wchar_t *channel,
+        _In_ const rtx_waveform_points points) const;
+
+    /// <summary>
+    /// Retrieves the waveform data for the specified channel.
+    /// </summary>
+    /// <param name="channel">The name of the channel, typically something
+    /// like &quot;CHAN1&quot; or &quot;CALC:MATH1&quot;.</param>
+    /// <param name="points">Specifies which sample points should be
+    /// transferred.</param>
+    /// <returns>The waveform for the specified channel.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="channel" />
+    /// is <see langword="nullptr" />.</exception>
+    /// <exception cref="std::runtime_error">If the method is called on an
+    /// object that has been disposed by moving it.</exception>
+    /// <exception cref="std::system_error">If any of the API calls to the
+    /// instrument failed.</exception>
+    rtx_waveform data(_In_z_ const char *channel,
+        _In_ const rtx_waveform_points points) const;
 
     /// <summary>
     /// Retrieves the waveform data for the specified channel.
@@ -647,10 +701,8 @@ public:
     /// <returns>The waveform for the specified channel.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the library was compiled without support for VISA.</exception>
     rtx_waveform data(_In_ const channel_type channel,
         _In_ const rtx_waveform_points points) const;
 
@@ -667,10 +719,8 @@ public:
     /// <returns>The waveforms of all active channels.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the library was compiled without support for VISA.</exception>
     rtx_sample data(
         _In_ const rtx_waveform_points points,
         _In_ const timeout_type timeout = 1000);
@@ -691,7 +741,7 @@ public:
     /// is <c>nullptr</c> or empty.</exception>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& delete_file_from_instrument(_In_z_ const wchar_t *name,
         _In_opt_z_ const wchar_t *path = nullptr);
@@ -712,7 +762,7 @@ public:
     /// is <c>nullptr</c> or empty.</exception>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& delete_file_from_instrument(_In_z_ const char *name,
         _In_opt_z_ const char *path = nullptr);
@@ -730,7 +780,7 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& expression(_In_ const channel_type channel,
         _In_opt_z_ const wchar_t *expression,
@@ -749,7 +799,7 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& expression(_In_ const channel_type channel,
         _In_opt_z_ const char *expression,
@@ -761,10 +811,8 @@ public:
     /// <returns>The history segment index currently displayed.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the library was compiled without support for VISA.</exception>
     int history_segment(void) const;
 
     /// <summary>
@@ -780,7 +828,7 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& history_segment(_In_ const int segment);
 
@@ -790,10 +838,8 @@ public:
     /// <returns>The number of history segments in memory.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the library was compiled without support for VISA.</exception>
     std::size_t history_segments(void) const;
 
     /// <summary>
@@ -809,7 +855,7 @@ public:
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="std::invalid_argument">If any of the parameters
     /// is <c>nullptr</c> or empty.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& load_state_from_instrument(_In_z_ const wchar_t *name,
         _In_z_ const wchar_t *path = L"/INT/SETTINGS");
@@ -838,8 +884,6 @@ public:
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="std::system_error">If the operation failed.</exception>
-    /// <exception cref="std::logic_error">If the library was compiled
-    /// without support for VISA.</exception>
     rtx_operation_status operation_status(void) const;
 
     /// <summary>
@@ -850,8 +894,6 @@ public:
     /// <paramref name="status" /> are currently set in the operation status
     /// register, <see langword="false" /> otherwise.</returns>
     /// <exception cref="std::system_error">If the operation failed.</exception>
-    /// <exception cref="std::logic_error">If the library was compiled
-    /// without support for VISA.</exception>
     bool operation_status(_In_ const rtx_operation_status status) const;
 
     /// <summary>
@@ -863,7 +905,7 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& reference_position(
         _In_ const rtx_reference_point position);
@@ -875,10 +917,8 @@ public:
     /// axis.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the library was compiled without support for VISA.</exception>
     rtx_reference_point reference_position(void) const;
 
     /// <summary>
@@ -902,7 +942,7 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If the VISA command was not
+    /// <exception cref="std::system_error">If the VISA command was not
     /// processed successfully.</exception>
     rtx_instrument& reset(_In_ const rtx_instrument_reset flags
         = rtx_instrument_reset::reset);
@@ -927,7 +967,7 @@ public:
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="std::invalid_argument">If any of the parameters
     /// is <c>nullptr</c>.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     const rtx_instrument& save_state_to_instrument(
         _In_z_ const wchar_t *name,
@@ -953,7 +993,7 @@ public:
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="std::invalid_argument">If any of the parameters
     /// is <c>nullptr</c>.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     const rtx_instrument& save_state_to_instrument(
         _In_z_ const char *name,
@@ -966,10 +1006,8 @@ public:
     /// <returns>The time range of the whole waveform displayed.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the library was compiled without support for VISA.</exception>
     rtx_quantity time_range(void) const;
 
     /// <summary>
@@ -980,7 +1018,7 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& time_range(_In_ const rtx_quantity& scale);
 
@@ -990,10 +1028,8 @@ public:
     /// <returns>The time scale of a single grid division.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the library was compiled without support for VISA.</exception>
     rtx_quantity time_scale(void) const;
 
     /// <summary>
@@ -1004,7 +1040,7 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& time_scale(_In_ const rtx_quantity& scale);
 
@@ -1014,12 +1050,8 @@ public:
     /// <returns>The trigger configuration</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the library was compiled without support for VISA.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the configured trigger is not an edge trigger.</exception>
     rtx_trigger trigger(void) const;
 
     /// <summary>
@@ -1052,8 +1084,6 @@ public:
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the library was compiled without support for VISA.</exception>
     /// <exception cref="std::range_error">If the response of the instrument
     /// did not fall into the range of states that can be expressed by the
     /// <see cref="rtx_trigger_output" /> enumeration.
@@ -1068,7 +1098,7 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& trigger_output(
         _In_ const rtx_trigger_output output);
@@ -1086,7 +1116,7 @@ public:
     /// <returns><c>*this</c>.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& trigger_position(
         _In_ const rtx_quantity& offset);
@@ -1098,7 +1128,7 @@ public:
     /// <returns>The horizontal trigger position.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_quantity trigger_position(void) const;
 
@@ -1117,10 +1147,8 @@ public:
     /// including the terminating zero.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the library was compiled without support for VISA.</exception>
     std::size_t unit(_Out_writes_(cnt) wchar_t *dst,
         _In_ const std::size_t cnt,
         _In_ const channel_type channel) const;
@@ -1137,7 +1165,7 @@ public:
     /// is <c>nullptr</c>.</exception>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& unit(_In_ const channel_type channel,
         _In_z_ const wchar_t *unit);
@@ -1157,10 +1185,8 @@ public:
     /// including the terminating zero.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the library was compiled without support for VISA.</exception>
     std::size_t unit(_Out_writes_(cnt) char *dst,
         _In_ const std::size_t cnt,
         _In_ const channel_type channel) const;
@@ -1177,7 +1203,7 @@ public:
     /// is <c>nullptr</c>.</exception>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_instrument& unit(_In_ const channel_type channel,
         _In_z_ const char *unit);
@@ -1194,10 +1220,8 @@ public:
     /// including the terminating zero.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
-    /// <exception cref="visa_exception">If any of the API calls to the
+    /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    /// <exception cref="std::logic_error">If the method is called while
-    /// the library was compiled without support for VISA.</exception>
     std::size_t unit(_In_opt_ std::nullptr_t dst,
         _In_ const std::size_t cnt,
         _In_ const channel_type channel) const;

@@ -149,6 +149,32 @@ public:
 private:
 
     /// <summary>
+    /// Configures which channels of the oscilloscope are used for a sensor.
+    /// </summary>
+    struct sensor_channel final {
+
+        /// <summary>
+        /// The one-based index of the primary (single or voltage) channel.
+        /// </summary>
+        rtx_channel::channel_type channel;
+
+        /// <summary>
+        /// The one-based index of the current channel in case of a power
+        /// sensor. If the sensor is a current sensor, its index is stored in
+        /// <see cref="channel" />. Zero denotes an invalid channel.
+        /// </summary>
+        rtx_channel::channel_type current;
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        inline sensor_channel(
+                _In_ rtx_channel::channel_type channel,
+                _In_ rtx_channel::channel_type current = 0)
+            : channel(channel), current(current) { }
+    };
+
+    /// <summary>
     /// The instrument controller thread that serialises all communication with
     /// the oscilloscopes. This thread will check the
     /// <see="rtx_sensor_trigger_impl::status" /> of <see cref="_trigger" /> and
@@ -157,7 +183,7 @@ private:
     /// </summary>
     void control_instruments(void);
 
-    std::vector<std::string> _channels;
+    std::vector<std::vector<sensor_channel>> _channels;
     std::size_t _index;
     const sensor_array_impl *_owner;
     std::thread _thread;

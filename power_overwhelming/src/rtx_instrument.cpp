@@ -400,17 +400,44 @@ PWROWG_NAMESPACE::rtx_instrument::beep_on_trigger(
 /*
  * PWROWG_NAMESPACE::rtx_instrument::binary_data
  */
-PWROWG_NAMESPACE::blob
-PWROWG_NAMESPACE::rtx_instrument::binary_data(
-        _In_ const channel_type channel) const {
+PWROWG_NAMESPACE::blob PWROWG_NAMESPACE::rtx_instrument::binary_data(
+        _In_z_ const wchar_t *channel) const {
+    if (channel == nullptr) {
+        throw std::invalid_argument("The channel identifier cannot be null.");
+    }
+
+    auto c = convert_string<char>(channel);
+    return this->binary_data(c.c_str());
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_instrument::binary_data
+ */
+PWROWG_NAMESPACE::blob PWROWG_NAMESPACE::rtx_instrument::binary_data(
+        _In_z_ const char *channel) const {
+    if (channel == nullptr) {
+        throw std::invalid_argument("The channel identifier cannot be null.");
+    }
+
     auto& impl = this->check_not_disposed();
 
     impl.write("FORM REAL,32\n");
     impl.write("FORM:BORD LSBF\n");
     impl.check_system_error();
 
-    impl.format("CHAN%u:DATA?\n", channel);
+    impl.format("%s:DATA?\n", channel);
     return impl.read_binary();
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_instrument::binary_data
+ */
+PWROWG_NAMESPACE::blob PWROWG_NAMESPACE::rtx_instrument::binary_data(
+        _In_ const channel_type channel) const {
+    auto c = detail::format_string("CHAN%u", channel);
+    return this->binary_data(c.c_str());
 }
 
 
@@ -857,59 +884,87 @@ PWROWG_NAMESPACE::rtx_instrument::copy_state_to_instrument(
 /*
  * PWROWG_NAMESPACE::rtx_instrument::data
  */
-PWROWG_NAMESPACE::rtx_waveform
-PWROWG_NAMESPACE::rtx_instrument::data(
-        _In_ const channel_type channel,
+PWROWG_NAMESPACE::rtx_waveform PWROWG_NAMESPACE::rtx_instrument::data(
+        _In_z_ const wchar_t *channel,
         _In_ const rtx_waveform_points points) const {
+    if (channel == nullptr) {
+        throw std::invalid_argument("The channel identifier cannot be null.");
+    }
+
+    auto c = convert_string<char>(channel);
+    return this->data(c.c_str(), points);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_instrument::data
+ */
+PWROWG_NAMESPACE::rtx_waveform PWROWG_NAMESPACE::rtx_instrument::data(
+        _In_z_ const char *channel,
+        _In_ const rtx_waveform_points points) const {
+    if (channel == nullptr) {
+        throw std::invalid_argument("The channel identifier cannot be null.");
+    }
+
     auto& impl = this->check_not_disposed();
 
     switch (points) {
         case rtx_waveform_points::maximum:
-            impl.format("CHAN%u:DATA:POIN MAX\n", channel);
+            impl.format("%s:DATA:POIN MAX\n", channel);
             break;
 
         case rtx_waveform_points::maximum_visible:
-            impl.format("CHAN%u:DATA:POIN DMAX\n", channel);
+            impl.format("%s:DATA:POIN DMAX\n", channel);
             break;
 
         case rtx_waveform_points::visible:
         default:
-            impl.format("CHAN%u:DATA:POIN DEF\n", channel);
+            impl.format("%s:DATA:POIN DEF\n", channel);
             break;
     }
 
-    const auto qxorg = detail::format_string("CHAN%u:DATA:XOR?\n", channel);
+    const auto qxorg = detail::format_string("%s:DATA:XOR?\n", channel);
     auto rxorg = this->query(qxorg.c_str());
     auto xorg = rxorg.as<char>();
     _Analysis_assume_(xorg != nullptr);
     detail::trim_eol(xorg);
 
-    const auto qxinc = detail::format_string("CHAN%u:DATA:XINC?\n", channel);
+    const auto qxinc = detail::format_string("%s:DATA:XINC?\n", channel);
     auto rxinc = this->query(qxinc.c_str());
     auto xinc= rxinc.as<char>();
     _Analysis_assume_(xinc != nullptr);
     detail::trim_eol(xinc);
 
-    const auto qtsr = detail::format_string("CHAN%u:HIST:TSR?\n", channel);
+    const auto qtsr = detail::format_string("%s:HIST:TSR?\n", channel);
     auto rtsr = this->query(qtsr.c_str());
     auto tsr = rtsr.as<char>();
     _Analysis_assume_(tsr != nullptr);
     detail::trim_eol(tsr);
 
-    const auto qtsd = detail::format_string("CHAN%u:HIST:TSD?\n", channel);
+    const auto qtsd = detail::format_string("%s:HIST:TSD?\n", channel);
     auto rtsd = this->query(qtsd.c_str());
     auto tsd = rtsd.as<char>();
     _Analysis_assume_(tsd != nullptr);
     detail::trim_eol(tsd);
 
-    const auto qtsab = detail::format_string("CHAN%u:HIST:TSAB?\n", channel);
+    const auto qtsab = detail::format_string("%s:HIST:TSAB?\n", channel);
     auto rtsab = this->query(qtsab.c_str());
     auto tsab = rtsab.as<char>();
     _Analysis_assume_(tsab != nullptr);
     detail::trim_eol(tsab);
 
-    return rtx_waveform(xorg, xinc, tsd, tsab, tsr,
-        this->binary_data(channel));
+    return rtx_waveform(xorg, xinc, tsd, tsab, tsr, this->binary_data(channel));
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_instrument::data
+ */
+PWROWG_NAMESPACE::rtx_waveform PWROWG_NAMESPACE::rtx_instrument::data(
+        _In_ const channel_type channel,
+        _In_ const rtx_waveform_points points) const {
+    auto c = detail::format_string("CHAN%u", channel);
+    return this->data(c.c_str(), points);
 }
 
 

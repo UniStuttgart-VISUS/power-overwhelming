@@ -27,10 +27,12 @@ TInput PWROWG_DETAIL_NAMESPACE::rtx_sensor::from_descriptions(
     // are grouped. The paths of the sensors are the VISA paths to the
     // instruments.
     std::sort(begin, retval, [](const desc_type& lhs, const desc_type& rhs) {
-        assert(lhs.path() != nullptr);
-        assert(rhs.path() != nullptr);
+        const auto l = lhs.path();
+        const auto r = rhs.path();
+        assert(l != nullptr);
+        assert(r != nullptr);
 
-        const auto d = ::wcscmp(lhs.path(), rhs.path());
+        const auto d = ::wcscmp(l, r);
         if (d == 0) {
             // If we are on the same device, order the sensors voltage, current
             // and power last.
@@ -170,15 +172,19 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
                 i.path(), idx_trig);
 
             if (this->_trigger._impl->trigger != nullptr) {
-                PWROWG_TRACE("Configuring \"%s\" to use the trigger provided "
-                    "by the user.", i.path());
-                icfg.trigger(*this->_trigger._impl->trigger);
+                auto& trigger = *this->_trigger._impl->trigger;
+                PWROWG_TRACE("Configuring \"%s\" to use the %u trigger "
+                    "provided by the user.", i.path(), trigger.type());
+                icfg.trigger(trigger);
 
             } else {
-                PWROWG_TRACE("Setting up an external dummy trigger on \"%s\".",
-                    i.path());
+                const auto level = (this->_trigger._impl->daisy_chain > 0.0f)
+                    ? this->_trigger._impl->daisy_chain
+                    : 400.0f;
+                PWROWG_TRACE("Setting up an external dummy trigger on \"%s\" "
+                    "at %f V.", i.path(), level);
                 icfg.trigger(rtx_trigger(5, rtx_trigger_type::edge)
-                    .external(230.0f)
+                    .external(level)
                     .mode(rtx_trigger_mode::normal));
             }
 
@@ -189,7 +195,7 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
             icfg.trigger(rtx_trigger(5, rtx_trigger_type::edge)
                 .external(level)
                 .mode(rtx_trigger_mode::normal));
-        }
+        } /* if (trig_instr.empty() || equals(trig_instr, i.path(), true)) */
 
         PWROWG_TRACE("Reset \"%s\" before creating sensors.", i.path());
         i.reset(rtx_instrument_reset::reset | rtx_instrument_reset::status);
@@ -215,37 +221,40 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         i.wait_status(visa_event_status::operation_complete);
         i.throw_on_system_error();
 
-        //auto sd = builder_type::private_data<rtx_sensor_definition>(*it);
-        //assert(sd != nullptr);
-        //auto& cur = sd->current_channel();
-        //auto& vol = sd->voltage_channel();
+        PWROWG_TRACE("Creating channel map for instrument \"%s\".", i.path());
+        this->_channels.emplace_back();
+        auto& ichannels = this->_channels.back();
+        for (auto jt = b; jt != it; ++jt) {
+            //PWROWG_TRACE(L"Creating sensor for \"%s\".", jt->path());
+            if (jt->is_sensor_type(sensor_type::voltage)) {
+                auto d = builder_type::private_data<rtx_sensor_definition>(*jt);
+                assert(d != nullptr);
+                assert(d->voltage_channel().channel() != 0);
+                ichannels.emplace_back(d->voltage_channel().channel());
+                PWROWG_TRACE("Channel %u on \"%s\" is a voltage sensor.",
+                    ichannels.back().channel, i.path());
 
-        //if (it->is_sensor_type(sensor_type::current)) {
-        //    instrument.channel(cur);
+            } else if (jt->is_sensor_type(sensor_type::current)) {
+                auto d = builder_type::private_data<rtx_sensor_definition>(*jt);
+                assert(d != nullptr);
+                assert(d->current_channel().channel() != 0);
+                ichannels.emplace_back(d->current_channel().channel());
+                PWROWG_TRACE("Channel %u on \"%s\" is a current sensor.",
+                    ichannels.back().channel, i.path());
 
-        //    std::string name("CH");
-        //    name += std::to_string(cur.channel());
-        //    this->_channels.push_back(std::move(name));
-
-        //} else if (it->is_sensor_type(sensor_type::power)) {
-        //    std::string expr("CH");
-        //    expr += std::to_string(cur.channel());
-        //    expr += "*CH";
-        //    expr += std::to_string(vol.channel());
-        //    instrument.expression(++next_math, expr.c_str(), "VA");
-
-        //    std::string name("MATH");
-        //    name += std::to_string(next_math);
-        //    this->_channels.push_back(std::move(name));
-
-        //} else {
-        //    assert(it->is_sensor_type(sensor_type::voltage));
-        //    instrument.channel(vol);
-
-        //    std::string name("CH");
-        //    name += std::to_string(vol.channel());
-        //    this->_channels.push_back(std::move(name));
-        //}
+            } else if (jt->is_sensor_type(sensor_type::power)) {
+                auto d = builder_type::private_data<rtx_sensor_definition>(*jt);
+                assert(d != nullptr);
+                assert(d->voltage_channel().channel() != 0);
+                assert(d->current_channel().channel() != 0);
+                ichannels.emplace_back(
+                    d->voltage_channel().channel(),
+                    d->current_channel().channel());
+                PWROWG_TRACE("Channel %u and %u on \"%s\" are a power sensor.",
+                    ichannels.back().channel, ichannels.back().current,
+                    i.path());
+            }
+        } /* for (auto jt = b; jt != it; ++jt) */
     }
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
