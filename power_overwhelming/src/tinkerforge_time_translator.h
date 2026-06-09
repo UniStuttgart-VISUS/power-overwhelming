@@ -1,5 +1,5 @@
 ﻿// <copyright file="tinkerforge_time_translator.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -10,6 +10,7 @@
 #include <cassert>
 #include <chrono>
 #include <cinttypes>
+#include <stdexcept>
 #include <thread>
 #include <utility>
 

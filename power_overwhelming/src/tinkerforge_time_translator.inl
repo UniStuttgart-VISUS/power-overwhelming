@@ -1,5 +1,5 @@
 ﻿// <copyright file="tinkerforge_time_translator.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -44,6 +44,9 @@ void visus::power_overwhelming::detail::tinkerforge_time_translator::reset(
 
         // Reset the update counter.
         this->_next_update = this->_update_every;
+    } else {
+        throw std::runtime_error("The given bricklet does not have the custom "
+            "firmware required for time translation.");
     }
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 }
