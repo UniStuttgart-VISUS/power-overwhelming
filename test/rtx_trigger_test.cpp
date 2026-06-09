@@ -28,7 +28,7 @@ public:
         Assert::AreEqual(int(rtx_trigger_mode::automatic), int(trigger.mode()), L"Default mode", LINE_INFO());
         Assert::AreEqual(int(rtx_trigger_slope::rising), int(trigger.slope()), L"Default slope", LINE_INFO());
         Assert::AreEqual("CH1", trigger.source(), L"Default source", LINE_INFO());
-        Assert::AreEqual("EDGE", trigger.type(), L"Default type", LINE_INFO());
+        Assert::IsTrue(trigger.type() == rtx_trigger_type::edge, L"Default type", LINE_INFO());
     }
 
     TEST_METHOD(test_edge_trigger_fluid_api) {
@@ -51,7 +51,7 @@ public:
         Assert::AreEqual(int(rtx_trigger_mode::automatic), int(trigger.mode()), L"Set mode", LINE_INFO());
         Assert::AreEqual(int(rtx_trigger_slope::falling), int(trigger.slope()), L"Set slope", LINE_INFO());
         Assert::AreEqual("CH2", trigger.source(), L"Set source", LINE_INFO());
-        Assert::AreEqual("EDGE", trigger.type(), L"Set type", LINE_INFO());
+        Assert::IsTrue(trigger.type() == rtx_trigger_type::edge, L"Set type", LINE_INFO());
     }
 
     TEST_METHOD(test_edge_trigger_copy_ctor) {
@@ -76,7 +76,7 @@ public:
         Assert::AreEqual(int(expected.mode()), int(trigger.mode()), L"Copy mode", LINE_INFO());
         Assert::AreEqual(int(expected.slope()), int(trigger.slope()), L"Copy slope", LINE_INFO());
         Assert::AreEqual(expected.source(), trigger.source(), L"Copy source", LINE_INFO());
-        Assert::AreEqual(expected.type(), trigger.type(), L"Copy type", LINE_INFO());
+        Assert::IsTrue(expected.type() == trigger.type(), L"Copy type", LINE_INFO());
     }
 
     TEST_METHOD(test_edge_trigger_assignment) {
@@ -102,7 +102,7 @@ public:
         Assert::AreEqual(int(expected.mode()), int(trigger.mode()), L"Copy mode", LINE_INFO());
         Assert::AreEqual(int(expected.slope()), int(trigger.slope()), L"Copy slope", LINE_INFO());
         Assert::AreEqual(expected.source(), trigger.source(), L"Copy source", LINE_INFO());
-        Assert::AreEqual(expected.type(), trigger.type(), L"Copy type", LINE_INFO());
+        Assert::IsTrue(expected.type() == trigger.type(), L"Copy type", LINE_INFO());
     }
 
     TEST_METHOD(test_parse_coupling) {

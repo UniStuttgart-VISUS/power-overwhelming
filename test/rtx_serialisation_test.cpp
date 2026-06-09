@@ -67,7 +67,7 @@ public:
         Assert::AreEqual(int(input.mode()), int(output.mode()), L"mode", LINE_INFO());
         Assert::AreEqual(int(input.slope()), int(output.slope()), L"slope", LINE_INFO());
         Assert::AreEqual(input.source(), output.source(), L"source", LINE_INFO());
-        Assert::AreEqual(input.type(), output.type(), L"type", LINE_INFO());
+        Assert::IsTrue(input.type() == output.type(), L"type", LINE_INFO());
     }
 
     TEST_METHOD(test_rtx_label) {
@@ -139,7 +139,7 @@ public:
         Assert::AreEqual(int(input.trigger().mode()), int(output.trigger().mode()), L"trigger.mode", LINE_INFO());
         Assert::AreEqual(int(input.trigger().slope()), int(output.trigger().slope()), L"trigger.slope", LINE_INFO());
         Assert::AreEqual(input.trigger().source(), output.trigger().source(), L"trigger.source", LINE_INFO());
-        Assert::AreEqual(input.trigger().type(), output.trigger().type(), L"trigger.type", LINE_INFO());
+        Assert::IsTrue(input.trigger().type() == output.trigger().type(), L"trigger.type", LINE_INFO());
     }
 
     TEST_METHOD(test_rtx_instrument_config_with_channels) {

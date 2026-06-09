@@ -79,6 +79,39 @@ enum class rtx_trigger_type {
     runt
 };
 
+
+/// <summary>
+/// Parses a <see cref="rtx_trigger_type" /> from its string representation.
+/// </summary>
+/// <param name="str">The string to be parsed.</param>
+/// <returns>The trigger type represented by the string, or
+/// <see cref="rtx_trigger_type::none "/> if the string could not be parsed.
+/// </returns>
+PWROWG_TEST_API rtx_trigger_type parse_rtx_trigger_type(
+    _In_z_ const wchar_t *str) noexcept;
+
+
+/// <summary>
+/// Parses a <see cref="rtx_trigger_type" /> from its string representation.
+/// </summary>
+/// <param name="str">The string to be parsed.</param>
+/// <returns>The trigger type represented by the string, or
+/// <see cref="rtx_trigger_type::none "/> if the string could not be parsed.
+/// </returns>
+PWROWG_TEST_API rtx_trigger_type parse_rtx_trigger_type(
+    _In_z_ const char *str) noexcept;
+
+
+/// <summary>
+/// Answer the string representation of the trigger type as it is used by the
+/// instrument. This string can be used for the VISA command configuring the
+/// trigger type.
+/// </summary>
+/// <param name="value">The type to be converted.</param>
+/// <returns>A pointer to a static string representing the type.</returns>
+PWROWG_TEST_API _Ret_z_ const char *to_string(
+    _In_ const rtx_trigger_type value);
+
 PWROWG_NAMESPACE_END
 
 #endif /* !defined(_PWROWG_RTX_TRIGGER_TYPE_H) */

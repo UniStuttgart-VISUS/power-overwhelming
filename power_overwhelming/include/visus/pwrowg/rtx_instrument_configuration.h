@@ -835,6 +835,15 @@ public:
     }
 
     /// <summary>
+    /// Answer the timeout of the instrument in milliseconds, or the default
+    /// value of <see cref="rtx_instrument::default_timeout" /> if no timeout
+    /// is configured.
+    /// </summary>
+    /// <returns>The timeout of the instrument, or the default value if the
+    /// timeout should not be modified.</returns>
+    timeout_type timeout_or_default(void) const noexcept;
+
+    /// <summary>
     /// Answers the time range the instrument will cover when a new sample
     /// is being requested.
     /// </summary>

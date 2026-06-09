@@ -212,8 +212,8 @@ void query_rtx_instrument(void) {
                     << int(t.slope()) << std::endl;
                 std::wcout << L"Trigger slope: "
                     << convert_string<wchar_t>(t.source()) << std::endl;
-                std::wcout << L"Trigger type: "
-                    << convert_string<wchar_t>(t.type()) << std::endl;
+                std::cout << "Trigger type: "
+                    << to_string(t.type()) << std::endl;
             }
 
             i.reference_position(rtx_reference_point::left);

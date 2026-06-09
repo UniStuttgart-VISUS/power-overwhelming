@@ -98,8 +98,10 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         // plus everything we need for the sensor to work.
         auto icfg = config.base_configuration();
 
-        PWROWG_TRACE(L"Connecting to instrument \"%s\".", b->path());
-        instruments.emplace_back(b->path(), icfg.timeout());
+        const auto timeout = icfg.timeout_or_default();
+        PWROWG_TRACE(L"Connecting to instrument \"%s\" with a timeout of "
+            "%u ms.", b->path(), timeout);
+        instruments.emplace_back(b->path(), timeout);
         assert(!instruments.empty());
         auto& i = instruments.back();
 
@@ -154,17 +156,48 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
 
         icfg.reference_position(rtx_reference_point::left);
 
-        // TODO: Trigger
+        if (this->_trigger._impl->daisy_chain > 0.0f) {
+            PWROWG_TRACE(_T("Setting up daisy chain for trigger."));
+            i.trigger_output(rtx_trigger_output::pulse);
+        }
+
+        const auto& trig_instr = this->_trigger._impl->path;
+        if (trig_instr.empty() || equals(trig_instr, i.path(), true)) {
+            assert(!instruments.empty());
+            const auto idx_trig = instruments.size() - 1;
+            this->_trigger._impl->trigger_instrument = idx_trig;
+            PWROWG_TRACE("\"%s\" at position %zu is the triggering instrument.",
+                i.path(), idx_trig);
+
+            if (this->_trigger._impl->trigger != nullptr) {
+                PWROWG_TRACE("Configuring \"%s\" to use the trigger provided "
+                    "by the user.", i.path());
+                icfg.trigger(*this->_trigger._impl->trigger);
+
+            } else {
+                PWROWG_TRACE("Setting up an external dummy trigger on \"%s\".",
+                    i.path());
+                icfg.trigger(rtx_trigger(5, rtx_trigger_type::edge)
+                    .external(230.0f)
+                    .mode(rtx_trigger_mode::normal));
+            }
+
+        } else {
+            const auto level = this->_trigger._impl->daisy_chain;
+            PWROWG_TRACE("Configuring \"%s\" to use the external trigger at "
+                "%f V.", i.path(), level);
+            icfg.trigger(rtx_trigger(5, rtx_trigger_type::edge)
+                .external(level)
+                .mode(rtx_trigger_mode::normal));
+        }
 
         PWROWG_TRACE("Reset \"%s\" before creating sensors.", i.path());
         i.reset(rtx_instrument_reset::reset | rtx_instrument_reset::status);
+        i.timeout(timeout);
+        i.operation_complete();
 
         PWROWG_TRACE("Applying configuration to instrument \"%s\".", i.path());
         icfg.apply(i);
-
-        PWROWG_TRACE("Synchronising the clock of \"%s\" with the current UTC.",
-            i.path());
-        i.synchronise_clock(true);
 
         PWROWG_TRACE("Configuring events for instrument \"%s\".", i.path());
         i.event_status(visa_event_status::operation_complete);
@@ -172,46 +205,15 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
             | visa_status_byte::message_available);
         i.enable_event(VI_EVENT_SERVICE_REQ, VI_QUEUE);
 
+        PWROWG_TRACE("Synchronising the clock of \"%s\" with the current UTC.",
+            i.path());
+        i.synchronise_clock(true);
+
         PWROWG_TRACE("Making sure that \"%s\" is not in an error state "
             "after applying all configuration changes.", i.path());
         i.operation_complete_async();
         i.wait_status(visa_event_status::operation_complete);
         i.throw_on_system_error();
-
-            //if (this->_trigger._impl->daisy_chain > 0.0f) {
-            //    PWROWG_TRACE(_T("Setting up daisy chain for trigger."));
-            //    i.trigger_output(rtx_trigger_output::pulse);
-
-            //    if (equals(this->_trigger._impl->path, i.path(), true)) {
-            //        assert(!instruments.empty());
-            //        const auto idx_trig = instruments.size() - 1;
-            //        this->_trigger._impl->trigger_instrument = idx_trig;
-            //        PWROWG_TRACE("\"%s\" at position %zu is the triggering "
-            //            "instrument.", i.path(), idx_trig);
-
-            //    } else {
-            //        const auto level = this->_trigger._impl->daisy_chain;
-            //        PWROWG_TRACE("Configuring \"%s\" to use the external "
-            //            "trigger at %f V.", i.path(), level);
-            //        i.trigger(rtx_trigger::external_edge(level)
-            //            .mode(rtx_trigger_mode::normal));
-            //    }
-            //}
-
-            //if (this->_trigger._impl->trigger != nullptr) {
-            //    const auto& path = this->_trigger._impl->path;
-            //    PWROWG_TRACE("Path to triggering instrument is \"%s.\".",
-            //        path.c_str());
-
-            //    if (path.empty() || equals(path, i.path(), true)) {
-            //        PWROWG_TRACE("Configuring \"%s\" to use the trigger "
-            //            "provided by the user.", i.path());
-            //        i.trigger(*this->_trigger._impl->trigger);
-            //    }
-            //}
-        //}
-        //assert(!instruments.empty());
-        //auto& instrument = instruments.back();
 
         //auto sd = builder_type::private_data<rtx_sensor_definition>(*it);
         //assert(sd != nullptr);

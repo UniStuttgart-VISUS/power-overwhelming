@@ -1434,7 +1434,7 @@ PWROWG_NAMESPACE::rtx_instrument::trigger(
     }
 
     // Apply special configuration if the trigger is an edge trigger.
-    if (detail::equals(trigger.type(), "EDGE", true)) {
+    if (trigger.type() == rtx_trigger_type::edge) {
         switch (trigger.slope()) {
             case rtx_trigger_slope::both:
                 impl.format("TRIG:A:EDGE:SLOP EITH\n");

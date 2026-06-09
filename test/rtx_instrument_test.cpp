@@ -44,7 +44,7 @@ public:
         Assert::AreEqual(int(expected_trigger.mode()), int(config.trigger().mode()), L"trigger.mode", LINE_INFO());
         Assert::AreEqual(expected_trigger.source(), config.trigger().source(), L"trigger.source", LINE_INFO());
         Assert::AreEqual(int(expected_trigger.slope()), int(config.trigger().slope()), L"trigger.slope", LINE_INFO());
-        Assert::AreEqual(expected_trigger.type(), config.trigger().type(), L"trigger.type", LINE_INFO());
+        Assert::IsTrue(expected_trigger.type() == config.trigger().type(), L"trigger.type", LINE_INFO());
     }
 
     TEST_METHOD(test_config_copy_ctor) {
@@ -83,7 +83,7 @@ public:
         Assert::AreEqual(int(expected_trigger.mode()), int(config.trigger().mode()), L"Initialise trigger.mode", LINE_INFO());
         Assert::AreEqual(expected_trigger.source(), config.trigger().source(), L"Initialise trigger.source", LINE_INFO());
         Assert::AreEqual(int(expected_trigger.slope()), int(config.trigger().slope()), L"Initialise trigger.slope", LINE_INFO());
-        Assert::AreEqual(expected_trigger.type(), config.trigger().type(), L"Initialise trigger.type", LINE_INFO());
+        Assert::IsTrue(expected_trigger.type() == config.trigger().type(), L"Initialise trigger.type", LINE_INFO());
 
         rtx_instrument_configuration copy(config);
         Assert::AreEqual(config.acquisition().automatic_points(), copy.acquisition().automatic_points(), L"acquisition.automatic_points", LINE_INFO());
@@ -106,7 +106,7 @@ public:
         Assert::AreEqual(int(config.trigger().mode()), int(copy.trigger().mode()), L"trigger.mode", LINE_INFO());
         Assert::AreEqual(config.trigger().source(), copy.trigger().source(), L"trigger.source", LINE_INFO());
         Assert::AreEqual(int(config.trigger().slope()), int(copy.trigger().slope()), L"trigger.slope", LINE_INFO());
-        Assert::AreEqual(config.trigger().type(), copy.trigger().type(), L"trigger.type", LINE_INFO());
+        Assert::IsTrue(config.trigger().type() == copy.trigger().type(), L"trigger.type", LINE_INFO());
 
         std::vector<rtx_channel> expected_channels(config.channels());
         config.channels(expected_channels.data(), expected_channels.size());
@@ -177,7 +177,7 @@ public:
         Assert::AreEqual(int(config.trigger().mode()), int(copy.trigger().mode()), L"trigger.mode", LINE_INFO());
         Assert::AreEqual(config.trigger().source(), copy.trigger().source(), L"trigger.source", LINE_INFO());
         Assert::AreEqual(int(config.trigger().slope()), int(copy.trigger().slope()), L"trigger.slope", LINE_INFO());
-        Assert::AreEqual(config.trigger().type(), copy.trigger().type(), L"trigger.type", LINE_INFO());
+        Assert::IsTrue(config.trigger().type() == copy.trigger().type(), L"trigger.type", LINE_INFO());
 
         std::vector<rtx_channel> expected_channels(config.channels());
         config.channels(expected_channels.data(), expected_channels.size());
@@ -243,7 +243,7 @@ public:
         Assert::AreEqual(int(expected_trigger.mode()), int(config.trigger().mode()), L"Initialise trigger.mode", LINE_INFO());
         Assert::AreEqual(expected_trigger.source(), config.trigger().source(), L"Initialise trigger.source", LINE_INFO());
         Assert::AreEqual(int(expected_trigger.slope()), int(config.trigger().slope()), L"Initialise trigger.slope", LINE_INFO());
-        Assert::AreEqual(expected_trigger.type(), config.trigger().type(), L"Initialise trigger.type", LINE_INFO());
+        Assert::IsTrue(expected_trigger.type() == config.trigger().type(), L"Initialise trigger.type", LINE_INFO());
 
         rtx_instrument_configuration copy(std::move(config));
         Assert::AreEqual(expected_acquisition.automatic_points(), copy.acquisition().automatic_points(), L"acquisition.automatic_points", LINE_INFO());
@@ -267,7 +267,7 @@ public:
         Assert::AreEqual(int(expected_trigger.mode()), int(copy.trigger().mode()), L"Initialise trigger.mode", LINE_INFO());
         Assert::AreEqual(expected_trigger.source(), copy.trigger().source(), L"Initialise trigger.source", LINE_INFO());
         Assert::AreEqual(int(expected_trigger.slope()), int(copy.trigger().slope()), L"Initialise trigger.slope", LINE_INFO());
-        Assert::AreEqual(expected_trigger.type(), copy.trigger().type(), L"Initialise trigger.type", LINE_INFO());
+        Assert::IsTrue(expected_trigger.type() == copy.trigger().type(), L"Initialise trigger.type", LINE_INFO());
     }
 
     TEST_METHOD(test_config_move_assign) {
@@ -312,7 +312,7 @@ public:
         Assert::AreEqual(int(expected_trigger.mode()), int(copy.trigger().mode()), L"Initialise trigger.mode", LINE_INFO());
         Assert::AreEqual(expected_trigger.source(), copy.trigger().source(), L"Initialise trigger.source", LINE_INFO());
         Assert::AreEqual(int(expected_trigger.slope()), int(copy.trigger().slope()), L"Initialise trigger.slope", LINE_INFO());
-        Assert::AreEqual(expected_trigger.type(), copy.trigger().type(), L"Initialise trigger.type", LINE_INFO());
+        Assert::IsTrue(expected_trigger.type() == copy.trigger().type(), L"Initialise trigger.type", LINE_INFO());
     }
 
     TEST_METHOD(test_config_channel) {
@@ -417,7 +417,7 @@ public:
         Assert::AreEqual(int(expected_config.trigger().mode()), int(actual_config.trigger().mode()), L"trigger.mode", LINE_INFO());
         Assert::AreEqual(expected_config.trigger().source(), actual_config.trigger().source(), L"trigger.source", LINE_INFO());
         Assert::AreEqual(int(expected_config.trigger().slope()), int(actual_config.trigger().slope()), L"trigger.slope", LINE_INFO());
-        Assert::AreEqual(expected_config.trigger().type(), actual_config.trigger().type(), L"trigger.type", LINE_INFO());
+        Assert::IsTrue(expected_config.trigger().type() == actual_config.trigger().type(), L"trigger.type", LINE_INFO());
     }
 
     TEST_METHOD(test_config_save_load_array) {
@@ -458,7 +458,7 @@ public:
             Assert::AreEqual(int(expected_configs[0].trigger().mode()), int(actual_config.trigger().mode()), L"trigger.mode", LINE_INFO());
             Assert::AreEqual(expected_configs[0].trigger().source(), actual_config.trigger().source(), L"trigger.source", LINE_INFO());
             Assert::AreEqual(int(expected_configs[0].trigger().slope()), int(actual_config.trigger().slope()), L"trigger.slope", LINE_INFO());
-            Assert::AreEqual(expected_configs[0].trigger().type(), actual_config.trigger().type(), L"trigger.type", LINE_INFO());
+            Assert::IsTrue(expected_configs[0].trigger().type() == actual_config.trigger().type(), L"trigger.type", LINE_INFO());
         }
 
         {
@@ -487,7 +487,7 @@ public:
                 Assert::AreEqual(int(expected_configs[i].trigger().mode()), int(actual_configs[i].trigger().mode()), L"trigger.mode", LINE_INFO());
                 Assert::AreEqual(expected_configs[i].trigger().source(), actual_configs[i].trigger().source(), L"trigger.source", LINE_INFO());
                 Assert::AreEqual(int(expected_configs[i].trigger().slope()), int(actual_configs[i].trigger().slope()), L"trigger.slope", LINE_INFO());
-                Assert::AreEqual(expected_configs[i].trigger().type(), actual_configs[i].trigger().type(), L"trigger.type", LINE_INFO());
+                Assert::IsTrue(expected_configs[i].trigger().type() ==  actual_configs[i].trigger().type(), L"trigger.type", LINE_INFO());
             }
         }
     }
@@ -534,7 +534,7 @@ public:
         Assert::AreEqual(int(expected_config.trigger().mode()), int(actual_config.trigger().mode()), L"trigger.mode", LINE_INFO());
         Assert::AreEqual(expected_config.trigger().source(), actual_config.trigger().source(), L"trigger.source", LINE_INFO());
         Assert::AreEqual(int(expected_config.trigger().slope()), int(actual_config.trigger().slope()), L"trigger.slope", LINE_INFO());
-        Assert::AreEqual(expected_config.trigger().type(), actual_config.trigger().type(), L"trigger.type", LINE_INFO());
+        Assert::IsTrue(expected_config.trigger().type() == actual_config.trigger().type(), L"trigger.type", LINE_INFO());
 
         Assert::ExpectException<std::invalid_argument>([](void) {
             rtx_instrument_configuration::deserialise(nullptr);
@@ -587,7 +587,7 @@ public:
                 Assert::AreEqual(int(expected_configs[i].trigger().mode()), int(actual_configs[i].trigger().mode()), L"trigger.mode", LINE_INFO());
                 Assert::AreEqual(expected_configs[i].trigger().source(), actual_configs[i].trigger().source(), L"trigger.source", LINE_INFO());
                 Assert::AreEqual(int(expected_configs[i].trigger().slope()), int(actual_configs[i].trigger().slope()), L"trigger.slope", LINE_INFO());
-                Assert::AreEqual(expected_configs[i].trigger().type(), actual_configs[i].trigger().type(), L"trigger.type", LINE_INFO());
+                Assert::IsTrue(expected_configs[i].trigger().type() == actual_configs[i].trigger().type(), L"trigger.type", LINE_INFO());
             }
         }
     }

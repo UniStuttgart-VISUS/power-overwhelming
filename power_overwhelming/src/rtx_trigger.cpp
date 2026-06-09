@@ -77,14 +77,15 @@ PWROWG_NAMESPACE::rtx_trigger PWROWG_NAMESPACE::rtx_trigger::external_edge(
  * PWROWG_NAMESPACE::rtx_trigger::rtx_trigger
  */
 PWROWG_NAMESPACE::rtx_trigger::rtx_trigger(
-        _In_z_ const wchar_t *source, _In_z_ const wchar_t *type)
+        _In_z_ const wchar_t *source,
+        _In_ const rtx_trigger_type type)
     : _coupling(rtx_trigger_coupling::direct_current),
         _hysteresis(rtx_trigger_hysteresis::automatic),
         _input(0),
         _mode(rtx_trigger_mode::automatic),
-        _slope(rtx_trigger_slope::rising) {
+        _slope(rtx_trigger_slope::rising),
+        _type(type) {
     this->source(source);
-    this->type(type);
 }
 
 
@@ -92,14 +93,43 @@ PWROWG_NAMESPACE::rtx_trigger::rtx_trigger(
  * PWROWG_NAMESPACE::rtx_trigger::rtx_trigger
  */
 PWROWG_NAMESPACE::rtx_trigger::rtx_trigger(
-        _In_z_ const char *source, _In_z_ const char *type)
+        _In_z_ const char *source,
+        _In_ const rtx_trigger_type type)
     : _coupling(rtx_trigger_coupling::direct_current),
         _hysteresis(rtx_trigger_hysteresis::automatic),
         _input(0),
         _mode(rtx_trigger_mode::automatic),
-        _slope(rtx_trigger_slope::rising) {
+        _slope(rtx_trigger_slope::rising),
+        _type(type) {
     this->source(source);
-    this->type(type);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_trigger::rtx_trigger
+ */
+PWROWG_NAMESPACE::rtx_trigger::rtx_trigger(
+        _In_z_ const wchar_t *source, _In_z_ const wchar_t *type)
+    : rtx_trigger(source, parse_rtx_trigger_type(type)) { }
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_trigger::rtx_trigger
+ */
+PWROWG_NAMESPACE::rtx_trigger::rtx_trigger(
+        _In_z_ const char *source, _In_z_ const char *type)
+    : rtx_trigger(source, parse_rtx_trigger_type(type)) { }
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_trigger::rtx_trigger
+ */
+PWROWG_NAMESPACE::rtx_trigger::rtx_trigger(
+        _In_ const input_type source,
+        _In_ const rtx_trigger_type type)
+        : rtx_trigger("", type) {
+    const auto s = std::string("CH") + std::to_string(source);
+    this->source(s.c_str());
 }
 
 
@@ -108,14 +138,15 @@ PWROWG_NAMESPACE::rtx_trigger::rtx_trigger(
  */
 PWROWG_NAMESPACE::rtx_trigger::rtx_trigger(
         _In_ const input_type source, _In_z_ const wchar_t *type)
-    : _coupling(rtx_trigger_coupling::direct_current),
-        _hysteresis(rtx_trigger_hysteresis::automatic),
-        _input(source),
-        _mode(rtx_trigger_mode::automatic),
-        _slope(rtx_trigger_slope::rising) {
-    const auto s = std::string("CH") + std::to_string(source);
-    this->source(s.c_str());
-    this->type(type);
+    : rtx_trigger(source, parse_rtx_trigger_type(type)) { }
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_trigger::rtx_trigger
+ */
+PWROWG_NAMESPACE::rtx_trigger::rtx_trigger(
+        _In_ const input_type source, _In_z_ const char *type)
+    : rtx_trigger(source, parse_rtx_trigger_type(type)) {
 }
 
 
@@ -187,10 +218,6 @@ PWROWG_NAMESPACE::rtx_trigger& PWROWG_NAMESPACE::rtx_trigger::mode(
  */
 PWROWG_NAMESPACE::rtx_trigger& PWROWG_NAMESPACE::rtx_trigger::source(
         _In_z_ const wchar_t *source) {
-    if (source == nullptr) {
-        throw std::invalid_argument("The trigger source must not be null.");
-    }
-
     auto s = convert_string<char>(source);
     return this->source(s.c_str());
 }
@@ -200,11 +227,7 @@ PWROWG_NAMESPACE::rtx_trigger& PWROWG_NAMESPACE::rtx_trigger::source(
  * PWROWG_NAMESPACE::rtx_trigger::source
  */
 PWROWG_NAMESPACE::rtx_trigger& PWROWG_NAMESPACE::rtx_trigger::source(
-    _In_z_ const char *source) {
-    if (source == nullptr) {
-        throw std::invalid_argument("The trigger source must not be null.");
-    }
-
+        _In_z_ const char *source) {
     detail::safe_assign(this->_source, source);
 
     {
@@ -219,36 +242,11 @@ PWROWG_NAMESPACE::rtx_trigger& PWROWG_NAMESPACE::rtx_trigger::source(
 
         } else if (detail::equals(this->_source.as<char>(), "EXT", true)) {
             this->_input = 5;
+
+        } else {
+            this->_input = 0;
         }
     }
 
-    return *this;
-}
-
-
-/*
- * PWROWG_NAMESPACE::rtx_trigger::type
- */
-PWROWG_NAMESPACE::rtx_trigger& PWROWG_NAMESPACE::rtx_trigger::type(
-        _In_z_ const wchar_t *type) {
-    if (type == nullptr) {
-        throw std::invalid_argument("The trigger type must not be null.");
-    }
-
-    detail::safe_assign(this->_sensor_type, convert_string<char>(type));
-    return *this;
-}
-
-
-/*
- * PWROWG_NAMESPACE::rtx_trigger::type
- */
-PWROWG_NAMESPACE::rtx_trigger& PWROWG_NAMESPACE::rtx_trigger::type(
-        _In_z_ const char *type) {
-    if (type == nullptr) {
-        throw std::invalid_argument("The trigger type must not be null.");
-    }
-
-    detail::safe_assign(this->_sensor_type, type);
     return *this;
 }

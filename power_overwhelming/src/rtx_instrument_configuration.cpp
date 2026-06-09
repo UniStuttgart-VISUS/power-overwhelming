@@ -17,6 +17,7 @@
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/rtx_instrument.h"
 #include "visus/pwrowg/string_functions.h"
+#include "visus/pwrowg/trace.h"
 
 #include "rtx_serialisation.h"
 
@@ -775,6 +776,8 @@ void PWROWG_NAMESPACE::rtx_instrument_configuration::apply(
         _Inout_ rtx_instrument& instrument) const {
     // Change the timeout before performing any operations that might time out.
     if (this->_timeout > 0) {
+        PWROWG_TRACE(_T("Setting user-defined timeout of %u ms."),
+            this->_timeout);
         instrument.timeout(this->_timeout);
     }
 
@@ -782,7 +785,7 @@ void PWROWG_NAMESPACE::rtx_instrument_configuration::apply(
     // the instrument default of half a second.
     const auto roll = (this->_min_time_base > 0.0f);
     const auto mtim = (this->_min_time_base == 0.0f)
-        ? (std::numeric_limits<float>::max)()
+        ? 0.5f
         : std::abs(this->_min_time_base);
 
     // If there are per-channel settings, apply them as well. Note that the
@@ -790,6 +793,7 @@ void PWROWG_NAMESPACE::rtx_instrument_configuration::apply(
     // legal and all data in '_channels' should be ignored in this case.
     if (this->_channels != nullptr) {
         for (std::size_t i = 0; i < this->_cnt_channels; ++i) {
+            PWROWG_TRACE(_T("Configuring channel %zu."), i);
             instrument.channel(this->_channels[i]);
         }
     }
@@ -797,17 +801,25 @@ void PWROWG_NAMESPACE::rtx_instrument_configuration::apply(
     // Note that the triggers must be configured *after* the channels, because
     // the trigger level can only be within the configured vertical range of the
     // respective channel.
+    PWROWG_TRACE(_T("Configuring time range and acquisition."));
     instrument.time_range(this->_time_range)
         .trigger_output(rtx_trigger_output::pulse)
         .reference_position(this->_reference_position)
         .automatic_roll(roll)
         .automatic_roll_time(mtim)
-        .trigger(this->_trigger)
         .trigger_position(this->_trigger_position)
         .acquisition(this->_acquisition);
 
-    // Wait until the instrument has applied all of the before settings.
+    if (this->_trigger.input() > 0) {
+        PWROWG_TRACE(_T("Configuring trigger."));
+        instrument.trigger(this->_trigger);
+    }
+
+    // Wait until the instrument has applied all of the before settings and
+    // check whether it is in an acceptable state.
+    PWROWG_TRACE(_T("Checking whether configuration was successful."));
     instrument.operation_complete();
+    instrument.throw_on_system_error();
 
     // Note: Beep will do nothing if the count is zero.
     instrument.beep(this->_beep_on_apply);
@@ -959,6 +971,18 @@ PWROWG_NAMESPACE::rtx_instrument_configuration::ignore_all_channels(
     this->_channels = nullptr;
     this->_cnt_channels = 0;
     return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_instrument_configuration::timeout_or_default
+ */
+PWROWG_NAMESPACE::rtx_instrument_configuration::timeout_type
+PWROWG_NAMESPACE::rtx_instrument_configuration::timeout_or_default(
+        void) const noexcept {
+    return (this->_timeout > 0)
+        ? this->_timeout
+        : rtx_instrument::default_timeout;
 }
 
 

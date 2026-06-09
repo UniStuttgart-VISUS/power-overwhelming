@@ -16,6 +16,7 @@
 #include "visus/pwrowg/rtx_trigger_hysteresis.h"
 #include "visus/pwrowg/rtx_trigger_mode.h"
 #include "visus/pwrowg/rtx_trigger_slope.h"
+#include "visus/pwrowg/rtx_trigger_type.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -96,6 +97,22 @@ public:
     /// <param name="source">The name of the trigger source.</param>
     /// <param name="type">The type of the trigger.</param>
     rtx_trigger(_In_z_ const wchar_t *source,
+        _In_ const rtx_trigger_type type);
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="source">The name of the trigger source.</param>
+    /// <param name="type">The type of the trigger.</param>
+    rtx_trigger(_In_z_ const char *source,
+        _In_ const rtx_trigger_type type);
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="source">The name of the trigger source.</param>
+    /// <param name="type">The type of the trigger.</param>
+    rtx_trigger(_In_z_ const wchar_t *source,
         _In_z_ const wchar_t *type);
 
     /// <summary>
@@ -113,7 +130,25 @@ public:
     /// to configure.</param>
     /// <param name="type">The type of the trigger.</param>
     rtx_trigger(_In_ const input_type source,
+        _In_ const rtx_trigger_type type);
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="source">The one-based index of the analog source
+    /// to configure.</param>
+    /// <param name="type">The type of the trigger.</param>
+    rtx_trigger(_In_ const input_type source,
         _In_z_ const wchar_t *type);
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="source">The one-based index of the analog source
+    /// to configure.</param>
+    /// <param name="type">The type of the trigger.</param>
+    rtx_trigger(_In_ const input_type source,
+        _In_z_ const char *type);
 
     /// <summary>
     /// Gets the coupling for the trigger source.
@@ -330,29 +365,38 @@ public:
     /// <summary>
     /// Gets the type of the trigger.
     /// </summary>
-    /// <remarks>
-    /// Trigger classes must implement this method and return the type of
-    /// the trigger, which is passed directly VISA API.
-    /// </remarks>
-    /// <returns>The string representation of the type of the trigger.
-    /// </returns>
-    inline _Ret_maybenull_z_ const char *type(void) const noexcept {
-        return this->_sensor_type.as<char>();
+    /// <returns>The type of trigger that is configured.</returns>
+    inline rtx_trigger_type type(void) const noexcept {
+        return this->_type;
     }
 
     /// <summary>
     /// Sets the type of the trigger.
     /// </summary>
     /// <param name="type">The type of the trigger.</param>
-    /// <returns><c>*this</c>.</returns>
-    rtx_trigger& type(_In_z_ const wchar_t *type);
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    rtx_trigger& type(_In_z_ const wchar_t *type) noexcept {
+        return this->type(parse_rtx_trigger_type(type));
+    }
 
     /// <summary>
     /// Sets the type of the trigger.
     /// </summary>
     /// <param name="type">The type of the trigger.</param>
-    /// <returns><c>*this</c>.</returns>
-    rtx_trigger& type(_In_z_ const char *type);
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    rtx_trigger& type(_In_z_ const char *type) noexcept {
+        return this->type(parse_rtx_trigger_type(type));
+    }
+
+    /// <summary>
+    /// Sets the type of the trigger.
+    /// </summary>
+    /// <param name="type">The type of the trigger.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    rtx_trigger& type(_In_ const rtx_trigger_type type) noexcept {
+        this->_type = type;
+        return *this;
+    }
 
 private:
 
@@ -364,7 +408,7 @@ private:
     rtx_trigger_mode _mode;
     rtx_trigger_slope _slope;
     blob _source;
-    blob _sensor_type;
+    rtx_trigger_type _type;
 };
 
 PWROWG_NAMESPACE_END

@@ -55,6 +55,7 @@ template<> struct json_serialiser<rtx_acquisition, false, false> final {
     }
 };
 
+
 /// <summary>
 /// Specialisation for <see cref="rtx_label" />.
 /// </summary>
@@ -75,6 +76,7 @@ template<> struct json_serialiser<rtx_label, false, false> final {
     }
 };
 
+
 /// <summary>
 /// Specialisation for <see cref="rtx_quantity" />.
 /// </summary>
@@ -94,6 +96,7 @@ template<> struct json_serialiser<rtx_quantity, false, false> final {
         });
     }
 };
+
 
 /// <summary>
 /// Specialisation for <see cref="rtx_channel" />.
@@ -153,6 +156,7 @@ template<> struct json_serialiser<rtx_channel, false, false> final {
     }
 };
 
+
 /// <summary>
 /// Specialisation for <see cref="rtx_trigger" />.
 /// </summary>
@@ -170,7 +174,7 @@ template<> struct json_serialiser<rtx_trigger, false, false> final {
         _PWROWG_DESERIALISE_FIELD(source);
         _PWROWG_DESERIALISE_FIELD(type);
 
-        return value_type(source.c_str(), type.c_str())
+        return value_type(source.c_str(), type)
             .coupling(coupling)
             .level(input, level)
             .slope(slope)
@@ -193,6 +197,7 @@ template<> struct json_serialiser<rtx_trigger, false, false> final {
             });
     }
 };
+
 
 /// <summary>
 /// Specialisation for <see cref="rtx_instrument_configuration" />.

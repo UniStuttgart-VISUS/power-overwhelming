@@ -9,6 +9,8 @@
 
 #include <string>
 
+#include "visus/pwrowg/trace.h"
+
 #include "visa_library.h"
 
 
@@ -63,6 +65,7 @@ void PWROWG_DETAIL_NAMESPACE::throw_if_visa_failed(
         _In_ const ViStatus status,
         _In_opt_z_ const char *message) {
     if (visa_failed(status)) {
+        PWROWG_TRACE(_T("A VISA call failed with error 0x%x"), status);
         if (message == nullptr) {
             throw std::system_error(status, visa_category());
         } else {
