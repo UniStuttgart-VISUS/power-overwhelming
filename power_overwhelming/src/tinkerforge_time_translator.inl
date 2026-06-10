@@ -1,5 +1,5 @@
 ﻿// <copyright file="tinkerforge_time_translator.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -44,6 +44,12 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::reset(
 
         // Reset the update counter.
         this->_next_update = this->_update_every;
+
+#if defined(CUSTOM_TINKERFORGE_FIRMWARE_MANDATORY)
+    } else {
+        throw std::invalid_argument("The bricklet does have the firmware "
+            "version specified at compile time.");
+#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE_MANDATORY) */
     }
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 }

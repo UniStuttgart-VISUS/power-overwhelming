@@ -77,7 +77,7 @@ private:
         /// Frees the allocation of a page.
         /// </summary>
         static inline void operator delete(_In_ void *ptr) noexcept {
-            free_for_atomic(ptr);
+            detail::free_for_atomic(ptr);
         }
 
         /// <summary>
@@ -93,16 +93,16 @@ private:
         /// <summary>
         /// The number of valid elements in <see cref="data" />.
         /// </summary>
-        alignas(false_sharing_range) index_type ready;
+        alignas(detail::false_sharing_range) index_type ready;
 
         /// <summary>
         /// The number of used elements that can be stored in
         /// <see cref="data" />, which must be at least <see cref="ready" />,
         /// but can be more while a thread is writing.
         /// </summary>
-        alignas(false_sharing_range) index_type used;
+        alignas(detail::false_sharing_range) index_type used;
 
-        std::uint8_t _padding[false_sharing_range - sizeof(used)];
+        std::uint8_t _padding[detail::false_sharing_range - sizeof(used)];
 
         /// <summary>
         /// Initialises a new instance.

@@ -460,15 +460,24 @@ public:
     /// </summary>
     /// <param name="channel">The name of the channel, typically something
     /// like &quot;CHAN1&quot; or &quot;CALC:MATH1&quot;.</param>
-    /// <returns>The channel data as a series of <c>float</c> values.
-    /// </returns>
+    /// <param name="timeout">The timeout for the operation in milliseconds,
+    /// which will be used to override the default timeout which might not be
+    /// sufficient for the download.</param>
+    /// <param name="retries">The number of retries the instrument should
+    /// perform when hitting a timeout. The instrument will progressively
+    /// increase the timeout for each retry and remember the successful timeout
+    /// for the future.</param>
+    /// <returns>The channel data as a series of <see langword="float" />
+    /// values.</returns>
     /// <exception cref="std::invalid_argument">If <paramref name="channel" />
     /// is <see langword="nullptr" />.</exception>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="sty::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    blob binary_data(_In_z_ const wchar_t *channel) const;
+    blob binary_data(_In_z_ const wchar_t *channel,
+        _In_ const timeout_type timeout = 0,
+        _In_ const std::size_t retries = 0) const;
 
     /// <summary>
     /// Downloads the data of the specified channel as floating-point
@@ -476,15 +485,24 @@ public:
     /// </summary>
     /// <param name="channel">The name of the channel, typically something
     /// like &quot;CHAN1&quot; or &quot;CALC:MATH1&quot;.</param>
-    /// <returns>The channel data as a series of <c>float</c> values.
-    /// </returns>
+    /// <param name="timeout">The timeout for the operation in milliseconds,
+    /// which will be used to override the default timeout which might not be
+    /// sufficient for the download.</param>
+    /// <param name="retries">The number of retries the instrument should
+    /// perform when hitting a timeout. The instrument will progressively
+    /// increase the timeout for each retry and remember the successful timeout
+    /// for the future.</param>
+    /// <returns>The channel data as a series of <see langword="float" />
+    /// values.</returns>
     /// <exception cref="std::invalid_argument">If <paramref name="channel" />
     /// is <see langword="nullptr" />.</exception>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="sty::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    blob binary_data(_In_z_ const char *channel) const;
+    blob binary_data(_In_z_ const char *channel,
+        _In_ const timeout_type timeout = 0,
+        _In_ std::size_t retries = 0) const;
 
     /// <summary>
     /// Downloads the data of the specified channel as floating-point
@@ -492,13 +510,24 @@ public:
     /// </summary>
     /// <param name="channel">The one-based index of the channel to
     /// retrieve.</param>
+    /// <param name="timeout">The timeout for the operation in milliseconds,
+    /// which will be used to override the default timeout which might not be
+    /// sufficient for the download.</param>
+    /// <param name="retries">The number of retries the instrument should
+    /// perform when hitting a timeout. The instrument will progressively
+    /// increase the timeout for each retry and remember the successful timeout
+    /// for the future.</param>
+    /// <returns>The channel data as a series of <see langword="float" />
+    /// values.</returns>
     /// <returns>The channel data as a series of <c>float</c> values.
     /// </returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="sty::system_error">If any of the API calls to the
     /// instrument failed.</exception>
-    blob binary_data(_In_ const channel_type channel) const;
+    blob binary_data(_In_ const channel_type channel,
+        _In_ const timeout_type timeout = 0,
+        _In_ const std::size_t retries = 0) const;
 
     /// <summary>
     /// Retrieve the configuration for the specified channel.
@@ -664,6 +693,13 @@ public:
     /// like &quot;CHAN1&quot; or &quot;CALC:MATH1&quot;.</param>
     /// <param name="points">Specifies which sample points should be
     /// transferred.</param>
+    /// <param name="timeout">The timeout for the operation in milliseconds,
+    /// which will be used to override the default timeout which might not be
+    /// sufficient for the download.</param>
+    /// <param name="retries">The number of retries the instrument should
+    /// perform when hitting a timeout. The instrument will progressively
+    /// increase the timeout for each retry and remember the successful timeout
+    /// for the future.</param>
     /// <returns>The waveform for the specified channel.</returns>
     /// <exception cref="std::invalid_argument">If <paramref name="channel" />
     /// is <see langword="nullptr" />.</exception>
@@ -672,7 +708,9 @@ public:
     /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_waveform data(_In_z_ const wchar_t *channel,
-        _In_ const rtx_waveform_points points) const;
+        _In_ const rtx_waveform_points points,
+        _In_ const timeout_type timeout = 0,
+        _In_ const std::size_t retries = 0) const;
 
     /// <summary>
     /// Retrieves the waveform data for the specified channel.
@@ -681,6 +719,13 @@ public:
     /// like &quot;CHAN1&quot; or &quot;CALC:MATH1&quot;.</param>
     /// <param name="points">Specifies which sample points should be
     /// transferred.</param>
+    /// <param name="timeout">The timeout for the operation in milliseconds,
+    /// which will be used to override the default timeout which might not be
+    /// sufficient for the download.</param>
+    /// <param name="retries">The number of retries the instrument should
+    /// perform when hitting a timeout. The instrument will progressively
+    /// increase the timeout for each retry and remember the successful timeout
+    /// for the future.</param>
     /// <returns>The waveform for the specified channel.</returns>
     /// <exception cref="std::invalid_argument">If <paramref name="channel" />
     /// is <see langword="nullptr" />.</exception>
@@ -689,7 +734,9 @@ public:
     /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_waveform data(_In_z_ const char *channel,
-        _In_ const rtx_waveform_points points) const;
+        _In_ const rtx_waveform_points points,
+        _In_ const timeout_type timeout = 0,
+        _In_ const std::size_t retries = 0) const;
 
     /// <summary>
     /// Retrieves the waveform data for the specified channel.
@@ -698,13 +745,22 @@ public:
     /// the waveform for.</param>
     /// <param name="points">Specifies which sample points should be
     /// transferred.</param>
+    /// <param name="timeout">The timeout for the operation in milliseconds,
+    /// which will be used to override the default timeout which might not be
+    /// sufficient for the download.</param>
+    /// <param name="retries">The number of retries the instrument should
+    /// perform when hitting a timeout. The instrument will progressively
+    /// increase the timeout for each retry and remember the successful timeout
+    /// for the future.</param>
     /// <returns>The waveform for the specified channel.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="std::system_error">If any of the API calls to the
     /// instrument failed.</exception>
     rtx_waveform data(_In_ const channel_type channel,
-        _In_ const rtx_waveform_points points) const;
+        _In_ const rtx_waveform_points points,
+        _In_ const timeout_type timeout = 0,
+        _In_ const std::size_t retries = 0) const;
 
     /// <summary>
     /// Retrieves the data of all segments for all active channels.
@@ -714,8 +770,15 @@ public:
     /// </remarks>
     /// <param name="points">Specifies which sample points should be
     /// transferred.</param>
-    /// <param name="timeout">The (typically shorter than default) timeout
+    /// <param name="probe_timeout">The (typically shorter than default) timeout
     /// for checking which channels are active.</param>
+    /// <param name="timeout">The timeout for the operation in milliseconds,
+    /// which will be used to override the default timeout which might not be
+    /// sufficient for the download.</param>
+    /// <param name="retries">The number of retries the instrument should
+    /// perform when hitting a timeout. The instrument will progressively
+    /// increase the timeout for each retry and remember the successful timeout
+    /// for the future.</param>
     /// <returns>The waveforms of all active channels.</returns>
     /// <exception cref="std::runtime_error">If the method is called on an
     /// object that has been disposed by moving it.</exception>
@@ -723,7 +786,9 @@ public:
     /// instrument failed.</exception>
     rtx_sample data(
         _In_ const rtx_waveform_points points,
-        _In_ const timeout_type timeout = 1000);
+        _In_ const timeout_type probe_timeout = 1000,
+        _In_ const timeout_type download_timeout = 0,
+        _In_ const std::size_t retries = 0);
 
     /// <summary>
     /// Deletes the specified file from the instrument.
@@ -1235,6 +1300,10 @@ public:
         visa_instrument::operator =(std::move(rhs));
         return *this;
     }
+
+private:
+
+    mutable timeout_type _data_timeout;
 };
 
 PWROWG_NAMESPACE_END

@@ -7,6 +7,7 @@
 #if defined(POWER_OVERWHELMING_WITH_VISA)
 #include "visus/pwrowg/rtx_instrument.h"
 
+#include <algorithm>
 #include <cassert>
 #include <cstdlib>
 #include <regex>
@@ -15,6 +16,7 @@
 
 #include "visus/pwrowg/on_exit.h"
 #include "visus/pwrowg/string_functions.h"
+#include "visus/pwrowg/trace.h"
 
 #include "visa_instrument_impl.h"
 #include "visa_timeout_override.h"
@@ -163,42 +165,43 @@ PWROWG_NAMESPACE::rtx_instrument::product_id;
  * PWROWG_NAMESPACE::rtx_instrument::rtx_instrument
  */
 PWROWG_NAMESPACE::rtx_instrument::rtx_instrument(void)
-    : visa_instrument() { }
+    : visa_instrument(), _data_timeout(0) { }
 
 
 /*
  * PWROWG_NAMESPACE::rtx_instrument::rtx_instrument
  */
 PWROWG_NAMESPACE::rtx_instrument::rtx_instrument(
-    _In_z_ const wchar_t *path, _In_ const timeout_type timeout)
-    : visa_instrument(path, timeout) { }
+        _In_z_ const wchar_t *path, _In_ const timeout_type timeout)
+    : visa_instrument(path, timeout), _data_timeout(0) { }
 
 
 /*
  * PWROWG_NAMESPACE::rtx_instrument::rtx_instrument
  */
 PWROWG_NAMESPACE::rtx_instrument::rtx_instrument(
-    _In_z_ const char *path, _In_ const timeout_type timeout)
-    : visa_instrument(path, timeout) { }
+        _In_z_ const char *path, _In_ const timeout_type timeout)
+    : visa_instrument(path, timeout), _data_timeout(0) { }
 
 
 /*
  * PWROWG_NAMESPACE::rtx_instrument::rtx_instrument
  */
 PWROWG_NAMESPACE::rtx_instrument::rtx_instrument(
-    _Out_ bool& is_new_connection, _In_z_ const wchar_t *path,
-    _In_ const timeout_type timeout)
-    : visa_instrument(is_new_connection, path, timeout) { }
+        _Out_ bool& is_new_connection,
+        _In_z_ const wchar_t *path,
+        _In_ const timeout_type timeout)
+    : visa_instrument(is_new_connection, path, timeout), _data_timeout(0) { }
 
 
 /*
  * PWROWG_NAMESPACE::rtx_instrument::rtx_instrument
  */
 PWROWG_NAMESPACE::rtx_instrument::rtx_instrument(
-    _Out_ bool& is_new_connection, _In_z_ const char *path,
-    _In_ const timeout_type timeout)
-    : visa_instrument(is_new_connection, path, timeout) { }
-
+        _Out_ bool& is_new_connection,
+        _In_z_ const char *path,
+        _In_ const timeout_type timeout)
+    : visa_instrument(is_new_connection, path, timeout), _data_timeout(0) { }
 
 
 /*
@@ -401,13 +404,15 @@ PWROWG_NAMESPACE::rtx_instrument::beep_on_trigger(
  * PWROWG_NAMESPACE::rtx_instrument::binary_data
  */
 PWROWG_NAMESPACE::blob PWROWG_NAMESPACE::rtx_instrument::binary_data(
-        _In_z_ const wchar_t *channel) const {
+        _In_z_ const wchar_t *channel,
+        _In_ const timeout_type timeout,
+        _In_ const std::size_t retries) const {
     if (channel == nullptr) {
         throw std::invalid_argument("The channel identifier cannot be null.");
     }
 
     auto c = convert_string<char>(channel);
-    return this->binary_data(c.c_str());
+    return this->binary_data(c.c_str(), timeout, retries);
 }
 
 
@@ -415,9 +420,17 @@ PWROWG_NAMESPACE::blob PWROWG_NAMESPACE::rtx_instrument::binary_data(
  * PWROWG_NAMESPACE::rtx_instrument::binary_data
  */
 PWROWG_NAMESPACE::blob PWROWG_NAMESPACE::rtx_instrument::binary_data(
-        _In_z_ const char *channel) const {
+        _In_z_ const char *channel,
+        _In_ const timeout_type timeout,
+        _In_ std::size_t retries) const {
+    using detail::visa_timeout_override;
+
     if (channel == nullptr) {
         throw std::invalid_argument("The channel identifier cannot be null.");
+    }
+
+    if (timeout > this->_data_timeout) {
+        this->_data_timeout = timeout;
     }
 
     auto& impl = this->check_not_disposed();
@@ -426,8 +439,25 @@ PWROWG_NAMESPACE::blob PWROWG_NAMESPACE::rtx_instrument::binary_data(
     impl.write("FORM:BORD LSBF\n");
     impl.check_system_error();
 
-    impl.format("%s:DATA?\n", channel);
-    return impl.read_binary();
+    while (true) {
+        try {
+            visa_timeout_override to(false, impl.session, this->_data_timeout);
+            impl.format("%s:DATA?\n", channel);
+            return impl.read_binary();
+        } catch (const std::system_error& ex) {
+            if ((ex.code().value() == VI_ERROR_TMO) && (retries > 0)) {
+                if (this->_data_timeout == 0) {
+                    this->_data_timeout = visa_instrument::default_timeout;
+                }
+                this->_data_timeout *= 2;
+                PWROWG_TRACE(_T("Increasing data download timeout to %u ms."),
+                    this->_data_timeout);
+                --retries;
+            } else {
+                throw;
+            }
+        }
+    }
 }
 
 
@@ -435,9 +465,11 @@ PWROWG_NAMESPACE::blob PWROWG_NAMESPACE::rtx_instrument::binary_data(
  * PWROWG_NAMESPACE::rtx_instrument::binary_data
  */
 PWROWG_NAMESPACE::blob PWROWG_NAMESPACE::rtx_instrument::binary_data(
-        _In_ const channel_type channel) const {
+        _In_ const channel_type channel,
+        _In_ const timeout_type timeout,
+        _In_ const std::size_t retries) const {
     auto c = detail::format_string("CHAN%u", channel);
-    return this->binary_data(c.c_str());
+    return this->binary_data(c.c_str(), timeout, retries);
 }
 
 
@@ -886,13 +918,15 @@ PWROWG_NAMESPACE::rtx_instrument::copy_state_to_instrument(
  */
 PWROWG_NAMESPACE::rtx_waveform PWROWG_NAMESPACE::rtx_instrument::data(
         _In_z_ const wchar_t *channel,
-        _In_ const rtx_waveform_points points) const {
+        _In_ const rtx_waveform_points points,
+        _In_ const timeout_type timeout,
+        _In_ const std::size_t retries) const {
     if (channel == nullptr) {
         throw std::invalid_argument("The channel identifier cannot be null.");
     }
 
     auto c = convert_string<char>(channel);
-    return this->data(c.c_str(), points);
+    return this->data(c.c_str(), points, timeout, retries);
 }
 
 
@@ -901,7 +935,9 @@ PWROWG_NAMESPACE::rtx_waveform PWROWG_NAMESPACE::rtx_instrument::data(
  */
 PWROWG_NAMESPACE::rtx_waveform PWROWG_NAMESPACE::rtx_instrument::data(
         _In_z_ const char *channel,
-        _In_ const rtx_waveform_points points) const {
+        _In_ const rtx_waveform_points points,
+        _In_ const timeout_type timeout,
+        _In_ const std::size_t retries) const {
     if (channel == nullptr) {
         throw std::invalid_argument("The channel identifier cannot be null.");
     }
@@ -953,7 +989,8 @@ PWROWG_NAMESPACE::rtx_waveform PWROWG_NAMESPACE::rtx_instrument::data(
     _Analysis_assume_(tsab != nullptr);
     detail::trim_eol(tsab);
 
-    return rtx_waveform(xorg, xinc, tsd, tsab, tsr, this->binary_data(channel));
+    return rtx_waveform(xorg, xinc, tsd, tsab, tsr,
+        this->binary_data(channel, timeout, retries));
 }
 
 
@@ -962,9 +999,11 @@ PWROWG_NAMESPACE::rtx_waveform PWROWG_NAMESPACE::rtx_instrument::data(
  */
 PWROWG_NAMESPACE::rtx_waveform PWROWG_NAMESPACE::rtx_instrument::data(
         _In_ const channel_type channel,
-        _In_ const rtx_waveform_points points) const {
+        _In_ const rtx_waveform_points points,
+        _In_ const timeout_type timeout,
+        _In_ const std::size_t retries) const {
     auto c = detail::format_string("CHAN%u", channel);
-    return this->data(c.c_str(), points);
+    return this->data(c.c_str(), points, timeout, retries);
 }
 
 
@@ -974,14 +1013,16 @@ PWROWG_NAMESPACE::rtx_waveform PWROWG_NAMESPACE::rtx_instrument::data(
 PWROWG_NAMESPACE::rtx_sample
 PWROWG_NAMESPACE::rtx_instrument::data(
         _In_ const rtx_waveform_points points,
-        _In_ const timeout_type timeout) {
+        _In_ const timeout_type probe_timeout,
+        _In_ const timeout_type download_timeout,
+        _In_ const std::size_t retries) {
     std::vector<channel_type> channels;
     std::vector<rtx_waveform> waveforms;
 
     auto& impl = this->check_not_disposed();
 
     {
-        const detail::visa_timeout_override t(impl.session, timeout);
+        detail::visa_timeout_override to(impl.session, probe_timeout);
 
         // Check for all channels that are enabled.
         auto has_next = true;
@@ -1011,7 +1052,8 @@ PWROWG_NAMESPACE::rtx_instrument::data(
         this->history_segment(0 - s).operation_complete();
 
         for (auto c : channels) {
-            waveforms.push_back(this->data(c, points));
+            waveforms.push_back(this->data(c, points, download_timeout,
+                retries));
         }
     }
 

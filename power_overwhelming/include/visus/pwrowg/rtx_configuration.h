@@ -9,6 +9,7 @@
 #pragma once
 
 #include <chrono>
+#include <cstdlib>
 #include <type_traits>
 
 #include "visus/pwrowg/blob.h"
@@ -155,6 +156,50 @@ public:
     std::size_t count_sensors(void) const noexcept;
 
     /// <summary>
+    /// Answer how often the sensor should try to increase the download timeout
+    /// before giving up.
+    /// </summary>
+    /// <returns>The number of retries for downloading channel data.</returns>
+    inline std::size_t download_retries(void) const noexcept {
+        return this->_download_retries;
+    }
+
+    /// <summary>
+    /// Configure how often the sensor should retry downloading the channel data
+    /// if the operation timed out.
+    /// </summary>
+    /// <param name="download_retries">The number of retries, or zero if the
+    /// download must succeed on first try.</param>
+    /// <returns><c>*<see cref="this" /></c>.</returns>
+    inline rtx_configuration& download_retries(
+            _In_ const std::size_t download_retries) noexcept {
+        this->_download_retries = download_retries;
+        return *this;
+    }
+
+    /// <summary>
+    /// Answer the initial timeout for the data download in milliseconds.
+    /// </summary>
+    /// <returns>The download timeout in milliseconds, or zero if the default
+    /// timeout of the instrument should be used.</returns>
+    inline timeout_type download_timeout(void) const noexcept {
+        return this->_download_timeout;
+    }
+
+    /// <summary>
+    /// Configure a custom timeout for downloading the channel data.
+    /// </summary>
+    /// <param name="download_timeout">The timeout used for downloading the
+    /// channel data, or zero to use the timeout set on the instrument when the
+    /// download is started.</param>
+    /// <returns><c>*<see cref="this" /></c>.</returns>
+    inline rtx_configuration& download_timeout(
+            _In_ const timeout_type download_timeout) noexcept {
+        this->_download_timeout = download_timeout;
+        return *this;
+    }
+
+    /// <summary>
     /// Indicates whether the oscilloscopes should be reset when enumerating the
     /// sensor descriptions.
     /// </summary>
@@ -236,6 +281,8 @@ public:
 private:
 
     rtx_instrument_configuration _base_configuration;
+    std::size_t _download_retries;
+    timeout_type _download_timeout;
     bool _reset_on_enumerate;
     type_erased_storage _sensors;
     rtx_sensor_trigger _trigger;

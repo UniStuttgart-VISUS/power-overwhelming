@@ -184,6 +184,8 @@ private:
     void control_instruments(void);
 
     std::vector<std::vector<sensor_channel>> _channels;
+    std::size_t _download_retries;
+    rtx_configuration::timeout_type _download_timeout;
     std::size_t _index;
     const sensor_array_impl *_owner;
     std::thread _thread;

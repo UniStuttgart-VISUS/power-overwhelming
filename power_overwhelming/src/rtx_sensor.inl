@@ -68,7 +68,10 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         _In_ std::size_t index,
         _In_ const sensor_array_impl *owner,
         _In_ const configuration_type& config)
-        : _index(index), _owner(owner) {
+    : _download_retries(config.download_retries()),
+        _download_timeout(config.download_timeout()),
+        _index(index),
+        _owner(owner) {
     typedef sensor_description_builder builder_type;
     typedef sensor_description desc_type;
 
@@ -148,13 +151,14 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
 
         // Modify the instrument configuration to match the needs of the sensor.
         for (auto& c : channels) {
-            icfg.channel(c.second);
+            icfg.channel(c.second.state(true));
         }
 
-        icfg.acquisition(rtx_acquisition()
-            .enable_automatic_points()
-            .count(1)
-            .segmented(true));
+        {
+            // Force to only one segment, regardless of what the user said.
+            auto a = icfg.acquisition();
+            icfg.acquisition(a.count(1));
+        }
 
         icfg.reference_position(rtx_reference_point::left);
 
@@ -174,8 +178,9 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
             if (this->_trigger._impl->trigger != nullptr) {
                 auto& trigger = *this->_trigger._impl->trigger;
                 PWROWG_TRACE("Configuring \"%s\" to use the %u trigger "
-                    "provided by the user.", i.path(), trigger.type());
-                icfg.trigger(trigger);
+                    "provided by the user. The user-defined trigger will be"
+                    "forced to normal mode.", i.path(), trigger.type());
+                icfg.trigger(trigger.mode(rtx_trigger_mode::normal));
 
             } else {
                 const auto level = (this->_trigger._impl->daisy_chain > 0.0f)
@@ -208,7 +213,7 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         PWROWG_TRACE("Configuring events for instrument \"%s\".", i.path());
         i.event_status(visa_event_status::operation_complete);
         i.service_request_status(visa_status_byte::master_status
-            | visa_status_byte::message_available);
+            /*| visa_status_byte::message_available*/);
         i.enable_event(VI_EVENT_SERVICE_REQ, VI_QUEUE);
 
         PWROWG_TRACE("Synchronising the clock of \"%s\" with the current UTC.",

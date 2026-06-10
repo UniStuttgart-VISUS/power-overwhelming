@@ -58,8 +58,7 @@ public:
     /// </para>
     /// <param name="count">The number of waveforms to acquire.</param>
     /// <returns><c>*this</c>.</returns>
-    inline rtx_acquisition& count(
-            _In_ const unsigned int count) noexcept {
+    inline rtx_acquisition& count(_In_ const unsigned int count) noexcept {
         this->_count = count;
         return *this;
     }

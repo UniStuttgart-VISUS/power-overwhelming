@@ -11,8 +11,9 @@
 template<class TValue, std::size_t PageSize>
 void *PWROWG_NAMESPACE::collector_result<TValue, PageSize>::page
 ::operator new(const std::size_t size) {
-    auto retval = allocate_for_atomic(size);
-    assert(reinterpret_cast<std::uintptr_t>(retval) % false_sharing_range == 0);
+    auto retval = detail::allocate_for_atomic(size);
+    assert(reinterpret_cast<std::uintptr_t>(retval)
+        % detail::false_sharing_range == 0);
     return retval;
 }
 

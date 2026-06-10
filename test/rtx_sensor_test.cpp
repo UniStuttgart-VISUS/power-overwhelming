@@ -78,15 +78,19 @@ public:
             Assert::IsNotNull(sensor_config0, L"Configuration is set", LINE_INFO());
 
             auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
-            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(3)).beep_on_trigger(true));
+            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(3))
+                .beep_on_trigger(true)
+                .acquisition(rtx_acquisition().points(5000)))
+                .download_retries(1)
+                .download_timeout(10000);
             auto trigger = rtx_sensor_trigger_builder::for_path(device.c_str()).when_software_triggered().build();
             trigger = rtx_sensor_trigger_builder::for_all().when_channel("CH0").rises_above(0.1f).build();
             sensor_config->trigger(trigger);
 
             Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
             sensor_config->add_sensor(device.c_str(),
-                rtx_channel(1).range(20.0f, "V").attenuation(0.1f, "V"),
-                rtx_channel(2).range(20.0f, "A").attenuation(0.1f, "A"));
+                rtx_channel(1).range(2.0f, "V").attenuation(0.1f, "V"),
+                rtx_channel(2).range(2.0f, "A").attenuation(0.1f, "A"));
             sensor_config->add_sensor(device.c_str(),
                 rtx_channel(3).range(4.0f, "V").attenuation(1.0f, "V"),
                 rtx_channel(4).range(4.0f, "A").attenuation(1.0f, "A"));
@@ -103,7 +107,7 @@ public:
             sensors.front().sample(true);
             std::this_thread::sleep_for(std::chrono::seconds(1));
             trigger.acquire();
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::this_thread::sleep_for(std::chrono::seconds(5));
         }
     }
 

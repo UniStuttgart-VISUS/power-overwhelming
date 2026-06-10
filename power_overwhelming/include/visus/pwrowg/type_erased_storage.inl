@@ -15,7 +15,7 @@ PWROWG_NAMESPACE::type_erased_storage::emplace(TArgs&&... args) {
     this->reset();
     assert(!*this);
 
-    // Construct the new object in place.
+    // Construct the new object on the heap.
     auto retval = new TType(std::forward<TArgs>(args)...);
     this->_data = retval;
 

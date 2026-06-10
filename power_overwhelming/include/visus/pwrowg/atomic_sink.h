@@ -91,8 +91,8 @@ private:
     collector_type _collector;
     std::chrono::milliseconds _interval;
     std::thread _writer;
-    alignas(false_sharing_range) std::atomic<bool> _running;
-    alignas(false_sharing_range) std::atomic<const sensor_description *>
+    alignas(detail::false_sharing_range) std::atomic<bool> _running;
+    alignas(detail::false_sharing_range) std::atomic<const sensor_description *>
         _sensors;
 };
 

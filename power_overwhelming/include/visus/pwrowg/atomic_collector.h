@@ -145,10 +145,11 @@ private:
     void reserve(_Out_ page_type *& page, _Out_ std::size_t& index);
 
 #if defined(PWROWG_PROFILE_ATOMIC_COLLECTOR)
-    alignas(false_sharing_range) std::atomic<std::size_t> _alloc_discarded;
+    alignas(detail::false_sharing_range) std::atomic<std::size_t>
+        _alloc_discarded;
 #endif /* defined(PWROWG_PROFILE_ATOMIC_COLLECTOR) */
-    alignas(false_sharing_range) std::atomic<page_type *> _pages;
-    std::uint8_t _padding[false_sharing_range - sizeof(_pages)];
+    alignas(detail::false_sharing_range) std::atomic<page_type *> _pages;
+    std::uint8_t _padding[detail::false_sharing_range - sizeof(_pages)];
 };
 
 PWROWG_NAMESPACE_END

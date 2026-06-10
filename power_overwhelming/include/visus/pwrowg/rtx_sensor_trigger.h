@@ -91,7 +91,7 @@ public:
     /// <para>The operation happening here depends on the configuration of the
     /// trigger:</para>
     /// </remarks>
-    void acquire(void);
+    bool acquire(void);
 
     /// <summary>
     /// Answer the path the oscilloscope to be configured as the trigger source.

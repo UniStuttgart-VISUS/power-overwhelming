@@ -9,6 +9,7 @@
 #pragma once
 
 #include <atomic>
+#include <chrono>
 #include <cinttypes>
 
 #include "visus/pwrowg/api.h"
@@ -23,108 +24,86 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 enum class rtx_sensor_state : std::uint32_t {
 
     /// <summary>
-    /// The sensor is running and the worker thread should do nothing but wait
-    /// for the next event.
+    /// The sensor is in an undefined state and should exit.
     /// </summary>
-    running = 0x00000000,
+    none = 0x00000000,
 
     /// <summary>
-    /// The sensor has requested the worker thread to exit. No other state
-    /// changes can be requested after this flag has been set.
+    /// The worker thread should continue checking the instrument. If this flag
+    /// is unset, the worker thread should exit.
     /// </summary>
-    stop = 0x00000001,
+    running = 0x00000001,
 
     /// <summary>
-    /// Indicates that the worker thread should manually trigger a single
-    /// acquisition on the instrument(s).
+    /// Indicates that an acquisition has been requested by the application.
     /// </summary>
-    trigger = 0x00000002,
+    /// <remarks>
+    /// This flag tells the RTX sensor worker thread that the application wants
+    /// to retrieve a sample. The worker thread will only try downloading
+    /// waveforms if it finds this flag set when it receives an OPC.
+    /// </remarks>
+    armed = 0x00000002,
 
     /// <summary>
     /// Indicates that the instrument is busy retrieving the measurement data.
-    /// The instrument must not be manipulated by any other thread while this
-    /// flag is set.
-    /// </summary>
+    /// <summary>
+    /// <remarks>
+    /// The RTX sensor worker thread sets this flag once it received an OPC
+    /// while being armed. The instrument must not be manipulated by any other
+    /// thread while this flag is set. The worker thread will clear the flag
+    /// once it is done, even if the processing failed.
+    /// </remarks>
     busy = 0x00000004
 };
 
 
 /// <summary>
-/// Checks whether all bits of <paramref name="check" /> are set in
-/// <paramref name="state" />.
+/// Computes the bitwise AND of <paramref name="lhs" /> and
+/// <paramref name="rhs" />.
 /// </summary>
-/// <param name="state"></param>
-/// <param name="check"></param>
+/// <param name="lhs"></param>
+/// <param name="rhs"></param>
 /// <returns></returns>
-inline constexpr bool check_state(
-        _In_ const rtx_sensor_state state,
-        _In_ const rtx_sensor_state check) noexcept {
-    typedef std::underlying_type_t<rtx_sensor_state> underlying_type;
-    const auto actual = static_cast<underlying_type>(state);
-    const auto reference = static_cast<underlying_type>(check);
-    return ((actual & reference) == reference);
+inline constexpr PWROWG_DETAIL_NAMESPACE::rtx_sensor_state operator &(
+        _In_ const PWROWG_DETAIL_NAMESPACE::rtx_sensor_state lhs,
+        _In_ const PWROWG_DETAIL_NAMESPACE::rtx_sensor_state rhs) noexcept {
+    typedef std::decay_t<decltype(lhs)> enum_type;
+    typedef std::underlying_type_t<enum_type> underlying_type;
+    auto l = static_cast<underlying_type>(lhs);
+    auto r = static_cast<underlying_type>(rhs);
+    return static_cast<enum_type>(l & r);
 }
 
 
 /// <summary>
-/// Checks whether all bits of <paramref name="check" /> are set in
-/// <paramref name="state" />.
+/// Computes the bitwise OR of <paramref name="lhs" /> and
+/// <paramref name="rhs" />.
 /// </summary>
-/// <param name="state"></param>
-/// <param name="check"></param>
+/// <param name="lhs"></param>
+/// <param name="rhs"></param>
 /// <returns></returns>
-inline bool check_state(_In_ const std::atomic<rtx_sensor_state>& state,
-        _In_ const rtx_sensor_state check) noexcept {
-    return check_state(state.load(std::memory_order_acquire), check);
+inline constexpr PWROWG_DETAIL_NAMESPACE::rtx_sensor_state operator |(
+        _In_ const PWROWG_DETAIL_NAMESPACE::rtx_sensor_state lhs,
+        _In_ const PWROWG_DETAIL_NAMESPACE::rtx_sensor_state rhs) noexcept {
+    typedef std::decay_t<decltype(lhs)> enum_type;
+    typedef std::underlying_type_t<enum_type> underlying_type;
+    auto l = static_cast<underlying_type>(lhs);
+    auto r = static_cast<underlying_type>(rhs);
+    return static_cast<enum_type>(l | r);
 }
 
 
 /// <summary>
-/// Removes all of the the given <paramref name="old_state" /> flags from
-/// <paramref name="state" /> and answers whether the state change was
-/// successful.
+/// Computes the bitwise NOT of <paramref name="value" />.
 /// </summary>
-/// <param name="state"></param>
-/// <param name="old_state"></param>
+/// <param name="value"></param>
 /// <returns></returns>
-PWROWG_TEST_API bool clear_state(_Inout_ rtx_sensor_state& state,
-    _In_ const rtx_sensor_state old_state) noexcept;
-
-
-/// <summary>
-/// Removes all of the the given <paramref name="old_state" /> flags from
-/// <paramref name="state" /> and answers whether the state change was
-/// successful.
-/// </summary>
-/// <param name="state"></param>
-/// <param name="old_state"></param>
-/// <returns></returns>
-PWROWG_TEST_API bool clear_state(_Inout_ std::atomic<rtx_sensor_state>& state,
-    _In_ const rtx_sensor_state old_state) noexcept;
-
-
-/// <summary>
-/// Sets the given <paramref name="new_state" /> flags in
-/// <paramref name="state" /> and answers whether the state change was
-/// successful.
-/// </summary>
-/// <param name="state"></param>
-/// <param name="new_state"></param>
-/// <returns></returns>
-PWROWG_TEST_API bool set_state(_Inout_ rtx_sensor_state& state,
-    _In_ const rtx_sensor_state new_state) noexcept;
-
-
-/// <summary>
-/// Sets the given <paramref name="new_state" /> flags in
-/// <paramref name="state" /> and answers whether the state change was
-/// successful.
-/// </summary>
-/// <param name="state"></param>
-/// <param name="new_state"></param>
-/// <returns></returns>
-PWROWG_TEST_API bool set_state(_Inout_ std::atomic<rtx_sensor_state>& state,
-    _In_ const rtx_sensor_state new_state) noexcept;
+inline constexpr PWROWG_DETAIL_NAMESPACE::rtx_sensor_state operator ~(
+        _In_ const PWROWG_DETAIL_NAMESPACE::rtx_sensor_state value) noexcept {
+    typedef std::decay_t<decltype(value)> enum_type;
+    typedef std::underlying_type_t<enum_type> underlying_type;
+    return static_cast<enum_type>(~static_cast<underlying_type>(value));
+}
 
 PWROWG_DETAIL_NAMESPACE_END
 

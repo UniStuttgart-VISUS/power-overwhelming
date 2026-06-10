@@ -9,6 +9,7 @@
 #include <cassert>
 #include <memory>
 
+#include "visus/pwrowg/atomic_utilities.h"
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/trace.h"
 
@@ -49,15 +50,26 @@ PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger::acquire
  */
-void PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(void) {
+bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(void) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
+    using detail::rtx_sensor_state;
     assert(this->_impl != nullptr);
 
-    while (check_state(this->_impl->state, detail::rtx_sensor_state::busy));
+    PWROWG_TRACE(_T("Making sure that the instrument controller thread is not ")
+        _T("working on the instruments anymore before triggering."));
+    detail::spin_while_all(this->_impl->state, rtx_sensor_state::busy);
+
+    if ((detail::atomic_set(this->_impl->state, rtx_sensor_state::armed)
+            & rtx_sensor_state::running) != rtx_sensor_state::running) {
+        PWROWG_TRACE(_T("The RTX sensor controller was shut down while trying ")
+            _T("to arm the trigger."));
+        return false;
+    }
 
     for (auto& i : this->_impl->instruments) {
-        PWROWG_TRACE("Arming single acquisition on \"%s\".", i.path());
-        i.acquisition(this->_impl->acquisition);
+        PWROWG_TRACE("Arming single acquisition on \"%s\" followed by an "
+            "asynchronous OPC.", i.path());
+        i.acquisition(rtx_acquisition_state::single).operation_complete_async();
     }
 
     if (this->_impl->external_trigger) {
@@ -86,6 +98,8 @@ void PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(void) {
         }
     } /* if (this->_impl->external_trigger) */
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
+
+    return true;
 }
 
 

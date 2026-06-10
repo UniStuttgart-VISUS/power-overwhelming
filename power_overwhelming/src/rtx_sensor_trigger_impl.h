@@ -33,11 +33,6 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// </summary>
 struct rtx_sensor_trigger_impl final {
 
-    /// <summary>
-    /// Configures how the instrument will acquire data.
-    /// </summary>
-    rtx_acquisition acquisition;
-
     ///// <summary>
     ///// A condition variable for signalling the worker thread.
     ///// </summary>
@@ -151,7 +146,7 @@ struct rtx_sensor_trigger_impl final {
         external_trigger_duration(100),
         external_trigger_pins(parallel_port_pin::data),
         references(1),
-        state(rtx_sensor_state::running),
+        state(rtx_sensor_state::none),
         trigger_instrument((std::numeric_limits<std::size_t>::max)()) { }
 
 };

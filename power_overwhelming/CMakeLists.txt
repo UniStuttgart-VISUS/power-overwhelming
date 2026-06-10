@@ -92,6 +92,10 @@ if (PWROWG_CustomTinkerforgeFirmwareMajor)
     if (PWROWG_CustomTinkerforgeFirmwareRevision)
         target_compile_definitions(${PROJECT_NAME} PRIVATE CUSTOM_TINKERFORGE_FIRMWARE_RV=${PWROWG_CustomTinkerforgeFirmwareRevision})
     endif ()
+
+    if (PWROWG_CustomTinkerforgeFirmwareMandatory)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE CUSTOM_TINKERFORGE_FIRMWARE_MANDATORY)
+    endif ()
 endif ()
 
 
