@@ -164,10 +164,10 @@ visus::power_overwhelming::detail::tinkerforge_time_translator::operator ()(
     using namespace std::chrono;
     const auto offset = duration<double, std::milli>(time * this->_time_scale);
 
-    if (this->_update_every == 0) {
+    if (this->_next_update == 0) {
         this->update(bricklet);
     } else {
-        --this->_update_every;
+        --this->_next_update;
     }
 
     const auto retval = (this->_time_offset + offset);
