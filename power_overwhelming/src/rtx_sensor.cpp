@@ -256,16 +256,11 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
     PWROWG_TRACE(_T("The RTX sensor controller thread has started."));
 
     while (check_all(trigger.state, rtx_sensor_state::running)) {
+        auto source = this->_index;
+
         for (std::size_t i = 0; i < instruments.size(); ++i) {
             assert(i < this->_channels.size());
             auto& instrument = instruments[i];
-            auto source = this->_index + std::accumulate(
-                this->_channels.begin(),
-                this->_channels.begin() + i,
-                static_cast<std::size_t>(this->_index),
-                [](std::size_t sum, const std::vector<sensor_channel>& c) {
-                    return sum + c.size();
-                });
 
             try {
                 PWROWG_TRACE("Waiting for \"%s\" to complete an acquisition "
@@ -291,8 +286,10 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
                 PWROWG_TRACE(_T("The RTX controller thread is processing the ")
                     _T("latest waveforms."));
                 std::map<rtx_channel::channel_type, rtx_waveform> waveforms;
-                for (auto& c : this->_channels[i]) {
-                    this->make_samples(samples, source, i, c, waveforms);
+                for (std::size_t c = 0; c < this->_channels[i].size(); ++c) {
+                    const auto& chan = this->_channels[i][c];
+                    const auto src = source + c;
+                    this->make_samples(samples, src, i, chan, waveforms);
                     assert(!samples.empty());
                     sensor_array_impl::callback(this->_owner, samples.data(),
                         samples.size());
@@ -301,6 +298,10 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
                 PWROWG_TRACE("An error occurred while processing waveforms "
                     "from instrument \"%s\": %s", instrument.path(), ex.what());
             }
+
+            // This line makes sure that the sensor offset for subsequent
+            // instruments is correct even if one of the them has failed.
+            source += this->_channels[i].size();
         } /* for (std::size_t i = 0; i < instruments.size(); ++i) */
 
         PWROWG_TRACE(_T("The RTX controller thread is done processing the ")
@@ -324,8 +325,6 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::make_samples(
         _In_ const std::size_t instrument,
         _In_ const sensor_channel& channel,
         _Inout_ std::map<rtx_channel::channel_type, rtx_waveform>& cache) {
-    typedef timestamp (*timestamp_gen)(const rtx_waveform&, const std::size_t,
-        const rtx_sensor_trigger_impl&, const std::size_t);
     assert(this->_trigger._impl != nullptr);
     auto& trigger = *this->_trigger._impl;
     assert(instrument < trigger.instruments.size());
@@ -333,7 +332,8 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::make_samples(
 
     // Generates the timestamp for the given 'sample', either from the cached
     // trigger timestamp or from the waveform itself as a fallback.
-    const timestamp_gen get_timestamp
+    timestamp (*get_timestamp)(const rtx_waveform&, const std::size_t,
+            const rtx_sensor_trigger_impl&, const std::size_t)
         = (instrument < trigger.trigger_timestamps.size())
         ? detail::get_instrument_timestamp
         : !trigger.trigger_timestamps.empty()
