@@ -192,6 +192,17 @@ public:
     static timestamp from_tm(_In_ std::tm& t);
 
     /// <summary>
+    /// Creates a timestamp in the middle between <paramref name="begin" />
+    /// and <paramref name="end" />.
+    /// </summary>
+    /// <param name="begin">The start of the range to compute the middle of.
+    /// </param>
+    /// <param name="end">The end of the range to compute the middle of.</param>
+    /// <returns>The timestamp in the middle of the specified range.</returns>
+    static timestamp middle(_In_ const timestamp& begin,
+        _In_ const timestamp& end) noexcept;
+
+    /// <summary>
     /// Creates the current UTC timestamp.
     /// </summary>
     /// <returns>The current timestamp.</returns>

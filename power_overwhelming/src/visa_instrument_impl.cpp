@@ -10,6 +10,8 @@
 #include <memory>
 #include <stdexcept>
 
+#include "visus/pwrowg/trace.h"
+
 #include "no_visa_error_msg.h"
 #include "visa_library.h"
 #include "zero_memory.h"
@@ -371,6 +373,7 @@ PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::read_status_byte(void) const {
     ViUInt16 retval;
     throw_if_visa_failed(detail::visa_library::instance()
         ._viReadSTB(this->session, &retval));
+    PWROWG_TRACE(_T("Read VISA status byte: 0x%02x"), retval);
     return static_cast<visa_status_byte>(retval);
 
     // Note: R&S does the following, but NI's documentation suggests that
@@ -432,6 +435,7 @@ int PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::system_error(
     this->write(":SYST:ERR?\n");
     blob status;
     this->read_all(status);
+    PWROWG_TRACE("Obtained VISA system errors \"%s\".", status.as<char>());
 
     auto delimiter = std::find_if(status.begin(), status.end(),
         [](const byte_type b) { return b == ','; });
@@ -468,12 +472,14 @@ int PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::system_error(
  */
 void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::throw_on_system_error(
         void) const {
-    // First of all, determine the instrument status to check whether there i
-    // something in the queue to retrieve.
+    PWROWG_TRACE(_T("Checking VISA status byte for errors."));
     const auto status = this->read_status_byte();
+    PWROWG_TRACE(_T("VISA status byte read was 0x%02x."), status);
 
     if (!(status && visa_status_byte::error_queue_not_empty)) {
-        // If the error queue is empty, do not retrieve the status.
+        PWROWG_TRACE(_T("VISA error queue is empty (status byte was 0x%02x, ")
+            _T("errors are indicated by 0x%02x)."), status,
+            visa_status_byte::error_queue_not_empty);
         return;
     }
 
@@ -487,14 +493,19 @@ void PWROWG_DETAIL_NAMESPACE::visa_instrument_impl::throw_on_system_error(
         // exceptions. If the above assertion is violated, callers might want to
         // check whether they are concurrently clearing the error queue, which
         // would be a bug.
+        PWROWG_TRACE(_T("Status byte was 0x%02x, but there is not error in ")
+            _T("the queue."), status);
         return;
     }
 
     if (message.empty()) {
-        // If we have no custom message, display the error code.
+        PWROWG_TRACE(_T("No message was associated with VISA error 0x%x."),
+            error);
         message = std::to_string(error);
     }
 
+    PWROWG_TRACE("Encountered VISA error \"%s\" (0x%x).", message.c_str(),
+        error);
     throw std::runtime_error(message);
 }
 

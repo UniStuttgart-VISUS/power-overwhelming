@@ -6,6 +6,9 @@
 
 #include "visus/pwrowg/timestamp.h"
 
+#include <algorithm>
+#include <cmath>
+
 #include "zero_memory.h"
 
 
@@ -82,8 +85,8 @@ PWROWG_NAMESPACE::timestamp PWROWG_NAMESPACE::timestamp::from_time_t(
 /*
  * PWROWG_NAMESPACE::detail::create
  */
-PWROWG_NAMESPACE::timestamp
-PWROWG_NAMESPACE::timestamp::from_tm(_In_ std::tm& t) {
+PWROWG_NAMESPACE::timestamp PWROWG_NAMESPACE::timestamp::from_tm(
+        _In_ std::tm& t) {
 #if defined(_WIN32)
     const auto time = ::_mkgmtime(&t);
 #else /* defined(_WIN32) */
@@ -91,6 +94,17 @@ PWROWG_NAMESPACE::timestamp::from_tm(_In_ std::tm& t) {
 #endif /* defined(_WIN32) */
 
     return std::chrono::system_clock::from_time_t(time);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::timestamp::middle
+ */
+PWROWG_NAMESPACE::timestamp PWROWG_NAMESPACE::timestamp::middle(
+        _In_ const timestamp& begin,
+        _In_ const timestamp& end) noexcept {
+    const auto dt = std::abs(end._value - begin._value) >> 2;
+    return timestamp((std::min)(begin._value, end._value) + dt);
 }
 
 

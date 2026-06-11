@@ -52,8 +52,7 @@ enum class visa_event_status : std::uint8_t {
     execution_error = 0x10,
 
     /// <summary>
-    /// This bit is set if a command was syntactically incorrect or
-    /// undefined.
+    /// This bit is set if a command was syntactically incorrect or undefined.
     /// </summary>
     command_error = 0x20,
 

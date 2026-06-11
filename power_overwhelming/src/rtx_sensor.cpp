@@ -13,6 +13,60 @@
 #include "unique_lock.h"
 
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+PWROWG_DETAIL_NAMESPACE_BEGIN
+
+/// <summary>
+/// Generates a timestamp for a <paramref name="sample" /> in the given
+/// <paramref name="waveform" /> based on the trigger timestamp recorded
+/// for the given <paramref name="instrument" />.
+/// </summary>
+static timestamp get_instrument_timestamp(
+        _In_ const rtx_waveform& waveform,
+        _In_ const std::size_t sample,
+        _In_ const rtx_sensor_trigger_impl& trigger,
+        _In_ const std::size_t instrument) {
+    typedef std::chrono::duration<float> instrument_duration;
+    assert(sample < waveform.size());
+    assert(instrument < trigger.instruments.size());
+    const instrument_duration offset(waveform.sample_time(sample));
+    return trigger.trigger_timestamps[instrument] + offset;
+}
+
+
+/// <summary>
+/// Generates a timestamp for a <paramref name="sample" /> in the given
+/// <paramref name="waveform" /> based on the trigger timestamp.
+/// </summary>
+static timestamp get_software_timestamp(
+        _In_ const rtx_waveform& waveform,
+        _In_ const std::size_t sample,
+        _In_ const rtx_sensor_trigger_impl& trigger,
+        _In_ const std::size_t) {
+    typedef std::chrono::duration<float> instrument_duration;
+    assert(sample < waveform.size());
+    assert(!trigger.instruments.empty());
+    const instrument_duration offset(waveform.sample_time(sample));
+    return trigger.trigger_timestamps.front() + offset;
+}
+
+
+/// <summary>
+/// Gets the instrument-generated timestamp for a <paramref name="sample" /> in
+/// the given <paramref name="waveform" />.
+/// </summary>
+static timestamp get_waveform_timestamp(
+        _In_ const rtx_waveform& waveform,
+        _In_ const std::size_t sample,
+        _In_ const rtx_sensor_trigger_impl&,
+        _In_ const std::size_t) {
+    return waveform.sample_timestamp(sample);
+}
+
+PWROWG_DETAIL_NAMESPACE_END
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+
+
 /*
  * PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions
  */
@@ -193,8 +247,8 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample(_In_ const bool enable) {
 void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
     set_thread_name("PwrOwg RTX Sensor Controller");
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    assert(this->_trigger._impl != nullptr);
     constexpr auto opc = visa_event_status::operation_complete;
+    assert(this->_trigger._impl != nullptr);
 
     std::vector<PWROWG_NAMESPACE::sample> samples;
     auto& trigger = *this->_trigger._impl;
@@ -236,31 +290,12 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
 
                 PWROWG_TRACE(_T("The RTX controller thread is processing the ")
                     _T("latest waveforms."));
-                std::vector<rtx_waveform> waveforms;
+                std::map<rtx_channel::channel_type, rtx_waveform> waveforms;
                 for (auto& c : this->_channels[i]) {
-                    if (c.current == 0) {
-                        waveforms.push_back(instrument.data(
-                            c.channel,
-                            rtx_waveform_points::maximum,
-                            this->_download_timeout,
-                            this->_download_retries));
-                        PWROWG_TRACE(_T("%zu samples, %f - %f"), waveforms.back().size(), waveforms.back().time_begin(), waveforms.back().time_end());
-
-                        ++source;   // TODO: what happens in case of failure?
-                        samples.resize(waveforms.back().size());
-                        std::transform(
-                            waveforms.back().begin(),
-                            waveforms.back().end(),
-                            samples.begin(),
-                            [source](const float value) {
-                                return PWROWG_NAMESPACE::sample(source, value); // TODO: timestamp
-                            });
-
-                    } else {
-                        assert(c.channel <= waveforms.size());
-                        assert(c.current <= waveforms.size());
-
-                    }
+                    this->make_samples(samples, source, i, c, waveforms);
+                    assert(!samples.empty());
+                    sensor_array_impl::callback(this->_owner, samples.data(),
+                        samples.size());
                 }
             } catch (const std::exception& ex) {
                 PWROWG_TRACE("An error occurred while processing waveforms "
@@ -276,3 +311,82 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
     PWROWG_TRACE(_T("The RTX sensor controller thread is exiting."));
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
+
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+/*
+ * PWROWG_DETAIL_NAMESPACE::rtx_sensor::make_samples
+ */
+std::vector<PWROWG_NAMESPACE::sample>&
+PWROWG_DETAIL_NAMESPACE::rtx_sensor::make_samples(
+        _Inout_ std::vector<PWROWG_NAMESPACE::sample>& samples,
+        _In_ const PWROWG_NAMESPACE::sample::source_type source,
+        _In_ const std::size_t instrument,
+        _In_ const sensor_channel& channel,
+        _Inout_ std::map<rtx_channel::channel_type, rtx_waveform>& cache) {
+    typedef timestamp (*timestamp_gen)(const rtx_waveform&, const std::size_t,
+        const rtx_sensor_trigger_impl&, const std::size_t);
+    assert(this->_trigger._impl != nullptr);
+    auto& trigger = *this->_trigger._impl;
+    assert(instrument < trigger.instruments.size());
+    auto& inst = trigger.instruments[instrument];
+
+    // Generates the timestamp for the given 'sample', either from the cached
+    // trigger timestamp or from the waveform itself as a fallback.
+    const timestamp_gen get_timestamp
+        = (instrument < trigger.trigger_timestamps.size())
+        ? detail::get_instrument_timestamp
+        : !trigger.trigger_timestamps.empty()
+        ? detail::get_software_timestamp
+        : detail::get_waveform_timestamp;
+
+    // Gets the waveform for the given channel 'c', preferably from the 'cache'.
+    const auto get_waveform = [this, &inst, &cache](
+            const rtx_channel::channel_type& c) -> rtx_waveform& {
+        auto& retval = cache[c];
+
+        if (retval.empty()) {
+            retval = inst.data(
+                c,
+                rtx_waveform_points::maximum,
+                this->_download_timeout,
+                this->_download_retries);
+        }
+
+        return retval;
+    };
+
+    if (channel.current == 0) {
+        // Single channel sensor, e.g. voltage or current.
+        auto& waveform = get_waveform(channel.channel);
+
+        samples.resize(waveform.size());
+        assert(samples.size() == waveform.size());
+
+        for (std::size_t s = 0; s < samples.size(); ++s) {
+            // TODO: unit?
+            const auto t = get_timestamp(waveform, s, trigger, instrument);
+            const auto v = waveform.sample(s);
+            samples[s] = PWROWG_NAMESPACE::sample(source, t, v);
+        }
+
+    } else {
+        // A power sensor combined from voltage and current.
+        auto& voltage = get_waveform(channel.channel);
+        auto& current = get_waveform(channel.current);
+
+        samples.resize(voltage.size());
+        assert(samples.size() == voltage.size());
+        assert(samples.size() == current.size());
+
+        for (std::size_t s = 0; s < samples.size(); ++s) {
+            // TODO: unit?
+            const auto t = get_timestamp(voltage, s, trigger, instrument);
+            const auto v = voltage.sample(s) * current.sample(s);
+            samples[s] = PWROWG_NAMESPACE::sample(source, t, v);
+        }
+    }
+
+    return samples;
+}
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */

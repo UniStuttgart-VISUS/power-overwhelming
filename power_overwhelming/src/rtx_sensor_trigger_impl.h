@@ -10,17 +10,17 @@
 
 #include <atomic>
 #include <cinttypes>
-#include <condition_variable>
 #include <limits>
 #include <memory>
-#include <mutex>
 #include <string>
+#include <vector>
 
 #include "visus/pwrowg/atomic_utilities.h"
 #include "visus/pwrowg/parallel_port_trigger.h"
 #include "visus/pwrowg/rtx_acquisition.h"
 #include "visus/pwrowg/rtx_instrument.h"
 #include "visus/pwrowg/rtx_trigger.h"
+#include "visus/pwrowg/timestamp.h"
 
 #include "rtx_sensor_state.h"
 
@@ -32,11 +32,6 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <see cref="rtx_sensor_trigger" />.
 /// </summary>
 struct rtx_sensor_trigger_impl final {
-
-    ///// <summary>
-    ///// A condition variable for signalling the worker thread.
-    ///// </summary>
-    //std::condition_variable condition;
 
     /// <summary>
     /// If positive, the oscilloscopes will be assumed to be daisy-chained even
@@ -72,11 +67,6 @@ struct rtx_sensor_trigger_impl final {
     /// </summary>
     std::vector<rtx_instrument> instruments;
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
-
-    ///// <summary>
-    ///// A lock for the <see cref="condition" />.
-    ///// </summary>
-    //std::mutex lock;
 
     /// <summary>
     /// The path to the oscilloscope used for triggering.
@@ -116,6 +106,11 @@ struct rtx_sensor_trigger_impl final {
     std::size_t trigger_instrument;
 
     /// <summary>
+    /// The host timestamps when the tigger was activated.
+    /// </summary>
+    std::vector<timestamp> trigger_timestamps;
+
+    /// <summary>
     /// Allocates aligned memory for a new object.
     /// </summary>
     /// <param name="size">The size of the block to align.</param>
@@ -147,7 +142,8 @@ struct rtx_sensor_trigger_impl final {
         external_trigger_pins(parallel_port_pin::data),
         references(1),
         state(rtx_sensor_state::none),
-        trigger_instrument((std::numeric_limits<std::size_t>::max)()) { }
+        trigger_instrument((std::numeric_limits<std::size_t>::max)()),
+        trigger_timestamps(1, timestamp()) { }
 
 };
 

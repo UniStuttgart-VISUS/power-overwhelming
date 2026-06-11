@@ -76,19 +76,36 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(void) {
         PWROWG_TRACE(_T("Triggering by raising parallel port pins %u for ")
             _T("%u ms."), this->_impl->external_trigger_pins,
             this->_impl->external_trigger_duration);
+        const auto b = timestamp::now();
         this->_impl->external_trigger.pulse(
             this->_impl->external_trigger_pins,
             this->_impl->external_trigger_duration);
+        const auto e = timestamp::now();
+
+        if (!this->_impl->trigger_timestamps.empty()) {
+            this->_impl->trigger_timestamps.front() = timestamp::middle(b, e);
+            PWROWG_TRACE(_T("Recorded external trigger timestamp: %" PRIu64),
+                this->_impl->trigger_timestamps.front().value());
+        }
 
     } else if (this->_impl->trigger != nullptr) {
         PWROWG_TRACE(_T("Performing a manual single acquisition."));
+        auto& timestamps = this->_impl->trigger_timestamps;
 
         if (this->_impl->trigger_instrument < this->_impl->instruments.size()) {
             PWROWG_TRACE(_T("Triggering manually via daisy chain starting at ")
                 _T("%zu."), this->_impl->trigger_instrument);
             assert(this->_impl->daisy_chain > 0.0f);
             auto& i = this->_impl->instruments[this->_impl->trigger_instrument];
+            const auto b = timestamp::now();
             i.trigger_manually();
+            const auto e = timestamp::now();
+
+            if (!timestamps.empty()) {
+                timestamps.front() = timestamp::middle(b, e);
+                PWROWG_TRACE(_T("Recorded manual trigger timestamp: %" PRIu64),
+                    timestamps.front().value());
+            }
 
         } else {
             PWROWG_TRACE(_T("Triggering all instruments manually."));

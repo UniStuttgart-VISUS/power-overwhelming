@@ -183,6 +183,19 @@ private:
     /// </summary>
     void control_instruments(void);
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    /// <summary>
+    /// Generates the samples for the specified <paramref name="channel" /> of
+    /// the <paramref name="instrument"/>th oscilloscope into
+    /// <see cref="samples" />.
+    std::vector<PWROWG_NAMESPACE::sample>& make_samples(
+        _Inout_ std::vector<PWROWG_NAMESPACE::sample>& samples,
+        _In_ const PWROWG_NAMESPACE::sample::source_type source,
+        _In_ const std::size_t instrument,
+        _In_ const sensor_channel& channel,
+        _Inout_ std::map<rtx_channel::channel_type, rtx_waveform>& cache);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+
     std::vector<std::vector<sensor_channel>> _channels;
     std::size_t _download_retries;
     rtx_configuration::timeout_type _download_timeout;

@@ -220,17 +220,22 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
             i.path());
         i.synchronise_clock(true);
 
+        PWROWG_TRACE("Waiting for all changes being applied to \"%s\".",
+            i.path());
+        i.operation_complete();
+        // Note: In contrast to *OPC?, *OPC + *ESR? frequently runs into
+        // timeouts when checking the status byte below ...
+        //i.operation_complete_async();
+        //i.wait_status(visa_event_status::operation_complete);
+
         PWROWG_TRACE("Making sure that \"%s\" is not in an error state "
             "after applying all configuration changes.", i.path());
-        i.operation_complete_async();
-        i.wait_status(visa_event_status::operation_complete);
         i.throw_on_system_error();
 
         PWROWG_TRACE("Creating channel map for instrument \"%s\".", i.path());
         this->_channels.emplace_back();
         auto& ichannels = this->_channels.back();
         for (auto jt = b; jt != it; ++jt) {
-            //PWROWG_TRACE(L"Creating sensor for \"%s\".", jt->path());
             if (jt->is_sensor_type(sensor_type::voltage)) {
                 auto d = builder_type::private_data<rtx_sensor_definition>(*jt);
                 assert(d != nullptr);
@@ -255,7 +260,7 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
                 ichannels.emplace_back(
                     d->voltage_channel().channel(),
                     d->current_channel().channel());
-                PWROWG_TRACE("Channel %u and %u on \"%s\" are a power sensor.",
+                PWROWG_TRACE("Channel %u and %u on \"%s\" form a power sensor.",
                     ichannels.back().channel, ichannels.back().current,
                     i.path());
             }
