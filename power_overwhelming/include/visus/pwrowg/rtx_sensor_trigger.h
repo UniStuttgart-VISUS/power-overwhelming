@@ -8,9 +8,12 @@
 #define _PWROWG_RTX_SENSOR_TRIGGER_H
 #pragma once
 
+#include <exception>
+
 #include "visus/pwrowg/parallel_port_trigger.h"
 #include "visus/pwrowg/rtx_acquisition.h"
 #include "visus/pwrowg/rtx_trigger.h"
+#include "visus/pwrowg/type_erased_storage.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -85,13 +88,60 @@ public:
     /// Triggers the oscilloscope manually and blocks the calling thread until
     /// the oscilloscope has acknowledged the trigger.
     /// </summary>
-    /// <remarks>
-    /// <para>This method must not be called on moved instances. The
-    /// implementation will only assert this in debug builds.</para>
-    /// <para>The operation happening here depends on the configuration of the
-    /// trigger:</para>
-    /// </remarks>
-    bool acquire(void);
+    template<class TDone, class TFailed>
+    bool acquire(_In_ TDone&& done, _In_ TFailed&& failed) {
+        type_erased_storage when_done, when_failed;
+        when_done.emplace<TDone>(std::forward<TDone>(done));
+        when_failed.emplace<TFailed>(std::forward<TFailed>(failed));
+
+        return this->acquire(
+            [](const type_erased_storage& c) {
+                (*c.template get<TDone>())();
+            },
+            std::move(when_done),
+            [](const std::exception_ptr ex, const type_erased_storage& c) {
+                return (*c.template get<TFailed>())(ex);
+            },
+            std::move(when_failed));
+    }
+
+    /// <summary>
+    /// Triggers the oscilloscope as soon as any ongoing acquisition has
+    /// finished.
+    /// </summary>
+    /// <typeparam name="TDone">The type of the callback to be invoked when
+    /// the acquisition was fully processed by the RTX sensor controller
+    /// thread.</typeparam>
+    /// <param name="done">The callback to be invoked when the acquisition was
+    /// processed.</param>
+    /// <returns><see langword="true" /> if the trigger was acknowledged,
+    /// <see langword="false" /> if the trigger was not issued as the sensor is
+    /// shutting down.</returns>
+    template<class TDone> bool acquire(_In_ TDone&& done) {
+        type_erased_storage when_done;
+        when_done.emplace<TDone>(std::forward<TDone>(done));
+
+        return this->acquire(
+            [](const type_erased_storage& c) { (*c.template get<TDone>())(); },
+            std::move(when_done),
+            rtx_sensor_trigger::fatal_failure,
+            type_erased_storage());
+    }
+
+    /// <summary>
+    /// Triggers the oscilloscope as soon as any ongoing acquisition has
+    /// finished.
+    /// </summary>
+    /// <returns><see langword="true" /> if the trigger was acknowledged,
+    /// <see langword="false" /> if the trigger was not issued as the sensor is
+    /// shutting down.</returns>
+    inline bool acquire(void) {
+        return this->acquire(
+            [](const type_erased_storage&) { },
+            type_erased_storage(),
+            rtx_sensor_trigger::fatal_failure,
+            type_erased_storage());
+    }
 
     /// <summary>
     /// Answer the path the oscilloscope to be configured as the trigger source.
@@ -134,6 +184,16 @@ public:
     }
 
 private:
+
+    static bool fatal_failure(const std::exception_ptr,
+        const type_erased_storage&) noexcept;
+
+    bool acquire(
+        _In_ void (*done)(const type_erased_storage&),
+        _Inout_ type_erased_storage&& done_context,
+        _In_ bool (*failed)(const std::exception_ptr,
+            const type_erased_storage&),
+        _Inout_ type_erased_storage&& failed_context);
 
     bool reset(_In_opt_ detail::rtx_sensor_trigger_impl *impl) noexcept;
 

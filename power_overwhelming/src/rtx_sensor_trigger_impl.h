@@ -10,6 +10,7 @@
 
 #include <atomic>
 #include <cinttypes>
+#include <exception>
 #include <limits>
 #include <memory>
 #include <string>
@@ -21,6 +22,7 @@
 #include "visus/pwrowg/rtx_instrument.h"
 #include "visus/pwrowg/rtx_trigger.h"
 #include "visus/pwrowg/timestamp.h"
+#include "visus/pwrowg/type_erased_storage.h"
 
 #include "rtx_sensor_state.h"
 
@@ -106,9 +108,34 @@ struct rtx_sensor_trigger_impl final {
     std::size_t trigger_instrument;
 
     /// <summary>
-    /// The host timestamps when the tigger was activated.
+    /// The host timestamps when the trigger was activated.
     /// </summary>
     std::vector<timestamp> trigger_timestamps;
+
+    /// <summary>
+    /// A callback to be invoked when the RTX sensor controller thread completed
+    /// an acquisition.
+    /// </summary>
+    void (*when_done)(const type_erased_storage&);
+
+    /// <summary>
+    /// The context passed to <see cref="when_done" />. This is usually used to
+    /// store a user-defined lambda to be called.
+    /// </summary>
+    type_erased_storage when_done_context;
+
+    /// <summary>
+    /// A callback to be invoked when the RTX sensor controller encounters an
+    /// error while processing an acquisition. The callback can decide on
+    /// whether the thread should continue or whether the failure is fatal.
+    /// </summary>
+    bool (*when_failed)(std::exception_ptr, const type_erased_storage&);
+
+    /// <summary>
+    /// The context passed to <see cref="when_failed" />. This is usually used to
+    /// store a user-defined lambda to be called.
+    /// </summary>
+    type_erased_storage when_failed_context;
 
     /// <summary>
     /// Allocates aligned memory for a new object.
@@ -144,7 +171,6 @@ struct rtx_sensor_trigger_impl final {
         state(rtx_sensor_state::none),
         trigger_instrument((std::numeric_limits<std::size_t>::max)()),
         trigger_timestamps(1, timestamp()) { }
-
 };
 
 PWROWG_DETAIL_NAMESPACE_END

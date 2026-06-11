@@ -11,6 +11,7 @@
 
 #include "visus/pwrowg/atomic_utilities.h"
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/event.h"
 #include "visus/pwrowg/trace.h"
 
 #include "rtx_sensor_trigger_impl.h"
@@ -21,15 +22,14 @@
  * PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger
  */
 PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(void)
-    : _impl(new detail::rtx_sensor_trigger_impl()) {
-}
+    : _impl(new detail::rtx_sensor_trigger_impl()) { }
 
 
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger
  */
 PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
-    _In_ const rtx_sensor_trigger& other) : _impl(other._impl) {
+        _In_ const rtx_sensor_trigger& other) : _impl(other._impl) {
     assert(this->_impl != nullptr);
     if (this->_impl != nullptr) {
         ++this->_impl->references;
@@ -41,23 +41,98 @@ PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
  * PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger
  */
 PWROWG_NAMESPACE::rtx_sensor_trigger::rtx_sensor_trigger(
-    _Inout_ rtx_sensor_trigger&& other) noexcept : _impl(other._impl) {
+        _Inout_ rtx_sensor_trigger&& other) noexcept : _impl(other._impl) {
     assert(this->_impl != nullptr);
     other._impl = nullptr;
 }
 
 
 /*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger::path
+ */
+_Ret_z_ const char *PWROWG_NAMESPACE::rtx_sensor_trigger::path(
+        void) const noexcept {
+    assert(this->_impl != nullptr);
+    return (this->_impl != nullptr) ? this->_impl->path.c_str() : "";
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger::trigger
+ */
+_Ret_maybenull_ const PWROWG_NAMESPACE::rtx_trigger *
+PWROWG_NAMESPACE::rtx_sensor_trigger::trigger(void) const noexcept {
+    assert(this->_impl != nullptr);
+    return (this->_impl != nullptr) ? this->_impl->trigger.get() : nullptr;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger::operator =
+ */
+PWROWG_NAMESPACE::rtx_sensor_trigger&
+PWROWG_NAMESPACE::rtx_sensor_trigger::operator =(
+        _In_ const rtx_sensor_trigger& rhs) {
+    if (this != std::addressof(rhs)) {
+        this->reset(rhs._impl);
+    }
+
+    assert(this->_impl != nullptr);
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger::operator =
+ */
+PWROWG_NAMESPACE::rtx_sensor_trigger&
+PWROWG_NAMESPACE::rtx_sensor_trigger::operator =(
+        _Inout_ rtx_sensor_trigger&& rhs) noexcept {
+    if ((this->_impl != rhs._impl) && this->reset(rhs._impl)) {
+        rhs.reset(nullptr);
+    }
+
+    assert(this->_impl != nullptr);
+    assert(rhs._impl == nullptr);
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger::fatal_failure
+ */
+bool PWROWG_NAMESPACE::rtx_sensor_trigger::fatal_failure(
+        const std::exception_ptr, const type_erased_storage&)  noexcept {
+    PWROWG_TRACE(_T("Fatal error in RTX sensor acquisition."));
+    return false;
+}
+
+
+/*
  * PWROWG_NAMESPACE::rtx_sensor_trigger::acquire
  */
-bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(void) {
+bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
+        _In_ void (*done)(const type_erased_storage&),
+        _Inout_ type_erased_storage&& done_context,
+        _In_ bool (*failed)(const std::exception_ptr,
+            const type_erased_storage&),
+        _Inout_ type_erased_storage&& failed_context) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     using detail::rtx_sensor_state;
+
     assert(this->_impl != nullptr);
+    if (this->_impl == nullptr) {
+        return false;
+    }
 
     PWROWG_TRACE(_T("Making sure that the instrument controller thread is not ")
         _T("working on the instruments anymore before triggering."));
     detail::spin_while_all(this->_impl->state, rtx_sensor_state::busy);
+
+    this->_impl->when_done = done;
+    this->_impl->when_done_context = std::move(done_context);
+    this->_impl->when_failed = failed;
+    this->_impl->when_failed_context = std::move(failed_context);
 
     if ((detail::atomic_set(this->_impl->state, rtx_sensor_state::armed)
             & rtx_sensor_state::running) != rtx_sensor_state::running) {
@@ -118,58 +193,6 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(void) {
 
     return true;
 }
-
-
-/*
- * PWROWG_NAMESPACE::rtx_sensor_trigger::path
- */
-_Ret_z_ const char *PWROWG_NAMESPACE::rtx_sensor_trigger::path(
-        void) const noexcept {
-    assert(this->_impl != nullptr);
-    return (this->_impl != nullptr) ? this->_impl->path.c_str() : "";
-}
-
-
-/*
- * PWROWG_NAMESPACE::rtx_sensor_trigger::trigger
- */
-_Ret_maybenull_ const PWROWG_NAMESPACE::rtx_trigger *
-PWROWG_NAMESPACE::rtx_sensor_trigger::trigger(void) const noexcept {
-    assert(this->_impl != nullptr);
-    return (this->_impl != nullptr) ? this->_impl->trigger.get() : nullptr;
-}
-
-
-/*
- * PWROWG_NAMESPACE::rtx_sensor_trigger::operator =
- */
-PWROWG_NAMESPACE::rtx_sensor_trigger&
-PWROWG_NAMESPACE::rtx_sensor_trigger::operator =(
-        _In_ const rtx_sensor_trigger& rhs) {
-    if (this != std::addressof(rhs)) {
-        this->reset(rhs._impl);
-    }
-
-    assert(this->_impl != nullptr);
-    return *this;
-}
-
-
-/*
- * PWROWG_NAMESPACE::rtx_sensor_trigger::operator =
- */
-PWROWG_NAMESPACE::rtx_sensor_trigger&
-PWROWG_NAMESPACE::rtx_sensor_trigger::operator =(
-        _Inout_ rtx_sensor_trigger&& rhs) noexcept {
-    if ((this->_impl != rhs._impl) && this->reset(rhs._impl)) {
-        rhs.reset(nullptr);
-    }
-
-    assert(this->_impl != nullptr);
-    assert(rhs._impl == nullptr);
-    return *this;
-}
-
 
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger::reset

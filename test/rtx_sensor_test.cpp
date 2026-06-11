@@ -104,7 +104,10 @@ public:
 
             sensors.front().sample(true);
             std::this_thread::sleep_for(std::chrono::seconds(1));
-            trigger.acquire();
+            Assert::IsTrue(trigger.acquire(
+                [](void) { Assert::IsTrue(true, L"Triggered", LINE_INFO()); },
+                [](std::exception_ptr) { Assert::IsTrue(false, L"Acquisition failure", LINE_INFO()); return true; }
+            ), L"Acquire scheduled", LINE_INFO());
             std::this_thread::sleep_for(std::chrono::seconds(5));
         }
     }

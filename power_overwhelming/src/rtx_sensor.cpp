@@ -297,6 +297,10 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
             } catch (const std::exception& ex) {
                 PWROWG_TRACE("An error occurred while processing waveforms "
                     "from instrument \"%s\": %s", instrument.path(), ex.what());
+                if (!trigger.when_failed(std::current_exception(),
+                        trigger.when_failed_context)) {
+                    throw;
+                }
             }
 
             // This line makes sure that the sensor offset for subsequent
@@ -307,6 +311,7 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
         PWROWG_TRACE(_T("The RTX controller thread is done processing the ")
             _T("latest waveforms."));
         atomic_unset(trigger.state, rtx_sensor_state::busy);
+        trigger.when_done(trigger.when_done_context);
     } /* while (!check_state(trigger.state, rtx_sensor_state::stop)) */
 
     PWROWG_TRACE(_T("The RTX sensor controller thread is exiting."));
