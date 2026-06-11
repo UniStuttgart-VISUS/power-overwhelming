@@ -133,7 +133,7 @@ namespace detail {
         /// used.
         /// </summary>
         inline operator bool(void) const noexcept {
-            return (this->_begin_host != 0);
+            return (this->_begin.first != 0);
         }
 
         /// <summary>
@@ -160,34 +160,26 @@ namespace detail {
             timestamp_millis;
 
         /// <summary>
-        /// The timestamp on the bricklet when the first calibration was
-        /// performed in <see cref="reset " />.
+        /// The timestamps at begin of last <see cref="reset" />.
         /// </summary>
-        double _begin_bricklet;
+        times_type _begin;
 
         /// <summary>
-        /// The timestamp on the host when the first calibration was performed
-        /// in <see cref="reset " />.
+        /// The timestamps at last <see cref="update" />.
         /// </summary>
-        timestamp _begin_host;
-
-        /// <summary>
-        /// Tracks how many translations need to be made before the next
-        /// automatic call to <see cref="update" />.
-        /// </summary>
-        std::size_t _next_update;
-
-        /// <summary>
-        /// The wall-clock timestamp (in milliseconds) from the zero-point
-        /// of the time reported by the bricklet with Moritz' custom firmware.
-        /// </summary>
-        timestamp_millis _time_offset;
+        times_type _last_update;
 
         /// <summary>
         /// Allows for adapting the slope of the bricklets clock to the system
         /// clock (the dübel constant).
         /// </summary>
         double _time_scale;
+
+        /// <summary>
+        /// Tracks how many translations need to be made before the next
+        /// automatic call to <see cref="update" />.
+        /// </summary>
+        std::size_t _next_update;
 
         /// <summary>
         /// The number of translations that will trigger an automatic
