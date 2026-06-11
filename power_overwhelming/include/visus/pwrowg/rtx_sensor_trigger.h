@@ -85,24 +85,43 @@ public:
     }
 
     /// <summary>
-    /// Triggers the oscilloscope manually and blocks the calling thread until
-    /// the oscilloscope has acknowledged the trigger.
+    /// Triggers the oscilloscope as soon as any ongoing acquisition has
+    /// finished.
     /// </summary>
+    /// <typeparam name="TDone">The type of the callback to be invoked when
+    /// the acquisition was fully processed by the RTX sensor controller
+    /// thread. This must be a callable type accepting no arguments and
+    /// returning <see langword="void" />.</typeparam>
+    /// <typeparam name="TFailed">The type of the callback to be invoked when
+    /// when RTX sensor controller asynchronously encounters an error while
+    /// processing the waveforms. This must be a callable type accepting an
+    /// <see cref="std::exception_ptr" /> and returning
+    /// <see langword="bool" />. If the callback returns <see cref="true" />,
+    /// the thread will continue processing the next acquisitions. Otherwise,
+    /// the error will be propagated and cause the application to exit.
+    /// </typeparam>
+    /// <param name="when_done">The callback to be invoked when the acquisition
+    /// was processed.</param>
+    /// <param name="when_failed">The callback to be invoked when an error was
+    /// encountered.</param>
+    /// <returns><see langword="true" /> if the trigger was acknowledged,
+    /// <see langword="false" /> if the trigger was not issued as the sensor is
+    /// shutting down.</returns>
     template<class TDone, class TFailed>
-    bool acquire(_In_ TDone&& done, _In_ TFailed&& failed) {
-        type_erased_storage when_done, when_failed;
-        when_done.emplace<TDone>(std::forward<TDone>(done));
-        when_failed.emplace<TFailed>(std::forward<TFailed>(failed));
+    bool acquire(_In_ TDone&& when_done, _In_ TFailed&& when_failed) {
+        type_erased_storage done, failed;
+        done.emplace<TDone>(std::forward<TDone>(when_done));
+        failed.emplace<TFailed>(std::forward<TFailed>(when_failed));
 
         return this->acquire(
             [](const type_erased_storage& c) {
                 (*c.template get<TDone>())();
             },
-            std::move(when_done),
+            std::move(done),
             [](const std::exception_ptr ex, const type_erased_storage& c) {
                 return (*c.template get<TFailed>())(ex);
             },
-            std::move(when_failed));
+            std::move(failed));
     }
 
     /// <summary>
@@ -111,7 +130,8 @@ public:
     /// </summary>
     /// <typeparam name="TDone">The type of the callback to be invoked when
     /// the acquisition was fully processed by the RTX sensor controller
-    /// thread.</typeparam>
+    /// thread. This must be a functor type accepting no arguments and returning
+    /// <see langword="void" />.</typeparam>
     /// <param name="done">The callback to be invoked when the acquisition was
     /// processed.</param>
     /// <returns><see langword="true" /> if the trigger was acknowledged,
