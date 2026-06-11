@@ -203,7 +203,7 @@ void visus::power_overwhelming::detail::tinkerforge_sensor_impl::disable_callbac
 
     if (this->has_internal_time()) {
         ::voltage_current_v2_register_callback(&this->bricklet,
-            VOLTAGE_CURRENT_V2_CALLBACK_POWER,
+            VOLTAGE_CURRENT_V2_CALLBACK_POWER_TIME,
             nullptr,
             this);
     }

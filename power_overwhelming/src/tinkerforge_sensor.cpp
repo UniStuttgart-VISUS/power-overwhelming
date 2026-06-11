@@ -373,6 +373,7 @@ void visus::power_overwhelming::tinkerforge_sensor::sample(
     this->check_not_disposed();
     this->sample_async(std::move(async_sampling()
         .samples_every(period)
+        .from_source(source)
         .delivers_measurements_to(on_measurement)
         .passes_context(context)));
 }
