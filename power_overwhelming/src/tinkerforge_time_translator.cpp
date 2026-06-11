@@ -142,7 +142,7 @@ visus::power_overwhelming::detail::tinkerforge_time_translator::operator ()(
         _In_ bricklet_type& bricklet) {
     using namespace std::chrono;
 
-    const auto db = static_cast<double>(time - this->_last_update.second);
+    const auto db = static_cast<double>(static_cast<int64_t>(time) - static_cast<int64_t>(this->_last_update.second));
     const auto retval = this->_last_update.first + duration<double, std::milli>(db * this->_time_scale);
 
     if (this->_next_update == 0) {
