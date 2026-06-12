@@ -282,20 +282,6 @@ public:
     void resync_internal_clock(void);
 
     /// <summary>
-    /// Instructs the implementation to synchronise the internal clock of
-    /// the bricklet with the wall-clock of the PC every
-    /// <paramref name="cnt" /> measurements.
-    /// </summary>
-    /// <remarks>
-    /// This method has no effect if the library has not been built with
-    /// support for our custom firmware or the bricklet does not run this
-    /// firmware.
-    /// </remarks>
-    /// <param name="cnt">The number of time translations (measurements)
-    /// that can be made with the same synchronisation state.</param>
-    void resync_internal_clock_after(_In_ const std::size_t cnt);
-
-    /// <summary>
     /// Starts or stops sampling the sensor.
     /// </summary>
     /// <param name="enable"><c>true</c> for enabling the sensor,

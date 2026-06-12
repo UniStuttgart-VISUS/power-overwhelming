@@ -79,7 +79,7 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::get_coord_times(
     throw_if_tinkerforge_failed(status);
 
     const auto dt = duration_cast<milliseconds>(end - begin).count();
-    return std::make_pair(begin + milliseconds(dt >> 1), time);
+    return times_type(timestamp::middle(begin, end), time);
 
 #else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
     throw std::logic_error("This operation is not supported without the "
@@ -92,12 +92,9 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::get_coord_times(
  * ...::detail::tinkerforge_time_translator::tinkerforge_time_translator
  */
 PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator
-::tinkerforge_time_translator(void) noexcept
-        : _begin { 0, 0 },
-        _last { 0, 0 },
-        _next_update((std::numeric_limits<std::size_t>::max)()),
-        _scale(1.0),
-        _update_every((std::numeric_limits<std::size_t>::max)()) { }
+::tinkerforge_time_translator(void) noexcept {
+    initialise_triple_buffer_state(this->_state);
+}
 
 
 /*
@@ -106,28 +103,29 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator
 bool PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::update(
         _In_ bricklet_type& bricklet) noexcept {
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
-    assert(this->_begin.first != 0);
-    assert(this->_begin.second != 0);
+    assert(this->_begin.host != 0);
+    assert(this->_begin.bricklet != 0);
 
     // Determine the current time on the host and the bricklet.
-    this->_last = get_coord_times(bricklet);
+    auto& b = this->_buffer[get_write_buffer_index(this->_state)];
+    b.first = get_coord_times(bricklet);
 
     // Compute the times elapsed on the host and on the bricklet.
-    assert(this->_last.second >= this->_begin.second);
-    const auto db = this->_last.second - this->_begin.second;
+    assert(b.first.bricklet > this->_begin.bricklet);
+    const auto db = b.first.bricklet - this->_begin.bricklet;
     const auto dh = std::chrono::duration_cast<float_millis>(
-        this->_last.first - this->_begin.first);
+        b.first.host - this->_begin.host);
 
     // Compute the scaling of the bricklet clock and the host clock.
-    this->_scale = dh.count() / static_cast<double>(db);
+    b.second = dh.count() / static_cast<double>(db);
 
-    // Reset the update counter.
-    this->_next_update = this->_update_every;
+    // Publish the new values.
+    swap_write_buffer(this->_state);
 
     return true;
 #else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
-    assert(this->_begin.first == 0);
-    assert(this->_begin.second == 0);
+    assert(this->_begin.host == timestamp::zero);
+    assert(this->_begin.bricklet == 0);
     return false;
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 }
@@ -140,18 +138,15 @@ PWROWG_NAMESPACE::timestamp
 PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::operator ()(
         _In_ const bricklet_time_type time,
         _In_ bricklet_type& bricklet) {
-    using namespace std::chrono;
-    const auto cur = static_cast<std::int64_t>(time);
-    const auto last = static_cast<std::int64_t>(this->_last.second);
-    assert(last >= cur);
-    const auto dt = static_cast<double>(last - cur);
-    const auto retval = this->_last.first + float_millis(dt * this->_scale);
+    swap_read_buffer(this->_state);
+    auto& b = this->_buffer[get_read_buffer_index(this->_state)];
 
-    if (this->_next_update == 0) {
-        this->update(bricklet);
-    } else {
-        --this->_next_update;
-    }
+    const auto cur = static_cast<std::int64_t>(time);
+    const auto last = static_cast<std::int64_t>(b.first.bricklet);
+    assert(last >= cur);
+
+    const auto dt = static_cast<double>(last - cur);
+    const auto retval = b.first.host + float_millis(dt * b.second);
 
     return retval;
 }

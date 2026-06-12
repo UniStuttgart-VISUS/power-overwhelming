@@ -9,6 +9,7 @@
 #pragma once
 
 #include <array>
+#include <atomic>
 #include <cassert>
 #include <chrono>
 #include <cinttypes>
@@ -21,6 +22,8 @@
 #include "visus/pwrowg/api.h"
 #include "visus/pwrowg/timestamp.h"
 #include "visus/pwrowg/trace.h"
+
+#include "triple_buffering.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -50,7 +53,28 @@ public:
     /// The type of a coordinated time comprising the current timestamp on
     /// the host and the time retrieved from the bricklet.
     /// </summary>
-    typedef std::pair<timestamp, bricklet_time_type> times_type;
+    struct times_type final {
+
+        /// <summary>
+        /// The timestamp on the host.
+        /// </summary>
+        timestamp host;
+
+        /// <summary>
+        /// The time reported by the bricklet.
+        /// </summary>
+        bricklet_time_type bricklet;
+
+        /// <summary>
+        /// Initialises a new instance.
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="bricklet"></param>
+        inline times_type(
+                _In_ const timestamp host = timestamp::zero,
+                _In_ const bricklet_time_type bricklet = 0) noexcept
+            : host(host), bricklet(bricklet) { }
+    };
 
     /// <summary>
     /// Checks whether timestamps from the bricklet are supported, which
@@ -123,21 +147,12 @@ public:
     bool update(_In_ bricklet_type& bricklet) noexcept;
 
     /// <summary>
-    /// Instructs the implementation to call <see cref="update" /> after
-    /// every <paramref name="cnt" /> translations.
-    /// </summary>
-    /// <param name="cnt"></param>
-    inline void update_every(_In_ std::size_t cnt) noexcept {
-        this->_update_every = cnt;
-    }
-
-    /// <summary>
     /// Answer whether the translator has been initialised/reset and can be
     /// used.
     /// </summary>
     inline operator bool(void) const noexcept {
-        return ((this->_begin.first != timestamp::zero)
-            && (this->_begin.second != 0.0));
+        return ((this->_begin.host != timestamp::zero)
+            && (this->_begin.bricklet != 0));
     }
 
     /// <summary>
@@ -162,30 +177,18 @@ private:
     times_type _begin;
 
     /// <summary>
-    /// The timestamps obtained in the last call to <see cref="update" />.
-    /// </summary>
-    times_type _last;
-
-    /// <summary>
-    /// Tracks how many translations need to be made before the next
-    /// automatic call to <see cref="update" />.
-    /// </summary>
-    std::size_t _next_update;
-
-    /// <summary>
-    /// Allows for adapting the slope of the bricklets clock to the system
-    /// clock (the d&uuml;bel constant).
-    /// </summary>
-    double _scale;
-
-    /// <summary>
-    /// The number of translations that will trigger an automatic
+    /// The timestamps and the scaling factor obtained in the last call to
     /// <see cref="update" />.
     /// </summary>
-    /// <remarks>
-    /// This variable is used to reset <see cref="_next_update" />.
-    /// </remarks>
-    std::size_t _update_every;
+    std::array<std::pair<times_type, double>, 3> _buffer;
+
+    /// <summary>
+    /// The state of the <see cref="_buffer" />, which determines which entry is
+    /// written next by <see cref="update" /> and which entry is read by
+    /// <see cref="operator ()" />.
+    /// </summary>
+    triple_buffer_state _state;
+
 };
 
 PWROWG_DETAIL_NAMESPACE_END

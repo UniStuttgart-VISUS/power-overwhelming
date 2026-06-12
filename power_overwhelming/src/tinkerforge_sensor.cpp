@@ -300,17 +300,6 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::resync_internal_clock(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::resync_internal_clock_after
- */
-void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::resync_internal_clock_after(
-    _In_ const std::size_t cnt) {
-#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
-    this->_time_xlate.update_every(cnt);
-#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
-}
-
-
-/*
  * PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::sample
  */
 void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::sample(

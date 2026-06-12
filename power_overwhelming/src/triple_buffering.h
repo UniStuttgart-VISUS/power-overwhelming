@@ -1,5 +1,5 @@
 ﻿// <copyright file="triple_buffering.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -26,7 +26,7 @@ typedef std::atomic<std::uint_fast8_t> triple_buffer_state;
 /// </summary>
 /// <remarks>
 /// According to https://en.cppreference.com/w/cpp/atomic/atomic, atomics
-/// should have a <c>value_type</c> member regarless of whether they are
+/// should have a <c>value_type</c> member regardless of whether they are
 /// specialised or not, but on Linux, this seems to be missing, so we do a
 /// wild <c>decltype</c> hack instead.
 /// </remarks>
