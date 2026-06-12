@@ -20,50 +20,14 @@
 
 
 /// <summary>
-/// Applies the defaults for the parallel port trigger.
+/// Sets the common properties of the parallel port trigger.
 /// </summary>
-static void configure_par_default(
-        _In_ PWROWG_DETAIL_NAMESPACE::rtx_sensor_trigger_impl& impl,
-        _In_ const wchar_t *channel) {
+static void configure_par_default(_In_ PWROWG_NAMESPACE::rtx_trigger& trigger) {
     using namespace PWROWG_NAMESPACE;
-    assert(impl.trigger == nullptr);
-    impl.trigger = std::make_unique<rtx_trigger>(channel, L"EDGE");
     // Cf. rtx_sen_trg_bld_chan0::rtx_sen_trg_bld_chan0
-    impl.trigger->mode(rtx_trigger_mode::normal);
-    impl.trigger->level(rtx_quantity(2.5f, "V"));
-    impl.trigger->slope(rtx_trigger_slope::rising);
-}
-
-
-/// <summary>
-/// Applies the defaults for the parallel port trigger.
-/// </summary>
-static void configure_par_default(
-        _In_ PWROWG_DETAIL_NAMESPACE::rtx_sensor_trigger_impl& impl,
-        _In_ const char *channel) {
-    using namespace PWROWG_NAMESPACE;
-    assert(impl.trigger == nullptr);
-    impl.trigger = std::make_unique<rtx_trigger>(channel, "EDGE");
-    // Cf. rtx_sen_trg_bld_chan0::rtx_sen_trg_bld_chan0
-    impl.trigger->mode(rtx_trigger_mode::normal);
-    impl.trigger->level(rtx_quantity(2.5f, "V"));
-    impl.trigger->slope(rtx_trigger_slope::rising);
-}
-
-
-/// <summary>
-/// Applies the defaults for the parallel port trigger.
-/// </summary>
-static void configure_par_default(
-        _In_ PWROWG_DETAIL_NAMESPACE::rtx_sensor_trigger_impl& impl,
-        _In_ const PWROWG_NAMESPACE::rtx_trigger::input_type channel) {
-    using namespace PWROWG_NAMESPACE;
-    assert(impl.trigger == nullptr);
-    impl.trigger = std::make_unique<rtx_trigger>(channel, L"EDGE");
-    // Cf. rtx_sen_trg_bld_chan0::rtx_sen_trg_bld_chan0
-    impl.trigger->mode(rtx_trigger_mode::normal);
-    impl.trigger->level(rtx_quantity(2.5f, "V"));
-    impl.trigger->slope(rtx_trigger_slope::rising);
+    trigger.mode(rtx_trigger_mode::normal);
+    trigger.level(rtx_quantity(2.5f, "V"));
+    trigger.slope(rtx_trigger_slope::rising);
 }
 
 
@@ -204,7 +168,9 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par2::measured_via_channel(
         _In_z_ const wchar_t *channel) {
     assert(this->_trigger._impl != nullptr);
-    ::configure_par_default(*this->_trigger._impl, channel);
+    this->_trigger._impl->trigger = std::make_unique<rtx_trigger>(channel,
+        rtx_trigger_type::edge);
+    configure_par_default(*this->_trigger._impl->trigger);
     return this->_trigger;
 }
 
@@ -216,7 +182,9 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par2::measured_via_channel(
         _In_z_ const char *channel) {
     assert(this->_trigger._impl != nullptr);
-    ::configure_par_default(*this->_trigger._impl, channel);
+    this->_trigger._impl->trigger = std::make_unique<rtx_trigger>(channel,
+        rtx_trigger_type::edge);
+    configure_par_default(*this->_trigger._impl->trigger);
     return this->_trigger;
 }
 
@@ -228,7 +196,9 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par2::measured_via_channel(
         _In_ const rtx_trigger::input_type channel) {
     assert(this->_trigger._impl != nullptr);
-    ::configure_par_default(*this->_trigger._impl, channel);
+    this->_trigger._impl->trigger = std::make_unique<rtx_trigger>(channel,
+        rtx_trigger_type::edge);
+    configure_par_default(*this->_trigger._impl->trigger);
     return this->_trigger;
 }
 
@@ -262,7 +232,10 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::rtx_sen_trg_bld_par0(
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel(
         _In_z_ const wchar_t *channel) {
-    ::configure_par_default(*this->_trigger._impl, channel);
+    assert(this->_trigger._impl != nullptr);
+    this->_trigger._impl->trigger = std::make_unique<rtx_trigger>(channel,
+        rtx_trigger_type::edge);
+    configure_par_default(*this->_trigger._impl->trigger);
     return this->_trigger;
 }
 
@@ -273,7 +246,10 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel(
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel(
         _In_z_ const char *channel) {
-    ::configure_par_default(*this->_trigger._impl, channel);
+    assert(this->_trigger._impl != nullptr);
+    this->_trigger._impl->trigger = std::make_unique<rtx_trigger>(channel,
+        rtx_trigger_type::edge);
+    configure_par_default(*this->_trigger._impl->trigger);
     return this->_trigger;
 }
 
@@ -284,7 +260,23 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel(
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_channel(
         _In_ const rtx_trigger::input_type channel) {
-    ::configure_par_default(*this->_trigger._impl, channel);
+    assert(this->_trigger._impl != nullptr);
+    this->_trigger._impl->trigger = std::make_unique<rtx_trigger>(channel,
+        rtx_trigger_type::edge);
+    configure_par_default(*this->_trigger._impl->trigger);
+    return this->_trigger;
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_external
+ */
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par3
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::measured_via_external(void) {
+    assert(this->_trigger._impl != nullptr);
+    this->_trigger._impl->trigger = std::make_unique<rtx_trigger>(L"EXT",
+        rtx_trigger_type::edge);
+    ::configure_par_default(*this->_trigger._impl->trigger);
     return this->_trigger;
 }
 

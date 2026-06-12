@@ -45,35 +45,6 @@ PWROWG_NAMESPACE::rtx_trigger PWROWG_NAMESPACE::rtx_trigger::edge(
 
 
 /*
- * PWROWG_NAMESPACE::rtx_trigger::external_edge
- */
-PWROWG_NAMESPACE::rtx_trigger PWROWG_NAMESPACE::rtx_trigger::external_edge(
-        _In_ const rtx_quantity& level,
-        _In_ const rtx_trigger_slope slope) {
-    return edge(5).external(level, slope);
-}
-
-
-/*
- * PWROWG_NAMESPACE::rtx_trigger::external_edge
- */
-PWROWG_NAMESPACE::rtx_trigger PWROWG_NAMESPACE::rtx_trigger::external_edge(
-        _In_ const float level,
-        _In_ const rtx_trigger_slope slope) {
-    return external_edge(rtx_quantity(level, "V"), slope);
-}
-
-
-/*
- * PWROWG_NAMESPACE::rtx_trigger::external_edge
- */
-PWROWG_NAMESPACE::rtx_trigger PWROWG_NAMESPACE::rtx_trigger::external_edge(
-        _In_ const rtx_trigger_slope slope) {
-    return external_edge(rtx_quantity(external_level, "V"), slope);
-}
-
-
-/*
  * PWROWG_NAMESPACE::rtx_trigger::rtx_trigger
  */
 PWROWG_NAMESPACE::rtx_trigger::rtx_trigger(
@@ -236,11 +207,14 @@ PWROWG_NAMESPACE::rtx_trigger& PWROWG_NAMESPACE::rtx_trigger::source(
         std::regex rx("^ch(\\d+)$", std::regex_constants::ECMAScript
             | std::regex_constants::icase);
 
-        if (std::regex_match(this->_source.as<char>(), match, rx)) {
+        auto src = this->_source.as<char>();
+        assert(src != nullptr);
+
+        if (std::regex_match(src, match, rx)) {
             auto c = match[1].str();
             this->_input = ::atoi(c.c_str());
 
-        } else if (detail::equals(this->_source.as<char>(), "EXT", true)) {
+        } else if (detail::equals(src, "EXT", true)) {
             this->_input = 5;
 
         } else {

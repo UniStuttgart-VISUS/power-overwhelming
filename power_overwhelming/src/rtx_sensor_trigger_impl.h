@@ -169,8 +169,7 @@ struct rtx_sensor_trigger_impl final {
         external_trigger_pins(parallel_port_pin::data),
         references(1),
         state(rtx_sensor_state::none),
-        trigger_instrument((std::numeric_limits<std::size_t>::max)()),
-        trigger_timestamps(1, timestamp()) { }
+        trigger_instrument((std::numeric_limits<std::size_t>::max)()) { }
 };
 
 PWROWG_DETAIL_NAMESPACE_END

@@ -291,6 +291,8 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
                     const auto src = source + c;
                     this->make_samples(samples, src, i, chan, waveforms);
                     assert(!samples.empty());
+                    PWROWG_TRACE("Delivering %zu samples from instrument "
+                        "\"%s\". ", samples.size(), instrument.path());
                     sensor_array_impl::callback(this->_owner, samples.data(),
                         samples.size());
                 }
@@ -351,6 +353,7 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::make_samples(
         auto& retval = cache[c];
 
         if (retval.empty()) {
+            PWROWG_TRACE(_T("Channel %u was not cached."), c);
             retval = inst.data(
                 c,
                 rtx_waveform_points::maximum,
@@ -362,7 +365,8 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::make_samples(
     };
 
     if (channel.current == 0) {
-        // Single channel sensor, e.g. voltage or current.
+        PWROWG_TRACE(_T("Sample single-channel sensor on %u."),
+            channel.channel);
         auto& waveform = get_waveform(channel.channel);
 
         samples.resize(waveform.size());
@@ -376,7 +380,8 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::make_samples(
         }
 
     } else {
-        // A power sensor combined from voltage and current.
+        PWROWG_TRACE(_T("Sample power sensor on %u, %u."), channel.channel,
+            channel.current);
         auto& voltage = get_waveform(channel.channel);
         auto& current = get_waveform(channel.current);
 

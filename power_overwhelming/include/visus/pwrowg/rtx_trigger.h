@@ -61,37 +61,6 @@ public:
     static rtx_trigger edge(_In_ const input_type source);
 
     /// <summary>
-    /// Configures an edge trigger on the external trigger input.
-    /// </summary>
-    /// <param name="level">The trigger level.</param>
-    /// <param name="slope">The slope on which to trigger. This parameter
-    /// defaults to <see cref="rtx_trigger_slope::rising" />.
-    /// </param>
-    /// <returns>An edge trigger.</returns>
-    static rtx_trigger external_edge(_In_ const rtx_quantity& level,
-        _In_ const rtx_trigger_slope slope = rtx_trigger_slope::rising);
-
-    /// <summary>
-    /// Configures an edge trigger on the external trigger input.
-    /// </summary>
-    /// <param name="level">The trigger level in Volts. This parameter
-    /// defaults to <see cref="external_level" />.</param>
-    /// <param name="slope">The slope on which to trigger. This parameter
-    /// defaults to <see cref="rtx_trigger_slope::rising" />.
-    /// </param>
-    /// <returns>An edge trigger.</returns>
-    static rtx_trigger external_edge(_In_ const float level = external_level,
-        _In_ const rtx_trigger_slope slope = rtx_trigger_slope::rising);
-
-    /// <summary>
-    /// Configure an edge trigger on <see cref="external_level" /> on the
-    /// external trigger input.
-    /// </summary>
-    /// <param name="slope">The slope on which to trigger.
-    /// <returns>An edge trigger.</returns>
-    static rtx_trigger external_edge(_In_ const rtx_trigger_slope slope);
-
-    /// <summary>
     /// Initialises a new instance.
     /// </summary>
     /// <param name="source">The name of the trigger source.</param>

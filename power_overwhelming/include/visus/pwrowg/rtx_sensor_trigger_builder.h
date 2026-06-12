@@ -453,6 +453,12 @@ public:
         _In_ const rtx_trigger::input_type channel);
 
     /// <summary>
+    /// Creates a trigger on the external channel.
+    /// </summary>
+    /// <returns>A builder to configure the type of the trigger.</returns>
+    detail::rtx_sen_trg_bld_par3 measured_via_external(void);
+
+    /// <summary>
     /// Tells the framework to only use the specified pins of the parallel port
     /// trigger. If not specified, all data pins will be used.
     /// </summary>

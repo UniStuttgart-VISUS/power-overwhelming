@@ -145,6 +145,7 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
         PWROWG_TRACE("Arming single acquisition on \"%s\" followed by an "
             "asynchronous OPC.", i.path());
         i.acquisition(rtx_acquisition_state::single).operation_complete_async();
+        while (!i.operation_status(rtx_operation_status::waiting));
     }
 
     if (this->_impl->external_trigger) {
@@ -186,6 +187,7 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
             PWROWG_TRACE(_T("Triggering all instruments manually."));
             for (auto& i : this->_impl->instruments) {
                 i.trigger_manually();
+                // TODO: timestamps
             }
         }
     } /* if (this->_impl->external_trigger) */

@@ -83,7 +83,8 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
     assert(this->_trigger._impl != nullptr);
     auto& instruments = this->_trigger._impl->instruments;
 
-    rtx_instrument::channel_type next_math = 0;
+    // Checks whether 'd' is using a different instrument than the last in
+    // 'instruments'.
     const auto next_instrument = [&instruments](const sensor_description& d) {
         if (instruments.empty()) {
             return true;
@@ -231,6 +232,17 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         PWROWG_TRACE("Making sure that \"%s\" is not in an error state "
             "after applying all configuration changes.", i.path());
         i.throw_on_system_error();
+
+        if (this->_trigger._impl->trigger == nullptr) {
+            PWROWG_TRACE("Allocating space for recording manual trigger "
+                "timestamp for \"%s\".", i.path());
+            this->_trigger._impl->trigger_timestamps.emplace_back(0);
+
+        } else if (this->_trigger._impl->external_trigger) {
+            PWROWG_TRACE(_T("Allocating space for recording timestamp of ")
+                _T("external trigger."));
+            this->_trigger._impl->trigger_timestamps.resize(1);
+        }
 
         PWROWG_TRACE("Creating channel map for instrument \"%s\".", i.path());
         this->_channels.emplace_back();
