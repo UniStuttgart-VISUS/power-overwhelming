@@ -1,5 +1,5 @@
 ﻿// <copyright file="tinkerforge_time_translator.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -8,6 +8,8 @@
 
 #include <limits>
 #include <stdexcept>
+
+#include "tinkerforge_error_category.h"
 
 
 /*
@@ -91,11 +93,10 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::get_coord_times(
  */
 PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator
 ::tinkerforge_time_translator(void) noexcept
-        : _begin_bricklet(0),
-        _begin_host(0),
+        : _begin { 0, 0.0 },
+        _last { 0, 0.0 },
         _next_update((std::numeric_limits<std::size_t>::max)()),
-        _time_offset(0),
-        _time_scale(1.0),
+        _scale(1.0),
         _update_every((std::numeric_limits<std::size_t>::max)()) { }
 
 
@@ -105,40 +106,20 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator
 bool PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::update(
         _In_ bricklet_type& bricklet) noexcept {
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
-    using namespace std::chrono;
-    assert(this->_begin_host != 0);
-    assert(this->_time_offset.count() != 0);
-    std::uint32_t btime;
+    assert(this->_begin.first != 0);
+    assert(this->_begin.second != 0);
 
     // Determine the current time on the host and the bricklet.
-    const auto begin = timestamp::now();
-    const auto status = ::voltage_current_v2_get_time(&bricklet, &btime);
-    const auto end = timestamp::now();
-    if (status < 0) {
-        return false;
-    }
-
-    const auto dt = end - begin;
-    const auto htime = begin + (dt  / 2);
+    this->_last = get_coord_times(bricklet);
 
     // Compute the times elapsed on the host and on the bricklet.
-    const auto db = static_cast<double>(btime) - this->_begin_bricklet;
-    const auto dh = static_cast<double>(htime)
-        - static_cast<double>(this->_begin_host);
+    assert(this->_last.second >= this->_begin.second);
+    const auto db = this->_last.second - this->_begin.second;
+    const auto dh = std::chrono::duration_cast<float_millis>(
+        this->_last.first - this->_begin.first);
 
-    // Assuming both clocks having started at the same point in time, compute
-    // the scaling of the bricklet clock such that it runs at the same rate as
-    // the host system.
-    this->_time_scale = dh / db;
-
-    // Compute the (probable) point in time on the host when the time on the
-    // bricklet was zero. We need to scale the offset, because the result should
-    // be in the units of the clock on the host, but the offset we have is in
-    // ticks on the bricklet.
-    const timestamp_millis origin_offset(static_cast<timestamp::value_type>(
-        this->_time_scale * this->_begin_bricklet));
-    this->_time_offset = this->_begin_host.to_duration<std::milli>()
-        - origin_offset;
+    // Compute the scaling of the bricklet clock and the host clock.
+    this->_scale = dh.count() / static_cast<double>(db);
 
     // Reset the update counter.
     this->_next_update = this->_update_every;
@@ -160,7 +141,11 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::operator ()(
         _In_ const bricklet_time_type time,
         _In_ bricklet_type& bricklet) {
     using namespace std::chrono;
-    const auto offset = duration<double, std::milli>(time * this->_time_scale);
+    const auto cur = static_cast<std::int64_t>(time);
+    const auto last = static_cast<std::int64_t>(this->_last.second);
+    assert(last >= cur);
+    const auto dt = static_cast<double>(last - cur);
+    const auto retval = this->_last.first + float_millis(dt * this->_scale);
 
     if (this->_update_every == 0) {
         this->update(bricklet);
@@ -168,6 +153,5 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::operator ()(
         --this->_update_every;
     }
 
-    const auto retval = (this->_time_offset + offset);
-    return timestamp(duration_cast<timestamp_duration>(retval).count());
+    return retval;
 }

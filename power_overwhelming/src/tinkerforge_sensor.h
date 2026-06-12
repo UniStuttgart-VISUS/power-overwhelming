@@ -29,6 +29,7 @@
 #include "sensor_state.h"
 #include "tinkerforge_bricklet.h"
 #include "tinkerforge_scope.h"
+#include "tinkerforge_time_translator.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -212,7 +213,7 @@ public:
     /// host time must be used.</returns>
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
     inline bool has_internal_time(void) const noexcept {
-        return this->time_xlate;
+        return this->_time_xlate;
     }
 #else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
     inline constexpr bool has_internal_time(void) const noexcept {

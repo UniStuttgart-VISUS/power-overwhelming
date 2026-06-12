@@ -59,8 +59,10 @@ public:
     /// version we expect to support the feature) and the given bricklet
     /// must have the required firmware version.
     /// </summary>
-    /// <param name="bricklet"></param>
-    /// <returns></returns>
+    /// <param name="bricklet">The bricklet to be tested.</param>
+    /// <returns><see langword="true" /> if the <paramref name="bricklet" /> has
+    /// the custom firmware defined at compile time, <see langword="false" />
+    /// otherwise.</returns>
     static bool check_support(_In_ bricklet_type& bricklet) noexcept;
 
     /// <summary>
@@ -128,11 +130,12 @@ public:
     }
 
     /// <summary>
-    /// Answe whether the translator has been initialised/reset and can be
+    /// Answer whether the translator has been initialised/reset and can be
     /// used.
     /// </summary>
     inline operator bool(void) const noexcept {
-        return (this->_begin_host != 0);
+        return ((this->_begin.first != timestamp::zero)
+            && (this->_begin.second != 0.0));
     }
 
     /// <summary>
@@ -147,28 +150,19 @@ public:
 private:
 
     /// <summary>
-    /// The duration of native timestamp ticks.
+    /// Fractional milliseconds used for computations.
     /// </summary>
-    typedef std::chrono::duration<timestamp::value_type,
-        std::ratio<1, timestamp::tick_rate>> timestamp_duration;
+    typedef std::chrono::duration<double, std::milli> float_millis;
 
     /// <summary>
-    /// A timestamp value in milliseconds.
+    /// The timestamps when the first in <see cref="reset " />.
     /// </summary>
-    typedef std::chrono::duration<timestamp::value_type, std::milli>
-        timestamp_millis;
+    times_type _begin;
 
     /// <summary>
-    /// The timestamp on the bricklet when the first calibration was
-    /// performed in <see cref="reset " />.
+    /// The timestamps obtained in the last call to <see cref="update" />.
     /// </summary>
-    double _begin_bricklet;
-
-    /// <summary>
-    /// The timestamp on the host when the first calibration was performed
-    /// in <see cref="reset " />.
-    /// </summary>
-    timestamp _begin_host;
+    times_type _last;
 
     /// <summary>
     /// Tracks how many translations need to be made before the next
@@ -177,16 +171,10 @@ private:
     std::size_t _next_update;
 
     /// <summary>
-    /// The wall-clock timestamp (in milliseconds) from the zero-point
-    /// of the time reported by the bricklet with Moritz' custom firmware.
-    /// </summary>
-    timestamp_millis _time_offset;
-
-    /// <summary>
     /// Allows for adapting the slope of the bricklets clock to the system
-    /// clock (the dübel constant).
+    /// clock (the d&uuml;bel constant).
     /// </summary>
-    double _time_scale;
+    double _scale;
 
     /// <summary>
     /// The number of translations that will trigger an automatic
