@@ -207,6 +207,15 @@ set_target_properties(usbpdtesterdriver PROPERTIES
 endif ()
 
 
+# VISA (headers only)
+if (PWROWG_WithVisa)
+    find_package(VISA REQUIRED)
+    add_library(visa INTERFACE IMPORTED GLOBAL)
+    set_target_properties(visa PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${VISA_INCLUDE_DIR}")
+endif ()
+
+
 # Windows Implementation Library
 if (WIN32)
     FetchContent_Declare(wil

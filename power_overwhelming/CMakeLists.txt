@@ -2,9 +2,6 @@
 # Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 # Licensed under the MIT licence. See LICENCE file for details.
 
-# Search optional dependencies
-find_package(VISA QUIET)
-
 
 # User-configurable options.
 cmake_dependent_option(PWROWG_ForceDirect3D11 "Force GPU enumeration via Direct3D 11" OFF WIN32 OFF)
@@ -76,9 +73,9 @@ if (PWROWG_WithTimeSynchronisation)
 endif ()
 
 if (PWROWG_WithVisa)
-    find_package(VISA REQUIRED)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_VISA)
-    target_include_directories(${PROJECT_NAME} PUBLIC ${VISA_INCLUDE_DIR})
+    # Note: VISA must be public as we want to expose the headers to the client.
+    target_link_libraries(${PROJECT_NAME} PUBLIC visa)
 endif ()
 
 if (PWROWG_CustomTinkerforgeFirmwareMajor)
