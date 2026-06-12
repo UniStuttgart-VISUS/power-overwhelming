@@ -110,7 +110,9 @@ public:
     /// </summary>
     /// <remarks>
     /// <para>This method must only be called if the times have been reset
-    /// before.</para>
+    /// before. It must not be called concurrently from multiple threads or
+    /// while the time translator is actively in used to compute host time
+    /// stamps.</para>
     /// <para>This method is relatively slow. Querying the time from the
     /// bricklet takes around 2 ms.</para>
     /// <para>This method does nothing if the bricklet does not support

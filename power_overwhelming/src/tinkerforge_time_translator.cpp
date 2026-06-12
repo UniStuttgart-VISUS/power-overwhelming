@@ -93,8 +93,8 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::get_coord_times(
  */
 PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator
 ::tinkerforge_time_translator(void) noexcept
-        : _begin { 0, 0.0 },
-        _last { 0, 0.0 },
+        : _begin { 0, 0 },
+        _last { 0, 0 },
         _next_update((std::numeric_limits<std::size_t>::max)()),
         _scale(1.0),
         _update_every((std::numeric_limits<std::size_t>::max)()) { }
@@ -147,10 +147,10 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::operator ()(
     const auto dt = static_cast<double>(last - cur);
     const auto retval = this->_last.first + float_millis(dt * this->_scale);
 
-    if (this->_update_every == 0) {
+    if (this->_next_update == 0) {
         this->update(bricklet);
     } else {
-        --this->_update_every;
+        --this->_next_update;
     }
 
     return retval;

@@ -205,14 +205,95 @@ for (std::size_t i = 0; i < 42; ++i) {
 sensors.stop();
 ```
 
-> **Note**
+> [!NOTE]
 > The sensor array will not record any markers if the `marker_configuration` has not been configured with at least one marker.
 
-> **Note**
+> [!NOTE]
 > The sensor array will not record any markers that have an invalid ID.
 
-> **Note**
+> [!NOTE]
 > The sensor array will not record any markers unless it is running.
+
+### Working with oscilloscopes
+Oscilloscopes can record changes of voltage (and using specialised probes also current) over time at a much higher temporal resolution than all other sensors supported by the library. This makes them difficult to use in the sensor array, because the high temporal resolution only allows for recording during short time spans, which in turn must be synchronised with the application to be tested in order to obtain meaningful results. Power Overwhelming provides two ways to address this: first, the classes for interacting with RTA/RTB oscilloscopes are exposed in the public API and can be used directly. Second, the `rtx_sensor` wraps the instruments and provides means to trigger the oscilloscopes by the application using the software trigger or using a parallel port extension board (this is preferred due to the software trigger having a difficult to judge delay).
+
+You can enumerate all RTA/RTB oscilloscopes attached to the system like this:
+```c++
+using namespace visus::pwrowg;
+
+std::vector<rtx_instrument> instruments(rtx_instrument::all(nullptr, 0));
+const auto cnt = rtx_instrument::all(instruments.data(), instruments.size());
+instruments.resize((std::min)(instruments.size(), cnt));
+```
+
+Before performing any measurements and configuring the instrument, you should reset the devices to bring them into a defined state:
+```c++
+for (auto& i : instruments) {
+    // The following resets the device and clears all error states.
+    i.reset(rtx_instrument_reset::reset | rtx_instrument_reset::status);
+    // The following would additionally trigger the instrument to unlock all 
+    // threads performing a blocking wait for an acquisition.
+    i.reset(rtx_instrument_reset::trigger);
+    // The following would additionally read all pending data in the input
+    // buffer.
+    i.reset(rtx_instrument_reset::buffers);
+    // The following would additionally stop any rolling acquisition.
+    i.reset(rtx_instrument_reset::stop);
+    // The following performs all of the above.
+    i.reset(rtx_instrument_reset::all);
+}
+```
+
+Afterwards, you would configure the channels and the trigger condition. While it is possible to perform these operations directly on an `rtx_instrument`, some of the operations depend on each other. The `rtx_instument_configuration` class provides a fluent API to construct a configuration set that can be applied at once. It is used like this:
+```c++
+// Create a configuration for recording 10K samples over three seconds.
+auto config = rtx_instrument_configuration(std::chrono::seconds(3), 10000)
+    // Configure CHAN1 to measure up to 2V.
+    .channel(rtx_channel(1).range(2.0f, "V").attenuation(0.1f, "V"))
+    // Configure CHAN2 to measure up to 2A.
+    .channel(rtx_channel(2).range(2.0f, "A").attenuation(0.1f, "A"))
+    // Typically, applications want to control everything manually.
+    .disable_automatic_roll()
+    // Trigger when the external trigger input rises above 2V.
+    .trigger(rtx_trigger("EXT", rtx_trigger_type::edge).level(rtx_quantity(2.0f, "V")).slope(rtx_trigger_slope::rising))
+    // Set the leftmost reference position, because we do not care about what
+    // happened before the trigger.
+    .reference_position(rtx_reference_point::left)
+    // Make it beep once a trigger occurs, because we can.
+    .beep_on_trigger(true);
+
+// Apply the configuration to all instruments. The apply() method will block
+// until the instrument has finished. It will also check whether it is in an
+// error state after being configured.
+for (auto& i : instruments) {
+    config.apply(i);
+}
+```
+
+For software-controlled measurements, you should only perform single-mode acquisitions where the instruments triggers and keeps the data for you to download:
+```c++
+// Arm the instruments for a single acquisition and inject an asynchronous OPC
+// for waiting on the results.
+for (auto& i : instruments) {
+    i.acquisition(rtx_acquisition_state::single).operation_complete_async();
+}
+
+// At this point, you must make sure to trigger, e.g. by sending a pulse to the
+// external trigger input using the parallel_port_trigger class. You could also
+// call the trigger_manually() method to force a trigger from software. This
+// should, however, not be performed in a loop over multiple instruments.
+
+// Wait for the acquisition to complete. There are multiple ways for doing this,
+// including the response of an OPC or blocking until the OPC status changed.
+// This requires the appropriate event_status() and serivce_request_status() to
+// be set and a call to operation_complete_async() like the one above.
+for (auto& i : instruments) {
+    i.wait_status(visa_event_status::operation_complete);
+    auto voltage = i.data(1, rtx_waveform_points::maximum);
+    auto current = i.data(2, rtx_waveform_points::maximum);
+    for (float v : voltage) { /* Do something with it. */ }
+}
+```
 
 ## Extending the library
 The main motivation for modifying the library is to add additional sensors. The new design of the API directly changes how sensors are implemented and, most importantly, drastically reduces the amount of code typically required to implement a sensor.
