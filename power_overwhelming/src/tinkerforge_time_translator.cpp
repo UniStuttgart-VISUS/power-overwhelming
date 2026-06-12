@@ -126,8 +126,8 @@ bool PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::update(
 
     return true;
 #else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
-    assert(this->_begin_host == 0);
-    assert(this->_time_offset.count() == 0);
+    assert(this->_begin.first == 0);
+    assert(this->_begin.second == 0);
     return false;
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 }
