@@ -78,7 +78,7 @@ endif ()
 if (PWROWG_WithVisa)
     find_package(VISA REQUIRED)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_VISA)
-    target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
+    target_include_directories(${PROJECT_NAME} PUBLIC ${VISA_INCLUDE_DIR})
 endif ()
 
 if (PWROWG_CustomTinkerforgeFirmwareMajor)
