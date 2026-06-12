@@ -1,8 +1,8 @@
-// <copyright file="string_functions.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="string_functions.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2023 - 2026 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 #if !defined(_PWROWG_STRING_FUNCTIONS_H)
 #define _PWROWG_STRING_FUNCTIONS_H
