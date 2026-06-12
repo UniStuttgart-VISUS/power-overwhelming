@@ -9,6 +9,8 @@
 #pragma once
 
 #include <cassert>
+#include <cinttypes>
+#include <cstring>
 #include <memory>
 #include <stdexcept>
 #include <utility>
@@ -44,12 +46,7 @@ public:
     /// Initialise from move.
     /// </summary>
     /// <param name="rhs">The object to be moved.</param>
-    inline type_erased_storage(_Inout_ type_erased_storage&& rhs) noexcept
-            : _cp(rhs._cp), _data(rhs._data), _dtor(rhs._dtor) {
-        rhs._cp = nullptr;
-        rhs._data = nullptr;
-        rhs._dtor = nullptr;
-    }
+    type_erased_storage(_Inout_ type_erased_storage&& rhs) noexcept;
 
     /// <summary>
     /// Finalises the instance.
@@ -132,7 +129,15 @@ public:
     /// <typeparam name="TType">The type contained in the object.</typeparam>
     /// <returns>A pointer to the data.</returns>
     template<class TType> inline _Ret_maybenull_ TType *get(void) noexcept {
-        return static_cast<TType *>(this->_data);
+        switch (this->_state) {
+            case state::small_value:
+                return reinterpret_cast<TType *>(this->_data.small_value);
+            case state::large_value:
+                assert(this->_data.value != nullptr);
+                return static_cast<TType *>(this->_data.value);
+            default:
+                return nullptr;
+        }
     }
 
     /// <summary>
@@ -146,7 +151,15 @@ public:
     /// <returns>A pointer to the data.</returns>
     template<class TType>
     inline _Ret_maybenull_ const TType *get(void) const noexcept {
-        return static_cast<const TType *>(this->_data);
+        switch (this->_state) {
+            case state::small_value:
+                return reinterpret_cast<const TType *>(this->_data.small_value);
+            case state::large_value:
+                assert(this->_data.value != nullptr);
+                return static_cast<const TType *>(this->_data.value);
+            default:
+                return nullptr;
+        }
     }
 
     /// <summary>
@@ -154,7 +167,7 @@ public:
     /// </summary>
     /// <remarks>
     /// It is safe to call this method if no destructor has been registered or
-    /// or the object has been already reset. The method will erase all
+    /// if the object has been already reset. The method will erase all
     /// operations once the contained object was destroyed to prevent them being
     /// invoked on invalid data.
     /// </remarks>
@@ -180,24 +193,42 @@ public:
     /// <returns><c>true</c> if there are data in the object, <c>false</c> if it
     /// is empty.</returns>
     inline operator bool(void) const noexcept {
-        return (this->_data != nullptr);
+        return (this->_state != state::empty);
     }
 
 private:
 
     /// <summary>
+    /// A union used for small value optimisation.
+    /// </summary>
+    union data {
+        std::uint8_t small_value[2 * sizeof(void *)];
+        void *value;
+    };
+
+    /// <summary>
+    /// Possible states of the object.
+    /// </summary>
+    enum class state {
+        empty,
+        small_value,
+        large_value
+    };
+
+    /// <summary>
     /// The type of a copy operation, either copy construct or assignment.
     /// </summary>
-    typedef void (*copy_type)(_Out_ void *& dst, _In_ const void *src);
+    typedef void (*copy_type)(_Out_ data& dst, _In_ const data& src);
 
     /// <summary>
     /// The type of a destructor function.
     /// </summary>
-    typedef void (*destruct_type)(_In_ void *obj);
+    typedef void (*destruct_type)(_In_ data& obj);
 
     copy_type _cp;
-    void *_data;
+    data _data;
     destruct_type _dtor;
+    state _state;
 };
 
 PWROWG_NAMESPACE_END

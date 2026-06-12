@@ -328,8 +328,8 @@ public:
     /// <returns><c>*this</c>.</returns>
     template<class TType>
     sensor_description_builder& with_private_data(_In_ TType&& data) {
-        this->_desc._private.emplace<std::decay_t<TType>>(
-            std::forward<TType>(data));
+        typedef std::decay_t<TType> data_type;
+        this->_desc._private.emplace<data_type>(std::forward<TType>(data));
         return *this;
     }
 

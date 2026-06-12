@@ -7,10 +7,12 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 
-#include "visus/pwrowg/rtx_configuration.h"
-#include "visus/pwrowg/rtx_sensor_trigger_builder.h"
+#include <visus/pwrowg/rtx_configuration.h>
+#include <visus/pwrowg/rtx_instrument.h>
+#include <visus/pwrowg/rtx_instrument_configuration.h>
+#include <visus/pwrowg/rtx_sensor_trigger_builder.h>
 
-#include "rtx_sensor.h"
+#include <rtx_sensor.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

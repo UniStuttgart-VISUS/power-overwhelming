@@ -28,9 +28,6 @@
 #include <visus/pwrowg/rapl_domain.h>
 #include <visus/pwrowg/rtx_sample.h>
 #include <visus/pwrowg/parallel_port_trigger.h>
-#include <visus/pwrowg/rtx_instrument.h>
-#include <visus/pwrowg/rtx_instrument_configuration.h>
-#include <visus/pwrowg/rtx_sensor_definition.h>
 #include <visus/pwrowg/sample.h>
 #include <visus/pwrowg/sensor_array.h>
 #include <visus/pwrowg/sensor_description.h>
@@ -44,7 +41,6 @@
 #include <marker_sensor.h>
 #include <msr_magic.h>
 #include <msr_sensor.h>
-#include <rtx_serialisation.h>
 #include <sensor_array_impl.h>
 #include <sensor_description_builder.h>
 #include <sensor_registry.h>

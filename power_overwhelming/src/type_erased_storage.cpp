@@ -11,7 +11,7 @@
  * PWROWG_NAMESPACE::type_erased_storage::type_erased_storage
  */
 PWROWG_NAMESPACE::type_erased_storage::type_erased_storage(void) noexcept
-    : _cp(nullptr), _data(nullptr), _dtor(nullptr) {
+    : _cp(nullptr), _dtor(nullptr), _state(state::empty) {
     assert(!*this);
 }
 
@@ -21,14 +21,31 @@ PWROWG_NAMESPACE::type_erased_storage::type_erased_storage(void) noexcept
  */
 PWROWG_NAMESPACE::type_erased_storage::type_erased_storage(
         _In_ const type_erased_storage& rhs)
-        : _cp(rhs._cp), _data(nullptr), _dtor(rhs._dtor) {
+        : _cp(rhs._cp), _dtor(rhs._dtor), _state(state::empty) {
     if (this->_cp != nullptr) {
         this->_cp(this->_data, rhs._data);
+        this->_state = rhs._state;
 
-    } else if (rhs._data != nullptr) {
+    } else if (rhs._state != state::empty) {
+        assert(this->_state == state::empty);
         throw std::logic_error("The object contained in a type-erased storage "
             "block is not copyable.");
     }
+}
+
+
+/*
+ * PWROWG_NAMESPACE::type_erased_storage::type_erased_storage
+ */
+PWROWG_NAMESPACE::type_erased_storage::type_erased_storage(
+        _Inout_ type_erased_storage&& rhs) noexcept
+        : _cp(rhs._cp), _data(rhs._data), _dtor(rhs._dtor), _state(rhs._state) {
+    rhs._cp = nullptr;
+#if (defined(_DEBUG) || defined(_DEBUG))
+    ::memset(&rhs._data, 0xD0, sizeof(rhs._data));
+#endif /* (defined(_DEBUG) || defined(_DEBUG)) */
+    rhs._dtor = nullptr;
+    rhs._state = state::empty;
 }
 
 
@@ -44,12 +61,12 @@ PWROWG_NAMESPACE::type_erased_storage::~type_erased_storage(void) noexcept {
  * PWROWG_NAMESPACE::type_erased_storage::reset
  */
 void PWROWG_NAMESPACE::type_erased_storage::reset(void) noexcept {
-    if (this->_dtor != nullptr) {
-        assert(*this);
+    if (this->_state != state::empty) {
+        assert(this->_dtor != nullptr);
         this->_dtor(this->_data);
         this->_cp = nullptr;
-        this->_data = nullptr;
         this->_dtor = nullptr;
+        this->_state = state::empty;
     }
     assert(!*this);
 }
@@ -74,11 +91,14 @@ PWROWG_NAMESPACE::type_erased_storage::operator =(
         this->_dtor = rhs._dtor;
 
         if (this->_cp != nullptr) {
+            assert(rhs._state != state::empty);
             this->_cp(this->_data, rhs._data);
+            this->_state = rhs._state;
 
-        } else if (rhs._data != nullptr) {
+        } else if (rhs._state != state::empty) {
             this->_cp = nullptr;
             this->_dtor = nullptr;
+            this->_state = state::empty;
             throw std::logic_error("The object contained in a type-erased "
                 "storage block is not copyable.");
         }
@@ -100,9 +120,13 @@ PWROWG_NAMESPACE::type_erased_storage::operator =(
         this->_cp = rhs._cp;
         rhs._cp = nullptr;
         this->_data = rhs._data;
-        rhs._data = nullptr;
+#if (defined(_DEBUG) || defined(_DEBUG))
+        ::memset(&rhs._data, 0xD0, sizeof(rhs._data));
+#endif /* (defined(_DEBUG) || defined(_DEBUG)) */
         this->_dtor = rhs._dtor;
         rhs._dtor = nullptr;
+        this->_state = rhs._state;
+        rhs._state = state::empty;
         assert(!rhs);
     }
 

@@ -8,7 +8,9 @@
 #include "pch.h"
 
 #include <visus/pwrowg/rtx_instrument.h>
+#include <visus/pwrowg/rtx_instrument_configuration.h>
 
+#include <rtx_serialisation.h>
 #include <usb_reset.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

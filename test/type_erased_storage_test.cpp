@@ -90,6 +90,12 @@ public:
         int _payload;
     };
 
+    struct small_obj final {
+        bool& dtor;
+        inline small_obj(bool& dtor) noexcept : dtor(dtor) { }
+        inline ~small_obj(void) noexcept { this->dtor = true; }
+    };
+
     TEST_METHOD(test_ctor) {
         type_erased_storage tes;
         Assert::IsFalse(tes, L"Initialised empty", LINE_INFO());
@@ -182,6 +188,43 @@ public:
         Assert::AreEqual(std::size_t(1), dtor, L"Destruction", LINE_INFO());
         Assert::AreEqual(std::size_t(0), mv, L"No move", LINE_INFO());
         Assert::AreEqual(std::size_t(0), mv_ctor, L"No move construct", LINE_INFO());
+    }
+
+    TEST_METHOD(test_small) {
+        std::size_t cp = 0;
+        std::size_t cp_ctor = 0;
+        std::size_t dtor = 0;
+        std::size_t mv = 0;
+        std::size_t mv_ctor = 0;
+        bool svo_dtor = false;
+
+        type_erased_storage tes;
+        Assert::IsFalse(tes, L"Initialised empty", LINE_INFO());
+        Assert::AreEqual(42, tes.emplace<int>(42), L"Emplace return", LINE_INFO());
+        Assert::IsTrue(tes, L"Emplaced value", LINE_INFO());
+        Assert::AreEqual(42, *tes.get<int>(), L"Value is correct", LINE_INFO());
+
+        tes.emplace<op_counter>(43, cp_ctor, mv_ctor, dtor, cp, mv);
+        Assert::IsTrue(tes, L"Emplaced value", LINE_INFO());
+        Assert::AreEqual(43, tes.get<op_counter>()->payload(), L"Source payload", LINE_INFO());
+        Assert::AreEqual(std::size_t(0), cp, L"No copy", LINE_INFO());
+        Assert::AreEqual(std::size_t(0), cp_ctor, L"No copy construction", LINE_INFO());
+        Assert::AreEqual(std::size_t(0), dtor, L"No destruction", LINE_INFO());
+        Assert::AreEqual(std::size_t(0), mv, L"No move", LINE_INFO());
+        Assert::AreEqual(std::size_t(0), mv_ctor, L"No move construct", LINE_INFO());
+
+        tes.emplace<small_obj>(svo_dtor);
+        Assert::IsTrue(tes, L"Emplaced value", LINE_INFO());
+        Assert::IsFalse(tes.get<small_obj>()->dtor, L"Value is correct", LINE_INFO());
+        Assert::AreEqual(std::size_t(0), cp, L"No copy", LINE_INFO());
+        Assert::AreEqual(std::size_t(0), cp_ctor, L"No copy construction", LINE_INFO());
+        Assert::AreEqual(std::size_t(1), dtor, L"Destruction", LINE_INFO());
+        Assert::AreEqual(std::size_t(0), mv, L"No move", LINE_INFO());
+        Assert::AreEqual(std::size_t(0), mv_ctor, L"No move construct", LINE_INFO());
+
+        Assert::AreEqual(std::uint64_t(42), tes.emplace<std::uint64_t>(42), L"Emplace return", LINE_INFO());
+        Assert::IsTrue(svo_dtor, L"Small object destroyed", LINE_INFO());
+
     }
 };
 

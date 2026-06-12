@@ -1,10 +1,12 @@
 ﻿// <copyright file="rtx_acquisition_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #include "pch.h"
+
+#include <visus/pwrowg/rtx_acquisition.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
