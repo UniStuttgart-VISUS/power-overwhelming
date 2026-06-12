@@ -295,6 +295,43 @@ for (auto& i : instruments) {
 }
 ```
 
+Using the `rtx_sensor` requires some upfront configuration because the oscilloscope channels have no inherent meaning. Therefore, you must tell the `sensor_array` which oscilloscope channels are in use when configuring the array:
+```c++
+sensor_array_configuration config;
+
+// Configure other options here.
+
+// Setup the trigger. This depends on your hardware setup. In the  example, we
+// configure a parallel port trigger on EXT, which must be multiplexed in
+// hardware to all instruments. In most cases, you want to keep the 'trigger'
+// object, because it allows the application to control triggering.
+auto trigger = rtx_sensor_trigger_builder::for_all()
+    .when_parallel_port("LPT1")
+    .measured_via_external()
+    .at_level(2.0f, "V")
+    .build();
+
+// Tell the array about the oscilloscopes using the fluent API.
+config.configure<rtx_configuration>([trigger](rtx_configuration& c) {
+    // Setup a linked voltage/current pair like above. 
+    c.add_sensor("VISA path to instrument", 
+        rtx_channel(1).range(2.0f, "V").attenuation(0.1f, "V"),
+        rtx_channel(2).range(2.0f, "A").attenuation(0.1f, "A"));
+    c.trigger(trigger);
+});
+
+// Continue building the sensor array as usual. A voltage, current and power
+// sensor using the oscilloscope should not be included when enumerating the
+// sensor descriptions.
+```
+
+Once the sensor array has been started, you can use the `rtx_sensor_trigger` object to control when the oscilloscope sensor should measure:
+```c++
+trigger.acquire(
+    [](void) { /* Acquisition completed, you could now trigger again. */ },
+    [](const std::exception_ptr) { /* Signal that any error is fatal. */ return false; });
+```
+
 ## Extending the library
 The main motivation for modifying the library is to add additional sensors. The new design of the API directly changes how sensors are implemented and, most importantly, drastically reduces the amount of code typically required to implement a sensor.
 
