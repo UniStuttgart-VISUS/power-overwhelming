@@ -1,8 +1,8 @@
-// <copyright file="guid.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="guid.cpp" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2025 - 2026 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
+// <author>Christoph MÃ¼ller</author>
 
 /*
  * src\guid.cpp
@@ -337,7 +337,7 @@ std::size_t PWROWG_NAMESPACE::guid::to_string(
     }
 
     auto hack = reinterpret_cast<char *>(tmp);
-    auto retval = ::strlen(hack);
+    auto retval = ::strlen(hack) + 1;
     if ((dst != nullptr) && (cnt >= retval)) {
         ::strcpy_s(dst, cnt, hack);
     }
@@ -378,7 +378,7 @@ std::size_t PWROWG_NAMESPACE::guid::to_string(
     }
 
     auto hack = reinterpret_cast<wchar_t *>(tmp);
-    auto retval = ::wcslen(hack);
+    auto retval = ::wcslen(hack) + 1;
     if ((dst != nullptr) && (cnt >= retval)) {
         ::wcscpy_s(dst, cnt, hack);
     }
