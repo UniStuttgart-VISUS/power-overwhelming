@@ -234,9 +234,36 @@ std::size_t PWROWG_NAMESPACE::sensor_array::markers(void) const noexcept {
     typedef detail::type_list_index_of<type, types> index;
 
     volatile auto impl = this->_impl;  // sic!
-    auto& list = std::get<index::value>(this->_impl->sensors);
+    if (impl == nullptr) {
+        return 0;
+    }
 
-    return ((impl != nullptr) && !list.empty()) ? list.begin()->size() : 0;
+    auto& list = std::get<index::value>(this->_impl->sensors);
+    if (list.empty()) {
+        return 0;
+    }
+
+    return list.begin()->size();
+}
+
+
+/*
+ * PWROWG_NAMESPACE::sensor_array::resync_tinkerforge
+ */
+void PWROWG_NAMESPACE::sensor_array::resync_tinkerforge(void) const {
+    typedef detail::tinkerforge_sensor::list_type type;
+    typedef detail::tuple_types_t<decltype(this->_impl->sensors)> types;
+    typedef detail::type_list_index_of<type, types> index;
+
+    volatile auto impl = this->_impl;  // sic!
+
+    if (impl != nullptr) {
+        auto& sensors = std::get<index::value>(this->_impl->sensors);
+
+        for (auto& s : sensors) {
+            s.resync_internal_clock();
+        }
+    }
 }
 
 

@@ -247,6 +247,25 @@ public:
     std::size_t markers(void) const noexcept;
 
     /// <summary>
+    /// Provided there are Tinkerforge sensors in the array which have the
+    /// custom firmware that allows for reading their internal clock, update the
+    /// time drift estimation for these sensors.
+    /// </summary>
+    /// <remarks>
+    /// <para>This method does nothing if there are no Tinkerforge sensors or if
+    /// the Voltage/Current Bricklets do not have the custom firmware requested
+    /// at build time.</para>
+    /// <para>This method should not be called when measuring important data as
+    /// it requires significant bandwidth on the Tinkerforge connection and
+    /// might cause samples to be delayed or dropped. Callers should call this
+    /// method between benchmarks to improve the estimate of the clock drift,
+    /// ideally while the sensor array is not running.</para>
+    /// <para>The calling thread will be blocked until the operation is
+    /// complete.</para>
+    /// </remarks>
+    void resync_tinkerforge(void) const;
+
+    /// <summary>
     /// Starts sampling all sensors in the array.
     /// </summary>
     /// <exception cref="std::runtime_error">If the object has been invalidated

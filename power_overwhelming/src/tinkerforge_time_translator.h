@@ -188,7 +188,6 @@ private:
     /// <see cref="operator ()" />.
     /// </summary>
     triple_buffer_state _state;
-
 };
 
 PWROWG_DETAIL_NAMESPACE_END
