@@ -149,7 +149,7 @@ template<class TSink> void PWROWG_NAMESPACE::thread_local_sink<TSink>::write(
 
         this->_ready.clear();
     }
-    PWROWG_TRACE(_T("TLS writer is exiting."));
+    PWROWG_TRACE(_T("TLS writer is finalising the output."));
 
     if (this->_sensors != nullptr) {
         // There might be something left that has not yet been written. We must
@@ -167,4 +167,5 @@ template<class TSink> void PWROWG_NAMESPACE::thread_local_sink<TSink>::write(
 
     //ULONG64 cycles;
     //::QueryThreadCycleTime(::GetCurrentThread(), &cycles);
+    PWROWG_TRACE(_T("TLS writer is exiting."));
 }
