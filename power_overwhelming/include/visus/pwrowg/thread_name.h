@@ -1,9 +1,8 @@
-// <copyright file="thread_name.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+ï»¿// <copyright file="thread_name.h" company="Visualisierungsinstitut der UniversitÃ¤t Stuttgart">
+// Copyright Â© 2022 - 2026 Visualisierungsinstitut der UniversitÃ¤t Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
-// <author>Christoph Müller</author>
-
+// <author>Christoph MÃ¼ller</author>
 
 #if !defined(_PWROWG_THREAD_NAME_H)
 #define _PWROWG_THREAD_NAME_H
