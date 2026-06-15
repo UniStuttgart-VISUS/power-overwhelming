@@ -689,11 +689,11 @@ PWROWG_NAMESPACE::visa_instrument::read_binary(void) const {
 /*
  * PWROWG_NAMESPACE::visa_instrument::reset
  */
-PWROWG_NAMESPACE::visa_instrument&
-PWROWG_NAMESPACE::visa_instrument::reset(
-        _In_ const bool flush_buffers,
-        _In_ const bool clear_status) {
-    if (flush_buffers) {
+PWROWG_NAMESPACE::visa_instrument& PWROWG_NAMESPACE::visa_instrument::reset(
+        _In_ const visa_instrument_reset reset) {
+    constexpr auto none = visa_instrument_reset::none;
+
+    if ((reset & visa_instrument_reset::buffers) != none) {
         // First, do the R&S flush ...
         this->check_not_disposed();
         try {
@@ -704,13 +704,39 @@ PWROWG_NAMESPACE::visa_instrument::reset(
         this->try_clear();
     }
 
-    if (clear_status) {
+    if ((reset & visa_instrument_reset::status) != none) {
         this->write("*CLS\n");
     }
 
-    this->write("*RST\n");
-    this->query("*OPC?\n");
+    if ((reset & visa_instrument_reset::reset) != none) {
+        this->write("*RST\n");
+    }
+
+    if (reset != none) {
+        this->query("*OPC?\n");
+    }
+
     return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::visa_instrument::reset
+ */
+PWROWG_NAMESPACE::visa_instrument& PWROWG_NAMESPACE::visa_instrument::reset(
+        _In_ const bool flush_buffers,
+        _In_ const bool clear_status) {
+    auto reset = visa_instrument_reset::reset;
+
+    if (flush_buffers) {
+        reset = reset | visa_instrument_reset::buffers;
+    }
+
+    if (clear_status) {
+        reset = reset | visa_instrument_reset::status;
+    }
+
+    return this->reset(reset);
 }
 
 

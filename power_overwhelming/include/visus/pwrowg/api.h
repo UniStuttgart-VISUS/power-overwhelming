@@ -112,4 +112,11 @@ PWROWG_NAMESPACE_BEGIN _PWROWG_NAMESPACE_BEGIN(detail)
 #include "visus/pwrowg/nosal.h"
 #endif /* defined(_WIN32) */
 
+
+#if (defined(__cplusplus) && (__cplusplus >= 201402L))
+#define PWROWG_DEPRECATED(msg) [[deprecated(msg)]]
+#elif defined(_MSC_VER)
+#define PWROWG_DEPRECATED(msg) __declspec(deprecated(msg))
+#endif /* (defined(__cplusplus) && (__cplusplus >= 201402L))) */
+
 #endif /* !defined(_PWROWG_API_H) */

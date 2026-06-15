@@ -993,12 +993,11 @@ public:
     /// bitmask.
     /// </summary>
     /// <remarks>
-    /// <para>This method does nothing if the library was compiled without
-    /// support for VISA.</para>
     /// <para>This method will issue an <c>*OPC?</c> query immediately after
     /// the reset request in order to make sure that the calling code is
-    /// blocked until the instrument finished resetting.
-    /// </para>
+    /// blocked until the instrument finished resetting, unless the
+    /// <paramref name="flags" /> parameter has is 
+    /// <see cref="rtx_instrument_reset::none" />.</para></para>
     /// <para>This method hides <see cref="visa_instrument::reset" />, which
     /// is on purpose. The method internally calls the parent class before
     /// performing instrument-specific cleanup.</para>

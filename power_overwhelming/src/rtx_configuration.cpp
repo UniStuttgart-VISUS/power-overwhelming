@@ -26,6 +26,8 @@ const PWROWG_NAMESPACE::guid PWROWG_NAMESPACE::rtx_configuration::id(
 PWROWG_NAMESPACE::rtx_configuration::rtx_configuration(void)
         : _download_retries(1),
         _download_timeout(0),
+        _reset_flags(rtx_instrument_reset::reset
+            | rtx_instrument_reset::status),
         _reset_on_enumerate(false) {
     this->_sensors.emplace<std::vector<rtx_sensor_definition>>();
 }

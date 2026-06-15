@@ -21,6 +21,7 @@
 #include "visus/pwrowg/string_functions.h"
 #include "visus/pwrowg/visa_event_handler.h"
 #include "visus/pwrowg/visa_event_status.h"
+#include "visus/pwrowg/visa_instrument_reset.h"
 #include "visus/pwrowg/visa_object.h"
 #include "visus/pwrowg/visa_status_byte.h"
 
@@ -953,18 +954,32 @@ public:
     blob read_binary(void) const;
 
     /// <summary>
+    /// Resets the specified parts of the instrument state.
+    /// </summary>
+    /// <remarks>
+    /// <para>This method will issue an <c>*OPC?</c> query immediately after
+    /// the reset request in order to make sure that the calling code is
+    /// blocked until the instrument finished resetting (unless the
+    /// <paramref name="reset" /> parameter is
+    /// <see cref="visa_instrument_reset::none" />, in which case the method
+    /// does nothing). If the I/O buffers are flushed and/or the status bits
+    /// are cleared, these operations are also guaranteed to have completed
+    /// before the method returns.</para>
+    /// </remarks>
+    /// <param name="reset">The parts to reset. Typically, one would use
+    /// at least <see cref="visa_instrument_reset::reset" /> to issue an
+    /// <c>*RST</c> command.</param>
+    /// <returns></returns>
+    visa_instrument& reset(_In_ const visa_instrument_reset reset
+        = visa_instrument_reset::reset);
+
+    /// <summary>
     /// Resets the instrument to its default state by issuing the
     /// <c>*RST</c> command.
     /// </summary>
     /// <remarks>
-    /// <para>This method does nothing if the library was compiled without
-    /// support for VISA.</para>
-    /// <para>This method will issue an <c>*OPC?</c> query immediately after
-    /// the reset request in order to make sure that the calling code is
-    /// blocked until the instrument finished resetting. If the I/O buffers
-    /// are flushed and/or the status bits are cleared, these operations
-    /// are also guaranteed to have completed before the method returns.
-    /// </para>
+    /// <para>This method exists only for backward compatibility and should
+    /// not be used.</para>
     /// </remarks>
     /// <param name="flush_buffers">Also clear all I/O buffers before the
     /// reset using <c>viClear</c>.</param>
@@ -975,7 +990,8 @@ public:
     /// object that has been disposed by moving it.</exception>
     /// <exception cref="visa_exception">If the VISA command was not
     /// processed successfully.</exception>
-    visa_instrument& reset(_In_ const bool flush_buffers = false,
+    PWROWG_DEPRECATED("Use overload with via_instrument_reset flags.")
+    visa_instrument& reset(_In_ const bool flush_buffers,
         _In_ const bool clear_status = false);
 
     /// <summary>

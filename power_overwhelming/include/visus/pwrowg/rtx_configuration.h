@@ -18,6 +18,7 @@
 #include "visus/pwrowg/rtx_quantity.h"
 #include "visus/pwrowg/rtx_sensor_definition.h"
 #include "visus/pwrowg/rtx_instrument_configuration.h"
+#include "visus/pwrowg/rtx_instrument_reset.h"
 #include "visus/pwrowg/rtx_sensor_trigger.h"
 #include "visus/pwrowg/sensor_configuration.h"
 #include "visus/pwrowg/string_functions.h"
@@ -210,6 +211,28 @@ public:
     }
 
     /// <summary>
+    /// Answer the flags used to reset the instrument on start or when
+    /// enumerating.
+    /// </summary>
+    /// <returns>The reset flags, which defaults to
+    /// <see cref="rtx_instrument_reset::reset" /> and
+    /// <see cref="rtx_instrument_reset::status" />.</returns>
+    inline rtx_instrument_reset reset_flags(void) const noexcept {
+        return this->_reset_flags;
+    }
+
+    /// <summary>
+    /// Sets what it to reset when starting the sensor or when enumerating.
+    /// </summary>
+    /// <param name="flags">The reset flags.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline rtx_configuration& reset_flags(
+            _In_ const rtx_instrument_reset flags) noexcept {
+        this->_reset_flags = flags;
+        return *this;
+    }
+
+    /// <summary>
     /// Instructs the sensor array on whether it should reset the oscilloscopes
     /// when enumerating the sensor descriptions. This makes enumerating the
     /// instruments significantly slower, but if it is unclear whether the
@@ -283,6 +306,7 @@ private:
     rtx_instrument_configuration _base_configuration;
     std::size_t _download_retries;
     timeout_type _download_timeout;
+    rtx_instrument_reset _reset_flags;
     bool _reset_on_enumerate;
     type_erased_storage _sensors;
     rtx_sensor_trigger _trigger;

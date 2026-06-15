@@ -1263,18 +1263,18 @@ PWROWG_NAMESPACE::rtx_instrument::reference_position(void) const {
 PWROWG_NAMESPACE::rtx_instrument&
 PWROWG_NAMESPACE::rtx_instrument::reset(
         _In_ const rtx_instrument_reset flags) {
-    typedef rtx_instrument_reset flags_type;
-    if ((flags & flags_type::trigger) == flags_type::trigger) {
+    typedef visa_instrument_reset base_flags;
+    typedef rtx_instrument_reset rtx_flags;
+
+    if ((flags & rtx_flags::trigger) == rtx_flags::trigger) {
         try {
             this->trigger_manually();
         } catch (...) { /* This might fail buffers are not clear. */ }
     }
 
-    visa_instrument::reset(
-        (flags & flags_type::buffers) == flags_type::buffers,
-        (flags & flags_type::status) == flags_type::status);
+    visa_instrument::reset(static_cast<base_flags>(flags));
 
-    if ((flags & flags_type::stop) == flags_type::stop) {
+    if ((flags & rtx_flags::stop) == rtx_flags::stop) {
         try {
             this->acquisition(rtx_acquisition_state::interrupt)
                 .operation_complete();

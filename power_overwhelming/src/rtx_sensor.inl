@@ -203,8 +203,9 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
                 .mode(rtx_trigger_mode::normal));
         } /* if (trig_instr.empty() || equals(trig_instr, i.path(), true)) */
 
-        PWROWG_TRACE("Reset \"%s\" before creating sensors.", i.path());
-        i.reset(rtx_instrument_reset::reset | rtx_instrument_reset::status);
+        PWROWG_TRACE("Reset \"%s\" with flags 0x%x before creating sensors.",
+            i.path(), config.reset_flags());
+        i.reset(config.reset_flags());
         i.timeout(timeout);
         i.operation_complete();
 
