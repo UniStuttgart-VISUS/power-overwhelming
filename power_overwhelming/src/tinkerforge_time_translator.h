@@ -108,8 +108,12 @@ public:
     /// </summary>
     /// <remarks>
     /// <para>This method has no effect unless <see cref="check_support" />
-    /// returns <c>true</c> for <paramref name="bricklet" />.</para>
-    /// <para>Longer <paramref name="time_span" />s typically yield more
+    /// returns <see langword="true" /> for <paramref name="bricklet" />. If
+    /// the library has been compiled such that the custom firmware is required
+    /// for all bricklets (CUSTOM_TINKERFORGE_FIRMWARE_MANDATORY), this method
+    /// will fail with an exception if a bricklet with a different firmware is
+    /// encountered.</para>
+    /// <para>Longer <paramref name="ts" /> typically yield more
     /// reliable translations, but obviously take longer.</para>
     /// </remarks>
     /// <typeparam name="TRep></typeparam>
@@ -123,6 +127,13 @@ public:
     /// Resets the calibration for the given bricklet by estimating the
     /// clock drift over the specified timespan.
     /// </summary>
+    /// <para>This method has no effect unless <see cref="check_support" />
+    /// returns <see langword="true" /> for <paramref name="bricklet" />. If
+    /// the library has been compiled such that the custom firmware is required
+    /// for all bricklets (CUSTOM_TINKERFORGE_FIRMWARE_MANDATORY), this method
+    /// will fail with an exception if a bricklet with a different firmware is
+    /// encountered.</para>
+    /// </remarks>
     /// <param name="bricklet"></param>
     inline void reset(_In_ bricklet_type& bricklet) {
         this->reset(bricklet, std::chrono::milliseconds(500));
