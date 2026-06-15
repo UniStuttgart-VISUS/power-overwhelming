@@ -72,13 +72,10 @@ void PWROWG_NAMESPACE::thread_local_sink<TSink>::sample_callback(
  * PWROWG_NAMESPACE::thread_local_sink<TSink>::atomic_sink
  */
 template<class TSink>
-template<class TRep, class TPeriod, class... TArgs>
+template<class... TArgs>
 PWROWG_NAMESPACE::thread_local_sink<TSink>::thread_local_sink(
-        _In_ const std::chrono::duration<TRep, TPeriod> interval,
-        _In_ const std::size_t page_size,
-        TArgs&&... args)
+        _In_ const std::size_t page_size, TArgs&&... args)
     : TSink(std::forward<TArgs>(args)...),
-        _interval(std::chrono::duration_cast<decltype(_interval)>(interval)),
         _page_size(page_size),
         _running(true),
         _sensors(nullptr) {

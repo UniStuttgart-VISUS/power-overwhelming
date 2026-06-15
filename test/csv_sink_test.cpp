@@ -82,7 +82,7 @@ TEST_CLASS(csv_sink_test) {
         stream << csvheader;
         stream << setcsvcolumns(csv_column::id | csv_column::label | csv_column::name);
 
-        sink_type sink(std::chrono::milliseconds(100), 10, std::move(stream));
+        sink_type sink(10, std::move(stream));
         config.deliver_context(&sink)
             .deliver_to(sink_type::sample_callback);
 
@@ -111,7 +111,7 @@ TEST_CLASS(csv_sink_test) {
         stream << csvheader;
         stream << setcsvcolumns(csv_column::id | csv_column::label | csv_column::name);
 
-        sink_type sink(std::chrono::milliseconds(100), 10, std::move(stream));
+        sink_type sink(10, std::move(stream));
         config.deliver_context(&sink)
             .deliver_to(sink_type::sample_callback);
 

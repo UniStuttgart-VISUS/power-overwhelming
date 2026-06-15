@@ -48,9 +48,16 @@ public:
         _In_ const sensor_description *sensors,
         _In_opt_ void *context);
 
-    template<class TRep, class TPeriod, class... TArgs>
-    thread_local_sink(_In_ const std::chrono::duration<TRep, TPeriod> interval,
-        _In_ const std::size_t page_size, TArgs&&... args);
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <typeparam name="TArgs">The types of the arguments passed to the
+    /// constructor of <typeparamref name="TSink" />.</typeparam>
+    /// <param name="page_size">The number of samples allocated at once.</param>
+    /// <param name="args">The arguments passed tot he constructor of
+    /// <typeparamref name="TSink" />.</param>
+    template<class... TArgs>
+    thread_local_sink(_In_ const std::size_t page_size, TArgs&&... args);
 
     /// <summary>
     /// Finalises the instance.
@@ -80,7 +87,6 @@ private:
 
     std::vector<std::vector<sample>> _buffers;
     std::condition_variable _condition;
-    std::chrono::milliseconds _interval;
     std::mutex _lock;
     std::vector<std::size_t> _ready;
     std::thread _writer;
