@@ -118,6 +118,7 @@ PWROWG_NAMESPACE::thread_local_sink<TSink>::buffer;
  */
 template<class TSink> void PWROWG_NAMESPACE::thread_local_sink<TSink>::write(
         void) {
+    PWROWG_THREAD_STATS(_T("thread_local_sink_write.json"));
     set_thread_name("PwrOwg Writer");
 
     while (this->_running.load(std::memory_order_acquire)) {
@@ -162,7 +163,5 @@ template<class TSink> void PWROWG_NAMESPACE::thread_local_sink<TSink>::write(
         }
     }
 
-    //ULONG64 cycles;
-    //::QueryThreadCycleTime(::GetCurrentThread(), &cycles);
     PWROWG_TRACE(_T("TLS writer is exiting."));
 }

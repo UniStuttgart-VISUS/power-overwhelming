@@ -1,5 +1,5 @@
 ﻿// <copyright file="atomic_sink.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for more information.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -70,6 +70,7 @@ void PWROWG_NAMESPACE::atomic_sink<TSink, PageSize>::dispose(void) noexcept {
  */
 template<class TSink, std::size_t PageSize>
 void PWROWG_NAMESPACE::atomic_sink<TSink, PageSize>::write(void) {
+    PWROWG_THREAD_STATS(_T("atomic_sink_write.json"));
     set_thread_name("PwrOwg Writer");
 
     while (this->_running.load(std::memory_order_acquire)) {

@@ -1,5 +1,5 @@
 ﻿// <copyright file="atomic_sink.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for more information.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -17,6 +17,7 @@
 #include "visus/pwrowg/sample.h"
 #include "visus/pwrowg/sensor_description.h"
 #include "visus/pwrowg/thread_name.h"
+#include "visus/pwrowg/thread_statistics.h"
 
 
 PWROWG_NAMESPACE_BEGIN

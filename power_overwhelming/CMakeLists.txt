@@ -68,6 +68,10 @@ if (PWROWG_WithPowenetics)
     target_link_libraries(${PROJECT_NAME} PRIVATE libpowenetics)
 endif ()
 
+if (PWROWG_WithThreadStats)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_THREAD_STATS)
+endif ()
+
 if (PWROWG_WithTimeSynchronisation)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_TIME_SYNCHRONISER)
 endif ()

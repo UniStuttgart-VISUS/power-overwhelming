@@ -20,6 +20,7 @@
 #include "visus/pwrowg/sample.h"
 #include "visus/pwrowg/sensor_description.h"
 #include "visus/pwrowg/thread_name.h"
+#include "visus/pwrowg/thread_statistics.h"
 #include "visus/pwrowg/trace.h"
 
 

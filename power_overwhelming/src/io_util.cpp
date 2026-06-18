@@ -1,11 +1,13 @@
 ﻿// <copyright file="io_util.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #include "io_util.h"
 
+#include <cassert>
+#include <cerrno>
 #include <stdexcept>
 #include <system_error>
 
@@ -13,13 +15,18 @@
 #include <Windows.h>
 #endif /* defined(_WIN32) */
 
+#include "visus/pwrowg/convert_string.h"
+
 
 #if defined(_WIN32)
 #define THROW_LAST_ERROR() throw std::system_error(::GetLastError(),\
     std::system_category())
+#define THROW_POSIX_ERROR() throw std::system_error(_doserrno,\
+     std::system_category())
 #else /* defined(_WIN32) */
 #define THROW_LAST_ERROR() throw std::system_error(errno,\
     std::system_category())
+#define THROW_POSIX_ERROR() THROW_LAST_ERROR()
 #endif /* defined(_WIN32) */
 
 
@@ -40,6 +47,46 @@ HANDLE PWROWG_DETAIL_NAMESPACE::open(_In_z_ const wchar_t *path,
 #endif /* defined(_WIN32) */
 
 
+#if defined(_WIN32)
+/*
+ * PWROWG_DETAIL_NAMESPACE::open
+ */
+HANDLE PWROWG_DETAIL_NAMESPACE::open(_In_z_ const char *path,
+        _In_ const DWORD desired_access, _In_ const DWORD share_mode,
+        _In_ const DWORD create_disposition, _In_ const DWORD flags) {
+    auto retval = ::CreateFileA(path, desired_access, share_mode, nullptr,
+        create_disposition, flags, NULL);
+    if (retval == INVALID_HANDLE_VALUE) {
+        THROW_LAST_ERROR();
+    }
+    return retval;
+}
+#endif /* defined(_WIN32) */
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::open
+ */
+POWER_OVERWHELMING_API int PWROWG_DETAIL_NAMESPACE::open(
+        _In_z_ const wchar_t *path, _In_ const int flags, _In_ const int mode) {
+    if (path == nullptr) {
+        throw std::invalid_argument("The path must be a valid string.");
+    }
+
+#if defined(_WIN32)
+    auto retval = ::_wopen(path, flags, mode);
+#else /* defined(_WIN32) */
+    auto p = PWROWG_NAMESPACE::convert_string<char>(path);
+    auto retval = ::open(p.c_str(), flags, mode);
+#endif /* defined(_WIN32) */
+    if (retval == -1) {
+        THROW_POSIX_ERROR();
+    }
+
+    return retval;
+}
+
+
 /*
  * PWROWG_DETAIL_NAMESPACE::open
  */
@@ -51,7 +98,7 @@ POWER_OVERWHELMING_API int PWROWG_DETAIL_NAMESPACE::open(
 
     auto retval = ::open(path, flags, mode);
     if (retval == -1) {
-        THROW_LAST_ERROR();
+        THROW_POSIX_ERROR();
     }
 
     return retval;
@@ -146,7 +193,7 @@ std::vector<std::uint8_t> PWROWG_DETAIL_NAMESPACE::read_all_bytes(
     }
 
     if (cnt == -1) {
-        THROW_LAST_ERROR();
+        THROW_POSIX_ERROR();
     }
 
     static_assert(sizeof(*(retval.data())) == 1, "value_type must be a byte.");
@@ -199,7 +246,7 @@ void PWROWG_DETAIL_NAMESPACE::read_bytes(_In_ const int fd,
     }
 
     if (c == -1) {
-        THROW_LAST_ERROR();
+        THROW_POSIX_ERROR();
     }
 
     if (rem > 0) {
@@ -246,8 +293,49 @@ std::streamoff PWROWG_DETAIL_NAMESPACE::seek(_In_ const int fd,
 #endif /* defined(_WIN32) */
 
     if (retval == -1) {
-        THROW_LAST_ERROR();
+        THROW_POSIX_ERROR();
     }
 
     return retval;
+}
+
+
+#if defined(_WIN32)
+/*
+ * PWROWG_DETAIL_NAMESPACE::write_all_bytes
+ */
+void PWROWG_DETAIL_NAMESPACE::write_all_bytes(
+        _In_ const HANDLE handle,
+        _In_reads_bytes_(cnt) const void *src,
+        _In_ std::size_t cnt) {
+    auto cur = static_cast<const std::uint8_t *>(src);
+
+    while (cnt > 0) {
+        DWORD c = 0;
+        if (!::WriteFile(handle, cur, static_cast<DWORD>(cnt), &c, nullptr)) {
+            THROW_LAST_ERROR();
+        }
+        assert(c <= cnt);
+        cur += c;
+        cnt -= c;
+    }
+}
+#endif /* defined(_WIN32) */
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::write_all_bytes
+ */
+void PWROWG_DETAIL_NAMESPACE::write_all_bytes(
+        _In_ const int fd,
+        _In_reads_bytes_(cnt) const void *src,
+        _In_ std::size_t cnt) {
+    auto cur = static_cast<const std::uint8_t *>(src);
+
+    while (cnt > 0) {
+        auto c = ::write(fd, cur, cnt);
+        assert(c <= cnt);
+        cur += c;
+        cnt -= c;
+    }
 }

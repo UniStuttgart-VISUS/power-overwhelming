@@ -99,6 +99,42 @@ POWER_OVERWHELMING_API HANDLE open(_In_z_ const wchar_t *path,
     _In_ const DWORD flags = FILE_ATTRIBUTE_NORMAL);
 #endif /* defined(_WIN32) */
 
+#if defined(_WIN32)
+/// <summary>
+/// Opens a native Win32 file handle.
+/// </summary>
+/// <remarks>
+/// This function is only exported for testing.
+/// </remarks>
+/// <param name="path">The name of the file or device to be opened.</param>
+/// <param name="desired_access">The requested access to the file or device.
+/// Typically, this is one of <c>GENERIC_READ</c> or <c>GENERIC_WRITE</c>.
+/// </param>
+/// <param name="share_mode">The requested sharing mode.</param>
+/// <param name="create_disposition">An action to take on a device or file
+/// which exists or does not exist.</param>
+/// <param name="flags">The file or device attribute flags.</param>
+/// <returns>A handle for the opened file or device.</returns>
+/// <exception cref="std::system_error">If opening the file or device
+/// failed.</exception>
+POWER_OVERWHELMING_API HANDLE open(_In_z_ const char *path,
+    _In_ const DWORD desired_access,
+    _In_ const DWORD share_mode,
+    _In_ const DWORD create_disposition,
+    _In_ const DWORD flags = FILE_ATTRIBUTE_NORMAL);
+#endif /* defined(_WIN32) */
+
+/// <summary>
+/// Opens a file using POSIX API.
+/// </summary>
+/// <param name="path"></param>
+/// <param name="flags"></param>
+/// <param name="mode"></param>
+/// <returns></returns>
+/// <exception cref="std::system_error"></exception>
+POWER_OVERWHELMING_API int open(_In_z_ const wchar_t *path,
+    _In_ const int flags, _In_ const int mode = 0);
+
 /// <summary>
 /// Opens a file using POSIX API.
 /// </summary>
@@ -192,6 +228,31 @@ POWER_OVERWHELMING_API std::streamoff seek(_In_ const HANDLE handle,
 POWER_OVERWHELMING_API std::streamoff seek(_In_ const int fd,
     _In_ const std::streamoff offset,
     _In_ const posix_seek_origin origin);
+
+#if defined(_WIN32)
+/// <summary>
+/// Writes exactly <paramref name="cnt" /> bytes or fails.
+/// </summary>
+/// <param name="handle"></param>
+/// <param name="src"></param>
+/// <param name="cnt"></param>
+/// <returns></returns>
+POWER_OVERWHELMING_API void write_all_bytes(_In_ const HANDLE handle,
+    _In_reads_bytes_(cnt) const void *src, _In_ std::size_t cnt);
+#endif /* defined(_WIN32) */
+
+/// <summary>
+/// Writes exactly <paramref name="cnt" /> bytes or fails.
+/// </summary>
+/// <remarks>
+/// This function is only exported for testing.
+/// </remarks>
+/// <param name="fd"></param>
+/// <param name="src"></param>
+/// <param name="cnt"></param>
+/// <returns></returns>
+POWER_OVERWHELMING_API void write_all_bytes(_In_ const int fd,
+    _In_reads_bytes_(cnt) const void *src, _In_ std::size_t cnt);
 
 PWROWG_DETAIL_NAMESPACE_END
 
