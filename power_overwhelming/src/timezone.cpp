@@ -67,15 +67,20 @@ PWROWG_DETAIL_NAMESPACE::get_timezone_bias(void) {
         retval += static_cast<timestamp::value_type>(tzi.StandardBias);
     }
 
-    retval *= 60LL * 1000LL * 10000LL;
+    // Convert to seconds.
+    retval *= 60LL;
 
-    return retval;
 #else /* defined(_WIN32) */
     static const time_t ts = 0;
     tm gmt;
     tm local;
     ::gmtime_r(&ts, &gmt);
     ::localtime_r(&ts, &local);
-    return ::mktime(&gmt) - ::mktime(&local);
+    timestamp::value_type retval = ::mktime(&gmt) - ::mktime(&local);
 #endif /* defined(_WIN32) */
+
+    // Convert seconds to 100 ns units.
+    retval *= 1000LL * 10000LL;
+
+    return retval;
 }

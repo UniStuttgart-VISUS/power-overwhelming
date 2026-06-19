@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <string>
 
 #if defined(_WIN32)
 #include <Windows.h>
