@@ -7,6 +7,25 @@
 #include "timezone.h"
 
 
+/// <summary>
+/// Compare two <see cref="SYSTEMTIME" />s.
+/// </summary>
+static bool operator <(_In_ const SYSTEMTIME& lhs,
+        _In_ const SYSTEMTIME& rhs) {
+    FILETIME l, r;
+
+    if (!::SystemTimeToFileTime(&lhs, &l)) {
+        throw std::system_error(::GetLastError(), std::system_category());
+    }
+
+    if (!::SystemTimeToFileTime(&rhs, &r)) {
+        throw std::system_error(::GetLastError(), std::system_category());
+    }
+
+    return (::CompareFileTime(&l, &r) < 0);
+}
+
+
 /*
  * PWROWG_DETAIL_NAMESPACE::get_timezone_bias
  */
@@ -18,9 +37,31 @@ PWROWG_DETAIL_NAMESPACE::get_timezone_bias(void) {
         throw std::system_error(::GetLastError(), std::system_category());
     }
 
+    // Apply the current year to the transition dates to compare to current
+    // time.
+    SYSTEMTIME now;
+    GetSystemTime(&now);
+    tzi.DaylightDate.wYear = now.wYear;
+    tzi.StandardDate.wYear = now.wYear;
+
+    // If the month is zero, no DST is defined. Otherwise, we assume to be in
+    // DST and subsequently check whether this is actually the case.
+    auto dst = ((tzi.DaylightDate.wMonth != 0)
+        || (tzi.StandardDate.wMonth != 0));
+
+    if (dst) {
+        if (tzi.DaylightDate < tzi.StandardDate) {
+            // DST start and end are in the same year.
+            dst = ((tzi.DaylightDate < now) && (now < tzi.StandardDate));
+        } else {
+            // On the southern hemisphere, DST crosses the year boundary.
+            dst = !((tzi.StandardDate < now) && (now < tzi.DaylightDate));
+        }
+    }
+
     auto retval = static_cast<timestamp::value_type>(tzi.Bias);
 
-    if (tzi.DynamicDaylightTimeDisabled) {
+    if (dst) {
         retval += static_cast<timestamp::value_type>(tzi.DaylightBias);
     } else {
         retval += static_cast<timestamp::value_type>(tzi.StandardBias);
