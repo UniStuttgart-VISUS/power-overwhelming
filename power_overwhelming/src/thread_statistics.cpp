@@ -7,6 +7,7 @@
 #include "visus/pwrowg/thread_statistics.h"
 
 #include <cassert>
+#include <cstring>
 
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/on_exit.h"
