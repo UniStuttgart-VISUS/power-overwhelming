@@ -7,6 +7,7 @@
 #include "timezone.h"
 
 
+#if defined(_WIN32)
 /// <summary>
 /// Compare two <see cref="SYSTEMTIME" />s.
 /// </summary>
@@ -24,6 +25,7 @@ static bool operator <(_In_ const SYSTEMTIME& lhs,
 
     return (::CompareFileTime(&l, &r) < 0);
 }
+#endif /* defined(_WIN32) */
 
 
 /*
