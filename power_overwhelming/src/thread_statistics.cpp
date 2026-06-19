@@ -11,7 +11,6 @@
 
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/on_exit.h"
-#include "visus/pwrowg/trace.h"
 
 #include "io_util.h"
 

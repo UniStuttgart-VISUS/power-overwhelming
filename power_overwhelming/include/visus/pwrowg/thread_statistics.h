@@ -15,6 +15,7 @@
 #endif /* defined(_WIN32) */
 
 #include "visus/pwrowg/api.h"
+#include "visus/pwrowg/trace.h" // For _T() macro on Linux.
 #include "visus/pwrowg/unique_variable.h"
 
 
