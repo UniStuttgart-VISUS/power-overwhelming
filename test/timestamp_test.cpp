@@ -1,10 +1,13 @@
 ﻿// <copyright file="timestamp_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #include "pch.h"
+
+#include <visus/pwrowg/timestamp.h>
+#include <timezone.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -149,6 +152,11 @@ public:
             Assert::AreEqual(timestamp::value_type(1), t.value(), L"lhs unchanged", LINE_INFO());
             Assert::AreEqual(expected, actual.value(), L"-", LINE_INFO());
         }
+    }
+
+    TEST_METHOD(timezone) {
+        auto bias = PWROWG_DETAIL_NAMESPACE::get_timezone_bias();
+        Assert::IsTrue(true, L"Test did not crash", LINE_INFO());
     }
 
 private:

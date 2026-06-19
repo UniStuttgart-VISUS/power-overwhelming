@@ -1,5 +1,5 @@
 ﻿// <copyright file="timezone.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2024 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2024 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -13,13 +13,22 @@
 PWROWG_NAMESPACE::timestamp::value_type
 PWROWG_DETAIL_NAMESPACE::get_timezone_bias(void) {
 #if defined(_WIN32)
-    TIME_ZONE_INFORMATION tzi;
-    if (::GetTimeZoneInformation(&tzi) == TIME_ZONE_ID_INVALID) {
+    DYNAMIC_TIME_ZONE_INFORMATION tzi;
+    if (::GetDynamicTimeZoneInformation(&tzi) == TIME_ZONE_ID_INVALID) {
         throw std::system_error(::GetLastError(), std::system_category());
     }
 
-    return static_cast<timestamp::value_type>(tzi.Bias)
-        * 60LL * 1000LL * 10000LL;
+    auto retval = static_cast<timestamp::value_type>(tzi.Bias);
+
+    if (tzi.DynamicDaylightTimeDisabled) {
+        retval += static_cast<timestamp::value_type>(tzi.DaylightBias);
+    } else {
+        retval += static_cast<timestamp::value_type>(tzi.StandardBias);
+    }
+
+    retval *= 60LL * 1000LL * 10000LL;
+
+    return retval;
 #else /* defined(_WIN32) */
     static const time_t ts = 0;
     tm gmt;

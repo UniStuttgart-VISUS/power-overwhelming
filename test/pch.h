@@ -1,5 +1,5 @@
 ﻿// <copyright file="pch.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -29,7 +29,6 @@
 #include <visus/pwrowg/sample.h>
 #include <visus/pwrowg/sensor_array.h>
 #include <visus/pwrowg/sensor_description.h>
-#include <visus/pwrowg/timestamp.h>
 
 #include <adl_error_category.h>
 #include <detect_sample.h>
