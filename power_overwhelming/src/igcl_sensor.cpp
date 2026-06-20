@@ -372,7 +372,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::igcl_sensor::descriptions(
         _In_ std::size_t cnt,
         _In_ const configuration_type& config) {
     auto builder = sensor_description_builder::create()
-        .with_vendor(L"Intel");
+        .with_vendor(L"Intel")
+        .with_class(configuration_type::id);
 
     try {
         // Get handles for all devices.

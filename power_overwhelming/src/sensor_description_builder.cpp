@@ -35,6 +35,17 @@ PWROWG_DETAIL_NAMESPACE::sensor_description_builder::produces(
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_class
+ */
+PWROWG_DETAIL_NAMESPACE::sensor_description_builder&
+PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_class(
+        _In_ const guid& id) noexcept {
+    this->_desc._sensor_class = id;
+    return *this;
+}
+
+
+/*
  * PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_editable_type
  */
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder&

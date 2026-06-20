@@ -10,6 +10,7 @@
 #include <stdexcept>
 
 #include "visus/pwrowg/thread_name.h"
+#include "visus/pwrowg/trace.h"
 
 #include "sensor_array_configuration_impl.h"
 #include "sensor_array_impl.h"
@@ -308,6 +309,7 @@ void PWROWG_NAMESPACE::sensor_array::sensor_array::stop(void) {
     // Stop the asynchronous sensors.
     detail::sensor_registry::sample(impl->samplers.begin(), impl->sensors,
         false);
+    PWROWG_TRACE(_T("Stopped asynchronous sensors."));
 
     // Wait for the sampler threads, which should exit now as the state signals
     // that we are stopping.
@@ -315,6 +317,7 @@ void PWROWG_NAMESPACE::sensor_array::sensor_array::stop(void) {
         assert(t.joinable());
         t.join();
     }
+    PWROWG_TRACE(_T("Stopped %zu sampler threads."), impl->sampler_threads.size());
     impl->sampler_threads.clear();
 
     impl->state.end_stop();
@@ -421,6 +424,7 @@ void PWROWG_NAMESPACE::sensor_array::start(
     detail::sensor_registry::sample(std::back_inserter(impl->samplers),
         impl->sensors,
         true);
+    PWROWG_TRACE(_T("Started asynchronous sensors."));
 
     // Start sampler threads for the synchronous sensors.
     {

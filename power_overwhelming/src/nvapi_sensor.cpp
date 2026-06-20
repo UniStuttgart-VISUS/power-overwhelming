@@ -24,6 +24,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::nvapi_sensor::descriptions(
         _In_ const configuration_type& config) {
     auto builder = sensor_description_builder::create()
         .with_vendor(L"NVIDIA")
+        .with_class(configuration_type::id)
         .with_type(sensor_type::gpu | sensor_type::power | sensor_type::software)
         .produces(reading_type::floating_point)
         .measured_in(reading_unit::watt);

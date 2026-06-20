@@ -1,5 +1,5 @@
 ﻿// <copyright file="tinkerforge_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -24,6 +24,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::descriptions(
     std::vector<bricklet_type> bricklets;
     auto builder = sensor_description_builder::create()
         .with_vendor(L"Tinkerforge")
+        .with_class(configuration_type::id)
         .with_editable_type(sensor_type::cpu
             | sensor_type::external
             | sensor_type::gpu

@@ -1,5 +1,5 @@
 ﻿// <copyright file="sensor_description.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -9,6 +9,7 @@
 #pragma once
 
 #include "visus/pwrowg/blob.h"
+#include "visus/pwrowg/guid.h"
 #include "visus/pwrowg/reading_type.h"
 #include "visus/pwrowg/reading_unit.h"
 #include "visus/pwrowg/sensor_type.h"
@@ -146,6 +147,15 @@ public:
     }
 
     /// <summary>
+    /// Answer the GUID identifying the class of the sensor. This is the ID
+    /// member of the sensor's configuration class.
+    /// </summary>
+    /// <returns>The class ID of the sensor.</returns>
+    inline const guid& sensor_class(void) const noexcept {
+        return this->_sensor_class;
+    }
+
+    /// <summary>
     /// Updates the type of the sensor.
     /// </summary>
     /// <remarks>
@@ -179,6 +189,7 @@ private:
     PWROWG_NAMESPACE::type_erased_storage _private;
     PWROWG_NAMESPACE::reading_type _reading_type;
     PWROWG_NAMESPACE::reading_unit _reading_unit;
+    guid _sensor_class;
     PWROWG_NAMESPACE::sensor_type _sensor_type;
     blob _vendor;
 

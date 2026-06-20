@@ -8,6 +8,7 @@
 #define _PWROWG_SENSOR_DESCRIPTION_BUILDER_H
 #pragma once
 
+#include "visus/pwrowg/guid.h"
 #include "visus/pwrowg/sensor_description.h"
 #include "visus/pwrowg/string_functions.h"
 
@@ -92,6 +93,13 @@ public:
     /// <param name="type">The type of data produced by the sensor.</param>
     /// <returns><c>*this</c>.</returns>
     sensor_description_builder& produces(_In_ const reading_type type) noexcept;
+
+    /// <summary>
+    /// Sets the ID identifying the class of the sensor.
+    /// </summary>
+    /// <param name="id">The GUID from the sensor configuration.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    sensor_description_builder& with_class(_In_ const guid& id) noexcept;
 
     /// <summary>
     /// Configures which parts of the <see cref="sensor_type" /> can be edited

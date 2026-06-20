@@ -1,5 +1,5 @@
 ﻿// <copyright file="emi_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -37,7 +37,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::emi_sensor::descriptions(
         auto dev = emi_device_factory::create(path);
 
         auto builder = sensor_description_builder::create()
-            .with_path(path);
+            .with_path(path)
+            .with_class(configuration_type::id);
 
         switch (dev->version().EmiVersion) {
             case EMI_VERSION_V1:

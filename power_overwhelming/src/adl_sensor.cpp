@@ -203,7 +203,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::adl_sensor::descriptions(
         _In_ std::size_t cnt,
         _In_ const configuration_type& config) {
     auto builder = sensor_description_builder::create()
-        .with_vendor(L"AMD");
+        .with_vendor(L"AMD")
+        .with_class(configuration_type::id);
 
     try {
         detail::adl_scope scope;

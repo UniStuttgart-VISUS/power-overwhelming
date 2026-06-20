@@ -116,6 +116,10 @@ PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::descriptions0(
     if ((it != config.sensor_configs.end()) && !exclude) {
         auto c = static_cast<const config_type *>(it->second.get());
         retval = sensor_type::descriptions(dst, cnt, *c);
+        assert((dst == nullptr) || std::all_of(dst, dst + retval,
+            [](const sensor_description& d) {
+                return (d.sensor_class() == config_type::id);
+            }));
 
         if (retval < cnt) {
             dst += retval;

@@ -1,5 +1,5 @@
 ﻿// <copyright file="powenetics_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -24,6 +24,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::powenetics_sensor::descriptions(
         _In_ const configuration_type& config) {
     auto builder = sensor_description_builder::create()
         .with_vendor(L"Cybenetics")
+        .with_class(configuration_type::id)
         .produces(reading_type::floating_point);
     auto retval = static_cast<std::size_t>(0);
 

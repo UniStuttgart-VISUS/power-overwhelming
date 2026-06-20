@@ -26,6 +26,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::marker_sensor::descriptions(
         auto builder = sensor_description_builder::create()
             .with_id(L"VISUS/Marker")
             .with_vendor(L"VISUS")
+            .with_class(configuration_type::id)
             .with_name(L"VISUS timestamp markers")
             .with_type(sensor_type::unknown)
             .produces(reading_type::signed_integer)

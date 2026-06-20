@@ -47,6 +47,7 @@
 
 #include <cinttypes>
 #include <cstdlib>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -473,7 +474,7 @@ public:
     /// </remarks>
     /// <returns>A pointer to the ative GUID representation.</returns>
     inline operator value_type *(void) noexcept {
-        return &this->_value;
+        return std::addressof(this->_value);
     }
 
     /// <summary>
@@ -484,7 +485,7 @@ public:
     /// </remarks>
     /// <returns>A pointer to the ative GUID representation.</returns>
     inline operator const value_type *(void) const noexcept {
-        return &this->_value;
+        return std::addressof(this->_value);
     }
 
 private:

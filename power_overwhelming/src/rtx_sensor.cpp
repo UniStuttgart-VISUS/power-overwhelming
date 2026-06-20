@@ -76,6 +76,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
         _In_ const configuration_type& config) {
     auto builder = sensor_description_builder::create()
         .with_vendor(L"Rohde & Schwarz")
+        .with_class(configuration_type::id)
         .with_editable_type(sensor_type::cpu
             | sensor_type::external
             | sensor_type::gpu

@@ -1,5 +1,5 @@
 ﻿// <copyright file="msr_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -87,6 +87,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
         _In_ const configuration_type& config) {
     const auto base_type = sensor_type::software | sensor_type::power;
     sensor_description_builder builder;
+    builder.with_class(configuration_type::id);
+
     std::size_t retval = 0;
     bool succeeded = true;
 

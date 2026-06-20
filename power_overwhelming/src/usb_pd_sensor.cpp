@@ -47,6 +47,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::descriptions(
 
         auto builder = sensor_description_builder::create()
             .with_vendor(L"PassMark")
+            .with_class(configuration_type::id)
             .produces(reading_type::floating_point);
 
         for (std::uintptr_t i = 0; i < devices; ++i) {
