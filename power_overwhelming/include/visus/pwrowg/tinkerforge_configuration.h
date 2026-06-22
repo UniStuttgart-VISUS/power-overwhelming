@@ -13,6 +13,7 @@
 
 #include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/sensor_configuration.h"
+#include "visus/pwrowg/tinkerforge_controller.h"
 #include "visus/pwrowg/tinkerforge_conversion_time.h"
 #include "visus/pwrowg/tinkerforge_error_count.h"
 #include "visus/pwrowg/tinkerforge_sample_averaging.h"
@@ -33,6 +34,12 @@ class POWER_OVERWHELMING_API tinkerforge_configuration final
         : public sensor_configuration {
 
 public:
+
+    /// <summary>
+    /// The <see cref="tinkerforge_controller" /> allows for synchronising the
+    /// clocks of the bricklets.
+    /// </summary>
+    typedef tinkerforge_controller controller_type;
 
     /// <summary>
     /// Represents the location of a Tinkerforge Brickd.

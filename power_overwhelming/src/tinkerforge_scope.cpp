@@ -1,5 +1,5 @@
 ﻿// <copyright file="tinkerforge_scope.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 -2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -86,10 +86,14 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::data::~data(void) {
  * PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::on_enumerate
  */
 void CALLBACK PWROWG_DETAIL_NAMESPACE::tinkerforge_scope::on_enumerate(
-    const char *uid, const char *connected_uid, char position,
-    std::uint8_t hardware_version[3], std::uint8_t firmware_version[3],
-    std::uint16_t device_identifier, std::uint8_t enumeration_type,
-    void *user_data) {
+        const char *uid,
+        const char *connected_uid,
+        char position,
+        std::uint8_t hardware_version[3],
+        std::uint8_t firmware_version[3],
+        std::uint16_t device_identifier,
+        std::uint8_t enumeration_type,
+        void *user_data) {
     auto data = static_cast<tinkerforge_scope::data *>(user_data);
     const auto is_add = (enumeration_type == IPCON_ENUMERATION_TYPE_AVAILABLE)
         || (enumeration_type == IPCON_ENUMERATION_TYPE_CONNECTED);

@@ -1,5 +1,5 @@
 ﻿// <copyright file="Configuration.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 - 2025 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2022 - 2026 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -22,8 +22,14 @@ static constexpr const char *FIELD_WRITE_INTERVAL = "writeInterval";
 /*
  * Configuration::Configuration
  */
-Configuration::Configuration(void) : _blankPage(L"about:blank"), _coolDown(0),
-    _initialWait(0), _iterations(0), _markerBlank(0), _visiblePeriod(0) { }
+Configuration::Configuration(void)
+    : _blankPage(L"about:blank"),
+    _coolDown(0),
+    _initialWait(0),
+    _iterations(0),
+    _markerBlank(0),
+    _markers(nullptr),
+    _visiblePeriod(0) { }
 
 
 /*
@@ -57,29 +63,26 @@ Configuration::Configuration(const std::wstring& path) {
     }
 
     {
+        unsigned int marker = 1;
+        std::wofstream s(timestamp + L"markers.csv");
+        s << L"marker,description" << std::endl;
+
+        for (auto &u : this->_urls) {
+            s << marker << L",navigating \"" << u << L"\"" << std::endl;
+            this->_markersNav.push_back(marker++);
+            s << marker << L",showing \"" << u << L"\"" << std::endl;
+            this->_markersShow.push_back(marker++);
+        }
+    }
+
+    {
         sensor_array_configuration cfg;
-        cfg.configure<marker_configuration>(
-            [this](marker_configuration& c) {
-            this->_markerBlank = c += L"blank";
-
-            for (auto &u : this->_urls) {
-                {
-                    std::wstringstream ss;
-                    ss << L"navigating \"" << u << L"\"" << std::ends;
-                    this->_markersNav.push_back(c += ss.str());
-                }
-                {
-                    std::wstringstream ss;
-                    ss << L"showing \"" << u << L"\"" << std::ends;
-                    this->_markersShow.push_back(c += ss.str());
-                }
-            }
-        });
-
         this->_sensors = sensor_array::for_all(std::move(cfg));
-
         dump_sensors(this->_sensors, timestamp + L".json");
     }
+
+    this->_markers = this->_sensors.controller<marker_configuration>();
+    assert(this->_markers != nullptr);
 
     this->_visiblePeriod = decltype(this->_visiblePeriod)(
         webConfig[FIELD_VISIBLE_PERIOD].get<std::uint64_t>());

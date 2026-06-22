@@ -62,6 +62,7 @@ public:
     }
 
     TEST_METHOD(test_power_sensor_creation) {
+        //::_CrtSetBreakAlloc(778);
         typedef detail::tinkerforge_sensor type;
 
         type::configuration_type config;
@@ -125,6 +126,18 @@ public:
         type::list_type sensors;
         const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), &dummy, config);
         Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
+    }
+
+    TEST_METHOD(test_sensor_array) {
+        sensor_array_configuration config;
+        auto sensors = sensor_array::for_matches(std::move(config), is_tinkerforge_sensor);
+
+        if (sensors.size() > 0) {
+            auto controller = sensors.controller<tinkerforge_configuration>();
+            Assert::IsNotNull(controller, L"Have Tinkerforge controller", LINE_INFO());
+            // Note: the following should never crash in any configuration.
+            controller->resync_clock();
+        }
     }
 };
 

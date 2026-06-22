@@ -1,5 +1,5 @@
 ﻿// <copyright file="sensor_array_impl.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -15,10 +15,12 @@
 #include <functional>
 #include <memory>
 #include <thread>
+#include <unordered_map>
 #include <vector>
 
 #include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_description.h"
+#include "visus/pwrowg/type_erased_storage.h"
 
 #include "detector.h"
 #include "sensor_array_configuration_impl.h"
@@ -94,6 +96,12 @@ struct sensor_array_impl final {
     /// and the user-defined context passed to it.
     /// </summary>
     std::unique_ptr<sensor_array_configuration_impl> configuration;
+
+    /// <summary>
+    /// The public controller object that allow users of the library to interact
+    /// with running sensors.
+    /// </summary>
+    std::unordered_map<guid, type_erased_storage> controllers;
 
     /// <summary>
     /// Holds the descriptions of all sensors in the array.

@@ -1,5 +1,5 @@
 ﻿// <copyright file="tinkerforge_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -156,6 +156,8 @@ public:
         _In_ const std::size_t index_voltage = invalid_index,
         _In_ const std::size_t index_current = invalid_index);
 
+    tinkerforge_sensor(const tinkerforge_sensor&) = delete;
+
     /// <summary>
     /// Finalises the instance.
     /// </summary>
@@ -287,6 +289,8 @@ public:
     /// <param name="enable"><c>true</c> for enabling the sensor,
     /// <c>false</c> for disabling it.</param>
     void sample(_In_ const bool enable);
+
+    tinkerforge_sensor& operator =(const tinkerforge_sensor&) = delete;
 
 private:
 

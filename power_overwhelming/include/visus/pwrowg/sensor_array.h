@@ -14,6 +14,7 @@
 
 #include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_array_configuration.h"
+#include "visus/pwrowg/sensor_controller.h"
 #include "visus/pwrowg/sensor_description.h"
 
 
@@ -149,6 +150,20 @@ public:
     }
 
     /// <summary>
+    /// Gets, if the sensor provides it, the sensor controller that allows for
+    /// </summary>
+    /// <typeparam name="TConfig">The configuration type of the sensor to
+    /// retrieve the controller for.</typeparam>
+    /// <returns>The controller for the sensor type configured by
+    /// <typeparamref name="TConfig" />, or <see langword="nullptr" /> if the
+    /// sensor is not configured or has no controller.</returns>
+    template<class TConfig>
+    _Ret_maybenull_ detail::sensor_controller_t<TConfig> controller(void) {
+        auto retval = this->controller(TConfig::id);
+        return static_cast<detail::sensor_controller_t<TConfig>>(retval);
+    }
+
+    /// <summary>
     /// Answer the descriptors for all sensors that are active in the array.
     /// </summary>
     /// <remarks>
@@ -183,87 +198,6 @@ public:
     /// </summary>
     /// <returns>The end of the sensor descriptions.</returns>
     _Ret_maybenull_ sensor_description *end(void) noexcept;
-
-    /// <summary>
-    /// If a <see cref="detail::marker_sensor" /> was configured, emit the
-    /// specified marker.
-    /// </summary>
-    /// <param name="timestamp">The timestamp of the marker event.</param>
-    /// <param name="id">The ID of the marker.</param>
-    /// <returns><c>true</c> if the marker was emitted, <c>false</c> if either
-    /// the marker sensor was not configured, the marker ID was invalid or the
-    /// array was not running.</returns>
-    bool marker(_In_ const timestamp timestamp, _In_ const int id) const;
-
-    /// <summary>
-    /// If a <see cref="detail::marker_sensor" /> was configured, emit the
-    /// specified marker.
-    /// </summary>
-    /// <param name="timestamp">The timestamp of the marker event.</param>
-    /// <param name="id">The ID of the marker.</param>
-    /// <returns><c>true</c> if the marker was emitted, <c>false</c> if either
-    /// the marker sensor was not configured, the marker ID was invalid or the
-    /// array was not running.</returns>
-    inline bool marker(_In_ const int id) const {
-        return this->marker(timestamp::now(), id);
-    }
-
-    /// <summary>
-    /// Answer the label of the specified <paramref name="marker" />.
-    /// </summary>
-    /// <param name="dst">If not <see langword="nullptr" />, receives the name
-    /// of the marker provided it exists and fits into <paramref name="cnt" />
-    /// characters.</param>
-    /// <param name="cnt">The size of the <paramref name="dst" /> array.</param>
-    /// <param name="marker">The ID of the marker to retrieve the label for.
-    /// </param>
-    /// <returns>The required buffer size to store the marker (including the
-    /// terminating NUL character), regardless of whether the name has been
-    /// written. If the <paramref name="marker" /> does not exist, the return
-    /// value is zero.</returns>
-    std::size_t marker(_Out_writes_opt_z_(cnt) wchar_t *dst,
-        _In_ const std::size_t cnt, _In_ const unsigned int marker) const;
-
-    /// <summary>
-    /// Answer the label of the specified <paramref name="marker" />.
-    /// </summary>
-    /// <param name="dst">If not <see langword="nullptr" />, receives the name
-    /// of the marker provided it exists and fits into <paramref name="cnt" />
-    /// characters.</param>
-    /// <param name="cnt">The size of the <paramref name="dst" /> array.</param>
-    /// <param name="marker">The ID of the marker to retrieve the label for.
-    /// </param>
-    /// <returns>The required buffer size to store the marker (including the
-    /// terminating NUL character), regardless of whether the name has been
-    /// written. If the <paramref name="marker" /> does not exist, the return
-    /// value is zero.</returns>
-    std::size_t marker(_Out_writes_opt_z_(cnt) char *dst,
-        _In_ const std::size_t cnt, _In_ const unsigned int marker) const;
-
-    /// <summary>
-    /// Answer the number of markers configured in the array.
-    /// </summary>
-    /// <returns>The number of valid markers.</returns>
-    std::size_t markers(void) const noexcept;
-
-    /// <summary>
-    /// Provided there are Tinkerforge sensors in the array which have the
-    /// custom firmware that allows for reading their internal clock, update the
-    /// time drift estimation for these sensors.
-    /// </summary>
-    /// <remarks>
-    /// <para>This method does nothing if there are no Tinkerforge sensors or if
-    /// the Voltage/Current Bricklets do not have the custom firmware requested
-    /// at build time.</para>
-    /// <para>This method should not be called when measuring important data as
-    /// it requires significant bandwidth on the Tinkerforge connection and
-    /// might cause samples to be delayed or dropped. Callers should call this
-    /// method between benchmarks to improve the estimate of the clock drift,
-    /// ideally while the sensor array is not running.</para>
-    /// <para>The calling thread will be blocked until the operation is
-    /// complete.</para>
-    /// </remarks>
-    void resync_tinkerforge(void) const;
 
     /// <summary>
     /// Starts sampling all sensors in the array.
@@ -370,6 +304,10 @@ private:
     _Ret_valid_ detail::sensor_array_impl *check_not_disposed(void);
 
     _Ret_valid_ const detail::sensor_array_impl *check_not_disposed(void) const;
+
+    _Ret_maybenull_ void *controller(_In_ const guid& id);
+
+    _Ret_maybenull_ const void *controller(_In_ const guid& id) const;
 
     detail::sensor_array_impl *_impl;
 };

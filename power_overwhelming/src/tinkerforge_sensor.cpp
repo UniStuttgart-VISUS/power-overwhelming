@@ -47,8 +47,10 @@ std::size_t PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::descriptions(
             bricklets.clear();
             scope.copy_bricklets(
                 std::back_inserter(bricklets),
-                [](const bricklet_type& b) { return (b.device_type()
-                    == VOLTAGE_CURRENT_V2_DEVICE_IDENTIFIER); },
+                [](const bricklet_type& b) {
+                    constexpr auto t = VOLTAGE_CURRENT_V2_DEVICE_IDENTIFIER;
+                    return (b.device_type() == t);
+                },
                 std::chrono::milliseconds(config.timeout()));
 
             for (auto& b : bricklets) {
@@ -155,9 +157,9 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::~tinkerforge_sensor(
     // exit asap.
     this->disable_callbacks();
 
-    // Make sure that we do not destroy the sensor while asnychronous data are
+    // Make sure that we do not destroy the sensor while asynchronous data are
     // written. This will block until the writer exited.
-    // TODO: This is only semi-safe for cases where only one calback is running. We need to fix that some time, but for now, we usually only
+    // TODO: This is only semi-safe for cases where only one callback is running. We need to fix that some time, but for now, we usually only
     // run power callbacks, so it is somewhat OK ...
     std::lock_guard<decltype(this->_lock)> l(this->_lock);
 
@@ -295,7 +297,9 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::reset(void) {
 void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::resync_internal_clock(
     void) {
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
-    this->_time_xlate.update(this->_bricklet);
+    if (this->has_internal_time()) {
+        this->_time_xlate.update(this->_bricklet);
+    }
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 }
 
@@ -406,7 +410,7 @@ bool PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::same_bricklet(
         _In_ const sensor_description& lhs,
         _In_ const sensor_description& rhs) {
     auto pdl = sensor_description_builder::private_data<tinkerforge_scope>(lhs);
-    auto pdr = sensor_description_builder::private_data<tinkerforge_scope>(lhs);
+    auto pdr = sensor_description_builder::private_data<tinkerforge_scope>(rhs);
     return ((*pdl == *pdr) && equals(lhs.path(), rhs.path()));
 }
 
@@ -506,7 +510,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::disable_callbacks(void) {
 
     if (this->has_internal_time()) {
         ::voltage_current_v2_register_callback(&this->_bricklet,
-            VOLTAGE_CURRENT_V2_CALLBACK_POWER,
+            VOLTAGE_CURRENT_V2_CALLBACK_POWER_TIME,
             nullptr,
             this);
     }

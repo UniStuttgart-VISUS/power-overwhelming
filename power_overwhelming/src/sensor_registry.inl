@@ -55,7 +55,8 @@ void PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::configure0(
 template<class ...TSensors>
 template<std::size_t I, class TInput, class T, class... Ts>
 TInput PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::create0(
-        _In_ sensor_list_type& dst,
+        _In_ sensor_list_type& sensors,
+        _In_ std::unordered_map<guid, type_erased_storage>& controllers,
         _In_ type_list<T, Ts...>,
         _In_ const sample::source_type index,
         _In_ const TInput begin,
@@ -77,8 +78,7 @@ TInput PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::create0(
             "configuration for all calls.");
     }
 
-    auto& sensors = std::get<I>(dst);
-    const auto it = sensor_type::from_descriptions(sensors,
+    const auto it = sensor_type::from_descriptions(std::get<I>(sensors),
         index,
         begin,
         end,
@@ -86,8 +86,23 @@ TInput PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::create0(
         *static_cast<const config_type *>(c));
     const auto i = std::distance(begin, it);
 
-    return create0<I + 1>(dst, type_list<Ts...>(), index + i, it, end, owner,
-        config);
+    if (sensor_controller_v<config_type>) {
+        // If the configuration declares a controller type and we have at least
+        // one instance of the sensor, create the controller. Note that we do
+        // not want to have controllers for sensors that are not actually
+        // present as some controllers require sensor resources for
+        // initialisation and might crash without them.
+        auto& list = std::get<I>(sensors);
+        if (!list.empty()) {
+            sensor_controller<config_type>::emplace(
+                controllers[config_type::id],
+                list.begin(),
+                list.end());
+        }
+    }
+
+    return create0<I + 1>(sensors, controllers, type_list<Ts...>(), index + i,
+        it, end, owner, config);
 }
 
 

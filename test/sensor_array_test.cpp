@@ -105,6 +105,19 @@ public:
 
         sensor_array sensors(std::move(config), descs.data(), descs.size());
     }
+
+    TEST_METHOD(test_controller) {
+        sensor_array_configuration config;
+        std::vector<sensor_description> descs;
+        descs.resize(sensor_array::all_descriptions(nullptr, 0, config));
+        sensor_array::all_descriptions(descs.data(), descs.size(), config);
+
+        Assert::IsTrue(std::any_of(descs.begin(), descs.end(), is_marker_sensor), L"Have marker sensor", LINE_INFO());
+
+        sensor_array sensors(std::move(config), descs.data(), descs.size());
+        Assert::IsNotNull(sensors.controller<marker_configuration>(), L"Have marker controller", LINE_INFO());
+        Assert::IsTrue(sensors.controller<emi_configuration>() == nullptr, L"Do not have EMI controller", LINE_INFO());
+    }
 };
 
 PWROWG_TEST_NAMESPACE_END

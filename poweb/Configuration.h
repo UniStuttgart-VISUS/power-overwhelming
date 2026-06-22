@@ -1,5 +1,5 @@
 ﻿// <copyright file="Configuration.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 - 2025 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+// Copyright © 2022 - 2026 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 // </copyright>
 // <author>Christoph Müller</author>
 
@@ -97,7 +97,7 @@ public:
     /// Emits the marker indicating that the blank page is shown.
     /// </summary>
     inline void MarkerBlank(void) const noexcept {
-        this->_sensors.marker(this->_markerBlank);
+        this->_markers->emit(this->_markerBlank);
     }
 
     /// <summary>
@@ -106,7 +106,7 @@ public:
     /// <param name="url"></param>
     inline void MarkerNavigate(_In_ const std::size_t url) const {
         assert(url < this->_markersNav.size());
-        this->_sensors.marker(this->_markersNav[url]);
+        this->_markers->emit(this->_markersNav[url]);
     }
 
     /// <summary>
@@ -115,7 +115,7 @@ public:
     /// <param name="url"></param>
     inline void MarkerShow(_In_ const std::size_t url) const {
         assert(url < this->_markersShow.size());
-        this->_sensors.marker(this->_markersShow[url]);
+        this->_markers->emit(this->_markersShow[url]);
     }
 
     /// <summary>
@@ -158,6 +158,7 @@ private:
     std::chrono::milliseconds _initialWait;
     std::uint32_t _iterations;
     unsigned int _markerBlank;
+    visus::pwrowg::marker_controller *_markers;
     std::vector<unsigned int> _markersNav;
     std::vector<unsigned int> _markersShow;
     visus::pwrowg::sensor_array _sensors;

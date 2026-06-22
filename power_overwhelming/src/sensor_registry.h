@@ -20,6 +20,7 @@
 
 #include "visus/pwrowg/guid.h"
 #include "visus/pwrowg/sensor_array_configuration.h"
+#include "visus/pwrowg/sensor_controller.h"
 #include "visus/pwrowg/sensor_description.h"
 #include "visus/pwrowg/string_functions.h"
 
@@ -70,12 +71,9 @@ public:
         const sensor_description *, void *context)> sampler_func;
 
     /// <summary>
-    /// The type of sensors created by the registry.
+    /// The type of sensors created by the registry. The sensor class defines
+    /// how its instances are stored via its <c>list_type</c> member.
     /// </summary>
-    /// <remarks>
-    /// A list is used here, because sensors do not have to be copyable or
-    /// movable for this container to work.
-    /// </remarks>
     typedef std::tuple<typename TSensors::list_type...> sensor_list_type;
 
     /// <summary>
@@ -100,13 +98,15 @@ public:
     /// Creates shared instances of all sensors configured in the range
     /// <paramref name="begin" /> to <paramref name="end" />.
     /// </summary>
-    /// <typeparam name="TOutput">An output iterator over <c>shared_ptr</c> of
-    /// <see cref="sensor"/>. The caller must not make any assumption on how
-    /// many items will be written based on the input, so this must be
-    /// something like a <c>back_insert_iterator</c>.</typeparam>
     /// <typeparam name="TInput">An iterator over
     /// <see cref="sensor_description" />s.</typeparam>
-    /// <param name="oit">An output iterator to receive the sensors.</param>
+    /// <param name="sensors">The sensor list receiving the instances of the
+    /// sensors described by [<paramref name="begin" />,
+    /// <paramref name="end" />[.</param>
+    /// <param name="controllers">The controller map receiving the controllers
+    /// for the sensors added to <paramref name="sensors" />. The keys are the
+    /// configuration IDs of the sensor classes. If the sensor does not declare
+    /// a controller, nothing will be added.</param>
     /// <param name="begin">The start of the range of sensor descriptions to
     /// create sensors for.</param>
     /// <param name="end">The end of the range of sensor descriptions.</param>
@@ -125,13 +125,14 @@ public:
     /// to create a sensor. If this is equal to <paramref name="end" />, all
     /// sensors have been successfully created.</returns>
     template<class TInput>
-    static inline TInput create(_In_ sensor_list_type& dst,
+    static inline TInput create(_In_ sensor_list_type& sensors,
+            _In_ std::unordered_map<guid, type_erased_storage>& controllers,
             _In_ const TInput begin,
             _In_ const TInput end,
             _In_ const sensor_array_impl *owner,
             _In_ const sensor_array_configuration_impl& config) {
-        return create0<0>(dst, type_list<TSensors...>(), 0, begin, end, owner,
-            config);
+        return create0<0>(sensors, controllers, type_list<TSensors...>(), 0,
+            begin, end, owner, config);
     }
 
     /// <summary>
@@ -194,7 +195,8 @@ private:
     /// to <paramref name="end" /> and stores them in <paramref name="dst" />.
     /// </summary>
     template<std::size_t I, class TInput, class T, class... Ts>
-    static TInput create0(_In_ sensor_list_type& dst,
+    static TInput create0(_In_ sensor_list_type& sensors,
+        _In_ std::unordered_map<guid, type_erased_storage>& controllers,
         _In_ type_list<T, Ts...>,
         _In_ const sample::source_type index,
         _In_ const TInput begin,
@@ -206,13 +208,14 @@ private:
     /// Recursion stop.
     /// </summary>
     template<std::size_t I, class TInput>
-    static inline TInput create0(_In_ sensor_list_type& dst,
+    static inline TInput create0(_In_ sensor_list_type&,
+            _In_ std::unordered_map<guid, type_erased_storage>&,
             _In_ type_list<>,
-            _In_ const sample::source_type index,
+            _In_ const sample::source_type,
             _In_ const TInput begin,
-            _In_ const TInput end,
-            _In_ const sensor_array_impl *owner,
-            _In_ const sensor_array_configuration_impl& config) {
+            _In_ const TInput,
+            _In_ const sensor_array_impl *,
+            _In_ const sensor_array_configuration_impl&) {
         return begin;
     }
 

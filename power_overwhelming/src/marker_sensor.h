@@ -120,38 +120,26 @@ public:
     inline marker_sensor(_In_ const std::size_t index,
             _In_ const sensor_array_impl *owner,
             _In_ const configuration_type& config)
-            : _emitting(false), _index(index), _owner(owner) {
-        multi_sz<wchar_t>::copy(config.names(),
-            std::back_inserter(this->_markers));
-    }
+        : _emitting(false), _index(index), _next(0), _owner(owner) { }
 
     marker_sensor(const marker_sensor& rhs) = delete;
 
     /// <summary>
-    /// If the sensor is enabled and <paramref name="id" /> is valid, emit the
-    /// specified marker event.
+    /// If the sensor is enabled emit the specified marker event.
     /// </summary>
     /// <param name="timestamp">The timestamp of the marker event.</param>
     /// <param name="id">The index of the marker.</param>
-    /// <returns><c>true</c> if the sample was acutally emitted, <c>false</c>
+    /// <returns><c>true</c> if the sample was actually emitted, <c>false</c>
     /// otherwise.</returns>
     bool emit(_In_ const timestamp timestamp, _In_ const unsigned int id);
 
     /// <summary>
-    /// Answer the label of the specified <paramref name="marker" />.
+    /// If the sensor is enabled, emit the next auto-increment marker.
     /// </summary>
-    /// <param name="dst">If not <see langword="nullptr" />, receives the name
-    /// of the marker provided it exists and fits into <paramref name="cnt" />
-    /// characters.</param>
-    /// <param name="cnt">The size of the <paramref name="dst" /> array.</param>
-    /// <param name="marker">The ID of the marker to retrieve the label for.
-    /// </param>
-    /// <returns>The required buffer size to store the marker (including the
-    /// terminating NUL character), regardless of whether the name has been
-    /// written. If the <paramref name="marker" /> does not exist, the return
-    /// value is zero.</returns>
-    std::size_t marker(_Out_writes_opt_z_(cnt) wchar_t *dst,
-        _In_ const std::size_t cnt, _In_ const unsigned int marker);
+    /// <param name="timestamp">The timestamp of the marker event.</param>
+    /// <returns><c>true</c> if the sample was actually emitted, <c>false</c>
+    /// otherwise.</returns>
+    bool emit(_In_ const timestamp timestamp);
 
     /// <summary>
     /// Starts or stops sampling the sensor.
@@ -160,21 +148,13 @@ public:
     /// <c>false</c> for disabling it.</param>
     void sample(_In_ const bool enable);
 
-    /// <summary>
-    /// Answer the number of markers configured for this sensor.
-    /// </summary>
-    /// <returns>The number of markers.</returns>
-    inline std::size_t size(void) const noexcept {
-        return this->_markers.size();
-    }
-
     marker_sensor& operator =(const marker_sensor& rhs) = delete;
 
 private:
 
     std::atomic<bool> _emitting;
     std::size_t _index;
-    std::vector<std::wstring> _markers;
+    std::atomic<unsigned int> _next;
     const sensor_array_impl *_owner;
     sensor_state _state;
 };

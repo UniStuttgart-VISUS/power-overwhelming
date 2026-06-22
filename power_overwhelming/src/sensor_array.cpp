@@ -67,7 +67,9 @@ PWROWG_NAMESPACE::sensor_array::sensor_array(
         std::copy(descs,
             descs + cnt,
             std::back_inserter(this->_impl->descriptions));
-        auto end = detail::sensor_registry::create(this->_impl->sensors,
+        auto end = detail::sensor_registry::create(
+            this->_impl->sensors,
+            this->_impl->controllers,
             this->_impl->descriptions.begin(),
             this->_impl->descriptions.end(),
             this->_impl,
@@ -159,112 +161,6 @@ PWROWG_NAMESPACE::sensor_array::end(void) noexcept {
     return (impl != nullptr)
         ? impl->descriptions.data() + impl->descriptions.size()
         : nullptr;
-}
-
-
-/*
- * PWROWG_NAMESPACE::sensor_array::marker
- */
-bool PWROWG_NAMESPACE::sensor_array::marker(_In_ const timestamp timestamp,
-        _In_ const int id) const {
-    typedef detail::marker_sensor::list_type type;
-    typedef detail::tuple_types_t<decltype(this->_impl->sensors)> types;
-    typedef detail::type_list_index_of<type, types> index;
-
-    volatile auto impl = this->_impl;  // sic!
-    auto& list = std::get<index::value>(this->_impl->sensors);
-    auto retval = ((impl != nullptr) && !list.empty());
-
-    if (retval) {
-        retval = list.begin()->emit(timestamp, id);
-    }
-
-    return retval;
-}
-
-
-/*
- * PWROWG_NAMESPACE::sensor_array::marker
- */
-std::size_t PWROWG_NAMESPACE::sensor_array::marker(
-        _Out_writes_opt_z_(cnt) wchar_t *dst,
-        _In_ const std::size_t cnt,
-        _In_ const unsigned int marker) const {
-    typedef detail::marker_sensor::list_type type;
-    typedef detail::tuple_types_t<decltype(this->_impl->sensors)> types;
-    typedef detail::type_list_index_of<type, types> index;
-
-    volatile auto impl = this->_impl;  // sic!
-    auto& list = std::get<index::value>(this->_impl->sensors);
-
-    return ((impl != nullptr) && !list.empty())
-        ? list.begin()->marker(dst, cnt, marker)
-        : 0;
-}
-
-
-/*
- * PWROWG_NAMESPACE::sensor_array::marker
- */
-std::size_t PWROWG_NAMESPACE::sensor_array::marker(
-        _Out_writes_opt_z_(cnt) char *dst,
-        _In_ const std::size_t cnt,
-        _In_ const unsigned int marker) const {
-    auto retval = this->marker(static_cast<wchar_t *>(nullptr), 0, marker);
-
-    if (retval == 0) {
-        // If the marker does not exist, we can bail out.
-        return retval;
-    }
-
-    // Get the marker and measure the required UTF-8 code units.
-    std::vector<wchar_t> buffer(retval);
-    this->marker(buffer.data(), buffer.size(), marker);
-    retval = detail::convert_string(dst, cnt, buffer.data(), retval);
-
-    return retval;
-}
-
-
-/*
- * PWROWG_NAMESPACE::sensor_array::markers
- */
-std::size_t PWROWG_NAMESPACE::sensor_array::markers(void) const noexcept {
-    typedef detail::marker_sensor::list_type type;
-    typedef detail::tuple_types_t<decltype(this->_impl->sensors)> types;
-    typedef detail::type_list_index_of<type, types> index;
-
-    volatile auto impl = this->_impl;  // sic!
-    if (impl == nullptr) {
-        return 0;
-    }
-
-    auto& list = std::get<index::value>(this->_impl->sensors);
-    if (list.empty()) {
-        return 0;
-    }
-
-    return list.begin()->size();
-}
-
-
-/*
- * PWROWG_NAMESPACE::sensor_array::resync_tinkerforge
- */
-void PWROWG_NAMESPACE::sensor_array::resync_tinkerforge(void) const {
-    typedef detail::tinkerforge_sensor::list_type type;
-    typedef detail::tuple_types_t<decltype(this->_impl->sensors)> types;
-    typedef detail::type_list_index_of<type, types> index;
-
-    volatile auto impl = this->_impl;  // sic!
-
-    if (impl != nullptr) {
-        auto& sensors = std::get<index::value>(this->_impl->sensors);
-
-        for (auto& s : sensors) {
-            s.resync_internal_clock();
-        }
-    }
 }
 
 
@@ -492,4 +388,26 @@ PWROWG_NAMESPACE::sensor_array::check_not_disposed(void) const {
     }
 
     return retval;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::sensor_array::controller
+ */
+_Ret_maybenull_ void *PWROWG_NAMESPACE::sensor_array::controller(
+        _In_ const guid& id) {
+    volatile auto impl = this->check_not_disposed();
+    auto it = impl->controllers.find(id);
+    return (it != impl->controllers.end()) ? it->second.get<void>() : nullptr;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::sensor_array::controller
+ */
+_Ret_maybenull_ const void *PWROWG_NAMESPACE::sensor_array::controller(
+        _In_ const guid& id) const {
+    volatile auto impl = this->check_not_disposed();
+    auto it = impl->controllers.find(id);
+    return (it != impl->controllers.end()) ? it->second.get<void>() : nullptr;
 }
