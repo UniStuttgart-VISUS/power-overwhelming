@@ -168,7 +168,7 @@ dump_sensors(sensors, "sensors.json");
 ```
 
 ### Injecting markers
-Sometimes, you might want to inject custom markers into the sensor stream to enable correlating software events with measurements. The library provides a "marker_sensor" for that. In order for your code to emit markers, the marker_sensor must not be disabled, and you must retrieve the controller for the sensor like this:
+Sometimes, you might want to inject custom markers (numbers) into the sensor stream to enable correlating software events with measurements. The library provides a `marker_sensor` for that. In order for your code to emit markers, the marker_sensor must not be disabled, and you must retrieve the controller for the sensor like this:
 ```c++
 using namespace visus::pwrowg;
 
@@ -201,6 +201,8 @@ sensors.stop();
 
 > [!NOTE]
 > The sensor array will not record any markers unless it is running.
+
+The marker sensor has a built-in auto-increment counter you can use if no specific ID is required. However, you should be aware that these markers are not deterministic if used from multiple threads (although the generation is thread-safe and will not produce duplicates).
 
 ### Working with oscilloscopes
 Oscilloscopes can record changes of voltage (and using specialised probes also current) over time at a much higher temporal resolution than all other sensors supported by the library. This makes them difficult to use in the sensor array, because the high temporal resolution only allows for recording during short time spans, which in turn must be synchronised with the application to be tested in order to obtain meaningful results. Power Overwhelming provides two ways to address this: first, the classes for interacting with RTA/RTB oscilloscopes are exposed in the public API and can be used directly. Second, the `rtx_sensor` wraps the instruments and provides means to trigger the oscilloscopes by the application using the software trigger or using a parallel port extension board (this is preferred due to the software trigger having a difficult to judge delay).
