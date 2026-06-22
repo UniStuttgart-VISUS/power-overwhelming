@@ -168,48 +168,36 @@ dump_sensors(sensors, "sensors.json");
 ```
 
 ### Injecting markers
-Sometimes, you might want to inject custom markers in the sensor stream that allow for correlating software events with measurements. The library provides a "marker_sensor" for that, which can be controlled via the `sensor_array::marker` method. In order for this to work, you need to register the markers you want to generate when configuring the sensor array:
+Sometimes, you might want to inject custom markers into the sensor stream to enable correlating software events with measurements. The library provides a "marker_sensor" for that. In order for your code to emit markers, the marker_sensor must not be disabled, and you must retrieve the controller for the sensor like this:
 ```c++
 using namespace visus::pwrowg;
 
-// This vector will receive the IDs of the markers we can emit.
-std::vector<int> markers;
-
-// Configure the sensor array and have samples delivered to the  built-in
-// callback. The sink must be passed as the user pointer to the callback.
+// Configure the sensor array.
 sensor_array_configuration config;
-config.sample_every(std::chrono::milliseconds(5))
-    .deliver_to(/* ... */)
-    .configure<marker_configuration>([&markers](marker_configuration& c) {
-        markers.push_back(c += L"preparing");
-        markers.push_back(c += L"start");
-        markers.push_back(c += L"stop");
-    });
+config.sample_every(std::chrono::milliseconds(5)).deliver_to(/* ... */);
 
 // Create an array for all available sensors.
 auto sensors = sensor_array::for_all(std::move(config));
 
+// Obtain a pointer to the controller. This pointer will be valid as long as the
+// the sensor array lives.
+auto markers = sensors.controller<marker_configuration>();
+
 // Start the measurements.
 sensors.start();
 
-sensors.marker(markers[0]);
+markers.emit(0);
 // Prepare stuff.
 
 for (std::size_t i = 0; i < 42; ++i) {
-    sensors.marker(markers[1]);
+    markers.emit(1);
     // Do work.
-    sensors.marker(markers[2]);
+    markers.emit(2);
 }
 
 // End the measurements.
 sensors.stop();
 ```
-
-> [!NOTE]
-> The sensor array will not record any markers if the `marker_configuration` has not been configured with at least one marker.
-
-> [!NOTE]
-> The sensor array will not record any markers that have an invalid ID.
 
 > [!NOTE]
 > The sensor array will not record any markers unless it is running.
@@ -368,6 +356,7 @@ The sensor class must fulfil the following requirements:
 * It must be default-constructible.
 * It must be located in the public namespace. It is strongly recommended to use the `PWROWG_NAMESPACE_BEGIN` and `PWROWG_NAMESPACE_END` macros to ensure proper API versioning.
 * It must not use `template` members, including classes like `std::string`. If you need to store a dynamically allocated string, use a [`blob`](power_overwhelming/include/visus/pwrowg/blob.h), manage your memory manually or use the [PIMPL pattern](https://learn.microsoft.com/en-us/cpp/cpp/pimpl-for-compile-time-encapsulation-modern-cpp).
+* It can have a `typedef controller_type` referring to a class that can be used to manipulate the sensor while it is running. See below for details.
 
 The default constructor of the configuration type should assign the safest possible default values such that a sensor will most likely work if it receives an unmodified instance.
 
