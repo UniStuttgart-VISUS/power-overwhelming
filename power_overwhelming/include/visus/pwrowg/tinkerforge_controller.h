@@ -24,7 +24,10 @@ namespace detail { class tinkerforge_sensor; }
 
 
 /// <summary>
-/// 
+/// The controller for Tinkeforge sensors allows for re-synchronising the drift
+/// of the internal clock of the bricklets to the system clock. This
+/// functionality is only available for bricklets with our custom firmware and
+/// if enabled at build time of the library.
 /// </summary>
 class POWER_OVERWHELMING_API tinkerforge_controller final {
 
@@ -44,32 +47,14 @@ public:
     /// valid iterator.</param>
     /// <param name="end">The end of the Tinkerforge sensors.</param>
     template<class TIterator>
-    tinkerforge_controller(_In_ TIterator begin, _In_ TIterator end)
+    tinkerforge_controller(_In_ const TIterator begin, _In_ const TIterator end)
             : _cnt(std::distance(begin, end)), _sensors(nullptr) {
         this->_sensors = new sensor_type *[this->_cnt];
         std::transform(begin, end, this->_sensors,
             [](sensor_type& s) { return std::addressof(s); });
     }
 
-    /// <summary>
-    /// Clone <paramref name="other" />.
-    /// </summary>
-    /// <param name="other">The object to be cloned.</param>
-    inline tinkerforge_controller(_In_ const tinkerforge_controller& other)
-            : _cnt(0), _sensors(nullptr) {
-        *this = other;
-    }
-
-    /// <summary>
-    /// Move <paramref name="other" />.
-    /// </summary>
-    /// <param name="other">The object to be cloned.</param>
-    inline tinkerforge_controller(
-            _Inout_ tinkerforge_controller&& other) noexcept
-            : _cnt(other._cnt), _sensors(other._sensors) {
-        other._cnt = 0;
-        other._sensors = nullptr;
-    }
+    tinkerforge_controller(const tinkerforge_controller&) = delete;
 
     /// <summary>
     /// Finalises the instance.
@@ -95,20 +80,7 @@ public:
     /// </remarks>
     void resync_clock(void) const;
 
-    /// <summary>
-    /// Assignment operator.
-    /// </summary>
-    /// <param name="rhs">The right-hand-side operand.</param>
-    /// <returns><c>*<see langword="this" /></c>.</returns>
-    tinkerforge_controller& operator =(_In_ const tinkerforge_controller& rhs);
-
-    /// <summary>
-    /// Assignment operator.
-    /// </summary>
-    /// <param name="rhs">The right-hand-side operand.</param>
-    /// <returns><c>*<see langword="this" /></c>.</returns>
-    tinkerforge_controller& operator =(
-        _Inout_ tinkerforge_controller&& rhs) noexcept;
+    tinkerforge_controller& operator =(const tinkerforge_controller&) = delete;
 
 private:
 

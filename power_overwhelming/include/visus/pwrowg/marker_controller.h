@@ -48,7 +48,7 @@ public:
     /// follow <paramref name="begin" /> as we expect exactly one sensor of this
     /// type.</param>
     template<class TIterator>
-    marker_controller(_In_ TIterator begin, _In_ TIterator end)
+    marker_controller(_In_ const TIterator begin, _In_ const TIterator end)
             : _sensor(*begin) {
         assert(begin != end);
     }

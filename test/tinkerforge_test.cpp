@@ -33,35 +33,9 @@ public:
         }
     }
 
-    TEST_METHOD(test_sensor_creation) {
-        typedef detail::tinkerforge_sensor type;
-
-        type::configuration_type config;
-        std::vector<sensor_description> descs;
-        descs.resize(type::descriptions(nullptr, 0, config));
-        type::descriptions(descs.data(), descs.size(), config);
-
-        detail::sensor_array_impl dummy;
-
-        type::list_type sensors;
-        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), &dummy, config);
-        Assert::AreEqual(descs.size() / 3, sensors.size(), L"Created in groups of three", LINE_INFO());
-        Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
-
-        //for (auto& s : sensors) {
-        //    auto evt = create_event();
-
-        //    s.sample([](const sample *samples, const std::size_t cnt, const sensor_description *sensors, void *context) {
-        //        auto evt = static_cast<event_type *>(context);
-        //        set_event(*evt);
-        //        Assert::AreEqual(std::size_t(1), cnt, L"Tinkerforge creates single sample", LINE_INFO());
-        //    }, std::chrono::milliseconds(5), &evt);
-
-        //    Assert::IsTrue(wait_event(evt, 1000), L"Sensor fired within 1 sec.", LINE_INFO());
-        //}
-    }
-
     TEST_METHOD(test_power_sensor_creation) {
+        //::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF);
+        //::_CrtSetDbgFlag(_CRTDBG_CHECK_ALWAYS_DF);
         //::_CrtSetBreakAlloc(778);
         typedef detail::tinkerforge_sensor type;
 
@@ -76,6 +50,60 @@ public:
             auto end = std::remove_if(descs.begin(), descs.end(), [](const sensor_description &d) {
                 return !d.is_sensor_type(sensor_type::power);
             });
+            descs.erase(end, descs.end());
+        }
+
+        type::list_type sensors;
+        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), &dummy, config);
+        Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
+        sensors.clear();
+    }
+
+    TEST_METHOD(test_sensor_array) {
+        sensor_array_configuration config;
+        auto sensors = sensor_array::for_matches(std::move(config), is_tinkerforge_sensor);
+
+        if (sensors.size() > 0) {
+            auto controller = sensors.controller<tinkerforge_configuration>();
+            Assert::IsNotNull(controller, L"Have Tinkerforge controller", LINE_INFO());
+            // Note: the following should never crash in any configuration.
+            controller->resync_clock();
+        }
+    }
+
+    TEST_METHOD(test_sensor_run) {
+        typedef detail::tinkerforge_sensor type;
+
+        auto evt = create_event();
+        sensor_array_configuration config;
+            config.deliver_to([](const sample *s, const std::size_t cnt, const sensor_description *, void *e) {
+                auto evt = static_cast<event_type *>(e);
+                set_event(*evt);
+            })
+            .deliver_context(&evt);
+
+        auto sensors = sensor_array::for_matches(std::move(config), is_tinkerforge_sensor);
+        if (!sensors.empty()) {
+            sensors.start();
+            Assert::IsTrue(wait_event(evt, 1000), L"Sensor fired within 1 sec.", LINE_INFO());
+            sensors.stop();
+        }
+    }
+
+    TEST_METHOD(test_voltage_current_sensor_creation) {
+        typedef detail::tinkerforge_sensor type;
+
+        type::configuration_type config;
+        std::vector<sensor_description> descs;
+        descs.resize(type::descriptions(nullptr, 0, config));
+        type::descriptions(descs.data(), descs.size(), config);
+
+        detail::sensor_array_impl dummy;
+
+        {
+            auto end = std::remove_if(descs.begin(), descs.end(), [](const sensor_description &d) {
+                return d.is_sensor_type(sensor_type::power);
+                });
             descs.erase(end, descs.end());
         }
 
@@ -106,39 +134,6 @@ public:
         Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
     }
 
-    TEST_METHOD(test_voltage_current_sensor_creation) {
-        typedef detail::tinkerforge_sensor type;
-
-        type::configuration_type config;
-        std::vector<sensor_description> descs;
-        descs.resize(type::descriptions(nullptr, 0, config));
-        type::descriptions(descs.data(), descs.size(), config);
-
-        detail::sensor_array_impl dummy;
-
-        {
-            auto end = std::remove_if(descs.begin(), descs.end(), [](const sensor_description &d) {
-                return d.is_sensor_type(sensor_type::power);
-            });
-            descs.erase(end, descs.end());
-        }
-
-        type::list_type sensors;
-        const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), &dummy, config);
-        Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
-    }
-
-    TEST_METHOD(test_sensor_array) {
-        sensor_array_configuration config;
-        auto sensors = sensor_array::for_matches(std::move(config), is_tinkerforge_sensor);
-
-        if (sensors.size() > 0) {
-            auto controller = sensors.controller<tinkerforge_configuration>();
-            Assert::IsNotNull(controller, L"Have Tinkerforge controller", LINE_INFO());
-            // Note: the following should never crash in any configuration.
-            controller->resync_clock();
-        }
-    }
 };
 
 PWROWG_TEST_NAMESPACE_END

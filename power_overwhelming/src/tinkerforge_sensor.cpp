@@ -118,9 +118,11 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::tinkerforge_sensor(
         _In_ const std::size_t index_power,
         _In_ const std::size_t index_voltage,
         _In_ const std::size_t index_current)
-    : _index_current(index_current),
+    : _bricklet { 0 },
+        _index_current(index_current),
         _index_power(index_power),
         _index_voltage(index_voltage),
+        _lock{ },
         _owner(owner),
         _scope(scope) {
     if (this->_owner == nullptr) {
@@ -139,7 +141,6 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::tinkerforge_sensor(
     //std::fill(this->async_data.begin(), this->async_data.end(),
     //    measurement::invalid_value);
 
-    // TODO: this is too slow, only set timing in reset.
 #if defined(CUSTOM_TINKERFORGE_FIRMWARE)
     this->_time_xlate.reset(this->_bricklet);
 #endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */

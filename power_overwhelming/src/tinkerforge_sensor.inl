@@ -29,12 +29,16 @@ TInput PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::from_descriptions(
     // bricklet are sorted to match the order in the constructor.
     std::sort(begin, retval,
             [](const sensor_description& lhs, const sensor_description& rhs) {
-        auto pdl = *builder_type::private_data<tinkerforge_scope>(lhs);
-        auto pdr = *builder_type::private_data<tinkerforge_scope>(rhs);
+        const auto pdl = *builder_type::private_data<tinkerforge_scope>(lhs);
+        const auto pdr = *builder_type::private_data<tinkerforge_scope>(rhs);
+        // Note: the following uses the custom cast operator exposing the
+        // underlying IPConnection pointer.
+        const auto conl = static_cast<const IPConnection *>(pdl);
+        const auto conr = static_cast<const IPConnection *>(pdr);
 
         // First of all, group by the brick daemon.
-        auto retval = static_cast<const IPConnection *>(pdl)
-            - static_cast<const IPConnection *>(pdr);
+        auto retval = reinterpret_cast<std::intptr_t>(conl)
+            - reinterpret_cast<std::intptr_t>(conr);
 
         // If on the same daemon, group by bricklet.
         if (retval == 0) {

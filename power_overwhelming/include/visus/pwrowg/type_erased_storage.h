@@ -70,54 +70,7 @@ public:
     /// <param name="args">The arguments passed to the constuctor.</param>
     /// <returns>A reference for the newly created object.</returns>
     template<class TType, class... TArgs>
-    std::enable_if_t<std::is_copy_constructible_v<TType>, TType&> emplace(
-        TArgs&&... args);
-
-#if false
-    /// <summary>
-    /// Emplaces an object of type <typeparamref name="TType" />.
-    /// </summary>
-    /// <remarks>
-    /// <para>It is safe to call the method on a valid object, in which case
-    /// this object will be destroyed before emplacing a new one.</para>
-    /// <para>This overload will only be used if a type is not copy
-    /// constructible. Any attempt to copy the type-erased storage of such an
-    /// object will result in a runtime error.</para>
-    /// </remarks>
-    /// <typeparam name="TType">The type of the new object.</typeparam>
-    /// <typeparam name="TArgs">The type of the arguments passed to the
-    /// constructor.</typeparam>
-    /// <param name="args">The arguments passed to the constuctor.</param>
-    /// <returns>A reference for the newly created object.</returns>
-    template<class TType, class... TArgs>
-    inline std::enable_if_t<!std::is_copy_constructible_v<TType>, TType&>
-    emplace(TArgs&&... args) {
-        return this->emplace_non_copyable(std::forward<TArgs>(args)...);
-    }
-
-    /// <summary>
-    /// Emplaces an object of type <typeparamref name="TType" /> without
-    /// registering a copy operation.
-    /// </summary>
-    /// <remarks>
-    /// <para>It is safe to call the method on a valid object, in which case
-    /// this object will be destroyed before emplacing a new one.</para>
-    /// <para>This method forces the object to be non-copyable by not
-    /// registering a copy callback, regardless of whether
-    /// <typeparamref name="TType" /> is actually copyable. Such a behaviour
-    /// is required to create type-erased vectors of non-copyable elements as
-    /// this cannot be detected by <see cref="std::is_copy_constructible_v" />.
-    /// Any attempt to copy the type-erased storage of such an object will
-    /// result in a runtime error.</para>
-    /// </remarks>
-    /// <typeparam name="TType">The type of the new object.</typeparam>
-    /// <typeparam name="TArgs">The type of the arguments passed to the
-    /// constructor.</typeparam>
-    /// <param name="args">The arguments passed to the constuctor.</param>
-    /// <returns>A reference for the newly created object.</returns>
-    template<class TType, class... TArgs>
-    TType& emplace_non_copyable(TArgs&&... args);
-#endif
+    TType& emplace(TArgs&&... args);
 
     /// <summary>
     /// Gets the data in form of a pointer to <typeparamref name="TType" />.
@@ -224,6 +177,50 @@ private:
     /// The type of a destructor function.
     /// </summary>
     typedef void (*destruct_type)(_In_ data& obj);
+
+    /// <summary>
+    /// Answer whether <typeparamref name="TType" /> is small enough to be
+    /// stored in-place in the data union.
+    /// </summary>
+    template<class TType>
+    static constexpr auto is_small_v = (sizeof(TType) <= sizeof(data));
+
+    /// <summary>
+    /// Creates the copy callback for a non-copyable type.
+    /// </summary>
+    template<class TType>
+    static std::enable_if_t<!std::is_copy_constructible_v<TType>, copy_type>
+    make_copy(void) noexcept;
+
+    /// <summary>
+    /// Creates the copy callback for a small type.
+    /// </summary>
+    template<class TType>
+    static std::enable_if_t<std::is_copy_constructible_v<TType>
+        && is_small_v<TType>, copy_type>
+    make_copy(void) noexcept;
+
+    /// <summary>
+    /// Creates the copy callback for a large type.
+    /// </summary>
+    template<class TType>
+    static std::enable_if_t<std::is_copy_constructible_v<TType>
+        && !is_small_v<TType>, copy_type>
+    make_copy(void) noexcept;
+
+    /// <summary>
+    /// Creates a destructor callback for a small type.
+    /// </summary>
+    template<class TType>
+    static std::enable_if_t<is_small_v<TType>, destruct_type> make_dtor(
+        void) noexcept;
+
+    /// <summary>
+    /// Creates a destructor callback for a heap-allocated type.
+    /// </summary>
+    template<class TType>
+    static std::enable_if_t<!is_small_v<TType>, destruct_type> make_dtor(
+        void) noexcept;
 
     copy_type _cp;
     data _data;

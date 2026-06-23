@@ -26,9 +26,8 @@ PWROWG_NAMESPACE::convert_string(_In_opt_z_ const TInput *str) {
     std::vector<TOutput> retval;
 
     if (str != nullptr) {
-        auto len = std::char_traits<TInput>::length(str);
+        const auto len = std::char_traits<TInput>::length(str);
         const std::size_t zero = 0;
-
         retval.resize(detail::convert_string(nullptr, zero, str, len));
         detail::convert_string(retval.data(), retval.size(), str, len);
     }

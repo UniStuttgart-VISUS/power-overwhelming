@@ -10,6 +10,7 @@
 
 #include <array>
 #include <cassert>
+#include <cstdint>
 #include <limits>
 #include <list>
 #include <memory>
@@ -23,6 +24,7 @@
 #include "visus/pwrowg/tinkerforge_configuration.h"
 #include "visus/pwrowg/tinkerforge_error_count.h"
 #include "visus/pwrowg/tinkerforge_sample_averaging.h"
+#include "visus/pwrowg/trace.h"
 
 #include "sensor_description_builder.h"
 #include "sensor_utilities.h"
@@ -370,9 +372,7 @@ private:
     const sensor_array_impl *_owner;
     tinkerforge_scope _scope;
     sensor_state _state;
-#if defined(CUSTOM_TINKERFORGE_FIRMWARE)
     tinkerforge_time_translator _time_xlate;
-#endif /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
 };
 
 PWROWG_DETAIL_NAMESPACE_END

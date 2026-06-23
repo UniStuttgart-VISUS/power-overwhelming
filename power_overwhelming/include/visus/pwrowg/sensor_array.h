@@ -188,6 +188,15 @@ public:
         _In_ std::size_t cnt);
 
     /// <summary>
+    /// Answer whether the array is empty.
+    /// </summary>
+    /// <returns><see langword="true" /> if there is no sensor in the array,
+    /// <see langword="false" /> otherwise.</returns>
+    inline bool empty(void) const noexcept {
+        return (this->size() < 1);
+    }
+
+    /// <summary>
     /// Answer a pointer beyond the description of the last sensor.
     /// </summary>
     /// <returns>The end of the sensor descriptions.</returns>

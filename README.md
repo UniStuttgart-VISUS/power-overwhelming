@@ -484,5 +484,20 @@ void sample(const bool enable);
 ### Registering your sensor
 All sensors are centrally registered at one place, in the [`sensor_registry`](power_overwhelming/src/sensor_registry.h). Just add your class in the `typedef` at the bottom of the file.
 
+### The `controller_type`
+If your sensor allows for changing its behaviour while it is running, you can provide a controller class in your `configuration_type` to allow users to manipulate the sensor. This is, for instance, used by the `marker_sensor` and the `tinkerforge_sensor`. There are a few requirements for the controller class:
+* It must forward declare the sensor type it controls, but not include the sensor header, for instance: `namespace detail { class marker_sensor; }`
+* It must be constructible from an iterator over the private sensor instances, for instance: `template<class TIterator> marker_controller(const TIterator begin, const TIterator end) {... }`
+* It must not use `template` members, including classes like `std::string`.
+
+> [!TIP]
+> The constructor can assume only to be called if at least one sensor has been instantiated, i.e. the range [`begin`, `end`[ is not empty.
+
+> [!TIP]
+> The controller class can assume that the sensor instances passed to the constructor will never change until the sensor array is destroyed. It is OK to store references to the sensors.
+
+> [!TIP]
+> The controller class will be constructed in-place by the sensor array. It therefore does not need to be copyable or movable.
+
 ## Acknowledgments
 This work was partially funded by Deutsche Forschungsgemeinschaft (DFG) as part of [SFB/Transregio 161](https://www.sfbtrr161.de) (project ID 251654672).
