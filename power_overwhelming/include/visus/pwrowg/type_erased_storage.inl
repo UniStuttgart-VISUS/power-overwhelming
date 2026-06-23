@@ -47,20 +47,6 @@ TType& PWROWG_NAMESPACE::type_erased_storage::emplace(TArgs&&... args) {
  * PWROWG_NAMESPACE::type_erased_storage::make_copy
  */
 template<class TType>
-static std::enable_if_t<!std::is_copy_constructible_v<TType>,
-    PWROWG_NAMESPACE::type_erased_storage::copy_type>
-PWROWG_NAMESPACE::type_erased_storage::make_copy(void) noexcept {
-    return [](data& dst, const data& src) {
-        throw std::logic_error("The object contained in a type-erased storage "
-            "block is not copyable.");
-    };
-}
-
-
-/*
- * PWROWG_NAMESPACE::type_erased_storage::make_copy
- */
-template<class TType>
 static std::enable_if_t<std::is_copy_constructible_v<TType>
     && PWROWG_NAMESPACE::type_erased_storage::is_small_v<TType>,
     PWROWG_NAMESPACE::type_erased_storage::copy_type>

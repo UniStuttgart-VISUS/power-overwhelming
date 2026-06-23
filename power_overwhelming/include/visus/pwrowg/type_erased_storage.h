@@ -188,9 +188,14 @@ private:
     /// <summary>
     /// Creates the copy callback for a non-copyable type.
     /// </summary>
-    template<class TType>
-    static std::enable_if_t<!std::is_copy_constructible_v<TType>, copy_type>
-    make_copy(void) noexcept;
+    template<class TType> static inline std::enable_if_t<
+        !std::is_copy_constructible_v<TType>, copy_type>
+    make_copy(void) noexcept {
+        return [](data& dst, const data& src) {
+            throw std::logic_error("The object contained in a type-erased "
+                "storage block is not copyable.");
+        };
+    }
 
     /// <summary>
     /// Creates the copy callback for a small type.

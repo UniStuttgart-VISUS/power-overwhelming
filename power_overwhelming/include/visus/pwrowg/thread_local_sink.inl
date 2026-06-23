@@ -18,6 +18,8 @@ void PWROWG_NAMESPACE::thread_local_sink<TSink>::sample_callback(
     auto that = static_cast<thread_local_sink *>(context);
 
     {
+        // The first sample callback must store the sensor list such that
+        // the writer can use it.
         const sensor_description *expected = nullptr;
         that->_sensors.compare_exchange_strong(expected, sensors);
     }
@@ -29,10 +31,11 @@ void PWROWG_NAMESPACE::thread_local_sink<TSink>::sample_callback(
 
     // Find out the buffer index for the current thread and instance.
     auto& tlb = thread_local_sink::buffer[that];
-    PWROWG_TRACE(_T("Thread is using sink %u in 0x%p."), tlb, that);
+    PWROWG_TRACE(_T("Sample callback is using sink %zu in 0x%p."), tlb, that);
 
     if (tlb >= that->_buffers.size()) {
-        // If we do not have a page, search one.
+        // If we do not have a page for the calling thread, search one that is
+        // empty.
         std::unique_lock<decltype(that->_lock)> lock(that->_lock);
         for (std::size_t i = 0; i < that->_buffers.size(); ++i) {
             if (that->_buffers[i].empty()) {
@@ -44,11 +47,14 @@ void PWROWG_NAMESPACE::thread_local_sink<TSink>::sample_callback(
         // If we did not find a page, create one.
         if (tlb >= that->_buffers.size()) {
             that->_buffers.emplace_back();
+            PWROWG_TRACE(_T("Allocated a new buffer for 0x%p. There are now ")
+                _T("%zu buffers."), that, that->_buffers.size());
             tlb = that->_buffers.size() - 1;
         }
 
-        // Make sure that the configured page size is reserved.
-        that->_buffers.back().reserve(that->_page_size);
+        PWROWG_TRACE(_T("Make sure that sink %zu in 0x%p has at least %zu ")
+            _T("reserved."), tlb, that, that->_page_size);
+        that->_buffers[tlb].reserve(that->_page_size);
     }
 
     assert(tlb < that->_buffers.size());
@@ -58,10 +64,14 @@ void PWROWG_NAMESPACE::thread_local_sink<TSink>::sample_callback(
     std::copy_n(samples, cnt, std::back_inserter(buffer));
 
     if (buffer.size() >= that->_page_size) {
-        // The page is full, publish it.
+        PWROWG_TRACE(_T("Publish page %zu in 0x%p as it contains %zu ")
+            _T("elements."), tlb, that, buffer.size());
         std::unique_lock<decltype(that->_lock)> lock(that->_lock);
         that->_ready.push_back(tlb);
         tlb = (std::numeric_limits<std::size_t>::max)();
+        PWROWG_TRACE(_T("Waking writer to read page %zu in 0x%p. Next index ")
+            _T("for sample callback in this thread is %zu."),
+            that->_ready.back(), that, tlb);
         lock.unlock();
         that->_condition.notify_one();
     }
@@ -137,19 +147,20 @@ template<class TSink> void PWROWG_NAMESPACE::thread_local_sink<TSink>::write(
 
         for (auto& r : this->_ready) {
             assert(this->_sensors.load() != nullptr);
-            PWROWG_TRACE(_T("TLS writer writes buffer %u."), r);
-            TSink::write_samples(
-                this->_buffers[r].begin(),
-                this->_buffers[r].end(),
+            PWROWG_TRACE(_T("TLS writer writes buffer %zu containing %zu ")
+                _T("elements."), r, this->_buffers[r].size());
+            auto buffer = std::move(this->_buffers[r]);
+            TSink::write_samples(buffer.begin(), buffer.end(),
                 this->_sensors.load(std::memory_order_acquire));
-            this->_buffers[r].clear();
+            buffer.clear();
+            std::swap(buffer, this->_buffers[r]);
         }
 
         this->_ready.clear();
     }
     PWROWG_TRACE(_T("TLS writer is finalising the output."));
 
-    if (this->_sensors != nullptr) {
+    if (this->_sensors.load(std::memory_order_acquire) != nullptr) {
         // There might be something left that has not yet been written. We must
         // hold the lock here, because a callback might have already started to
         // write when the exit request was received.
