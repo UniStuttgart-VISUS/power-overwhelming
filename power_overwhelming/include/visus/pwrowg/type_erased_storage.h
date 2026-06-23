@@ -200,32 +200,54 @@ private:
     /// <summary>
     /// Creates the copy callback for a small type.
     /// </summary>
-    template<class TType>
-    static std::enable_if_t<std::is_copy_constructible_v<TType>
-        && is_small_v<TType>, copy_type>
-    make_copy(void) noexcept;
+    template<class TType> static inline std::enable_if_t<
+        std::is_copy_constructible_v<TType> && is_small_v<TType>, copy_type>
+    make_copy(void) noexcept {
+        return [](_Out_ data& dst, _In_ const data& src) {
+            auto d = reinterpret_cast<void *>(dst.small_value);
+            auto s = reinterpret_cast<const void *>(src.small_value);
+            new (d) TType(*static_cast<const TType *>(s));
+        };
+    }
 
     /// <summary>
     /// Creates the copy callback for a large type.
     /// </summary>
-    template<class TType>
-    static std::enable_if_t<std::is_copy_constructible_v<TType>
-        && !is_small_v<TType>, copy_type>
-    make_copy(void) noexcept;
+    template<class TType> static inline std::enable_if_t<
+        std::is_copy_constructible_v<TType> && !is_small_v<TType>, copy_type>
+    make_copy(void) noexcept {
+        return [](_Out_ data& dst, _In_ const data& src) {
+            dst.value = new TType(*static_cast<const TType *>(src.value));
+        };
+    }
 
     /// <summary>
     /// Creates a destructor callback for a small type.
     /// </summary>
     template<class TType>
-    static std::enable_if_t<is_small_v<TType>, destruct_type> make_dtor(
-        void) noexcept;
+    static inline std::enable_if_t<is_small_v<TType>, destruct_type>
+    make_dtor(void) noexcept {
+        return [](_Inout_ data& obj) {
+            reinterpret_cast<TType *>(obj.small_value)->~TType();
+#if (defined(_DEBUG) || defined(_DEBUG))
+            ::memset(&obj, 0x5D, sizeof(obj));
+#endif /* (defined(_DEBUG) || defined(_DEBUG)) */
+        };
+    }
 
     /// <summary>
     /// Creates a destructor callback for a heap-allocated type.
     /// </summary>
     template<class TType>
-    static std::enable_if_t<!is_small_v<TType>, destruct_type> make_dtor(
-        void) noexcept;
+    static inline std::enable_if_t<!is_small_v<TType>, destruct_type>
+    make_dtor(void) noexcept {
+        return [](_Inout_ data& obj) {
+            delete static_cast<TType *>(obj.value);
+#if (defined(_DEBUG) || defined(_DEBUG))
+            ::memset(&obj, 0, sizeof(obj));
+#endif /* (defined(_DEBUG) || defined(_DEBUG)) */
+        };
+    }
 
     copy_type _cp;
     data _data;
