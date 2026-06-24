@@ -152,6 +152,15 @@ bool PWROWG_NAMESPACE::is_power_sensor(
 
 
 /*
+ * PWROWG_NAMESPACE::is_power_sensor_or_not_tinkerforge
+ */
+bool PWROWG_NAMESPACE::is_power_sensor_or_not_tinkerforge(
+        _In_ const sensor_description& desc) noexcept {
+    return (is_power_sensor(desc) || !is_tinkerforge_sensor(desc));
+}
+
+
+/*
  * PWROWG_NAMESPACE::is_rtx_sensor
  */
 bool PWROWG_NAMESPACE::is_rtx_sensor(

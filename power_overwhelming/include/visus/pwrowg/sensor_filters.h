@@ -241,6 +241,23 @@ extern POWER_OVERWHELMING_API bool is_power_sensor(
 
 /// <summary>
 /// Answer whether the given <see cref="sensor_description" /> describes a
+/// Tinkerforge-based power sensor or a sensor that is not based on Tinkerforge
+/// bricklets.
+/// </summary>
+/// <remarks>
+/// This method is useful to filter out the voltage and current data from
+/// Tinkerforge bricklets.
+/// </remarks>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><see langword="true" /> if the sensor is a Tinkerforge-based power
+/// sensor or any sensor other than a Tinkerforge sensor,
+/// <see langword="false" /> otherwise.
+/// </returns>
+extern POWER_OVERWHELMING_API bool is_power_sensor_or_not_tinkerforge(
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes a
 /// sensor using a Rohde &amp; Schwarz RTA or RTB series oscilloscope as the
 /// measurement device.
 /// </summary>
