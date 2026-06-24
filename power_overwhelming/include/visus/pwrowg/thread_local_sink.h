@@ -18,6 +18,7 @@
 
 #include "visus/pwrowg/atomic_utilities.h"
 #include "visus/pwrowg/event.h"
+#include "visus/pwrowg/on_exit.h"
 #include "visus/pwrowg/sample.h"
 #include "visus/pwrowg/sensor_description.h"
 #include "visus/pwrowg/thread_name.h"
