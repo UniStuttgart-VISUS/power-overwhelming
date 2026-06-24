@@ -129,17 +129,20 @@ public:
     /// </summary>
     /// <param name="timestamp">The timestamp of the marker event.</param>
     /// <param name="id">The index of the marker.</param>
-    /// <returns><c>true</c> if the sample was actually emitted, <c>false</c>
-    /// otherwise.</returns>
+    /// <returns><see langword="true" /> if the sample was actually emitted,
+    /// <see langword="false" /> otherwise.</returns>
     bool emit(_In_ const timestamp timestamp, _In_ const unsigned int id);
 
     /// <summary>
     /// If the sensor is enabled, emit the next auto-increment marker.
     /// </summary>
     /// <param name="timestamp">The timestamp of the marker event.</param>
-    /// <returns><c>true</c> if the sample was actually emitted, <c>false</c>
-    /// otherwise.</returns>
-    bool emit(_In_ const timestamp timestamp);
+    /// <param name="id">If not <see langword="nullptr" />, receives the
+    /// ID actually emitted.</param>
+    /// <returns><see langword="true" /> if the sample was actually emitted,
+    /// <see langword="false" /> otherwise.</returns>
+    bool emit(_In_ const timestamp timestamp,
+        _Out_opt_ unsigned int *id = nullptr);
 
     /// <summary>
     /// Starts or stops sampling the sensor.

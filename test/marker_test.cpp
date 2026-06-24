@@ -40,7 +40,7 @@ public:
         Assert::AreEqual(L"VISUS", sensors.begin()->vendor(), L"Vendor", LINE_INFO());
 
         for (auto& s : sensors) {
-            Assert::IsFalse(controller->emit(0));
+            Assert::IsFalse(controller->emit(0u));
             sensors.start();
             Assert::IsTrue(controller->emit(1));
             Assert::IsTrue(controller->emit(2));

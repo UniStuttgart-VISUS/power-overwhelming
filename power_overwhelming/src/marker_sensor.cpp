@@ -67,7 +67,8 @@ bool PWROWG_DETAIL_NAMESPACE::marker_sensor::emit(
  * PWROWG_DETAIL_NAMESPACE::marker_sensor::emit
  */
 bool PWROWG_DETAIL_NAMESPACE::marker_sensor::emit(
-        _In_ const timestamp timestamp) {
+        _In_ const timestamp timestamp,
+        _Out_opt_ unsigned int *id) {
     this->_emitting.store(true, std::memory_order_release);
     pwrowg_on_exit([this](void) {
         this->_emitting.store(false, std::memory_order_release);
@@ -81,6 +82,10 @@ bool PWROWG_DETAIL_NAMESPACE::marker_sensor::emit(
         sample.source = this->_index;
         sample.timestamp = timestamp;
         sensor_array_impl::callback(this->_owner, &sample, 1);
+
+        if (id != nullptr) {
+            *id = sample.reading.unsigned_integer;
+        }
     }
 
     return retval;

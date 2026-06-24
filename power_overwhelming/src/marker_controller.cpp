@@ -22,6 +22,8 @@ bool PWROWG_NAMESPACE::marker_controller::emit(
 /*
  * PWROWG_NAMESPACE::marker_controller::emit
  */
-bool PWROWG_NAMESPACE::marker_controller::emit(_In_ const timestamp timestamp) {
-    return this->_sensor.emit(timestamp);
+bool PWROWG_NAMESPACE::marker_controller::emit(
+        _In_ const timestamp timestamp,
+        _Out_opt_ unsigned int *id) {
+    return this->_sensor.emit(timestamp, id);
 }

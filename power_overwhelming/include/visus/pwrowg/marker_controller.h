@@ -83,9 +83,12 @@ public:
     /// sensor is stopped.
     /// </remarks>
     /// <param name="timestamp">The timestamp of the marker event.</param>
-    /// <returns><c>true</c> if the sample was actually emitted, <c>false</c>
-    /// otherwise.</returns>
-    bool emit(_In_ const timestamp timestamp);
+    /// <param name="id">If not <see langword="nullptr" />, receives the
+    /// ID actually emitted.</param>
+    /// <returns><see langword="true" /> if the sample was actually emitted,
+    /// <see langword="false" /> otherwise.</returns>
+    bool emit(_In_ const timestamp timestamp,
+        _Out_opt_ unsigned int *id = nullptr);
 
     /// <summary>
     /// If the sensor is enabled, emit a marker event wit the built-in
@@ -98,10 +101,12 @@ public:
     /// sensor is stopped.
     /// </remarks>
     /// <param name="timestamp">The timestamp of the marker event.</param>
-    /// <returns><c>true</c> if the sample was actually emitted, <c>false</c>
-    /// otherwise.</returns>
-    inline bool emit(void) {
-        return this->emit(timestamp::now());
+    /// <param name="id">If not <see langword="nullptr" />, receives the
+    /// ID actually emitted.</param>
+    /// <returns><see langword="true" /> if the sample was actually emitted,
+    /// <see langword="false" /> otherwise.</returns>
+    inline bool emit(_Out_opt_ unsigned int *id = nullptr) {
+        return this->emit(timestamp::now(), id);
     }
 
 private:
