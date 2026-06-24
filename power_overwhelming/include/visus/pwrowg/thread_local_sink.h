@@ -16,7 +16,8 @@
 #include <thread>
 #include <vector>
 
-#include "visus/pwrowg/atomic_collector.h"
+#include "visus/pwrowg/atomic_utilities.h"
+#include "visus/pwrowg/event.h"
 #include "visus/pwrowg/sample.h"
 #include "visus/pwrowg/sensor_description.h"
 #include "visus/pwrowg/thread_name.h"
@@ -77,20 +78,88 @@ public:
 
 private:
 
+    /// <summary>
+    /// Possible states of the per-thread <see cref="page" />s.
+    /// </summary>
+    enum page_state {
+        /// <summary>
+        /// The page is empty and may be reused by the first thread that can
+        /// change the state in a CAS operation.
+        /// </summary>
+        reusable = 0x00,
+
+        /// <summary>
+        /// The page is currently assigned to a source thread, but not writing
+        /// at that moment. As long as the page is in this state and not in
+        /// <see cref="receiving" />, the writer can assume that the page is
+        /// done when it is tearing down.
+        /// </summary>
+        assigned = 0x01,
+
+        /// <summary>
+        /// The page is currently receiving samples in the sample callback. The
+        /// writer thread must not touch it and wait for the state to change on
+        /// teardown.
+        /// </summary>
+        callback = 0x02,
+
+        /// <summary>
+        /// Combination of <see cref="assigned" /> and <see cref="callback" />.
+        /// </summary>
+        assigned_callback = assigned | callback,
+
+        /// <summary>
+        /// The writer thread is reading the page and sending its contents to
+        /// the sink implementation.
+        /// </summary>
+        writing = 0x04
+    };
+
+    /// <summary>
+    /// Wraps a page of samples that is exclusively used by a single thread
+    /// and published to the writer thread when full.
+    /// </summary>
+    struct page final {
+        std::vector<sample> buffer;
+        page *next;
+        std::atomic<page_state> state;
+
+        static inline void *operator new(_In_ const std::size_t size) {
+            return detail::allocate_for_atomic(size);
+        }
+
+        static inline void operator delete(_In_ void *ptr) noexcept {
+            detail::free_for_atomic(ptr);
+        }
+
+        inline explicit page(const std::size_t size)
+            : buffer(size),
+            next(nullptr),
+            state(page_state::assigned_callback) { }
+
+        inline bool is_state(_In_ const page_state state) const noexcept {
+            const auto s = this->state.load(std::memory_order_acquire);
+            return ((s & state) == state);
+        }
+    };
+
     static constexpr auto alignment = detail::false_sharing_range;
 
-    static thread_local std::map<thread_local_sink *, std::size_t> buffer;
+    static thread_local std::map<thread_local_sink *, page *> buffer;
 
     /// <summary>
     /// The code running in the <see cref="_writer" /> thread.
     /// </summary>
     void write(void);
 
-    std::vector<std::vector<sample>> _buffers;
-    std::condition_variable _condition;
-    std::mutex _lock;
-    std::vector<std::size_t> _ready;
+    /// <summary>
+    /// Writes the sampes in the given page to the sink.
+    /// </summary>
+    void write_samples(_In_ page *p);
+
+    event_type _event;
     std::thread _writer;
+    alignas(alignment) std::atomic<page *> _pages;
     std::size_t _page_size;
     alignas(alignment) std::atomic<bool> _running;
     alignas(alignment) std::atomic<const sensor_description *> _sensors;

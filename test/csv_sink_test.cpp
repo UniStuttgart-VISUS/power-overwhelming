@@ -20,7 +20,7 @@ TEST_CLASS(csv_sink_test) {
 
     TEST_METHOD(atomic_char_sink) {
         typedef std::ofstream stream_type;
-        typedef atomic_sink<csv_sink<stream_type>> sink_type;
+        typedef atomic_sink<csv_sink<stream_type>, 10> sink_type;
 
         sensor_array_configuration config;
         config.exclude<hmc8015_configuration>();
@@ -48,7 +48,7 @@ TEST_CLASS(csv_sink_test) {
 
     TEST_METHOD(atomic_wchar_t_sink) {
         typedef std::wofstream stream_type;
-        typedef atomic_sink<csv_sink<stream_type>> sink_type;
+        typedef atomic_sink<csv_sink<stream_type>, 10> sink_type;
 
         sensor_array_configuration config;
         config.exclude<hmc8015_configuration>();
