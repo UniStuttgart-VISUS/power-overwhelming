@@ -141,13 +141,17 @@ sensors.stop();
 ```
 
 ### Collecting data
-Typically, your data callback will persist the data to disk for further analysis. The library provides a built-in mechanism to decouple the samples being dropped to the callback and potentially lengthy I/O in a lock-free manner by means of the [`atomic_collector`](power_overwhelming/include/visus/pwrowg/atomic_collector.h), which can be combined with the  [`csv_sink`](power_overwhelming/include/visus/pwrowg/csv_sink.h) like this:
+Typically, your data callback will persist the data to disk for further analysis. The library provides a built-in mechanism to decouple the samples being dropped to the callback and potentially lengthy I/O in a lock-free manner by means of the [`atomic_collector`](power_overwhelming/include/visus/pwrowg/atomic_collector.h) or the [`thread_local_sink`](power_overwhelming/include/visus/pwrowg/thread_local_sink.h), which can be combined with the  [`csv_sink`](power_overwhelming/include/visus/pwrowg/csv_sink.h) like this:
 ```c++
 using namespace visus::pwrowg;
 
-// Create a CSV sink that writes all accumulated samples every
-// second to "log.csv".
-atomic_sink<csv_sink<std::ofstream>> sink(std::chrono::milliseconds(1000), std::ofstream("log.csv"));
+// Create a CSV sink that writes batches of 512 samples to
+// "log.csv".
+sink_type sink(512, std::ofstream("log.csv"));
+
+// The equivalent atomic_collector with a writing interval of
+// one second would look like this:
+//atomic_sink<csv_sink<std::ofstream>> sink(std::chrono::milliseconds(1000), std::ofstream("log.csv"));
 
 // Configure the sensor array and have samples delivered to the  built-in
 // callback. The sink must be passed as the user pointer to the callback.
