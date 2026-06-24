@@ -147,7 +147,7 @@ using namespace visus::pwrowg;
 
 // Create a CSV sink that writes batches of 512 samples to
 // "log.csv".
-sink_type sink(512, std::ofstream("log.csv"));
+thread_local_sink<csv_sink<std::ofstream>> sink(512, std::ofstream("log.csv"));
 
 // The equivalent atomic_collector with a writing interval of
 // one second would look like this:
