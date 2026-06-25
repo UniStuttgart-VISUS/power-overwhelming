@@ -1,13 +1,13 @@
-﻿// <copyright file="powenetics_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+﻿// <copyright file="benchlab_sensor.h" company="Visualisierungsinstitut der Universität Stuttgart">
+// Copyright © 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
-#if !defined(_PWROWG_POWENETICS_SENSOR_H)
-#define _PWROWG_POWENETICS_SENSOR_H
+#if !defined(_PWROWG_BENCHLAB_SENSOR_H)
+#define _PWROWG_BENCHLAB_SENSOR_H
 #pragma once
-#if defined(POWER_OVERWHELMING_WITH_POWENETICS)
+#if defined(POWER_OVERWHELMING_WITH_BENCHLAB)
 
 #include <cassert>
 #include <functional>
@@ -17,9 +17,9 @@
 #include <string>
 #include <vector>
 
-#include <libpowenetics/powenetics.h>
+#include <libbenchlab/benchlab.h>
 
-#include "visus/pwrowg/powenetics_configuration.h"
+#include "visus/pwrowg/benchlab_configuration.h"
 #include "visus/pwrowg/sensor_array_callback.h"
 #include "visus/pwrowg/sensor_description.h"
 #include "visus/pwrowg/sensor_filters.h"
@@ -32,16 +32,16 @@
 PWROWG_DETAIL_NAMESPACE_BEGIN
 
 /// <summary>
-/// Implementation of a power sensor using the Cybenetics Powenetics PMD.
+/// Implementation of a power sensor using the ElmorLabs Benchlab PMD.
 /// </summary>
-class PWROWG_TEST_API powenetics_sensor final {
+class PWROWG_TEST_API benchlab_sensor final {
 
 public:
 
     /// <summary>
     /// The type of sensor class configuration used by this sensor.
     /// </summary>
-    typedef powenetics_configuration configuration_type;
+    typedef benchlab_configuration configuration_type;
 
     /// <summary>
     /// The type used for a sensor index.
@@ -51,18 +51,18 @@ public:
     /// <summary>
     /// The type of a list of sensors of this type.
     /// </summary>
-    typedef std::list<powenetics_sensor> list_type;
+    typedef std::list<benchlab_sensor> list_type;
 
     /// <summary>
     /// The type of a function selecting a sample value.
     /// </summary>
-    typedef std::function<float(const powenetics_sample&)> selector_type;
+    typedef std::function<float(const benchlab_sensor_readings&)> selector_type;
 
     /// <summary>
-    /// Create descriptions for all supported Powenetics sensors in the system.
+    /// Create descriptions for all supported Benchlab sensors in the system.
     /// </summary>
     /// <remarks>
-    /// <para>It is safe to call this method on systems without Powenetics PMD.
+    /// <para>It is safe to call this method on systems without Benchlab PMD.
     /// No descriptions are returned in this case.</para>
     /// </remarks>
     /// <param name="config">The global sensor configuration which might affect
@@ -116,34 +116,26 @@ public:
     /// </summary>
     /// <param name="path"></param>
     /// <param name="indices"></param>
-    powenetics_sensor(_In_z_ const wchar_t *path,
-        _Inout_ std::map<index_type, selector_type>&& indices,
-        _In_ const sensor_array_impl *owner);
+    benchlab_sensor(_In_z_ const wchar_t *path,
+        _Inout_ std::map<index_type, selector_type>&& indices);
 
-    powenetics_sensor(const powenetics_sensor& rhs) = delete;
-
-    /// <summary>
-    /// Initialises a new instance.
-    /// </summary>
-    ~powenetics_sensor(void) noexcept;
+    benchlab_sensor(const benchlab_sensor& rhs) = delete;
 
     /// <summary>
-    /// Starts or stops sampling the sensor.
+    /// Deliver a sample to the given <paramref name="callback" />.
     /// </summary>
-    /// <param name="enable"><c>true</c> for enabling the sensor,
-    /// <c>false</c> for disabling it.</param>
-    void sample(_In_ const bool enable);
+    /// <param name="callback">The callback to be invoked.</param>
+    /// <param name="sensors">The sensor descriptions passed to the
+    /// <paramref name="callback" />.</param>
+    /// <param name="context">An optional context pointer passed to the
+    /// <paramref name="callback" />.</param>
+    void sample(_In_ const sensor_array_callback callback,
+        _In_ const sensor_description *sensors,
+        _In_opt_ void *context = nullptr);
 
-    powenetics_sensor& operator =(const powenetics_sensor& rhs) = delete;
+    benchlab_sensor& operator =(const benchlab_sensor& rhs) = delete;
 
 private:
-
-    /// <summary>
-    /// Processes a single sample.
-    /// </summary>
-    static void on_sample(_In_ powenetics_handle source,
-        _In_ const struct powenetics_sample_t *sample,
-        _In_opt_ void *context);
 
     /// <summary>
     /// Specialises the <paramref name="builder" /> for the given sub-sensor.
@@ -168,20 +160,18 @@ private:
         _In_ sensor_description_builder& builder,
         _In_ const std::wstring& port,
         _In_z_ const wchar_t *rail,
-        _In_ const sensor_type type,
         _In_ const selector_type& voltage_selector,
         _In_ const selector_type& current_selector,
         _In_ const selector_type& power_selector);
 
-    powenetics_handle _handle;
+    benchlab::unique_handle _handle;
     std::map<index_type, selector_type> _indices;
-    const sensor_array_impl *_owner;
-    sensor_state _state;
+    std::vector<PWROWG_NAMESPACE::sample> _samples;
 };
 
 PWROWG_DETAIL_NAMESPACE_END
 
-#include "powenetics_sensor.inl"
+#include "benchlab_sensor.inl"
 
-#endif /* defined(POWER_OVERWHELMING_WITH_POWENETICS) */
-#endif /* defined(_PWROWG_POWENETICS_SENSOR_H) */
+#endif /* defined(POWER_OVERWHELMING_WITH_BENCHLAB) */
+#endif /* defined(_PWROWG_BENCHLAB_SENSOR_H) */

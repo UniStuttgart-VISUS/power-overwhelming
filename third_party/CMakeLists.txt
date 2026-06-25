@@ -88,7 +88,7 @@ mark_as_advanced(FORCE
 # Benchlab
 if (PWROWG_WithBenchlab)
     FetchContent_Declare(libbenchlab
-        URL "https://github.com/UniStuttgart-VISUS/libbenchlab/archive/refs/tags/v0.4.zip"
+        URL "https://github.com/UniStuttgart-VISUS/libbenchlab/archive/refs/tags/v0.5.zip"
         DOWNLOAD_EXTRACT_TIMESTAMP ON
     )
     option(BENCHLAB_BuildTests "" OFF)

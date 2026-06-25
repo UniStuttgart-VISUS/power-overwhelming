@@ -95,6 +95,16 @@ inline bool is_any_sensor_type_of(
 
 /// <summary>
 /// Answer whether the given <see cref="sensor_description" /> describes a
+/// sensor on the ElmorLab's BenchLab power measurement device.
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><see langword="true" /> if the sensor is BenchLab-based,
+/// <see langword="false" /> otherwise.</returns>
+extern POWER_OVERWHELMING_API bool is_benchlab_sensor(
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes a
 /// sensor targetting the CPU.
 /// </summary>
 /// <param name="desc">The sensor to check.</param>

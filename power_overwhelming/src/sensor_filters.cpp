@@ -22,6 +22,15 @@ bool PWROWG_NAMESPACE::is_adl_sensor(
 
 
 /*
+ * PWROWG_NAMESPACE::is_benchlab_sensor
+ */
+bool PWROWG_NAMESPACE::is_benchlab_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    return detail::starts_with(desc.id(), L"BenchLab/");
+}
+
+
+/*
  * PWROWG_NAMESPACE::is_cpu_sensor
  */
 bool PWROWG_NAMESPACE::is_cpu_sensor(

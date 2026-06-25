@@ -25,6 +25,7 @@
 #include "visus/pwrowg/string_functions.h"
 
 #include "adl_sensor.h"
+#include "benchlab_sensor.h"
 #include "detect_sample.h"
 #include "emi_sensor.h"
 #include "hmc8015_sensor.h"
@@ -321,6 +322,9 @@ typedef basic_sensor_registry<
 #if defined(POWER_OVERWHELMING_WITH_ADL)
     adl_sensor,
 #endif /* defined(POWER_OVERWHELMING_WITH_ADL) */
+#if defined(POWER_OVERWHELMING_WITH_BENCHLAB)
+    benchlab_sensor,
+#endif /* defined(POWER_OVERWHELMING_WITH_BENCHLAB) */
     hmc8015_sensor,
 #if defined(POWER_OVERWHELMING_WITH_IGCL)
     igcl_sensor,
