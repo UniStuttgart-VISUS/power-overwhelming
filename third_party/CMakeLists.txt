@@ -111,7 +111,7 @@ endif ()
 # Powenetics (the "Greek device")
 if (PWROWG_WithPowenetics)
     FetchContent_Declare(libpowenetics
-        URL "https://github.com/UniStuttgart-VISUS/libpowenetics/archive/refs/tags/v1.3.zip"
+        URL "https://github.com/UniStuttgart-VISUS/libpowenetics/archive/refs/tags/v1.4.zip"
         DOWNLOAD_EXTRACT_TIMESTAMP ON
     )
     option(POWENETICS_BuildTests "" OFF)
