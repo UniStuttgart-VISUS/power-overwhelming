@@ -1,5 +1,5 @@
 # CMakeLists.txt
-# Copyright © 2022 - 2023 Visualisierungsinstitut der Universität Stuttgart.
+# Copyright © 2022 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 # Licensed under the MIT licence. See LICENCE file for details.
 
 cmake_minimum_required(VERSION 3.15...3.26)
@@ -12,6 +12,7 @@ include(GNUInstallDirs)
 # User-configurable options.
 option(PWROWG_BuildDemo "Build demo programme" OFF)
 cmake_dependent_option(PWROWG_BuildDriver "Build RAPL MSR driver" OFF WIN32 OFF)
+option(PWROWG_BuildDumpReadings "Build dump_readings utility" OFF)
 option(PWROWG_BuildDumpSensors "Build dump_sensors utility" ON)
 option(PWROWG_BuildRtxConfig "Build R&S RTA/RTB configuration utility" OFF)
 cmake_dependent_option(PWROWG_BuildStablePower "Build setstablepowerstate tool" OFF WIN32 OFF)
@@ -60,6 +61,11 @@ endif ()
 # RAPL MSR driver
 if (PWROWG_BuildDriver)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/pwrowgrapldrv)
+endif ()
+
+# dump_readings utility
+if (PWROWG_BuildDumpReadings)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/dump_readings)
 endif ()
 
 # dump_sensors utility
