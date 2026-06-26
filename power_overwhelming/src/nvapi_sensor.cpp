@@ -117,7 +117,7 @@ void PWROWG_DETAIL_NAMESPACE::nvapi_sensor::on_sample(
     constexpr auto one_watt = static_cast<value_type>(1000);
     auto that = reinterpret_cast<nvapi_sensor *>(data->super.pCallbackParam);
 
-    const auto t = (long long)( data->timestamp / static_cast<NvU64>(1000000));
+    const auto t = data->timestamp / static_cast<NvU64>(1000000);
     const auto r = data->timestamp % static_cast<NvU64>(1000000);
 
     PWROWG_NAMESPACE::sample sample(
