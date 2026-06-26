@@ -65,6 +65,16 @@ public:
         Assert::AreEqual(10.f, config.sensors()[0].voltage_channel().attenuation().value(), L"Voltage attenuation is set", LINE_INFO());
         Assert::AreEqual(std::uint32_t(2), config.sensors()[0].current_channel().channel(), L"Current channel is set", LINE_INFO());
         Assert::AreEqual(1.f, config.sensors()[0].current_channel().attenuation().value(), L"Current attenuation is set", LINE_INFO());
+
+        config.save(L"rtx_sensor_test.json");
+        auto config2 = rtx_configuration::load(L"rtx_sensor_test.json");
+        Assert::AreEqual(config.count_sensors(), config2.count_sensors(), L"One sensor restored", LINE_INFO());
+        Assert::IsNotNull(config2.sensors(), L"Sensors allocated", LINE_INFO());
+        Assert::AreEqual(config.sensors()[0].path(), config2.sensors()[0].path(), L"Sensor path is restored", LINE_INFO());
+        Assert::AreEqual(config.sensors()[0].voltage_channel().channel(), config2.sensors()[0].voltage_channel().channel(), L"Voltage channel is restored", LINE_INFO());
+        Assert::AreEqual(config.sensors()[0].voltage_channel().attenuation().value(), config2.sensors()[0].voltage_channel().attenuation().value(), L"Voltage attenuation is restored", LINE_INFO());
+        Assert::AreEqual(config.sensors()[0].current_channel().channel(), config2.sensors()[0].current_channel().channel(), L"Current channel is restored", LINE_INFO());
+        Assert::AreEqual(config.sensors()[0].current_channel().attenuation().value(), config2.sensors()[0].current_channel().attenuation().value(), L"Current attenuation is restored", LINE_INFO());
     }
 
     TEST_METHOD(test_sensor_creation) {

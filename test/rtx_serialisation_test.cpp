@@ -6,6 +6,8 @@
 
 #include "pch.h"
 
+#include <visus/pwrowg/rtx_sensor_trigger_builder.h>
+
 #include <rtx_serialisation.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -163,6 +165,30 @@ public:
         Assert::AreEqual(expected_channels[0].channel(), actual_channels[0].channel(), L"CH1", LINE_INFO());
         Assert::AreEqual(expected_channels[1].channel(), actual_channels[1].channel(), L"CH2", LINE_INFO());
         Assert::AreEqual(expected_channels[2].channel(), actual_channels[2].channel(), L"CH4", LINE_INFO());
+    }
+
+    TEST_METHOD(test_rtx_sensor_definition) {
+        const auto input = rtx_sensor_definition("visa path", rtx_channel(1).attenuation(42.0f, "V"), rtx_channel(2));
+        const auto json = detail::json_serialise(input);
+        const auto output = detail::json_deserialise<rtx_sensor_definition>(json);
+
+        Assert::AreEqual(input.path(), output.path(), L"path", LINE_INFO());
+        Assert::AreEqual(input.channel_voltage(), output.channel_voltage(), L"channel_voltage", LINE_INFO());
+        Assert::AreEqual(input.channel_current(), output.channel_current(), L"channel_current", LINE_INFO());
+        Assert::AreEqual(L"", output.description(), L"description", LINE_INFO());
+        Assert::AreEqual(int(input.waveform_points()), int(output.waveform_points()), L"waveform_points", LINE_INFO());
+    }
+
+
+    TEST_METHOD(test_rtx_sensor_trigger) {
+        const auto input = rtx_sensor_trigger_builder::for_all().when_channel(std::uint8_t(1)).rises_above(2.5f).build();
+        const auto json = detail::json_serialise(input);
+        const auto output = detail::json_deserialise<rtx_sensor_trigger>(json);
+
+        Assert::AreEqual(input.path(), output.path(), L"path", LINE_INFO());
+        Assert::IsNotNull(output.trigger(), L"trigger", LINE_INFO());
+        Assert::AreEqual(input.trigger()->input(), output.trigger()->input(), L"input", LINE_INFO());
+        Assert::AreEqual(input.trigger()->level().value(), output.trigger()->level().value(), L"level", LINE_INFO());
     }
 
 };

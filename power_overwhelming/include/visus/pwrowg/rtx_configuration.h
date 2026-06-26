@@ -50,6 +50,31 @@ public:
 #endif /* !defined(POWER_OVERWHELMING_WITH_VISA) */
 
     /// <summary>
+    /// Deserialises a JSON string into a new
+    /// <see cref="rtx_configuration" /> object.
+    /// </summary>
+    /// <param name="json">The JSON text to be parsed.</param>
+    /// <returns>The configuration object encoded in the given JSON.</returns>
+    static rtx_configuration from_json(_In_z_ const char *json);
+
+    /// <summary>
+    /// Loads an <see cref="rtx_configuration" /> from a JSON file.
+    /// </summary>
+    /// <param name="path">The path to the JSON file to be parsed.</param>
+    /// <returns>The configuration object encoded in the given JSON file.
+    /// </returns>
+    static rtx_configuration load(_In_z_ const wchar_t *path);
+
+
+    /// <summary>
+    /// Loads an <see cref="rtx_configuration" /> from a JSON file.
+    /// </summary>
+    /// <param name="path">The path to the JSON file to be parsed.</param>
+    /// <returns>The configuration object encoded in the given JSON file.
+    /// </returns>
+    static rtx_configuration load(_In_z_ const char *path);
+
+    /// <summary>
     /// A unique identifier for the <see cref="rtx_configuration" /> type.
     /// </summary>
     static const guid id;
@@ -201,16 +226,6 @@ public:
     }
 
     /// <summary>
-    /// Indicates whether the oscilloscopes should be reset when enumerating the
-    /// sensor descriptions.
-    /// </summary>
-    /// <returns><see langword="true" /> if the instruments should be reset,
-    /// <see langword="false" /> (the default) otherwise.</returns>
-    inline bool reset_on_enumerate(void) const noexcept {
-        return this->_reset_on_enumerate;
-    }
-
-    /// <summary>
     /// Answer the flags used to reset the instrument on start or when
     /// enumerating.
     /// </summary>
@@ -233,6 +248,16 @@ public:
     }
 
     /// <summary>
+    /// Indicates whether the oscilloscopes should be reset when enumerating the
+    /// sensor descriptions.
+    /// </summary>
+    /// <returns><see langword="true" /> if the instruments should be reset,
+    /// <see langword="false" /> (the default) otherwise.</returns>
+    inline bool reset_on_enumerate(void) const noexcept {
+        return this->_reset_on_enumerate;
+    }
+
+    /// <summary>
     /// Instructs the sensor array on whether it should reset the oscilloscopes
     /// when enumerating the sensor descriptions. This makes enumerating the
     /// instruments significantly slower, but if it is unclear whether the
@@ -248,6 +273,27 @@ public:
         this->_reset_on_enumerate = reset;
         return *this;
     }
+
+    /// <summary>
+    /// Saves the configuration to a JSON file.
+    /// </summary>
+    /// <param name="path">The location of the output file.</param>
+    void save(_In_z_ const wchar_t *path) const;
+
+    /// <summary>
+    /// Saves the configuration to a JSON file.
+    /// </summary>
+    /// <param name="path">The location of the output file.</param>
+    void save(_In_z_ const char *path) const;
+
+    /// <summary>
+    /// Answer the <paramref name="index" />th sensor.
+    /// </summary>
+    /// <param name="index">The zero-based index of the sensor.</param>
+    /// <returns>The sensor definition at the specified index.</returns>
+    /// <exception cref="std::out_of_range">The index is greater than or equal
+    /// to the number of sensors.</exception>
+    const rtx_sensor_definition& sensor(_In_ const std::size_t index) const;
 
     /// <summary>
     /// Answer the array of registered <see cref="rtx_sensor_definition" />s.

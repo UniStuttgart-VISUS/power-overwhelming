@@ -574,6 +574,19 @@ public:
     static rtx_sensor_trigger_builder for_path(_In_z_ const char *path);
 
     /// <summary>
+    /// Creates a new builder for triggering the device identified by the given
+    /// VISA path.
+    /// </summary>
+    /// <param name="path">The VISA path to the instrument used to trigger the
+    /// measurement.</param>
+    /// <returns>A builder for configuring the trigger.</returns>
+    template<class TChar, class TTraits, class TAlloc>
+    static rtx_sensor_trigger_builder for_path(
+            _In_ const std::basic_string<TChar, TTraits, TAlloc>& path) {
+        return rtx_sensor_trigger_builder::for_path(path.c_str());
+    }
+
+    /// <summary>
     /// Creates a new builder for triggering the instrument with the given
     /// serial number. There must be exactly one device with matching the query
     /// for the serial number for the method to succeed.
@@ -648,6 +661,15 @@ public:
     /// </summary>
     /// <returns>A builder for a manual trigger.</returns>
     detail::rtx_sen_trg_bld_man0 when_software_triggered(void) noexcept;
+
+    /// <summary>
+    /// Applies the given trigger.
+    /// </summary>
+    /// <param name="trigger">An object describing an oscilloscope trigger.
+    /// </param>
+    /// <returns>A builder for a manually configured trigger.</returns>
+    detail::rtx_sen_trg_bld_final with_trigger(
+        _In_ const rtx_trigger& trigger) noexcept;
 
 private:
 

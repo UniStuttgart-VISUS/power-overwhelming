@@ -585,3 +585,16 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_software_triggered(
     assert(this->_trigger._impl->trigger == nullptr);
     return this->_trigger;
 }
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::with_trigger
+ */
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_final
+PWROWG_NAMESPACE::rtx_sensor_trigger_builder::with_trigger(
+        _In_ const rtx_trigger& trigger) noexcept {
+    assert(this->_trigger._impl != nullptr);
+    assert(this->_trigger._impl->trigger == nullptr);
+    this->_trigger._impl->trigger = std::make_unique<rtx_trigger>(trigger);
+    return this->_trigger;
+}

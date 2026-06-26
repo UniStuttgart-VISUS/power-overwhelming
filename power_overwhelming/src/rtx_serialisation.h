@@ -10,9 +10,12 @@
 
 #include "visus/pwrowg/rtx_acquisition.h"
 #include "visus/pwrowg/rtx_channel.h"
+#include "visus/pwrowg/rtx_configuration.h"
 #include "visus/pwrowg/rtx_instrument_configuration.h"
 #include "visus/pwrowg/rtx_label.h"
 #include "visus/pwrowg/rtx_quantity.h"
+#include "visus/pwrowg/rtx_sensor_definition.h"
+#include "visus/pwrowg/rtx_sensor_trigger_builder.h"
 #include "visus/pwrowg/rtx_trigger.h"
 
 #include "json_serialiser.h"
@@ -22,7 +25,7 @@
     typename std::decay<decltype(std::declval<value_type>().member())>::type\
     >(json[#member])
 
-#define _PWOWG_SERIALISE_FIELD(field) json_serialise(#field, value.field())
+#define _PWROWG_SERIALISE_FIELD(field) json_serialise(#field, value.field())
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -47,10 +50,10 @@ template<> struct json_serialiser<rtx_acquisition, false, false> final {
 
     static inline nlohmann::json serialise(_In_ const value_type& value) {
         return nlohmann::json::object({
-            _PWOWG_SERIALISE_FIELD(count),
-            _PWOWG_SERIALISE_FIELD(points),
-            _PWOWG_SERIALISE_FIELD(segmented),
-            _PWOWG_SERIALISE_FIELD(state)
+            _PWROWG_SERIALISE_FIELD(count),
+            _PWROWG_SERIALISE_FIELD(points),
+            _PWROWG_SERIALISE_FIELD(segmented),
+            _PWROWG_SERIALISE_FIELD(state)
         });
     }
 };
@@ -70,8 +73,8 @@ template<> struct json_serialiser<rtx_label, false, false> final {
 
     static inline nlohmann::json serialise(_In_ const value_type& value) {
         return nlohmann::json::object({
-            _PWOWG_SERIALISE_FIELD(text),
-            _PWOWG_SERIALISE_FIELD(visible),
+            _PWROWG_SERIALISE_FIELD(text),
+            _PWROWG_SERIALISE_FIELD(visible),
         });
     }
 };
@@ -91,8 +94,8 @@ template<> struct json_serialiser<rtx_quantity, false, false> final {
 
     static inline nlohmann::json serialise(_In_ const value_type& value) {
         return nlohmann::json::object({
-            _PWOWG_SERIALISE_FIELD(value),
-            _PWOWG_SERIALISE_FIELD(unit)
+            _PWROWG_SERIALISE_FIELD(value),
+            _PWROWG_SERIALISE_FIELD(unit)
         });
     }
 };
@@ -138,20 +141,52 @@ template<> struct json_serialiser<rtx_channel, false, false> final {
 
     static inline nlohmann::json serialise(_In_ const value_type& value) {
         return nlohmann::json::object({
-            _PWOWG_SERIALISE_FIELD(attenuation),
-            _PWOWG_SERIALISE_FIELD(bandwidth),
-            _PWOWG_SERIALISE_FIELD(channel),
-            _PWOWG_SERIALISE_FIELD(coupling),
-            _PWOWG_SERIALISE_FIELD(decimation_mode),
-            _PWOWG_SERIALISE_FIELD(label),
-            _PWOWG_SERIALISE_FIELD(offset),
-            _PWOWG_SERIALISE_FIELD(polarity),
-            _PWOWG_SERIALISE_FIELD(range),
-            _PWOWG_SERIALISE_FIELD(skew),
-            _PWOWG_SERIALISE_FIELD(state),
-            _PWOWG_SERIALISE_FIELD(zero_adjust),
-            _PWOWG_SERIALISE_FIELD(zero_adjust_offset),
-            _PWOWG_SERIALISE_FIELD(zero_offset)
+            _PWROWG_SERIALISE_FIELD(attenuation),
+            _PWROWG_SERIALISE_FIELD(bandwidth),
+            _PWROWG_SERIALISE_FIELD(channel),
+            _PWROWG_SERIALISE_FIELD(coupling),
+            _PWROWG_SERIALISE_FIELD(decimation_mode),
+            _PWROWG_SERIALISE_FIELD(label),
+            _PWROWG_SERIALISE_FIELD(offset),
+            _PWROWG_SERIALISE_FIELD(polarity),
+            _PWROWG_SERIALISE_FIELD(range),
+            _PWROWG_SERIALISE_FIELD(skew),
+            _PWROWG_SERIALISE_FIELD(state),
+            _PWROWG_SERIALISE_FIELD(zero_adjust),
+            _PWROWG_SERIALISE_FIELD(zero_adjust_offset),
+            _PWROWG_SERIALISE_FIELD(zero_offset)
+        });
+    }
+};
+
+
+/// <summary>
+/// Specialisation for <see cref="rtx_sensor_definition" />.
+/// </summary>
+template<> struct json_serialiser<rtx_sensor_definition, false, false> final {
+    typedef rtx_sensor_definition value_type;
+
+    static inline value_type deserialise(_In_ const nlohmann::json& json) {
+        _PWROWG_DESERIALISE_FIELD(current_channel);
+        _PWROWG_DESERIALISE_FIELD(description);
+        _PWROWG_DESERIALISE_FIELD(path);
+        _PWROWG_DESERIALISE_FIELD(voltage_channel);
+        _PWROWG_DESERIALISE_FIELD(waveform_points);
+
+        return value_type(path.c_str(),
+            voltage_channel,
+            current_channel,
+            description.c_str(),
+            waveform_points);
+    }
+
+    static inline nlohmann::json serialise(_In_ const value_type& value) {
+        return nlohmann::json::object({
+            _PWROWG_SERIALISE_FIELD(current_channel),
+            _PWROWG_SERIALISE_FIELD(description),
+            _PWROWG_SERIALISE_FIELD(path),
+            _PWROWG_SERIALISE_FIELD(voltage_channel),
+            _PWROWG_SERIALISE_FIELD(waveform_points)
         });
     }
 };
@@ -185,16 +220,53 @@ template<> struct json_serialiser<rtx_trigger, false, false> final {
 
     static inline nlohmann::json serialise(_In_ const value_type& value) {
         return nlohmann::json::object({
-            _PWOWG_SERIALISE_FIELD(coupling),
-            _PWOWG_SERIALISE_FIELD(hold_off),
-            _PWOWG_SERIALISE_FIELD(hysteresis),
-            _PWOWG_SERIALISE_FIELD(input),
-            _PWOWG_SERIALISE_FIELD(level),
-            _PWOWG_SERIALISE_FIELD(mode),
-            _PWOWG_SERIALISE_FIELD(slope),
-            _PWOWG_SERIALISE_FIELD(source),
-            _PWOWG_SERIALISE_FIELD(type)
+            _PWROWG_SERIALISE_FIELD(coupling),
+            _PWROWG_SERIALISE_FIELD(hold_off),
+            _PWROWG_SERIALISE_FIELD(hysteresis),
+            _PWROWG_SERIALISE_FIELD(input),
+            _PWROWG_SERIALISE_FIELD(level),
+            _PWROWG_SERIALISE_FIELD(mode),
+            _PWROWG_SERIALISE_FIELD(slope),
+            _PWROWG_SERIALISE_FIELD(source),
+            _PWROWG_SERIALISE_FIELD(type)
             });
+    }
+};
+
+
+/// <summary>
+/// Specialisation for <see cref="rtx_sensor_trigger" />.
+/// </summary>
+template<> struct json_serialiser<rtx_sensor_trigger, false, false> final {
+    typedef rtx_sensor_trigger value_type;
+
+    static inline value_type deserialise(_In_ const nlohmann::json& json) {
+        auto it = json.find(u8"path");
+        auto builder = ((it != json.end()) && it->is_string())
+            ? rtx_sensor_trigger_builder::for_path(it->get<std::string>())
+            : rtx_sensor_trigger_builder::for_all();
+
+        it = json.find(u8"trigger");
+        if ((it != json.end()) && it->is_object()) {
+            auto trigger = json_deserialise<rtx_trigger>(*it);
+            return builder.with_trigger(trigger).build();
+        } else {
+            return builder.when_software_triggered().build();
+        }
+    }
+
+    static inline nlohmann::json serialise(_In_ const value_type& value) {
+        auto path = (value.path() != nullptr)
+            ? json_serialise(value.path())
+            : nlohmann::json(nullptr);
+        auto trigger = (value.trigger() != nullptr)
+            ? json_serialise(*value.trigger())
+            : nlohmann::json(nullptr);
+
+        return nlohmann::json::object({
+            { u8"path", path },
+            { u8"trigger", trigger },
+        });
     }
 };
 
@@ -247,22 +319,73 @@ template<> struct json_serialiser<rtx_instrument_configuration, false,
         }
 
         return nlohmann::json::object({
-            _PWOWG_SERIALISE_FIELD(acquisition),
-            _PWOWG_SERIALISE_FIELD(beep_on_apply),
-            _PWOWG_SERIALISE_FIELD(beep_on_error),
-            _PWOWG_SERIALISE_FIELD(beep_on_trigger),
+            _PWROWG_SERIALISE_FIELD(acquisition),
+            _PWROWG_SERIALISE_FIELD(beep_on_apply),
+            _PWROWG_SERIALISE_FIELD(beep_on_error),
+            _PWROWG_SERIALISE_FIELD(beep_on_trigger),
             { "channels", channels_json },
-            _PWOWG_SERIALISE_FIELD(reference_position),
-            _PWOWG_SERIALISE_FIELD(timeout),
-            _PWOWG_SERIALISE_FIELD(time_range),
-            _PWOWG_SERIALISE_FIELD(trigger),
-            _PWOWG_SERIALISE_FIELD(trigger_position)
+            _PWROWG_SERIALISE_FIELD(reference_position),
+            _PWROWG_SERIALISE_FIELD(timeout),
+            _PWROWG_SERIALISE_FIELD(time_range),
+            _PWROWG_SERIALISE_FIELD(trigger),
+            _PWROWG_SERIALISE_FIELD(trigger_position)
+        });
+    }
+};
+
+
+/// <summary>
+/// Specialisation for <see cref="rtx_configuration" />.
+/// </summary>
+template<> struct json_serialiser<rtx_configuration, false, false> final {
+    typedef rtx_configuration value_type;
+
+    static inline value_type deserialise(_In_ const nlohmann::json& json) {
+        _PWROWG_DESERIALISE_FIELD(base_configuration);
+        _PWROWG_DESERIALISE_FIELD(download_retries);
+        _PWROWG_DESERIALISE_FIELD(download_timeout);
+        _PWROWG_DESERIALISE_FIELD(reset_on_enumerate);
+        _PWROWG_DESERIALISE_FIELD(reset_flags);
+        _PWROWG_DESERIALISE_FIELD(trigger);
+
+        std::vector<rtx_sensor_definition> sensors;
+        auto it = json.find(u8"sensors");
+        if ((it != json.end()) && it->is_array()) {
+            for (auto& s : *it) {
+                sensors.push_back(json_deserialise<rtx_sensor_definition>(s));
+            }
+        }
+
+        return rtx_configuration()
+            .base_configuration(std::move(base_configuration))
+            .download_retries(download_retries)
+            .download_timeout(download_timeout)
+            .reset_on_enumerate(reset_on_enumerate)
+            .reset_flags(reset_flags)
+            .sensors(sensors.data(), sensors.size())
+            .trigger(trigger);
+    }
+
+    static inline nlohmann::json serialise(_In_ const value_type& value) {
+        auto sensors = nlohmann::json::array();
+        for (std::size_t i = 0; i < value.count_sensors(); ++i) {
+            sensors.push_back(json_serialise(value.sensor(i)));
+        }
+
+        return nlohmann::json::object({
+            _PWROWG_SERIALISE_FIELD(base_configuration),
+            _PWROWG_SERIALISE_FIELD(download_retries),
+            _PWROWG_SERIALISE_FIELD(download_timeout),
+            _PWROWG_SERIALISE_FIELD(reset_on_enumerate),
+            _PWROWG_SERIALISE_FIELD(reset_flags),
+            { "sensors", sensors },
+            _PWROWG_SERIALISE_FIELD(trigger),
         });
     }
 };
 
 #undef _PWROWG_DESERIALISE_FIELD
-#undef _PWOWG_SERIALISE_FIELD
+#undef _PWROWG_SERIALISE_FIELD
 
 PWROWG_DETAIL_NAMESPACE_END
 
