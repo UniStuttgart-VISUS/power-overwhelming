@@ -42,6 +42,11 @@ if (PWROWG_WithIgcl)
     #target_link_libraries(${PROJECT_NAME} PRIVATE oneapi)
 endif ()
 
+if (PWROWG_WithNiDaqMx)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_DAQMX)
+    #target_link_libraries(${PROJECT_NAME} PRIVATE nidaqmx))
+endif ()
+
 if (PWROWG_WithNvapi)
     find_package(NVAPI REQUIRED)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_NVAPI)

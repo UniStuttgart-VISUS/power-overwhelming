@@ -27,6 +27,7 @@ option(PWROWG_CustomTinkerforgeFirmwareMandatory "Raises an exception if a custo
 option(PWROWG_WithAdl "Build support for the AMD Display Library" ON)
 option(PWROWG_WithBenchlab "Build support for the Benchlab telemetry system" OFF)
 cmake_dependent_option(PWROWG_WithIgcl "Build support for IGCL" ON WIN32 OFF)
+option(PWROWG_WithNiDaqMx "Build support for NI-DAQmx" OFF)
 cmake_dependent_option(PWROWG_WithNvapi "Build support for NVIDIA API" OFF WIN32 OFF)
 option(PWROWG_WithNvml "Build support for the NVIDIA Management Library" ON)
 option(PWROWG_WithParquet "Build support for Apache Parquet sinks" OFF)
