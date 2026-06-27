@@ -4,6 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
 #include "visus/pwrowg/daqmx_task.h"
 
 #include <memory>
@@ -75,3 +76,5 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator =(
 
     return *this;
 }
+
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */

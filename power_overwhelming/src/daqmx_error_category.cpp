@@ -4,7 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#if defined(POWER_OVERWHELMING_WITH_NVAPI)
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
 #include "daqmx_error_category.h"
 
 #include <string>
@@ -56,4 +56,4 @@ void PWROWG_DETAIL_NAMESPACE::throw_if_daqmx_failed(
     }
 }
 
-#endif /* defined(POWER_OVERWHELMING_WITH_NVAPI) */
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
