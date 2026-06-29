@@ -8,13 +8,21 @@
 #include "visus/pwrowg/daqmx_task.h"
 
 #include <memory>
+#include <stdexcept>
+
+#include "daqmx_error_category.h"
 
 
 /*
  * PWROWG_NAMESPACE::daqmx_task::daqmx_task
  */
 PWROWG_NAMESPACE::daqmx_task::daqmx_task(_In_z_ const char *name) {
-    //DAQmxCreateTask(const char taskName[], TaskHandle *taskHandle)
+    if (name == nullptr) {
+        throw std::invalid_argument("A valid name for the task must be "
+            "provided.");
+    }
+
+    //detail::throw_if_daqmx_failed(::DAQmxCreateTask(name, &this->_handle));
 }
 
 
@@ -39,6 +47,14 @@ PWROWG_NAMESPACE::daqmx_task::~daqmx_task(void) noexcept {
  */
 void PWROWG_NAMESPACE::daqmx_task::clear(void) noexcept {
     // DAQmxClearTask(TaskHandle taskHandle)
+}
+
+
+/*
+ * PWROWG_NAMESPACE::daqmx_task::done
+ */
+bool PWROWG_NAMESPACE::daqmx_task::done(void) const {
+    return false;
 }
 
 
@@ -72,6 +88,8 @@ bool PWROWG_NAMESPACE::daqmx_task::wait(_In_ const double timeout) const {
 PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator =(
         _Inout_ daqmx_task&& rhs) noexcept {
     if (this == std::addressof(rhs)) {
+        //this->_handle = rhs._handle;
+        //rhs._handle = nullptr;
     }
 
     return *this;

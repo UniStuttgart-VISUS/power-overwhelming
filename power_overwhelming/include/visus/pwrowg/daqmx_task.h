@@ -4,8 +4,8 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#if !defined(_PWROWG_DAQMX_CONFIGURATION_H)
-#define _PWROWG_DAQMX_CONFIGURATION_H
+#if !defined(_PWROWG_DAQMX_TASK_H)
+#define _PWROWG_DAQMX_TASK_H
 #pragma once
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
 
@@ -41,6 +41,13 @@ public:
     void clear(void) noexcept;
 
     /// <summary>
+    /// Indicates whether the task is done.
+    /// </summary>
+    /// <returns><see langword="true" /> if the task was completed,
+    /// <see langword="false" /> otherwise.</returns>
+    bool done(void) const;
+
+    /// <summary>
     /// Starts the task.
     /// </summary>
     void start(void);
@@ -69,9 +76,10 @@ public:
 
 private:
 
+    //TaskHandle _handle;
 };
 
 PWROWG_NAMESPACE_END
 
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
-#endif /* !defined(_PWROWG_DAQMX_CONFIGURATION_H) */
+#endif /* !defined(_PWROWG_DAQMX_TASK_H) */

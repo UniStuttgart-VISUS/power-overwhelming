@@ -1,0 +1,265 @@
+﻿// <copyright file="daqmx_channel_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+// Copyright © 2026 Visualisierungsinstitut der Universität Stuttgart.
+// Licensed under the MIT licence. See LICENCE file for details.
+// </copyright>
+// <author>Christoph Müller</author>
+
+#include "pch.h"
+
+#include <visus/pwrowg/daqmx_current_channel.h>
+#include <visus/pwrowg/daqmx_voltage_channel.h>
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+
+PWROWG_TEST_NAMESPACE_BEGIN
+
+TEST_CLASS(daqmx_channel_test) {
+
+public:
+
+    TEST_METHOD(current_char_ctor) {
+        daqmx_current_channel c("ai0");
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(0.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(0.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::IsNull(c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_shunt_resistor_location::standard), int(c.shunt_resistor_location()), L"shunt_resistor_location", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+        Assert::AreEqual(0.0, c.shunt_resistor_value(), L"shunt_resistor_value", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+    }
+
+    TEST_METHOD(current_wchar_ctor) {
+        daqmx_current_channel c(L"ai0");
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(0.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(0.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::IsNull(c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_shunt_resistor_location::standard), int(c.shunt_resistor_location()), L"shunt_resistor_location", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+        Assert::AreEqual(0.0, c.shunt_resistor_value(), L"shunt_resistor_value", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+    }
+
+    TEST_METHOD(current_setters) {
+        daqmx_current_channel c("ai0");
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(0.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(0.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::IsNull(c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_shunt_resistor_location::standard), int(c.shunt_resistor_location()), L"shunt_resistor_location", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+        Assert::AreEqual(0.0, c.shunt_resistor_value(), L"shunt_resistor_value", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
+        c.max_value(1.0);
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(1.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(0.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::IsNull(c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_shunt_resistor_location::standard), int(c.shunt_resistor_location()), L"shunt_resistor_location", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+        Assert::AreEqual(0.0, c.shunt_resistor_value(), L"shunt_resistor_value", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
+        c.min_value(-1.0);
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(1.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(-1.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::IsNull(c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_shunt_resistor_location::standard), int(c.shunt_resistor_location()), L"shunt_resistor_location", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+        Assert::AreEqual(0.0, c.shunt_resistor_value(), L"shunt_resistor_value", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
+        c.name("hugo");
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(1.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(-1.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::AreEqual("hugo", c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_shunt_resistor_location::standard), int(c.shunt_resistor_location()), L"shunt_resistor_location", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+        Assert::AreEqual(0.0, c.shunt_resistor_value(), L"shunt_resistor_value", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
+        c.name(L"heinz");
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(1.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(-1.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::AreEqual("heinz", c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_shunt_resistor_location::standard), int(c.shunt_resistor_location()), L"shunt_resistor_location", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+        Assert::AreEqual(0.0, c.shunt_resistor_value(), L"shunt_resistor_value", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
+        c.name(std::string("horst"));
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(1.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(-1.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::AreEqual("horst", c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_shunt_resistor_location::standard), int(c.shunt_resistor_location()), L"shunt_resistor_location", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+        Assert::AreEqual(0.0, c.shunt_resistor_value(), L"shunt_resistor_value", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        c.shunt_resistor_location(daqmx_shunt_resistor_location::external);
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(1.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(-1.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::AreEqual("horst", c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_shunt_resistor_location::external), int(c.shunt_resistor_location()), L"shunt_resistor_location", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+        Assert::AreEqual(0.0, c.shunt_resistor_value(), L"shunt_resistor_value", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
+        c.shunt_resistor_value(42.0);
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(1.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(-1.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::AreEqual("horst", c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_shunt_resistor_location::external), int(c.shunt_resistor_location()), L"shunt_resistor_location", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+        Assert::AreEqual(42.0, c.shunt_resistor_value(), L"shunt_resistor_value", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        c.terminal_configuration(daqmx_terminal_configuration::differential);
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(1.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(-1.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::AreEqual("horst", c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_shunt_resistor_location::external), int(c.shunt_resistor_location()), L"shunt_resistor_location", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+        Assert::AreEqual(42.0, c.shunt_resistor_value(), L"shunt_resistor_value", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::differential), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+    }
+
+    TEST_METHOD(voltage_char_ctor) {
+        daqmx_voltage_channel c("ai0");
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(0.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(0.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::IsNull(c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+    }
+
+    TEST_METHOD(voltage_wchar_ctor) {
+        daqmx_voltage_channel c(L"ai0");
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(0.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(0.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::IsNull(c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+    }
+
+    TEST_METHOD(voltage_setters) {
+        daqmx_voltage_channel c(L"ai0");
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(0.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(0.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::IsNull(c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
+        c.max_value(1.0);
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(1.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(0.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::IsNull(c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
+        c.min_value(-1.0);
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(1.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(-1.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::IsNull(c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
+        c.name("hugo");
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(1.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(-1.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::AreEqual("hugo", c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
+        c.name(L"heinz");
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(1.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(-1.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::AreEqual("heinz", c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
+        c.name(std::wstring(L"horst"));
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(1.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(-1.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::AreEqual("horst", c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::standard), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        c.terminal_configuration(daqmx_terminal_configuration::differential);
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+        Assert::AreEqual("ai0", c.channel(), L"channel", LINE_INFO());
+        Assert::AreEqual(1.0, c.max_value(), L"max_value", LINE_INFO());
+        Assert::AreEqual(-1.0, c.min_value(), L"min_value", LINE_INFO());
+        Assert::AreEqual("horst", c.name(), L"name", LINE_INFO());
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+        Assert::AreEqual(int(daqmx_terminal_configuration::differential), int(c.terminal_configuration()), L"terminal_configuration", LINE_INFO());
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+    }
+
+};
+
+PWROWG_TEST_NAMESPACE_END
