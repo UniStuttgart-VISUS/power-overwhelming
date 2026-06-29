@@ -11,6 +11,7 @@
 #include <stdexcept>
 
 #include "daqmx_error_category.h"
+#include "daqmx_library.h"
 
 
 /*
@@ -22,15 +23,17 @@ PWROWG_NAMESPACE::daqmx_task::daqmx_task(_In_z_ const char *name) {
             "provided.");
     }
 
-    //detail::throw_if_daqmx_failed(::DAQmxCreateTask(name, &this->_handle));
+    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+        ._DAQmxCreateTask(name, &this->_handle));
 }
 
 
 /*
  * PWROWG_NAMESPACE::daqmx_task::daqmx_task
  */
-PWROWG_NAMESPACE::daqmx_task::daqmx_task(_Inout_ daqmx_task&& other) noexcept {
-
+PWROWG_NAMESPACE::daqmx_task::daqmx_task(_Inout_ daqmx_task&& other) noexcept
+        : _handle(other._handle) {
+    other._handle = nullptr;
 }
 
 
@@ -46,7 +49,8 @@ PWROWG_NAMESPACE::daqmx_task::~daqmx_task(void) noexcept {
  * PWROWG_NAMESPACE::daqmx_task::clear
  */
 void PWROWG_NAMESPACE::daqmx_task::clear(void) noexcept {
-    // DAQmxClearTask(TaskHandle taskHandle)
+    detail::daqmx_library::instance()._DAQmxClearTask(this->_handle);
+    this->_handle = nullptr;
 }
 
 
@@ -54,7 +58,10 @@ void PWROWG_NAMESPACE::daqmx_task::clear(void) noexcept {
  * PWROWG_NAMESPACE::daqmx_task::done
  */
 bool PWROWG_NAMESPACE::daqmx_task::done(void) const {
-    return false;
+    bool32 done = 0;
+    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+        ._DAQmxIsTaskDone(this->_handle, &done));
+    return (done != 0);
 }
 
 
@@ -62,7 +69,8 @@ bool PWROWG_NAMESPACE::daqmx_task::done(void) const {
  * PWROWG_NAMESPACE::daqmx_task::start
  */
 void PWROWG_NAMESPACE::daqmx_task::start(void) {
-    // DAQmxStartTask(TaskHandle taskHandle)
+    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+        ._DAQmxStartTask(this->_handle));
 }
 
 
@@ -70,7 +78,8 @@ void PWROWG_NAMESPACE::daqmx_task::start(void) {
  * PWROWG_NAMESPACE::daqmx_task::stop
  */
 void PWROWG_NAMESPACE::daqmx_task::stop(void) {
-
+    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+        ._DAQmxStopTask(this->_handle));
 }
 
 
@@ -78,7 +87,15 @@ void PWROWG_NAMESPACE::daqmx_task::stop(void) {
  * PWROWG_NAMESPACE::daqmx_task::wait
  */
 bool PWROWG_NAMESPACE::daqmx_task::wait(_In_ const double timeout) const {
-    return false;
+    const auto status = detail::daqmx_library::instance()
+        ._DAQmxWaitUntilTaskDone(this->_handle, timeout);
+    if (status == DAQmxErrorTimeoutExceeded) {
+        return false;
+    }
+
+    detail::throw_if_daqmx_failed(status);
+
+    return true;
 }
 
 
@@ -88,8 +105,8 @@ bool PWROWG_NAMESPACE::daqmx_task::wait(_In_ const double timeout) const {
 PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator =(
         _Inout_ daqmx_task&& rhs) noexcept {
     if (this == std::addressof(rhs)) {
-        //this->_handle = rhs._handle;
-        //rhs._handle = nullptr;
+        this->_handle = rhs._handle;
+        rhs._handle = nullptr;
     }
 
     return *this;

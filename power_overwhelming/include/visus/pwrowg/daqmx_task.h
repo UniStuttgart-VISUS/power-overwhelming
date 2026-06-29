@@ -9,6 +9,7 @@
 #pragma once
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
 
+#include <NIDAQmx.h>
 
 #include "visus/pwrowg/api.h"
 
@@ -65,7 +66,7 @@ public:
     /// </param>
     /// <returns><see langword="true "/> if the task finished in time,
     /// <see langword="false" /> if the operation timed out.</returns>
-    bool wait(_In_ const double timeout) const;
+    bool wait(_In_ const double timeout = DAQmx_Val_WaitInfinitely) const;
 
     /// <summary>
     /// Move assignment.
@@ -76,7 +77,7 @@ public:
 
 private:
 
-    //TaskHandle _handle;
+    TaskHandle _handle;
 };
 
 PWROWG_NAMESPACE_END

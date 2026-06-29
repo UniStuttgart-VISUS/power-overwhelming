@@ -10,6 +10,10 @@
 
 #include <cinttypes>
 
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+#include <NIDAQmx.h>
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
 #include "visus/pwrowg/api.h"
 
 
@@ -24,17 +28,17 @@ enum class daqmx_shunt_resistor_location : std::int32_t {
     /// At run time, NI-DAQmx chooses the default shunt resistor location for
     /// the channel.
     /// </summary>
-    standard,
+    standard = DAQmx_Val_Default,
 
     /// <summary>
     /// Use the built-in shunt resistor of the device.
     /// </summary>
-    internal,
+    internal = DAQmx_Val_Internal,
 
     /// <summary>
     /// Use a shunt resistor external to the device.
     /// </summary>
-    external
+    external = DAQmx_Val_External
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 };
 

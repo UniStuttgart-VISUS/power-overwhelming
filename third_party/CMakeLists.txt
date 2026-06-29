@@ -150,6 +150,14 @@ mark_as_advanced(FORCE
     JSON_MultipleHeaders
     JSON_SystemInclude)
 
+# NI-DAQmx (headers only)
+if (PWROWG_WithNiDaqMx)
+    find_package(NIDAQMX REQUIRED)
+    add_library(nidaqmx INTERFACE IMPORTED GLOBAL)
+    set_target_properties(nidaqmx PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${NIDAQMX_INCLUDE_DIR}")
+endif ()
+
 
 # NVIDIA Management Library
 add_library(nvml INTERFACE IMPORTED GLOBAL)

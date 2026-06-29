@@ -10,6 +10,10 @@
 
 #include <cinttypes>
 
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+#include <NIDAQmx.h>
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
 #include "visus/pwrowg/api.h"
 
 
@@ -24,27 +28,27 @@ enum class daqmx_terminal_configuration : std::int32_t {
     /// At run time, NI-DAQmx chooses the default terminal configuration for the
     /// channel.
     /// </summary>
-    standard,
+    standard = DAQmx_Val_Cfg_Default,
 
     /// <summary>
     /// Referenced single-ended mode. The measurement is made with respect to
     /// ground.
     /// </summary>
-    referenced_single_ended,
+    referenced_single_ended = DAQmx_Val_RSE,
 
     /// <summary>
     /// Non-referenced single-ended mode. The measurement is made with respect
     /// to a single-node analog input sense, but the potential at this node can
     /// vary with respect to the measurement system ground.
     /// </summary>
-    non_referenced_single_ended,
+    non_referenced_single_ended = DAQmx_Val_NRSE,
 
     /// <summary>
     /// Differential mode. A differential measurement system is similar to a
     /// floating signal source in that the measurement is made with respect to
     /// a floating ground that is different from the measurement system ground.
     /// </summary>
-    differential,
+    differential = DAQmx_Val_Diff,
 
     /// <summary>
     /// Pseudo-differential mode. A pseudo-differential measurement system
@@ -58,7 +62,7 @@ enum class daqmx_terminal_configuration : std::int32_t {
     /// include both resistive and capacitive components. The positive and
     /// negative sides of the input channel are separated by a larger impedance.
     /// </summary>
-    pseudo_differential,
+    pseudo_differential = DAQmx_Val_PseudoDiff,
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 };
 

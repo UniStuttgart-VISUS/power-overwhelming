@@ -374,3 +374,4 @@ third_party/*-subbuild/
 /.vscode
 /build
 /poweb/demo.json*.csv
+/_install

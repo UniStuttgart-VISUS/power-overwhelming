@@ -8,6 +8,9 @@
 #include "daqmx_error_category.h"
 
 #include <string>
+#include <vector>
+
+#include "daqmx_library.h"
 
 
 /*
@@ -25,9 +28,19 @@ PWROWG_DETAIL_NAMESPACE::daqmx_error_category::default_error_condition(
  */
 std::string PWROWG_DETAIL_NAMESPACE::daqmx_error_category::message(
         int status) const {
-    //https://www.ni.com/docs/de-DE/bundle/ni-daqmx-c-api-ref/page/group__ni-daqmx__c__functions__error__handling_1ga3aab3885d2e6c3643dfd479fbf55692c.html
-    //DAQmxGetErrorString
-    return "";
+    const auto get_error = daqmx_library::instance()._DAQmxGetErrorString;
+
+    auto cnt = get_error(status, nullptr, 0);
+    if (cnt < 0) {
+        return std::to_string(status);
+    }
+
+    std::vector<char> buffer(cnt);
+    if (get_error(status, buffer.data(), cnt) < 0) {
+        return std::to_string(status);
+    }
+
+    return buffer.data();
 }
 
 
