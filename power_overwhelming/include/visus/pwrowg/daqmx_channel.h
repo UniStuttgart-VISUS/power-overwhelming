@@ -51,9 +51,7 @@ public:
     /// Gets the name to assign to the virtual channel.
     /// </summary>
     /// <returns>The user-defined name of the channel.</returns>
-    _Ret_maybenull_z_ inline const char *name(void) const noexcept {
-        return this->_name.as<char>();
-    }
+    _Ret_z_ const char *name(void) const noexcept;
 
     /// <summary>
     /// Gets the input terminal configuration for the channel.
@@ -70,14 +68,16 @@ protected:
     /// Initialises a new instance.
     /// </summary>
     /// <param name="channel">The name of the physical channel, which should
-    /// be something like &quot;ai0&quot; for the first analog input.</param>
+    /// be something like &quot;Dev1/ai0&quot; for the first analog input.
+    /// </param>
     explicit daqmx_channel(_In_z_ const wchar_t *channel);
 
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
     /// <param name="channel">The name of the physical channel, which should
-    /// be something like &quot;ai0&quot; for the first analog input.</param>
+    /// be something like &quot;Dev1/ai0&quot; for the first analog input.
+    /// </param>
     explicit daqmx_channel(_In_z_ const char *channel);
 
     /// <summary>

@@ -27,14 +27,16 @@ public:
     /// Initialises a new instance.
     /// </summary>
     /// <param name="channel">The name of the physical channel, which should
-    /// be something like &quot;ai0&quot; for the first analog input.</param>
+    /// be something like &quot;Dev1/ai0&quot; for the first analog input.
+    /// </param>
     explicit daqmx_current_channel(_In_z_ const wchar_t *channel);
 
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
     /// <param name="channel">The name of the physical channel, which should
-    /// be something like &quot;ai0&quot; for the first analog input.</param>
+    /// be something like &quot;Dev1/ai0&quot; for the first analog input.
+    /// </param>
     explicit daqmx_current_channel(_In_z_ const char *channel);
 
     using daqmx_channel::max_value;

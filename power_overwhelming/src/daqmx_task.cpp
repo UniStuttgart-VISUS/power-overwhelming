@@ -10,6 +10,8 @@
 #include <memory>
 #include <stdexcept>
 
+#include "visus/pwrowg/trace.h"
+
 #include "daqmx_error_category.h"
 #include "daqmx_library.h"
 
@@ -109,6 +111,87 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator =(
         rhs._handle = nullptr;
     }
 
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::daqmx_task::operator +=
+ */
+PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator +=(
+        _In_ const daqmx_current_channel& rhs) {
+    PWROWG_TRACE("Adding current channel \"%s\" as \"%s\" with terminal "
+        "configuration %d, range [%g, %g], shunt resistor %d, shunt value %g.",
+        rhs.channel(), rhs.name(), rhs.terminal_configuration(),
+        rhs.min_value(), rhs.max_value(), rhs.shunt_resistor_location(),
+        rhs.shunt_resistor_value());
+    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+        ._DAQmxCreateAICurrentChan(
+            this->_handle,
+            rhs.channel(),
+            rhs.name(),
+            static_cast<int32>(rhs.terminal_configuration()),
+            rhs.min_value(),
+            rhs.max_value(),
+            DAQmx_Val_Amps,
+            static_cast<int32>(rhs.shunt_resistor_location()),
+            rhs.shunt_resistor_value(),
+            nullptr));
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::daqmx_task::operator +=
+ */
+PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator +=(
+        _In_ const daqmx_power_channel& rhs) {
+    PWROWG_TRACE("Adding power channel \"%s\" (voltage), \"%s\" (current) as "
+        "\"%s\" with terminal configuration %d, range [%g, %g] (voltage), "
+        "[%g, %g] (current), shunt resistor %d, shunt value %g.",
+        rhs.voltage_channel(), rhs.current_channel(), rhs.name(),
+        rhs.terminal_configuration(), rhs.voltage_min_value(),
+        rhs.voltage_max_value(), rhs.current_min_value(),
+        rhs.current_max_value(), rhs.shunt_resistor_location(),
+        rhs.shunt_resistor_value());
+    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+        ._DAQmxCreateAICalculatedPowerChan(
+            this->_handle,
+            rhs.voltage_channel(),
+            rhs.current_channel(),
+            rhs.name(),
+            static_cast<int32>(rhs.terminal_configuration()),
+            rhs.voltage_min_value(),
+            rhs.voltage_max_value(),
+            rhs.current_min_value(),
+            rhs.current_max_value(),
+            DAQmx_Val_Watts,
+            static_cast<int32>(rhs.shunt_resistor_location()),
+            rhs.shunt_resistor_value(),
+            nullptr));
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::daqmx_task::operator +=
+ */
+PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator +=(
+        _In_ const daqmx_voltage_channel& rhs) {
+    PWROWG_TRACE("Adding voltage channel \"%s\" as \"%s\" with terminal "
+        "configuration %d, range [%g, %g].",
+        rhs.channel(), rhs.name(), rhs.terminal_configuration(),
+        rhs.min_value(), rhs.max_value());
+    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+        ._DAQmxCreateAIVoltageChan(
+            this->_handle,
+            rhs.channel(),
+            rhs.name(),
+            static_cast<int32>(rhs.terminal_configuration()),
+            rhs.min_value(),
+            rhs.max_value(),
+            DAQmx_Val_Volts,
+            nullptr));
     return *this;
 }
 

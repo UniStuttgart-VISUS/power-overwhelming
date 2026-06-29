@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "visus/pwrowg/trace.h"
+
 #include "daqmx_library.h"
 
 
@@ -31,7 +33,7 @@ std::string PWROWG_DETAIL_NAMESPACE::daqmx_error_category::message(
     const auto get_error = daqmx_library::instance()._DAQmxGetErrorString;
 
     auto cnt = get_error(status, nullptr, 0);
-    if (cnt < 0) {
+    if (cnt <= 0) {
         return std::to_string(status);
     }
 
@@ -60,7 +62,9 @@ const std::error_category& PWROWG_DETAIL_NAMESPACE::daqmx_category(
 void PWROWG_DETAIL_NAMESPACE::throw_if_daqmx_failed(
         _In_ const std::int32_t status,
         _In_opt_z_ const char *message) {
-    if (status != 0) {
+    if (DAQmxFailed(status)) {
+        PWROWG_TRACE(_T("NI-DAQmx call failed with status %d."), status);
+
         if (message == nullptr) {
             throw std::system_error(status, daqmx_category());
         } else {

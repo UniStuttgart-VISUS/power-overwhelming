@@ -13,6 +13,15 @@
 
 
 /*
+ * PWROWG_NAMESPACE::daqmx_channel::name
+ */
+_Ret_z_ const char *PWROWG_NAMESPACE::daqmx_channel::name(void) const noexcept {
+    auto retval = this->_name.as<char>();
+    return (retval != nullptr) ? retval : "";
+}
+
+
+/*
  * PWROWG_NAMESPACE::daqmx_channel::daqmx_channel
  */
 PWROWG_NAMESPACE::daqmx_channel::daqmx_channel(

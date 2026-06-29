@@ -9,9 +9,9 @@
 #pragma once
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
 
-#include <NIDAQmx.h>
-
-#include "visus/pwrowg/api.h"
+#include "visus/pwrowg/daqmx_current_channel.h"
+#include "visus/pwrowg/daqmx_power_channel.h"
+#include "visus/pwrowg/daqmx_voltage_channel.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -23,6 +23,10 @@ class POWER_OVERWHELMING_API daqmx_task final {
 
 public:
 
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="name">The name of the task.</param>
     explicit daqmx_task(_In_z_ const char *name);
 
     /// <summary>
@@ -74,6 +78,36 @@ public:
     /// <param name="rhs">The right-hand-side operand.</param>
     /// <returns><c>*<see langword="this" /></c>.</returns>
     daqmx_task& operator =(_Inout_ daqmx_task&& rhs) noexcept;
+
+    /// <summary>
+    /// Configures the given analog current channel as part of the task.
+    /// </summary>
+    /// <param name="rhs"></param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    daqmx_task& operator +=(_In_ const daqmx_current_channel& rhs);
+
+    /// <summary>
+    /// Configures the given computed power channel as part of the task.
+    /// </summary>
+    /// <param name="rhs"></param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    daqmx_task& operator +=(_In_ const daqmx_power_channel& rhs);
+
+    /// <summary>
+    /// Configures the given analog voltage channel as part of the task.
+    /// </summary>
+    /// <param name="rhs"></param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    daqmx_task& operator +=(_In_ const daqmx_voltage_channel& rhs);
+
+    /// <summary>
+    /// Indicates whether the instance is valid.
+    /// </summary>
+    /// <returns><see langword="true" /> if the instance is valid,
+    /// <see langword="false" /> otherwise.</returns>
+    operator bool(void) const noexcept {
+        return (this->_handle != nullptr);
+    }
 
 private:
 

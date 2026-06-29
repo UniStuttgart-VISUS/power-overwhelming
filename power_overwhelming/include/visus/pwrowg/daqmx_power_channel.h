@@ -29,11 +29,11 @@ public:
     /// Initialises a new instance.
     /// </summary>
     /// <param name="voltage_channel">The name of the physical channel measuring
-    /// voltage, which should be something like &quot;ai0&quot; for the first
-    /// analog input.</param>
+    /// voltage, which should be something like &quot;Dev1/ai0&quot; for the
+    /// first analog input.</param>
     /// <param name="current_channel">The name of the physical channel measuring
-    /// current, which should be something like &quot;ai1&quot; for the second
-    /// analog input.</param>
+    /// current, which should be something like &quot;Dev1/ai1&quot; for the
+    /// second analog input.</param>
     daqmx_power_channel(_In_z_ const wchar_t *voltage_channel,
         _In_z_ const wchar_t *current_channel);
 

@@ -26,7 +26,8 @@ public:
     /// Initialises a new instance.
     /// </summary>
     /// <param name="channel">The name of the physical channel, which should
-    /// be something like &quot;ai0&quot; for the first analog input.</param>
+    /// be something like &quot;Dev1/ai0&quot; for the first analog input.
+    /// </param>
     explicit inline daqmx_voltage_channel(_In_z_ const wchar_t *channel)
         : daqmx_channel(channel) { }
 
@@ -34,7 +35,8 @@ public:
     /// Initialises a new instance.
     /// </summary>
     /// <param name="channel">The name of the physical channel, which should
-    /// be something like &quot;ai0&quot; for the first analog input.</param>
+    /// be something like &quot;Dev1/ai0&quot; for the first analog input.
+    /// </param>
     explicit inline daqmx_voltage_channel(_In_z_ const char *channel)
         : daqmx_channel(channel) { }
 
