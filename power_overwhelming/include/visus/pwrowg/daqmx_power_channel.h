@@ -18,6 +18,9 @@ PWROWG_NAMESPACE_BEGIN
 /// A descriptor for a computed power channel of a NI-DAQmx-based sensor, which
 /// can be used to add such a channel to a <see cref="daqmx_task" />.
 /// </summary>
+/// <remarks>
+/// The &quot;default&quot; channel is the voltage channel.
+/// </remarks>
 class POWER_OVERWHELMING_API daqmx_power_channel final : public daqmx_channel {
 
 public:
