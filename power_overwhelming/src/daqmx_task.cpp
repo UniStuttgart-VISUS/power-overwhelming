@@ -34,7 +34,9 @@ PWROWG_NAMESPACE::daqmx_task::daqmx_task(_In_z_ const char *name) {
  * PWROWG_NAMESPACE::daqmx_task::daqmx_task
  */
 PWROWG_NAMESPACE::daqmx_task::daqmx_task(_Inout_ daqmx_task&& other) noexcept
-        : _handle(other._handle) {
+        : _handle(other._handle),
+        _on_done(std::move(other._on_done)),
+        _on_sample(std::move(other._on_sample)) {
     other._handle = nullptr;
 }
 
@@ -86,6 +88,20 @@ void PWROWG_NAMESPACE::daqmx_task::stop(void) {
 
 
 /*
+ * PWROWG_NAMESPACE::daqmx_task::timing
+ */
+PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::timing(
+        _In_ const daqmx_implicit_timing& timing) {
+    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+        ._DAQmxCfgImplicitTiming(
+            this->_handle,
+            static_cast<int32>(timing.mode()),
+            timing.samples()));
+    return *this;
+}
+
+
+/*
  * PWROWG_NAMESPACE::daqmx_task::wait
  */
 bool PWROWG_NAMESPACE::daqmx_task::wait(_In_ const double timeout) const {
@@ -109,6 +125,8 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator =(
     if (this == std::addressof(rhs)) {
         this->_handle = rhs._handle;
         rhs._handle = nullptr;
+        this->_on_done = std::move(rhs._on_done);
+        this->_on_sample = std::move(rhs._on_sample);
     }
 
     return *this;
@@ -193,6 +211,26 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator +=(
             DAQmx_Val_Volts,
             nullptr));
     return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::daqmx_task::done_callback
+ */
+int32 CVICALLBACK PWROWG_NAMESPACE::daqmx_task::done_callback(
+        _In_ const TaskHandle task, _In_ const int32 status,
+        _In_ void *context) {
+    return 0;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::daqmx_task::sample_callback
+ */
+int32 CVICALLBACK PWROWG_NAMESPACE::daqmx_task::sample_callback(
+        _In_ const TaskHandle task, _In_ const int32 type,
+        _In_ const uInt32 cnt, _In_ void *context) {
+    return 0;
 }
 
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */

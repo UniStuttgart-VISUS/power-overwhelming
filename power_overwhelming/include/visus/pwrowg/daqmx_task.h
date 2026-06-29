@@ -10,8 +10,10 @@
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
 
 #include "visus/pwrowg/daqmx_current_channel.h"
+#include "visus/pwrowg/daqmx_implicit_timing.h"
 #include "visus/pwrowg/daqmx_power_channel.h"
 #include "visus/pwrowg/daqmx_voltage_channel.h"
+#include "visus/pwrowg/type_erased_storage.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -63,6 +65,13 @@ public:
     void stop(void);
 
     /// <summary>
+    /// Configures an implicit timing for the task.
+    /// </summary>
+    /// <param name="timing">The timing configuration.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    daqmx_task& timing(_In_ const daqmx_implicit_timing& timing);
+
+    /// <summary>
     /// Waits for the task to complete.
     /// </summary>
     /// <param name="timeout">The maximum amount of time to wait, in seconds.
@@ -111,7 +120,15 @@ public:
 
 private:
 
+    static int32 CVICALLBACK done_callback(_In_ const TaskHandle task,
+        _In_ const int32 status, _In_ void *context);
+
+    static int32 CVICALLBACK sample_callback(_In_ const TaskHandle task,
+        _In_ const int32 type, _In_ const uInt32 cnt, _In_ void *context);
+
     TaskHandle _handle;
+    type_erased_storage _on_done;
+    type_erased_storage _on_sample;
 };
 
 PWROWG_NAMESPACE_END

@@ -35,6 +35,7 @@ public:
     /// </exception>
     static const daqmx_library& instance(void);
 
+    __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxCfgImplicitTiming);
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxClearTask);
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxCreateAICalculatedPowerChan);
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxCreateAICurrentChan);

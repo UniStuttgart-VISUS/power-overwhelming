@@ -29,6 +29,7 @@ PWROWG_DETAIL_NAMESPACE::daqmx_library::daqmx_library(void)
 #if defined(_WIN32)
         : library_base(TEXT("nicaiu.dll")) {
 #endif /* defined(_WIN32) */
+    __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxCfgImplicitTiming);
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxClearTask);
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxCreateAICalculatedPowerChan);
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxCreateAICurrentChan);
