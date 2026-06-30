@@ -13,4 +13,4 @@
 PWROWG_NAMESPACE::daqmx_implicit_timing::daqmx_implicit_timing(
         _In_ const daqmx_sample_mode mode,
         _In_ const std::uint64_t samples)
-    : _mode(mode), _samples(samples) { }
+    : daqmx_timing(mode, samples) { }

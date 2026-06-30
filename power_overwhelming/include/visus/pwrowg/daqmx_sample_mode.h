@@ -32,14 +32,14 @@ enum class daqmx_sample_mode : std::int32_t {
     /// <summary>
     /// Acquire or generate samples until the task is stopped.
     /// </summary>
-    continouse = DAQmx_Val_ContSamps,
+    continous = DAQmx_Val_ContSamps,
 
     /// <summary>
     /// Acquire or generate samples continuously using hardware timing without a
     /// buffer. Hardware-timed single-point acquisition and generation is only
     /// supported for the sample clock and change detection timing types.
     /// </summary>
-    external = DAQmx_Val_HWTimedSinglePoint
+    hardware_timed_single_point = DAQmx_Val_HWTimedSinglePoint
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 };
 

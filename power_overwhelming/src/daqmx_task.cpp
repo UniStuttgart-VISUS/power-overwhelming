@@ -102,6 +102,23 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::timing(
 
 
 /*
+ * PWROWG_NAMESPACE::daqmx_task::timing
+ */
+PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::timing(
+        _In_ const daqmx_sample_clock_timing& timing) {
+    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+        ._DAQmxCfgSampClkTiming(
+            this->_handle,
+            timing.source(),
+            timing.rate(),
+            static_cast<int32>(timing.edge()),
+            static_cast<int32>(timing.mode()),
+            timing.samples()));
+    return *this;
+}
+
+
+/*
  * PWROWG_NAMESPACE::daqmx_task::wait
  */
 bool PWROWG_NAMESPACE::daqmx_task::wait(_In_ const double timeout) const {

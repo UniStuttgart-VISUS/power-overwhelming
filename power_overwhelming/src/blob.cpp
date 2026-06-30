@@ -1,5 +1,5 @@
 // <copyright file="blob.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -72,7 +72,7 @@ _Ret_maybenull_ const void *PWROWG_NAMESPACE::blob::at(
 /*
  * PWROWG_NAMESPACE::blob::clear
  */
-void PWROWG_NAMESPACE::blob::clear(void) {
+void PWROWG_NAMESPACE::blob::clear(void) noexcept {
     delete[] this->_data;
     this->_data = nullptr;
     this->_size = 0;

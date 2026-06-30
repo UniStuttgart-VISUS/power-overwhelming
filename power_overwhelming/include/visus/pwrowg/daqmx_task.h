@@ -12,6 +12,7 @@
 #include "visus/pwrowg/daqmx_current_channel.h"
 #include "visus/pwrowg/daqmx_implicit_timing.h"
 #include "visus/pwrowg/daqmx_power_channel.h"
+#include "visus/pwrowg/daqmx_sample_clock_timing.h"
 #include "visus/pwrowg/daqmx_voltage_channel.h"
 #include "visus/pwrowg/type_erased_storage.h"
 
@@ -70,6 +71,13 @@ public:
     /// <param name="timing">The timing configuration.</param>
     /// <returns><c>*<see langword="this" /></c>.</returns>
     daqmx_task& timing(_In_ const daqmx_implicit_timing& timing);
+
+    /// <summary>
+    /// Configures the timing of the task.
+    /// </summary>
+    /// <param name="timing">The timing configuration.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    daqmx_task& timing(_In_ const daqmx_sample_clock_timing& timing);
 
     /// <summary>
     /// Waits for the task to complete.

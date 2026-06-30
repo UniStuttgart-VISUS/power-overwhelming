@@ -40,6 +40,16 @@ public:
     }
 #endif
 
+#if false
+    // Note: This test requires a (simulated) device NIUSB-6423 to be present.
+    TEST_METHOD(clock_timing) {
+        daqmx_task task("test");
+        Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
+        task += daqmx_voltage_channel("NIUSB-6423/ai0").min_value(-10.0).max_value(10.0);
+        task.timing(daqmx_sample_clock_timing(1000.0, daqmx_edge::rising, daqmx_sample_mode::finite, 1000));
+    }
+#endif
+
 };
 
 PWROWG_TEST_NAMESPACE_END
