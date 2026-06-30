@@ -50,5 +50,5 @@ PWROWG_DETAIL_NAMESPACE::daqmx_library::daqmx_library(void)
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxWaitUntilTaskDone);
 }
 
-#undef __POWER_OVERWHELMING_NVAPI_FUNC
+#undef __POWER_OVERWHELMING_DAQMX_FUNC
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */

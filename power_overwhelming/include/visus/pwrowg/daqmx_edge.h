@@ -20,7 +20,7 @@
 PWROWG_NAMESPACE_BEGIN
 
 /// <summary>
-/// Specifies the possible trigger egdes for a NI-DAQmx device.
+/// Specifies the possible trigger edges for a NI-DAQmx device.
 /// </summary>
 enum class daqmx_edge : std::int32_t {
 

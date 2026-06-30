@@ -32,7 +32,7 @@ enum class daqmx_sample_mode : std::int32_t {
     /// <summary>
     /// Acquire or generate samples until the task is stopped.
     /// </summary>
-    continous = DAQmx_Val_ContSamps,
+    continuous = DAQmx_Val_ContSamps,
 
     /// <summary>
     /// Acquire or generate samples continuously using hardware timing without a
