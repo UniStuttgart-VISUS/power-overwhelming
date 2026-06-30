@@ -4,6 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
 #include "visus/pwrowg/daqmx_timing.h"
 
 
@@ -14,3 +15,5 @@ PWROWG_NAMESPACE::daqmx_timing::daqmx_timing(
         _In_ const daqmx_sample_mode mode,
         _In_ const std::uint64_t samples)
     : _mode(mode), _samples(samples) { }
+
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */

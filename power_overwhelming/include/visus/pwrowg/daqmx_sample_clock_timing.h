@@ -8,6 +8,7 @@
 #define _PWROWG_DAQMX_SAMPLE_CLOCK_TIMING_H
 #pragma once
 
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
 #include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/daqmx_edge.h"
 #include "visus/pwrowg/daqmx_timing.h"
@@ -191,4 +192,5 @@ private:
 
 PWROWG_NAMESPACE_END
 
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 #endif /* !defined(_PWROWG_DAQMX_SAMPLE_CLOCK_TIMING_H) */

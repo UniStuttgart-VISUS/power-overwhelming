@@ -32,11 +32,7 @@ public:
     /// <param name="name">The name of the task.</param>
     explicit daqmx_task(_In_z_ const char *name);
 
-    /// <summary>
-    /// Initialise from move.
-    /// </summary>
-    /// <param name="other">The object to be moved.</param>
-    daqmx_task(_Inout_ daqmx_task&& other) noexcept;
+    daqmx_task(const daqmx_task&) = delete;
 
     /// <summary>
     /// Finalises the instance.
@@ -54,6 +50,24 @@ public:
     /// <returns><see langword="true" /> if the task was completed,
     /// <see langword="false" /> otherwise.</returns>
     bool done(void) const;
+
+    /// <summary>
+    /// Sets a callback to be invoked when the task is completed.
+    /// </summary>
+    /// <typeparam name="TCallback"></typeparam>
+    /// <param name="callback"></param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    template<class TCallback> daqmx_task& on_done(_In_ TCallback&& callback);
+
+    /// <summary>
+    /// Clears the callback for the task completion event.
+    /// </summary>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline daqmx_task& on_done(const std::nullptr_t) {
+        this->_on_done.reset();
+        this->set_on_done(nullptr);
+        return *this;
+    }
 
     /// <summary>
     /// Starts the task.
@@ -89,12 +103,7 @@ public:
     /// <see langword="false" /> if the operation timed out.</returns>
     bool wait(_In_ const double timeout = DAQmx_Val_WaitInfinitely) const;
 
-    /// <summary>
-    /// Move assignment.
-    /// </summary>
-    /// <param name="rhs">The right-hand-side operand.</param>
-    /// <returns><c>*<see langword="this" /></c>.</returns>
-    daqmx_task& operator =(_Inout_ daqmx_task&& rhs) noexcept;
+    daqmx_task& operator =(const daqmx_task&) = delete;
 
     /// <summary>
     /// Configures the given analog current channel as part of the task.
@@ -134,12 +143,18 @@ private:
     static int32 CVICALLBACK sample_callback(_In_ const TaskHandle task,
         _In_ const int32 type, _In_ const uInt32 cnt, _In_ void *context);
 
+    void set_on_done(_In_opt_ DAQmxDoneEventCallbackPtr cb = done_callback);
+
+    void set_on_sample(_In_opt_ DAQmxEveryNSamplesEventCallbackPtr cb);
+
     TaskHandle _handle;
     type_erased_storage _on_done;
     type_erased_storage _on_sample;
 };
 
 PWROWG_NAMESPACE_END
+
+#include "visus/pwrowg/daqmx_task.inl"
 
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 #endif /* !defined(_PWROWG_DAQMX_TASK_H) */

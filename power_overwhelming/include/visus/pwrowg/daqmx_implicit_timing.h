@@ -8,6 +8,7 @@
 #define _PWROWG_DAQMX_IMPLICIT_TIMING_H
 #pragma once
 
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
 #include "visus/pwrowg/daqmx_timing.h"
 
 
@@ -60,4 +61,5 @@ public:
 
 PWROWG_NAMESPACE_END
 
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 #endif /* !defined(_PWROWG_DAQMX_IMPLICIT_TIMING_H) */
