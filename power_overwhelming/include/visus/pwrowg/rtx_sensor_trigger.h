@@ -19,16 +19,16 @@
 PWROWG_NAMESPACE_BEGIN
 
 // Forward declarations.
-namespace detail { struct rtx_sensor; }
+namespace detail { class rtx_sensor; }
 namespace detail { struct rtx_sensor_trigger_impl; }
-namespace detail { struct rtx_sen_trg_bld_final; }
-namespace detail { struct rtx_sen_trg_bld_chan0; }
-namespace detail { struct rtx_sen_trg_bld_chan1; }
-namespace detail { struct rtx_sen_trg_bld_man0; }
-namespace detail { struct rtx_sen_trg_bld_par0; }
-namespace detail { struct rtx_sen_trg_bld_par1; }
-namespace detail { struct rtx_sen_trg_bld_par2; }
-namespace detail { struct rtx_sen_trg_bld_par3; }
+namespace detail { class rtx_sen_trg_bld_final; }
+namespace detail { class rtx_sen_trg_bld_chan0; }
+namespace detail { class rtx_sen_trg_bld_chan1; }
+namespace detail { class rtx_sen_trg_bld_man0; }
+namespace detail { class rtx_sen_trg_bld_par0; }
+namespace detail { class rtx_sen_trg_bld_par1; }
+namespace detail { class rtx_sen_trg_bld_par2; }
+namespace detail { class rtx_sen_trg_bld_par3; }
 
 
 /// <summary>
