@@ -14,7 +14,6 @@
 
 #include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/guid.h"
-#include "visus/pwrowg/rtx_instrument.h"
 #include "visus/pwrowg/rtx_quantity.h"
 #include "visus/pwrowg/rtx_sensor_definition.h"
 #include "visus/pwrowg/rtx_instrument_configuration.h"

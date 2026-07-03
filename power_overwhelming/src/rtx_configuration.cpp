@@ -56,6 +56,7 @@ PWROWG_NAMESPACE::rtx_configuration PWROWG_NAMESPACE::rtx_configuration::load(
     return detail::json_deserialise<rtx_configuration>(json);
 }
 
+
 /*
  * PWROWG_NAMESPACE::rtx_configuration::rtx_configuration
  */
