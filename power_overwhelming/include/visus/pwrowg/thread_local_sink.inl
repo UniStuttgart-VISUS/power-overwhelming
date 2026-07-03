@@ -75,6 +75,8 @@ void PWROWG_NAMESPACE::thread_local_sink<TSink>::sample_callback(
                     std::memory_order_relaxed)) {
                 PWROWG_TRACE(_T("Reusing page 0x%p for sink 0x%p."), p, that);
                 thread_local_sink::buffer[that] = p;
+                assert(p->buffer.empty());
+                assert(p->buffer.capacity() >= that->_page_size);
                 break;
             }
 
@@ -88,6 +90,8 @@ void PWROWG_NAMESPACE::thread_local_sink<TSink>::sample_callback(
         p = thread_local_sink::buffer[that] = new page(that->_page_size);
         assert(p->is_state(page_state::assigned));
         assert(p->is_state(page_state::callback));
+        assert(p->buffer.empty());
+        assert(p->buffer.capacity() >= that->_page_size);
         PWROWG_TRACE(_T("Allocated a new page 0x%p for sink 0x%p."), p, that);
 
         // Swap the root node until we succeed to store our page.
