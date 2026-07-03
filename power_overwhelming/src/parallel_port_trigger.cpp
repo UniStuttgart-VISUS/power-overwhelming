@@ -287,7 +287,7 @@ void PWROWG_NAMESPACE::parallel_port_trigger::open(
 
 #if defined(_WIN32)
     this->_handle = ::CreateFileW(path, GENERIC_WRITE, 0, NULL,
-        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL /*| FILE_FLAG_NO_BUFFERING*/, NULL);
     if (this->_handle == invalid_handle) {
         throw std::system_error(::GetLastError(), std::system_category());
     }
@@ -312,7 +312,7 @@ void PWROWG_NAMESPACE::parallel_port_trigger::open(
 
 #if defined(_WIN32)
     this->_handle = ::CreateFileA(path, GENERIC_WRITE, 0, NULL,
-        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL /*| FILE_FLAG_NO_BUFFERING*/, NULL);
     if (this->_handle == invalid_handle) {
         throw std::system_error(::GetLastError(), std::system_category());
     }
