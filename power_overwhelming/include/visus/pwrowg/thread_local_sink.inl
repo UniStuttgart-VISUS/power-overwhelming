@@ -66,7 +66,7 @@ void PWROWG_NAMESPACE::thread_local_sink<TSink>::sample_callback(
     // If we do not have a page, check the page list for one to reuse and put it
     // into the assigned and callback writing state directly.
     if (p == nullptr) {
-        auto p = that->_pages.load(std::memory_order_acquire);
+        p = that->_pages.load(std::memory_order_acquire);
         while (p != nullptr) {
             auto e = page_state::reusable;
             if (p->state.compare_exchange_strong(e,

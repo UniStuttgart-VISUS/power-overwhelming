@@ -157,7 +157,8 @@ thread_local_sink<csv_sink<std::ofstream>> sink(512, std::ofstream("log.csv"));
 // callback. The sink must be passed as the user pointer to the callback.
 sensor_array_configuration config;
 config.sample_every(std::chrono::milliseconds(5))
-    .deliver_to(decltype(sink)::sample_callback, &sink);
+    .deliver_to(decltype(sink)::sample_callback)
+    .deliver_context(&sink);
 
 // Create an array for all available sensors.
 auto sensors = sensor_array::for_all(std::move(config));

@@ -138,9 +138,9 @@ private:
             next(nullptr),
             state(page_state::assigned_callback) { }
 
-        inline bool is_state(_In_ const page_state state) const noexcept {
+        inline bool is_state(_In_ const page_state reference) const noexcept {
             const auto s = this->state.load(std::memory_order_acquire);
-            return ((s & state) == state);
+            return ((s & reference) == reference);
         }
     };
 
