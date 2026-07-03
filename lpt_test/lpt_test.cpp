@@ -16,6 +16,7 @@
 
 #include <conio.h>
 #include <Windows.h>
+#include <ntddpar.h>
 #include <tchar.h>
 
 #include <wil/resource.h>
@@ -28,7 +29,7 @@
 /// <summary>
 /// Describes the current test run.
 /// </summary>
-struct test_run final {
+struct test final {
     wil::unique_event event;
     std::ofstream output;
     std::atomic<bool> running;
@@ -40,65 +41,86 @@ struct test_run final {
 /// <summary>
 /// Reads from the specified LPT port and logs the result.
 /// </summary>
-void read_port(_In_ const std::basic_string<TCHAR>& path, _In_ test_run& test) {
+void read_port(_In_ const std::basic_string<TCHAR>& path, _In_ test& test) {
     typedef std::chrono::duration<float, std::milli> millis;
-    wil::unique_hfile port(CreateFile(path.c_str(), GENERIC_READ, 0, nullptr,
-            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr));
-    THROW_LAST_ERROR_IF(!port);
 
-    char data;
-    DWORD read;
+    try {
+        wil::unique_hfile port(CreateFile(path.c_str(), GENERIC_READ, 0,
+            nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL));
+        THROW_LAST_ERROR_IF(!port);
 
-    while (test.running.load(std::memory_order_acquire)) {
-        THROW_LAST_ERROR_IF(!::ReadFile(port.get(), &data, sizeof(data),
-            &read, nullptr));
-        const auto read_time = visus::pwrowg::timestamp::now();
-        assert(read == 1);
+        //{
+        //    BYTE buffer[1024];
+        //    DWORD read;
 
-        const auto write_time = visus::pwrowg::timestamp::middle(
-            test.write_start, test.write_end);
-        const auto elapsed = std::chrono::duration_cast<millis>(
-            read_time - write_time);
+        //    THROW_LAST_ERROR_IF(!::DeviceIoControl(port.get(),
+        //        IOCTL_PAR_QUERY_DEVICE_ID, nullptr, 0, buffer, sizeof(buffer),
+        //        &read, nullptr));
+        //}
 
-        test.output
-            << test.write_start.value() << ","
-            << test.write_end.value() << ","
-            << write_time.value() << ","
-            << data << ","
-            << read_time.value() << ","
-            << elapsed.count() << ","
-            << std::endl;
+        char data;
+        DWORD read;
 
+        while (test.running.load(std::memory_order_acquire)) {
+            THROW_LAST_ERROR_IF(!::ReadFile(port.get(), &data, sizeof(data),
+                &read, nullptr));
+            const auto read_time = visus::pwrowg::timestamp::now();
+            assert(read == 1);
+
+            const auto write_time = visus::pwrowg::timestamp::middle(
+                test.write_start, test.write_end);
+            const auto elapsed = std::chrono::duration_cast<millis>(
+                read_time - write_time);
+
+            test.output
+                << test.write_start.value() << ","
+                << test.write_end.value() << ","
+                << write_time.value() << ","
+                << data << ","
+                << read_time.value() << ","
+                << elapsed.count() << ","
+                << std::endl;
+
+            test.event.SetEvent();
+        }
+    } catch (std::exception& ex) {
+        std::cout << ex.what() << std::endl;
+        test.running.store(false, std::memory_order_release);
         test.event.SetEvent();
     }
 }
+
 
 /// <summary>
 /// Writes to the specified LPT port.
 /// </summary>
 /// <param name="path"></param>
 /// <param name="test"></param>
-void write_port(_In_ const std::basic_string<TCHAR>& path,
-        _In_ test_run& test) {
-    wil::unique_hfile port(CreateFile(path.c_str(), GENERIC_WRITE, 0, nullptr,
-        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr));
-    THROW_LAST_ERROR_IF(!port);
+void write_port(_In_ const std::basic_string<TCHAR>& path, _In_ test& test) {
+    try {
+        wil::unique_hfile port(CreateFile(path.c_str(), GENERIC_WRITE, 0,
+            nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL));
+        THROW_LAST_ERROR_IF(!port);
 
-    char data = 'a';
-    DWORD written;
+        char data = 'a';
+        DWORD written;
 
-    while (test.running.load(std::memory_order_acquire)) {
-        test.event.wait();
+        while (test.running.load(std::memory_order_acquire)) {
+            test.event.wait();
 
-        test.write_start = visus::pwrowg::timestamp::now();
-        THROW_LAST_ERROR_IF(!::WriteFile(port.get(), &data, sizeof(data),
-            &written, nullptr));
-        test.write_end = visus::pwrowg::timestamp::now();
-        assert(written == 1);
+            test.write_start = visus::pwrowg::timestamp::now();
+            THROW_LAST_ERROR_IF(!::WriteFile(port.get(), &data, sizeof(data),
+                &written, nullptr));
+            test.write_end = visus::pwrowg::timestamp::now();
+            assert(written == 1);
 
-        if (++data > 'z') {
-            data = 'a';
+            if (++data > 'z') {
+                data = 'a';
+            }
         }
+    } catch (std::exception& ex) {
+        std::cout << ex.what() << std::endl;
+        test.running.store(false, std::memory_order_release);
     }
 }
 
@@ -160,11 +182,7 @@ int _tmain(const int argc, const TCHAR **argv) {
     }
 
     try {
-        wil::unique_hfile port(CreateFile(source_port.c_str(), GENERIC_READ, 0,
-            nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr));
-        THROW_LAST_ERROR_IF(!port);
-
-        test_run test;
+        test test;
         test.event.create();
         test.running.store(true, std::memory_order_release);
         test.output.open(output_path, std::ios::trunc);
@@ -178,6 +196,11 @@ int _tmain(const int argc, const TCHAR **argv) {
         std::wcout << L"Press any key to stop the test..." << std::endl;
         ::_getch();
         test.running.store(false, std::memory_order_release);
+        test.event.SetEvent();
+
+        std::wcout << L"Waiting for I/O threads to exit..." << std::endl;
+        reader.join();
+        writer.join();
 
         return 0;
     } catch (std::exception& ex) {
