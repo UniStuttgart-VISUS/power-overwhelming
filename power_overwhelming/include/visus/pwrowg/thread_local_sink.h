@@ -134,9 +134,10 @@ private:
         }
 
         inline explicit page(const std::size_t size)
-            : buffer(size),
-            next(nullptr),
-            state(page_state::assigned_callback) { }
+                : next(nullptr),
+                state(page_state::assigned_callback) { 
+            this->buffer.reserve(size);
+        }
 
         inline bool is_state(_In_ const page_state reference) const noexcept {
             const auto s = this->state.load(std::memory_order_acquire);
