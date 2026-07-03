@@ -61,6 +61,7 @@ PWROWG_NAMESPACE::rtx_configuration PWROWG_NAMESPACE::rtx_configuration::load(
  * PWROWG_NAMESPACE::rtx_configuration::rtx_configuration
  */
 PWROWG_NAMESPACE::rtx_configuration::rtx_configuration(void)
+#if defined(POWER_OVERWHELMING_WITH_VISA)
         : _download_retries(1),
         _download_timeout(0),
         _reset_flags(rtx_instrument_reset::reset
@@ -68,8 +69,12 @@ PWROWG_NAMESPACE::rtx_configuration::rtx_configuration(void)
         _reset_on_enumerate(false) {
     this->_sensors.emplace<std::vector<rtx_sensor_definition>>();
 }
+#else /* !defined(POWER_OVERWHELMING_WITH_VISA) */
+    { }
+#endif /* !defined(POWER_OVERWHELMING_WITH_VISA) */
 
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 /*
  * PWROWG_NAMESPACE::rtx_configuration::add_sensor
  */
@@ -204,3 +209,4 @@ PWROWG_NAMESPACE::rtx_configuration::sensors(
 
     return *this;
 }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */

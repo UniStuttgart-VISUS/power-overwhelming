@@ -12,13 +12,14 @@
 #include <cstdlib>
 #include <type_traits>
 
-#include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/guid.h"
+#if defined(POWER_OVERWHELMING_WITH_VISA)
 #include "visus/pwrowg/rtx_quantity.h"
 #include "visus/pwrowg/rtx_sensor_definition.h"
 #include "visus/pwrowg/rtx_instrument_configuration.h"
 #include "visus/pwrowg/rtx_instrument_reset.h"
 #include "visus/pwrowg/rtx_sensor_trigger.h"
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 #include "visus/pwrowg/sensor_configuration.h"
 #include "visus/pwrowg/string_functions.h"
 #include "visus/pwrowg/type_erased_storage.h"
@@ -83,6 +84,7 @@ public:
     /// </summary>
     rtx_configuration(void);
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// Adds a new sensor definition to the configuration.
     /// </summary>
@@ -345,9 +347,12 @@ public:
         this->_trigger = std::move(trigger);
         return *this;
     }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+
 
 private:
 
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     rtx_instrument_configuration _base_configuration;
     std::size_t _download_retries;
     timeout_type _download_timeout;
@@ -355,6 +360,8 @@ private:
     bool _reset_on_enumerate;
     type_erased_storage _sensors;
     rtx_sensor_trigger _trigger;
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+
 };
 
 PWROWG_NAMESPACE_END
