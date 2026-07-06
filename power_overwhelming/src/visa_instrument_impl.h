@@ -24,7 +24,6 @@
 #include "visus/pwrowg/visa_instrument.h"
 
 #include "visa_error_category.h"
-#include "visa_event_handler.h"
 #include "visa_library.h"
 
 
