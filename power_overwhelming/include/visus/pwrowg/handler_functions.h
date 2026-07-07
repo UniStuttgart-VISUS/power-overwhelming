@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cassert>
+#include <cinttypes>
 #include <cstdlib>
 #include <type_traits>
 
