@@ -19,7 +19,8 @@
 /*
  * PWROWG_NAMESPACE::daqmx_task::daqmx_task
  */
-PWROWG_NAMESPACE::daqmx_task::daqmx_task(_In_z_ const char *name) {
+PWROWG_NAMESPACE::daqmx_task::daqmx_task(_In_z_ const char *name)
+        : _on_done(nullptr), _on_sample(nullptr) {
     if (name == nullptr) {
         throw std::invalid_argument("A valid name for the task must be "
             "provided.");
@@ -42,6 +43,10 @@ PWROWG_NAMESPACE::daqmx_task::~daqmx_task(void) noexcept {
  * PWROWG_NAMESPACE::daqmx_task::clear
  */
 void PWROWG_NAMESPACE::daqmx_task::clear(void) noexcept {
+    delete this->_on_done;
+    this->_on_done = nullptr;
+    delete this->_on_sample;
+    this->_on_sample = nullptr;
     detail::daqmx_library::instance()._DAQmxClearTask(this->_handle);
     this->_handle = nullptr;
 }
@@ -201,50 +206,6 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator +=(
             DAQmx_Val_Volts,
             nullptr));
     return *this;
-}
-
-
-/*
- * PWROWG_NAMESPACE::daqmx_task::done_callback
- */
-int32 CVICALLBACK PWROWG_NAMESPACE::daqmx_task::done_callback(
-        _In_ const TaskHandle task, _In_ const int32 status,
-        _In_ void *context) {
-    auto that = static_cast<daqmx_task *>(context);
-
-    if ((that != nullptr) && that->_on_done) {
-        
-    }
-
-    return 0;
-}
-
-
-/*
- * PWROWG_NAMESPACE::daqmx_task::sample_callback
- */
-int32 CVICALLBACK PWROWG_NAMESPACE::daqmx_task::sample_callback(
-        _In_ const TaskHandle task, _In_ const int32 type,
-        _In_ const uInt32 cnt, _In_ void *context) {
-    return 0;
-}
-
-
-/*
- * PWROWG_NAMESPACE::daqmx_task::set_on_done
- */
-void PWROWG_NAMESPACE::daqmx_task::set_on_done(
-        _In_opt_ DAQmxDoneEventCallbackPtr cb) {
-    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
-        ._DAQmxRegisterDoneEvent(this->_handle, 0, cb, this));
-}
-
-
-/*
- * PWROWG_NAMESPACE::daqmx_task::set_on_sample
- */
-void PWROWG_NAMESPACE::daqmx_task::set_on_sample(
-        _In_opt_ DAQmxEveryNSamplesEventCallbackPtr cb) {
 }
 
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */

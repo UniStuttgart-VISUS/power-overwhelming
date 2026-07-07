@@ -10,11 +10,12 @@
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
 
 #include "visus/pwrowg/daqmx_current_channel.h"
+#include "visus/pwrowg/daqmx_done_handler.h"
 #include "visus/pwrowg/daqmx_implicit_timing.h"
 #include "visus/pwrowg/daqmx_power_channel.h"
 #include "visus/pwrowg/daqmx_sample_clock_timing.h"
+#include "visus/pwrowg/daqmx_sample_handler.h"
 #include "visus/pwrowg/daqmx_voltage_channel.h"
-#include "visus/pwrowg/type_erased_storage.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -33,6 +34,8 @@ public:
     explicit daqmx_task(_In_z_ const char *name);
 
     daqmx_task(const daqmx_task&) = delete;
+
+    daqmx_task(daqmx_task&&) = delete;
 
     /// <summary>
     /// Finalises the instance.
@@ -57,15 +60,55 @@ public:
     /// <typeparam name="TCallback"></typeparam>
     /// <param name="callback"></param>
     /// <returns><c>*<see langword="this" /></c>.</returns>
-    template<class TCallback> daqmx_task& on_done(_In_ TCallback&& callback);
+    template<class TCallback>
+    inline daqmx_task& on_done(_In_ TCallback&& callback) {
+        delete this->_on_done;
+        this->_on_done = detail::daqmx_done_handler::install(
+            *this, std::forward<TCallback>(callback));
+        return *this;
+    }
 
     /// <summary>
     /// Clears the callback for the task completion event.
     /// </summary>
     /// <returns><c>*<see langword="this" /></c>.</returns>
-    inline daqmx_task& on_done(const std::nullptr_t) {
-        this->_on_done.reset();
-        this->set_on_done(nullptr);
+    inline daqmx_task& on_done(const std::nullptr_t) noexcept {
+        delete this->_on_done;
+        this->_on_done = nullptr;
+        return *this;
+    }
+
+    template<class TCallback> inline daqmx_task& on_sample(
+            _In_ const uInt32 samples,
+            _In_ TCallback&& callback) {
+        delete this->_on_sample;
+        this->_on_sample = detail::daqmx_sample_handler::install(
+            *this,
+            daqmx_sample_event_type::acquired,
+            samples,
+            std::forward<TCallback>(callback));
+        return *this;
+    }
+
+    /// <summary>
+    /// Clears the regular sample callback for the task.
+    /// </summary>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline daqmx_task& on_sample(
+            _In_ const uInt32,
+            _In_ const std::nullptr_t) noexcept {
+        delete this->_on_sample;
+        this->_on_sample = nullptr;
+        return *this;
+    }
+
+    /// <summary>
+    /// Clears the regular sample callback for the task.
+    /// </summary>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline daqmx_task& on_sample(_In_ const std::nullptr_t) noexcept {
+        delete this->_on_sample;
+        this->_on_sample = nullptr;
         return *this;
     }
 
@@ -105,6 +148,8 @@ public:
 
     daqmx_task& operator =(const daqmx_task&) = delete;
 
+    daqmx_task& operator =(daqmx_task&&) = delete;
+
     /// <summary>
     /// Configures the given analog current channel as part of the task.
     /// </summary>
@@ -131,30 +176,27 @@ public:
     /// </summary>
     /// <returns><see langword="true" /> if the instance is valid,
     /// <see langword="false" /> otherwise.</returns>
-    operator bool(void) const noexcept {
+    inline operator bool(void) const noexcept {
         return (this->_handle != nullptr);
+    }
+
+    /// <summary>
+    /// Exposes the native task handle.
+    /// </summary>
+    /// <returns>The native task handle. The object remains owner of the
+    /// handle.</returns>
+    inline operator TaskHandle(void) const noexcept {
+        return this->_handle;
     }
 
 private:
 
-    static int32 CVICALLBACK done_callback(_In_ const TaskHandle task,
-        _In_ const int32 status, _In_ void *context);
-
-    static int32 CVICALLBACK sample_callback(_In_ const TaskHandle task,
-        _In_ const int32 type, _In_ const uInt32 cnt, _In_ void *context);
-
-    void set_on_done(_In_opt_ DAQmxDoneEventCallbackPtr cb = done_callback);
-
-    void set_on_sample(_In_opt_ DAQmxEveryNSamplesEventCallbackPtr cb);
-
     TaskHandle _handle;
-    type_erased_storage _on_done;
-    type_erased_storage _on_sample;
+    detail::daqmx_done_handler *_on_done;
+    detail::daqmx_sample_handler *_on_sample;
 };
 
 PWROWG_NAMESPACE_END
-
-#include "visus/pwrowg/daqmx_task.inl"
 
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 #endif /* !defined(_PWROWG_DAQMX_TASK_H) */

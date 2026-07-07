@@ -17,6 +17,7 @@
 
 #include <visa.h>
 
+#include "visus/pwrowg/handler_functions.h"
 #include "visus/pwrowg/visa_object.h"
 
 
@@ -38,7 +39,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// as opaque handles.</para>
 /// <para>This type works by allocating instances on the heap with additional
 /// space behind to hold the C++ callable to be invoked. This is achieved by
-/// providing a specialised <see cref="operator new" /> that allocated more
+/// providing a specialised <see cref="operator new" /> that allocates more
 /// space than requested and in-place constructs the callable behind the
 /// requested memory block. The destructor of the handler will call a
 /// type-erased destructor callback for the context. Therefore, it is important
@@ -57,21 +58,23 @@ class POWER_OVERWHELMING_API visa_event_handler final {
 public:
 
     /// <summary>
-    /// Installs a new event handler <paramref name="callback" /> for the given
+    /// Creates a new event handler <paramref name="callback" /> for the given
     /// <paramref name="event_type" /> on the VISA session of the given
-    /// <param name="instrument" />.
+    /// <param name="instrument" />, which can be installed using the
+    /// <ses cref="viInstallHandler" /> function for said session.
     /// </summary>
     /// <typeparam name="TCallback">A callable receiving a reference to the
     /// <see cref="visa_instrument" />, the <see cref="ViEventType" /> and a
     /// <see cref="visa_object" /> representing the event itself.</typeparam>
-    /// <param name="instrument"></param>
-    /// <param name="event_type"></param>
-    /// <param name="callback"></param>
+    /// <param name="instrument">The VISA instrument for which the event handler
+    /// is intended. The caller is responsible for making sure that the handler
+    /// is installed to the session of this instrument.</param>
+    /// <param name="event_type">The type of the event to subscribe.</param>
+    /// <param name="callback">The callback to be invoked.</param>
     /// <returns>An instance of the wrapper, which must be
-    /// <see langword="delete" />d in order to unregister the handler and to
-    /// free the memory associated with it. Typically, this pointer is only used
-    /// as a handle in the public API and should not be deleted by the users of
-    /// the library.</returns>
+    /// <see langword="delete" />d after the handler has been unregistered.
+    /// Typically, this pointer is only used as a handle in the public API and
+    /// should not be deleted by the users of the library.</returns>
     template<class TCallback> static _Ret_valid_ visa_event_handler *create(
         _In_ visa_instrument& instrument,
         _In_ const ViEventType event_type,
@@ -94,15 +97,17 @@ public:
     /// </returns>
     /// <exception cref="std::bad_alloc">If the allocation failed.</exception>
     template<class TContext> static void *operator new(
-        _In_ const std::size_t size, _In_ TContext&& context);
+            _In_ const std::size_t size,
+            _In_ TContext&& context) {
+        return allocate_with_context(size, std::forward<TContext>(context));
+    }
 
     /// <summary>
     /// Frees the memory allocated for an instance of the handler.
     /// </summary>
     /// <param name="ptr">The memory to be freed.</param>
     static inline void operator delete(_In_ void *ptr) noexcept {
-        assert(ptr != nullptr);
-        ::operator delete(ptr);
+        free_with_context(ptr);
     }
 
     visa_event_handler(const visa_event_handler&) = delete;
@@ -113,7 +118,7 @@ public:
     /// Finalises the instance.
     /// </summary>
     inline ~visa_event_handler(void) noexcept {
-        this->_dtor(this + 1);
+        this->_dtor(this);
     }
 
     visa_event_handler& operator =(const visa_event_handler&) = delete;
@@ -148,7 +153,11 @@ private:
     /// of the instance.
     /// </summary>
     template<class TContext>
-    static void dtor(_In_ visa_event_handler *ptr) noexcept;
+    static void dtor(_In_ visa_event_handler *ptr) noexcept {
+        assert(ptr != nullptr);
+        auto ctx = reinterpret_cast<TContext *>(ptr + 1);
+        ctx->~TContext();
+    }
 
     /// <summary>
     /// The native callback function that is used to invoke functors from VISA.
@@ -179,8 +188,7 @@ private:
     /// <param name="handler">The native handler, which must be an instance of
     /// <see cref="invoke" />.</param>
     /// <param name="dtor">The destructor callback to be used for the context of
-    /// the instance. Use <see cref="no_destructor" /> if there is no context.
-    /// </param>
+    /// the instance.</param>
     visa_event_handler(_In_ visa_instrument& instrument,
         _In_ const ViEventType type,
         _In_ const ViHndlr handler,

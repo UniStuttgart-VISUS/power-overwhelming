@@ -723,6 +723,5 @@ inline std::basic_string<TChar, TTraits, TAlloc>& trim_if(
 
 PWROWG_DETAIL_NAMESPACE_END
 
-#include "string_functions.inl"
-
+#include "visus/pwrowg/string_functions.inl"
 #endif /* !defined(_PWROWG_STRING_FUNCTIONS_H) */

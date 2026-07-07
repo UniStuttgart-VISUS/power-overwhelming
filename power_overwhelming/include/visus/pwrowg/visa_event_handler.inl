@@ -21,41 +21,6 @@ PWROWG_DETAIL_NAMESPACE::visa_event_handler::create(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::visa_event_handler::operator new
- */
-template<class TContext>
-void *PWROWG_DETAIL_NAMESPACE::visa_event_handler::operator new(
-        _In_ const std::size_t size,
-        _In_ TContext&& context) {
-    typedef std::decay_t<TContext> context_type;
-    auto retval = ::operator new(size + sizeof(context_type));
-    assert(retval != nullptr);
-
-    try {
-        auto ctx = reinterpret_cast<std::uint8_t *>(retval) + size;
-        new (ctx) context_type(std::forward<TContext>(context));
-    } catch (...) {
-        ::operator delete(retval);
-        throw;
-    }
-
-    return retval;
-}
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::visa_event_handler::dtor
- */
-template<class TContext>
-void PWROWG_DETAIL_NAMESPACE::visa_event_handler::dtor(
-        _In_ _In_ visa_event_handler *ptr) noexcept {
-    assert(ptr != nullptr);
-    auto ctx = reinterpret_cast<TContext *>(ptr + 1);
-    ctx->~TContext();
-}
-
-
-/*
  * PWROWG_DETAIL_NAMESPACE::visa_event_handler::invoke
  */
 template<class TCallback>

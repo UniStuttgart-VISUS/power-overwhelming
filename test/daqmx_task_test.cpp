@@ -50,6 +50,25 @@ public:
     }
 #endif
 
+    TEST_METHOD(on_done) {
+        daqmx_task task("test");
+        Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
+        task += daqmx_voltage_channel("NIUSB-6423/ai0").min_value(-10.0).max_value(10.0);
+        task.on_done([](const daqmx_task& task, const int32) {
+            Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
+            return 0;
+        });
+    }
+
+    TEST_METHOD(on_sample) {
+        daqmx_task task("test");
+        Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
+        task += daqmx_voltage_channel("NIUSB-6423/ai0").min_value(-10.0).max_value(10.0);
+        task.on_sample(1024, [](const daqmx_task& task, const daqmx_sample_event_type, uInt32) {
+            Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
+            return 0;
+        });
+    }
 };
 
 PWROWG_TEST_NAMESPACE_END
