@@ -8,6 +8,8 @@
 #define _PWROWG_RTX_SERIALISATION_H
 #pragma once
 
+#include <type_traits>
+
 #include "visus/pwrowg/rtx_acquisition.h"
 #include "visus/pwrowg/rtx_channel.h"
 #include "visus/pwrowg/rtx_configuration.h"
