@@ -63,7 +63,6 @@ public:
     /// </returns>
     static rtx_configuration load(_In_z_ const wchar_t *path);
 
-
     /// <summary>
     /// Loads an <see cref="rtx_configuration" /> from a JSON file.
     /// </summary>
@@ -214,13 +213,29 @@ public:
     /// Configure a custom timeout for downloading the channel data.
     /// </summary>
     /// <param name="download_timeout">The timeout used for downloading the
-    /// channel data, or zero to use the timeout set on the instrument when the
-    /// download is started.</param>
+    /// channel data, in milliseconds, or zero to use the timeout set on the
+    /// instrument when the download is started.</param>
     /// <returns><c>*<see cref="this" /></c>.</returns>
     inline rtx_configuration& download_timeout(
             _In_ const timeout_type download_timeout) noexcept {
         this->_download_timeout = download_timeout;
         return *this;
+    }
+
+    /// <summary>
+    /// Configure a custom timeout for downloading the channel data.
+    /// </summary>
+    /// <typeparam name="TRep">The value type of the duration.</typeparam>
+    /// <typeparam name="TPeriod">The period of the duration.</typeparam>
+    /// <param name="t">The timeout used for downloading the channel
+    /// data.</param>
+    /// <returns><c>*<see cref="this" /></c>.</returns>
+    template<class TRep, class TPeriod>
+    inline rtx_configuration& download_timeout(
+            _In_ const std::chrono::duration<TRep, TPeriod>& t) noexcept {
+        typedef std::chrono::duration<timeout_type, std::milli> millis_type;
+        return this->download_timeout(std::chrono::duration_cast<millis_type>(
+            t).count());
     }
 
     /// <summary>
