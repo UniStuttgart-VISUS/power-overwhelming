@@ -44,6 +44,10 @@ public:
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
+    /// <remarks>
+    /// Constructs a sensor that manually computes power from a voltage and a
+    /// current channel.
+    /// <remarks>
     /// <param name="voltage_channel"></param>
     /// <param name="current_channel"></param>
     /// <param name="description"></param>
@@ -55,6 +59,10 @@ public:
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
+    /// <remarks>
+    /// Constructs a sensor that uses the built-in computed power channel of 
+    /// a NI-DAQmx device.
+    /// <remarks>
     /// <param name="power_channel"></param>
     /// <param name="description"></param>
     explicit daqmx_sensor_definition(
@@ -64,6 +72,13 @@ public:
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
+    /// <remarks>
+    /// Constructs a sensor that manually computes power from a voltage and a
+    /// current channel where the current channel is measured in Volts
+    /// (e.g. using a current clamp) and the sensor has to translate this
+    /// voltage to current based on the given
+    /// <paramref name="volt_per_ampere" />.
+    /// </remarks>
     /// <param name="voltage_channel"></param>
     /// <param name="current_channel"></param>
     /// <param name="description"></param>
