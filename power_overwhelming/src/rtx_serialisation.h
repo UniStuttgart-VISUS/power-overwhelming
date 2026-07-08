@@ -25,9 +25,9 @@
 
 #define _PWROWG_DESERIALISE_FIELD(member) auto member = json_deserialise<\
     typename std::decay<decltype(std::declval<value_type>().member())>::type\
-    >(json[#member])
+    >(json[u8#member])
 
-#define _PWROWG_SERIALISE_FIELD(field) json_serialise(#field, value.field())
+#define _PWROWG_SERIALISE_FIELD(field) json_serialise(u8#field, value.field())
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
