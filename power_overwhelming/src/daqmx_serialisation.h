@@ -65,6 +65,7 @@ template<> struct json_serialiser<daqmx_current_channel, false, false> final {
 };
 
 
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
 /// <summary>
 /// Specialisation for <see cref="daqmx_implicit_timing" />.
 /// </summary>
@@ -84,6 +85,7 @@ template<> struct json_serialiser<daqmx_implicit_timing, false, false> final {
         });
     }
 };
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 
 
 /// <summary>
@@ -129,6 +131,35 @@ template<> struct json_serialiser<daqmx_power_channel, false, false> final {
         });
     }
 };
+
+
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+/// <summary>
+/// Specialisation for <see cref="daqmx_sample_clock_timing" />.
+/// </summary>
+template<> struct json_serialiser<daqmx_sample_clock_timing, false, false> final {
+    typedef daqmx_sample_clock_timing value_type;
+
+    static inline value_type deserialise(_In_ const nlohmann::json& json) {
+        _PWROWG_DESERIALISE_FIELD(edge);
+        _PWROWG_DESERIALISE_FIELD(mode);
+        _PWROWG_DESERIALISE_FIELD(rate);
+        _PWROWG_DESERIALISE_FIELD(samples);
+        _PWROWG_DESERIALISE_FIELD(source);
+        return value_type(source.c_str(), rate, edge, mode, samples);
+    }
+
+    static inline nlohmann::json serialise(_In_ const value_type& value) {
+        return nlohmann::json::object({
+            _PWROWG_SERIALISE_FIELD(edge),
+            _PWROWG_SERIALISE_FIELD(mode),
+            _PWROWG_SERIALISE_FIELD(rate),
+            _PWROWG_SERIALISE_FIELD(samples),
+            _PWROWG_SERIALISE_FIELD(source)
+        });
+    }
+};
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 
 
 /// <summary>
