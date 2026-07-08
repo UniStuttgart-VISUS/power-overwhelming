@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <type_traits>
 
+#include "visus/pwrowg/macro_concat.h"
 #include "visus/pwrowg/daqmx_current_channel.h"
 #include "visus/pwrowg/daqmx_implicit_timing.h"
 #include "visus/pwrowg/daqmx_power_channel.h"
@@ -23,10 +24,11 @@
 
 
 #define _PWROWG_DESERIALISE_FIELD(member) auto member = json_deserialise<\
-    typename std::decay<decltype(std::declval<value_type>().member())>::type\
-    >(json[u8#member])
+    typename std::decay<decltype(std::declval<value_type>().member())>::type>\
+    (json[PWROWG_CONCAT(u8, #member)])
 
-#define _PWROWG_SERIALISE_FIELD(field) json_serialise(u8#field, value.field())
+#define _PWROWG_SERIALISE_FIELD(field) json_serialise(\
+    PWROWG_CONCAT(u8, #field), value.field())
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
