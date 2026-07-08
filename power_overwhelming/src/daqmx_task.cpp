@@ -7,6 +7,7 @@
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
 #include "visus/pwrowg/daqmx_task.h"
 
+#include <limits>
 #include <memory>
 #include <stdexcept>
 
@@ -60,6 +61,75 @@ bool PWROWG_NAMESPACE::daqmx_task::done(void) const {
     detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
         ._DAQmxIsTaskDone(this->_handle, &done));
     return (done != 0);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::daqmx_task::input_buffer
+ */
+PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::input_buffer(
+        _In_ const std::size_t size) {
+    const auto s = (size > (std::numeric_limits<uInt32>::max)())
+        ? (std::numeric_limits<uInt32>::max)()
+        : static_cast<uInt32>(size);
+    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+        ._DAQmxCfgInputBuffer(this->_handle, s));
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::daqmx_task::output_buffer
+ */
+PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::output_buffer(
+        _In_ const std::size_t size) {
+    const auto s = (size > (std::numeric_limits<uInt32>::max)())
+        ? (std::numeric_limits<uInt32>::max)()
+        : static_cast<uInt32>(size);
+    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+        ._DAQmxCfgOutputBuffer(this->_handle, s));
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::daqmx_task::read
+ */
+std::size_t PWROWG_NAMESPACE::daqmx_task::read(
+        _Out_writes_(cnt * samples) double *dst,
+        _In_ const std::size_t cnt,
+        _In_ const int32 samples,
+        _In_ const bool interleaved,
+        _In_ const double timeout) {
+    const auto avail = (cnt > (std::numeric_limits<uInt32>::max)())
+        ? (std::numeric_limits<uInt32>::max)()
+        : static_cast<uInt32>(cnt);
+    const auto fill = interleaved
+        ? DAQmx_Val_GroupByChannel
+        : DAQmx_Val_GroupByScanNumber;
+
+    int32 read = 0;
+    const auto status = detail::daqmx_library::instance()
+        ._DAQmxReadAnalogF64(
+            this->_handle,
+            static_cast<int32>(samples),
+            timeout,
+            fill,
+            dst,
+            avail,
+            &read,
+            nullptr);
+
+    switch (status) {
+        case DAQmxErrorTimeoutExceeded:
+            return 0;
+
+        default:
+            detail::throw_if_daqmx_failed(status);
+            break;
+    }
+
+    return static_cast<std::size_t>(read);
 }
 
 

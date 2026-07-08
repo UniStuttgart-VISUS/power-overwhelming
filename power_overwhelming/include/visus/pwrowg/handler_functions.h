@@ -12,6 +12,7 @@
 #include <cinttypes>
 #include <cstdlib>
 #include <type_traits>
+#include <utility>
 
 #include "visus/pwrowg/api.h"
 

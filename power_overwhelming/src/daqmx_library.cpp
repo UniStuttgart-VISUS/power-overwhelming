@@ -30,6 +30,8 @@ PWROWG_DETAIL_NAMESPACE::daqmx_library::daqmx_library(void)
         : library_base(TEXT("nicaiu.dll")) {
 #endif /* defined(_WIN32) */
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxCfgImplicitTiming);
+    __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxCfgInputBuffer);
+    __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxCfgOutputBuffer);
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxCfgSampClkTiming);
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxClearTask);
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxCreateAICalculatedPowerChan);
@@ -39,6 +41,7 @@ PWROWG_DETAIL_NAMESPACE::daqmx_library::daqmx_library(void)
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxGetErrorString);
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxGetExtendedErrorInfo);
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxIsTaskDone);
+    __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxReadAnalogF64);
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxRegisterDoneEvent);
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxRegisterEveryNSamplesEvent);
     __POWER_OVERWHELMING_DAQMX_FUNC(DAQmxRegisterSignalEvent);

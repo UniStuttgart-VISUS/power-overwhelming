@@ -55,6 +55,15 @@ public:
     bool done(void) const;
 
     /// <summary>
+    /// Configures the number of samples the internal buffer can hold per
+    /// channel.
+    /// </summary>
+    /// <param name="size">The number of buffered samples. Use zero to disable
+    /// buffering.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    daqmx_task& input_buffer(_In_ const std::size_t size);
+
+    /// <summary>
     /// Sets a callback to be invoked when the task is completed.
     /// </summary>
     /// <typeparam name="TCallback"></typeparam>
@@ -78,16 +87,41 @@ public:
         return *this;
     }
 
+    /// <summary>
+    /// Installs a callback to be invoked whenever the task has acquired
+    /// or emitted a given number of <paramref name="samples" />.
+    /// </summary>
+    /// <typeparam name="TCallback">The type of the callback.</typeparam>
+    /// <param name="samples">The number of samples to wait for before
+    /// invoking the callback.</param>
+    /// <param name="type">The type of the sample event to wait for.</param>
+    /// <param name="callback">The callback to be invoked.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
     template<class TCallback> inline daqmx_task& on_sample(
             _In_ const uInt32 samples,
+            _In_ const daqmx_sample_event_type type,
             _In_ TCallback&& callback) {
         delete this->_on_sample;
         this->_on_sample = detail::daqmx_sample_handler::install(
-            *this,
-            daqmx_sample_event_type::acquired,
-            samples,
-            std::forward<TCallback>(callback));
+            *this, type, samples, std::forward<TCallback>(callback));
         return *this;
+    }
+
+    /// <summary>
+    /// Installs a callback to be invoked whenever the task has acquired
+    /// a given number of <paramref name="samples" />.
+    /// </summary>
+    /// <typeparam name="TCallback">The type of the callback.</typeparam>
+    /// <param name="samples">The number of samples to wait for before
+    /// invoking the callback.</param>
+    /// <param name="callback">The callback to be invoked.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    template<class TCallback> inline daqmx_task& on_sample(
+            _In_ const uInt32 samples,
+            _In_ TCallback&& callback) {
+        return this->on_sample(samples,
+            daqmx_sample_event_type::acquired,
+            std::forward<TCallback>(callback));
     }
 
     /// <summary>
@@ -111,6 +145,41 @@ public:
         this->_on_sample = nullptr;
         return *this;
     }
+
+    /// <summary>
+    /// Reads at most <paramref name="samples" /> per configured channel into
+    /// the given buffer.
+    /// </summary>
+    /// <param name="dst">A buffer of <pararmef name="cnt" /> numbers to store
+    /// the samples to.</param>
+    /// <param name="cnt">The number of elements in <paramref name="dst" />. If
+    /// not specified, the default value reading as many samples as are
+    /// available is used. If the default value is used for a task acquiring a
+    /// finite number of samples, the call will block until all samples have
+    /// been acquired or the timeout has been reached.</param>
+    /// <param name="samples">The number of samples to read per channel.</param>
+    /// <param name="interleaved">Indicates whether the values of a single
+    /// sample should be consecutive (channels are interleaved) or all samples
+    /// of a channel should be consecutive.</param>
+    /// <param name="timeout">The maximum amount of time to wait, in seconds.
+    /// Use <c>DAQmx_Val_WaitInfinitely</c> (the default) to wait indefinitely.
+    /// </param>
+    /// <returns>The number of samples read or zero if the operation timed out.
+    /// </returns>
+    std::size_t read(_Out_writes_(cnt * samples) double *dst,
+        _In_ const std::size_t cnt,
+        _In_ const int32 samples = DAQmx_Val_Auto,
+        _In_ const bool interleaved = false,
+        _In_ const double timeout = DAQmx_Val_WaitInfinitely);
+
+    /// <summary>
+    /// Configures the number of samples the internal buffer can hold per
+    /// channel.
+    /// </summary>
+    /// <param name="size">The number of buffered samples. Use zero to disable
+    /// buffering.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    daqmx_task& output_buffer(_In_ const std::size_t size);
 
     /// <summary>
     /// Starts the task.

@@ -7,7 +7,9 @@
 #include "pch.h"
 
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
+#include <visus/pwrowg/event.h>
 #include <visus/pwrowg/daqmx_task.h>
+#include <visus/pwrowg/on_exit.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -50,6 +52,8 @@ public:
     }
 #endif
 
+#if false
+    // Note: This test requires a (simulated) device NIUSB-6423 to be present.
     TEST_METHOD(on_done) {
         daqmx_task task("test");
         Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
@@ -59,7 +63,10 @@ public:
             return 0;
         });
     }
+#endif
 
+#if false
+    // Note: This test requires a (simulated) device NIUSB-6423 to be present.
     TEST_METHOD(on_sample) {
         daqmx_task task("test");
         Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
@@ -69,6 +76,30 @@ public:
             return 0;
         });
     }
+#endif
+
+#if true
+    // Note: This test requires a (simulated) device NIUSB-6423 to be present.
+    TEST_METHOD(read) {
+        daqmx_task task("test");
+        Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
+        task += daqmx_voltage_channel("NIUSB-6423/ai0").terminal_configuration(daqmx_terminal_configuration::differential).min_value(-10.0).max_value(10.0);
+        task += daqmx_voltage_channel("NIUSB-6423/ai1").terminal_configuration(daqmx_terminal_configuration::differential).min_value(-10.0).max_value(10.0);
+        task.timing(daqmx_sample_clock_timing(100.0, daqmx_edge::rising, daqmx_sample_mode::continuous, 10));
+        auto evt = create_event();
+        pwrowg_on_exit([&evt]() { destroy_event(evt); });
+        task.on_sample(10, [evt](daqmx_task& t, const daqmx_sample_event_type, const uInt32 cnt) {
+            Assert::AreEqual(uInt32(10), cnt, L"Sample count ready", LINE_INFO());
+            std::array<double, 20> buffer;
+            Assert::AreEqual(std::size_t(10), t.read(buffer.data(), buffer.size()), L"Read all", LINE_INFO());
+            set_event(evt);
+            return 0;
+        });
+        task.start();
+        wait_event(evt);
+    }
+#endif
+
 };
 
 PWROWG_TEST_NAMESPACE_END
