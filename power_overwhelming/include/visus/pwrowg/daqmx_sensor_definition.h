@@ -37,7 +37,9 @@ public:
     daqmx_sensor_definition(void) noexcept
         : _current_channel(nullptr),
         _power_channel(nullptr),
-        _voltage_channel(nullptr) { }
+        _voltage_channel(nullptr),
+        _voltage_for_current_channel(nullptr),
+        _volt_per_ampere(0.0f) { }
 
     /// <summary>
     /// Initialises a new instance.
@@ -60,13 +62,26 @@ public:
         _In_opt_z_ const wchar_t *description = nullptr);
 
     /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name="voltage_channel"></param>
+    /// <param name="current_channel"></param>
+    /// <param name="description"></param>
+    daqmx_sensor_definition(
+        _In_ const daqmx_voltage_channel& voltage_channel,
+        _In_ const daqmx_voltage_channel& current_channel,
+        _In_ const double volt_per_ampere,
+        _In_opt_z_ const wchar_t *description = nullptr);
+
+    /// <summary>
     /// Initialise a clone.
     /// </summary>
     /// <param name="other">The object to be cloned.</param>
     inline daqmx_sensor_definition(_In_ const daqmx_sensor_definition& other)
             : _current_channel(nullptr),
             _power_channel(nullptr),
-            _voltage_channel(nullptr) {
+            _voltage_channel(nullptr),
+            _voltage_for_current_channel(nullptr) {
         *this = other;
     }
 
@@ -124,6 +139,27 @@ public:
     }
 
     /// <summary>
+    /// Answer the current channel in case a current clamp is attached to a
+    /// voltage channel to get current. This may be <see langword="nullptr" />
+    /// if the sensor is defined using the built-in computed power channel.
+    /// </summary>
+    /// <returns>The current channel.</returns>
+    inline _Ret_maybenull_ const daqmx_voltage_channel *
+    voltage_for_current_channel(void) const noexcept {
+        return this->_voltage_for_current_channel;
+    }
+
+    /// <summary>
+    /// Answer the voltage reported per ampere of current for a configuration
+    /// using a <see cref="voltage_for_current_channel" />. This value is
+    /// undefined for any other kind of sensor definition.
+    /// </summary>
+    /// <returns>The Volts reported for an Ampere.</returns>
+    inline double volt_per_ampere(void) const noexcept {
+        return this->_volt_per_ampere;
+    }
+
+    /// <summary>
     /// Assignment.
     /// </summary>
     /// <param name="rhs">The right-hand-side operand.</param>
@@ -144,6 +180,8 @@ private:
     blob _description;
     daqmx_power_channel *_power_channel;
     daqmx_voltage_channel *_voltage_channel;
+    daqmx_voltage_channel *_voltage_for_current_channel;
+    double _volt_per_ampere;
 };
 
 PWROWG_NAMESPACE_END
