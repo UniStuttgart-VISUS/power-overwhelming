@@ -20,6 +20,7 @@ TEST_CLASS(daqmx_configuration_test) {
 
 public:
 
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
     TEST_METHOD(timing_get_set) {
         daqmx_configuration config;
         config.timing(daqmx_implicit_timing(daqmx_sample_mode::hardware_timed_single_point, 512));
@@ -57,6 +58,7 @@ public:
             Assert::IsNull(t, L"implicit timing pointer should be null", LINE_INFO());
         }
     }
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 
     TEST_METHOD(channels) {
         daqmx_configuration config;
