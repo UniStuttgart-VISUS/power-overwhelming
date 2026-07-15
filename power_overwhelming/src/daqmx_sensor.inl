@@ -47,5 +47,12 @@ template<class TIterator> PWROWG_DETAIL_NAMESPACE::daqmx_sensor::daqmx_sensor(
         _In_ const configuration_type& config)
     : _index(index),
         _owner(owner) {
-    throw "TODO";
+    typedef sensor_description_builder builder_type;
+    typedef daqmx_sensor_definition private_type;
+
+    std::transform(begin, end,
+        std::back_inserter(this->_sensors),
+        [](const auto& d) {
+            return *builder_type::private_data<private_type>(d);
+        });
 }

@@ -245,10 +245,20 @@ bool PWROWG_NAMESPACE::daqmx_task::wait(_In_ const double timeout) const {
  */
 PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator +=(
         _In_ const daqmx_current_channel& rhs) {
+    auto min_value = rhs.min_value();
+    auto max_value = rhs.max_value();
+
+    //if (min_value == max_value) {
+    //    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+    //        ._DAQmxGetDevAICurrentRngs(
+    //            rhs.channel(),
+    //            &min_value);
+    //}
+
     PWROWG_TRACE("Adding current channel \"%s\" as \"%s\" with terminal "
         "configuration %d, range [%g, %g], shunt resistor %d, shunt value %g.",
         rhs.channel(), rhs.name(), rhs.terminal_configuration(),
-        rhs.min_value(), rhs.max_value(), rhs.shunt_resistor_location(),
+        min_value, max_value, rhs.shunt_resistor_location(),
         rhs.shunt_resistor_value());
     detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
         ._DAQmxCreateAICurrentChan(
@@ -256,8 +266,8 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator +=(
             rhs.channel(),
             rhs.name(),
             static_cast<int32>(rhs.terminal_configuration()),
-            rhs.min_value(),
-            rhs.max_value(),
+            min_value,
+            max_value,
             DAQmx_Val_Amps,
             static_cast<int32>(rhs.shunt_resistor_location()),
             rhs.shunt_resistor_value(),
@@ -271,14 +281,18 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator +=(
  */
 PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator +=(
         _In_ const daqmx_power_channel& rhs) {
+    auto voltage_min_value = rhs.voltage_min_value();
+    auto voltage_max_value = rhs.voltage_max_value();
+    auto current_min_value = rhs.current_min_value();
+    auto current_max_value = rhs.current_max_value();
+
     PWROWG_TRACE("Adding power channel \"%s\" (voltage), \"%s\" (current) as "
         "\"%s\" with terminal configuration %d, range [%g, %g] (voltage), "
         "[%g, %g] (current), shunt resistor %d, shunt value %g.",
         rhs.voltage_channel(), rhs.current_channel(), rhs.name(),
-        rhs.terminal_configuration(), rhs.voltage_min_value(),
-        rhs.voltage_max_value(), rhs.current_min_value(),
-        rhs.current_max_value(), rhs.shunt_resistor_location(),
-        rhs.shunt_resistor_value());
+        rhs.terminal_configuration(), voltage_min_value,
+        voltage_max_value, current_min_value, current_max_value,
+        rhs.shunt_resistor_location(), rhs.shunt_resistor_value());
     detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
         ._DAQmxCreateAICalculatedPowerChan(
             this->_handle,
@@ -286,10 +300,10 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator +=(
             rhs.current_channel(),
             rhs.name(),
             static_cast<int32>(rhs.terminal_configuration()),
-            rhs.voltage_min_value(),
-            rhs.voltage_max_value(),
-            rhs.current_min_value(),
-            rhs.current_max_value(),
+            voltage_min_value,
+            voltage_max_value,
+            current_min_value,
+            current_max_value,
             DAQmx_Val_Watts,
             static_cast<int32>(rhs.shunt_resistor_location()),
             rhs.shunt_resistor_value(),
@@ -303,18 +317,21 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator +=(
  */
 PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator +=(
         _In_ const daqmx_voltage_channel& rhs) {
+    auto min_value = rhs.min_value();
+    auto max_value = rhs.max_value();
+
     PWROWG_TRACE("Adding voltage channel \"%s\" as \"%s\" with terminal "
         "configuration %d, range [%g, %g].",
         rhs.channel(), rhs.name(), rhs.terminal_configuration(),
-        rhs.min_value(), rhs.max_value());
+        min_value, max_value);
     detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
         ._DAQmxCreateAIVoltageChan(
             this->_handle,
             rhs.channel(),
             rhs.name(),
             static_cast<int32>(rhs.terminal_configuration()),
-            rhs.min_value(),
-            rhs.max_value(),
+            min_value,
+            max_value,
             DAQmx_Val_Volts,
             nullptr));
     return *this;

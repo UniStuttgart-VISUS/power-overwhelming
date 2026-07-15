@@ -8,7 +8,9 @@
 #define _PWROWG_DAQMX_SENSOR_H
 #pragma once
 
+#include <algorithm>
 #include <list>
+#include <vector>
 
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/daqmx_configuration.h"
@@ -142,6 +144,7 @@ private:
 
     std::size_t _index;
     const sensor_array_impl *_owner;
+    std::vector<daqmx_sensor_definition> _sensors;
     daqmx_sensor_trigger _trigger;
 };
 

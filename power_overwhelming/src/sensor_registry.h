@@ -26,6 +26,7 @@
 
 #include "adl_sensor.h"
 #include "benchlab_sensor.h"
+#include "daqmx_sensor.h"
 #include "detect_sample.h"
 #include "emi_sensor.h"
 #include "hmc8015_sensor.h"
@@ -325,7 +326,12 @@ typedef basic_sensor_registry<
 #if defined(POWER_OVERWHELMING_WITH_BENCHLAB)
     benchlab_sensor,
 #endif /* defined(POWER_OVERWHELMING_WITH_BENCHLAB) */
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+    daqmx_sensor,
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     hmc8015_sensor,
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 #if defined(POWER_OVERWHELMING_WITH_IGCL)
     igcl_sensor,
 #endif /* defined(POWER_OVERWHELMING_WITH_IGCL) */
@@ -340,7 +346,9 @@ typedef basic_sensor_registry<
 #if defined(POWER_OVERWHELMING_WITH_POWENETICS)
     powenetics_sensor,
 #endif /* defined(POWER_OVERWHELMING_WITH_POWENETICS) */
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     rtx_sensor,
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     tinkerforge_sensor>
     sensor_registry;
 

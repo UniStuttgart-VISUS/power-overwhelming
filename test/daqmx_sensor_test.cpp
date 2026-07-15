@@ -8,9 +8,11 @@
 
 #include <visus/pwrowg/daqmx_configuration.h>
 #include <visus/pwrowg/daqmx_current_channel.h>
+#include <visus/pwrowg/daqmx_device.h>
 #include <visus/pwrowg/daqmx_power_channel.h>
 #include <visus/pwrowg/daqmx_sensor_definition.h>
 #include <visus/pwrowg/daqmx_voltage_channel.h>
+#include <visus/pwrowg/multi_sz.h>
 
 #include <daqmx_serialisation.h>
 
@@ -173,6 +175,70 @@ public:
         Assert::AreEqual("ai1", e.voltage_channel()->channel(), L"voltage_channel path", LINE_INFO());
         Assert::AreEqual("ai2", e.voltage_for_current_channel()->channel(), L"voltage_for_current_channel path", LINE_INFO());
     }
+
+
+    TEST_METHOD(test_sensor_creation) {
+        typedef detail::daqmx_sensor type;
+        const auto device = test_instrument();
+
+        if (device) {
+            detail::sensor_array_impl owner;
+            owner.configuration = std::make_unique<detail::sensor_array_configuration_impl>();
+            owner.configuration->sensor_configs[type::configuration_type::id] = std::make_unique<type::configuration_type>();
+
+            auto sensor_config0 = owner.configuration->find_sensor_config(type::configuration_type::id);
+            Assert::IsNotNull(sensor_config0, L"Configuration is set", LINE_INFO());
+
+            auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
+            Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
+
+            //sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(3), 5000, 4000).beep_on_trigger(true))
+            //    .download_retries(1)
+            //    .download_timeout(10000);
+            //auto trigger = rtx_sensor_trigger_builder::for_path(device.c_str()).when_software_triggered().build();
+            ////trigger = rtx_sensor_trigger_builder::for_all().when_parallel_port("LPT1").measured_via_external().build();
+            //trigger = rtx_sensor_trigger_builder::for_all().when_channel("CH0").rises_above(0.1f).build();
+            //sensor_config->trigger(trigger);
+
+            sensor_config->add_sensor(
+                daqmx_sensor_definition(
+                    daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 0)).max_value(10),
+                    daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 1)).max_value(10),
+                    10));
+            sensor_config->add_sensor(
+                daqmx_sensor_definition(
+                    daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 2)).max_value(10),
+                    daqmx_current_channel(multi_sz<char>::at(device.analog_inputs(), 3)).max_value(10).shunt_resistor_value(500)));
+
+            std::vector<sensor_description> descs;
+            descs.resize(type::descriptions(nullptr, 0, *sensor_config));
+            type::descriptions(descs.data(), descs.size(), *sensor_config);
+
+            type::list_type sensors;
+            const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), &owner, *sensor_config);
+            Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
+
+            //sensors.front().sample(true);
+            //std::this_thread::sleep_for(std::chrono::seconds(1));
+            //Assert::IsTrue(trigger.acquire(
+            //    [](void) { Assert::IsTrue(true, L"Triggered", LINE_INFO()); },
+            //    [](std::exception_ptr) { Assert::IsTrue(false, L"Acquisition failure", LINE_INFO()); return true; }
+            //), L"Acquire scheduled", LINE_INFO());
+            //std::this_thread::sleep_for(std::chrono::seconds(5));
+        }
+    }
+
+    private:
+
+        static daqmx_device test_instrument(void) {
+            std::vector<daqmx_device> devices(daqmx_device::all(nullptr, 0));
+            if (devices.empty()) {
+                return daqmx_device();
+            }
+
+            daqmx_device::all(devices.data(), devices.size());
+            return devices.front();
+        }
 };
 
 PWROWG_TEST_NAMESPACE_END

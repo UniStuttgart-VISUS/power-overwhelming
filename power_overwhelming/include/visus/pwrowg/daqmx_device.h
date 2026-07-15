@@ -71,6 +71,12 @@ public:
         return this->_analog_inputs.as<char>();
     }
 
+    bool analog_input_current_ranges(_Out_ const double *& values,
+        _Out_ std::size_t& cnt) const noexcept;
+
+    bool analog_input_voltage_ranges(_Out_ const double *& values,
+        _Out_ std::size_t& cnt) const noexcept;
+
     /// <summary>
     /// Gets the names of the analog output channels of the device in form of a
     /// multi-sz string.
@@ -105,16 +111,24 @@ public:
         return this->_type.as<char>();
     }
 
+    /// <summary>
+    /// Indicates whether the instance contains a valid device.
+    /// </summary>
+    /// <returns><see langword="true" /> if the instance represents a valid
+    /// device, <see langword="false" /> if the instance is empty.</returns>
+    operator bool(void) const noexcept;
+
 private:
 
     void populate(void);
 
     blob _analog_inputs;
     blob _analog_outputs;
+    blob _analog_input_current_ranges;
+    blob _analog_input_voltage_ranges;
     blob _name;
     bool _simulated;
     blob _type;
-
 };
 
 PWROWG_NAMESPACE_END

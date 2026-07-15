@@ -6,7 +6,14 @@
 
 #include "daqmx_sensor.h"
 
+#include "visus/pwrowg/daqmx_current_channel.h"
+#include "visus/pwrowg/daqmx_power_channel.h"
+#include "visus/pwrowg/daqmx_voltage_channel.h"
+#include "visus/pwrowg/daqmx_task.h"
 #include "visus/pwrowg/trace.h"
+
+#include "daqmx_error_category.h"
+#include "daqmx_library.h"
 
 
 /*
@@ -30,109 +37,138 @@ std::size_t PWROWG_DETAIL_NAMESPACE::daqmx_sensor::descriptions(
     const auto cnt_sensors = config.count_sensors();
     auto sensors = config.sensors();
 
+    // Check whether the given channel is valid and exists on any device
+    // attached to the machine running this code.
+    const auto check_channel = [](const auto *c) {
+        if (c == nullptr) {
+            return false;
+        }
+
+        try {
+            daqmx_task task("daqmx_sensor probe");
+            task += *c;
+            return true;
+        } catch (...) {
+            PWROWG_TRACE("Failed to configure channel %s.", c->channel());
+            return false;
+        }
+    };
+
     for (std::size_t i = 0; i < cnt_sensors; ++i) {
         try {
-            std::string name("NI-DAQmx");
             const auto& sensor = sensors[i];
 
-//
-//            // Connect to the instrument.
-//            auto reset = false;
-//            rtx_instrument instrument(reset, sensor.path(),
-//                config.base_configuration().timeout());
-//            if (reset && config.reset_on_enumerate()) {
-//                instrument.reset(rtx_instrument_reset::all);
-//            }
-//
-//            // Get the friendly name of the instrument the user might have
-//            // configured. We use that in the friendly name of the sensor to
-//            // facilitate identification of the instrument.
-//            {
-//                std::vector<char> buf(instrument.name(nullptr, 0), '\0');
-//                if (!buf.empty()) {
-//                    instrument.name(buf.data(), buf.size());
-//                    name = buf.data();
-//                }
-//            }
-//
-//            // This function tries to read the channel label in order to find
-//            // out whether a channel exists.
-//            const auto check_channel = [&instrument](const rtx_channel& c) {
-//                // Channels that can be measured range from 1 to 4. The
-//                // instrument somehow accepts channel 0, but I have no idea what
-//                // this channel is, so we manually reject it here.
-//                if (c.channel() < 1) {
-//                    return false;
-//                }
-//
-//                try {
-//                    auto label = instrument.write("CHAN%u:LAB?\n", c.channel())
-//                        .read_all();
-//                    return !label.empty();
-//                } catch (...) {
-//                    PWROWG_TRACE("Failed to configure channel %u on instrument "
-//                        "\"%s\".", c.channel(), instrument.path());
-//                    return false;
-//                }
-//            };
-//
-//            // Try to configure the voltage and current channels.
-//            auto& cur = sensor.current_channel();
-//            auto& vol = sensor.voltage_channel();
-//            const auto have_cur = check_channel(cur);
-//            const auto have_vol = check_channel(vol);
-//
-//            if (have_cur) {
-//                if (retval < cnt) {
-//                    dst[retval] = builder
-//                        .with_path(sensor.path())
-//                        .with_private_data(sensor)
-//                        .with_id("RTX/%s/CH%u", sensor.path(), cur.channel())
-//                        .with_name("%s Current (CH%u)", name.c_str(),
-//                            cur.channel())
-//                        .with_type(sensor_type::current)
-//                        .measured_in(reading_unit::ampere)
-//                        .build();
-//                }
-//                ++retval;
-//            }
-//
-//            if (have_vol) {
-//                if (retval < cnt) {
-//                    dst[retval] = builder
-//                        .with_path(sensor.path())
-//                        .with_private_data(sensor)
-//                        .with_id("RTX/%s/CH%u", sensor.path(), vol.channel())
-//                        .with_name("%s Voltage (CH%u)", name.c_str(),
-//                            vol.channel())
-//                        .with_type(sensor_type::voltage)
-//                        .measured_in(reading_unit::volt)
-//                        .build();
-//                }
-//                ++retval;
-//            }
-//
-//            if (have_cur && have_vol) {
-//                if (retval < cnt) {
-//                    dst[retval] = builder
-//                        .with_path(sensor.path())
-//                        .with_private_data(sensor)
-//                        .with_id("RTX/%s/CH%u*CH%u", sensor.path(),
-//                            cur.channel(), vol.channel())
-//                        .with_name("%s Power (CH%u * CH%u)",
-//                            name.c_str(), cur.channel(), vol.channel())
-//                        .with_type(sensor_type::power)
-//                        .measured_in(reading_unit::watt)
-//                        .build();
-//                }
-//
-//                ++retval;
-//            }
-//
-//            // Keep the instrument alive until the end of the method because we
-//            // want to reuse existing connections to the same instrument
-//            // whenever possible.
-//            instruments.push_back(std::move(instrument));
+            auto cur = sensor.current_channel();
+            auto pow = sensor.power_channel();
+            auto vfc = sensor.voltage_for_current_channel();
+            auto vol = sensor.voltage_channel();
+            const auto have_cur = check_channel(cur);
+            const auto have_pow = check_channel(pow);
+            const auto have_vfc = check_channel(vfc);
+            const auto have_vol = check_channel(vol);
+
+            if (have_cur) {
+                if (retval < cnt) {
+                    auto channel = cur->channel();
+                    dst[retval] = builder
+                        .with_path(channel)
+                        .with_private_data(sensor)
+                        .with_id("DAQmx/%s", channel)
+                        .with_name("%s (current)", channel)
+                        .with_type(sensor_type::current)
+                        .measured_in(reading_unit::ampere)
+                        .build();
+                }
+
+                ++retval;
+            }
+
+            if (have_pow) {
+                if (retval < cnt) {
+                    assert(pow != nullptr);
+                    auto v = pow->voltage_channel();
+                    auto c = pow->current_channel();
+                    dst[retval] = builder
+                        .with_path("%s+%s", v, c)
+                        .with_private_data(sensor)
+                        .with_id("DAQmx/%s+%s", v, c)
+                        .with_name("%s+%s (on-device-computed power)", v, c)
+                        .with_type(sensor_type::power)
+                        .measured_in(reading_unit::watt)
+                        .build();
+                }
+
+                ++retval;
+            }
+
+            if (have_vfc) {
+                if (retval < cnt) {
+                    auto channel = vfc->channel();
+                    dst[retval] = builder
+                        .with_path(channel)
+                        .with_private_data(sensor)
+                        .with_id("DAQmx/%s", channel)
+                        .with_name("%s (current)", channel)
+                        .with_type(sensor_type::current)
+                        .measured_in(reading_unit::ampere)
+                        .build();
+                }
+
+                ++retval;
+            }
+
+            if (have_vol) {
+                if (retval < cnt) {
+                    assert(vol != nullptr);
+                    auto channel = vol->channel();
+                    dst[retval] = builder
+                        .with_path(channel)
+                        .with_private_data(sensor)
+                        .with_id("DAQmx/%s", channel)
+                        .with_name("%s (voltage)", channel)
+                        .with_type(sensor_type::voltage)
+                        .measured_in(reading_unit::volt)
+                        .build();
+                }
+
+                ++retval;
+            }
+
+            if (have_vol && have_cur) {
+                if (retval < cnt) {
+                    assert(vol != nullptr);
+                    auto v = vol->channel();
+                    auto c = cur->channel();
+                    dst[retval] = builder
+                        .with_path("%s*%s", v, c)
+                        .with_private_data(sensor)
+                        .with_id("DAQmx/%s*%s", v, c)
+                        .with_name("%s*%s (power)", v, c)
+                        .with_type(sensor_type::power)
+                        .measured_in(reading_unit::watt)
+                        .build();
+                }
+
+                ++retval;
+            }
+
+            if (have_vol && have_vfc) {
+                if (retval < cnt) {
+                    assert(vol != nullptr);
+                    auto v = vol->channel();
+                    auto c = vfc->channel();
+                    dst[retval] = builder
+                        .with_path("%s*%s", v, c)
+                        .with_private_data(sensor)
+                        .with_id("DAQmx/%s*%s", v, c)
+                        .with_name("%s*%s (power)", v, c)
+                        .with_type(sensor_type::power)
+                        .measured_in(reading_unit::watt)
+                        .build();
+                }
+
+                ++retval;
+            }
         } catch (...) {
             PWROWG_TRACE(_T("Skipping sensor due to a NI-DAQmx error."));
         }

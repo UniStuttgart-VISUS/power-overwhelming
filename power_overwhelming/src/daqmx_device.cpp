@@ -98,6 +98,48 @@ PWROWG_NAMESPACE::daqmx_device::daqmx_device(_In_z_ const char *name) {
 
 
 /*
+ * PWROWG_NAMESPACE::daqmx_device::analog_input_current_ranges
+ */
+bool PWROWG_NAMESPACE::daqmx_device::analog_input_current_ranges(
+        _Out_ const double *& values, _Out_ std::size_t& cnt) const noexcept {
+    const auto& ranges = this->_analog_input_current_ranges;
+    const auto retval = !ranges.empty();
+
+    if (retval) {
+        values = this->_analog_inputs.as<double>();
+        assert(ranges.size() % sizeof(double) == 0);
+        cnt = ranges.size() / sizeof(double);
+    } else {
+        values = nullptr;
+        cnt = 0;
+    }
+
+    return retval;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::daqmx_device::analog_input_voltage_ranges
+ */
+bool PWROWG_NAMESPACE::daqmx_device::analog_input_voltage_ranges(
+        _Out_ const double *& values, _Out_ std::size_t& cnt) const noexcept {
+    const auto& ranges = this->_analog_input_voltage_ranges;
+    const auto retval = !ranges.empty();
+
+    if (retval) {
+        values = this->_analog_inputs.as<double>();
+        assert(ranges.size() % sizeof(double) == 0);
+        cnt = ranges.size() / sizeof(double);
+    } else {
+        values = nullptr;
+        cnt = 0;
+    }
+
+    return retval;
+}
+
+
+/*
  * PWROWG_NAMESPACE::daqmx_device::populate
  */
 void PWROWG_NAMESPACE::daqmx_device::populate(void) {
@@ -118,6 +160,30 @@ void PWROWG_NAMESPACE::daqmx_device::populate(void) {
         this->_type.resize(l);
         detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
             ._DAQmxGetDevProductType(this->name(), this->_type.as<char>(), l));
+    }
+
+    {
+        const auto l = detail::daqmx_library::instance()
+            ._DAQmxGetDevAICurrentRngs(this->name(), nullptr, 0);
+        detail::throw_if_daqmx_failed(l);
+        this->_analog_input_current_ranges.resize(l * sizeof(float64));
+        detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+            ._DAQmxGetDevAICurrentRngs(
+                this->name(),
+                this->_analog_input_current_ranges.as<float64>(),
+                l));
+    }
+
+    {
+        const auto l = detail::daqmx_library::instance()
+            ._DAQmxGetDevAIVoltageRngs(this->name(), nullptr, 0);
+        detail::throw_if_daqmx_failed(l);
+        this->_analog_input_voltage_ranges.resize(l * sizeof(float64));
+        detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+            ._DAQmxGetDevAIVoltageRngs(
+                this->name(),
+                this->_analog_input_voltage_ranges.as<float64>(),
+                l));
     }
 
     {
@@ -160,4 +226,12 @@ void PWROWG_NAMESPACE::daqmx_device::populate(void) {
         *d = static_cast<char>(0);
     }
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+}
+
+
+/*
+ * PWROWG_NAMESPACE::daqmx_device::operator bool
+ */
+PWROWG_NAMESPACE::daqmx_device::operator bool(void) const noexcept {
+    return (!this->_name.empty() && !this->_type.empty());
 }
