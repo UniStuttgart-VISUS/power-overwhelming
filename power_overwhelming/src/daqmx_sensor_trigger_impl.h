@@ -155,7 +155,9 @@ struct daqmx_sensor_trigger_impl final {
         external_trigger_pins(parallel_port_pin::data),
         references(1),
         state(sensor_trigger_state::none),
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
         task(task),
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
         when_failed(nullptr),
         when_done(nullptr) { }
 };
