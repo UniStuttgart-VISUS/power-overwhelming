@@ -12,6 +12,7 @@
 #include <type_traits>
 
 #include "visus/pwrowg/macro_concat.h"
+#include "visus/pwrowg/daqmx_configuration.h"
 #include "visus/pwrowg/daqmx_current_channel.h"
 #include "visus/pwrowg/daqmx_implicit_timing.h"
 #include "visus/pwrowg/daqmx_power_channel.h"
@@ -276,6 +277,25 @@ struct json_serialiser<daqmx_sensor_definition, IsArithmetic, IsEnum> final {
             }
         }
 
+        return retval;
+    }
+};
+
+
+/// <summary>
+/// Specialisation for <see cref="daqmx_configuration" />.
+/// </summary>
+template<bool IsArithmetic, bool IsEnum>
+struct json_serialiser<daqmx_configuration, IsArithmetic, IsEnum> final {
+    typedef daqmx_configuration value_type;
+
+    static inline value_type deserialise(_In_ const nlohmann::json& json) {
+        value_type retval;
+        return retval;
+    }
+
+    static inline nlohmann::json serialise(_In_ const value_type& value) {
+        auto retval = nlohmann::json::object({ });
         return retval;
     }
 };

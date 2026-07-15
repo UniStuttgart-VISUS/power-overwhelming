@@ -135,8 +135,7 @@ std::size_t PWROWG_NAMESPACE::rtx_configuration::count_sensors(
         void) const noexcept {
     assert(this->_sensors);
     const auto s = this->_sensors.get<std::vector<rtx_sensor_definition>>();
-    assert(s != nullptr);
-    return s->size();
+    return (s != nullptr) ? s->size() : 0;
 }
 
 
@@ -166,7 +165,7 @@ PWROWG_NAMESPACE::rtx_configuration::sensor(_In_ const std::size_t index) const 
     const auto s = this->_sensors.get<std::vector<rtx_sensor_definition>>();
     assert(s != nullptr);
 
-    if (index >= s->size()) {
+    if ((s == nullptr) || (index >= s->size())) {
         throw std::out_of_range("The specified sensor does not exist.");
     }
 
@@ -195,8 +194,15 @@ PWROWG_NAMESPACE::rtx_configuration::sensors(
         _In_ const std::size_t cnt) {
     assert(this->_sensors);
     auto s = this->_sensors.get<std::vector<rtx_sensor_definition>>();
+
+    if (s == nullptr) {
+        this->_sensors.emplace<std::vector<rtx_sensor_definition>>();
+        s = this->_sensors.get<std::vector<rtx_sensor_definition>>();
+    } else {
+        s->clear();
+    }
     assert(s != nullptr);
-    s->clear();
+    assert(s->empty());
 
     if (sensors != nullptr) {
         std::copy_n(sensors, cnt, std::back_inserter(*s));

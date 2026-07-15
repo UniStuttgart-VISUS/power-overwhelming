@@ -9,12 +9,15 @@
 #pragma once
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
 
+#include "visus/pwrowg/daqmx_analog_edge_trigger.h"
 #include "visus/pwrowg/daqmx_current_channel.h"
 #include "visus/pwrowg/daqmx_done_handler.h"
+#include "visus/pwrowg/daqmx_immediate_trigger.h"
 #include "visus/pwrowg/daqmx_implicit_timing.h"
 #include "visus/pwrowg/daqmx_power_channel.h"
 #include "visus/pwrowg/daqmx_sample_clock_timing.h"
 #include "visus/pwrowg/daqmx_sample_handler.h"
+#include "visus/pwrowg/daqmx_time_trigger.h"
 #include "visus/pwrowg/daqmx_voltage_channel.h"
 
 
@@ -204,6 +207,27 @@ public:
     /// <param name="timing">The timing configuration.</param>
     /// <returns><c>*<see langword="this" /></c>.</returns>
     daqmx_task& timing(_In_ const daqmx_sample_clock_timing& timing);
+
+    /// <summary>
+    /// Configures how the task is being triggered.
+    /// </summary>
+    /// <param name="trigger">The trigger to be configured.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    daqmx_task& trigger(_In_ const daqmx_analog_edge_trigger& trigger);
+
+    /// <summary>
+    /// Configures how the task is being triggered.
+    /// </summary>
+    /// <param name="trigger">The trigger to be configured.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    daqmx_task& trigger(_In_ const daqmx_immediate_trigger& trigger);
+
+    ///// <summary>
+    ///// Configures how the task is being triggered.
+    ///// </summary>
+    ///// <param name="trigger">The trigger to be configured.</param>
+    ///// <returns><c>*<see langword="this" /></c>.</returns>
+    //daqmx_task& trigger(_In_ const daqmx_time_trigger& trigger);
 
     /// <summary>
     /// Waits for the task to complete.

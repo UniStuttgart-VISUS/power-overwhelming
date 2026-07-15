@@ -179,7 +179,6 @@ public:
         Assert::AreEqual(int(input.waveform_points()), int(output.waveform_points()), L"waveform_points", LINE_INFO());
     }
 
-
     TEST_METHOD(test_rtx_sensor_trigger) {
         const auto input = rtx_sensor_trigger_builder::for_all().when_channel(std::uint8_t(1)).rises_above(2.5f).build();
         const auto json = detail::json_serialise(input);
@@ -189,6 +188,23 @@ public:
         Assert::IsNotNull(output.trigger(), L"trigger", LINE_INFO());
         Assert::AreEqual(input.trigger()->input(), output.trigger()->input(), L"input", LINE_INFO());
         Assert::AreEqual(input.trigger()->level().value(), output.trigger()->level().value(), L"level", LINE_INFO());
+    }
+
+    TEST_METHOD(test_rtx_configuration) {
+        const auto input = rtx_configuration()
+            .base_configuration(rtx_instrument_configuration(42.0f, 512))
+            .add_sensor("sensor1", rtx_channel(1), rtx_channel(2))
+            .add_sensor("sensor2", rtx_channel(3), rtx_channel(4))
+            .download_retries(42)
+            .download_timeout(std::chrono::seconds(2));
+        const auto json = detail::json_serialise(input);
+        const auto output = detail::json_deserialise<rtx_configuration>(json);
+
+        Assert::AreEqual(input.count_sensors(), output.count_sensors(), L"# of sensors", LINE_INFO());
+        Assert::AreEqual(input.download_retries(), output.download_retries(), L"download_retries", LINE_INFO());
+        Assert::AreEqual(input.download_timeout(), output.download_timeout(), L"download_timeout", LINE_INFO());
+        Assert::AreEqual(input.base_configuration().timeout(), output.base_configuration().timeout(), L"base_configuration.timeout", LINE_INFO());
+        Assert::AreEqual(input.base_configuration().acquisition().points(), output.base_configuration().acquisition().points(), L"base_configuration.acquisition.points", LINE_INFO());
     }
 
 };

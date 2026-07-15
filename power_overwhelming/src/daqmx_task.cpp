@@ -183,6 +183,48 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::timing(
 
 
 /*
+ * PWROWG_NAMESPACE::daqmx_task::trigger
+ */
+PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::trigger(
+        _In_ const daqmx_analog_edge_trigger& trigger) {
+    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+        ._DAQmxCfgAnlgEdgeStartTrig(
+            this->_handle,
+            trigger.source(),
+            static_cast<int32>(trigger.edge()),
+            trigger.level()));
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::daqmx_task::trigger
+ */
+PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::trigger(
+        _In_ const daqmx_immediate_trigger& trigger) {
+    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+        ._DAQmxDisableStartTrig(this->_handle));
+    return *this;
+}
+
+
+// TODO: figure out how to use the utility library that allows for converting to
+// NI binary time format.
+///*
+// * PWROWG_NAMESPACE::daqmx_task::trigger
+// */
+//PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::trigger(
+//        _In_ const daqmx_time_trigger& trigger) {
+//    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
+//        ._DAQmxCfgTimeStartTrig(
+//            this->_handle,
+//            trigger.when(),
+//            static_cast<int32>(trigger.time_scale())));
+//    return *this;
+//}
+
+
+/*
  * PWROWG_NAMESPACE::daqmx_task::wait
  */
 bool PWROWG_NAMESPACE::daqmx_task::wait(_In_ const double timeout) const {

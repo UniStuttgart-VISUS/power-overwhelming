@@ -330,9 +330,10 @@ public:
     /// during the operation.</para>
     /// </remarks>
     /// <param name="size">The requested size in bytes.</param>
+    /// <returns>The new data pointer of the blob.</returns>
     /// <exception cref="std::bad_alloc">If the required memory could not
     /// be allocated.</exception>
-    void resize(_In_ const std::size_t size);
+    _Ret_maybenull_ void *resize(_In_ const std::size_t size);
 
     /// <summary>
     /// Answer the overall size of the blob in bytes.

@@ -186,7 +186,8 @@ bool PWROWG_NAMESPACE::blob::reserve(_In_ const std::size_t size) {
 /*
  * PWROWG_NAMESPACE::blob::resize
  */
-void PWROWG_NAMESPACE::blob::resize(_In_ const std::size_t size) {
+_Ret_maybenull_ void *PWROWG_NAMESPACE::blob::resize(
+        _In_ const std::size_t size) {
     if (this->_size != size) {
         delete[] this->_data;
         this->_size = size;
@@ -197,6 +198,8 @@ void PWROWG_NAMESPACE::blob::resize(_In_ const std::size_t size) {
             this->_data = nullptr;
         }
     }
+
+    return this->_data;
 }
 
 

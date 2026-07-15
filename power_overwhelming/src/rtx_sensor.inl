@@ -23,7 +23,7 @@ TInput PWROWG_DETAIL_NAMESPACE::rtx_sensor::from_descriptions(
     // Move the RTA/RTB sensor to the front of the list.
     auto retval = move_front_if(begin, end, is_rtx_sensor);
 
-    // If there is not RTA/RTB-based sensor, bail out directly.
+    // If there is no RTA/RTB-based sensor, bail out directly.
     if (begin == retval) {
         return retval;
     }

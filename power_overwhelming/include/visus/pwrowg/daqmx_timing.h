@@ -22,6 +22,11 @@ class POWER_OVERWHELMING_API daqmx_timing {
 public:
 
     /// <summary>
+    /// Finalises the instance.
+    /// </summary>
+    virtual ~daqmx_timing(void) noexcept = default;
+
+    /// <summary>
     /// Answer the sample mode.
     /// </summary>
     /// <returns>The sample mode.</returns>

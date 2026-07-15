@@ -118,7 +118,7 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
             const type_erased_storage&),
         _Inout_ type_erased_storage&& failed_context) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    using detail::rtx_sensor_state;
+    using detail::sensor_trigger_state;
 
     assert(this->_impl != nullptr);
     if (this->_impl == nullptr) {
@@ -127,15 +127,15 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
 
     PWROWG_TRACE(_T("Making sure that the instrument controller thread is not ")
         _T("working on the instruments anymore before triggering."));
-    detail::spin_while_all(this->_impl->state, rtx_sensor_state::busy);
+    detail::spin_while_all(this->_impl->state, sensor_trigger_state::busy);
 
     this->_impl->when_done = done;
     this->_impl->when_done_context = std::move(done_context);
     this->_impl->when_failed = failed;
     this->_impl->when_failed_context = std::move(failed_context);
 
-    if ((detail::atomic_set(this->_impl->state, rtx_sensor_state::armed)
-            & rtx_sensor_state::running) != rtx_sensor_state::running) {
+    if ((detail::atomic_set(this->_impl->state, sensor_trigger_state::armed)
+            & sensor_trigger_state::running) != sensor_trigger_state::running) {
         PWROWG_TRACE(_T("The RTX sensor controller was shut down while trying ")
             _T("to arm the trigger."));
         return false;
@@ -185,9 +185,14 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
 
         } else {
             PWROWG_TRACE(_T("Triggering all instruments manually."));
+            timestamps.clear();
+            timestamps.reserve(this->_impl->instruments.size());
+
             for (auto& i : this->_impl->instruments) {
+                const auto b = timestamp::now();
                 i.trigger_manually();
-                // TODO: timestamps
+                const auto e = timestamp::now();
+                timestamps.push_back(timestamp::middle(b, e));
             }
         }
     } /* if (this->_impl->external_trigger) */
@@ -195,6 +200,7 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
 
     return true;
 }
+
 
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger::reset

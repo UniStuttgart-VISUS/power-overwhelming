@@ -210,21 +210,22 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample(_In_ const bool enable) {
     auto& trigger = *this->_trigger._impl;
 
     if (enable) {
-        if ((atomic_set(trigger.state, rtx_sensor_state::running)
-                & rtx_sensor_state::running) != rtx_sensor_state::running) {
+        if ((atomic_set(trigger.state, sensor_trigger_state::running)
+                & sensor_trigger_state::running)
+                != sensor_trigger_state::running) {
             PWROWG_TRACE(_T("Starting the RTX sensor controller thread."));
             this->_thread = std::thread(&rtx_sensor::control_instruments, this);
         }
 
     } else {
         PWROWG_TRACE(_T("Signalling the RTX sensor controller to stop."));
-        atomic_unset(trigger.state, rtx_sensor_state::running
-            | rtx_sensor_state::armed);
+        atomic_unset(trigger.state, sensor_trigger_state::running
+            | sensor_trigger_state::armed);
 
         PWROWG_TRACE(_T("Making sure that the controller thread is not ")
             _T("working on the instruments anymore before injecting an OPC to ")
             _T("wake it up."));
-        spin_while_all(trigger.state, rtx_sensor_state::busy);
+        spin_while_all(trigger.state, sensor_trigger_state::busy);
 
         if (this->_thread.joinable()) {
             for (auto& i : trigger.instruments) {
@@ -256,7 +257,7 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
     auto& instruments = trigger.instruments;
     PWROWG_TRACE(_T("The RTX sensor controller thread has started."));
 
-    while (check_all(trigger.state, rtx_sensor_state::running)) {
+    while (check_all(trigger.state, sensor_trigger_state::running)) {
         auto source = this->_index;
 
         for (std::size_t i = 0; i < instruments.size(); ++i) {
@@ -275,10 +276,10 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
                 // state was not set before that, the previous instrument must
                 // have already set the busy state.
                 const auto prev_state = atomic_change(trigger.state,
-                    rtx_sensor_state::busy,
-                    rtx_sensor_state::armed);
-                if ((prev_state & rtx_sensor_state::running)
-                        != rtx_sensor_state::running) {
+                    sensor_trigger_state::busy,
+                    sensor_trigger_state::armed);
+                if ((prev_state & sensor_trigger_state::running)
+                        != sensor_trigger_state::running) {
                     PWROWG_TRACE(_T("Termination of the RTX sensor thread ")
                         _T("was requested while waiting for data."));
                     break;
@@ -313,9 +314,9 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
 
         PWROWG_TRACE(_T("The RTX controller thread is done processing the ")
             _T("latest waveforms."));
-        atomic_unset(trigger.state, rtx_sensor_state::busy);
+        atomic_unset(trigger.state, sensor_trigger_state::busy);
         trigger.when_done(trigger.when_done_context);
-    } /* while (!check_state(trigger.state, rtx_sensor_state::stop)) */
+    } /* while (!check_state(trigger.state, sensor_trigger_state::stop)) */
 
     PWROWG_TRACE(_T("The RTX sensor controller thread is exiting."));
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
