@@ -11,6 +11,7 @@
 #include <memory>
 #include <stdexcept>
 
+#include "visus/pwrowg/daqmx_device.h"
 #include "visus/pwrowg/trace.h"
 
 #include "daqmx_error_category.h"
@@ -248,12 +249,19 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator +=(
     auto min_value = rhs.min_value();
     auto max_value = rhs.max_value();
 
-    //if (min_value == max_value) {
-    //    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
-    //        ._DAQmxGetDevAICurrentRngs(
-    //            rhs.channel(),
-    //            &min_value);
-    //}
+    if (min_value >= max_value) {
+        PWROWG_TRACE(_T("Trying to fix an empty current range."));
+        const auto dev = daqmx_device::from_channel(rhs.channel());
+        std::size_t cnt;
+        const double *rng;
+        if (dev.analog_input_current_ranges(rng, cnt)) {
+            assert(cnt >= 1);
+            min_value = rng[0];
+            max_value = rng[1];
+            PWROWG_TRACE(_T("Fixed an empty current range to [%g, %g]."),
+                min_value, max_value);
+        }
+    }
 
     PWROWG_TRACE("Adding current channel \"%s\" as \"%s\" with terminal "
         "configuration %d, range [%g, %g], shunt resistor %d, shunt value %g.",
@@ -319,6 +327,20 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator +=(
         _In_ const daqmx_voltage_channel& rhs) {
     auto min_value = rhs.min_value();
     auto max_value = rhs.max_value();
+
+    if (min_value >= max_value) {
+        PWROWG_TRACE(_T("Trying to fix an empty voltage range."));
+        const auto dev = daqmx_device::from_channel(rhs.channel());
+        std::size_t cnt;
+        const double *rng;
+        if (dev.analog_input_voltage_ranges(rng, cnt)) {
+            assert(cnt >= 1);
+            min_value = rng[0];
+            max_value = rng[1];
+            PWROWG_TRACE(_T("Fixed an empty voltage range to [%g, %g]."),
+                min_value, max_value);
+        }
+    }
 
     PWROWG_TRACE("Adding voltage channel \"%s\" as \"%s\" with terminal "
         "configuration %d, range [%g, %g].",

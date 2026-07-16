@@ -117,12 +117,22 @@ void PWROWG_DETAIL_NAMESPACE::nvapi_sensor::on_sample(
     constexpr auto one_watt = static_cast<value_type>(1000);
     auto that = reinterpret_cast<nvapi_sensor *>(data->super.pCallbackParam);
 
-    const auto t = data->timestamp / static_cast<NvU64>(1000000);
-    const auto r = data->timestamp % static_cast<NvU64>(1000000);
+    const auto t = data->timestamp / static_cast<NvU64>(std::micro::den)
+        * static_cast<NvU64>(std::micro::num);
+    const auto r = data->timestamp % static_cast<NvU64>(std::micro::den)
+        * static_cast<NvU64>(std::micro::num);
+    const auto timestamp = PWROWG_NAMESPACE::timestamp::from_time_t(t, 0, r);
+#if (defined(DEBUG) || defined(_DEBUG))
+    PWROWG_TRACE(_T("NVAPI dt: %"PRId64" ms"),std::chrono::duration_cast<
+        std::chrono::milliseconds>(timestamp::now() - timestamp).count());
+//    const auto dt = std::chrono::duration_cast<std::chrono::milliseconds>(
+//        timestamp::now() - timestamp);
+//    assert(dt < std::chrono::milliseconds(500));
+#endif /* (defined(DEBUG) || defined(_DEBUG)) */
 
     PWROWG_NAMESPACE::sample sample(
         that->_index,
-        timestamp::from_time_t(t, 0, r),
+        timestamp,
         static_cast<value_type>(data->totalGpuPowermw) / one_watt);
     sensor_array_impl::callback(that->_owner)(&sample, 1,
         sensor_array_impl::raw_descriptions(that->_owner),

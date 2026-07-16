@@ -40,6 +40,21 @@ public:
         _In_ std::size_t cnt);
 
     /// <summary>
+    /// Tries to extract the device name from the given
+    /// <paramref name="channel" /> name and returns the corresponding device
+    /// descriptor.
+    /// </summary>
+    /// <param name="channel">The name of the channel to get the device
+    /// for.</param>
+    /// <returns>The device descriptor corresponding to the given channel.
+    /// </returns>
+    /// <exception cref="std::invalid_argument">If the device name could not be
+    /// extracted from the given <paramref name="channel" />.</exception>
+    /// <exception cref="std::system_error">If any of the API calls getting
+    /// the device properties failed.</exception>
+    static daqmx_device from_channel(_In_z_ const char *channel);
+
+    /// <summary>
     /// Initialises a new instance.
     /// </summary>
     /// <remarks>

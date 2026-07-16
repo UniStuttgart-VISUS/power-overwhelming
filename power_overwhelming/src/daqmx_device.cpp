@@ -9,6 +9,7 @@
 #include <cassert>
 #include <cctype>
 #include <cstring>
+#include <stdexcept>
 #include <vector>
 
 #include "visus/pwrowg/convert_string.h"
@@ -79,6 +80,25 @@ std::size_t PWROWG_NAMESPACE::daqmx_device::all(
 
 
 /*
+ * PWROWG_NAMESPACE::daqmx_device::from_channel
+ */
+PWROWG_NAMESPACE::daqmx_device PWROWG_NAMESPACE::daqmx_device::from_channel(
+        _In_z_ const char *channel) {
+    if (channel == nullptr) {
+        throw std::invalid_argument("A valid channel name must be provided.");
+    }
+
+    const auto end = ::strchr(channel, '/');
+    if (end == nullptr) {
+        throw std::invalid_argument("The channel name is incomplete.");
+    }
+
+    const std::string name(channel, end);
+    return daqmx_device(name.c_str());
+}
+
+
+/*
  * PWROWG_NAMESPACE::daqmx_device::daqmx_device
  */
 PWROWG_NAMESPACE::daqmx_device::daqmx_device(_In_z_ const wchar_t *name) {
@@ -107,8 +127,8 @@ bool PWROWG_NAMESPACE::daqmx_device::analog_input_current_ranges(
 
     if (retval) {
         values = this->_analog_inputs.as<double>();
-        assert(ranges.size() % sizeof(double) == 0);
-        cnt = ranges.size() / sizeof(double);
+        assert(ranges.size() % (2 * sizeof(double)) == 0);
+        cnt = ranges.size() / (2 * sizeof(double));
     } else {
         values = nullptr;
         cnt = 0;
@@ -128,8 +148,8 @@ bool PWROWG_NAMESPACE::daqmx_device::analog_input_voltage_ranges(
 
     if (retval) {
         values = this->_analog_inputs.as<double>();
-        assert(ranges.size() % sizeof(double) == 0);
-        cnt = ranges.size() / sizeof(double);
+        assert(ranges.size() % (2 * sizeof(double)) == 0);
+        cnt = ranges.size() / (2 * sizeof(double));
     } else {
         values = nullptr;
         cnt = 0;

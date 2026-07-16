@@ -202,8 +202,8 @@ public:
 
             sensor_config->add_sensor(
                 daqmx_sensor_definition(
-                    daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 0)).max_value(10),
-                    daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 1)).max_value(10),
+                    daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 0)),
+                    daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 1)),
                     10));
             sensor_config->add_sensor(
                 daqmx_sensor_definition(

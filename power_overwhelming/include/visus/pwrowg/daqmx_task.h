@@ -246,6 +246,11 @@ public:
     /// <summary>
     /// Configures the given analog current channel as part of the task.
     /// </summary>
+    /// <remarks>
+    /// If the value range of <paramref name="rhs" /> is empty, the method will
+    /// try to obtain the valid ranges for the channel from the device and use
+    /// the first one.
+    /// </remarks>
     /// <param name="rhs"></param>
     /// <returns><c>*<see langword="this" /></c>.</returns>
     daqmx_task& operator +=(_In_ const daqmx_current_channel& rhs);
@@ -260,6 +265,11 @@ public:
     /// <summary>
     /// Configures the given analog voltage channel as part of the task.
     /// </summary>
+    /// <remarks>
+    /// If the value range of <paramref name="rhs" /> is empty, the method will
+    /// try to obtain the valid ranges for the channel from the device and use
+    /// the first one.
+    /// </remarks>
     /// <param name="rhs"></param>
     /// <returns><c>*<see langword="this" /></c>.</returns>
     daqmx_task& operator +=(_In_ const daqmx_voltage_channel& rhs);
