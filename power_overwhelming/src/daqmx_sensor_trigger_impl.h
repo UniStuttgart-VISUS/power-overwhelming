@@ -96,10 +96,12 @@ struct daqmx_sensor_trigger_impl final {
     /// </remarks>
     std::unique_ptr<daqmx_analog_edge_trigger> trigger;
 
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
     /// <summary>
     /// Holds the timing information for the acquisition.
     /// </summary>
     std::unique_ptr<daqmx_timing> timing;
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 
     /// <summary>
     /// The host timestamp when the trigger was activated.
@@ -156,13 +158,15 @@ struct daqmx_sensor_trigger_impl final {
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    inline daqmx_sensor_trigger_impl(_In_z_ const char *task = "")
+    inline daqmx_sensor_trigger_impl(_In_z_ const char *task = nullptr)
         : external_trigger_duration(100),
         external_trigger_pins(parallel_port_pin::data),
         references(1),
         state(sensor_trigger_state::none),
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
-        task(task),
+        task((task == nullptr)
+            ? std::to_string(reinterpret_cast<std::uintptr_t>(this))
+            : task),
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
         when_failed(nullptr),
         when_done(nullptr) { }

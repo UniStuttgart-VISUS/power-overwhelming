@@ -9,6 +9,8 @@
 #pragma once
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
 
+#include <string>
+
 #include "visus/pwrowg/daqmx_analog_edge_trigger.h"
 #include "visus/pwrowg/daqmx_current_channel.h"
 #include "visus/pwrowg/daqmx_done_handler.h"
@@ -35,6 +37,16 @@ public:
     /// </summary>
     /// <param name="name">The name of the task.</param>
     explicit daqmx_task(_In_z_ const char *name);
+
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <typeparam name="TTraits">The character traits.</typeparam>
+    /// <typeparam name="TAlloc">The string allocator</typeparam>
+    /// <param name="name">The name of the task.</param>
+    template<class TTraits, class TAlloc> inline daqmx_task(
+            _In_ const std::basic_string<char, TTraits, TAlloc>& name)
+        : daqmx_task(name.c_str()) { }
 
     daqmx_task(const daqmx_task&) = delete;
 
