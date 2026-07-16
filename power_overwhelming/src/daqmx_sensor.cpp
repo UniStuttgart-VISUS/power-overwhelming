@@ -14,6 +14,8 @@
 
 #include "daqmx_error_category.h"
 #include "daqmx_library.h"
+#include "daqmx_sensor_trigger_impl.h"
+#include "sensor_trigger_state.h"
 
 
 /*
@@ -186,17 +188,17 @@ void PWROWG_DETAIL_NAMESPACE::daqmx_sensor::sample(_In_ const bool enable) {
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
     assert(this->_trigger._impl != nullptr);
     auto& trigger = *this->_trigger._impl;
-    throw "TODO";
 
-    //if (enable) {
-    //    if ((atomic_set(trigger.state, sensor_trigger_state::running)
-    //            & sensor_trigger_state::running)
-    //            != sensor_trigger_state::running) {
-    //        PWROWG_TRACE(_T("Starting the RTX sensor controller thread."));
-    //        this->_thread = std::thread(&rtx_sensor::control_instruments, this);
-    //    }
+    if (enable) {
+        if ((atomic_set(trigger.state, sensor_trigger_state::running)
+                & sensor_trigger_state::running)
+                != sensor_trigger_state::running) {
+            PWROWG_TRACE(_T("Starting DAQmx task."));
+            trigger.task.start();
+        }
 
-    //} else {
+    } else {
+        throw "TODO";
     //    PWROWG_TRACE(_T("Signalling the RTX sensor controller to stop."));
     //    atomic_unset(trigger.state, sensor_trigger_state::running
     //        | sensor_trigger_state::armed);
@@ -217,6 +219,6 @@ void PWROWG_DETAIL_NAMESPACE::daqmx_sensor::sample(_In_ const bool enable) {
     //            _T("to return until all pending samples have been delivered."));
     //        this->_thread.join();
     //    }
-    //}
+    }
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 }
