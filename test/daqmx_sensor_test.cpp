@@ -11,6 +11,7 @@
 #include <visus/pwrowg/daqmx_device.h>
 #include <visus/pwrowg/daqmx_power_channel.h>
 #include <visus/pwrowg/daqmx_sensor_definition.h>
+#include <visus/pwrowg/daqmx_sensor_trigger_builder.h>
 #include <visus/pwrowg/daqmx_voltage_channel.h>
 #include <visus/pwrowg/multi_sz.h>
 
@@ -176,7 +177,6 @@ public:
         Assert::AreEqual("ai2", e.voltage_for_current_channel()->channel(), L"voltage_for_current_channel path", LINE_INFO());
     }
 
-
     TEST_METHOD(test_sensor_creation) {
         typedef detail::daqmx_sensor type;
         const auto device = test_instrument();
@@ -192,13 +192,30 @@ public:
             auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
             Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
 
-            //sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(3), 5000, 4000).beep_on_trigger(true))
-            //    .download_retries(1)
-            //    .download_timeout(10000);
-            //auto trigger = rtx_sensor_trigger_builder::for_path(device.c_str()).when_software_triggered().build();
-            ////trigger = rtx_sensor_trigger_builder::for_all().when_parallel_port("LPT1").measured_via_external().build();
-            //trigger = rtx_sensor_trigger_builder::for_all().when_channel("CH0").rises_above(0.1f).build();
-            //sensor_config->trigger(trigger);
+            auto trigger = daqmx_sensor_trigger_builder()
+                .when_starting()
+                .sample_at(1000)
+                .build();
+            //trigger = daqmx_sensor_trigger_builder()
+            //    .when_parallel_port("LPT1")
+            //    .measured_via_channel("hugo/ai0")
+            //    .sample_at(200)
+            //    .a_finite_number(100)
+            //    .build();
+            //trigger = daqmx_sensor_trigger_builder()
+            //    .when_parallel_port("LPT2")
+            //    .raise_pins(parallel_port_pin::data)
+            //    .for_duration(100)
+            //    .measured_via_channel("hugo/ai0")
+            //    .is_rising_above(2.0)
+            //    .sample_at(200)
+            //    .build();
+            //trigger = daqmx_sensor_trigger_builder()
+            //    .when_channel("hugo/ai1")
+            //    .is_falling_below(0.1)
+            //    .sample_at(100)
+            //    .build();
+            sensor_config->trigger(trigger);
 
             sensor_config->add_sensor(
                 daqmx_sensor_definition(

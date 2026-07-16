@@ -19,6 +19,7 @@
 #include "visus/pwrowg/atomic_utilities.h"
 #include "visus/pwrowg/daqmx_analog_edge_trigger.h"
 #include "visus/pwrowg/daqmx_task.h"
+#include "visus/pwrowg/daqmx_timing.h"
 #include "visus/pwrowg/parallel_port_trigger.h"
 #include "visus/pwrowg/timestamp.h"
 #include "visus/pwrowg/type_erased_storage.h"
@@ -96,6 +97,11 @@ struct daqmx_sensor_trigger_impl final {
     std::unique_ptr<daqmx_analog_edge_trigger> trigger;
 
     /// <summary>
+    /// Holds the timing information for the acquisition.
+    /// </summary>
+    std::unique_ptr<daqmx_timing> timing;
+
+    /// <summary>
     /// The host timestamp when the trigger was activated.
     /// </summary>
     timestamp trigger_timestamp;
@@ -150,7 +156,7 @@ struct daqmx_sensor_trigger_impl final {
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    inline daqmx_sensor_trigger_impl(_In_z_ const char *task = "PwrOwgMeasure")
+    inline daqmx_sensor_trigger_impl(_In_z_ const char *task = "")
         : external_trigger_duration(100),
         external_trigger_pins(parallel_port_pin::data),
         references(1),

@@ -10,6 +10,7 @@
 
 #include "visus/pwrowg/daqmx_implicit_timing.h"
 #include "visus/pwrowg/daqmx_sensor_definition.h"
+#include "visus/pwrowg/daqmx_sensor_trigger.h"
 #include "visus/pwrowg/daqmx_sample_clock_timing.h"
 #include "visus/pwrowg/sensor_configuration.h"
 #include "visus/pwrowg/type_erased_storage.h"
@@ -161,6 +162,38 @@ public:
     daqmx_configuration& timing(_Inout_ daqmx_sample_clock_timing&& timing);
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 
+    /// <summary>
+    /// Gets the trigger configuration object.
+    /// </summary>
+    /// <returns>The sensor trigger configuration.</returns>
+    inline const daqmx_sensor_trigger& trigger(void) const noexcept {
+        return this->_trigger;
+    }
+
+    /// <summary>
+    /// Sets the trigger configuration.
+    /// </summary>
+    /// <param name="trigger">The new trigger configuration which determines how
+    /// the underlying oscilloscopes are controlled.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline daqmx_configuration& trigger(
+            _In_ const daqmx_sensor_trigger& trigger) {
+        this->_trigger = trigger;
+        return *this;
+    }
+
+    /// <summary>
+    /// Sets the trigger configuration.
+    /// </summary>
+    /// <param name="trigger">The new trigger configuration which determines how
+    /// the underlying oscilloscopes are controlled.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline daqmx_configuration& trigger(
+            _Inout_ daqmx_sensor_trigger&& trigger) noexcept {
+        this->_trigger = std::move(trigger);
+        return *this;
+    }
+
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
     /// <summary>
     /// Checks whether the timing configuration is of type
@@ -187,6 +220,7 @@ private:
 
     type_erased_storage _sensors;
     type_erased_storage _timing;
+    daqmx_sensor_trigger _trigger;
 };
 
 PWROWG_NAMESPACE_END

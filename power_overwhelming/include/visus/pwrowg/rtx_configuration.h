@@ -344,7 +344,7 @@ public:
     /// <param name="trigger">The new trigger configuration which determines how
     /// the underlying oscilloscopes are controlled.</param>
     /// <returns><c>*<see langword="this" /></c>.</returns>
-    rtx_configuration& trigger(_In_ const rtx_sensor_trigger& trigger) {
+    inline rtx_configuration& trigger(_In_ const rtx_sensor_trigger& trigger) {
         this->_trigger = trigger;
         return *this;
     }
@@ -355,7 +355,8 @@ public:
     /// <param name="trigger">The new trigger configuration which determines how
     /// the underlying oscilloscopes are controlled.</param>
     /// <returns><c>*<see langword="this" /></c>.</returns>
-    rtx_configuration& trigger(_Inout_ rtx_sensor_trigger&& trigger) noexcept {
+    inline rtx_configuration& trigger(
+            _Inout_ rtx_sensor_trigger&& trigger) noexcept {
         this->_trigger = std::move(trigger);
         return *this;
     }

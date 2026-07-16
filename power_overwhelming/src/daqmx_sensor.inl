@@ -46,9 +46,11 @@ template<class TIterator> PWROWG_DETAIL_NAMESPACE::daqmx_sensor::daqmx_sensor(
         _In_ const sensor_array_impl *owner,
         _In_ const configuration_type& config)
     : _index(index),
-        _owner(owner) {
+        _owner(owner),
+        _trigger(config.trigger()) {
     typedef sensor_description_builder builder_type;
     typedef daqmx_sensor_definition private_type;
+    assert(this->_trigger._impl != nullptr);
 
     std::transform(begin, end,
         std::back_inserter(this->_sensors),

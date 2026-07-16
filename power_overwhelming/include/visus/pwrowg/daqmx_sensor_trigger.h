@@ -21,16 +21,19 @@ PWROWG_NAMESPACE_BEGIN
 // Forward declarations.
 namespace detail { class daqmx_sensor; }
 namespace detail { struct daqmx_sensor_trigger_impl; }
-//namespace detail { class rtx_sen_trg_bld_final; }
-//namespace detail { class rtx_sen_trg_bld_chan0; }
-//namespace detail { class rtx_sen_trg_bld_chan1; }
-//namespace detail { class rtx_sen_trg_bld_man0; }
-//namespace detail { class rtx_sen_trg_bld_par0; }
-//namespace detail { class rtx_sen_trg_bld_par1; }
-//namespace detail { class rtx_sen_trg_bld_par2; }
-//namespace detail { class rtx_sen_trg_bld_par3; }
+namespace detail { class daqmx_sen_trg_bld_chan0; }
+namespace detail { class daqmx_sen_trg_bld_final0; }
+namespace detail { class daqmx_sen_trg_bld_final1; }
+namespace detail { class daqmx_sen_trg_bld_final2; }
+namespace detail { class daqmx_sen_trg_bld_par0; }
+namespace detail { class daqmx_sen_trg_bld_par1; }
+namespace detail { class daqmx_sen_trg_bld_par2; }
+namespace detail { class daqmx_sen_trg_bld_par3; }
 
 
+/// <summary>
+/// Configures how the DAQmx-based sensor will be triggered.
+/// </summary>
 class POWER_OVERWHELMING_API daqmx_sensor_trigger final {
 
 public:
@@ -179,14 +182,14 @@ private:
     detail::daqmx_sensor_trigger_impl *_impl;
 
     friend class detail::daqmx_sensor;
-    //friend class detail::daqmx_sen_trg_bld_final;
-    //friend class detail::daqmx_sen_trg_bld_chan0;
-    //friend class detail::daqmx_sen_trg_bld_chan1;
-    //friend class detail::daqmx_sen_trg_bld_man0;
-    //friend class detail::daqmx_sen_trg_bld_par0;
-    //friend class detail::daqmx_sen_trg_bld_par1;
-    //friend class detail::daqmx_sen_trg_bld_par2;
-    //friend class detail::daqmx_sen_trg_bld_par3;
+    friend class detail::daqmx_sen_trg_bld_chan0;
+    friend class detail::daqmx_sen_trg_bld_final0;
+    friend class detail::daqmx_sen_trg_bld_final1;
+    friend class detail::daqmx_sen_trg_bld_final2;
+    friend class detail::daqmx_sen_trg_bld_par0;
+    friend class detail::daqmx_sen_trg_bld_par1;
+    friend class detail::daqmx_sen_trg_bld_par2;
+    friend class detail::daqmx_sen_trg_bld_par3;
     friend class daqmx_sensor_trigger_builder;
 };
 

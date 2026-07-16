@@ -143,7 +143,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::daqmx_sensor::descriptions(
                         .with_path("%s*%s", v, c)
                         .with_private_data(sensor)
                         .with_id("DAQmx/%s*%s", v, c)
-                        .with_name("%s*%s (power)", v, c)
+                        .with_name("%s*%s (computed power)", v, c)
                         .with_type(sensor_type::power)
                         .measured_in(reading_unit::watt)
                         .build();
@@ -161,7 +161,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::daqmx_sensor::descriptions(
                         .with_path("%s*%s", v, c)
                         .with_private_data(sensor)
                         .with_id("DAQmx/%s*%s", v, c)
-                        .with_name("%s*%s (power)", v, c)
+                        .with_name("%s*%s (computed power)", v, c)
                         .with_type(sensor_type::power)
                         .measured_in(reading_unit::watt)
                         .build();

@@ -32,6 +32,11 @@ public:
         : _trigger(trigger) { }
 
     /// <summary>
+    /// Finalises the instance.
+    /// </summary>
+    virtual ~rtx_sen_trg_bld_final(void) noexcept = default;
+
+    /// <summary>
     /// Creates the trigger as configured by the previous steps.
     /// </summary>
     /// <returns>The trigger created using the builder.</returns>
@@ -62,6 +67,10 @@ public:
     inline rtx_sen_trg_bld_chan1(_In_ const rtx_sensor_trigger& trigger)
         : rtx_sen_trg_bld_final(trigger) { }
 
+    /// <summary>
+    /// Finalises the instance.
+    /// </summary>
+    virtual ~rtx_sen_trg_bld_chan1(void) noexcept = default;
 
     /// <summary>
     /// Creates the trigger as configured by the previous steps.
@@ -335,8 +344,7 @@ public:
     /// <param name="channel">The channel to trigger on, which must be the name
     /// of a valid channel of the oscilloscope.</param>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sen_trg_bld_par3 measured_via_channel(
-        _In_z_ const wchar_t *channel);
+    rtx_sen_trg_bld_par3 measured_via_channel(_In_z_ const wchar_t *channel);
 
     /// <summary>
     /// Creates a trigger on the specified channel.
@@ -344,8 +352,7 @@ public:
     /// <param name="channel">The channel to trigger on, which must be the name
     /// of a valid channel of the oscilloscope.</param>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sen_trg_bld_par3 measured_via_channel(
-        _In_z_ const char *channel);
+    rtx_sen_trg_bld_par3 measured_via_channel(_In_z_ const char *channel);
 
     /// <summary>
     /// Creates a trigger on the specified channel.
@@ -353,7 +360,7 @@ public:
     /// <param name="channel">The channel to trigger on, which must be the name
     /// of a valid channel of the oscilloscope.</param>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sen_trg_bld_par3 measured_via_channel(
+    rtx_sen_trg_bld_par3 measured_via_channel(
         _In_ const rtx_trigger::input_type channel);
 
 private:
@@ -431,8 +438,7 @@ public:
     /// <param name="channel">The channel to trigger on, which must be the name
     /// of a valid channel of the oscilloscope.</param>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sen_trg_bld_par3 measured_via_channel(
-        _In_z_ const wchar_t *channel);
+    rtx_sen_trg_bld_par3 measured_via_channel(_In_z_ const wchar_t *channel);
 
     /// <summary>
     /// Creates a trigger on the specified channel.
@@ -440,8 +446,7 @@ public:
     /// <param name="channel">The channel to trigger on, which must be the name
     /// of a valid channel of the oscilloscope.</param>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sen_trg_bld_par3 measured_via_channel(
-        _In_z_ const char *channel);
+    rtx_sen_trg_bld_par3 measured_via_channel(_In_z_ const char *channel);
 
     /// <summary>
     /// Creates a trigger on the specified channel.
@@ -449,14 +454,14 @@ public:
     /// <param name="channel">The channel to trigger on, which must be the name
     /// of a valid channel of the oscilloscope.</param>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sen_trg_bld_par3 measured_via_channel(
+    rtx_sen_trg_bld_par3 measured_via_channel(
         _In_ const rtx_trigger::input_type channel);
 
     /// <summary>
     /// Creates a trigger on the external channel.
     /// </summary>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sen_trg_bld_par3 measured_via_external(void);
+    rtx_sen_trg_bld_par3 measured_via_external(void);
 
     /// <summary>
     /// Tells the framework to only use the specified pins of the parallel port
