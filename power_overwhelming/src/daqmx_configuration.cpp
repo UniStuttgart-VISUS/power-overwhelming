@@ -109,9 +109,13 @@ std::size_t PWROWG_NAMESPACE::daqmx_configuration::count_sensors(
  */
 std::uint64_t PWROWG_NAMESPACE::daqmx_configuration::samples(
         void) const noexcept {
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
     auto t = this->_timing.get<daqmx_timing>();
     assert(t != nullptr);
     return t->samples();
+#else /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+    return 0;
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 }
 
 

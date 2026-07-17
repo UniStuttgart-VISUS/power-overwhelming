@@ -95,7 +95,7 @@ public:
                 .download_timeout(10000);
             auto trigger = rtx_sensor_trigger_builder::for_path(device.c_str()).when_software_triggered().build();
             //trigger = rtx_sensor_trigger_builder::for_all().when_parallel_port("LPT1").measured_via_external().build();
-            trigger = rtx_sensor_trigger_builder::for_all().when_channel("CH0").rises_above(0.1f).build();
+            trigger = rtx_sensor_trigger_builder::for_all().when_channel("CH1").rises_above(0.1f).build();
             sensor_config->trigger(trigger);
 
             Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
@@ -149,7 +149,7 @@ public:
             Assert::IsNotNull(trigger.path(), L"Path is set", LINE_INFO());
         }
 #endif
-#if 1
+#if false
         {
             // This test will only work if the port extension card is installed on the test machine.
             auto trigger = rtx_sensor_trigger_builder::for_name("rta01").when_channel("CH1").rises_above(2.5f).build();
@@ -170,7 +170,7 @@ public:
             Assert::IsNotNull(trigger.trigger(), L"Trigger is set", LINE_INFO());
         }
 #endif
-#if 0
+#if false
         {
             // This test will only work if the port extension card is installed on the test machine.
             auto trigger = rtx_sensor_trigger_builder::for_path("hugo").when_parallel_port("COM1").measured_via_channel("CH1").build();
@@ -178,7 +178,7 @@ public:
             Assert::IsNotNull(trigger.trigger(), L"Trigger is set", LINE_INFO());
         }
 #endif
-#if 0
+#if false
         {
             // This test will only work if the port extension card is installed on the test machine.
             auto trigger = rtx_sensor_trigger_builder::for_serial(L"103698").when_channel("CH1").rises_above(2.5f).build();

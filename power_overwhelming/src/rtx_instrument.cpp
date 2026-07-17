@@ -1589,7 +1589,7 @@ PWROWG_NAMESPACE::rtx_instrument::trigger(
     }
 
     impl.format("TRIG:A:SOUR %s\n", trigger.source());
-    impl.format("TRIG:A:TYPE %s\n", trigger.type());
+    impl.format("TRIG:A:TYPE %s\n", to_string(trigger.type()));
 
     if (trigger.hold_off() == nullptr) {
         impl.format("TRIG:A:HOLD:MODE OFF\n");
