@@ -364,8 +364,12 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder
 PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_name(
         _In_z_ const wchar_t *name,
         _In_ const std::int32_t timeout) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto instrument = rtx_instrument::from_name(name, nullptr, nullptr, timeout);
     return for_path(instrument.path());
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::runtime_error(detail::no_visa_error_msg);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
@@ -376,8 +380,12 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder
 PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_name(
         _In_z_ const char *name,
         _In_ const std::int32_t timeout) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     auto instrument = rtx_instrument::from_name(name, nullptr, nullptr, timeout);
     return for_path(instrument.path());
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::runtime_error(detail::no_visa_error_msg);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 
