@@ -192,9 +192,11 @@ public:
             auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
             Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
 
+            sensor_config->timing(daqmx_sample_clock_timing(100.0, daqmx_edge::rising, daqmx_sample_mode::continuous, 10));
             auto trigger = daqmx_sensor_trigger_builder()
                 .when_starting()
-                .sample_at(1000)
+                .sample_at(100.0)
+                .in_batches_of(10)
                 .build();
             //trigger = daqmx_sensor_trigger_builder()
             //    .when_parallel_port("LPT1")
@@ -225,7 +227,7 @@ public:
             sensor_config->add_sensor(
                 daqmx_sensor_definition(
                     daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 2)).max_value(10),
-                    daqmx_current_channel(multi_sz<char>::at(device.analog_inputs(), 3)).max_value(10).shunt_resistor_value(500)));
+                    daqmx_current_channel(multi_sz<char>::at(device.analog_inputs(), 3)).max_value(10).shunt_resistor_location(daqmx_shunt_resistor_location::external).shunt_resistor_value(500)));
 
             std::vector<sensor_description> descs;
             descs.resize(type::descriptions(nullptr, 0, *sensor_config));
@@ -235,13 +237,13 @@ public:
             const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), &owner, *sensor_config);
             Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
 
-            //sensors.front().sample(true);
+            sensors.front().sample(true);
             //std::this_thread::sleep_for(std::chrono::seconds(1));
             //Assert::IsTrue(trigger.acquire(
             //    [](void) { Assert::IsTrue(true, L"Triggered", LINE_INFO()); },
             //    [](std::exception_ptr) { Assert::IsTrue(false, L"Acquisition failure", LINE_INFO()); return true; }
             //), L"Acquire scheduled", LINE_INFO());
-            //std::this_thread::sleep_for(std::chrono::seconds(5));
+            std::this_thread::sleep_for(std::chrono::seconds(5));
         }
     }
 

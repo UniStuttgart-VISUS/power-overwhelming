@@ -59,7 +59,8 @@ PWROWG_NAMESPACE::daqmx_configuration::load(_In_z_ const char *path) {
 PWROWG_NAMESPACE::daqmx_configuration::daqmx_configuration(void) {
     this->_sensors.emplace<std::vector<daqmx_sensor_definition>>();
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
-    this->_timing.emplace<daqmx_sample_clock_timing>(1000.0);
+    this->_timing.emplace<daqmx_sample_clock_timing>(
+        1000.0, daqmx_edge::rising, daqmx_sample_mode::continuous);
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 }
 
@@ -100,6 +101,17 @@ std::size_t PWROWG_NAMESPACE::daqmx_configuration::count_sensors(
     assert(this->_sensors);
     const auto s = this->_sensors.get<std::vector<daqmx_sensor_definition>>();
     return (s != nullptr) ? s->size() : 0;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::daqmx_configuration::samples
+ */
+std::uint64_t PWROWG_NAMESPACE::daqmx_configuration::samples(
+        void) const noexcept {
+    auto t = this->_timing.get<daqmx_timing>();
+    assert(t != nullptr);
+    return t->samples();
 }
 
 

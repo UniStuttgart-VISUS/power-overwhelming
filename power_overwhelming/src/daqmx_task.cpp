@@ -184,6 +184,29 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::timing(
 
 
 /*
+ * PWROWG_NAMESPACE::daqmx_task::timing
+ */
+PWROWG_NAMESPACE::daqmx_task&  PWROWG_NAMESPACE::daqmx_task::timing(
+        _In_ const daqmx_timing& timing) {
+    {
+        auto t = dynamic_cast<const daqmx_implicit_timing *>(&timing);
+        if (t != nullptr) {
+            return this->timing(*t);
+        }
+    }
+
+    {
+        auto t = dynamic_cast<const daqmx_sample_clock_timing *>(&timing);
+        if (t != nullptr) {
+            return this->timing(*t);
+        }
+    }
+
+    throw std::invalid_argument("An unsupported type of timing was specified.");
+}
+
+
+/*
  * PWROWG_NAMESPACE::daqmx_task::trigger
  */
 PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::trigger(
@@ -250,16 +273,17 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator +=(
     auto max_value = rhs.max_value();
 
     if (min_value >= max_value) {
-        PWROWG_TRACE(_T("Trying to fix an empty current range."));
+        PWROWG_TRACE("Trying to fix invalid current range [%g, %g] of channel "
+            "\"%s\".", min_value, max_value, rhs.channel());
         const auto dev = daqmx_device::from_channel(rhs.channel());
         std::size_t cnt;
         const double *rng;
         if (dev.analog_input_current_ranges(rng, cnt)) {
             assert(cnt >= 1);
-            min_value = rng[0];
-            max_value = rng[1];
-            PWROWG_TRACE(_T("Fixed an empty current range to [%g, %g]."),
-                min_value, max_value);
+            min_value = rng[1];
+            max_value = rng[0];
+            PWROWG_TRACE("Fixed the current range of channel \"%s\" to "
+                "[%g, %g].", rhs.channel(), min_value, max_value);
         }
     }
 
@@ -329,16 +353,17 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::operator +=(
     auto max_value = rhs.max_value();
 
     if (min_value >= max_value) {
-        PWROWG_TRACE(_T("Trying to fix an empty voltage range."));
+        PWROWG_TRACE("Trying to fix invalid voltage range [%g, %g] of channel "
+            "\"%s\".", min_value, max_value, rhs.channel());
         const auto dev = daqmx_device::from_channel(rhs.channel());
         std::size_t cnt;
         const double *rng;
         if (dev.analog_input_voltage_ranges(rng, cnt)) {
             assert(cnt >= 1);
-            min_value = rng[0];
-            max_value = rng[1];
-            PWROWG_TRACE(_T("Fixed an empty voltage range to [%g, %g]."),
-                min_value, max_value);
+            min_value = rng[1];
+            max_value = rng[0];
+            PWROWG_TRACE("Fixed the voltage range of channel \"%s\" to "
+                "[%g, %g].", rhs.channel(), min_value, max_value);
         }
     }
 

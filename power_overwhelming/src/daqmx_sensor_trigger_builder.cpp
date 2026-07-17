@@ -36,6 +36,24 @@ PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final1::a_finite_number(
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final1::in_batches_of
+ */
+PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final2&
+PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final1::in_batches_of(
+        _In_ const std::uint64_t samples) {
+    assert(this->_trigger._impl != nullptr);
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+    assert(this->_trigger._impl->timing != nullptr);
+    auto timing = dynamic_cast<daqmx_sample_clock_timing *>(
+        this->_trigger._impl->timing.get());
+    assert(timing != nullptr);
+    timing->samples(samples);
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+    return *this;
+}
+
+
+/*
  * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final0::sample_at
  */
 PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final1

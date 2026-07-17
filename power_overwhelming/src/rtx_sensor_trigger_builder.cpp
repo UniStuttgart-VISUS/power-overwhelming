@@ -364,12 +364,8 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder
 PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_name(
         _In_z_ const wchar_t *name,
         _In_ const std::int32_t timeout) {
-    if (name == nullptr) {
-        throw std::invalid_argument("A valid device name must be provided.");
-    }
-
-    const auto n = convert_string<char>(name);
-    return for_name(n.c_str(), timeout);
+    auto instrument = rtx_instrument::from_name(name, nullptr, nullptr, timeout);
+    return for_path(instrument.path());
 }
 
 
@@ -380,53 +376,8 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder
 PWROWG_NAMESPACE::rtx_sensor_trigger_builder::for_name(
         _In_z_ const char *name,
         _In_ const std::int32_t timeout) {
-    if (name == nullptr) {
-        throw std::invalid_argument("A valid device name must be provided.");
-    }
-
-#if defined(POWER_OVERWHELMING_WITH_VISA)
-    const auto devices = detail::visa_library::instance().find_resource();
-    std::string dev_name(name);
-    const auto cnt_name = dev_name.size() + 1;
-    std::string path;
-
-    for (auto d : devices) {
-        try {
-            rtx_instrument i(d.c_str(), timeout);
-            if (i.name(nullptr, 0) == cnt_name) {
-                // Only if the device name has the name length, there is a
-                // chance for a match.
-                dev_name[0] = 0;
-                i.name(&dev_name[0], cnt_name);
-
-                if (dev_name == name) {
-                    if (!path.empty()) {
-                        // If we already have match, the name is not unique,
-                        // which is an error. We do not want to have naming
-                        // collisions here as the trigger configuration might
-                        // be wrong in this case.
-                        throw std::invalid_argument("The given name does not "
-                            "uniquely identify a instrument.");
-                    }
-
-                    path = d;
-                }
-            } /* if (i.name(nullptr, 0) == dev_name.size()) */
-        } catch (...) {
-            PWROWG_TRACE("Failed to open instrument \"%s\", so we skip it.",
-                d.c_str());
-        }
-    } /* for (auto d : devices) */
-
-    if (path.empty()) {
-        throw std::invalid_argument("No instrument with the given name could "
-            "be found.");
-    }
-
-    return for_path(path.c_str());
-#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
-    throw std::runtime_error(detail::no_visa_error_msg);
-#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    auto instrument = rtx_instrument::from_name(name, nullptr, nullptr, timeout);
+    return for_path(instrument.path());
 }
 
 

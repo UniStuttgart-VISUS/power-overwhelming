@@ -8,12 +8,12 @@
 
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
 #include <visus/pwrowg/event.h>
+#include <visus/pwrowg/daqmx_device.h>
 #include <visus/pwrowg/daqmx_task.h>
+#include <visus/pwrowg/multi_sz.h>
 #include <visus/pwrowg/on_exit.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
-#define TEST_DEVICE_NAME "NIUSB-6423"
 
 
 PWROWG_TEST_NAMESPACE_BEGIN
@@ -30,57 +30,68 @@ public:
     TEST_METHOD(add_channels) {
         daqmx_task task("test");
         Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
-        try {
-            task += daqmx_voltage_channel(TEST_DEVICE_NAME "/ai0").min_value(-10.0).max_value(10.0);
-            task += daqmx_current_channel(TEST_DEVICE_NAME "/ai1").min_value(-10.0).max_value(10.0)
+
+        auto device = test_instrument();
+        if (device) {
+            task += daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 0)).min_value(-10.0).max_value(10.0);
+            task += daqmx_current_channel(multi_sz<char>::at(device.analog_inputs(), 1)).min_value(-10.0).max_value(10.0)
                 .shunt_resistor_location(daqmx_shunt_resistor_location::external)
                 .shunt_resistor_value(400);
-            //task += daqmx_power_channel(TEST_DEVICE_NAME "/ai2", TEST_DEVICE_NAME "/ai3")
+            //task += daqmx_power_channel(multi_sz<char>::at(device.analog_inputs(), 2), multi_sz<char>::at(device.analog_inputs(), 3))
             //    .voltage_min_value(-5.0).voltage_max_value(5.0)
             //    .current_min_value(-2.0).current_max_value(2.0)
             //    .shunt_resistor_location(daqmx_shunt_resistor_location::external)
             //    .shunt_resistor_value(249.0);
-        } catch (...) { /* Will fail if no device is present */ }
+        }
     }
 
     TEST_METHOD(clock_timing) {
         daqmx_task task("test");
         Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
-        try {
-            task += daqmx_voltage_channel(TEST_DEVICE_NAME "/ai0").min_value(-10.0).max_value(10.0);
+
+        auto device = test_instrument();
+        if (device) {
+            task += daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 0)).min_value(-10.0).max_value(10.0);
             task.timing(daqmx_sample_clock_timing(1000.0, daqmx_edge::rising, daqmx_sample_mode::finite, 1000));
-        } catch (...) { /* Will fail if no device is present */ }
+        }
     }
 
     TEST_METHOD(on_done) {
         daqmx_task task("test");
-        Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
-        task += daqmx_voltage_channel(TEST_DEVICE_NAME "/ai0").min_value(-10.0).max_value(10.0);
-        task.on_done([](const daqmx_task& task, const int32) {
+
+        auto device = test_instrument();
+        if (device) {
             Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
-            return 0;
-        });
+            task += daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 0)).min_value(-10.0).max_value(10.0);
+            task.on_done([](const daqmx_task& task, const int32) {
+                Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
+                return 0;
+                });
+        }
     }
 
     TEST_METHOD(on_sample) {
         daqmx_task task("test");
         Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
-        try {
-            task += daqmx_voltage_channel(TEST_DEVICE_NAME "/ai0").min_value(-10.0).max_value(10.0);
+
+        auto device = test_instrument();
+        if (device) {
+            task += daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 0)).min_value(-10.0).max_value(10.0);
             task.on_sample(1024, [](const daqmx_task& task, const daqmx_sample_event_type, uInt32) {
                 Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
                 return 0;
                 });
-        } catch (...) { /* Will fail if no device is present */ }
+        }
     }
 
     TEST_METHOD(read) {
         daqmx_task task("test");
         Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
 
-        try {
-            task += daqmx_voltage_channel(TEST_DEVICE_NAME "/ai0").terminal_configuration(daqmx_terminal_configuration::differential).min_value(-10.0).max_value(10.0);
-            task += daqmx_voltage_channel(TEST_DEVICE_NAME "/ai1").terminal_configuration(daqmx_terminal_configuration::differential).min_value(-10.0).max_value(10.0);
+        auto device = test_instrument();
+        if (device) {
+            task += daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 0)).terminal_configuration(daqmx_terminal_configuration::differential).min_value(-10.0).max_value(10.0);
+            task += daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 1)).terminal_configuration(daqmx_terminal_configuration::differential).min_value(-10.0).max_value(10.0);
             task.timing(daqmx_sample_clock_timing(100.0, daqmx_edge::rising, daqmx_sample_mode::continuous, 10));
             auto evt = create_event();
             pwrowg_on_exit([&evt]() { destroy_event(evt); });
@@ -93,8 +104,21 @@ public:
                 });
             task.start();
             wait_event(evt);
-        } catch (...) { /* Will fail if no device is present */ }
+        }
     }
+
+private:
+
+    static daqmx_device test_instrument(void) {
+        std::vector<daqmx_device> devices(daqmx_device::all(nullptr, 0));
+        if (devices.empty()) {
+            return daqmx_device();
+        }
+
+        daqmx_device::all(devices.data(), devices.size());
+        return devices.front();
+    }
+
 
 };
 

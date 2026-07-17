@@ -8,6 +8,8 @@
 #define _PWROWG_DAQMX_CONFIGURATION_H
 #pragma once
 
+#include <cinttypes>
+
 #include "visus/pwrowg/daqmx_implicit_timing.h"
 #include "visus/pwrowg/daqmx_sensor_definition.h"
 #include "visus/pwrowg/daqmx_sensor_trigger.h"
@@ -81,6 +83,12 @@ public:
     /// </summary>
     /// <returns>The number of configured sensors.</returns>
     std::size_t count_sensors(void) const noexcept;
+
+    /// <summary>
+    /// Gets the number of samples that should be read at once from the DAQ.
+    /// </summary>
+    /// <returns>The size of a batch read at once from the DAQ.</returns>
+    std::uint64_t samples(void) const noexcept;
 
     /// <summary>
     /// Saves the configuration to a JSON file.

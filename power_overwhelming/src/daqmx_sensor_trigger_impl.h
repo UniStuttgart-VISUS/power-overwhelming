@@ -22,6 +22,7 @@
 #include "visus/pwrowg/daqmx_timing.h"
 #include "visus/pwrowg/parallel_port_trigger.h"
 #include "visus/pwrowg/timestamp.h"
+#include "visus/pwrowg/trace.h"
 #include "visus/pwrowg/type_erased_storage.h"
 
 #include "sensor_trigger_state.h"
@@ -159,17 +160,17 @@ struct daqmx_sensor_trigger_impl final {
     /// Initialises a new instance.
     /// </summary>
     inline daqmx_sensor_trigger_impl(_In_z_ const char *task = nullptr)
-        : external_trigger_duration(100),
-        external_trigger_pins(parallel_port_pin::data),
-        references(1),
-        state(sensor_trigger_state::none),
+            : external_trigger_duration(100),
+            external_trigger_pins(parallel_port_pin::data),
+            references(1),
+            state(sensor_trigger_state::none),
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
-        task((task == nullptr)
-            ? std::to_string(reinterpret_cast<std::uintptr_t>(this))
-            : task),
+            task((task == nullptr)
+                ? std::to_string(reinterpret_cast<std::uintptr_t>(this))
+                : task),
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
-        when_failed(nullptr),
-        when_done(nullptr) { }
+            when_done(nullptr),
+            when_failed(nullptr) { }
 };
 
 PWROWG_DETAIL_NAMESPACE_END

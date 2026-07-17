@@ -71,14 +71,16 @@ public:
         _In_ const std::int32_t timeout = default_timeout);
 
     /// <summary>
-    /// Creates a new istrument and invokes the given callback if the
+    /// Creates a new instrument and invokes the given callback if the
     /// instrument was newly opened in contrast to be reused from other
     /// instances.
     /// </summary>
     /// <param name="path">The VISA resource path of the instrument.</param>
     /// <param name="on_new">The callback to be invoked if the instrument
     /// is new. If you only plan to reset the instrument, you can also
-    /// use <see cref="create_and_reset_new" />.</param>
+    /// use <see cref="create_and_reset_new" />. This parameter can be
+    /// <see langword="nullptr" /> in which case the behaviour of the method
+    /// is the same as of the constructor.</param>
     /// <param name="context">A user-defined context pointer to be passed
     /// to the <see cref="on_new" /> callback.</param>
     /// <param name="timeout">The timeout for the connection attempt in
@@ -94,19 +96,21 @@ public:
     /// <exception cref="std::system_error">If the instrument could not be
     /// initialised.</exception>
     static rtx_instrument create(_In_z_ const wchar_t *path,
-        _In_ void (*on_new)(rtx_instrument&, void *),
+        _In_opt_ void (*on_new)(rtx_instrument&, void *),
         _In_opt_ void *context = nullptr,
         _In_ const timeout_type timeout = default_timeout);
 
     /// <summary>
-    /// Creates a new istrument and invokes the given callback if the
+    /// Creates a new instrument and invokes the given callback if the
     /// instrument was newly opened in contrast to be reused from other
     /// instances.
     /// </summary>
     /// <param name="path">The VISA resource path of the instrument.</param>
     /// <param name="on_new">The callback to be invoked if the instrument
     /// is new. If you only plan to reset the instrument, you can also
-    /// use <see cref="create_and_reset_new" />.</param>
+    /// use <see cref="create_and_reset_new" />. This parameter can be
+    /// <see langword="nullptr" /> in which case the behaviour of the method
+    /// is the same as of the constructor.</param>
     /// <param name="context">A user-defined context pointer to be passed
     /// to the <see cref="on_new" /> callback.</param>
     /// <param name="timeout">The timeout for the connection attempt in
@@ -122,7 +126,7 @@ public:
     /// <exception cref="std::system_error">If the sensor could not be
     /// initialised.</exception>
     static rtx_instrument create(_In_z_ const char *path,
-        _In_ void (*on_new)(rtx_instrument&, void *),
+        _In_opt_ void (*on_new)(rtx_instrument&, void *),
         _In_opt_ void *context = nullptr,
         _In_ const timeout_type timeout = default_timeout);
 
@@ -165,6 +169,26 @@ public:
     /// initialised.</exception>
     static rtx_instrument create_and_reset_new(_In_z_ const char *path,
         _In_ const timeout_type timeout = default_timeout);
+
+    static rtx_instrument from_name(_In_z_ const wchar_t *name,
+        _In_opt_ void (*on_new)(rtx_instrument&, void *),
+        _In_opt_ void *context = nullptr,
+        _In_ const std::int32_t timeout = default_timeout);
+
+    static rtx_instrument from_name(_In_z_ const char *name,
+        _In_opt_ void (*on_new)(rtx_instrument&, void *),
+        _In_opt_ void *context = nullptr,
+        _In_ const std::int32_t timeout = default_timeout);
+
+    inline static rtx_instrument from_name(_In_z_ const wchar_t *name,
+            _In_ const std::int32_t timeout = default_timeout) {
+        return rtx_instrument::from_name(name, nullptr, nullptr, timeout);
+    }
+
+    inline static rtx_instrument from_name(_In_z_ const char *name,
+            _In_ const std::int32_t timeout = default_timeout) {
+        return rtx_instrument::from_name(name, nullptr, nullptr, timeout);
+    }
 
     /// <summary>
     /// The product ID of the RTA and RTB series oscilloscopes.

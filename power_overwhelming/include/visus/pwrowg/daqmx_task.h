@@ -221,6 +221,13 @@ public:
     daqmx_task& timing(_In_ const daqmx_sample_clock_timing& timing);
 
     /// <summary>
+    /// Configures the timing of the task.
+    /// </summary>
+    /// <param name="timing">The timing configuration.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    daqmx_task& timing(_In_ const daqmx_timing& timing);
+
+    /// <summary>
     /// Configures how the task is being triggered.
     /// </summary>
     /// <param name="trigger">The trigger to be configured.</param>

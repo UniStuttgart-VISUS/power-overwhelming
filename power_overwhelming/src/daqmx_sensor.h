@@ -11,8 +11,10 @@
 #include <algorithm>
 #include <cassert>
 #include <list>
+#include <set>
 #include <vector>
 
+#include "visus/pwrowg/atomic_utilities.h"
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/daqmx_configuration.h"
 #include "visus/pwrowg/daqmx_sensor_trigger.h"
@@ -22,6 +24,7 @@
 #include "sensor_description_builder.h"
 #include "sensor_utilities.h"
 #include "sensor_state.h"
+#include "daqmx_sensor_trigger_impl.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN

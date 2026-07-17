@@ -142,21 +142,21 @@ public:
             Assert::AreEqual("hugo", trigger.path(), L"Path is set", LINE_INFO());
             Assert::IsNull(trigger.trigger(), L"Trigger is not set", LINE_INFO());
         }
-#if 0
+#if false
         {
             // This test will only work if the port extension card is installed on the test machine.
             auto trigger = rtx_sensor_trigger_builder::for_first().when_channel("CH1").rises_above(2.5f).build();
             Assert::IsNotNull(trigger.path(), L"Path is set", LINE_INFO());
         }
 #endif
-#if 0
+#if 1
         {
             // This test will only work if the port extension card is installed on the test machine.
             auto trigger = rtx_sensor_trigger_builder::for_name("rta01").when_channel("CH1").rises_above(2.5f).build();
             Assert::IsNotNull(trigger.path(), L"Path is set", LINE_INFO());
         }
 #endif
-#if 0
+#if false
         {
             // This test will only work if the port extension card is installed on the test machine.
             auto trigger = rtx_sensor_trigger_builder::for_path("hugo")

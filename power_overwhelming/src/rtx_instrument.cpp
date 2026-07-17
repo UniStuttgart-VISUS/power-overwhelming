@@ -18,6 +18,7 @@
 #include "visus/pwrowg/string_functions.h"
 #include "visus/pwrowg/trace.h"
 
+#include "no_visa_error_msg.h"
 #include "visa_instrument_impl.h"
 #include "visa_timeout_override.h"
 
@@ -83,18 +84,13 @@ std::size_t PWROWG_NAMESPACE::rtx_instrument::all(
  */
 PWROWG_NAMESPACE::rtx_instrument PWROWG_NAMESPACE::rtx_instrument::create(
         _In_z_ const wchar_t *path,
-        _In_ void (*on_new)(rtx_instrument &, void *),
+        _In_opt_ void (*on_new)(rtx_instrument &, void *),
         _In_opt_ void *context,
         _In_ const timeout_type timeout) {
-    if (on_new == nullptr) {
-        throw std::invalid_argument("The callback for new instruments must not "
-            "be null.");
-    }
-
     auto is_new = false;
     rtx_instrument retval(is_new, path, timeout);
 
-    if (is_new) {
+    if (is_new && (on_new != nullptr)) {
         on_new(retval, context);
     }
 
@@ -108,18 +104,13 @@ PWROWG_NAMESPACE::rtx_instrument PWROWG_NAMESPACE::rtx_instrument::create(
  */
 PWROWG_NAMESPACE::rtx_instrument PWROWG_NAMESPACE::rtx_instrument::create(
         _In_z_ const char *path,
-        _In_ void (*on_new)(rtx_instrument &, void *),
+        _In_opt_ void (*on_new)(rtx_instrument &, void *),
         _In_opt_ void *context,
         _In_ const timeout_type timeout) {
-    if (on_new == nullptr) {
-        throw std::invalid_argument("The callback for new instruments must not "
-            "be null.");
-    }
-
     auto is_new = false;
     rtx_instrument retval(is_new, path, timeout);
 
-    if (is_new) {
+    if (is_new && (on_new != nullptr)) {
         on_new(retval, context);
     }
 
@@ -151,6 +142,84 @@ PWROWG_NAMESPACE::rtx_instrument::create_and_reset_new(
         [](rtx_instrument &i, void *) { i.reset(rtx_instrument_reset::all); },
         nullptr,
         timeout);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_instrument::create_and_reset_new
+ */
+PWROWG_NAMESPACE::rtx_instrument
+PWROWG_NAMESPACE::rtx_instrument::from_name(
+        _In_z_ const wchar_t *name,
+        _In_opt_ void (*on_new)(rtx_instrument&, void *),
+        _In_opt_ void *context,
+        _In_ const std::int32_t timeout) {
+    if (name == nullptr) {
+        throw std::invalid_argument("A valid device name must be provided.");
+    }
+
+    const auto n = convert_string<char>(name);
+    return from_name(n.c_str(), on_new, context, timeout);
+}
+
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_instrument::create_and_reset_new
+ */
+PWROWG_NAMESPACE::rtx_instrument
+PWROWG_NAMESPACE::rtx_instrument::from_name(
+        _In_z_ const char *name,
+        _In_opt_ void (*on_new)(rtx_instrument&, void *),
+        _In_opt_ void *context,
+        _In_ const std::int32_t timeout) {
+    if (name == nullptr) {
+        throw std::invalid_argument("A valid device name must be provided.");
+    }
+
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    const auto devices = detail::visa_library::instance().find_resource();
+    std::string dev_name(name);
+    const auto cnt_name = dev_name.size() + 1;
+    std::string path;
+
+    for (auto d : devices) {
+        try {
+            rtx_instrument i(d.c_str(), timeout);
+            if (i.name(nullptr, 0) == cnt_name) {
+                // Only if the device name has the name length, there is a
+                // chance for a match.
+                dev_name[0] = 0;
+                i.name(&dev_name[0], cnt_name);
+
+                if (dev_name == name) {
+                    if (!path.empty()) {
+                        // If we already have match, the name is not unique,
+                        // which is an error. We do not want to have naming
+                        // collisions here as the software might not behave
+                        // as expected.
+                        throw std::invalid_argument("The given name does not "
+                            "uniquely identify a instrument.");
+                    }
+
+                    path = d;
+                }
+            } /* if (i.name(nullptr, 0) == dev_name.size()) */
+        } catch (...) {
+            PWROWG_TRACE("Failed to open instrument \"%s\", so we skip it.",
+                d.c_str());
+        }
+    } /* for (auto d : devices) */
+
+    if (path.empty()) {
+        throw std::invalid_argument("No instrument with the given name could "
+            "be found.");
+    }
+
+    return create(path.c_str(), on_new, context, timeout);
+#else /* defined(POWER_OVERWHELMING_WITH_VISA) */
+    throw std::runtime_error(detail::no_visa_error_msg);
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
 

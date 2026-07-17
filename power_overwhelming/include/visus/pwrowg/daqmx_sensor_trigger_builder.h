@@ -77,6 +77,8 @@ public:
     /// automatically.</param>
     /// <returns>A builder instance for finalising the trigger.</returns>
     daqmx_sen_trg_bld_final2& a_finite_number(_In_ const std::uint64_t samples);
+
+    daqmx_sen_trg_bld_final2& in_batches_of(_In_ const std::uint64_t samples);
 };
 
 

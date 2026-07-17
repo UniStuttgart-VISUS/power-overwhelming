@@ -14,7 +14,6 @@
 
 #include "daqmx_error_category.h"
 #include "daqmx_library.h"
-#include "daqmx_sensor_trigger_impl.h"
 #include "sensor_trigger_state.h"
 
 
@@ -91,7 +90,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::daqmx_sensor::descriptions(
                     auto v = pow->voltage_channel();
                     auto c = pow->current_channel();
                     dst[retval] = builder
-                        .with_path("%s+%s", v, c)
+                        .with_path("%s&%s", v, c)
                         .with_private_data(sensor)
                         .with_id("DAQmx/%s+%s", v, c)
                         .with_name("%s+%s (on-device-computed power)", v, c)
@@ -190,35 +189,23 @@ void PWROWG_DETAIL_NAMESPACE::daqmx_sensor::sample(_In_ const bool enable) {
     auto& trigger = *this->_trigger._impl;
 
     if (enable) {
-        if ((atomic_set(trigger.state, sensor_trigger_state::running)
-                & sensor_trigger_state::running)
-                != sensor_trigger_state::running) {
+        constexpr auto change = sensor_trigger_state::running;
+        if ((atomic_set(trigger.state, change) & change) != change) {
             PWROWG_TRACE(_T("Starting DAQmx task."));
             trigger.task.start();
         }
 
     } else {
-        throw "TODO";
-    //    PWROWG_TRACE(_T("Signalling the RTX sensor controller to stop."));
-    //    atomic_unset(trigger.state, sensor_trigger_state::running
-    //        | sensor_trigger_state::armed);
-
-    //    PWROWG_TRACE(_T("Making sure that the controller thread is not ")
-    //        _T("working on the instruments anymore before injecting an OPC to ")
-    //        _T("wake it up."));
-    //    spin_while_all(trigger.state, sensor_trigger_state::busy);
-
-    //    if (this->_thread.joinable()) {
-    //        for (auto& i : trigger.instruments) {
-    //            PWROWG_TRACE("Unlocking instrument \"%s\".", i.path());
-    //            i.operation_complete_async();
-    //        }
-
-    //        PWROWG_TRACE(_T("Waiting for the RTX sensor controller to exit, ")
-    //            _T("because the contract of sample requires them method not ")
-    //            _T("to return until all pending samples have been delivered."));
-    //        this->_thread.join();
-    //    }
+        constexpr auto change = sensor_trigger_state::running
+            | sensor_trigger_state::armed;
+        if ((atomic_unset(trigger.state, change) & change)
+                != sensor_trigger_state::none) {
+            PWROWG_TRACE(_T("Stopping DAQmx task."));
+            trigger.task.stop();
+            PWROWG_TRACE(_T("Making sure that no DAQmx callback is running ")
+                _T("before returning from sample method."));
+            spin_while_all(trigger.state, sensor_trigger_state::busy);
+        }
     }
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 }
