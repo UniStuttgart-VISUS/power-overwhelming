@@ -178,6 +178,7 @@ public:
     }
 
     TEST_METHOD(test_sensor_creation) {
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
         typedef detail::daqmx_sensor type;
         const auto device = test_instrument();
 
@@ -245,6 +246,7 @@ public:
             //), L"Acquire scheduled", LINE_INFO());
             std::this_thread::sleep_for(std::chrono::seconds(5));
         }
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
     }
 
     private:

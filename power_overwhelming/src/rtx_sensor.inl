@@ -191,11 +191,12 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
             } else {
                 const auto level = (this->_trigger._impl->daisy_chain > 0.0f)
                     ? this->_trigger._impl->daisy_chain
-                    : 400.0f;
-                PWROWG_TRACE("Setting up an external dummy trigger on \"%s\" "
-                    "at %f V.", i.path(), level);
-                icfg.trigger(rtx_trigger(5, rtx_trigger_type::edge)
-                    .external(level)
+                    : 0.0f;
+                PWROWG_TRACE("Setting up an invalid dummy trigger on \"%s\" "
+                    "at %fV.", i.path(), level);
+                icfg.trigger(rtx_trigger(
+                        static_cast<rtx_trigger::input_type>(0),
+                        rtx_trigger_type::edge)
                     .mode(rtx_trigger_mode::normal));
             }
 

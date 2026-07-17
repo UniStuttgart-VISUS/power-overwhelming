@@ -227,6 +227,15 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample(_In_ const bool enable) {
             _T("wake it up."));
         spin_while_all(trigger.state, sensor_trigger_state::busy);
 
+#if false
+        while (this->_thread.joinable()) {
+            for (auto& i : trigger.instruments) {
+                PWROWG_TRACE("Unlocking instrument \"%s\".", i.path());
+                i.operation_complete_async();
+            }
+            std::this_thread::yield();
+        }
+#else 
         if (this->_thread.joinable()) {
             for (auto& i : trigger.instruments) {
                 PWROWG_TRACE("Unlocking instrument \"%s\".", i.path());
@@ -238,6 +247,7 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample(_In_ const bool enable) {
                 _T("to return until all pending samples have been delivered."));
             this->_thread.join();
         }
+#endif
     }
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
