@@ -262,12 +262,17 @@ template<class TIterator> PWROWG_DETAIL_NAMESPACE::daqmx_sensor::daqmx_sensor(
             ._DAQmxDisableStartTrig(trigger->task));
     }
 
-    // Install a callback receiving the data.
+    // Install a callback receiving the data. This callback will read as many
+    // vaalues as available from the DAQ and use the '_make_sample' functions to
+    // generate the per-sensor samples.
     const auto chunk = (std::max)(config.samples() / config.reads(),
         static_cast<std::size_t>(1));
     this->_buffer.resize(chunk * channels.size());
     trigger->task.on_sample(chunk, [this](_In_ daqmx_task& task,
             const daqmx_sample_event_type, _In_ const uInt32 cnt) {
+        // Note: The following read will fail if the callback is too slow. This
+        // is on purpose because we have no way to resynchronise the timestamp
+        // once out of sync.
         const auto read = task.read(this->_buffer.data(), this->_buffer.size(),
             cnt, false);
         auto& timestamp = this->_trigger._impl->trigger_timestamp;
@@ -283,12 +288,13 @@ template<class TIterator> PWROWG_DETAIL_NAMESPACE::daqmx_sensor::daqmx_sensor(
                     this->_make_sample.size()));
             }
 
+            // Note: we assume that the samples are equidistant between
+            // callbacks as well as within a callback.
             timestamp += cnt * this->_trigger._impl->period;
         }
 
         sensor_array_impl::callback(this->_owner, this->_samples.data(),
             this->_samples.size());
-
         return 0;
     });
 

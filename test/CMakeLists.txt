@@ -76,12 +76,12 @@ if (PWROWG_WithPowenetics)
     target_link_libraries(${PROJECT_NAME} PRIVATE libpowenetics)
 endif ()
 
-# The test requires access to the VISA headers to test the instruments.
-if (PWROWG_WithVisa)
-    find_package(VISA REQUIRED)
-    target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
-    target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_WITH_VISA)
-endif ()
+## The test requires access to the VISA headers to test the instruments.
+#if (PWROWG_WithVisa)
+#    find_package(VISA REQUIRED)
+#    target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
+#    target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_WITH_VISA)
+#endif ()
 
 # Grab the DLLs to be tested and copy them to the output directory such that
 # the Visual Studio test driver finds everything.

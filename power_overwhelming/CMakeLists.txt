@@ -50,6 +50,7 @@ endif ()
 
 if (PWROWG_WithNvapi)
     find_package(NVAPI REQUIRED)
+    # Note: Do not link against the wrapper here as this would defeat its purpose.
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_NVAPI)
     target_include_directories(${PROJECT_NAME} PRIVATE ${PWROVRNVAPI_INCLUDE_DIR})
     target_include_directories(${PROJECT_NAME} PRIVATE ${NVAPI_INCLUDE_DIR})
@@ -144,4 +145,4 @@ install(DIRECTORY include/
 install(EXPORT ${PROJECT_NAME}Targets
     FILE ${PROJECT_NAME}Config.cmake
     NAMESPACE ${PROJECT_NAME}::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)
