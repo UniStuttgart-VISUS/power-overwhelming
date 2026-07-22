@@ -61,8 +61,7 @@ public:
     }
 
     /// <summary>
-    /// Triggers the oscilloscope as soon as any ongoing acquisition has
-    /// finished.
+    /// Triggers the DAQ as soon as any ongoing acquisition has finished.
     /// </summary>
     /// <typeparam name="TDone">The type of the callback to be invoked when
     /// the acquisition was fully processed by the RTX sensor controller
@@ -101,8 +100,7 @@ public:
     }
 
     /// <summary>
-    /// Triggers the oscilloscope as soon as any ongoing acquisition has
-    /// finished.
+    /// Triggers the DAQ as soon as any ongoing acquisition has finished.
     /// </summary>
     /// <typeparam name="TDone">The type of the callback to be invoked when
     /// the acquisition was fully processed by the RTX sensor controller
@@ -125,8 +123,7 @@ public:
     }
 
     /// <summary>
-    /// Triggers the oscilloscope as soon as any ongoing acquisition has
-    /// finished.
+    /// Triggers the DAQ as soon as any ongoing acquisition has finished.
     /// </summary>
     /// <returns><see langword="true" /> if the trigger was acknowledged,
     /// <see langword="false" /> if the trigger was not issued as the sensor is

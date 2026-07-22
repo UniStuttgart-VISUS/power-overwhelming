@@ -270,6 +270,15 @@ template<class TIterator> PWROWG_DETAIL_NAMESPACE::daqmx_sensor::daqmx_sensor(
     this->_buffer.resize(chunk * channels.size());
     trigger->task.on_sample(chunk, [this](_In_ daqmx_task& task,
             const daqmx_sample_event_type, _In_ const uInt32 cnt) {
+        assert(this->_trigger._impl != nullptr);
+        auto& trigger = *this->_trigger._impl;
+
+        const auto prev_state = atomic_change(trigger.state,
+            sensor_trigger_state::busy,
+            sensor_trigger_state::armed);
+
+
+
         // Note: The following read will fail if the callback is too slow. This
         // is on purpose because we have no way to resynchronise the timestamp
         // once out of sync.
@@ -295,6 +304,11 @@ template<class TIterator> PWROWG_DETAIL_NAMESPACE::daqmx_sensor::daqmx_sensor(
 
         sensor_array_impl::callback(this->_owner, this->_samples.data(),
             this->_samples.size());
+
+        PWROWG_TRACE(_T("The samples from the DAQ have been processed."));
+        atomic_unset(trigger.state, sensor_trigger_state::busy);
+        //trigger.when_done(trigger.when_done_context);
+
         return 0;
     });
 

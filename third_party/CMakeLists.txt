@@ -160,7 +160,7 @@ if (PWROWG_WithNiDaqMx)
     install(TARGETS nidaqmx EXPORT nidaqmxTargets)
     install(EXPORT nidaqmxTargets
         FILE nidaqmxConfig.cmake
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/nidaqmx)
 endif ()
 
 
@@ -229,7 +229,7 @@ if (PWROWG_WithVisa)
     install(TARGETS visa EXPORT visaTargets)
     install(EXPORT visaTargets
         FILE visaConfig.cmake
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/visa)
 endif ()
 
 
