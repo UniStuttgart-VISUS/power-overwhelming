@@ -6,11 +6,12 @@
 
 #include "pch.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include <marker_sensor.h>
+#include <visus/pwrowg/tinkerforge_configuration.h>
+#include <visus/pwrowg/usb_pd_configuration.h>
 
 
 PWROWG_TEST_NAMESPACE_BEGIN
-
 
 TEST_CLASS(marker_test) {
 

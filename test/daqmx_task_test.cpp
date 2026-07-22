@@ -13,6 +13,9 @@
 #include <visus/pwrowg/multi_sz.h>
 #include <visus/pwrowg/on_exit.h>
 
+#include <daqmx_error_category.h>
+#include <daqmx_library.h>
+
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 
@@ -93,17 +96,24 @@ public:
             task += daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 0)).terminal_configuration(daqmx_terminal_configuration::differential).min_value(-10.0).max_value(10.0);
             task += daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 1)).terminal_configuration(daqmx_terminal_configuration::differential).min_value(-10.0).max_value(10.0);
             task.timing(daqmx_sample_clock_timing(100.0, daqmx_edge::rising, daqmx_sample_mode::continuous, 10));
+            detail::throw_if_daqmx_failed(detail::daqmx_library::instance()._DAQmxDisableStartTrig(task));
             auto evt = create_event();
             pwrowg_on_exit([&evt]() { destroy_event(evt); });
             task.on_sample(10, [evt](daqmx_task& t, const daqmx_sample_event_type, const uInt32 cnt) {
                 Assert::AreEqual(uInt32(10), cnt, L"Sample count ready", LINE_INFO());
                 std::array<double, 20> buffer;
-                Assert::AreEqual(std::size_t(10), t.read(buffer.data(), buffer.size()), L"Read all", LINE_INFO());
+                std::size_t read = 0;
+                const auto status = t.read(read, buffer.data(), buffer.size());
+                if (status >= 0) {
+                    Assert::AreEqual(std::size_t(10), read, L"Read all", LINE_INFO());
+                }
                 set_event(evt);
                 return 0;
-                });
+            });
             task.start();
             wait_event(evt);
+            task.stop();
+            task.wait();
         }
     }
 

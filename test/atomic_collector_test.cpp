@@ -8,8 +8,6 @@
 
 #include <visus/pwrowg/atomic_collector.h>
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
 
 PWROWG_TEST_NAMESPACE_BEGIN
 

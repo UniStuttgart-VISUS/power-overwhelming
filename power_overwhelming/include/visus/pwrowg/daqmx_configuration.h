@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cinttypes>
+#include <numeric>
 
 #include "visus/pwrowg/daqmx_implicit_timing.h"
 #include "visus/pwrowg/daqmx_sensor_definition.h"
@@ -83,6 +84,27 @@ public:
     /// </summary>
     /// <returns>The number of configured sensors.</returns>
     std::size_t count_sensors(void) const noexcept;
+
+    /// <summary>
+    /// Gets the number of reads on the ring buffer of the instrument that the
+    /// the sensor should perform.
+    /// </summary>
+    /// <returns>The number of reads to split the ring buffer into.</returns>
+    inline std::size_t reads(void) const noexcept {
+        return this->_reads;
+    }
+
+    /// <summary>
+    /// Sets into how many reads the ring buffer of the instrument should be
+    /// split.
+    /// </summary>
+    /// <param name="reads">The number of reads, which must be at least two.
+    /// </param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline daqmx_configuration& reads(_In_ const std::size_t reads) noexcept {
+        this->_reads = (std::min)(reads, static_cast<std::size_t>(2));
+        return *this;
+    }
 
     /// <summary>
     /// Gets the number of samples that should be read at once from the DAQ.
@@ -226,6 +248,7 @@ public:
 
 private:
 
+    std::size_t _reads;
     type_erased_storage _sensors;
     type_erased_storage _timing;
     daqmx_sensor_trigger _trigger;

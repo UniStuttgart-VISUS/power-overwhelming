@@ -22,9 +22,7 @@ PWROWG_NAMESPACE_BEGIN
 namespace detail { class daqmx_sensor; }
 namespace detail { struct daqmx_sensor_trigger_impl; }
 namespace detail { class daqmx_sen_trg_bld_chan0; }
-namespace detail { class daqmx_sen_trg_bld_final0; }
-namespace detail { class daqmx_sen_trg_bld_final1; }
-namespace detail { class daqmx_sen_trg_bld_final2; }
+namespace detail { class daqmx_sen_trg_bld_final; }
 namespace detail { class daqmx_sen_trg_bld_par0; }
 namespace detail { class daqmx_sen_trg_bld_par1; }
 namespace detail { class daqmx_sen_trg_bld_par2; }
@@ -183,9 +181,7 @@ private:
 
     friend class detail::daqmx_sensor;
     friend class detail::daqmx_sen_trg_bld_chan0;
-    friend class detail::daqmx_sen_trg_bld_final0;
-    friend class detail::daqmx_sen_trg_bld_final1;
-    friend class detail::daqmx_sen_trg_bld_final2;
+    friend class detail::daqmx_sen_trg_bld_final;
     friend class detail::daqmx_sen_trg_bld_par0;
     friend class detail::daqmx_sen_trg_bld_par1;
     friend class detail::daqmx_sen_trg_bld_par2;

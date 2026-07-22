@@ -6,11 +6,11 @@
 
 #include "pch.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include <nvapi_sensor.h>
+#include <sensor_array_impl.h>
 
 
 PWROWG_TEST_NAMESPACE_BEGIN
-
 
 TEST_CLASS(nvida_test) {
 

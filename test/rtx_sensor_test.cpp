@@ -13,8 +13,7 @@
 #include <visus/pwrowg/rtx_sensor_trigger_builder.h>
 
 #include <rtx_sensor.h>
-
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include <sensor_array_impl.h>
 
 
 PWROWG_TEST_NAMESPACE_BEGIN

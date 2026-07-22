@@ -56,7 +56,7 @@ PWROWG_NAMESPACE::daqmx_configuration::load(_In_z_ const char *path) {
 /*
  * PWROWG_NAMESPACE::daqmx_configuration::daqmx_configuration
  */
-PWROWG_NAMESPACE::daqmx_configuration::daqmx_configuration(void) {
+PWROWG_NAMESPACE::daqmx_configuration::daqmx_configuration(void) : _reads(2) {
     this->_sensors.emplace<std::vector<daqmx_sensor_definition>>();
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
     this->_timing.emplace<daqmx_sample_clock_timing>(

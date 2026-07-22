@@ -18,58 +18,6 @@
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final1::a_finite_number
- */
-PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final2&
-PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final1::a_finite_number(
-        _In_ const std::uint64_t samples) {
-    assert(this->_trigger._impl != nullptr);
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
-    assert(this->_trigger._impl->timing != nullptr);
-    auto timing = dynamic_cast<daqmx_sample_clock_timing *>(
-        this->_trigger._impl->timing.get());
-    assert(timing != nullptr);
-    timing->mode(daqmx_sample_mode::finite).samples(samples);
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
-    return *this;
-}
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final1::in_batches_of
- */
-PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final2&
-PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final1::in_batches_of(
-        _In_ const std::uint64_t samples) {
-    assert(this->_trigger._impl != nullptr);
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
-    assert(this->_trigger._impl->timing != nullptr);
-    auto timing = dynamic_cast<daqmx_sample_clock_timing *>(
-        this->_trigger._impl->timing.get());
-    assert(timing != nullptr);
-    timing->samples(samples);
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
-    return *this;
-}
-
-
-/*
- * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final0::sample_at
- */
-PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final1
-PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final0::sample_at(
-        _In_ const double rate) {
-    assert(this->_trigger._impl != nullptr);
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
-    assert(this->_trigger._impl->timing == nullptr);
-    this->_trigger._impl->timing = std::make_unique<daqmx_sample_clock_timing>(
-        rate, daqmx_edge::rising, daqmx_sample_mode::continuous);
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
-    return daqmx_sen_trg_bld_final1(this->_trigger);
-}
-
-
-/*
  * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_chan0::daqmx_sen_trg_bld_chan0
  */
 PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_chan0::daqmx_sen_trg_bld_chan0(
@@ -85,7 +33,7 @@ PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_chan0::daqmx_sen_trg_bld_chan0(
 /*
  * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_chan0::is_falling_below
  */
-PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final0
+PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final
 PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_chan0::is_falling_below(
         _In_ const double level) {
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
@@ -94,14 +42,14 @@ PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_chan0::is_falling_below(
     this->_trigger._impl->trigger.reset(new daqmx_analog_edge_trigger(
         this->_channel.as<char>(), daqmx_edge::falling, level));
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
-    return daqmx_sen_trg_bld_final0(this->_trigger);
+    return daqmx_sen_trg_bld_final(this->_trigger);
 }
 
 
 /*
  * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_chan0::is_rising_above
  */
-PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final0
+PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final
 PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_chan0::is_rising_above(
         _In_ const double level) {
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
@@ -110,17 +58,39 @@ PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_chan0::is_rising_above(
     this->_trigger._impl->trigger.reset(new daqmx_analog_edge_trigger(
         this->_channel.as<char>(), daqmx_edge::rising, level));
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
-    return daqmx_sen_trg_bld_final0(this->_trigger);
+    return daqmx_sen_trg_bld_final(this->_trigger);
 }
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par3::sample_at
+ * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par3::daqmx_sen_trg_bld_par3
  */
-PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final1
-PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par3::sample_at(
-        _In_ const double rate) {
-    return this->is_rising_above(2.5).sample_at(rate);
+PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par3::daqmx_sen_trg_bld_par3(
+        _In_ const daqmx_sensor_trigger& trigger,
+        _In_ const char *channel)
+        : daqmx_sen_trg_bld_final(trigger) {
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+    assert(this->_trigger._impl != nullptr);
+    assert(this->_trigger._impl->trigger == nullptr);
+    this->_trigger._impl->trigger.reset(new daqmx_analog_edge_trigger(
+        channel, daqmx_edge::rising, 2.5f));
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par3::rising_above
+ */
+PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final
+PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par3::rising_above(
+        _In_ const double level) {
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+    assert(this->_trigger._impl != nullptr);
+    assert(this->_trigger._impl->trigger != nullptr);
+    this->_trigger._impl->trigger.reset(new daqmx_analog_edge_trigger(
+        this->_trigger._impl->trigger->source(), daqmx_edge::rising, level));
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+    return daqmx_sen_trg_bld_final(this->_trigger);
 }
 
 
@@ -247,7 +217,7 @@ PWROWG_NAMESPACE::daqmx_sensor_trigger_builder::when_parallel_port(
 /*
  * PWROWG_NAMESPACE::daqmx_sensor_trigger_builder::when_starting
  */
-PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final0
+PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final
 PWROWG_NAMESPACE::daqmx_sensor_trigger_builder::when_starting(void) {
-    return detail::daqmx_sen_trg_bld_final0(daqmx_sensor_trigger());
+    return detail::daqmx_sen_trg_bld_final(daqmx_sensor_trigger());
 }

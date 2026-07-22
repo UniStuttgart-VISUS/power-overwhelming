@@ -10,8 +10,10 @@
 
 #include <algorithm>
 #include <cassert>
+#include <functional>
+#include <limits>
 #include <list>
-#include <set>
+#include <tuple>
 #include <vector>
 
 #include "visus/pwrowg/atomic_utilities.h"
@@ -24,6 +26,8 @@
 #include "sensor_description_builder.h"
 #include "sensor_utilities.h"
 #include "sensor_state.h"
+#include "daqmx_error_category.h"
+#include "daqmx_library.h"
 #include "daqmx_sensor_trigger_impl.h"
 
 
@@ -146,8 +150,16 @@ public:
 
 private:
 
+    typedef std::vector<PWROWG_NAMESPACE::sample> sample_list;
+
+    typedef std::function<PWROWG_NAMESPACE::sample(const timestamp,
+        const double *, const std::size_t)> sample_builder;
+
+    std::vector<double> _buffer;
     std::size_t _index;
+    std::vector<sample_builder> _make_sample;
     const sensor_array_impl *_owner;
+    std::vector<PWROWG_NAMESPACE::sample> _samples;
     std::vector<daqmx_sensor_definition> _sensors;
     daqmx_sensor_trigger _trigger;
 };

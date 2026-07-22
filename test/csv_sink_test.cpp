@@ -11,8 +11,6 @@
 #include <visus/pwrowg/csv_sink.h>
 #include <visus/pwrowg/thread_local_sink.h>
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
 
 PWROWG_TEST_NAMESPACE_BEGIN
 

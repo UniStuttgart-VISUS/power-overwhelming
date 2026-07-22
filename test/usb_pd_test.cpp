@@ -1,16 +1,16 @@
 // <copyright file="usb_pd_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #include "pch.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include <sensor_array_impl.h>
+#include <usb_pd_sensor.h>
 
 
 PWROWG_TEST_NAMESPACE_BEGIN
-
 
 TEST_CLASS(usb_pd_test) {
 

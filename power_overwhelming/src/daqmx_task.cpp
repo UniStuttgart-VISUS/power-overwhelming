@@ -96,12 +96,13 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::output_buffer(
 /*
  * PWROWG_NAMESPACE::daqmx_task::read
  */
-std::size_t PWROWG_NAMESPACE::daqmx_task::read(
+int32 PWROWG_NAMESPACE::daqmx_task::read(
+        _Out_ std::size_t& read,
         _Out_writes_(cnt * samples) double *dst,
         _In_ const std::size_t cnt,
         _In_ const int32 samples,
         _In_ const bool interleaved,
-        _In_ const double timeout) {
+        _In_ const double timeout) noexcept {
     const auto avail = (cnt > (std::numeric_limits<uInt32>::max)())
         ? (std::numeric_limits<uInt32>::max)()
         : static_cast<uInt32>(cnt);
@@ -109,8 +110,8 @@ std::size_t PWROWG_NAMESPACE::daqmx_task::read(
         ? DAQmx_Val_GroupByChannel
         : DAQmx_Val_GroupByScanNumber;
 
-    int32 read = 0;
-    const auto status = detail::daqmx_library::instance()
+    int32 r = 0;
+    const auto retval = detail::daqmx_library::instance()
         ._DAQmxReadAnalogF64(
             this->_handle,
             static_cast<int32>(samples),
@@ -118,8 +119,26 @@ std::size_t PWROWG_NAMESPACE::daqmx_task::read(
             fill,
             dst,
             avail,
-            &read,
+            &r,
             nullptr);
+    read = static_cast<std::size_t>(r);
+
+    return retval;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::daqmx_task::read
+ */
+std::size_t PWROWG_NAMESPACE::daqmx_task::read(
+        _Out_writes_(cnt * samples) double *dst,
+        _In_ const std::size_t cnt,
+        _In_ const int32 samples,
+        _In_ const bool interleaved,
+        _In_ const double timeout) {
+    std::size_t retval = 0;
+    const auto status = this->read(retval, dst, cnt, samples, interleaved,
+        timeout);
 
     switch (status) {
         case DAQmxErrorTimeoutExceeded:
@@ -130,7 +149,7 @@ std::size_t PWROWG_NAMESPACE::daqmx_task::read(
             break;
     }
 
-    return static_cast<std::size_t>(read);
+    return retval;
 }
 
 

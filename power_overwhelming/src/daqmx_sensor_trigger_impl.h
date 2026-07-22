@@ -9,6 +9,7 @@
 #pragma once
 
 #include <atomic>
+#include <chrono>
 #include <cinttypes>
 #include <exception>
 #include <limits>
@@ -60,6 +61,11 @@ struct daqmx_sensor_trigger_impl final {
     /// data pins.
     /// </summary>
     parallel_port_pin external_trigger_pins;
+
+    /// <summary>
+    /// The time period between two samples.
+    /// </summary>
+    std::chrono::duration<double> period;
 
     /// <summary>
     /// The number of <see cref="rtx_sensor_trigger" /> instances sharing this
@@ -162,6 +168,7 @@ struct daqmx_sensor_trigger_impl final {
     inline daqmx_sensor_trigger_impl(_In_z_ const char *task = nullptr)
             : external_trigger_duration(100),
             external_trigger_pins(parallel_port_pin::data),
+            period(1.0),
             references(1),
             state(sensor_trigger_state::none),
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)

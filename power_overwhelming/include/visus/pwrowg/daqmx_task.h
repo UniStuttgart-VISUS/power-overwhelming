@@ -161,6 +161,13 @@ public:
         return *this;
     }
 
+    int32 read(_Out_ std::size_t& read,
+        _Out_writes_(cnt * samples) double *dst,
+        _In_ const std::size_t cnt,
+        _In_ const int32 samples = DAQmx_Val_Auto,
+        _In_ const bool interleaved = false,
+        _In_ const double timeout = DAQmx_Val_WaitInfinitely) noexcept;
+
     /// <summary>
     /// Reads at most <paramref name="samples" /> per configured channel into
     /// the given buffer.

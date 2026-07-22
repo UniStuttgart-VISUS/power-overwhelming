@@ -8,7 +8,7 @@
 
 #include <visus/pwrowg/string_functions.h>
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include <tokenise.h>
 
 
 PWROWG_TEST_NAMESPACE_BEGIN

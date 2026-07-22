@@ -19,7 +19,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// The last step in the builder stage which only allows for retrieving the
 /// final object.
 /// </summary>
-class POWER_OVERWHELMING_API daqmx_sen_trg_bld_final2 {
+class POWER_OVERWHELMING_API daqmx_sen_trg_bld_final {
 
 public:
 
@@ -27,13 +27,13 @@ public:
     /// Initialises a new instance.
     /// </summary>
     /// <param name="trigger">The trigger to be returned by the builder.</param>
-    inline daqmx_sen_trg_bld_final2(_In_ const daqmx_sensor_trigger& trigger)
+    inline daqmx_sen_trg_bld_final(_In_ const daqmx_sensor_trigger& trigger)
         : _trigger(trigger) { }
 
     /// <summary>
     /// Finalises the instance.
     /// </summary>
-    virtual ~daqmx_sen_trg_bld_final2(void) noexcept = default;
+    virtual ~daqmx_sen_trg_bld_final(void) noexcept = default;
 
     /// <summary>
     /// Creates the trigger as configured by the previous steps.
@@ -50,70 +50,9 @@ protected:
 
 
 /// <summary>
-/// This builder allows for limiting the number of samples acquired after
-/// triggering.
-/// </summary>
-/// <remarks>
-/// If no limit is configured, the sensor will sample continuously until the
-/// sensor array is stopped.
-/// </remarks>
-class POWER_OVERWHELMING_API daqmx_sen_trg_bld_final1 final
-        : public daqmx_sen_trg_bld_final2 {
-
-public:
-
-    /// <summary>
-    /// Initialises a new instance.
-    /// </summary>
-    /// <param name="trigger">The trigger to be returned by the builder.</param>
-    inline daqmx_sen_trg_bld_final1(_In_ const daqmx_sensor_trigger& trigger)
-        : daqmx_sen_trg_bld_final2(trigger) { }
-
-    /// <summary>
-    /// Configures the trigger to stop after the specified number of samples has
-    /// been acquired.
-    /// </summary>
-    /// <param name="samples">The number of samples to acquire before stopping
-    /// automatically.</param>
-    /// <returns>A builder instance for finalising the trigger.</returns>
-    daqmx_sen_trg_bld_final2& a_finite_number(_In_ const std::uint64_t samples);
-
-    daqmx_sen_trg_bld_final2& in_batches_of(_In_ const std::uint64_t samples);
-};
-
-
-/// <summary>
-/// This builder is the start of the final stretch where the sample rate must
-/// be configured.
-/// </summary>
-class POWER_OVERWHELMING_API daqmx_sen_trg_bld_final0 final {
-
-public:
-
-    /// <summary>
-    /// Initialises a new instance.
-    /// </summary>
-    /// <param name="trigger">The trigger to be returned by the builder.</param>
-    inline daqmx_sen_trg_bld_final0(_In_ const daqmx_sensor_trigger& trigger)
-        : _trigger(trigger) { }
-
-    /// <summary>
-    /// Configures the sample rate to collect at when triggered.
-    /// </summary>
-    /// <param name="rate">The sampling rate in samples per second.</param>
-    /// <returns>A builder instance for configuring the next step.</returns>
-    daqmx_sen_trg_bld_final1 sample_at(_In_ const double rate);
-
-private:
-
-    daqmx_sensor_trigger _trigger;
-};
-
-
-/// <summary>
 /// This builder configures the analog trigger level.
 /// </summary>
-class POWER_OVERWHELMING_API daqmx_sen_trg_bld_chan0 {
+class POWER_OVERWHELMING_API daqmx_sen_trg_bld_chan0 final {
 
 public:
 
@@ -136,7 +75,7 @@ public:
     /// </summary>
     /// <param name="level">The trigger level in Volts.</param>
     /// <returns>A builder instance for configuring the next step.</returns>
-    daqmx_sen_trg_bld_final0 is_falling_below(_In_ const double level);
+    daqmx_sen_trg_bld_final is_falling_below(_In_ const double level);
 
     /// <summary>
     /// Configures an analog edge trigger rising above the specified
@@ -144,15 +83,12 @@ public:
     /// </summary>
     /// <param name="level">The trigger level in Volts.</param>
     /// <returns>A builder instance for configuring the next step.</returns>
-    daqmx_sen_trg_bld_final0 is_rising_above(_In_ const double level);
-
-protected:
-
-    daqmx_sensor_trigger _trigger;
+    daqmx_sen_trg_bld_final is_rising_above(_In_ const double level);
 
 private:
 
     blob _channel;
+    daqmx_sensor_trigger _trigger;
 };
 
 
@@ -161,7 +97,7 @@ private:
 /// rising edge.
 /// </summary>
 class POWER_OVERWHELMING_API daqmx_sen_trg_bld_par3 final
-        : public daqmx_sen_trg_bld_chan0 {
+        : public daqmx_sen_trg_bld_final {
 
 public:
 
@@ -170,17 +106,16 @@ public:
     /// </summary>
     /// <param name="trigger">The trigger to be configured.</param>
     /// <par,am name="channel">The channel to trigger on.</param>
-    inline daqmx_sen_trg_bld_par3(
-            _In_ const daqmx_sensor_trigger& trigger,
-            _In_ const char *channel)
-        : daqmx_sen_trg_bld_chan0(trigger, channel) { }
+    daqmx_sen_trg_bld_par3(_In_ const daqmx_sensor_trigger& trigger,
+        _In_ const char *channel);
 
     /// <summary>
-    /// Configures the sample rate to collect at when triggered.
+    /// Configures an analog edge trigger rising above the specified
+    /// <paramref name="level" /> in Volts.
     /// </summary>
-    /// <param name="rate">The sampling rate in samples per second.</param>
+    /// <param name="level">The trigger level in Volts.</param>
     /// <returns>A builder instance for configuring the next step.</returns>
-    daqmx_sen_trg_bld_final1 sample_at(_In_ const double rate);
+    daqmx_sen_trg_bld_final rising_above(_In_ const double level);
 };
 
 
@@ -366,7 +301,7 @@ public:
     /// Configures the sensor to trigger as soon as the sensor array is started.
     /// </summary>
     /// <returns>A builder for an auto-start trigger.</returns>
-    detail::daqmx_sen_trg_bld_final0 when_starting(void);
+    detail::daqmx_sen_trg_bld_final when_starting(void);
 };
 
 PWROWG_NAMESPACE_END

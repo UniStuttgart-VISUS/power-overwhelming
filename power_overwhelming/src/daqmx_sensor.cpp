@@ -12,8 +12,6 @@
 #include "visus/pwrowg/daqmx_task.h"
 #include "visus/pwrowg/trace.h"
 
-#include "daqmx_error_category.h"
-#include "daqmx_library.h"
 #include "sensor_trigger_state.h"
 
 
@@ -192,7 +190,15 @@ void PWROWG_DETAIL_NAMESPACE::daqmx_sensor::sample(_In_ const bool enable) {
         constexpr auto change = sensor_trigger_state::running;
         if ((atomic_set(trigger.state, change) & change) != change) {
             PWROWG_TRACE(_T("Starting DAQmx task."));
+            const auto b = timestamp::now();
             trigger.task.start();
+            const auto e = timestamp::now();
+
+            // If no hardware trigger has been configured, use the start of the
+            // sensor as the trigger timestamp.
+            if (trigger.trigger == nullptr) {
+                trigger.trigger_timestamp = timestamp::middle(b, e);
+            }
         }
 
     } else {

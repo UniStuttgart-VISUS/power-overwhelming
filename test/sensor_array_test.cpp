@@ -1,12 +1,17 @@
 // <copyright file="sensor_array_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #include "pch.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include <visus/pwrowg/emi_configuration.h>
+#include <visus/pwrowg/msr_configuration.h>
+#include <visus/pwrowg/nvml_configuration.h>
+#include <visus/pwrowg/sensor_array.h>
+#include <visus/pwrowg/sensor_filters.h>
+#include <visus/pwrowg/tinkerforge_configuration.h>
 
 
 PWROWG_TEST_NAMESPACE_BEGIN
