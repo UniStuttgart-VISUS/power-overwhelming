@@ -1,0 +1,23 @@
+﻿# power_overwhelmingConfig.cmake
+# Copyright © 2026 Visualisierungsinstitut der Universität Stuttgart.
+# Licensed under the MIT licence. See LICENCE file for details.
+
+include(CMakeFindDependencyMacro)
+
+# Set variables passed to configure_file.
+set(PWROWG_WithNiDaqMx @PWROWG_WithNiDaqMx@)
+set(PWROWG_WithVisa @PWROWG_WithVisa@)
+set(PROJECT_NAME @PROJECT_NAME@)
+
+
+# Add dependencies bases on the configuration of the library.
+if (PWROWG_WithNiDaqMx)
+    find_dependency(nidaqmx REQUIRED)
+endif ()
+
+if (PWROWG_WithVisa)
+    find_dependency(visa REQUIRED)
+endif ()
+
+
+include("${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}Targets.cmake")
