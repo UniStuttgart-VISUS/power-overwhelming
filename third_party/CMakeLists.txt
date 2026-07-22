@@ -153,9 +153,12 @@ mark_as_advanced(FORCE
 # NI-DAQmx (headers only)
 if (PWROWG_WithNiDaqMx)
     find_package(NIDAQMX REQUIRED)
-    add_library(nidaqmx INTERFACE IMPORTED GLOBAL)
-    set_target_properties(nidaqmx PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${NIDAQMX_INCLUDE_DIR}")
+    add_library(nidaqmx INTERFACE)
+    target_include_directories(nidaqmx INTERFACE "${NIDAQMX_INCLUDE_DIR}")
+    install(TARGETS nidaqmx EXPORT nidaqmxTargets)
+    install(EXPORT nidaqmxTargets
+        FILE nidaqmxConfig.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/nidaqmx)
 endif ()
 
 
@@ -218,9 +221,12 @@ endif ()
 # VISA (headers only)
 if (PWROWG_WithVisa)
     find_package(VISA REQUIRED)
-    add_library(visa INTERFACE IMPORTED GLOBAL)
-    set_target_properties(visa PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${VISA_INCLUDE_DIR}")
+    add_library(visa INTERFACE)
+    target_include_directories(visa INTERFACE "${VISA_INCLUDE_DIR}")
+    install(TARGETS visa EXPORT visaTargets)
+    install(EXPORT visaTargets
+        FILE visaConfig.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/visa)
 endif ()
 
 
