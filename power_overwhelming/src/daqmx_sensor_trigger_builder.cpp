@@ -169,25 +169,25 @@ PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par0::raise_pins(
 }
 
 
-/*
- * PWROWG_NAMESPACE::daqmx_sensor_trigger_builder::when_channel
- */
-PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_chan0
-PWROWG_NAMESPACE::daqmx_sensor_trigger_builder::when_channel(
-        _In_z_ const wchar_t *channel) {
-    auto c = convert_string<char>(channel);
-    return detail::daqmx_sen_trg_bld_chan0(daqmx_sensor_trigger(), c.c_str());
-}
-
-
-/*
- * PWROWG_NAMESPACE::daqmx_sensor_trigger_builder::when_channel
- */
-PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_chan0
-PWROWG_NAMESPACE::daqmx_sensor_trigger_builder::when_channel(
-        _In_z_ const char *channel) {
-    return detail::daqmx_sen_trg_bld_chan0(daqmx_sensor_trigger(), channel);
-}
+///*
+// * PWROWG_NAMESPACE::daqmx_sensor_trigger_builder::when_channel
+// */
+//PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_chan0
+//PWROWG_NAMESPACE::daqmx_sensor_trigger_builder::when_channel(
+//        _In_z_ const wchar_t *channel) {
+//    auto c = convert_string<char>(channel);
+//    return detail::daqmx_sen_trg_bld_chan0(daqmx_sensor_trigger(), c.c_str());
+//}
+//
+//
+///*
+// * PWROWG_NAMESPACE::daqmx_sensor_trigger_builder::when_channel
+// */
+//PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_chan0
+//PWROWG_NAMESPACE::daqmx_sensor_trigger_builder::when_channel(
+//        _In_z_ const char *channel) {
+//    return detail::daqmx_sen_trg_bld_chan0(daqmx_sensor_trigger(), channel);
+//}
 
 
 /*

@@ -166,8 +166,7 @@ void PWROWG_NAMESPACE::daqmx_task::start(void) {
  * PWROWG_NAMESPACE::daqmx_task::stop
  */
 void PWROWG_NAMESPACE::daqmx_task::stop(void) {
-    detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
-        ._DAQmxStopTask(this->_handle));
+    detail::throw_if_daqmx_failed(this->try_stop());
 }
 
 
@@ -248,6 +247,14 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::trigger(
     detail::throw_if_daqmx_failed(detail::daqmx_library::instance()
         ._DAQmxDisableStartTrig(this->_handle));
     return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::daqmx_task::try_stop
+ */
+std::int32_t PWROWG_NAMESPACE::daqmx_task::try_stop(void) {
+    return detail::daqmx_library::instance()._DAQmxStopTask(this->_handle);
 }
 
 

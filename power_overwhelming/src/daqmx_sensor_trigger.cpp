@@ -79,12 +79,11 @@ PWROWG_NAMESPACE::daqmx_sensor_trigger::operator =(
 
 
 /*
- * PWROWG_NAMESPACE::daqmx_sensor_trigger::fatal_failure
+ * PWROWG_NAMESPACE::daqmx_sensor_trigger::default_failure
  */
-bool PWROWG_NAMESPACE::daqmx_sensor_trigger::fatal_failure(
+void PWROWG_NAMESPACE::daqmx_sensor_trigger::default_failure(
         const std::exception_ptr, const type_erased_storage&)  noexcept {
-    PWROWG_TRACE(_T("Fatal error in RTX sensor acquisition."));
-    return false;
+    PWROWG_TRACE(_T("Fatal error in DAQmx sensor acquisition."));
 }
 
 
@@ -94,10 +93,10 @@ bool PWROWG_NAMESPACE::daqmx_sensor_trigger::fatal_failure(
 bool PWROWG_NAMESPACE::daqmx_sensor_trigger::acquire(
         _In_ void (*done)(const type_erased_storage&),
         _Inout_ type_erased_storage&& done_context,
-        _In_ bool (*failed)(const std::exception_ptr,
+        _In_ void (*failed)(const std::exception_ptr,
             const type_erased_storage&),
         _Inout_ type_erased_storage&& failed_context) {
-#if defined(POWER_OVERWHELMING_WITH_VISA)
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
     using detail::sensor_trigger_state;
 
     assert(this->_impl != nullptr);
@@ -105,10 +104,20 @@ bool PWROWG_NAMESPACE::daqmx_sensor_trigger::acquire(
         return false;
     }
 
-    PWROWG_TRACE(_T("Making sure that the instrument controller thread is not ")
-        _T("working on the instruments anymore before triggering."));
-    detail::spin_while_all(this->_impl->state, sensor_trigger_state::busy);
+    if (!this->_impl->external_trigger) {
+        PWROWG_TRACE(_T("Manual triggering is only supported via a parallel ")
+            _T("port, which must be set at configuration time."));
+        return false;
+    }
 
+    if (detail::check_all(this->_impl->state, sensor_trigger_state::armed)) {
+        PWROWG_TRACE(_T("The trigger has already been armed and not fired ")
+            _T("yet."));
+        return false;
+    }
+
+    // Setup the end-user callbacks. The DAQmx callbacks cannot use these at
+    // this point, because the trigger has not been armed yet.
     this->_impl->when_done = done;
     this->_impl->when_done_context = std::move(done_context);
     this->_impl->when_failed = failed;
@@ -116,66 +125,20 @@ bool PWROWG_NAMESPACE::daqmx_sensor_trigger::acquire(
 
     if ((detail::atomic_set(this->_impl->state, sensor_trigger_state::armed)
             & sensor_trigger_state::running) != sensor_trigger_state::running) {
-        PWROWG_TRACE(_T("The RTX sensor controller was shut down while trying ")
-            _T("to arm the trigger."));
+        PWROWG_TRACE(_T("The DAQmx sensor was shut down while trying to arm ")
+            _T("the trigger."));
         return false;
     }
 
-    //for (auto& i : this->_impl->instruments) {
-    //    PWROWG_TRACE("Arming single acquisition on \"%s\" followed by an "
-    //        "asynchronous OPC.", i.path());
-    //    i.acquisition(rtx_acquisition_state::single).operation_complete_async();
-    //    while (!i.operation_status(rtx_operation_status::waiting));
-    //}
-
-    //if (this->_impl->external_trigger) {
-    //    PWROWG_TRACE(_T("Triggering by raising parallel port pins %u for ")
-    //        _T("%u ms."), this->_impl->external_trigger_pins,
-    //        this->_impl->external_trigger_duration);
-    //    const auto b = timestamp::now();
-    //    this->_impl->external_trigger.pulse(
-    //        this->_impl->external_trigger_pins,
-    //        this->_impl->external_trigger_duration);
-    //    const auto e = timestamp::now();
-
-    //    if (!this->_impl->trigger_timestamps.empty()) {
-    //        this->_impl->trigger_timestamps.front() = timestamp::middle(b, e);
-    //        PWROWG_TRACE(_T("Recorded external trigger timestamp: %" PRIu64),
-    //            this->_impl->trigger_timestamps.front().value());
-    //    }
-
-    //} else if (this->_impl->trigger != nullptr) {
-    //    PWROWG_TRACE(_T("Performing a manual single acquisition."));
-    //    auto& timestamps = this->_impl->trigger_timestamps;
-
-    //    if (this->_impl->trigger_instrument < this->_impl->instruments.size()) {
-    //        PWROWG_TRACE(_T("Triggering manually via daisy chain starting at ")
-    //            _T("%zu."), this->_impl->trigger_instrument);
-    //        assert(this->_impl->daisy_chain > 0.0f);
-    //        auto& i = this->_impl->instruments[this->_impl->trigger_instrument];
-    //        const auto b = timestamp::now();
-    //        i.trigger_manually();
-    //        const auto e = timestamp::now();
-
-    //        if (!timestamps.empty()) {
-    //            timestamps.front() = timestamp::middle(b, e);
-    //            PWROWG_TRACE(_T("Recorded manual trigger timestamp: %" PRIu64),
-    //                timestamps.front().value());
-    //        }
-
-    //    } else {
-    //        PWROWG_TRACE(_T("Triggering all instruments manually."));
-    //        timestamps.clear();
-    //        timestamps.reserve(this->_impl->instruments.size());
-
-    //        for (auto& i : this->_impl->instruments) {
-    //            const auto b = timestamp::now();
-    //            i.trigger_manually();
-    //            const auto e = timestamp::now();
-    //            timestamps.push_back(timestamp::middle(b, e));
-    //        }
-    //    }
-    //} /* if (this->_impl->external_trigger) */
+    PWROWG_TRACE(_T("Triggering by raising parallel port pins %u for %u ms."),
+        this->_impl->external_trigger_pins,
+        this->_impl->external_trigger_duration);
+    const auto b = timestamp::now();
+    this->_impl->external_trigger.pulse(
+        this->_impl->external_trigger_pins,
+        this->_impl->external_trigger_duration);
+    const auto e = timestamp::now();
+    this->_impl->trigger_timestamp = timestamp::middle(b, e);
 #endif /*defined(POWER_OVERWHELMING_WITH_VISA) */
 
     return true;

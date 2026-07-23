@@ -10,16 +10,21 @@
 
 #include <algorithm>
 #include <cassert>
+#include <chrono>
 #include <functional>
 #include <limits>
 #include <list>
-#include <tuple>
+#include <utility>
 #include <vector>
 
 #include "visus/pwrowg/atomic_utilities.h"
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/daqmx_configuration.h"
 #include "visus/pwrowg/daqmx_sensor_trigger.h"
+#include "visus/pwrowg/daqmx_task.h"
+#include "visus/pwrowg/daqmx_timing.h"
+#include "visus/pwrowg/guid.h"
+#include "visus/pwrowg/on_exit.h"
 #include "visus/pwrowg/sensor_filters.h"
 #include "visus/pwrowg/string_functions.h"
 
@@ -156,11 +161,13 @@ private:
         const double *, const std::size_t)> sample_builder;
 
     std::vector<double> _buffer;
-    std::size_t _index;
     std::vector<sample_builder> _make_sample;
     const sensor_array_impl *_owner;
+    std::chrono::duration<double> _period;
     std::vector<PWROWG_NAMESPACE::sample> _samples;
-    std::vector<daqmx_sensor_definition> _sensors;
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+    daqmx_task _task;
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
     daqmx_sensor_trigger _trigger;
 };
 

@@ -30,6 +30,36 @@ PWROWG_DETAIL_NAMESPACE::atomic_change(
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE::atomic_try_set
+ */
+template<class TEnum>
+std::enable_if_t<std::is_enum_v<TEnum>, bool>
+PWROWG_DETAIL_NAMESPACE::atomic_try_set(
+        _In_ std::atomic<TEnum>& state,
+        _In_ const TEnum flags) noexcept {
+    typedef std::underlying_type_t<TEnum> t;
+    const auto f = static_cast<t>(flags);
+    auto prev = static_cast<t>(atomic_set(state, flags));
+    return ((prev & f) == 0);
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::atomic_try_unset
+ */
+template<class TEnum>
+std::enable_if_t<std::is_enum_v<TEnum>, bool>
+PWROWG_DETAIL_NAMESPACE::atomic_try_unset(
+        _In_ std::atomic<TEnum>& state,
+        _In_ const TEnum flags) noexcept {
+    typedef std::underlying_type_t<TEnum> t;
+    const auto f = static_cast<t>(flags);
+    auto prev = static_cast<t>(atomic_unset(state, flags));
+    return ((prev & f) == f);
+}
+
+
+/*
  * PWROWG_DETAIL_NAMESPACE::atomic_set
  */
 template<class TEnum>

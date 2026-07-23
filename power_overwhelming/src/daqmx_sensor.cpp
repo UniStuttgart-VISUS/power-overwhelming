@@ -191,7 +191,7 @@ void PWROWG_DETAIL_NAMESPACE::daqmx_sensor::sample(_In_ const bool enable) {
         if ((atomic_set(trigger.state, change) & change) != change) {
             PWROWG_TRACE(_T("Starting DAQmx task."));
             const auto b = timestamp::now();
-            trigger.task.start();
+            this->_task.start();
             const auto e = timestamp::now();
 
             // If no hardware trigger has been configured, use the start of the
@@ -207,7 +207,8 @@ void PWROWG_DETAIL_NAMESPACE::daqmx_sensor::sample(_In_ const bool enable) {
         if ((atomic_unset(trigger.state, change) & change)
                 != sensor_trigger_state::none) {
             PWROWG_TRACE(_T("Stopping DAQmx task."));
-            trigger.task.stop();
+            this->_task.stop();
+
             PWROWG_TRACE(_T("Making sure that no DAQmx callback is running ")
                 _T("before returning from sample method."));
             spin_while_all(trigger.state, sensor_trigger_state::busy);

@@ -211,28 +211,6 @@ PWROWG_NAMESPACE::daqmx_configuration::timing(void) const {
  */
 PWROWG_NAMESPACE::daqmx_configuration&
 PWROWG_NAMESPACE::daqmx_configuration::timing(
-        _In_ const daqmx_implicit_timing& timing) {
-    this->_timing.emplace<daqmx_implicit_timing>(timing);
-    return *this;
-}
-
-
-/*
- * PWROWG_NAMESPACE::daqmx_configuration::timing
- */
-PWROWG_NAMESPACE::daqmx_configuration&
-PWROWG_NAMESPACE::daqmx_configuration::timing(
-        _Inout_ daqmx_implicit_timing&& timing) {
-    this->_timing.emplace<daqmx_implicit_timing>(std::move(timing));
-    return *this;
-}
-
-
-/*
- * PWROWG_NAMESPACE::daqmx_configuration::timing
- */
-PWROWG_NAMESPACE::daqmx_configuration&
-PWROWG_NAMESPACE::daqmx_configuration::timing(
         _In_ const daqmx_sample_clock_timing& timing) {
     this->_timing.emplace<daqmx_sample_clock_timing>(timing);
     return *this;

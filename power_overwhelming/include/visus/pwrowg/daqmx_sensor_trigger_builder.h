@@ -263,21 +263,22 @@ class POWER_OVERWHELMING_API daqmx_sensor_trigger_builder final {
 
 public:
 
-    /// <summary>
-    /// Creates a trigger on the specified channel.
-    /// </summary>
-    /// <param name="channel">The channel to trigger on, which must be the name
-    /// of a valid channel of a NI-DAQmx device connected to the machine.</param>
-    /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::daqmx_sen_trg_bld_chan0 when_channel(_In_z_ const wchar_t *channel);
+    // Note: I have no idea how we would get the timestamp from a "free" trigger.
+    ///// <summary>
+    ///// Creates a trigger on the specified channel.
+    ///// </summary>
+    ///// <param name="channel">The channel to trigger on, which must be the name
+    ///// of a valid channel of a NI-DAQmx device connected to the machine.</param>
+    ///// <returns>A builder to configure the type of the trigger.</returns>
+    //detail::daqmx_sen_trg_bld_chan0 when_channel(_In_z_ const wchar_t *channel);
 
-    /// <summary>
-    /// Creates a trigger on the specified channel.
-    /// </summary>
-    /// <param name="channel">The channel to trigger on, which must be the name
-    /// of a valid channel of a NI-DAQmx device connected to the machine.</param>
-    /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::daqmx_sen_trg_bld_chan0 when_channel(_In_z_ const char *channel);
+    ///// <summary>
+    ///// Creates a trigger on the specified channel.
+    ///// </summary>
+    ///// <param name="channel">The channel to trigger on, which must be the name
+    ///// of a valid channel of a NI-DAQmx device connected to the machine.</param>
+    ///// <returns>A builder to configure the type of the trigger.</returns>
+    //detail::daqmx_sen_trg_bld_chan0 when_channel(_In_z_ const char *channel);
 
     /// <summary>
     /// Starts configuring a trigger that is controlled by a parallel port on

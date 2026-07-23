@@ -68,12 +68,9 @@ public:
     /// thread. This must be a callable type accepting no arguments and
     /// returning <see langword="void" />.</typeparam>
     /// <typeparam name="TFailed">The type of the callback to be invoked when
-    /// when RTX sensor controller asynchronously encounters an error while
-    /// processing the waveforms. This must be a callable type accepting an
-    /// <see cref="std::exception_ptr" /> and returning
-    /// <see langword="bool" />. If the callback returns <see cref="true" />,
-    /// the thread will continue processing the next acquisitions. Otherwise,
-    /// the error will be propagated and cause the application to exit.
+    /// when an exception when processing the DAQmx samples occurred. This must
+    /// be a callable type accepting an <see cref="std::exception_ptr" />. The
+    /// acquisition will be stopped once this callback returns.
     /// </typeparam>
     /// <param name="when_done">The callback to be invoked when the acquisition
     /// was processed.</param>
@@ -118,7 +115,7 @@ public:
         return this->acquire(
             [](const type_erased_storage& c) { (*c.template get<TDone>())(); },
             std::move(when_done),
-            daqmx_sensor_trigger::fatal_failure,
+            daqmx_sensor_trigger::default_failure,
             type_erased_storage());
     }
 
@@ -132,7 +129,7 @@ public:
         return this->acquire(
             [](const type_erased_storage&) { },
             type_erased_storage(),
-            daqmx_sensor_trigger::fatal_failure,
+            daqmx_sensor_trigger::default_failure,
             type_erased_storage());
     }
 
@@ -162,13 +159,13 @@ public:
 
 private:
 
-    static bool fatal_failure(const std::exception_ptr,
+    static void default_failure(const std::exception_ptr,
         const type_erased_storage&) noexcept;
 
     bool acquire(
         _In_ void (*done)(const type_erased_storage&),
         _Inout_ type_erased_storage&& done_context,
-        _In_ bool (*failed)(const std::exception_ptr,
+        _In_ void (*failed)(const std::exception_ptr,
             const type_erased_storage&),
         _Inout_ type_erased_storage&& failed_context);
 

@@ -226,9 +226,60 @@ public:
             //    [](void) { Assert::IsTrue(true, L"Triggered", LINE_INFO()); },
             //    [](std::exception_ptr) { Assert::IsTrue(false, L"Acquisition failure", LINE_INFO()); return true; }
             //), L"Acquire scheduled", LINE_INFO());
-            std::this_thread::sleep_for(std::chrono::seconds(20));
+            std::this_thread::sleep_for(std::chrono::seconds(5));
         }
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+    }
+
+    TEST_METHOD(test_sensor_trigger) {
+#if false&& defined(POWER_OVERWHELMING_WITH_DAQMX)
+        typedef detail::daqmx_sensor type;
+        const auto device = test_instrument();
+
+        if (device) {
+            detail::sensor_array_impl owner;
+            owner.configuration = std::make_unique<detail::sensor_array_configuration_impl>();
+            owner.configuration->sensor_configs[type::configuration_type::id] = std::make_unique<type::configuration_type>();
+
+            auto sensor_config0 = owner.configuration->find_sensor_config(type::configuration_type::id);
+            Assert::IsNotNull(sensor_config0, L"Configuration is set", LINE_INFO());
+
+            auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
+            Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
+
+            sensor_config->timing(daqmx_sample_clock_timing(1000.0, daqmx_edge::rising, daqmx_sample_mode::finite, 1024));
+            auto trigger = daqmx_sensor_trigger_builder()
+                .when_parallel_port("LPT1")
+                .raise_pins(parallel_port_pin::data)
+                .for_duration(std::chrono::milliseconds(50))
+                .measured_via_channel(multi_sz<char>::at(device.analog_inputs(), 2))
+                .build();
+            sensor_config->trigger(trigger);
+
+            sensor_config->add_sensor(
+                daqmx_sensor_definition(
+                    daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 0)).max_value(10),
+                    daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 1)).max_value(10),
+                    10));
+
+            std::vector<sensor_description> descs;
+            descs.resize(type::descriptions(nullptr, 0, *sensor_config));
+            type::descriptions(descs.data(), descs.size(), *sensor_config);
+
+            type::list_type sensors;
+            const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), &owner, *sensor_config);
+            Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
+
+            sensors.front().sample(true);
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            Assert::IsTrue(trigger.acquire(
+                [](void) { Assert::IsTrue(true, L"Triggered", LINE_INFO()); },
+                [](std::exception_ptr) { Assert::IsTrue(false, L"Acquisition failure", LINE_INFO()); }
+            ), L"Acquire scheduled", LINE_INFO());
+            std::this_thread::sleep_for(std::chrono::seconds(5));
+        }
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+
     }
 
     private:

@@ -23,22 +23,6 @@ public:
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
     TEST_METHOD(timing_get_set) {
         daqmx_configuration config;
-        config.timing(daqmx_implicit_timing(daqmx_sample_mode::hardware_timed_single_point, 512));
-
-        {
-            const daqmx_implicit_timing *t = nullptr;
-            Assert::IsTrue(config.try_get(t), L"try_get implicit timing", LINE_INFO());
-            Assert::IsNotNull(t, L"implicit timing pointer should not be null", LINE_INFO());
-            Assert::AreEqual(int(daqmx_sample_mode::hardware_timed_single_point), int(t->mode()), L"sample mode", LINE_INFO());
-            Assert::AreEqual(std::uint64_t(512), t->samples(), L"samples per channel", LINE_INFO());
-        }
-
-        {
-            const daqmx_sample_clock_timing *t = nullptr;
-            Assert::IsFalse(config.try_get(t), L"try_get sample clock timing", LINE_INFO());
-            Assert::IsNull(t, L"sample clock timing pointer should be null", LINE_INFO());
-        }
-
         config.timing(daqmx_sample_clock_timing("ch1", 1000.0, daqmx_edge::falling, daqmx_sample_mode::continuous, 2048));
 
         {

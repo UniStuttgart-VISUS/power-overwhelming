@@ -9,18 +9,16 @@
 #pragma once
 
 #include <atomic>
-#include <chrono>
 #include <cinttypes>
 #include <exception>
 #include <limits>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "visus/pwrowg/atomic_utilities.h"
 #include "visus/pwrowg/daqmx_analog_edge_trigger.h"
-#include "visus/pwrowg/daqmx_task.h"
-#include "visus/pwrowg/daqmx_timing.h"
 #include "visus/pwrowg/parallel_port_trigger.h"
 #include "visus/pwrowg/timestamp.h"
 #include "visus/pwrowg/trace.h"
@@ -36,6 +34,11 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <see cref="daqmx_sensor_trigger" />.
 /// </summary>
 struct daqmx_sensor_trigger_impl final {
+
+    /// <summary>
+    /// The range of the external trigger signal. This defaults to [0, 4] V.
+    /// </summary>
+    std::pair<double, double> external_range;
 
     /// <summary>
     /// If the instance is valid, the DAQ will be triggered via the configured
@@ -63,11 +66,6 @@ struct daqmx_sensor_trigger_impl final {
     parallel_port_pin external_trigger_pins;
 
     /// <summary>
-    /// The time period between two samples.
-    /// </summary>
-    std::chrono::duration<double> period;
-
-    /// <summary>
     /// The number of <see cref="rtx_sensor_trigger" /> instances sharing this
     /// implementation.
     /// </summary>
@@ -85,14 +83,6 @@ struct daqmx_sensor_trigger_impl final {
     /// </remarks>
     alignas(false_sharing_range) std::atomic<sensor_trigger_state> state;
 
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
-    /// <summary>
-    /// The task holding the acquisition channels and the optional external
-    /// trigger.
-    /// </summary>
-    alignas(false_sharing_range) daqmx_task task;
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
-
     /// <summary>
     /// An (optional) analog edge trigger starting the acquisition. If this is
     /// <see langword="nullptr" />, the acquisition is started with the task.
@@ -102,13 +92,6 @@ struct daqmx_sensor_trigger_impl final {
     /// be ignored.
     /// </remarks>
     std::unique_ptr<daqmx_analog_edge_trigger> trigger;
-
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
-    /// <summary>
-    /// Holds the timing information for the acquisition.
-    /// </summary>
-    std::unique_ptr<daqmx_timing> timing;
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 
     /// <summary>
     /// The host timestamp when the trigger was activated.
@@ -127,11 +110,9 @@ struct daqmx_sensor_trigger_impl final {
     type_erased_storage when_done_context;
 
     /// <summary>
-    /// A callback to be invoked when an acquisition fails. The callback can
-    /// decide on whether the thread should continue or whether the failure is
-    /// fatal.
+    /// A callback to be invoked when an acquisition fails asynchronously.
     /// </summary>
-    bool (*when_failed)(std::exception_ptr, const type_erased_storage&);
+    void (*when_failed)(std::exception_ptr, const type_erased_storage&);
 
     /// <summary>
     /// The context passed to <see cref="when_failed" />. This is usually used to
@@ -165,19 +146,14 @@ struct daqmx_sensor_trigger_impl final {
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    inline daqmx_sensor_trigger_impl(_In_z_ const char *task = nullptr)
-            : external_trigger_duration(100),
-            external_trigger_pins(parallel_port_pin::data),
-            period(1.0),
-            references(1),
-            state(sensor_trigger_state::none),
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
-            task((task == nullptr)
-                ? std::to_string(reinterpret_cast<std::uintptr_t>(this))
-                : task),
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
-            when_done(nullptr),
-            when_failed(nullptr) { }
+    inline daqmx_sensor_trigger_impl(void)
+        : external_range(0.0, 4.0),
+        external_trigger_duration(100),
+        external_trigger_pins(parallel_port_pin::data),
+        references(1),
+        state(sensor_trigger_state::none),
+        when_done(nullptr),
+        when_failed(nullptr) { }
 };
 
 PWROWG_DETAIL_NAMESPACE_END

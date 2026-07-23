@@ -168,20 +168,6 @@ public:
     /// </summary>
     /// <param name="timing">The new timing configuration.</param>
     /// <returns><c>*<see langword="this" /><c>.</returns>
-    daqmx_configuration& timing(_In_ const daqmx_implicit_timing& timing);
-
-    /// <summary>
-    /// Sets a new timing configuration.
-    /// </summary>
-    /// <param name="timing">The new timing configuration.</param>
-    /// <returns><c>*<see langword="this" /><c>.</returns>
-    daqmx_configuration& timing(_Inout_ daqmx_implicit_timing&& timing);
-
-    /// <summary>
-    /// Sets a new timing configuration.
-    /// </summary>
-    /// <param name="timing">The new timing configuration.</param>
-    /// <returns><c>*<see langword="this" /><c>.</returns>
     daqmx_configuration& timing(_In_ const daqmx_sample_clock_timing& timing);
 
     /// <summary>

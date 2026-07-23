@@ -256,6 +256,13 @@ public:
     //daqmx_task& trigger(_In_ const daqmx_time_trigger& trigger);
 
     /// <summary>
+    /// Tries stopping the task.
+    /// </summary>
+    /// <returns>Zero in case of success, a NI-DAQmx error code
+    /// otherwise.</returns>
+    std::int32_t try_stop(void);
+
+    /// <summary>
     /// Waits for the task to complete.
     /// </summary>
     /// <param name="timeout">The maximum amount of time to wait, in seconds.

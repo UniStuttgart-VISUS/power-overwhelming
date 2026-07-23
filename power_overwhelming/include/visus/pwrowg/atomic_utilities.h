@@ -70,6 +70,39 @@ std::enable_if_t<std::is_enum_v<TEnum>, TEnum> atomic_change(
 
 /// <summary>
 /// Atomically sets all of <paramref name="flags" /> in
+/// <paramref name="state" /> by performing a CAS loop and answers whether
+/// any of these bits was set before the modification.
+/// </summary>
+/// <typeparam name="TEnum">An enumeration type that is used as a bitmask.
+/// </typeparam>
+/// <param name="state"></param>
+/// <param name="flags"></param>
+/// <returns><see langword="true"/ > if <i>none</i> of <paramref name="flags" />
+/// have been set before, <see langword="false" /> if any of it was already
+/// set.</returns>
+template<class TEnum>
+std::enable_if_t<std::is_enum_v<TEnum>, bool> atomic_try_set(
+    _In_ std::atomic<TEnum>& state, _In_ const TEnum flags) noexcept;
+
+
+/// <summary>
+/// Atomically unsets all of <paramref name="flags" /> in
+/// <paramref name="state" /> by performing a CAS loop and answers whether
+/// all of these bits were set before the modification.
+/// </summary>
+/// <typeparam name="TEnum">An enumeration type that is used as a bitmask.
+/// </typeparam>
+/// <param name="state"></param>
+/// <param name="flags"></param>
+/// <returns><see langword="true"/ > if all of <paramref name="flag" /> have
+/// been set before, <see langword="false" /> otherwise.</returns>
+template<class TEnum>
+std::enable_if_t<std::is_enum_v<TEnum>, bool> atomic_try_unset(
+    _In_ std::atomic<TEnum>& state, _In_ const TEnum flags) noexcept;
+
+
+/// <summary>
+/// Atomically sets all of <paramref name="flags" /> in
 /// <paramref name="state" /> by performing a CAS loop.
 /// </summary>
 /// <typeparam name="TEnum">An enumeration type that is used as a bitmask.
@@ -80,7 +113,6 @@ std::enable_if_t<std::is_enum_v<TEnum>, TEnum> atomic_change(
 template<class TEnum>
 std::enable_if_t<std::is_enum_v<TEnum>, TEnum> atomic_set(
     _In_ std::atomic<TEnum>& state, _In_ const TEnum flags) noexcept;
-
 
 /// <summary>
 /// Atomically unsets all of <paramref name="flags" /> in
