@@ -145,7 +145,11 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
         PWROWG_TRACE("Arming single acquisition on \"%s\" followed by an "
             "asynchronous OPC.", i.path());
         i.acquisition(rtx_acquisition_state::single).operation_complete_async();
+        PWROWG_TRACE("Making sure that \"%s\" is waiting for a trigger.",
+            i.path());
         while (!i.operation_status(rtx_operation_status::waiting));
+        // TODO: wait for preroll to finish here!
+        //std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
 
     if (this->_impl->external_trigger) {

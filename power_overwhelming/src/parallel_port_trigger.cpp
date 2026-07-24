@@ -1,5 +1,5 @@
 ﻿// <copyright file="parallel_port_trigger.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -24,6 +24,7 @@
 #endif /* !defined(_WIN32) */
 
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/trace.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -346,6 +347,7 @@ void PWROWG_NAMESPACE::parallel_port_trigger::write(
         throw std::system_error(errno, std::system_category());
     }
 #endif /* defined(_WIN32) */
+    PWROWG_TRACE("Wrote \"%x\" to parallel port.", static_cast<int>(data));
 }
 
 

@@ -167,6 +167,8 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
             icfg.acquisition(a.count(1));
         }
 
+        // Note: Hacking the reference position to "even more left" (0) is not
+        // working.
         icfg.reference_position(rtx_reference_point::left);
 
         if (this->_trigger._impl->daisy_chain > 0.0f) {

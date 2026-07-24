@@ -233,7 +233,7 @@ public:
         }
     }
 
-#if false
+#if true
     TEST_METHOD(test_multi_sensor_creation) {
         typedef detail::rtx_sensor type;
 
@@ -248,11 +248,11 @@ public:
             auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
             Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
 
-            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(3), 5000, 4000).beep_on_trigger(true).beep_on_apply(true))
+            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(2), 5000, 4000).beep_on_trigger(true).beep_on_apply(true))
                 .download_retries(1)
                 .download_timeout(10000);
             auto trigger = rtx_sensor_trigger_builder::for_all().when_parallel_port("LPT3").measured_via_external().build();
-            trigger = rtx_sensor_trigger_builder::for_all().when_software_triggered().build();
+            //trigger = rtx_sensor_trigger_builder::for_all().when_software_triggered().build();
             sensor_config->trigger(trigger);
 
             std::vector<rtx_instrument> instruments(rtx_instrument::all(nullptr, 0));
@@ -265,8 +265,8 @@ public:
                     rtx_channel(1).range(2.0f, "V").attenuation(0.1f, "V"),
                     rtx_channel(2).range(2.0f, "A").attenuation(0.1f, "A"));
                 config->add_sensor(i.path(),
-                    rtx_channel(1).range(2.0f, "V").attenuation(0.1f, "V"),
-                    rtx_channel(2).range(2.0f, "A").attenuation(0.1f, "A"));
+                    rtx_channel(4).range(2.0f, "V").attenuation(0.1f, "V"),
+                    rtx_channel(3).range(2.0f, "A").attenuation(0.1f, "A"));
                 return true;
             }, sensor_config);
 
