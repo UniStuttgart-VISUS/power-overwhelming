@@ -313,6 +313,9 @@ config.configure<rtx_configuration>([trigger](rtx_configuration& c) {
         rtx_channel(1).range(2.0f, "V").attenuation(0.1f, "V"),
         rtx_channel(2).range(2.0f, "A").attenuation(0.1f, "A"));
     c.trigger(trigger);
+
+    // The configuration can be optionally saved as JSON.
+    //c.save(L"rtx_sensors.json");
 });
 
 // Continue building the sensor array as usual. A voltage, current and power
@@ -320,18 +323,10 @@ config.configure<rtx_configuration>([trigger](rtx_configuration& c) {
 // sensor descriptions.
 ```
 
-Oscilloscope sensor definitions can be persisted as JSON files and reloaded later:
+For restoring the RTX sensor configuration from JSON, use
 ```c++
 config.configure<rtx_configuration>([trigger](rtx_configuration& c) {
-    // Modify the configuration here.
-
-    // Save the configuration to rtx_sensors.json.
-    c.save(L"rtx_sensors.json");
-}
-
-// Configure the RTX sensors from JSON.
-config.configure<rtx_configuration>([trigger](rtx_configuration& c) {
-    c = rtx_configuration::load(L"rtx_sensor_test.json");
+    c = rtx_configuration::load(L"rtx_sensors.json");
 }
 ```
 
