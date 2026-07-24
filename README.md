@@ -308,7 +308,7 @@ auto trigger = rtx_sensor_trigger_builder::for_all()
 
 // Tell the array about the oscilloscopes using the fluent API.
 config.configure<rtx_configuration>([trigger](rtx_configuration& c) {
-    // Setup a linked voltage/current pair like above. 
+    // Setup a linked voltage/current pair like above.
     c.add_sensor("VISA path to instrument", 
         rtx_channel(1).range(2.0f, "V").attenuation(0.1f, "V"),
         rtx_channel(2).range(2.0f, "A").attenuation(0.1f, "A"));
@@ -318,6 +318,21 @@ config.configure<rtx_configuration>([trigger](rtx_configuration& c) {
 // Continue building the sensor array as usual. A voltage, current and power
 // sensor using the oscilloscope should not be included when enumerating the
 // sensor descriptions.
+```
+
+Oscilloscope sensor definitions can be persisted as JSON files and reloaded later:
+```c++
+config.configure<rtx_configuration>([trigger](rtx_configuration& c) {
+    // Modify the configuration here.
+
+    // Save the configuration to rtx_sensors.json.
+    c.save(L"rtx_sensors.json");
+}
+
+// Configure the RTX sensors from JSON.
+config.configure<rtx_configuration>([trigger](rtx_configuration& c) {
+    c = rtx_configuration::load(L"rtx_sensor_test.json");
+}
 ```
 
 Once the sensor array has been started, you can use the `rtx_sensor_trigger` object to control when the oscilloscope sensor should measure:
