@@ -200,6 +200,7 @@ public:
 
             auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
             Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
+
             sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(3), 5000, 4000).beep_on_trigger(true))
                 .download_retries(1)
                 .download_timeout(10000);
@@ -231,6 +232,70 @@ public:
             std::this_thread::sleep_for(std::chrono::seconds(5));
         }
     }
+
+#if false
+    TEST_METHOD(test_multi_sensor_creation) {
+        typedef detail::rtx_sensor type;
+
+        if (rtx_instrument::all(nullptr, 0) > 1) {
+            detail::sensor_array_impl owner;
+            owner.configuration = std::make_unique<detail::sensor_array_configuration_impl>();
+            owner.configuration->sensor_configs[type::configuration_type::id] = std::make_unique<type::configuration_type>();
+
+            auto sensor_config0 = owner.configuration->find_sensor_config(type::configuration_type::id);
+            Assert::IsNotNull(sensor_config0, L"Configuration is set", LINE_INFO());
+
+            auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
+            Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
+
+            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(3), 5000, 4000).beep_on_trigger(true).beep_on_apply(true))
+                .download_retries(1)
+                .download_timeout(10000);
+            auto trigger = rtx_sensor_trigger_builder::for_all().when_parallel_port("LPT3").measured_via_external().build();
+            trigger = rtx_sensor_trigger_builder::for_all().when_software_triggered().build();
+            sensor_config->trigger(trigger);
+
+            std::vector<rtx_instrument> instruments(rtx_instrument::all(nullptr, 0));
+            rtx_instrument::all(instruments.data(), instruments.size());
+            Assert::IsFalse(instruments.empty(), L"Have at least one instrument", LINE_INFO());
+
+            rtx_instrument::foreach_instance([](visa_instrument& i, void *c) {
+                auto config = static_cast<type::configuration_type *>(c);
+                config->add_sensor(i.path(),
+                    rtx_channel(1).range(2.0f, "V").attenuation(0.1f, "V"),
+                    rtx_channel(2).range(2.0f, "A").attenuation(0.1f, "A"));
+                config->add_sensor(i.path(),
+                    rtx_channel(1).range(2.0f, "V").attenuation(0.1f, "V"),
+                    rtx_channel(2).range(2.0f, "A").attenuation(0.1f, "A"));
+                return true;
+            }, sensor_config);
+
+            std::vector<sensor_description> descs(type::descriptions(nullptr, 0, *sensor_config));
+            type::descriptions(descs.data(), descs.size(), *sensor_config);
+
+            type::list_type sensors;
+            const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), &owner, *sensor_config);
+            Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
+            Assert::IsFalse(sensors.empty(), L"Have at least one sensor.", LINE_INFO());
+
+            sensors.front().sample(true);
+            auto evt = create_event();
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            Assert::IsTrue(trigger.acquire(
+                [evt](void) { 
+                    Assert::IsTrue(true, L"Triggered", LINE_INFO()); 
+                    set_event(evt);
+                },
+                [evt](std::exception_ptr) {
+                    set_event(evt);
+                    Assert::IsTrue(false, L"Acquisition failure", LINE_INFO());
+                    return true;
+                }
+            ), L"Acquire scheduled", LINE_INFO());
+            wait_event(evt);
+        }
+    }
+#endif
 
 private:
 
