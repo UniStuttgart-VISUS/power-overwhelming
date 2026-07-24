@@ -7,7 +7,7 @@
 #include "rtx_sensor.h"
 
 #include <algorithm>
-#include <unordeectd_map>
+#include <unordered_map>
 
 #include "sensor_array_impl.h"
 #include "unique_lock.h"
