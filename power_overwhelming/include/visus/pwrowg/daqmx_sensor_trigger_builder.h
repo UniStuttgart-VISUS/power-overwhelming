@@ -96,7 +96,7 @@ private:
 /// Allows for adjusting the trigger level or keeping the default level at a
 /// rising edge.
 /// </summary>
-class POWER_OVERWHELMING_API daqmx_sen_trg_bld_par3 final
+class POWER_OVERWHELMING_API daqmx_sen_trg_bld_par5
         : public daqmx_sen_trg_bld_final {
 
 public:
@@ -106,8 +106,16 @@ public:
     /// </summary>
     /// <param name="trigger">The trigger to be configured.</param>
     /// <par,am name="channel">The channel to trigger on.</param>
-    daqmx_sen_trg_bld_par3(_In_ const daqmx_sensor_trigger& trigger,
+    daqmx_sen_trg_bld_par5(_In_ const daqmx_sensor_trigger& trigger,
         _In_ const char *channel);
+
+    /// <summary>
+    /// Configures an analog edge trigger falling belov the specified
+    /// <paramref name="level" /> in Volts.
+    /// </summary>
+    /// <param name="level">The trigger level in Volts.</param>
+    /// <returns>A builder instance for configuring the next step.</returns>
+    daqmx_sen_trg_bld_final falling_below(_In_ const double level);
 
     /// <summary>
     /// Configures an analog edge trigger rising above the specified
@@ -116,6 +124,58 @@ public:
     /// <param name="level">The trigger level in Volts.</param>
     /// <returns>A builder instance for configuring the next step.</returns>
     daqmx_sen_trg_bld_final rising_above(_In_ const double level);
+};
+
+
+class POWER_OVERWHELMING_API daqmx_sen_trg_bld_par4 final {
+
+public:
+
+    /// <summary>
+    /// Initialise a new instance.
+    /// </summary>
+    /// <param name="trigger">The trigger to be configured.</param>
+    inline daqmx_sen_trg_bld_par4(_In_ const daqmx_sensor_trigger& trigger)
+        : _trigger(trigger) { }
+
+    /// <summary>
+    /// Configures the upper end of the range expected on the channel measuring
+    /// the parallel port trigger.
+    /// </summary>
+    /// <param name="level">The upper end of the voltage range expected on the
+    /// trigger channel.</param>
+    /// <returns>A builder for configuring the trigger level itself.</returns>
+    daqmx_sen_trg_bld_par5 to(_In_ const double level);
+
+private:
+
+    daqmx_sensor_trigger _trigger;
+};
+
+
+class POWER_OVERWHELMING_API daqmx_sen_trg_bld_par3 final
+        : public daqmx_sen_trg_bld_par5 {
+
+public:
+
+    /// <summary>
+    /// Initialise a new instance.
+    /// </summary>
+    /// <param name="trigger">The trigger to be configured.</param>
+    /// <par,am name="channel">The channel to trigger on.</param>
+    inline daqmx_sen_trg_bld_par3(
+            _In_ const daqmx_sensor_trigger& trigger,
+            _In_ const char *channel)
+        : daqmx_sen_trg_bld_par5(trigger, channel) { }
+
+    /// <summary>
+    /// Configure the lower end of the range expected on the channel measuring
+    /// the parallel port trigger.
+    /// </summary>
+    /// <param name="level">The lower end of the voltage range expected on the
+    /// trigger channel.</param>
+    /// <returns>A builder for the upper range.</returns>
+    daqmx_sen_trg_bld_par4 ranging_from(_In_ const double level);
 };
 
 

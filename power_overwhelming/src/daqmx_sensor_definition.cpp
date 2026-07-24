@@ -66,6 +66,21 @@ PWROWG_NAMESPACE::daqmx_sensor_definition::daqmx_sensor_definition(
 
 
 /*
+ * PWROWG_NAMESPACE::daqmx_sensor_definition::daqmx_sensor_definition
+ */
+PWROWG_NAMESPACE::daqmx_sensor_definition::daqmx_sensor_definition(
+        _In_ const daqmx_voltage_channel& channel,
+        _In_opt_z_ const wchar_t *description) 
+    : _current_channel(nullptr),
+        _power_channel(nullptr),
+        _voltage_channel(new daqmx_voltage_channel(channel)),
+        _voltage_for_current_channel(nullptr),
+        _volt_per_ampere(0.0f) {
+    detail::safe_assign(this->_description, description);
+}
+
+
+/*
  * PWROWG_NAMESPACE::daqmx_sensor_definition::~daqmx_sensor_definition
  */
 PWROWG_NAMESPACE::daqmx_sensor_definition::~daqmx_sensor_definition(

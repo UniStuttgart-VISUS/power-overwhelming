@@ -198,7 +198,12 @@ public:
             auto trigger = daqmx_sensor_trigger_builder().when_starting().build();
             //trigger = daqmx_sensor_trigger_builder()
             //    .when_parallel_port("LPT1")
-            //    .measured_via_channel("hugo/ai0")
+            //    .raise_pins(parallel_port_pin::data)
+            //    .for_duration(std::chrono::milliseconds(50))
+            //    .measured_via_channel(multi_sz<char>::at(device.analog_inputs(), 2))
+            //    .ranging_from(0.0)
+            //    .to(5.0)
+            //    .rising_above(2.5)
             //    .build();
             sensor_config->trigger(trigger);
 

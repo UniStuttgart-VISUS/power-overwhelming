@@ -82,8 +82,10 @@ PWROWG_NAMESPACE::daqmx_sensor_trigger::operator =(
  * PWROWG_NAMESPACE::daqmx_sensor_trigger::default_failure
  */
 void PWROWG_NAMESPACE::daqmx_sensor_trigger::default_failure(
-        const std::exception_ptr, const type_erased_storage&)  noexcept {
+        const std::exception_ptr,
+        _In_ const type_erased_storage& impl)  noexcept {
     PWROWG_TRACE(_T("Fatal error in DAQmx sensor acquisition."));
+    auto that = *impl.get<std::decay_t<decltype(_impl)>>();
 }
 
 

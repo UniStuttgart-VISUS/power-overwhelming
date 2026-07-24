@@ -89,6 +89,17 @@ public:
         _In_opt_z_ const wchar_t *description = nullptr);
 
     /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <remarks>
+    /// Constructs a sensor that uses a raw single voltage channel.
+    /// </remarks>
+    /// <param name="channel"></param>
+    /// <param name="description"></param>
+    daqmx_sensor_definition(_In_ const daqmx_voltage_channel& channel,
+        _In_opt_z_ const wchar_t *description = nullptr);
+
+    /// <summary>
     /// Initialise a clone.
     /// </summary>
     /// <param name="other">The object to be cloned.</param>

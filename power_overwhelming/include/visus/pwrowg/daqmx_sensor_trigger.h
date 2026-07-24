@@ -27,6 +27,8 @@ namespace detail { class daqmx_sen_trg_bld_par0; }
 namespace detail { class daqmx_sen_trg_bld_par1; }
 namespace detail { class daqmx_sen_trg_bld_par2; }
 namespace detail { class daqmx_sen_trg_bld_par3; }
+namespace detail { class daqmx_sen_trg_bld_par4; }
+namespace detail { class daqmx_sen_trg_bld_par5; }
 
 
 /// <summary>
@@ -91,7 +93,7 @@ public:
             },
             std::move(done),
             [](const std::exception_ptr ex, const type_erased_storage& c) {
-                return (*c.template get<TFailed>())(ex);
+                (*c.template get<TFailed>())(ex);
             },
             std::move(failed));
     }
@@ -116,7 +118,7 @@ public:
             [](const type_erased_storage& c) { (*c.template get<TDone>())(); },
             std::move(when_done),
             daqmx_sensor_trigger::default_failure,
-            type_erased_storage());
+            type_erased_storage(this->_impl));
     }
 
     /// <summary>
@@ -160,7 +162,7 @@ public:
 private:
 
     static void default_failure(const std::exception_ptr,
-        const type_erased_storage&) noexcept;
+        _In_ const type_erased_storage& impl) noexcept;
 
     bool acquire(
         _In_ void (*done)(const type_erased_storage&),
@@ -180,6 +182,8 @@ private:
     friend class detail::daqmx_sen_trg_bld_par1;
     friend class detail::daqmx_sen_trg_bld_par2;
     friend class detail::daqmx_sen_trg_bld_par3;
+    friend class detail::daqmx_sen_trg_bld_par4;
+    friend class detail::daqmx_sen_trg_bld_par5;
     friend class daqmx_sensor_trigger_builder;
 };
 

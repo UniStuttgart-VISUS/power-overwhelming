@@ -63,9 +63,9 @@ PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_chan0::is_rising_above(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par3::daqmx_sen_trg_bld_par3
+ * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par5::daqmx_sen_trg_bld_par5
  */
-PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par3::daqmx_sen_trg_bld_par3(
+PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par5::daqmx_sen_trg_bld_par5(
         _In_ const daqmx_sensor_trigger& trigger,
         _In_ const char *channel)
         : daqmx_sen_trg_bld_final(trigger) {
@@ -79,10 +79,26 @@ PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par3::daqmx_sen_trg_bld_par3(
 
 
 /*
- * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par3::rising_above
+ * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par5::falling_below
  */
 PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final
-PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par3::rising_above(
+PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par5::falling_below(
+        _In_ const double level) {
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+    assert(this->_trigger._impl != nullptr);
+    assert(this->_trigger._impl->trigger != nullptr);
+    this->_trigger._impl->trigger.reset(new daqmx_analog_edge_trigger(
+        this->_trigger._impl->trigger->source(), daqmx_edge::falling, level));
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+    return daqmx_sen_trg_bld_final(this->_trigger);
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par5::rising_above
+ */
+PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_final
+PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par5::rising_above(
         _In_ const double level) {
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
     assert(this->_trigger._impl != nullptr);
@@ -91,6 +107,43 @@ PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par3::rising_above(
         this->_trigger._impl->trigger->source(), daqmx_edge::rising, level));
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
     return daqmx_sen_trg_bld_final(this->_trigger);
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par4::to
+ */
+PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par5
+PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par4::to(_In_ const double level) {
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+    assert(this->_trigger._impl != nullptr);
+    assert(this->_trigger._impl->trigger != nullptr);
+    if (level <= this->_trigger._impl->external_range.first) {
+        throw std::invalid_argument("The upper end of the voltage range must "
+            "be higher than the lower end.");
+    }
+
+    this->_trigger._impl->external_range.second = level;
+    return daqmx_sen_trg_bld_par5(this->_trigger,
+        this->_trigger._impl->trigger->source());
+#else /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+    return daqmx_sen_trg_bld_par5(this->_trigger, nullptr);
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par3::ranging_from
+ */
+PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par4
+PWROWG_DETAIL_NAMESPACE::daqmx_sen_trg_bld_par3::ranging_from(
+        _In_ const double level) {
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+    assert(this->_trigger._impl != nullptr);
+    assert(this->_trigger._impl->trigger != nullptr);
+    this->_trigger._impl->external_range.first = level;
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+    return daqmx_sen_trg_bld_par4(this->_trigger);
 }
 
 
