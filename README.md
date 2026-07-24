@@ -325,8 +325,11 @@ config.configure<rtx_configuration>([trigger](rtx_configuration& c) {
 
 For restoring the RTX sensor configuration from JSON, use
 ```c++
-config.configure<rtx_configuration>([trigger](rtx_configuration& c) {
+config.configure<rtx_configuration>([&trigger](rtx_configuration& c) {
+    // Load the stored configuration, including the trigger configuration.
     c = rtx_configuration::load(L"rtx_sensors.json");
+    // Retrun the restored trigger object to the caller.
+    trigger = c.trigger();
 }
 ```
 
