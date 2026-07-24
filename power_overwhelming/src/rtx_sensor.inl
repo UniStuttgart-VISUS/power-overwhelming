@@ -171,6 +171,14 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         // working.
         icfg.reference_position(rtx_reference_point::left);
 
+        {
+            const auto range = icfg.time_range();
+            const rtx_quantity offset(range.value() / -12.0f, range.unit());
+            PWROWG_TRACE("Setting trigger position on \"%s\" to %f %s.",
+                i.path(), offset.value(), offset.unit());
+            icfg.trigger_position(offset);
+        }
+
         if (this->_trigger._impl->daisy_chain > 0.0f) {
             PWROWG_TRACE(_T("Setting up daisy chain for trigger."));
             i.trigger_output(rtx_trigger_output::pulse);
