@@ -704,6 +704,10 @@ PWROWG_NAMESPACE::visa_instrument& PWROWG_NAMESPACE::visa_instrument::reset(
         this->try_clear();
     }
 
+    if ((reset & visa_instrument_reset::errors) != none) {
+        while (this->system_error() != 0);
+    }
+
     if ((reset & visa_instrument_reset::status) != none) {
         this->write("*CLS\n");
     }

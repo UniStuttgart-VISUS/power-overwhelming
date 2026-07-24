@@ -172,8 +172,11 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         icfg.reference_position(rtx_reference_point::left);
 
         {
+            // Force the trigger to happen at the left edge of the screen. Note
+            // that the offset needs to be positive to move left from the
+            // reference position, which might seem counter-intuitive.
             const auto range = icfg.time_range();
-            const rtx_quantity offset(range.value() / -12.0f, range.unit());
+            const rtx_quantity offset(range.value() / 12.0f, range.unit());
             PWROWG_TRACE("Setting trigger position on \"%s\" to %f %s.",
                 i.path(), offset.value(), offset.unit());
             icfg.trigger_position(offset);
@@ -225,6 +228,9 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         i.reset(config.reset_flags());
         i.timeout(timeout);
         i.operation_complete();
+
+        // This might fix the chain not fully triggering.
+        //std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         PWROWG_TRACE("Applying configuration to instrument \"%s\".", i.path());
         icfg.apply(i);

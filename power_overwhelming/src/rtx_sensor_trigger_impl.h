@@ -62,6 +62,8 @@ struct rtx_sensor_trigger_impl final {
     /// </summary>
     parallel_port_pin external_trigger_pins;
 
+    //std::chrono::duration<float> external_trigger_safety_margin;
+
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
     /// The instruments used by the sensor. This list is stored in the trigger,

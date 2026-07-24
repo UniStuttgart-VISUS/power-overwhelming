@@ -672,6 +672,18 @@ public:
         _In_ const std::size_t cnt) const;
 
     /// <summary>
+    /// Gets the configured name of the instrument.
+    /// </summary>
+    /// <typeparam name="TChar"></typeparam>
+    /// <returns></returns>
+    template<class TChar>
+    inline std::basic_string<TChar> name(void) const {
+        std::basic_string<TChar> retval(this->name(nullptr, 0) - 1, 0);
+        this->name(std::addressof(retval[0]), retval.size() + 1);
+        return retval;
+    }
+
+    /// <summary>
     /// Sets the user-defined name of the instrument.
     /// </summary>
     /// <param name="name">The new name of the instrument.</param>

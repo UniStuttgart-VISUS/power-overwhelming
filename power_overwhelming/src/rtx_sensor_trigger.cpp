@@ -148,8 +148,8 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
         PWROWG_TRACE("Making sure that \"%s\" is waiting for a trigger.",
             i.path());
         while (!i.operation_status(rtx_operation_status::waiting));
-        // TODO: wait for preroll to finish here!
-        //std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        // TODO: sleeping here mostly fixes the last scope to miss the trigger, but it is a bad solution.
+        //std::this_thread::sleep_for(std::chrono::microseconds(10));
     }
 
     if (this->_impl->external_trigger) {

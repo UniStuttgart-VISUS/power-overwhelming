@@ -248,9 +248,11 @@ public:
             auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
             Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
 
-            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(2), 5000, 4000).beep_on_trigger(true).beep_on_apply(true))
+            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(6), 5000, 4000).beep_on_trigger(true).beep_on_apply(true))
                 .download_retries(1)
-                .download_timeout(10000);
+                .download_timeout(10000)
+                .reset_flags(rtx_instrument_reset::status | rtx_instrument_reset::buffers | rtx_instrument_reset::errors);
+                //.reset_flags(rtx_instrument_reset::reset);
             auto trigger = rtx_sensor_trigger_builder::for_all().when_parallel_port("LPT3").measured_via_external().build();
             //trigger = rtx_sensor_trigger_builder::for_all().when_software_triggered().build();
             sensor_config->trigger(trigger);
@@ -293,6 +295,16 @@ public:
                 }
             ), L"Acquire scheduled", LINE_INFO());
             wait_event(evt);
+
+            //for (auto& i : instruments) {
+            //    if (detail::equals(i.name<char>(), "rtb01")) {
+            //        const auto d = i.data(1, rtx_waveform_points::maximum);
+            //        std::ofstream hack("hugo.csv");
+            //        for (auto s : d) {
+            //            hack << s << std::endl;
+            //        }
+            //    }
+            //}
         }
     }
 #endif
