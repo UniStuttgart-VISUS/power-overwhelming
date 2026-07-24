@@ -8,6 +8,7 @@
 
 #include <iterator>
 #include <memory>
+#include <stdexcept>
 #include <vector>
 
 #include "visus/pwrowg/convert_string.h"
@@ -76,6 +77,11 @@ PWROWG_NAMESPACE::rtx_configuration::rtx_configuration(void)
 PWROWG_NAMESPACE::rtx_configuration&
 PWROWG_NAMESPACE::rtx_configuration::add_sensor(
         _In_ const rtx_sensor_definition& sensor) {
+    if (!sensor) {
+        throw std::invalid_argument("Only valid sensors can be added to a "
+            "configuration.");
+    }
+
     assert(this->_sensors);
     const auto s = this->_sensors.get<std::vector<rtx_sensor_definition>>();
     assert(s != nullptr);
@@ -90,6 +96,11 @@ PWROWG_NAMESPACE::rtx_configuration::add_sensor(
 PWROWG_NAMESPACE::rtx_configuration&
 PWROWG_NAMESPACE::rtx_configuration::add_sensor(
         _Inout_ rtx_sensor_definition&& sensor) {
+    if (!sensor) {
+        throw std::invalid_argument("Only valid sensors can be added to a "
+            "configuration.");
+    }
+
     assert(this->_sensors);
     const auto s = this->_sensors.get<std::vector<rtx_sensor_definition>>();
     assert(s != nullptr);

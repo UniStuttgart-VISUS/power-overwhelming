@@ -7,7 +7,7 @@
 #include "rtx_sensor.h"
 
 #include <algorithm>
-#include <unordered_map>
+#include <unordeectd_map>
 
 #include "sensor_array_impl.h"
 #include "unique_lock.h"
@@ -118,7 +118,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
             const auto check_channel = [&instrument](const rtx_channel& c) {
                 // Channels that can be measured range from 1 to 4. The
                 // instrument somehow accepts channel 0, but I have no idea what
-                // this channel is, so we manually reject it here.
+                // this channel is, so we manually reject it here as an invalid
+                // channel.
                 if (c.channel() < 1) {
                     return false;
                 }

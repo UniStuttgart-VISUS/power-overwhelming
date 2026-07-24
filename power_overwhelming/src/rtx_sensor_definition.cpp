@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_sensor_definition.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -12,10 +12,9 @@
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/rtx_instrument.h"
 #include "visus/pwrowg/string_functions.h"
+#include "visus/pwrowg/trace.h"
 
 
-static constexpr const char *error_description = "The description of an "
-    "oscilloscope-based sensor must not be empty.";
 static constexpr const char *error_path = "The VISA path of an "
     "oscilloscope-based sensor must not be empty.";
 static constexpr const char *error_same_channel = "The channel measuring "
@@ -78,9 +77,17 @@ PWROWG_NAMESPACE::rtx_sensor_definition::rtx_sensor_definition(
 void PWROWG_NAMESPACE::rtx_sensor_definition::apply(
         _Inout_ rtx_instrument& instrument) const {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    instrument.channel(this->_current_channel)
-        .channel(this->_voltage_channel)
-        .operation_complete();
+    if (this->_current_channel.channel() > 0) {
+        PWROWG_TRACE(_T("Configuring current channel."));
+        instrument.channel(this->_current_channel);
+    }
+
+    if (this->_voltage_channel.channel() > 0) {
+        PWROWG_TRACE(_T("Configuring voltage channel."));
+        instrument.channel(this->_voltage_channel);
+    }
+
+    instrument.operation_complete();
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
 
@@ -103,9 +110,8 @@ PWROWG_NAMESPACE::rtx_sensor_definition::operator bool(
         void) const noexcept {
     const auto path = this->path();
 
-    return (this->channel_current() > 0)
-        && (this->channel_voltage() > 0)
-        && (path != nullptr) && (*path != 0);
+    return ((this->channel_current() > 0) || (this->channel_voltage() > 0))
+        && ((path != nullptr) && (*path != 0));
 }
 
 

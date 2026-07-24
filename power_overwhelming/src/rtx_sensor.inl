@@ -124,6 +124,7 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         const auto collect_channel = [&channels](const rtx_channel& c) {
             auto e = channels.find(c.channel());
             if (e == channels.end()) {
+                assert(c.channel() != 0);
                 channels[c.channel()] = c;
             } else if (c != e->second) {
                 throw std::invalid_argument("A channel must be identically "
