@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_instrument.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -19,6 +19,7 @@
 #include "visus/pwrowg/trace.h"
 
 #include "no_visa_error_msg.h"
+#include "visa_assert.h"
 #include "visa_instrument_impl.h"
 #include "visa_timeout_override.h"
 
@@ -96,7 +97,6 @@ PWROWG_NAMESPACE::rtx_instrument PWROWG_NAMESPACE::rtx_instrument::create(
 
     return retval;
 }
-
 
 
 /*
@@ -324,6 +324,7 @@ PWROWG_NAMESPACE::rtx_instrument::acquisition(
         this->acquisition(acquisition.state());
     }
 
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -353,6 +354,7 @@ PWROWG_NAMESPACE::rtx_instrument::acquisition(
             break;
     }
 
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -421,6 +423,7 @@ PWROWG_NAMESPACE::rtx_instrument::automatic_roll(
         _In_ const bool enable) {
     this->check_not_disposed().format("TIM:ROLL:AUT %s\n",
         enable ? "ON" : "OFF");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -443,6 +446,7 @@ PWROWG_NAMESPACE::rtx_instrument::automatic_roll_time(
         _In_ const rtx_quantity& min_time_base) {
     this->check_not_disposed().format("TIM:ROLL:MTIM %f%s\n",
         min_time_base.value(), min_time_base.unit());
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -465,6 +469,7 @@ PWROWG_NAMESPACE::rtx_instrument::beep_on_trigger(
         _In_ const bool enable) {
     auto& impl = this->check_not_disposed();
     impl.format("SYST:BEEP:TRIG:STAT %s\n", enable ? "ON" : "OFF");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -710,87 +715,107 @@ PWROWG_NAMESPACE::rtx_instrument::channel(
         //    channel.attenuation().value());
         impl.format("PROB%d:SET:GAIN:UNIT %s\n", channel.channel(),
             channel.attenuation().unit());
+        PWROWG_ASSERT_NO_VISA_ERROR(*this);
         impl.format("PROB%d:SET:GAIN:MAN %f\n", channel.channel(),
             1.0f / channel.attenuation().value());
+        PWROWG_ASSERT_NO_VISA_ERROR(*this);
     }
 
     switch (channel.bandwidth()) {
         case rtx_channel_bandwidth::limit_to_20_mhz:
             impl.format("CHAN%d:BAND B20\n", channel.channel());
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
 
         case rtx_channel_bandwidth::full:
         default:
             impl.format("CHAN%d:BAND FULL\n", channel.channel());
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
     }
 
     switch (channel.coupling()) {
         case rtx_channel_coupling::alternating_current_limit:
             impl.format("CHAN%d:COUP ACL\n", channel.channel());
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
 
         case rtx_channel_coupling::ground:
             impl.format("CHAN%d:COUP GND\n", channel.channel());
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
 
         case rtx_channel_coupling::direct_current_limit:
         default:
             impl.format("CHAN%d:COUP DCL\n", channel.channel());
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
     }
 
     switch (channel.decimation_mode()) {
         case rtx_decimation_mode::high_resolution:
             impl.format("CHAN%d:TYPE HRES\n", channel.channel());
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
 
         case rtx_decimation_mode::peak_detect:
             impl.format("CHAN%d:TYPE PDET\n", channel.channel());
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
 
         default:
             impl.format("CHAN%d:TYPE SAMP\n", channel.channel());
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
     }
 
     impl.format("CHAN%d:LAB \"%s\"\n", channel.channel(),
         channel.label().text());
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     impl.format("CHAN%d:LAB:STAT %s\n", channel.channel(),
         channel.label().visible() ? "ON" : "OFF");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
     switch (channel.polarity()) {
         case rtx_channel_polarity::inverted:
             impl.format("CHAN%d:POL INV\n", channel.channel());
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
 
         default:
             impl.format("CHAN%d:POL NORM\n", channel.channel());
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
     }
 
     impl.format("CHAN%d:RANG %f%s\n", channel.channel(),
         channel.range().value(), channel.range().unit());
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
-    // Note: CHAN:RANG influcences the behaviour of CHAN:OFFS, so it
+    // Note: CHAN:RANG influences the behaviour of CHAN:OFFS, so it
     // must be first.
     impl.format("CHAN%d:OFFS %f%s\n", channel.channel(),
         channel.offset().value(), channel.offset().unit());
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
     impl.format("CHAN%d:SKEW %f%s\n", channel.channel(),
         channel.skew().value(), channel.skew().unit());
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
     impl.format("CHAN%d:STAT %s\n", channel.channel(),
         channel.state() ? "ON" : "OFF");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
     // Note: CHAN:ZOFF must be before PROB:SET:ADV:ZADJ, because setting the
     // channel offset will reset the zero-adjust on the RTA family.
     impl.format("CHAN%d:ZOFF %f%s\n", channel.channel(),
         channel.zero_offset().value(), channel.zero_offset().unit());
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
     if (channel.zero_adjust()) {
         impl.format("PROB%d:SET:ADV:ZADJ %f\n",
             channel.channel(), channel.zero_adjust_offset());
+        PWROWG_ASSERT_NO_VISA_ERROR(*this);
     }
 
     return *this;
@@ -1016,45 +1041,53 @@ PWROWG_NAMESPACE::rtx_waveform PWROWG_NAMESPACE::rtx_instrument::data(
     switch (points) {
         case rtx_waveform_points::maximum:
             impl.format("%s:DATA:POIN MAX\n", channel);
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
 
         case rtx_waveform_points::maximum_visible:
             impl.format("%s:DATA:POIN DMAX\n", channel);
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
 
         case rtx_waveform_points::visible:
         default:
             impl.format("%s:DATA:POIN DEF\n", channel);
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
     }
 
     const auto qxorg = detail::format_string("%s:DATA:XOR?\n", channel);
     auto rxorg = this->query(qxorg.c_str());
     auto xorg = rxorg.as<char>();
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     _Analysis_assume_(xorg != nullptr);
     detail::trim_eol(xorg);
 
     const auto qxinc = detail::format_string("%s:DATA:XINC?\n", channel);
     auto rxinc = this->query(qxinc.c_str());
     auto xinc= rxinc.as<char>();
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     _Analysis_assume_(xinc != nullptr);
     detail::trim_eol(xinc);
 
     const auto qtsr = detail::format_string("%s:HIST:TSR?\n", channel);
     auto rtsr = this->query(qtsr.c_str());
     auto tsr = rtsr.as<char>();
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     _Analysis_assume_(tsr != nullptr);
     detail::trim_eol(tsr);
 
     const auto qtsd = detail::format_string("%s:HIST:TSD?\n", channel);
     auto rtsd = this->query(qtsd.c_str());
     auto tsd = rtsd.as<char>();
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     _Analysis_assume_(tsd != nullptr);
     detail::trim_eol(tsd);
 
     const auto qtsab = detail::format_string("%s:HIST:TSAB?\n", channel);
     auto rtsab = this->query(qtsab.c_str());
     auto tsab = rtsab.as<char>();
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     _Analysis_assume_(tsab != nullptr);
     detail::trim_eol(tsab);
 
@@ -1100,6 +1133,7 @@ PWROWG_NAMESPACE::rtx_instrument::data(
                 auto request = detail::format_string("CHAN%u:STAT?\n", c);
                 auto response = this->query(request.c_str());
                 auto state = response.as<char>();
+                PWROWG_ASSERT_NO_VISA_ERROR(*this);
                 _Analysis_assume_(state != nullptr);
                 if (!response.empty() && (state[0] != '0')) {
                     channels.push_back(c);
@@ -1168,6 +1202,7 @@ PWROWG_NAMESPACE::rtx_instrument::delete_file_from_instrument(
     cmd += "\"\n";
     this->write(cmd.c_str());
 
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -1202,14 +1237,18 @@ PWROWG_NAMESPACE::rtx_instrument::expression(
         if (unit != nullptr) {
             impl.format("CALC:MATH%u:EXPR:DEF \"%s in %s\"\n",
                 channel, expression, unit);
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
         } else {
             impl.format("CALC:MATH%u:EXPR:DEF \"%s\"\n", channel, expression);
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
         }
 
         impl.format("CALC:MATH%u:STAT ON\n", channel);
+        PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
     } else {
         impl.format("CALC:MATH%u:STAT OFF\n", channel);
+        PWROWG_ASSERT_NO_VISA_ERROR(*this);
     }
 
     return *this;
@@ -1311,6 +1350,7 @@ PWROWG_NAMESPACE::rtx_instrument::reference_position(
         _In_ const rtx_reference_point position) {
     auto& impl = this->check_not_disposed();
     impl.format("TIM:REF %f\n", static_cast<float>(position) / 100.0f);
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -1350,6 +1390,7 @@ PWROWG_NAMESPACE::rtx_instrument::reset(
         } catch (...) { /* This is non-fatal if nothing was going on. */ }
     }
 
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -1427,6 +1468,7 @@ PWROWG_NAMESPACE::rtx_instrument::time_range(
         _In_ const rtx_quantity& scale) {
     auto &impl = this->check_not_disposed();
     impl.format("TIM:RANG %f %s\n", scale.value(), scale.unit());
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -1449,6 +1491,7 @@ PWROWG_NAMESPACE::rtx_instrument::time_scale(
         _In_ const rtx_quantity& scale) {
     auto& impl = this->check_not_disposed();
     impl.format("TIM:SCAL %f %s\n", scale.value(), scale.unit());
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -1462,12 +1505,14 @@ PWROWG_NAMESPACE::rtx_instrument::trigger(void) const {
 
     // First, get the type of the trigger.
     auto type = this->query("TRIG:A:TYPE?\n");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     auto typ = type.as<char>();
     _Analysis_assume_(typ != nullptr);
     detail::trim_eol(typ);
 
     // Next, we need to know the source for constructing the instance.
     auto source = this->query("TRIG:A:SOUR?\n");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     auto src = source.as<char>();
     _Analysis_assume_(src != nullptr);
     detail::trim_eol(src);
@@ -1477,6 +1522,7 @@ PWROWG_NAMESPACE::rtx_instrument::trigger(void) const {
     {
         typedef rtx_trigger_mode enum_type;
         auto mode = this->query("TRIG:A:MODE?\n");
+        PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
         if (detail::starts_with(mode.as<char>(), "AUTO")) {
             retval.mode(enum_type::automatic);
@@ -1492,6 +1538,8 @@ PWROWG_NAMESPACE::rtx_instrument::trigger(void) const {
 
     {
         auto mode = this->query("TRIG:A:HOLD:MODE?\n");
+        PWROWG_ASSERT_NO_VISA_ERROR(*this);
+
         if (detail::starts_with(mode.as<char>(), "TIME")) {
             auto time = this->query("TRIG:A:HOLD:TIME?\n");
             auto t = time.as<char>();
@@ -1507,6 +1555,7 @@ PWROWG_NAMESPACE::rtx_instrument::trigger(void) const {
     {
         typedef rtx_trigger_slope enum_type;
         auto edge = this->query("TRIG:A:EDGE:SLOP?\n");
+        PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
         if (detail::starts_with(edge.as<char>(), "EITH")) {
             retval.slope(enum_type::both);
@@ -1543,12 +1592,14 @@ PWROWG_NAMESPACE::rtx_instrument::trigger(void) const {
         }
 
         auto level = this->query(query.c_str());
+        PWROWG_ASSERT_NO_VISA_ERROR(*this);
         retval.level(detail::parse_float(level.as<char>()));
     }
 
     {
         typedef rtx_trigger_coupling enum_type;
         auto coupling = this->query("TRIG:A:EDGE:COUP?\n");
+        PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
         if (detail::starts_with(coupling.as<char>(), "AC")) {
             retval.coupling(enum_type::alternating_current);
@@ -1581,22 +1632,29 @@ PWROWG_NAMESPACE::rtx_instrument::trigger(
     switch (trigger.mode()) {
         case rtx_trigger_mode::automatic:
             impl.format("TRIG:A:MODE AUTO\n");
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
 
         default:
             impl.format("TRIG:A:MODE NORM\n");
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
     }
 
     impl.format("TRIG:A:SOUR %s\n", trigger.source());
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     impl.format("TRIG:A:TYPE %s\n", to_string(trigger.type()));
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
     if (trigger.hold_off() == nullptr) {
         impl.format("TRIG:A:HOLD:MODE OFF\n");
+        PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
     } else {
         impl.format("TRIG:A:HOLD:MODE TIME\n");
+        PWROWG_ASSERT_NO_VISA_ERROR(*this);
         impl.format("TRIG:A:HOLD:TIME %s\n", trigger.hold_off());
+        PWROWG_ASSERT_NO_VISA_ERROR(*this);
     }
 
     // Apply special configuration if the trigger is an edge trigger.
@@ -1604,20 +1662,24 @@ PWROWG_NAMESPACE::rtx_instrument::trigger(
         switch (trigger.slope()) {
             case rtx_trigger_slope::both:
                 impl.format("TRIG:A:EDGE:SLOP EITH\n");
+                PWROWG_ASSERT_NO_VISA_ERROR(*this);
                 break;
 
             case rtx_trigger_slope::rising:
                 impl.format("TRIG:A:EDGE:SLOP POS\n");
+                PWROWG_ASSERT_NO_VISA_ERROR(*this);
                 break;
 
             case rtx_trigger_slope::falling:
                 impl.format("TRIG:A:EDGE:SLOP NEG\n");
+                PWROWG_ASSERT_NO_VISA_ERROR(*this);
                 break;
         }
 
         if (trigger.input() > 0) {
             impl.format("TRIG:A:LEV%d:VAL %f%s\n", trigger.input(),
                 trigger.level().value(), trigger.level().unit());
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
         //} else {
         //    impl.format("TRIG:A:LEV:VAL %f%s\n", trigger.level().value(),
         //        trigger.level().unit());
@@ -1626,14 +1688,17 @@ PWROWG_NAMESPACE::rtx_instrument::trigger(
         switch (trigger.coupling()) {
             case rtx_trigger_coupling::alternating_current:
                 impl.format("TRIG:A:EDGE:COUP AC\n");
+                PWROWG_ASSERT_NO_VISA_ERROR(*this);
                 break;
 
             case rtx_trigger_coupling::direct_current:
                 impl.format("TRIG:A:EDGE:COUP DC\n");
+                PWROWG_ASSERT_NO_VISA_ERROR(*this);
                 break;
 
             case rtx_trigger_coupling::low_frequency_reject:
                 impl.format("TRIG:A:EDGE:COUP LFR\n");
+                PWROWG_ASSERT_NO_VISA_ERROR(*this);
                 break;
         }
 
@@ -1671,6 +1736,7 @@ PWROWG_NAMESPACE::rtx_trigger_output
 PWROWG_NAMESPACE::rtx_instrument::trigger_output(void) const {
     typedef rtx_trigger_output enum_type;
     auto value = this->query("TRIG:OUT:MODEL?\n");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
     if (detail::starts_with(value.as<char>(), "MASK")) {
         return enum_type::mask;
@@ -1693,6 +1759,7 @@ PWROWG_NAMESPACE::rtx_instrument::trigger_output(void) const {
 PWROWG_NAMESPACE::rtx_instrument&
 PWROWG_NAMESPACE::rtx_instrument::trigger_manually() {
     this->check_not_disposed().write("*TRG\n");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -1706,19 +1773,23 @@ PWROWG_NAMESPACE::rtx_instrument::trigger_output(
     switch (output) {
         case rtx_trigger_output::mask:
             this->check_not_disposed().write("TRIG:OUT:MODE MASK\n");
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
 
         case rtx_trigger_output::pulse:
             this->check_not_disposed().write("TRIG:OUT:MODE TRIG\n");
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
 
         case rtx_trigger_output::reference:
             this->check_not_disposed().write("TRIG:OUT:MODE REF\n");
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
 
         case rtx_trigger_output::off:
         default:
             this->check_not_disposed().write("TRIG:OUT:MODE OFF\n");
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
     }
 
@@ -1734,6 +1805,7 @@ PWROWG_NAMESPACE::rtx_instrument::trigger_position(
         _In_ const rtx_quantity& offset) {
     auto& impl = this->check_not_disposed();
     impl.format("TIM:POS %f%s\n", offset.value(), offset.unit());
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -1744,6 +1816,7 @@ PWROWG_NAMESPACE::rtx_instrument::trigger_position(
 PWROWG_NAMESPACE::rtx_quantity
 PWROWG_NAMESPACE::rtx_instrument::trigger_position(void) const {
     auto response = this->query("TIM:POS?\n");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return detail::parse_float(response.as<char>());
 }
 
@@ -1783,6 +1856,7 @@ PWROWG_NAMESPACE::rtx_instrument::unit(
     auto& impl = this->check_not_disposed();
     auto u = convert_string<char>(unit);
     impl.format("PROB%u:SET:ATT:UNIT %s\n", channel, u.c_str());
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
     return *this;
 }
@@ -1797,6 +1871,7 @@ std::size_t PWROWG_NAMESPACE::rtx_instrument::unit(
         _In_ const channel_type channel) const {
     auto& impl = this->check_not_disposed();
     impl.format("PROB%u:SET:ATT:UNIT?\n", channel);
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
     // Read the answer and get a first guess of how long it is.
     blob unit;
@@ -1827,6 +1902,7 @@ PWROWG_NAMESPACE::rtx_instrument::unit(
 
     auto& impl = this->check_not_disposed();
     impl.format("PROB%u:SET:ATT:UNIT %s\n", channel, unit);
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
     return *this;
 }
