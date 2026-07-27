@@ -14,12 +14,16 @@
 
 
 #if ((defined(DEBUG) || defined(_DEBUG)) && !defined(NDEBUG))
+#define PWROWG_ASSERT_VISA_INSTRUMENT_STATE 1
+#endif /* ((defined(DEBUG) || defined(_DEBUG)) && !defined(NDEBUG)) */
+
+#if defined(PWROWG_ASSERT_VISA_INSTRUMENT_STATE)
 /// <summary>
 /// Asserts that the given instrument has no VISA error.
 /// </summary>
 /// <param name="instrument">The instrument to check.</param>
 #define PWROWG_ASSERT_NO_VISA_ERROR(instrument)\
     assert((instrument).system_error() == 0)
-#endif /* ((defined(DEBUG) || defined(_DEBUG)) && !defined(NDEBUG)) */
+#endif /* defined(PWROWG_ASSERT_VISA_INSTRUMENT_STATE) */
 
 #endif /* !defined(_PWROWG_VISA_ASSERT_H) */
