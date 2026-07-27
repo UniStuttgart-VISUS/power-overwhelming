@@ -22,6 +22,7 @@
 #include "visus/pwrowg/trace.h"
 
 #include "no_visa_error_msg.h"
+#include "visa_assert.h"
 #include "visa_instrument_impl.h"
 #include "visa_library.h"
 
@@ -283,6 +284,7 @@ PWROWG_NAMESPACE::visa_instrument::attribute(_In_ ViAttr name,
     detail::throw_if_visa_failed(
         detail::visa_library::instance()._viSetAttribute(
             this->check_not_disposed().session, name, value));
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -295,6 +297,7 @@ PWROWG_NAMESPACE::visa_instrument::beep(_In_ const std::size_t cnt) {
     for (std::size_t i = 0; i < cnt; ++i) {
         this->write("SYST:BEEP:IMM\n");
     }
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -319,6 +322,7 @@ PWROWG_NAMESPACE::visa_instrument::beep_on_error(
         _In_ const bool enable) {
     auto& impl = this->check_not_disposed();
     impl.format("SYST:BEEP:ERR:STAT %s\n", enable ? "ON" : "OFF");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -332,6 +336,7 @@ PWROWG_NAMESPACE::visa_instrument::buffer(
     detail::throw_if_visa_failed(
         detail::visa_library::instance()._viSetBuf(
             this->check_not_disposed().session, mask, size));
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -344,6 +349,7 @@ PWROWG_NAMESPACE::visa_instrument::clear(void) {
     detail::throw_if_visa_failed(
         detail::visa_library::instance()._viClear(
             this->check_not_disposed().session));
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -354,6 +360,7 @@ PWROWG_NAMESPACE::visa_instrument::clear(void) {
 PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::clear_status(void) {
     this->check_not_disposed().write("*CLS\n");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -366,6 +373,7 @@ PWROWG_NAMESPACE::visa_instrument::disable_event(_In_ const ViEventType type,
         _In_ const ViUInt16 mechanism) {
     detail::throw_if_visa_failed(detail::visa_library::instance()
         ._viDisableEvent(this->check_not_disposed().session, type, mechanism));
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -380,6 +388,7 @@ PWROWG_NAMESPACE::visa_instrument::enable_event(_In_ const ViEventType type,
     detail::throw_if_visa_failed(detail::visa_library::instance()
         ._viEnableEvent(this->check_not_disposed().session, type, mechanism,
             VI_NULL));
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -417,6 +426,7 @@ PWROWG_NAMESPACE::visa_instrument::event_status(
     auto s = static_cast<int>(status);
     this->check_not_disposed().format("*ESE %u; *OPC?\n", s);
     this->read_all();
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -575,6 +585,7 @@ const PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::operation_complete(void) const {
     // Cf. https://www.rohde-schwarz.com/at/driver-pages/fernsteuerung/measurements-synchronization_231248.html
     this->query("*OPC?\n");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -586,6 +597,7 @@ const PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::operation_complete_async(void) const {
     // Cf. https://www.rohde-schwarz.com/at/driver-pages/fernsteuerung/measurements-synchronization_231248.html
     this->write("*OPC\n");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -720,6 +732,7 @@ PWROWG_NAMESPACE::visa_instrument& PWROWG_NAMESPACE::visa_instrument::reset(
         this->query("*OPC?\n");
     }
 
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -809,6 +822,7 @@ PWROWG_NAMESPACE::visa_instrument::synchronise_clock(
         time->tm_year + 1900, time->tm_mon + 1, time->tm_mday);
 #endif /* defined(_WIN32) */
 
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 

@@ -239,6 +239,42 @@ public:
     }
 
     /// <summary>
+    /// Answer a delay, in milliseconds, that the sensor should wait after a
+    /// reset before starting.
+    /// </summary>
+    /// <returns>The reset delay in milliseconds.</returns>
+    inline timeout_type reset_delay(void) const noexcept {
+        return this->_reset_delay;
+    }
+
+    /// <summary>
+    /// Configure a delay between resetting the instrument and starting the
+    /// sensor.
+    /// </summary>
+    /// <param name="reset_delay">The delay in milliseconds.</param>
+    /// <returns><c>*<see cref="this" /></c>.</returns>
+    inline rtx_configuration& reset_delay(
+            _In_ const timeout_type reset_delay) noexcept {
+        this->_reset_delay = reset_delay;
+        return *this;
+    }
+
+    /// <summary>
+    /// Configure a delay between resetting the instrument and starting the
+    /// sensor.
+    /// </summary>
+    /// <typeparam name="TRep">The value type of the duration.</typeparam>
+    /// <typeparam name="TPeriod">The period of the duration.</typeparam>
+    /// <param name="t">The delay.</param>
+    /// <returns><c>*<see cref="this" /></c>.</returns>
+    template<class TRep, class TPeriod> inline rtx_configuration& reset_delay(
+            _In_ const std::chrono::duration<TRep, TPeriod>& t) noexcept {
+        typedef std::chrono::duration<timeout_type, std::milli> millis_type;
+        return this->reset_delay(std::chrono::duration_cast<millis_type>(
+            t).count());
+    }
+
+    /// <summary>
     /// Answer the flags used to reset the instrument on start or when
     /// enumerating.
     /// </summary>
@@ -367,6 +403,7 @@ private:
     std::size_t _download_retries;
     timeout_type _download_timeout;
     rtx_instrument_reset _reset_flags;
+    timeout_type _reset_delay;
     bool _reset_on_enumerate;
     type_erased_storage _sensors;
     rtx_sensor_trigger _trigger;

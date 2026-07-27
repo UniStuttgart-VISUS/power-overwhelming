@@ -64,6 +64,7 @@ PWROWG_NAMESPACE::rtx_configuration PWROWG_NAMESPACE::rtx_configuration::load(
 PWROWG_NAMESPACE::rtx_configuration::rtx_configuration(void)
         : _download_retries(1),
         _download_timeout(0),
+        _reset_delay(100),
         _reset_flags(rtx_instrument_reset::reset
             | rtx_instrument_reset::status),
         _reset_on_enumerate(false) {
