@@ -167,8 +167,9 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
             icfg.acquisition(a.count(1));
         }
 
-        // Note: Hacking the reference position to "even more left" (0) is not
-        // working.
+        // Make sure that the reference position is always in the expected
+        // location such that we can move the trigger to the leftmost edge of
+        // the screen (the begin of the first segment).
         icfg.reference_position(rtx_reference_point::left);
 
         {
@@ -229,8 +230,10 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         i.timeout(timeout);
         i.operation_complete();
 
-        // This might fix the chain not fully triggering.
-        //std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        PWROWG_TRACE("Pausing for %u ms before configuring \"%s\".",
+            config.reset_delay(), i.path());
+        std::this_thread::sleep_for(std::chrono::milliseconds(
+            config.reset_delay()));
 
         PWROWG_TRACE("Applying configuration to instrument \"%s\".", i.path());
         icfg.apply(i);
