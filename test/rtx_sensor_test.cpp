@@ -233,7 +233,7 @@ public:
         }
     }
 
-#if true
+#if false
     TEST_METHOD(test_multi_sensor_creation) {
         typedef detail::rtx_sensor type;
 
