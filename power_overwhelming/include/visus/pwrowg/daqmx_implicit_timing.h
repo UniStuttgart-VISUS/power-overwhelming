@@ -8,7 +8,6 @@
 #define _PWROWG_DAQMX_IMPLICIT_TIMING_H
 #pragma once
 
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
 #include "visus/pwrowg/daqmx_timing.h"
 
 
@@ -27,9 +26,8 @@ public:
     /// </summary>
     /// <param name="mode"></param>
     /// <param name="samples"></param>
-    explicit daqmx_implicit_timing(
-        _In_ const daqmx_sample_mode mode = daqmx_sample_mode::finite,
-        _In_ const std::uint64_t samples = 1024);
+    explicit daqmx_implicit_timing(_In_ const daqmx_sample_mode mode,
+        _In_ const std::uint64_t samples);
 
     using daqmx_timing::mode;
 
@@ -61,5 +59,4 @@ public:
 
 PWROWG_NAMESPACE_END
 
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 #endif /* !defined(_PWROWG_DAQMX_IMPLICIT_TIMING_H) */

@@ -96,11 +96,11 @@ PWROWG_NAMESPACE::daqmx_task& PWROWG_NAMESPACE::daqmx_task::output_buffer(
 /*
  * PWROWG_NAMESPACE::daqmx_task::read
  */
-int32 PWROWG_NAMESPACE::daqmx_task::read(
+std::int32_t PWROWG_NAMESPACE::daqmx_task::read(
         _Out_ std::size_t& read,
         _Out_writes_(cnt * samples) double *dst,
         _In_ const std::size_t cnt,
-        _In_ const int32 samples,
+        _In_ const std::int32_t samples,
         _In_ const bool interleaved,
         _In_ const double timeout) noexcept {
     const auto avail = (cnt > (std::numeric_limits<uInt32>::max)())
@@ -133,7 +133,7 @@ int32 PWROWG_NAMESPACE::daqmx_task::read(
 std::size_t PWROWG_NAMESPACE::daqmx_task::read(
         _Out_writes_(cnt * samples) double *dst,
         _In_ const std::size_t cnt,
-        _In_ const int32 samples,
+        _In_ const std::int32_t samples,
         _In_ const bool interleaved,
         _In_ const double timeout) {
     std::size_t retval = 0;

@@ -161,10 +161,10 @@ public:
         return *this;
     }
 
-    int32 read(_Out_ std::size_t& read,
+    std::int32_t read(_Out_ std::size_t& read,
         _Out_writes_(cnt * samples) double *dst,
         _In_ const std::size_t cnt,
-        _In_ const int32 samples = DAQmx_Val_Auto,
+        _In_ const std::int32_t samples = DAQmx_Val_Auto,
         _In_ const bool interleaved = false,
         _In_ const double timeout = DAQmx_Val_WaitInfinitely) noexcept;
 
@@ -190,7 +190,7 @@ public:
     /// </returns>
     std::size_t read(_Out_writes_(cnt * samples) double *dst,
         _In_ const std::size_t cnt,
-        _In_ const int32 samples = DAQmx_Val_Auto,
+        _In_ const std::int32_t samples = DAQmx_Val_Auto,
         _In_ const bool interleaved = false,
         _In_ const double timeout = DAQmx_Val_WaitInfinitely);
 

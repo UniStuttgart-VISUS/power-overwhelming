@@ -8,7 +8,6 @@
 #define _PWROWG_DAQMX_SAMPLE_CLOCK_TIMING_H
 #pragma once
 
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
 #include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/daqmx_edge.h"
 #include "visus/pwrowg/daqmx_timing.h"
@@ -37,9 +36,9 @@ public:
     daqmx_sample_clock_timing(
         _In_opt_z_ const char *source,
         _In_ const double rate,
-        _In_ const daqmx_edge edge = daqmx_edge::rising,
-        _In_ const daqmx_sample_mode mode = daqmx_sample_mode::finite,
-        _In_ const std::uint64_t samples = 1024);
+        _In_ const daqmx_edge edge,
+        _In_ const daqmx_sample_mode mode,
+        _In_ const std::uint64_t samples);
 
     /// <summary>
     /// Initialises a new instance.
@@ -54,9 +53,9 @@ public:
     daqmx_sample_clock_timing(
         _In_opt_z_ const wchar_t *source,
         _In_ const double rate,
-        _In_ const daqmx_edge edge = daqmx_edge::rising,
-        _In_ const daqmx_sample_mode mode = daqmx_sample_mode::finite,
-        _In_ const std::uint64_t samples = 1024);
+        _In_ const daqmx_edge edge,
+        _In_ const daqmx_sample_mode mode,
+        _In_ const std::uint64_t samples);
 
     /// <summary>
     /// Initialises a new instance.
@@ -74,9 +73,9 @@ public:
     /// <param name="samples">The number of samples.</param>
     inline explicit daqmx_sample_clock_timing(
             _In_ const double rate,
-            _In_ const daqmx_edge edge = daqmx_edge::rising,
-            _In_ const daqmx_sample_mode mode = daqmx_sample_mode::finite,
-            _In_ const std::uint64_t samples = 1024)
+            _In_ const daqmx_edge edge,
+            _In_ const daqmx_sample_mode mode,
+            _In_ const std::uint64_t samples)
         : daqmx_timing(mode, samples), _edge(edge), _rate(rate) { }
 
     /// <summary>
@@ -192,5 +191,4 @@ private:
 
 PWROWG_NAMESPACE_END
 
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 #endif /* !defined(_PWROWG_DAQMX_SAMPLE_CLOCK_TIMING_H) */

@@ -66,7 +66,7 @@ public:
         if (device) {
             Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
             task += daqmx_voltage_channel(multi_sz<char>::at(device.analog_inputs(), 0)).min_value(-10.0).max_value(10.0);
-            task.on_done([](const daqmx_task& task, const int32) {
+            task.on_done([](const daqmx_task& task, const std::int32_t) {
                 Assert::IsTrue(static_cast<bool>(task), L"Task valid", LINE_INFO());
                 return 0;
                 });

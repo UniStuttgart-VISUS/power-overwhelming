@@ -351,7 +351,7 @@ template<class TIterator> PWROWG_DETAIL_NAMESPACE::daqmx_sensor::daqmx_sensor(
     });
 
     // Register a handler that handles the completion of the task.
-    this->_task.on_done([trigger](const daqmx_task&, const int32) {
+    this->_task.on_done([trigger](const daqmx_task&, const std::int32_t) {
         assert(trigger != nullptr);
 
         // Clear the armed flag to mark the acquisition as finished.

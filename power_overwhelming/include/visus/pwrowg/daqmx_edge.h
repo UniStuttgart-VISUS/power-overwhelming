@@ -8,13 +8,7 @@
 #define _PWROWG_DAQMX_EDGE_H
 #pragma once
 
-#include <cinttypes>
-
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
-#include <NIDAQmx.h>
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
-
-#include "visus/pwrowg/api.h"
+#include "visus/pwrowg/daqmx_types.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -24,17 +18,15 @@ PWROWG_NAMESPACE_BEGIN
 /// </summary>
 enum class daqmx_edge : std::int32_t {
 
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
     /// <summary>
     /// Acquire or generate samples on the rising edges of the sample clock.
     /// </summary>
-    rising = DAQmx_Val_Rising,
+    rising = __PWOWG_DAQMX_VALUE(DAQmx_Val_Rising, 10280),
 
     /// <summary>
     /// Acquire or generate samples on the falling edges of the sample clock.
     /// </summary>
-    falling = DAQmx_Val_Falling,
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+    falling = __PWOWG_DAQMX_VALUE(DAQmx_Val_Falling, 10171),
 };
 
 PWROWG_NAMESPACE_END

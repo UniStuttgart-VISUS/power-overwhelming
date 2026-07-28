@@ -8,13 +8,7 @@
 #define _PWROWG_DAQMX_SAMPLE_MODE_H
 #pragma once
 
-#include <cinttypes>
-
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
-#include <NIDAQmx.h>
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
-
-#include "visus/pwrowg/api.h"
+#include "visus/pwrowg/daqmx_types.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -23,24 +17,24 @@ PWROWG_NAMESPACE_BEGIN
 /// Specifies the possible sample modes for a NI-DAQmx task.
 /// </summary>
 enum class daqmx_sample_mode : std::int32_t {
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+
     /// <summary>
     /// Acquire or generate the specified number of samples.
     /// </summary>
-    finite = DAQmx_Val_FiniteSamps,
+    finite = __PWOWG_DAQMX_VALUE(DAQmx_Val_FiniteSamps, 10178),
 
     /// <summary>
     /// Acquire or generate samples until the task is stopped.
     /// </summary>
-    continuous = DAQmx_Val_ContSamps,
+    continuous = __PWOWG_DAQMX_VALUE(DAQmx_Val_ContSamps, 10123),
 
     /// <summary>
     /// Acquire or generate samples continuously using hardware timing without a
     /// buffer. Hardware-timed single-point acquisition and generation is only
     /// supported for the sample clock and change detection timing types.
     /// </summary>
-    hardware_timed_single_point = DAQmx_Val_HWTimedSinglePoint
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+    hardware_timed_single_point
+        = __PWOWG_DAQMX_VALUE(DAQmx_Val_HWTimedSinglePoint, 12522)
 };
 
 PWROWG_NAMESPACE_END

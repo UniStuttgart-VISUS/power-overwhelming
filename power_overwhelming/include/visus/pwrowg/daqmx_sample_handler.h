@@ -10,14 +10,12 @@
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
 
 #include <cassert>
+#include <cinttypes>
 #include <cstdlib>
 #include <memory>
 
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
-#include <NIDAQmx.h>
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
-
 #include "visus/pwrowg/daqmx_sample_event_type.h"
+#include "visus/pwrowg/daqmx_types.h"
 #include "visus/pwrowg/handler_functions.h"
 
 

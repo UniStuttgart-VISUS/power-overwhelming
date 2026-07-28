@@ -22,16 +22,9 @@ TEST_CLASS(daqmx_timing_test) {
 public:
 
     TEST_METHOD(implicit) {
-        {
-            daqmx_implicit_timing timing;
-            Assert::AreEqual(int(daqmx_sample_mode::finite), int(timing.mode()), L"mode", LINE_INFO());
-            Assert::AreEqual(1024ull, timing.samples(), L"samples", LINE_INFO());
-        }
-        {
-            daqmx_implicit_timing timing(daqmx_sample_mode::continuous, 42);
-            Assert::AreEqual(int(daqmx_sample_mode::continuous), int(timing.mode()), L"mode", LINE_INFO());
-            Assert::AreEqual(42ull, timing.samples(), L"samples", LINE_INFO());
-        }
+        daqmx_implicit_timing timing(daqmx_sample_mode::continuous, 42);
+        Assert::AreEqual(int(daqmx_sample_mode::continuous), int(timing.mode()), L"mode", LINE_INFO());
+        Assert::AreEqual(42ull, timing.samples(), L"samples", LINE_INFO());
     }
 
     TEST_METHOD(implicit_serialisation) {
@@ -44,7 +37,7 @@ public:
 
     TEST_METHOD(sample_clock) {
         {
-            daqmx_sample_clock_timing timing(42.0);
+            daqmx_sample_clock_timing timing(42.0, daqmx_edge::rising, daqmx_sample_mode::finite, 1024);
             Assert::AreEqual(int(daqmx_edge::rising), int(timing.edge()), L"edge", LINE_INFO());
             Assert::AreEqual(int(daqmx_sample_mode::finite), int(timing.mode()), L"mode", LINE_INFO());
             Assert::AreEqual(42.0, timing.rate(), L"rate", LINE_INFO());
@@ -52,7 +45,7 @@ public:
             Assert::IsNull(timing.source(), L"source", LINE_INFO());
         }
         {
-            daqmx_sample_clock_timing timing("ai1", 42.0);
+            daqmx_sample_clock_timing timing("ai1", 42.0, daqmx_edge::rising, daqmx_sample_mode::finite, 1024);
             Assert::AreEqual(int(daqmx_edge::rising), int(timing.edge()), L"edge", LINE_INFO());
             Assert::AreEqual(int(daqmx_sample_mode::finite), int(timing.mode()), L"mode", LINE_INFO());
             Assert::AreEqual(42.0, timing.rate(), L"rate", LINE_INFO());
@@ -60,7 +53,7 @@ public:
             Assert::AreEqual("ai1", timing.source(), L"source", LINE_INFO());
         }
         {
-            daqmx_sample_clock_timing timing(L"ai1", 42.0);
+            daqmx_sample_clock_timing timing(L"ai1", 42.0, daqmx_edge::rising, daqmx_sample_mode::finite, 1024);
             Assert::AreEqual(int(daqmx_edge::rising), int(timing.edge()), L"edge", LINE_INFO());
             Assert::AreEqual(int(daqmx_sample_mode::finite), int(timing.mode()), L"mode", LINE_INFO());
             Assert::AreEqual(42.0, timing.rate(), L"rate", LINE_INFO());
@@ -81,7 +74,7 @@ public:
             Assert::AreEqual(t.source(), u.source(), L"source", LINE_INFO());
         }
         {
-            daqmx_sample_clock_timing t(42.0);
+            daqmx_sample_clock_timing t(42.0, daqmx_edge::rising, daqmx_sample_mode::finite, 1024);
             const auto json = detail::json_serialise(t);
             const auto u = detail::json_deserialise<daqmx_sample_clock_timing>(json);
             Assert::AreEqual(int(t.edge()), int(u.edge()), L"edge", LINE_INFO());

@@ -155,7 +155,6 @@ public:
         _In_reads_opt_(cnt) daqmx_sensor_definition *sensors,
         _In_ const std::size_t cnt);
 
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
     /// <summary>
     /// Answer the acquistion timing configuration for the sensors.
     /// </summary>
@@ -176,7 +175,6 @@ public:
     /// <param name="timing">The new timing configuration.</param>
     /// <returns><c>*<see langword="this" /><c>.</returns>
     daqmx_configuration& timing(_Inout_ daqmx_sample_clock_timing&& timing);
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 
     /// <summary>
     /// Gets the trigger configuration object.
@@ -210,7 +208,6 @@ public:
         return *this;
     }
 
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
     /// <summary>
     /// Checks whether the timing configuration is of type
     /// <see cref="daqmx_implicit_timing" />, and if so, returns it.
@@ -230,7 +227,6 @@ public:
     /// <returns><see langword="true "/> if a configuration was written to
     /// <paramref name="timing" />, <see langword="false" /> otherwise.</returns>
     bool try_get(_Out_opt_ const daqmx_sample_clock_timing *& timing) const;
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 
 private:
 

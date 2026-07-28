@@ -60,7 +60,7 @@ PWROWG_NAMESPACE::daqmx_configuration::daqmx_configuration(void) : _reads(2) {
     this->_sensors.emplace<std::vector<daqmx_sensor_definition>>();
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
     this->_timing.emplace<daqmx_sample_clock_timing>(
-        1000.0, daqmx_edge::rising, daqmx_sample_mode::continuous);
+        1000.0, daqmx_edge::rising, daqmx_sample_mode::continuous, 1024);
 #endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 }
 
@@ -193,7 +193,6 @@ PWROWG_NAMESPACE::daqmx_configuration::sensors(
 }
 
 
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
 /*
  * PWROWG_NAMESPACE::daqmx_configuration::timing
  */
@@ -226,10 +225,8 @@ PWROWG_NAMESPACE::daqmx_configuration::timing(
     this->_timing.emplace<daqmx_sample_clock_timing>(std::move(timing));
     return *this;
 }
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 
 
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
 /*
  * PWROWG_NAMESPACE::daqmx_configuration::try_get
  */
@@ -258,4 +255,3 @@ bool PWROWG_NAMESPACE::daqmx_configuration::try_get(
     timing = dynamic_cast<const daqmx_sample_clock_timing *>(t);
     return (timing != nullptr);
 }
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
