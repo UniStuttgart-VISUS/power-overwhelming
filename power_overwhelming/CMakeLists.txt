@@ -43,6 +43,9 @@ if (PWROWG_WithIgcl)
 endif ()
 
 if (PWROWG_WithNiDaqMx)
+    # Note: In contrast to VISA, we do not publish NI-DAQmx headers to the
+    # client. If a client wants to have native access to NI-DAQmx, they must
+    # define the macro itself.
     target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_WITH_DAQMX)
     target_link_libraries(${PROJECT_NAME} PRIVATE nidaqmx)
 endif ()

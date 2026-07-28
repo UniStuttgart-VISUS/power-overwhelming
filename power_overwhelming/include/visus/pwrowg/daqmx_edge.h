@@ -26,7 +26,7 @@ enum class daqmx_edge : std::int32_t {
     /// <summary>
     /// Acquire or generate samples on the falling edges of the sample clock.
     /// </summary>
-    falling = __PWOWG_DAQMX_VALUE(DAQmx_Val_Falling, 10171),
+    falling = __PWOWG_DAQMX_VALUE(DAQmx_Val_Falling, 10171)
 };
 
 PWROWG_NAMESPACE_END
