@@ -5,6 +5,7 @@
 # User-configurable options.
 cmake_dependent_option(PWROWG_ForceDirect3D11 "Force GPU enumeration via Direct3D 11" OFF WIN32 OFF)
 mark_as_advanced(FORCE PWROWG_ForceDirect3D11)
+option(PWROWG_AssertVisaInstrumentState "Assert a valid state of a VISA instrument after each change" OFF)
 
 
 # Collect source files.
@@ -115,6 +116,10 @@ target_include_directories(${PROJECT_NAME}
 
 if (WIN32)
     target_compile_options(${PROJECT_NAME} PRIVATE "-doc")
+endif ()
+
+if (PWROWG_AssertVisaInstrumentState)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE PWROWG_ASSERT_VISA_INSTRUMENT_STATE)
 endif ()
 
 target_link_libraries(${PROJECT_NAME}
