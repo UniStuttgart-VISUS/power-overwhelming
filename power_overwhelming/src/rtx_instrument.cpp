@@ -311,20 +311,23 @@ PWROWG_NAMESPACE::rtx_instrument::acquisition(
     auto& impl = this->check_not_disposed();
 
     if (acquisition.automatic_points()) {
-        impl.format("ACQ:POIN:AUT ON\n", acquisition.points());
+        impl.write("ACQ:POIN:AUT ON\n");
+        PWROWG_ASSERT_NO_VISA_ERROR(*this);
     } else {
         impl.format("ACQ:POIN:VAL %u\n", acquisition.points());
+        PWROWG_ASSERT_NO_VISA_ERROR(*this);
     }
 
     impl.format("ACQ:NSIN:COUN %u\n", acquisition.count());
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
     impl.format("ACQ:SEGM:STAT %s\n", acquisition.segmented() ? "ON" : "OFF");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
     if (acquisition.state() != rtx_acquisition_state::unknown) {
         this->acquisition(acquisition.state());
     }
 
-    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -338,23 +341,26 @@ PWROWG_NAMESPACE::rtx_instrument::acquisition(
     switch (state) {
         case rtx_acquisition_state::run:
             this->write("ACQ:STAT RUN\n");
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
 
         case rtx_acquisition_state::stop:
             this->write("ACQ:STAT STOP\n");
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
 
         case rtx_acquisition_state::single:
             this->write("SING\n");
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
 
         case rtx_acquisition_state::interrupt:
         default:
             this->write("ACQ:STAT BRE\n");
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
     }
 
-    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 

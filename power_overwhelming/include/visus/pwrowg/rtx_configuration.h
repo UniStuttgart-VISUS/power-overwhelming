@@ -251,6 +251,14 @@ public:
     /// Configure a delay between resetting the instrument and starting the
     /// sensor.
     /// </summary>
+    /// <remarks>
+    /// If an RTX sensor addressing multiple oscilloscopes is started after a
+    /// reset is issued, not all of the instruments might be ready to accept the
+    /// trigger, which is (at least to my current knowledge) not detectable by
+    /// software. By forcing the sensor to wait a few milliseconds after the
+    /// reset and before applying the configuration, this can be circumvented.
+    /// The default value of 100 ms seems to work reasonably well for our setup.
+    /// </remarks>
     /// <param name="reset_delay">The delay in milliseconds.</param>
     /// <returns><c>*<see cref="this" /></c>.</returns>
     inline rtx_configuration& reset_delay(
@@ -263,6 +271,14 @@ public:
     /// Configure a delay between resetting the instrument and starting the
     /// sensor.
     /// </summary>
+    /// <remarks>
+    /// If an RTX sensor addressing multiple oscilloscopes is started after a
+    /// reset is issued, not all of the instruments might be ready to accept the
+    /// trigger, which is (at least to my current knowledge) not detectable by
+    /// software. By forcing the sensor to wait a few milliseconds after the
+    /// reset and before applying the configuration, this can be circumvented.
+    /// The default value of 100 ms seems to work reasonably well for our setup.
+    /// </remarks>
     /// <typeparam name="TRep">The value type of the duration.</typeparam>
     /// <typeparam name="TPeriod">The period of the duration.</typeparam>
     /// <param name="t">The delay.</param>

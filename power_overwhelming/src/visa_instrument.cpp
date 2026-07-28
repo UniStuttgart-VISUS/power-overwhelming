@@ -845,6 +845,12 @@ int PWROWG_NAMESPACE::visa_instrument::system_error(void) const {
     if (!status.empty()) {
         _Analysis_assume_(status.begin() != nullptr);
         _Analysis_assume_(status.end() != nullptr);
+#if (defined(DEBUG) || defined(_DEBUG))
+        std::string __status(status.begin(), status.end());
+        __status.resize(__status.find_last_not_of("\r\n") + 1);
+        PWROWG_TRACE("Instrument \"%s\" error queue contains \"%s\".",
+            this->path(), __status.c_str());
+#endif /* (defined(DEBUG) || defined(_DEBUG)) */
         auto delimiter = std::find_if(status.begin(),
             status.end(),
             [](const byte_type b) { return b == ','; });

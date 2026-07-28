@@ -90,7 +90,7 @@ public:
 
             auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
             Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
-            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(3), 5000, 4000).beep_on_trigger(true))
+            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(3), 10000, 4000).beep_on_trigger(true))
                 .download_retries(1)
                 .download_timeout(10000);
             auto trigger = rtx_sensor_trigger_builder::for_path(device.c_str()).when_software_triggered().build();
@@ -201,7 +201,7 @@ public:
             auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
             Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
 
-            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(3), 5000, 4000).beep_on_trigger(true))
+            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(3), 10000, 4000).beep_on_trigger(true))
                 .download_retries(1)
                 .download_timeout(10000);
             auto trigger = rtx_sensor_trigger_builder::for_path(device.c_str()).when_software_triggered().build();
@@ -233,7 +233,7 @@ public:
         }
     }
 
-#if false
+#if true
     TEST_METHOD(test_multi_sensor_creation) {
         typedef detail::rtx_sensor type;
 
@@ -248,11 +248,11 @@ public:
             auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
             Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
 
-            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(6), 5000, 4000).beep_on_trigger(true).beep_on_apply(true))
+            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(6), 10000, 4000).beep_on_trigger(true).beep_on_apply(true))
                 .download_retries(1)
                 .download_timeout(10000)
-                .reset_flags(rtx_instrument_reset::status | rtx_instrument_reset::buffers | rtx_instrument_reset::errors);
-                //.reset_flags(rtx_instrument_reset::reset);
+                //.reset_flags(rtx_instrument_reset::status | rtx_instrument_reset::buffers | rtx_instrument_reset::errors);
+                .reset_flags(rtx_instrument_reset::reset);
             auto trigger = rtx_sensor_trigger_builder::for_all().when_parallel_port("LPT3").measured_via_external().build();
             //trigger = rtx_sensor_trigger_builder::for_all().when_software_triggered().build();
             sensor_config->trigger(trigger);
