@@ -47,8 +47,13 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 
 # The test requires access to the BenchLab headers to test the sensor.
 if (PWROWG_WithBenchlab)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_BENCHLAB)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_WITH_BENCHLAB)
     target_link_libraries(${PROJECT_NAME} PRIVATE libbenchlab)
+endif ()
+
+if (PWROWG_WithNiDaqMx)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_WITH_DAQMX)
+    target_link_libraries(${PROJECT_NAME} PRIVATE nidaqmx)
 endif ()
 
 # The test requires access to the IGCL headers to test the sensor.

@@ -43,9 +43,8 @@ if (PWROWG_WithIgcl)
 endif ()
 
 if (PWROWG_WithNiDaqMx)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_DAQMX)
-    # Note: NI-DAQmx must be public as we want to expose the headers to the client.
-    target_link_libraries(${PROJECT_NAME} PUBLIC nidaqmx)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_WITH_DAQMX)
+    target_link_libraries(${PROJECT_NAME} PRIVATE nidaqmx)
 endif ()
 
 if (PWROWG_WithNvapi)

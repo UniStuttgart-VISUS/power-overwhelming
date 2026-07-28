@@ -38,25 +38,25 @@ if (WDK_FOUND)
     endif ()
 
     # Derive the name of the co-installer DLL from ${PWROWG_KmdfVersion}.
-    string(REGEX MATCH "([0-9]+)\.([0-9]+)" _ ${PWROWG_KmdfVersion})
-    string(LENGTH ${CMAKE_MATCH_1} KmdfMajorLength)
-    math(EXPR KmdfMajorPad "2 - ${KmdfMajorLength}")
-    if (${KmdfMajorPad} GREATER 0)
-        string(REPEAT "0" ${KmdfMajorPad} KmdfMajorPad)
-    else ()
-        set(KmdfMajorPad "")
-    endif ()
-    string(LENGTH ${CMAKE_MATCH_2} KmdfMinorLength)
-    math(EXPR KmdfMinorPad "3 - ${KmdfMinorLength}")
-    if (${KmdfMinorPad} GREATER 0)
-        string(REPEAT "0" ${KmdfMinorPad} KmdfMinorPad)
-    else ()
-        set(KmdfMinorPad "")
-    endif ()
-    set(WdfCoInstallerVersion ${KmdfMajorPad})
-    string(APPEND WdfCoInstallerVersion ${CMAKE_MATCH_1})
-    string(APPEND WdfCoInstallerVersion ${KmdfMinorPad})
-    string(APPEND WdfCoInstallerVersion ${CMAKE_MATCH_2})
+    #string(REGEX MATCH "([0-9]+)\.([0-9]+)" _ ${PWROWG_KmdfVersion})
+    #string(LENGTH ${CMAKE_MATCH_1} KmdfMajorLength)
+    #math(EXPR KmdfMajorPad "2 - ${KmdfMajorLength}")
+    #if (${KmdfMajorPad} GREATER 0)
+    #    string(REPEAT "0" ${KmdfMajorPad} KmdfMajorPad)
+    #else ()
+    #    set(KmdfMajorPad "")
+    #endif ()
+    #string(LENGTH ${CMAKE_MATCH_2} KmdfMinorLength)
+    #math(EXPR KmdfMinorPad "3 - ${KmdfMinorLength}")
+    #if (${KmdfMinorPad} GREATER 0)
+    #    string(REPEAT "0" ${KmdfMinorPad} KmdfMinorPad)
+    #else ()
+    #    set(KmdfMinorPad "")
+    #endif ()
+    #set(WdfCoInstallerVersion ${KmdfMajorPad})
+    #string(APPEND WdfCoInstallerVersion ${CMAKE_MATCH_1})
+    #string(APPEND WdfCoInstallerVersion ${KmdfMinorPad})
+    #string(APPEND WdfCoInstallerVersion ${CMAKE_MATCH_2})
 
     # Define the output.
     wdk_add_driver(${PROJECT_NAME}
@@ -70,7 +70,6 @@ if (WDK_FOUND)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/${InfFile} $<TARGET_FILE_DIR:${PROJECT_NAME}>
             COMMAND ${PWROWG_StampInfPath} -f $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>\\${InfFile} -a ${InfArchitecture} -k ${PWROWG_KmdfVersion} -v * -d *
-            COMMAND ${CMAKE_COMMAND} -E copy ${WDK_ROOT}/redist/wdf/${WDK_PLATFORM}/WdfCoinstaller${WdfCoInstallerVersion}.dll $<TARGET_FILE_DIR:${PROJECT_NAME}>
             COMMAND ${PWROWG_Inf2CatPath} /driver:$<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>> /os:${PWROWG_DriverTargets}
             WORKING_DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}>
             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${InfFile})
