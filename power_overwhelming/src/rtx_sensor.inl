@@ -170,14 +170,16 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         // Make sure that the reference position is always in the expected
         // location such that we can move the trigger to the leftmost edge of
         // the screen (the begin of the first segment).
-        icfg.reference_position(rtx_reference_point::left);
+        icfg.reference_position(rtx_reference_point::middle);
 
         {
             // Force the trigger to happen at the left edge of the screen. Note
-            // that the offset needs to be positive to move left from the
-            // reference position, which might seem counter-intuitive.
+            // that the offset here specifies the offset of the reference
+            // position from the begin of the acquisition (the trigger
+            // position), so moving the trigger to the left means moving the
+            // reference position to the right.
             const auto range = icfg.time_range();
-            const rtx_quantity offset(range.value() / 12.0f, range.unit());
+            const rtx_quantity offset(range.value() / 2.0f, range.unit());
             PWROWG_TRACE("Setting trigger position on \"%s\" to %f %s.",
                 i.path(), offset.value(), offset.unit());
             icfg.trigger_position(offset);
