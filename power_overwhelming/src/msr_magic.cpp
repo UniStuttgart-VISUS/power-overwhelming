@@ -114,6 +114,7 @@ PWROWG_DETAIL_NAMESPACE::make_energy_magic_config(
             config.unit_location = msr_offsets::intel::unit_divisors;
             config.unit_mask = msr_units::intel::energy_mask;
             config.unit_offset = msr_units::intel::energy_offset;
+            break;
 
         default:
             config.is_supported = nope;
