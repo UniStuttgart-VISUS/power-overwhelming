@@ -67,6 +67,13 @@ bool PWROWG_DETAIL_NAMESPACE::is_rapl_energy_supported(
                     case 0xBA:  // Raptor Lake P
                     case 0xAC:  // Meteor Lake
                     case 0xAA:  // Meteor Lake L
+                    case 0xC5:  // Arrow Lake H
+                    case 0xC6:  // Arrow Lake
+                    case 0xB5:  // Arrow Lake U
+                    case 0xBD:  // Lunar Lake M
+                    case 0xCC:  // Panther Lake L
+                    case 0xE5:  // Panther Lake R
+                    case 0xD5:  // Wildcat Lake
                         return true;
                 }
             }
