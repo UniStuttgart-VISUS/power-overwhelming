@@ -122,7 +122,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
 
             // Emit descriptions for all RAPL supported RAPL domains.
             for (auto& d : vit->second) {
-                if (d.second.is_supported && !d.second.is_supported(c)) {
+                if (!config.bypass_check() && d.second.is_supported
+                        && !d.second.is_supported(c)) {
                     // The specified RAPL domain has specifically been marked as
                     // unsupported for the given core.
                     continue;
@@ -160,8 +161,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
         } catch (std::system_error) {
             // If creating a device for core 'c' causes an std::system_error, we
             // have reached the last core and leave the loop. Papa Schlumpf
-            // would not approve this use of exceptions for control flow, but it
-            // is the simplest way to implement this without duplicating code.
+            // would not approve of this use of exceptions for control flow, but
+            // it is the simplest way to implement this without duplicating code.
             succeeded = false;
         }
     }

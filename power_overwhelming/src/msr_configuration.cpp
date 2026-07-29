@@ -16,6 +16,13 @@ const PWROWG_NAMESPACE::guid PWROWG_NAMESPACE::msr_configuration::id(
 
 
 /*
+ * PWROWG_NAMESPACE::msr_configuration::msr_configuration
+ */
+PWROWG_NAMESPACE::msr_configuration::msr_configuration(void)
+    : _bypass_check(false) { }
+
+
+/*
  * PWROWG_NAMESPACE::msr_configuration::start_driver
  */
 PWROWG_NAMESPACE::msr_configuration&
