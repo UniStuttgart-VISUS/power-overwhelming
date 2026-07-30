@@ -75,7 +75,6 @@ struct json_serialiser<daqmx_current_channel, IsArithmetic, IsEnum> final {
 };
 
 
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
 /// <summary>
 /// Specialisation for <see cref="daqmx_implicit_timing" />.
 /// </summary>
@@ -96,7 +95,6 @@ struct json_serialiser<daqmx_implicit_timing, IsArithmetic, IsEnum> final {
         });
     }
 };
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 
 
 /// <summary>
@@ -145,7 +143,6 @@ struct json_serialiser<daqmx_power_channel, IsArithmetic, IsEnum> final {
 };
 
 
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
 /// <summary>
 /// Specialisation for <see cref="daqmx_sample_clock_timing" />.
 /// </summary>
@@ -172,7 +169,6 @@ struct json_serialiser<daqmx_sample_clock_timing, IsArithmetic, IsEnum> final {
         });
     }
 };
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 
 
 /// <summary>
