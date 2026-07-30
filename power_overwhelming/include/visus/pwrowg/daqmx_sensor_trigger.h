@@ -29,6 +29,7 @@ namespace detail { class daqmx_sen_trg_bld_par2; }
 namespace detail { class daqmx_sen_trg_bld_par3; }
 namespace detail { class daqmx_sen_trg_bld_par4; }
 namespace detail { class daqmx_sen_trg_bld_par5; }
+namespace detail { template<class, bool, bool> struct json_serialiser; }
 
 
 /// <summary>
@@ -185,6 +186,7 @@ private:
     friend class detail::daqmx_sen_trg_bld_par4;
     friend class detail::daqmx_sen_trg_bld_par5;
     friend class daqmx_sensor_trigger_builder;
+    template<class, bool, bool> friend struct detail::json_serialiser;
 };
 
 PWROWG_NAMESPACE_END

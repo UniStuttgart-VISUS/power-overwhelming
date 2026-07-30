@@ -11,7 +11,11 @@
 #include <visus/pwrowg/daqmx_power_channel.h>
 #include <visus/pwrowg/daqmx_voltage_channel.h>
 
+#include <daqmx_serialisation.h>
+
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+#define SERIALISATION_TEST_FILE L"daqmx_config_test.json"
 
 
 PWROWG_TEST_NAMESPACE_BEGIN
@@ -64,6 +68,41 @@ public:
         Assert::AreEqual(config.sensor(1).power_channel()->current_channel(), "ai4", L"sensor 1 current channel", LINE_INFO());
     }
 
+    TEST_METHOD(serialisation) {
+        {
+            const daqmx_configuration expected;
+            const auto json = detail::json_serialise(expected);
+            const auto actual = detail::json_deserialise<daqmx_configuration>(json);
+            Assert::AreEqual(expected.count_sensors(), actual.count_sensors(), L"count_sensors", LINE_INFO());
+            Assert::AreEqual(expected.reads(), actual.reads(), L"reads", LINE_INFO());
+            Assert::AreEqual(expected.samples(), actual.samples(), L"samples", LINE_INFO());
+        }
+        {
+            const auto expected = daqmx_configuration()
+                .reads(42)
+                .add_sensor(daqmx_sensor_definition(daqmx_voltage_channel("ai1"), daqmx_voltage_channel("ai2"), 42.0, L"Erich"))
+                .add_sensor(daqmx_sensor_definition(daqmx_power_channel("ai3", "ai4"), L"Walter"))
+                .timing(daqmx_sample_clock_timing("ai1", 10000.0f, daqmx_edge::falling, daqmx_sample_mode::continuous, 2048));
+            const auto json = detail::json_serialise(expected);
+            PWROWG_TRACE("%s", json.dump().c_str());
+            const auto actual = detail::json_deserialise<daqmx_configuration>(json);
+            Assert::AreEqual(expected.count_sensors(), actual.count_sensors(), L"count_sensors", LINE_INFO());
+            Assert::AreEqual(expected.reads(), actual.reads(), L"reads", LINE_INFO());
+            Assert::AreEqual(expected.samples(), actual.samples(), L"samples", LINE_INFO());
+        }
+        {
+            const auto expected = daqmx_configuration()
+                .reads(42)
+                .add_sensor(daqmx_sensor_definition(daqmx_voltage_channel("ai1"), daqmx_voltage_channel("ai2"), 42.0, L"Erich"))
+                .add_sensor(daqmx_sensor_definition(daqmx_power_channel("ai3", "ai4"), L"Walter"))
+                .timing(daqmx_sample_clock_timing("ai1", 10000.0f, daqmx_edge::falling, daqmx_sample_mode::continuous, 2048));
+            expected.save(SERIALISATION_TEST_FILE);
+            const auto actual = daqmx_configuration::load(SERIALISATION_TEST_FILE);
+            Assert::AreEqual(expected.count_sensors(), actual.count_sensors(), L"count_sensors", LINE_INFO());
+            Assert::AreEqual(expected.reads(), actual.reads(), L"reads", LINE_INFO());
+            Assert::AreEqual(expected.samples(), actual.samples(), L"samples", LINE_INFO());
+        }
+    }
 };
 
 PWROWG_TEST_NAMESPACE_END

@@ -1,5 +1,5 @@
 ﻿// <copyright file="json_serialiser.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -8,6 +8,7 @@
 #define _PWROWG_JSON_SERIALISER_H
 #pragma once
 
+#include <chrono>
 #include <iostream>
 #include <type_traits>
 
@@ -74,9 +75,27 @@ struct json_serialiser<TEnum, false, true> final {
 };
 
 /// <summary>
+/// Specialisation for durations.
+/// </summary>
+template<class TRep, class TPeriod, bool IsArithmetic, bool IsEnum>
+struct json_serialiser<std::chrono::duration<TRep, TPeriod>,
+        IsArithmetic, IsEnum> final {
+    typedef std::chrono::duration<TRep, TPeriod> value_type;
+
+    static inline value_type deserialise(_In_ const nlohmann::json& json) {
+        return std::chrono::duration<TRep, TPeriod>(json.get<TRep>());
+    }
+
+    static inline const value_type& serialise(_In_ const value_type& value) {
+        return value.count();
+    }
+};
+
+/// <summary>
 /// Specialisation for strings.
 /// </summary>
-template<> struct json_serialiser<std::string, false, false> final {
+template<bool IsArithmetic, bool IsEnum>
+struct json_serialiser<std::string, IsArithmetic, IsEnum> final {
     typedef std::string value_type;
 
     static inline value_type deserialise(_In_ const nlohmann::json& json) {
@@ -92,7 +111,8 @@ template<> struct json_serialiser<std::string, false, false> final {
 /// <summary>
 /// Specialisation for strings.
 /// </summary>
-template<> struct json_serialiser<std::wstring, false, false> final {
+template<bool IsArithmetic, bool IsEnum>
+struct json_serialiser<std::wstring, IsArithmetic, IsEnum> final {
     static inline std::wstring deserialise(
             _In_ const nlohmann::json& json) {
         auto retval = json.get<std::string>();

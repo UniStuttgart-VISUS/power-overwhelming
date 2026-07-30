@@ -8,6 +8,7 @@
 #define _PWROWG_DAQMX_SERIALISATION_H
 #pragma once
 
+#include <memory>
 #include <stdexcept>
 #include <type_traits>
 
@@ -18,9 +19,11 @@
 #include "visus/pwrowg/daqmx_power_channel.h"
 #include "visus/pwrowg/daqmx_sample_clock_timing.h"
 #include "visus/pwrowg/daqmx_sensor_definition.h"
+#include "visus/pwrowg/daqmx_sensor_trigger.h"
 #include "visus/pwrowg/daqmx_voltage_channel.h"
 #include "visus/pwrowg/convert_string.h"
 
+#include "daqmx_sensor_trigger_impl.h"
 #include "json_serialiser.h"
 
 
@@ -283,6 +286,83 @@ struct json_serialiser<daqmx_sensor_definition, IsArithmetic, IsEnum> final {
 
 
 /// <summary>
+/// Specialisation for <see cref="daqmx_sensor_trigger_impl" />, which contains
+/// the actual information of a <see cref="daqmx_sensor_trigger" />.
+/// </summary>
+template<bool IsArithmetic, bool IsEnum>
+struct json_serialiser<daqmx_sensor_trigger_impl *, IsArithmetic, IsEnum> final {
+    typedef daqmx_sensor_trigger_impl *value_type;
+
+    static inline value_type deserialise(_In_ const nlohmann::json& json) {
+        if (json.is_null()) {
+            return nullptr;
+        }
+
+        auto retval = std::make_unique<daqmx_sensor_trigger_impl>();
+
+        retval->external_trigger_duration = json_deserialise<
+            decltype(retval->external_trigger_duration)>(
+            json[u8"external_trigger_duration"]);
+
+        retval->external_trigger_pins = json_deserialise<
+            decltype(retval->external_trigger_pins)>(
+                json[u8"external_trigger_pins"]);
+
+        {
+            auto it = json.find(u8"external_range");
+            if ((it != json.end()) && it->is_array() && (it->size() == 2)) {
+                retval->external_range.first = it->at(0).get<double>();
+                retval->external_range.second = it->at(1).get<double>();
+            }
+        }
+
+        return retval.release();
+    }
+
+    static inline nlohmann::json serialise(_In_ const value_type value) {
+        if (value == nullptr) {
+            return nlohmann::json(nullptr);
+        }
+
+        nlohmann::json retval = nlohmann::json::object({
+            json_serialise(u8"external_trigger_duration",
+                value->external_trigger_duration),
+            json_serialise(u8"external_trigger_pins",
+                value->external_trigger_pins),
+        });
+
+        retval[u8"external_range"] = nlohmann::json::array({
+            value->external_range.first,
+            value->external_range.second
+        });
+
+        // TODO: external_trigger???
+
+        return retval;
+    }
+};
+
+
+/// <summary>
+/// Specialisation for <see cref="daqmx_sensor_trigger" />.
+/// </summary>
+template<bool IsArithmetic, bool IsEnum>
+struct json_serialiser<daqmx_sensor_trigger, IsArithmetic, IsEnum> final {
+    typedef daqmx_sensor_trigger value_type;
+
+    static inline value_type deserialise(_In_ const nlohmann::json& json) {
+        value_type retval;
+        retval._impl = json_deserialise<daqmx_sensor_trigger_impl *>(json);
+        return retval;
+    }
+
+    static inline nlohmann::json serialise(_In_ const value_type& value) {
+        return json_serialise(value._impl);
+    }
+};
+
+
+/// <summary>
 /// Specialisation for <see cref="daqmx_configuration" />.
 /// </summary>
 template<bool IsArithmetic, bool IsEnum>
@@ -290,12 +370,72 @@ struct json_serialiser<daqmx_configuration, IsArithmetic, IsEnum> final {
     typedef daqmx_configuration value_type;
 
     static inline value_type deserialise(_In_ const nlohmann::json& json) {
+        _PWROWG_DESERIALISE_FIELD(reads);
+        _PWROWG_DESERIALISE_FIELD(trigger);
+
         value_type retval;
-        return retval;
+
+        do {
+            auto it = json.find(u8"sensors");
+            if (it == json.end()) {
+                continue;
+            }
+            if (!it->is_array()) {
+                continue;
+            }
+
+            for (auto& s : *it) {
+                retval.add_sensor(json_deserialise<daqmx_sensor_definition>(s));
+            }
+        } while (false);
+
+        do {
+            auto it = json.find(u8"timing");
+            if (it == json.end()) {
+                continue;
+            }
+            if (!it->is_object()) {
+                continue;
+            }
+
+            auto jt = it->find(u8"edge");
+            // We currently only support sample clock timing, so this must be
+            // present.
+            assert(jt != it->end());
+            if (jt != it->end()) {
+                retval.timing(json_deserialise<daqmx_sample_clock_timing>(*it));
+            }
+        } while (false);
+
+        return retval.reads(reads).trigger(trigger);
     }
 
     static inline nlohmann::json serialise(_In_ const value_type& value) {
-        auto retval = nlohmann::json::object({ });
+        auto sensors = nlohmann::json::array();
+        for (std::size_t i = 0; i < value.count_sensors(); ++i) {
+            sensors.push_back(json_serialise(value.sensor(i)));
+        }
+
+        auto retval = nlohmann::json::object({
+            _PWROWG_SERIALISE_FIELD(reads),
+            { "sensors", sensors },
+            _PWROWG_SERIALISE_FIELD(trigger)
+        });
+
+        auto t = std::addressof(value.timing());
+        auto i = dynamic_cast<const daqmx_implicit_timing *>(t);
+        auto sc = dynamic_cast<const daqmx_sample_clock_timing *>(t);
+        if (i != nullptr) {
+            retval[u8"timing"] = json_serialise(*i);
+
+        } else if (sc != nullptr) {
+            retval[u8"timing"] = json_serialise(*sc);
+
+        } else {
+            throw std::invalid_argument("The timing configuration is of an "
+                "unknown type and cannot be serialised.");
+        }
+
         return retval;
     }
 };

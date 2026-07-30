@@ -178,6 +178,16 @@ public:
         Assert::AreEqual("ai2", e.voltage_for_current_channel()->channel(), L"voltage_for_current_channel path", LINE_INFO());
     }
 
+    TEST_METHOD(daqmx_sensor_trigger_serialisation) {
+        {
+            auto expected = daqmx_sensor_trigger_builder().when_starting().build();
+            Assert::IsTrue(expected, L"Valid trigger", LINE_INFO());
+            const auto json = detail::json_serialise(expected);
+            const auto actual = detail::json_deserialise<daqmx_sensor_trigger>(json);
+            Assert::IsTrue(actual, L"Valid trigger restored", LINE_INFO());
+        }
+    }
+
     TEST_METHOD(test_sensor_creation) {
 #if defined(POWER_OVERWHELMING_WITH_DAQMX)
         typedef detail::daqmx_sensor type;
