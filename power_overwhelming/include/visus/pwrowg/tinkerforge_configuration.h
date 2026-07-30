@@ -49,6 +49,20 @@ public:
     public:
 
         /// <summary>
+        /// Parses an end point from a string representation.
+        /// </summary>
+        /// <param name="str">The string representation to be parsed.</param>
+        /// <returns>The parsed end point.</returns>
+        static end_point parse(_In_z_ const char *str);
+
+        /// <summary>
+        /// Parses an end point from a string representation.
+        /// </summary>
+        /// <param name="str">The string representation to be parsed.</param>
+        /// <returns>The parsed end point.</returns>
+        static end_point parse(_In_z_ const wchar_t *str);
+
+        /// <summary>
         /// Initialises a new instance with the default port on localhost.
         /// </summary>
         end_point(void);

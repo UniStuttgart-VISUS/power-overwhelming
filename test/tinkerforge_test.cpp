@@ -33,6 +33,39 @@ public:
         }
     }
 
+    TEST_METHOD(test_parse_end_point) {
+        {
+            const auto ep = tinkerforge_configuration::end_point::parse((char *) nullptr);
+            Assert::AreEqual("localhost", ep.name(), L"name", LINE_INFO());
+            Assert::AreEqual(4223, int(ep.port()), L"port", LINE_INFO());
+        }
+        {
+            const auto ep = tinkerforge_configuration::end_point::parse((wchar_t *) nullptr);
+            Assert::AreEqual("localhost", ep.name(), L"name", LINE_INFO());
+            Assert::AreEqual(4223, int(ep.port()), L"port", LINE_INFO());
+        }
+        {
+            const auto ep = tinkerforge_configuration::end_point::parse("horst");
+            Assert::AreEqual("horst", ep.name(), L"name", LINE_INFO());
+            Assert::AreEqual(4223, int(ep.port()), L"port", LINE_INFO());
+        }
+        {
+            const auto ep = tinkerforge_configuration::end_point::parse(L"horst:42");
+            Assert::AreEqual("horst", ep.name(), L"name", LINE_INFO());
+            Assert::AreEqual(42, int(ep.port()), L"port", LINE_INFO());
+        }
+        {
+            const auto ep = tinkerforge_configuration::end_point::parse("127.0.0.1:1234");
+            Assert::AreEqual("127.0.0.1", ep.name(), L"name", LINE_INFO());
+            Assert::AreEqual(1234, int(ep.port()), L"port", LINE_INFO());
+        }
+        {
+            const auto ep = tinkerforge_configuration::end_point::parse(L"[::1]:1234");
+            Assert::AreEqual("[::1]", ep.name(), L"name", LINE_INFO());
+            Assert::AreEqual(1234, int(ep.port()), L"port", LINE_INFO());
+        }
+    }
+
     TEST_METHOD(test_power_sensor_creation) {
         //::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF);
         //::_CrtSetDbgFlag(_CRTDBG_CHECK_ALWAYS_DF);
