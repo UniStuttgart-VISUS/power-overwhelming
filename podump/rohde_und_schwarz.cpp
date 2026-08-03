@@ -7,7 +7,11 @@
 #include "pch.h"
 #include "rohde_und_schwarz.h"
 
+#include "visus/pwrowg/hmc8015_instrument.h"
+#include "visus/pwrowg/rtx_configuration.h"
+#include "visus/pwrowg/rtx_sensor_trigger_builder.h"
 #include "visus/pwrowg/event.h"
+#include "visus/pwrowg/sensor_array.h"
 
 
 /*
@@ -376,25 +380,79 @@ void configure_rtx_sensor(void) {
         std::vector<rtx_instrument> devices(rtx_instrument::all(nullptr, 0));
         rtx_instrument::all(devices.data(), devices.size());
 
-        //rtx_instrument_configuration config(12,
-        //    rtx_acquisition().points(12000).segmented(true),
-        //    rtx_trigger::edge("CH1"));
-        //config.prevent_automatic_roll();
+        auto trigger = rtx_sensor_trigger_builder::for_all()
+            .when_channel(5)
+            .rises_above(2.5f, "V")
+            .build();
 
-        //for (auto& i : devices) {
-        //    i.reset();
-        //    config.apply(i);
+        sensor_array_configuration config;
+        config.configure<rtx_configuration>([&trigger](rtx_configuration& c) {
+            c.base_configuration(rtx_instrument_configuration(std::chrono::seconds(5), 10000));
 
-        //    rtx_instrument_configuration actual(i);
-        //    std::cout << "acquisition.count: "
-        //        << actual.acquisition().count() << std::endl
-        //        << "acquisition.segmented: "
-        //        << actual.acquisition().segmented() << std::endl
-        //        << "min_time_base: " << actual.min_time_base() << std::endl
-        //        << "timeout: " << actual.timeout() << std::endl
-        //        << "time_range: " << actual.time_range().value() << std::endl;
-        //}
+            //c.trigger(trigger);
 
+            {
+                auto i = rtx_instrument::from_name("rtb01");
+
+                c.add_sensor(rtx_sensor_definition(
+                    i.path(),
+                    rtx_channel(3).attenuation(10.0f, "V").range(4.0, "V"),
+                    rtx_channel(4).attenuation(10.0f, "A").range(5, "A"),
+                    L"3ATX3"));
+            }
+
+            {
+                auto i = rtx_instrument::from_name("rtb02");
+
+                c.add_sensor(rtx_sensor_definition(
+                    i.path(),
+                    rtx_channel(1).attenuation(10.0f, "V").range(6.0, "V"),
+                    rtx_channel(2).attenuation(10.0f, "A").range(5, "A"),
+                    L"5ATX"));
+
+                c.add_sensor(rtx_sensor_definition(
+                    i.path(),
+                    rtx_channel(3).attenuation(10.0f, "V").range(13.0, "V"),
+                    rtx_channel(4).attenuation(10.0f, "A").range(5, "A"),
+                    L"12ATX"));
+            }
+
+            {
+                auto i = rtx_instrument::from_name("rtb03");
+
+                c.add_sensor(rtx_sensor_definition(
+                    i.path(),
+                    rtx_channel(1).attenuation(10.0f, "V").range(13.0, "V"),
+                    rtx_channel(2).attenuation(10.0f, "A").range(5, "A"),
+                    L"12EPS"));
+
+                c.add_sensor(rtx_sensor_definition(
+                    i.path(),
+                    rtx_channel(3).attenuation(10.0f, "V").range(4.0, "V"),
+                    rtx_channel(4).attenuation(10.0f, "A").range(5, "A"),
+                    L"3PCI3"));
+            }
+
+            {
+                auto i = rtx_instrument::from_name("rta01");
+
+                c.add_sensor(rtx_sensor_definition(
+                    i.path(),
+                    rtx_channel(1).attenuation(10.0f, "V").range(13.0, "V"),
+                    rtx_channel(2).attenuation(10.0f, "A").range(7, "A"),
+                    L"12PCI"));
+
+                c.add_sensor(rtx_sensor_definition(
+                    i.path(),
+                    rtx_channel(3).attenuation(10.0f, "V").range(13.0, "V"),
+                    rtx_channel(4).attenuation(10.0f, "A").range(55, "A"),
+                    L"12GPU0"));
+            }
+
+            c.save("visus-benchtable.json");
+        });
+
+        auto sensors = sensor_array::for_matches(std::move(config), is_rtx_sensor);
     } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }

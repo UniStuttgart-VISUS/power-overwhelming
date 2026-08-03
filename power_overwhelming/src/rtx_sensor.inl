@@ -180,14 +180,9 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
             // reference position to the right.
             const auto range = icfg.time_range();
             const rtx_quantity offset(range.value() / 2.0f, range.unit());
-            PWROWG_TRACE("Setting trigger position on \"%s\" to %f %s.",
-                i.path(), offset.value(), offset.unit());
+            PWROWG_TRACE("Setting trigger position in configuration of \"%s\" "
+                "to %f %s.", i.path(), offset.value(), offset.unit());
             icfg.trigger_position(offset);
-        }
-
-        if (this->_trigger._impl->daisy_chain > 0.0f) {
-            PWROWG_TRACE(_T("Setting up daisy chain for trigger."));
-            i.trigger_output(rtx_trigger_output::pulse);
         }
 
         const auto& trig_instr = this->_trigger._impl->path;
@@ -200,17 +195,17 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
 
             if (this->_trigger._impl->trigger != nullptr) {
                 auto& trigger = *this->_trigger._impl->trigger;
-                PWROWG_TRACE("Configuring \"%s\" to use the %u trigger "
-                    "provided by the user. The user-defined trigger will be"
-                    "forced to normal mode.", i.path(), trigger.type());
+                PWROWG_TRACE("Modifying configuration of \"%s\" to use the %u "
+                    "trigger provided by the user. The user-defined trigger "
+                    "will be forced to normal mode.", i.path(), trigger.type());
                 icfg.trigger(trigger.mode(rtx_trigger_mode::normal));
 
             } else {
                 const auto level = (this->_trigger._impl->daisy_chain > 0.0f)
                     ? this->_trigger._impl->daisy_chain
                     : 0.0f;
-                PWROWG_TRACE("Setting up an invalid dummy trigger on \"%s\" "
-                    "at %fV.", i.path(), level);
+                PWROWG_TRACE("Setting up an invalid dummy trigger in "
+                    "configuration of \"%s\" at %fV.", i.path(), level);
                 icfg.trigger(rtx_trigger(
                         static_cast<rtx_trigger::input_type>(0),
                         rtx_trigger_type::edge)
@@ -219,8 +214,8 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
 
         } else {
             const auto level = this->_trigger._impl->daisy_chain;
-            PWROWG_TRACE("Configuring \"%s\" to use the external trigger at "
-                "%f V.", i.path(), level);
+            PWROWG_TRACE("Changing configuration of \"%s\" to use the external "
+                "trigger at %f V.", i.path(), level);
             icfg.trigger(rtx_trigger(5, rtx_trigger_type::edge)
                 .external(level)
                 .mode(rtx_trigger_mode::normal));
@@ -306,6 +301,12 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
                     i.path());
             }
         } /* for (auto jt = b; jt != it; ++jt) */
+
+        if (this->_trigger._impl->daisy_chain > 0.0f) {
+            PWROWG_TRACE("Setting up daisy chain for trigger by enabling "
+                "trigger output on \"%s\".", i.path());
+            i.trigger_output(rtx_trigger_output::pulse);
+        }
     }
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
