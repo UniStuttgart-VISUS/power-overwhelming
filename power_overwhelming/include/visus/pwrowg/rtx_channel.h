@@ -207,6 +207,30 @@ public:
     }
 
     /// <summary>
+    /// Sets the offset voltage to be subtracted to correct and
+    /// offset-affected signal.
+    /// </summary>
+    /// <param name="offset">The offset value.</param>
+    /// <param name="unit">The unit of the offset value.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline rtx_channel& offset(_In_ const float value,
+            _In_z_ const wchar_t *unit) {
+        return this->offset(rtx_quantity(value, unit));
+    }
+
+    /// <summary>
+    /// Sets the offset voltage to be subtracted to correct and
+    /// offset-affected signal.
+    /// </summary>
+    /// <param name="offset">The offset value.</param>
+    /// <param name="unit">The unit of the offset value.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline rtx_channel& offset(_In_ const float value,
+            _In_z_ const char *unit) {
+        return this->offset(rtx_quantity(value, unit));
+    }
+
+    /// <summary>
     /// Indicates whether the signal amplitude is inverted or not.
     /// </summary>
     /// <returns>The state of the signal inversion.</returns>
@@ -290,7 +314,7 @@ public:
     /// </summary>
     /// <remarks>
     /// Deskew compensates delay differences between channels caused by the
-    /// different length of cables, probes, andother sources. Correct deskew
+    /// different length of cables, probes, and other sources. Correct deskew
     /// values are important for accurate triggering.
     /// </remarks>
     /// <param name="offset">The delay for the selected channel.</param>

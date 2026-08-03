@@ -244,9 +244,9 @@ Afterwards, you would configure the channels and the trigger condition. While it
 // Create a configuration for recording 10K samples over three seconds.
 auto config = rtx_instrument_configuration(std::chrono::seconds(3), 10000)
     // Configure CHAN1 to measure up to 2V.
-    .channel(rtx_channel(1).range(2.0f, "V").attenuation(0.1f, "V"))
+    .channel(rtx_channel(1).range(2.0f, "V").attenuation(10.0f, "V"))
     // Configure CHAN2 to measure up to 2A.
-    .channel(rtx_channel(2).range(2.0f, "A").attenuation(0.1f, "A"))
+    .channel(rtx_channel(2).range(2.0f, "A").attenuation(10.0f, "A"))
     // Typically, applications want to control everything manually.
     .disable_automatic_roll()
     // Trigger when the external trigger input rises above 2V.
@@ -308,10 +308,18 @@ auto trigger = rtx_sensor_trigger_builder::for_all()
 
 // Tell the array about the oscilloscopes using the fluent API.
 config.configure<rtx_configuration>([trigger](rtx_configuration& c) {
+    // Set the base configuration shared between instruments. In this case,
+    // we configure that a measurement runs for five seconds and records
+    // 10K samples. It is important to set a base configuration with valid
+    // parameters. Otherwise, the sensor will fail to initialise.
+    c.base_configuration(rtx_instrument_configuration(
+        std::chrono::seconds(5),
+        10000));
+
     // Setup a linked voltage/current pair like above.
     c.add_sensor("VISA path to instrument", 
-        rtx_channel(1).range(2.0f, "V").attenuation(0.1f, "V"),
-        rtx_channel(2).range(2.0f, "A").attenuation(0.1f, "A"));
+        rtx_channel(1).range(2.0f, "V").attenuation(10.0f, "V"),
+        rtx_channel(2).range(2.0f, "A").attenuation(10.0f, "A"));
     c.trigger(trigger);
 
     // The configuration can be optionally saved as JSON.

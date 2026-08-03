@@ -603,6 +603,8 @@ PWROWG_NAMESPACE::rtx_instrument::channel(
             retval.coupling(enum_type::ground);
         } else if (detail::starts_with(v, "DCL")) {
             retval.coupling(enum_type::direct_current_limit);
+        } else if (detail::starts_with(v, "DC")) {
+            retval.coupling(enum_type::direct);
         }
     }
 
@@ -748,6 +750,11 @@ PWROWG_NAMESPACE::rtx_instrument::channel(
 
         case rtx_channel_coupling::ground:
             impl.format("CHAN%d:COUP GND\n", channel.channel());
+            PWROWG_ASSERT_NO_VISA_ERROR(*this);
+            break;
+
+        case rtx_channel_coupling::direct:
+            impl.format("CHAN%d:COUP DC\n", channel.channel());
             PWROWG_ASSERT_NO_VISA_ERROR(*this);
             break;
 

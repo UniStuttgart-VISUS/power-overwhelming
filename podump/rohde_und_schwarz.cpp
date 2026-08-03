@@ -444,9 +444,9 @@ void configure_rtx_sensor(void) {
 
                 c.add_sensor(rtx_sensor_definition(
                     i.path(),
-                    rtx_channel(3).attenuation(10.0f, "V").range(13.0, "V"),
+                    rtx_channel(3).attenuation(10.0f, "V").range(1.0f, "V").offset(12.0f, "V").coupling(rtx_channel_coupling::direct),
                     rtx_channel(4).attenuation(10.0f, "A").range(55, "A"),
-                    L"12GPU0"));
+                    L"12GPU"));
             }
 
             c.save("visus-benchtable.json");
