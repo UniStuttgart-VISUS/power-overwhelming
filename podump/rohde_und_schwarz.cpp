@@ -363,3 +363,40 @@ void configure_rtx_instrument(void) {
     }
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
+
+
+/*
+ * ::configure_rtx_sensor
+ */
+void configure_rtx_sensor(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    using namespace visus::pwrowg;
+
+    try {
+        std::vector<rtx_instrument> devices(rtx_instrument::all(nullptr, 0));
+        rtx_instrument::all(devices.data(), devices.size());
+
+        //rtx_instrument_configuration config(12,
+        //    rtx_acquisition().points(12000).segmented(true),
+        //    rtx_trigger::edge("CH1"));
+        //config.prevent_automatic_roll();
+
+        //for (auto& i : devices) {
+        //    i.reset();
+        //    config.apply(i);
+
+        //    rtx_instrument_configuration actual(i);
+        //    std::cout << "acquisition.count: "
+        //        << actual.acquisition().count() << std::endl
+        //        << "acquisition.segmented: "
+        //        << actual.acquisition().segmented() << std::endl
+        //        << "min_time_base: " << actual.min_time_base() << std::endl
+        //        << "timeout: " << actual.timeout() << std::endl
+        //        << "time_range: " << actual.time_range().value() << std::endl;
+        //}
+
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+}

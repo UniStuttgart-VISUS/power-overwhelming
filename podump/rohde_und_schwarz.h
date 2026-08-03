@@ -21,3 +21,8 @@ void query_rtx_instrument(void);
 /// Apply the configuration builder to RTA4004 or RTB2004 oscilloscopes.
 /// </summary>
 void configure_rtx_instrument(void);
+
+/// <summary>
+/// Generates the RTx configuration used at VISUS and dumps it to a file.
+/// </summary>
+void configure_rtx_sensor(void);
