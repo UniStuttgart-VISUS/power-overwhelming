@@ -25,7 +25,7 @@
 #define IDC_TBTIMEOUT                   1007
 #define IDC_CBREFPOS                    1008
 #define IDC_TBTRIGPOS                   1009
-#define IDC_CKBEEPERR2                  1010
+#define IDC_CKBEEPTRIGGER               1010
 #define IDC_LBSENSORS                   1011
 #define IDC_CBSENSORINST                1012
 #define IDC_CBSENSORVOL                 1013
@@ -39,7 +39,18 @@
 #define IDC_TBOFFSETCUR                 1021
 #define IDC_CBCOUPVOL                   1022
 #define IDC_CBCOUPCUR                   1023
-#define IDC_SLIDER1                     1025
+#define IDC_TBDLTIMEOUT                 1024
+#define IDC_TBWAITRESET                 1025
+#define IDC_SLDLRETRIES                 1026
+#define IDC_CKENUMRESET                 1027
+#define IDC_CKRESET                     1028
+#define IDC_CKCLRBUF                    1029
+#define IDC_CKCLRSTAT                   1030
+#define IDC_CKCLRERR                    1031
+#define IDC_CKSTOP                      1032
+#define IDC_CKTRIGGER                   1033
+#define IDC_CKBEEPTRIGGER2              1034
+#define IDC_CKBEEPAPPLY                 1034
 
 // Next default values for new objects
 // 
@@ -47,7 +58,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        106
 #define _APS_NEXT_COMMAND_VALUE         40002
-#define _APS_NEXT_CONTROL_VALUE         1026
+#define _APS_NEXT_CONTROL_VALUE         1027
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -14,6 +14,7 @@
 
 #include <tchar.h>
 #include <Windows.h>
+#include <CommCtrl.h>
 
 #include <wil/resource.h>
 #include <wil/result.h>
@@ -200,17 +201,18 @@ static visus::pwrowg::rtx_sensor_definition make_sensor(_In_ const HWND hWnd) {
 }
 
 /// <summary>
-/// Updates the base configuration of <see cref="configuration" /> from the
-/// dialog.
+/// Updates the <see cref="configuration" /> from the dialog.
 /// </summary>
 /// <param name="hWnd"></param>
-static void update_base_configuration(_In_ const HWND hWnd) {
+static void update_configuration(_In_ const HWND hWnd) {
+    using visus::pwrowg::rtx_instrument_reset;
     using visus::pwrowg::rtx_reference_point;
 
     std::chrono::milliseconds duration;
     std::size_t samples = 0;
     visus::pwrowg::rtx_instrument_configuration::timeout_type timeout = 0;
 
+    // First, create a new base configuration.
     {
         const auto item = ::GetDlgItem(hWnd, IDC_TBDURATION);
         assert(item != NULL);
@@ -264,7 +266,119 @@ static void update_base_configuration(_In_ const HWND hWnd) {
         config.trigger_position(position);
     }
 
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_CKBEEPERR);
+        assert(item != NULL);
+        const auto value = ::SendMessage(item, BM_GETCHECK, 0, 0);
+        config.beep_on_error(value == BST_CHECKED);
+    }
+
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_CKBEEPTRIGGER);
+        assert(item != NULL);
+        const auto value = ::SendMessage(item, BM_GETCHECK, 0, 0);
+        config.beep_on_trigger(value == BST_CHECKED);
+    }
+
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_CKBEEPAPPLY);
+        assert(item != NULL);
+        const auto value = ::SendMessage(item, BM_GETCHECK, 0, 0);
+        config.beep_on_apply((value == BST_CHECKED) ? 1 : 0);
+    }
+
     ::configuration.base_configuration(std::move(config));
+
+    // Next, update the properties directly in the sensor configuration.
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_TBWAITRESET);
+        assert(item != NULL);
+        const auto text = ::get_text(item, true);
+        std::chrono::milliseconds delay(std::stoul(text));
+        ::configuration.reset_delay(delay);
+    }
+
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_CKENUMRESET);
+        assert(item != NULL);
+        const auto value = ::SendMessage(item, BM_GETCHECK, 0, 0);
+        ::configuration.reset_on_enumerate(value == BST_CHECKED);
+    }
+
+    {
+        auto reset = rtx_instrument_reset::none;
+
+        {
+            const auto item = ::GetDlgItem(hWnd, IDC_CKRESET);
+            assert(item != NULL);
+            const auto value = ::SendMessage(item, BM_GETCHECK, 0, 0);
+            if (value == BST_CHECKED) {
+                reset = reset | rtx_instrument_reset::reset;
+            }
+        }
+
+        {
+            const auto item = ::GetDlgItem(hWnd, IDC_CKCLRBUF);
+            assert(item != NULL);
+            const auto value = ::SendMessage(item, BM_GETCHECK, 0, 0);
+            if (value == BST_CHECKED) {
+                reset = reset | rtx_instrument_reset::buffers;
+            }
+        }
+
+        {
+            const auto item = ::GetDlgItem(hWnd, IDC_CKCLRSTAT);
+            assert(item != NULL);
+            const auto value = ::SendMessage(item, BM_GETCHECK, 0, 0);
+            if (value == BST_CHECKED) {
+                reset = reset | rtx_instrument_reset::status;
+            }
+        }
+
+        {
+            const auto item = ::GetDlgItem(hWnd, IDC_CKCLRERR);
+            assert(item != NULL);
+            const auto value = ::SendMessage(item, BM_GETCHECK, 0, 0);
+            if (value == BST_CHECKED) {
+                reset = reset | rtx_instrument_reset::errors;
+            }
+        }
+
+        {
+            const auto item = ::GetDlgItem(hWnd, IDC_CKSTOP);
+            assert(item != NULL);
+            const auto value = ::SendMessage(item, BM_GETCHECK, 0, 0);
+            if (value == BST_CHECKED) {
+                reset = reset | rtx_instrument_reset::stop;
+            }
+        }
+
+        {
+            const auto item = ::GetDlgItem(hWnd, IDC_CKTRIGGER);
+            assert(item != NULL);
+            const auto value = ::SendMessage(item, BM_GETCHECK, 0, 0);
+            if (value == BST_CHECKED) {
+                reset = reset | rtx_instrument_reset::trigger;
+            }
+        }
+
+        ::configuration.reset_flags(reset);
+    }
+
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_TBDLTIMEOUT);
+        assert(item != NULL);
+        const auto text = ::get_text(item, true);
+        std::chrono::milliseconds timeout(std::stoul(text));
+        ::configuration.download_timeout(timeout);
+    }
+
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_SLDLRETRIES);
+        assert(item != NULL);
+        const auto value = ::SendMessage(item, TBM_GETPOS, 0, 0);
+        ::configuration.download_retries(value);
+    }
 }
 
 /// <summary>
@@ -310,7 +424,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                         ofn.Flags = OFN_OVERWRITEPROMPT;
                         ofn.lpstrDefExt = _T("json");
 
-                        ::update_base_configuration(hWnd);
+                        ::update_configuration(hWnd);
 
                         if (::GetSaveFileName(&ofn)) {
                             ::configuration.save(ofn.lpstrFile);
@@ -330,7 +444,8 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                             ::SetCursor(::LoadCursor(NULL, IDC_ARROW));
                         });
 
-                        ::update_base_configuration(hWnd);
+                        ::update_configuration(hWnd);
+
                         visus::pwrowg::sensor_array_configuration config;
                         config.configure<visus::pwrowg::rtx_configuration>(
                             [](visus::pwrowg::rtx_configuration& c) {
@@ -355,6 +470,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
         break;
 
         case WM_INITDIALOG:
+            // When the dialog is initialised, apply all the defaults.
             {
                 auto item = ::GetDlgItem(hWnd, IDC_TBDURATION);
                 assert(item != NULL);
@@ -362,6 +478,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
                     value.c_str()));
             }
+
             {
                 auto item = ::GetDlgItem(hWnd, IDC_TBSAMPLES);
                 assert(item != NULL);
@@ -369,6 +486,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
                     value.c_str()));
             }
+
             {
                 auto item = ::GetDlgItem(hWnd, IDC_TBTIMEOUT);
                 assert(item != NULL);
@@ -376,6 +494,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
                     value.c_str()));
             }
+
             {
                 auto item = ::GetDlgItem(hWnd, IDC_CBREFPOS);
                 assert(item != NULL);
@@ -387,6 +506,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                     ::load_string(IDS_REFERENCE_RIGHT).c_str()));
                 ::SendMessage(item, CB_SETCURSEL, 1, 0);
             }
+
             {
                 auto item = ::GetDlgItem(hWnd, IDC_TBTRIGPOS);
                 assert(item != NULL);
@@ -394,6 +514,27 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
                     value.c_str()));
             }
+
+            {
+                auto item = ::GetDlgItem(hWnd, IDC_TBWAITRESET);
+                assert(item != NULL);
+                auto value = std::to_string(100);
+                ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
+                    value.c_str()));
+            }
+
+            {
+                const auto item = ::GetDlgItem(hWnd, IDC_CKRESET);
+                assert(item != NULL);
+                ::SendMessage(item, BM_SETCHECK, BST_CHECKED, 0);
+            }
+
+            {
+                const auto item = ::GetDlgItem(hWnd, IDC_CKCLRSTAT);
+                assert(item != NULL);
+                ::SendMessage(item, BM_SETCHECK, BST_CHECKED, 0);
+            }
+
             try {
                 auto item = ::GetDlgItem(hWnd, IDC_CBSENSORINST);
                 assert(item != NULL);
@@ -417,11 +558,13 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                     ::load_string(IDS_ERROR).c_str(),
                     MB_ICONERROR);
             }
+
             {
                 auto item = ::GetDlgItem(hWnd, IDC_TBSENSORNAME);
                 assert(item != NULL);
                 ::SendMessage(item, EM_LIMITTEXT, 7, 0);
             }
+
             {
                 auto item = ::GetDlgItem(hWnd, IDC_CBSENSORVOL);
                 assert(item != NULL);
@@ -435,6 +578,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                     _T("4")));
                 ::SendMessage(item, CB_SETCURSEL, 0, 0);
             }
+
             {
                 auto item = ::GetDlgItem(hWnd, IDC_CBSENSORCUR);
                 assert(item != NULL);
@@ -448,6 +592,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                     _T("4")));
                 ::SendMessage(item, CB_SETCURSEL, 1, 0);
             }
+
             {
                 auto item = ::GetDlgItem(hWnd, IDC_TBATTVOL);
                 assert(item != NULL);
@@ -455,6 +600,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
                     value.c_str()));
             }
+
             {
                 auto item = ::GetDlgItem(hWnd, IDC_TBATTCUR);
                 assert(item != NULL);
@@ -462,6 +608,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
                     value.c_str()));
             }
+
             {
                 auto item = ::GetDlgItem(hWnd, IDC_TBRANGEVOL);
                 assert(item != NULL);
@@ -469,6 +616,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
                     value.c_str()));
             }
+
             {
                 auto item = ::GetDlgItem(hWnd, IDC_TBRANGECUR);
                 assert(item != NULL);
@@ -476,6 +624,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
                     value.c_str()));
             }
+
             {
                 auto item = ::GetDlgItem(hWnd, IDC_TBOFFSETVOL);
                 assert(item != NULL);
@@ -483,6 +632,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
                     value.c_str()));
             }
+
             {
                 auto item = ::GetDlgItem(hWnd, IDC_TBOFFSETCUR);
                 assert(item != NULL);
@@ -490,6 +640,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
                     value.c_str()));
             }
+
             {
                 auto item = ::GetDlgItem(hWnd, IDC_CBCOUPVOL);
                 assert(item != NULL);
@@ -503,6 +654,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                     ::load_string(IDS_COUPLING_DC).c_str()));
                 ::SendMessage(item, CB_SETCURSEL, 0, 0);
             }
+
             {
                 auto item = ::GetDlgItem(hWnd, IDC_CBCOUPCUR);
                 assert(item != NULL);
@@ -515,6 +667,21 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                 ::SendMessage(item, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(
                     ::load_string(IDS_COUPLING_DC).c_str()));
                 ::SendMessage(item, CB_SETCURSEL, 0, 0);
+            }
+
+            {
+                auto item = ::GetDlgItem(hWnd, IDC_TBDLTIMEOUT);
+                assert(item != NULL);
+                auto value = std::to_string(10000);
+                ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
+                    value.c_str()));
+            }
+
+            {
+                auto item = ::GetDlgItem(hWnd, IDC_SLDLRETRIES);
+                assert(item != NULL);
+                ::SendMessage(item, TBM_SETRANGEMIN, 0, 0);
+                ::SendMessage(item, TBM_SETRANGEMAX, 0, 8);
             }
             return TRUE;
 
