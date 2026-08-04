@@ -187,6 +187,55 @@ public:
     }
 
     /// <summary>
+    /// Answer a string representation of the channel's name.
+    /// </summary>
+    /// <param name="dst">A buffer that is able to hold at least
+    /// <paramref name="cnt" /> elements. It is safe to pass
+    /// <see langword="nullptr" />, in which case the method will only
+    /// measure the required buffer size.
+    /// </param>
+    /// <param name="cnt">The size of <paramref name="dst" /> in number of
+    /// characters.</param>
+    /// <returns>The required buffer size for the name, including the
+    /// terminating zero.</returns>
+    std::size_t name(_Out_writes_(cnt) wchar_t *dst,
+        _In_ std::size_t cnt) const;
+
+    /// <summary>
+    /// Answer a string representation of the channel's name.
+    /// </summary>
+    /// <param name="dst">A buffer that is able to hold at least
+    /// <paramref name="cnt" /> elements. It is safe to pass
+    /// <see langword="nullptr" />, in which case the method will only
+    /// measure the required buffer size.
+    /// </param>
+    /// <param name="cnt">The size of <paramref name="dst" /> in number of
+    /// characters.</param>
+    /// <returns>The required buffer size for the name, including the
+    /// terminating zero.</returns>
+    std::size_t name(_Out_writes_(cnt) char *dst, _In_ std::size_t cnt) const;
+
+    /// <summary>
+    /// Measures the size of the buffer to hold the name of the channel.
+    /// </summary>
+    /// <returns>The required buffer size for the name, including the
+    /// terminating zero.</returns>
+    std::size_t name(_In_opt_ const std::nullptr_t,
+        _In_ const std::size_t) const;
+
+    /// <summary>
+    /// Answer a string representation of the channel's name.
+    /// </summary>
+    /// <typeparam name="TChar">The type of the character.</typeparam>
+    /// <returns>The name of the channel.</returns>
+    template<class TChar>
+    inline std::basic_string<TChar> name(void) const {
+        std::basic_string<TChar> retval(this->name(nullptr, 0) - 1, 0);
+        this->name(std::addressof(retval[0]), retval.size() + 1);
+        return retval;
+    }
+
+    /// <summary>
     /// Gets the offset voltage to be subtracted to correct and
     /// offset-affected signal.
     /// </summary>

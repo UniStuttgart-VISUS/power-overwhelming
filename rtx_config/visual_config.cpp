@@ -8,6 +8,8 @@
 #include "visual_config.h"
 
 #include <algorithm>
+#include <cassert>
+#include <regex>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -24,6 +26,7 @@
 #include "visus/pwrowg/rtx_configuration.h"
 #include "visus/pwrowg/sensor_array.h"
 #include "visus/pwrowg/sensor_filters.h"
+#include "visus/pwrowg/string_functions.h"
 
 #include "resource.h"
 
@@ -115,7 +118,7 @@ static visus::pwrowg::rtx_sensor_definition make_sensor(_In_ const HWND hWnd) {
         idx_voltage = ::get_selection(item);
     }
 
-    rtx_channel chan_voltage(idx_voltage);
+    rtx_channel chan_voltage(idx_voltage + 1);
 
     {
         const auto item = ::GetDlgItem(hWnd, IDC_TBATTVOL);
@@ -151,7 +154,7 @@ static visus::pwrowg::rtx_sensor_definition make_sensor(_In_ const HWND hWnd) {
         idx_current = get_selection(item);
     }
 
-    rtx_channel chan_current(idx_current);
+    rtx_channel chan_current(idx_current + 1);
 
     {
         const auto item = ::GetDlgItem(hWnd, IDC_TBATTCUR);
@@ -182,15 +185,23 @@ static visus::pwrowg::rtx_sensor_definition make_sensor(_In_ const HWND hWnd) {
     }
 
     {
-        auto item = ::GetDlgItem(hWnd, IDC_TBSENSORNAME);
+        const auto item = ::GetDlgItem(hWnd, IDC_TBSENSORNAME);
         assert(item != NULL);
-        name = convert_string<wchar_t>(::get_text(item, true));
+        name = convert_string<wchar_t>(::get_text(item));
     }
 
     {
-        auto item = ::GetDlgItem(hWnd, IDC_CBSENSORINST);
+        static const std::basic_regex<TCHAR> rx(_T("(.*)\\s+\\(.+"));
+
+        const auto item = ::GetDlgItem(hWnd, IDC_CBSENSORINST);
         assert(item != NULL);
-        const auto path = ::get_text(item, true);
+        auto path = ::get_text(item, true);
+
+        // If the label had a name, remove it from the path.
+        std::match_results<std::basic_string<TCHAR>::const_iterator> match;
+        if (std::regex_search(path, match, rx)) {
+            path = match[1].str();
+        }
 
         return visus::pwrowg::rtx_sensor_definition(
             path.c_str(),
@@ -391,12 +402,34 @@ static void update_configuration(_In_ const HWND hWnd) {
 /// <returns></returns>
 static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
         _In_ WPARAM wParam, _In_ LPARAM lParam) {
+    using visus::pwrowg::convert_string;
+    using visus::pwrowg::detail::empty;
+
     switch (msg) {
         case WM_COMMAND:
             switch (LOWORD(wParam)) {
                 case IDADD:
                     try {
                         auto sensor = ::make_sensor(hWnd);
+
+                        const auto item = ::GetDlgItem(hWnd, IDC_LBSENSORS);
+                        assert(item != nullptr);
+
+                        std::basic_string<TCHAR> label = sensor.path();
+                        if (!empty(sensor.description())) {
+                            label += _T(" (");
+                            label += convert_string<TCHAR>(sensor.description());
+                            label += _T(")");
+                        }
+
+                        label += _T(": ");
+                        label += sensor.voltage_channel().name<TCHAR>();
+                        label += _T(", ");
+                        label += sensor.current_channel().name<TCHAR>();
+
+                        ::SendMessage(item, LB_ADDSTRING, 0,
+                            reinterpret_cast<LPARAM>(label.c_str()));
+
                         ::configuration.add_sensor(std::move(sensor));
                     } catch (std::exception& ex) {
                         ::MessageBoxA(hWnd,
@@ -544,9 +577,18 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                 visus::pwrowg::rtx_instrument::all(devices.data(),
                     devices.size());
 
-                for (auto& d : devices) {
+                for (std::size_t i = 0; i < devices.size(); ++i) {
+                    auto label = convert_string<TCHAR>(devices[i].path());
+
+                    auto name = devices[i].name<TCHAR>();
+                    if (!name.empty()) {
+                        label += _T(" (");
+                        label += name;
+                        label += _T(")");
+                    }
+
                     ::SendMessageA(item, CB_ADDSTRING, 0,
-                        reinterpret_cast<LPARAM>(d.path()));
+                        reinterpret_cast<LPARAM>(label.c_str()));
                 }
 
                 if (!devices.empty()) {

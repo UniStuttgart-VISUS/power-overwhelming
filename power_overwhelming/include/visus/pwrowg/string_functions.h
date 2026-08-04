@@ -107,6 +107,34 @@ bool copy_string(_When_(dst != nullptr, _Out_writes_opt_(cnt)) TChar *dst,
     _In_ const std::basic_string<TChar, TTraits, TAlloc>& string);
 
 /// <summary>
+/// Answer whether the given string is <see langword="nullptr" /> or an empty
+/// string.
+/// </summary>
+/// <typeparam name="TChar">The character type.</typeparam>
+/// <param name="str">The string to be tested.</param>
+/// <returns><see langword="true "/> if <paramref name="str" /> is
+/// <see langword="nullptr" /> or an empty string, <see langword="false" />
+/// otherwise.</returns>
+template<class TChar>
+inline constexpr bool empty(_In_opt_z_ const TChar *str) noexcept {
+    return ((str == nullptr) || (*str == static_cast<TChar>(0)));
+}
+
+/// <summary>
+/// Answer whether the given string is empty
+/// </summary>
+/// <typeparam name="TChar">The character type.</typeparam>
+/// <typeparam name="TTraits">The character traits.</typeparam>
+/// <typeparam name="TAlloc">The allocator of the input string.</typeparam>
+/// <param name="str">The string to be tested.</param>
+/// <returns><see langword="true "/> if <paramref name="str" /> is empty,
+/// <see langword="false" /> otherwise.</returns>
+template<class TChar, class TTraits, class TAlloc> inline bool empty(
+        _In_ const std::basic_string<TChar, TTraits, TAlloc>& str) noexcept {
+    return str.empty();
+}
+
+/// <summary>
 /// Tests two strings for equality.
 /// </summary>
 /// <remarks>
