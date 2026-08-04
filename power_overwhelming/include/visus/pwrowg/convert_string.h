@@ -1,5 +1,5 @@
 ﻿// <copyright file="convert_string.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -78,6 +78,18 @@ template<class TOutput, class TInput, class TTraits, class TAlloc>
 inline std::basic_string<TOutput> convert_string(
         _In_ const std::basic_string<TInput, TTraits, TAlloc>& str) {
     return convert_string<TOutput>(str.c_str());
+}
+
+/// <summary>
+/// Performs an identity conversion between two strings of the same character
+/// set.
+/// </summary>
+/// <typeparam name="TChar"></typeparam>
+/// <param name="str"></param>
+/// <returns></returns>
+template<class TChar> inline const std::basic_string<TChar>& convert_string(
+        _In_ const std::basic_string<TChar>& str) {
+    return str;
 }
 
 PWROWG_NAMESPACE_END

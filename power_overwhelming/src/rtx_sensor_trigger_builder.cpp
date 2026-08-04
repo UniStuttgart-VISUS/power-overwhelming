@@ -509,6 +509,16 @@ PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_channel(
 
 
 /*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_external
+ */
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan0
+PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_external(void) {
+    // Channel 5 is the external trigger input on R&S instruments.
+    return this->when_channel(5);
+}
+
+
+/*
  * PWROWG_NAMESPACE::rtx_sensor_trigger_builder::when_parallel_port
  */
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0

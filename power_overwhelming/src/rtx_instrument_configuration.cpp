@@ -643,7 +643,7 @@ PWROWG_NAMESPACE::rtx_instrument_configuration::rtx_instrument_configuration(
         _min_time_base(0.0f),
         _reference_position(rtx_reference_point::middle),
         _slave(false),
-        _timeout(0),
+        _timeout(timeout),
         _time_range(time_range),
         _trigger("EXT", "EDGE"),
         _trigger_position(0.0f) {

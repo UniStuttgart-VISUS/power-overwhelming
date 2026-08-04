@@ -381,15 +381,14 @@ void configure_rtx_sensor(void) {
         rtx_instrument::all(devices.data(), devices.size());
 
         auto trigger = rtx_sensor_trigger_builder::for_all()
-            .when_channel(5)
+            .when_external()
             .rises_above(2.5f, "V")
             .build();
 
         sensor_array_configuration config;
         config.configure<rtx_configuration>([&trigger](rtx_configuration& c) {
             c.base_configuration(rtx_instrument_configuration(std::chrono::seconds(5), 10000));
-
-            //c.trigger(trigger);
+            c.trigger(trigger);
 
             {
                 auto i = rtx_instrument::from_name("rtb01");

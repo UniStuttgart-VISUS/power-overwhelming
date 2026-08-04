@@ -643,6 +643,14 @@ public:
         _In_ const rtx_trigger::input_type channel);
 
     /// <summary>
+    /// Creates a trigger on the external trigger input, which is not controlled
+    /// by the integrated parallel port triggering capability of the
+    /// <see cref="rtx_sensor_trigger" />.
+    /// </summary>
+    /// <returns>A builder to configure the type of the trigger.</returns>
+    detail::rtx_sen_trg_bld_chan0 when_external(void);
+
+    /// <summary>
     /// Starts configuring a trigger that is controlled by a parallel port on
     /// the machine.
     /// </summary>

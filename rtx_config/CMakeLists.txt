@@ -7,9 +7,15 @@ project(rtx_config)
 # Collect source files.
 file(GLOB_RECURSE HeaderFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.h" "*.inl")
 file(GLOB_RECURSE SourceFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.cpp")
+file(GLOB_RECURSE ResourceFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.rc")
 
 # Define the output.
-add_executable(${PROJECT_NAME} ${HeaderFiles} ${SourceFiles})
+add_executable(${PROJECT_NAME} ${HeaderFiles} ${SourceFiles} ${ResourceFiles})
+
+# Add resource scripts.
+if (WIN32)
+    target_sources(${PROJECT_NAME} PRIVATE ${ResourceFiles})
+endif ()
 
 # Enable VISA.
 find_package(VISA REQUIRED)
@@ -17,7 +23,11 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_VISA)
 target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
 
 # Configure the linker.
-target_link_libraries(${PROJECT_NAME} power_overwhelming)
+target_link_libraries(${PROJECT_NAME} PRIVATE power_overwhelming)
+
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE WIL::WIL)
+endif ()
 
 # Deploy DLLs with the executable.
 if (WIN32)
