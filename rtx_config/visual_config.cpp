@@ -130,7 +130,6 @@ static std::basic_string<TCHAR> get_instrument(_In_ const HWND wnd) {
     return retval;
 }
 
-
 /// <summary>
 /// Creates a new sensor definition from the dialog and returns it.
 /// </summary>
@@ -970,7 +969,6 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
             return FALSE;
     }
 }
-
 
 /*
  * ::visual_config
