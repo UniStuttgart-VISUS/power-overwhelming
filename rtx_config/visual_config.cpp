@@ -24,6 +24,7 @@
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/on_exit.h"
 #include "visus/pwrowg/rtx_configuration.h"
+#include "visus/pwrowg/rtx_sensor_trigger_builder.h"
 #include "visus/pwrowg/sensor_array.h"
 #include "visus/pwrowg/sensor_filters.h"
 #include "visus/pwrowg/string_functions.h"
@@ -36,6 +37,15 @@
 /// </summary>
 visus::pwrowg::rtx_configuration configuration;
 
+
+/// <summary>
+/// Answer whether a checkbox is checked.
+/// </summary>
+/// <param name="wnd"></param>
+/// <returns></returns>
+static inline bool get_checked(_In_ const HWND wnd) noexcept {
+    return (::SendMessage(wnd, BM_GETCHECK, 0, 0) == BST_CHECKED);
+}
 
 /// <summary>
 /// Gets access to the string resource with the given ID in the process image.
@@ -97,6 +107,29 @@ static std::basic_string<TCHAR> get_text(_In_ const HWND wnd,
     ::GetWindowText(wnd, &retval[0], len + 1);
     return retval;
 }
+
+/// <summary>
+/// Gets the VISA path of selected instrument from a combo box
+/// <paramref name="wnd" />.
+/// </summary>
+/// <param name="wnd"></param>
+/// <returns></returns>
+static std::basic_string<TCHAR> get_instrument(_In_ const HWND wnd) {
+    static const std::basic_regex<TCHAR> rx(_T("(.*)\\s+\\(.+"));
+
+    // Gets the label, which is the VISA path or the VISA path with a label
+    // in parentheses.
+    auto retval = ::get_text(wnd, true);
+
+    // If the label had a name, remove it from the path.
+    std::match_results<std::basic_string<TCHAR>::const_iterator> match;
+    if (std::regex_search(retval, match, rx)) {
+        retval = match[1].str();
+    }
+
+    return retval;
+}
+
 
 /// <summary>
 /// Creates a new sensor definition from the dialog and returns it.
@@ -191,17 +224,9 @@ static visus::pwrowg::rtx_sensor_definition make_sensor(_In_ const HWND hWnd) {
     }
 
     {
-        static const std::basic_regex<TCHAR> rx(_T("(.*)\\s+\\(.+"));
-
         const auto item = ::GetDlgItem(hWnd, IDC_CBSENSORINST);
         assert(item != NULL);
-        auto path = ::get_text(item, true);
-
-        // If the label had a name, remove it from the path.
-        std::match_results<std::basic_string<TCHAR>::const_iterator> match;
-        if (std::regex_search(path, match, rx)) {
-            path = match[1].str();
-        }
+        auto path = ::get_instrument(item);
 
         return visus::pwrowg::rtx_sensor_definition(
             path.c_str(),
@@ -216,8 +241,11 @@ static visus::pwrowg::rtx_sensor_definition make_sensor(_In_ const HWND hWnd) {
 /// </summary>
 /// <param name="hWnd"></param>
 static void update_configuration(_In_ const HWND hWnd) {
+    using visus::pwrowg::parallel_port_pin;
     using visus::pwrowg::rtx_instrument_reset;
     using visus::pwrowg::rtx_reference_point;
+    using visus::pwrowg::rtx_sensor_trigger_builder;
+    using visus::pwrowg::rtx_trigger_slope;
 
     std::chrono::milliseconds duration;
     std::size_t samples = 0;
@@ -280,22 +308,19 @@ static void update_configuration(_In_ const HWND hWnd) {
     {
         const auto item = ::GetDlgItem(hWnd, IDC_CKBEEPERR);
         assert(item != NULL);
-        const auto value = ::SendMessage(item, BM_GETCHECK, 0, 0);
-        config.beep_on_error(value == BST_CHECKED);
+        config.beep_on_error(get_checked(item));
     }
 
     {
         const auto item = ::GetDlgItem(hWnd, IDC_CKBEEPTRIGGER);
         assert(item != NULL);
-        const auto value = ::SendMessage(item, BM_GETCHECK, 0, 0);
-        config.beep_on_trigger(value == BST_CHECKED);
+        config.beep_on_trigger(get_checked(item));
     }
 
     {
         const auto item = ::GetDlgItem(hWnd, IDC_CKBEEPAPPLY);
         assert(item != NULL);
-        const auto value = ::SendMessage(item, BM_GETCHECK, 0, 0);
-        config.beep_on_apply((value == BST_CHECKED) ? 1 : 0);
+        config.beep_on_apply(get_checked(item) ? 1 : 0);
     }
 
     ::configuration.base_configuration(std::move(config));
@@ -390,6 +415,116 @@ static void update_configuration(_In_ const HWND hWnd) {
         const auto value = ::SendMessage(item, TBM_GETPOS, 0, 0);
         ::configuration.download_retries(value);
     }
+
+    // Finally, rebuild the trigger.
+    {
+        std::basic_string<TCHAR> path;
+
+        try {
+            const auto item = ::GetDlgItem(hWnd, IDC_CBTRIGGERINST);
+            assert(item != NULL);
+            path = ::get_instrument(item);
+        } catch (...) {
+            path.clear();
+        }
+
+        auto builder = path.empty()
+            ? rtx_sensor_trigger_builder::for_all()
+            : rtx_sensor_trigger_builder::for_path(path.c_str());
+
+        const auto sw_ctrl = ::GetDlgItem(hWnd, IDC_CKSWTRIGGER);
+        assert(sw_ctrl != NULL);
+
+        if (::get_checked(sw_ctrl)) {
+            const auto daisy_ctrl = ::GetDlgItem(hWnd, IDC_CKSWDAISY);
+            assert(daisy_ctrl != NULL);
+            const auto daisy = ::get_checked(daisy_ctrl);
+
+            const auto level_ctrl = ::GetDlgItem(hWnd, IDC_TBDAISYLEVEL);
+            assert(level_ctrl != NULL);
+            const auto level = std::stof(::get_text(level_ctrl, true));
+
+            if (daisy) {
+                // Software trigger with a daisy chain.
+                ::configuration.trigger(builder
+                    .when_software_triggered()
+                    .with_daisy_chain(level)
+                    .build());
+
+            } else {
+                // Software trigger in a loop.
+                ::configuration.trigger(builder
+                    .when_software_triggered()
+                    .build());
+            }
+
+        } else {
+            const auto lpt_ctrl = ::GetDlgItem(hWnd, IDC_TBLPT);
+            assert(lpt_ctrl != NULL);
+            const auto lpt = ::get_text(lpt_ctrl);
+
+            const auto channel_ctrl = ::GetDlgItem(hWnd, IDC_CBTRIGGERCHAN);
+            assert(channel_ctrl != NULL);
+            const auto channel = ::get_selection(channel_ctrl) + 1;
+
+            const auto edge_ctrl = ::GetDlgItem(hWnd, IDC_CBTRIGGEREDGE);
+            assert(edge_ctrl != NULL);
+            const auto edge = static_cast<rtx_trigger_slope>(::get_selection(
+                edge_ctrl));
+
+            const auto level_ctrl = ::GetDlgItem(hWnd, IDC_TBTRIGGERLEVEL);
+            assert(level_ctrl != NULL);
+            const auto level = std::stof(::get_text(level_ctrl, true));
+
+            if (lpt.empty()) {
+                // Trigger on an edge which is generated by something out of the
+                // control of the sensor trigger.
+
+                switch (edge) {
+                    case rtx_trigger_slope::both:
+                        ::configuration.trigger(builder
+                            .when_channel(channel)
+                            .rises_above(level, "V")
+                            .build());
+                        break;
+
+                    case rtx_trigger_slope::falling:
+                        ::configuration.trigger(builder
+                            .when_channel(channel)
+                            .falls_below(level, "V")
+                            .build());
+                        break;
+
+                    case rtx_trigger_slope::rising:
+                    default:
+                        ::configuration.trigger(builder
+                            .when_channel(channel)
+                            .rises_above(level, "V")
+                            .build());
+                        break;
+                }
+
+            } else {
+                // Setup an edge trigger via a parallel port pin.
+                const auto length_ctrl = ::GetDlgItem(hWnd, IDC_TBTRIGGERLEN);
+                assert(length_ctrl != NULL);
+                const auto length = std::stoul(::get_text(length_ctrl, true));
+
+                const auto value_ctrl = ::GetDlgItem(hWnd, IDC_TBLPTTEXT);
+                assert(value_ctrl != NULL);
+                const auto value = static_cast<parallel_port_pin>(std::stoul(
+                    ::get_text(level_ctrl, true)));
+
+                ::configuration.trigger(builder
+                    .when_parallel_port(lpt.c_str())
+                    .raise_pins(value)
+                    .for_duration(std::chrono::milliseconds(length))
+                    .measured_via_channel(channel)
+                    .at_level(level, "V")
+                    .build());
+            }
+        }
+    }
 }
 
 /// <summary>
@@ -438,6 +573,34 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                             MB_ICONERROR);
                     }
                     return TRUE;
+
+                case IDC_CKSWDAISY: {
+                    const auto item1 = ::GetDlgItem(hWnd, IDC_CKSWDAISY);
+                    assert(item1 != NULL);
+                    const auto state = get_checked(item1) ? TRUE : FALSE;
+
+                    const auto item2 = ::GetDlgItem(hWnd, IDC_TBDAISYLEVEL);
+                    assert(item2 != NULL);
+                    ::EnableWindow(item2, state);
+                    } return TRUE;
+
+                case IDC_CKSWTRIGGER: {
+                    const auto item1 = ::GetDlgItem(hWnd, IDC_CKSWTRIGGER);
+                    assert(item1 != NULL);
+                    const auto state = get_checked(item1) ? TRUE : FALSE;
+
+                    const auto item2 = ::GetDlgItem(hWnd, IDC_CKSWDAISY);
+                    assert(item2 != NULL);
+                    ::EnableWindow(item2, state);
+
+                    if (!state) {
+                        ::SendMessage(item2, BM_SETCHECK, BST_UNCHECKED, 0);
+
+                        const auto item3 = ::GetDlgItem(hWnd, IDC_TBDAISYLEVEL);
+                        assert(item3 != NULL);
+                        ::EnableWindow(item3, state);
+                    }
+                    } return TRUE;
 
                 case IDSAVE:
                     try {
@@ -496,6 +659,12 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                             MB_ICONERROR);
                     }
                     return TRUE;
+
+                case IDTRIGALL: {
+                    const auto item = ::GetDlgItem(hWnd, IDC_CBTRIGGERINST);
+                    assert(item != NULL);
+                    ::SendMessage(item, CB_SETCURSEL, -1, 0);
+                    } break;
 
                 default:
                     return FALSE;
@@ -569,8 +738,10 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
             }
 
             try {
-                auto item = ::GetDlgItem(hWnd, IDC_CBSENSORINST);
-                assert(item != NULL);
+                const auto item1 = ::GetDlgItem(hWnd, IDC_CBSENSORINST);
+                assert(item1 != NULL);
+                const auto item2 = ::GetDlgItem(hWnd, IDC_CBTRIGGERINST);
+                assert(item2 != NULL);
 
                 std::vector<visus::pwrowg::rtx_instrument> devices(
                     visus::pwrowg::rtx_instrument::all(nullptr, 0));
@@ -587,12 +758,15 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                         label += _T(")");
                     }
 
-                    ::SendMessageA(item, CB_ADDSTRING, 0,
+                    ::SendMessage(item1, CB_ADDSTRING, 0,
+                        reinterpret_cast<LPARAM>(label.c_str()));
+                    ::SendMessage(item2, CB_ADDSTRING, 0,
                         reinterpret_cast<LPARAM>(label.c_str()));
                 }
 
                 if (!devices.empty()) {
-                    ::SendMessage(item, CB_SETCURSEL, 0, 0);
+                    ::SendMessage(item1, CB_SETCURSEL, 0, 0);
+                    ::SendMessage(item2, CB_SETCURSEL, 0, 0);
                 }
             } catch (std::exception& ex) {
                 ::MessageBoxA(hWnd,
@@ -622,7 +796,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
             }
 
             {
-                auto item = ::GetDlgItem(hWnd, IDC_CBSENSORCUR);
+                const auto item = ::GetDlgItem(hWnd, IDC_CBSENSORCUR);
                 assert(item != NULL);
                 ::SendMessage(item, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(
                     _T("1")));
@@ -636,7 +810,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
             }
 
             {
-                auto item = ::GetDlgItem(hWnd, IDC_TBATTVOL);
+                const auto item = ::GetDlgItem(hWnd, IDC_TBATTVOL);
                 assert(item != NULL);
                 auto value = std::to_string(10);
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
@@ -644,7 +818,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
             }
 
             {
-                auto item = ::GetDlgItem(hWnd, IDC_TBATTCUR);
+                const auto item = ::GetDlgItem(hWnd, IDC_TBATTCUR);
                 assert(item != NULL);
                 auto value = std::to_string(10);
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
@@ -652,7 +826,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
             }
 
             {
-                auto item = ::GetDlgItem(hWnd, IDC_TBRANGEVOL);
+                const auto item = ::GetDlgItem(hWnd, IDC_TBRANGEVOL);
                 assert(item != NULL);
                 auto value = std::to_string(13);
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
@@ -660,7 +834,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
             }
 
             {
-                auto item = ::GetDlgItem(hWnd, IDC_TBRANGECUR);
+                const auto item = ::GetDlgItem(hWnd, IDC_TBRANGECUR);
                 assert(item != NULL);
                 auto value = std::to_string(5);
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
@@ -668,7 +842,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
             }
 
             {
-                auto item = ::GetDlgItem(hWnd, IDC_TBOFFSETVOL);
+                const auto item = ::GetDlgItem(hWnd, IDC_TBOFFSETVOL);
                 assert(item != NULL);
                 auto value = std::to_string(0);
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
@@ -676,7 +850,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
             }
 
             {
-                auto item = ::GetDlgItem(hWnd, IDC_TBOFFSETCUR);
+                const auto item = ::GetDlgItem(hWnd, IDC_TBOFFSETCUR);
                 assert(item != NULL);
                 auto value = std::to_string(0);
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
@@ -684,7 +858,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
             }
 
             {
-                auto item = ::GetDlgItem(hWnd, IDC_CBCOUPVOL);
+                const auto item = ::GetDlgItem(hWnd, IDC_CBCOUPVOL);
                 assert(item != NULL);
                 ::SendMessage(item, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(
                     ::load_string(IDS_COUPLING_DCL).c_str()));
@@ -698,7 +872,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
             }
 
             {
-                auto item = ::GetDlgItem(hWnd, IDC_CBCOUPCUR);
+                const auto item = ::GetDlgItem(hWnd, IDC_CBCOUPCUR);
                 assert(item != NULL);
                 ::SendMessage(item, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(
                     ::load_string(IDS_COUPLING_DCL).c_str()));
@@ -712,15 +886,75 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
             }
 
             {
-                auto item = ::GetDlgItem(hWnd, IDC_TBDLTIMEOUT);
+                const auto item = ::GetDlgItem(hWnd, IDC_CBTRIGGERCHAN);
                 assert(item != NULL);
-                auto value = std::to_string(10000);
+                ::SendMessage(item, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(
+                    _T("1")));
+                ::SendMessage(item, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(
+                    _T("2")));
+                ::SendMessage(item, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(
+                    _T("3")));
+                ::SendMessage(item, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(
+                    _T("4")));
+                ::SendMessage(item, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(
+                    _T("EXT")));
+                ::SendMessage(item, CB_SETCURSEL, 4, 0);
+            }
+
+            {
+                const auto item = ::GetDlgItem(hWnd, IDC_CBTRIGGEREDGE);
+                assert(item != NULL);
+                ::SendMessage(item, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(
+                    ::load_string(IDS_EDGE_BOTH).c_str()));
+                ::SendMessage(item, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(
+                    ::load_string(IDS_EDGE_RISE).c_str()));
+                ::SendMessage(item, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(
+                    ::load_string(IDS_EDGE_FALL).c_str()));
+                ::SendMessage(item, CB_SETCURSEL, 1, 0);
+            }
+
+            {
+                const auto item = ::GetDlgItem(hWnd, IDC_TBTRIGGERLEVEL);
+                assert(item != NULL);
+                const auto value = std::to_string(2.5f);
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
                     value.c_str()));
             }
 
             {
-                auto item = ::GetDlgItem(hWnd, IDC_SLDLRETRIES);
+                const auto item = ::GetDlgItem(hWnd, IDC_TBTRIGGERLEN);
+                assert(item != NULL);
+                const auto value = std::to_string(10);
+                ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
+                    value.c_str()));
+            }
+
+            {
+                const auto item = ::GetDlgItem(hWnd, IDC_TBLPTTEXT);
+                assert(item != NULL);
+                const auto value = std::to_string(255);
+                ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
+                    value.c_str()));
+            }
+
+            {
+                const auto item = ::GetDlgItem(hWnd, IDC_TBDAISYLEVEL);
+                assert(item != NULL);
+                const auto value = std::to_string(2.5f);
+                ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
+                    value.c_str()));
+            }
+
+            {
+                const auto item = ::GetDlgItem(hWnd, IDC_TBDLTIMEOUT);
+                assert(item != NULL);
+                const auto value = std::to_string(10000);
+                ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
+                    value.c_str()));
+            }
+
+            {
+                const auto item = ::GetDlgItem(hWnd, IDC_SLDLRETRIES);
                 assert(item != NULL);
                 ::SendMessage(item, TBM_SETRANGEMIN, 0, 0);
                 ::SendMessage(item, TBM_SETRANGEMAX, 0, 8);

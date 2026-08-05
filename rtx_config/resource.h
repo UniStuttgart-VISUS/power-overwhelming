@@ -16,6 +16,9 @@
 #define IDS_NO_SELECTION                112
 #define IDS_NO_INPUT                    113
 #define IDS_FILE_FILTER                 114
+#define IDS_EDGE_RISE                   115
+#define IDS_EDGE_FALL                   116
+#define IDS_EDGE_BOTH                   117
 #define IDSAVE                          1001
 #define IDADD                           1002
 #define IDTEST                          1003
@@ -49,8 +52,20 @@
 #define IDC_CKCLRERR                    1031
 #define IDC_CKSTOP                      1032
 #define IDC_CKTRIGGER                   1033
-#define IDC_CKBEEPTRIGGER2              1034
 #define IDC_CKBEEPAPPLY                 1034
+#define IDC_CBTRIGGERINST               1035
+#define IDTRIGALL                       1036
+#define IDC_CBTRIGGERCHAN               1037
+#define IDC_CBTRIGGEREDGE               1038
+#define IDC_TBLPT                       1041
+#define IDC_CKSWTRIGGER                 1042
+#define IDC_TBTRIGGERLEVEL              1043
+#define IDC_TBTRIGGERLEN                1044
+#define IDC_TBLPTTEXT                   1045
+#define IDC_CKSWDAISY                   1046
+#define IDC_TBDAISYLEVEL                1048
+#define IDC_CBTRIGGEREDGE2              1049
+#define IDC_CBDAISYEDGE                 1049
 
 // Next default values for new objects
 // 

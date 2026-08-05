@@ -223,6 +223,7 @@ PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_par0::rtx_sen_trg_bld_par0(
         : _trigger(trigger) {
     assert(this->_trigger._impl != nullptr);
     this->_trigger._impl->daisy_chain = 2.5f;
+    this->_trigger._impl->external_trigger_duration = 10;
 }
 
 
