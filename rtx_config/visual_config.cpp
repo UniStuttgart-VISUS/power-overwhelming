@@ -257,6 +257,26 @@ static visus::pwrowg::rtx_sensor_definition make_sensor(_In_ const HWND hWnd) {
 }
 
 /// <summary>
+/// Remove the <paramref name="idx" />-th sensor from the
+/// <see cref="configuration" />.
+/// </summary>
+/// <param name="idx"></param>
+static void remove_sensor(_In_ const std::size_t idx) {
+    const auto cnt = ::configuration.count_sensors();
+
+    std::vector<visus::pwrowg::rtx_sensor_definition> sensors;
+    sensors.reserve(cnt);
+
+    for (std::size_t i = 0; i < cnt; ++i) {
+        if (i != idx) {
+            sensors.push_back(::configuration.sensor(i));
+        }
+    }
+
+    ::configuration.sensors(sensors.data(), sensors.size());
+}
+
+/// <summary>
 /// Updates the <see cref="configuration" /> from the dialog.
 /// </summary>
 /// <param name="hWnd"></param>
@@ -984,8 +1004,23 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
         case WM_KEYDOWN:
             switch (wParam) {
                 case VK_DELETE:
-                case VK_BACK:
+                case VK_BACK: {
+                    // Delete the selected sensor if the list box has the focus.
+                    const auto focus = ::GetFocus();
+                    const auto list = ::GetDlgItem(hWnd, IDC_LBSENSORS);
+                    assert(list != NULL);
+
+                    if (focus == list) {
+                        const auto i = ::SendMessage(list, LB_GETCURSEL, 0, 0);
+                        if (i != LB_ERR) {
+                            ::SendMessage(list, LB_DELETESTRING, i, 0);
+                            ::remove_sensor(i);
+                        }
+                    }
+
+                    // Mark the key as handled.
                     return TRUE;
+                }
             }
             break;
 
