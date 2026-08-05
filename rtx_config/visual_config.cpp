@@ -28,6 +28,7 @@
 #include "visus/pwrowg/sensor_array.h"
 #include "visus/pwrowg/sensor_filters.h"
 #include "visus/pwrowg/string_functions.h"
+#include "visus/pwrowg/trace.h"
 
 #include "resource.h"
 
@@ -156,6 +157,7 @@ static visus::pwrowg::rtx_sensor_definition make_sensor(_In_ const HWND hWnd) {
         const auto item = ::GetDlgItem(hWnd, IDC_TBATTVOL);
         assert(item != NULL);
         const auto text = ::get_text(item, true);
+        PWROWG_TRACE(_T("Voltage attenuation: %s"), text.c_str());
         chan_voltage.attenuation(std::stof(text), "V");
     }
 
@@ -163,22 +165,33 @@ static visus::pwrowg::rtx_sensor_definition make_sensor(_In_ const HWND hWnd) {
         const auto item = ::GetDlgItem(hWnd, IDC_TBRANGEVOL);
         assert(item != NULL);
         const auto text = ::get_text(item, true);
-        chan_voltage.attenuation(std::stof(text), "V");
+        PWROWG_TRACE(_T("Voltage range: %s"), text.c_str());
+        chan_voltage.range(std::stof(text), "V");
     }
 
     {
         const auto item = ::GetDlgItem(hWnd, IDC_TBOFFSETVOL);
         assert(item != NULL);
         const auto text = ::get_text(item, true);
-        chan_voltage.attenuation(std::stof(text), "V");
+        PWROWG_TRACE(_T("Voltage offset: %s"), text.c_str());
+        chan_voltage.offset(std::stof(text), "V");
     }
 
     {
         const auto item = ::GetDlgItem(hWnd, IDC_CBCOUPVOL);
         assert(item != NULL);
         const auto value = get_selection(item);
+        PWROWG_TRACE(_T("Voltage coupling: %d"), value);
         chan_voltage.coupling(static_cast<rtx_channel_coupling>(value));
     }
+
+    PWROWG_TRACE(_T("Configured voltage channel %d with attenuation %f, ")
+        _T("range % f, offset %f, coupling %d."),
+        static_cast<int>(chan_voltage.channel()),
+        chan_voltage.attenuation().value(),
+        chan_voltage.range().value(),
+        chan_voltage.offset().value(),
+        static_cast<int>(chan_voltage.coupling()));
 
     {
         const auto item = ::GetDlgItem(hWnd, IDC_CBSENSORCUR);
@@ -199,14 +212,14 @@ static visus::pwrowg::rtx_sensor_definition make_sensor(_In_ const HWND hWnd) {
         const auto item = ::GetDlgItem(hWnd, IDC_TBRANGECUR);
         assert(item != NULL);
         const auto text = ::get_text(item, true);
-        chan_current.attenuation(std::stof(text), "A");
+        chan_current.range(std::stof(text), "A");
     }
 
     {
         const auto item = ::GetDlgItem(hWnd, IDC_TBOFFSETCUR);
         assert(item != NULL);
         const auto text = ::get_text(item, true);
-        chan_current.attenuation(std::stof(text), "A");
+        chan_current.offset(std::stof(text), "A");
     }
 
     {
@@ -215,6 +228,14 @@ static visus::pwrowg::rtx_sensor_definition make_sensor(_In_ const HWND hWnd) {
         const auto value = get_selection(item);
         chan_current.coupling(static_cast<rtx_channel_coupling>(value));
     }
+
+    PWROWG_TRACE(_T("Configured current channel %d with attenuation %f, ")
+        _T("range % f, offset %f, coupling %d."),
+        static_cast<int>(chan_current.channel()),
+        chan_current.attenuation().value(),
+        chan_current.range().value(),
+        chan_current.offset().value(),
+        static_cast<int>(chan_current.coupling()));
 
     {
         const auto item = ::GetDlgItem(hWnd, IDC_TBSENSORNAME);
@@ -960,14 +981,22 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
             }
             return TRUE;
 
+        case WM_KEYDOWN:
+            switch (wParam) {
+                case VK_DELETE:
+                case VK_BACK:
+                    return TRUE;
+            }
+            break;
+
         case WM_CLOSE:
         case WM_DESTROY:
             ::PostQuitMessage(0);
             return FALSE;
-
-        default:
-            return FALSE;
     }
+
+    // Event was not handled.
+    return FALSE;
 }
 
 /*

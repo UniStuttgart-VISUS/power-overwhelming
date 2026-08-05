@@ -96,7 +96,7 @@ public:
     /// Initialises a new instance.
     /// </summary>
     /// <param name="source">The one-based index of the analog source
-    /// to configure.</param>
+    /// to configure. Channel 5 will be interpreted as external.</param>
     /// <param name="type">The type of the trigger.</param>
     rtx_trigger(_In_ const input_type source,
         _In_ const rtx_trigger_type type);
