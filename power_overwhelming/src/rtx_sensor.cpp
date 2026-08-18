@@ -220,13 +220,13 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample(_In_ const bool enable) {
 
     } else {
         PWROWG_TRACE(_T("Signalling the RTX sensor controller to stop."));
-        atomic_unset(trigger.state, sensor_trigger_state::running
-            | sensor_trigger_state::armed);
+        atomic_unset(trigger.state, sensor_trigger_state::running);
 
         PWROWG_TRACE(_T("Making sure that the controller thread is not ")
             _T("working on the instruments anymore before injecting an OPC to ")
             _T("wake it up."));
-        spin_while_all(trigger.state, sensor_trigger_state::busy);
+        spin_while_all(trigger.state, sensor_trigger_state::busy
+            | sensor_trigger_state::armed);
 
 #if false
         while (this->_thread.joinable()) {
@@ -312,7 +312,8 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
             } catch (const std::exception& ex) {
                 PWROWG_TRACE("An error occurred while processing waveforms "
                     "from instrument \"%s\": %s", instrument.path(), ex.what());
-                if (!trigger.when_failed(std::current_exception(),
+                if ((trigger.when_failed == nullptr) || !trigger.when_failed(
+                        std::current_exception(),
                         trigger.when_failed_context)) {
                     throw;
                 }
@@ -326,7 +327,12 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
         PWROWG_TRACE(_T("The RTX controller thread is done processing the ")
             _T("latest waveforms."));
         atomic_unset(trigger.state, sensor_trigger_state::busy);
-        trigger.when_done(trigger.when_done_context);
+
+        if (trigger.when_done != nullptr) {
+            PWROWG_TRACE(_T("The RTX controller thread is invoking the ")
+                _T("completion callback."));
+            trigger.when_done(trigger.when_done_context);
+        }
     } /* while (!check_state(trigger.state, sensor_trigger_state::stop)) */
 
     PWROWG_TRACE(_T("The RTX sensor controller thread is exiting."));
