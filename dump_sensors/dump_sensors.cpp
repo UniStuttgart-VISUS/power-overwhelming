@@ -34,7 +34,6 @@ int _tmain(const int argc, const TCHAR **argv) {
 
     std::wcout << L"dump_sensors" << std::endl;
     std::wcout << L"© 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart."
-        << std::endl << L"All rights reserved."
         << std::endl << std::endl;
 
     const std::vector<std::basic_string<TCHAR>> cmd_line(argv, argv + argc);

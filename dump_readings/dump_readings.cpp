@@ -39,7 +39,6 @@ int _tmain(const int argc, const TCHAR **argv) {
     std::wcout << L"dump_readings" << std::endl;
     std::wcout
         << L"© 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart."
-        << std::endl << L"All rights reserved."
         << std::endl << std::endl;
 
     try {
