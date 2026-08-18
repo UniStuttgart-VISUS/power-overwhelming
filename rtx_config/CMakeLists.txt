@@ -26,7 +26,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE power_overwhelming)
 
 if (WIN32)
-    target_link_libraries(${PROJECT_NAME} PRIVATE WIL::WIL)
+    target_link_libraries(${PROJECT_NAME} PRIVATE WIL::WIL Comctl32)
 endif ()
 
 # Deploy DLLs with the executable.

@@ -131,6 +131,7 @@ static std::basic_string<TCHAR> get_instrument(_In_ const HWND wnd) {
     return retval;
 }
 
+
 /// <summary>
 /// Creates a new sensor definition from the dialog and returns it.
 /// </summary>
@@ -257,23 +258,50 @@ static visus::pwrowg::rtx_sensor_definition make_sensor(_In_ const HWND hWnd) {
 }
 
 /// <summary>
-/// Remove the <paramref name="idx" />-th sensor from the
-/// <see cref="configuration" />.
+/// Process delete events on the sensor list
 /// </summary>
-/// <param name="idx"></param>
-static void remove_sensor(_In_ const std::size_t idx) {
-    const auto cnt = ::configuration.count_sensors();
+/// <param name="wnd"></param>
+/// <param name="msg"></param>
+/// <param name="wParam"></param>
+/// <param name="lParam"></param>
+/// <param name=""></param>
+/// <param name=""></param>
+/// <returns></returns>
+static LRESULT CALLBACK sensor_list_proc(_In_ const HWND wnd,
+        _In_ const UINT msg,
+        _In_ const WPARAM wParam,
+        _In_ const LPARAM lParam,
+        _In_ const UINT_PTR,
+        _In_ const DWORD_PTR) noexcept {
 
-    std::vector<visus::pwrowg::rtx_sensor_definition> sensors;
-    sensors.reserve(cnt);
+    switch (msg) {
+        case WM_KEYDOWN:
+            if ((wParam == VK_DELETE) || (wParam == VK_BACK)) {
+                const auto sel = ::SendMessage(wnd, LB_GETCURSEL, 0, 0);
+                if (sel != LB_ERR) {
+                    // Remove visual entry.
+                    ::SendMessage(wnd, LB_DELETESTRING, sel, 0);
 
-    for (std::size_t i = 0; i < cnt; ++i) {
-        if (i != idx) {
-            sensors.push_back(::configuration.sensor(i));
-        }
+                    // Keep configuration in sync.
+                    const auto cnt = ::configuration.count_sensors();
+
+                    std::vector<visus::pwrowg::rtx_sensor_definition> sensors;
+                    sensors.reserve(cnt);
+
+                    for (std::size_t i = 0; i < cnt; ++i) {
+                        if (i != sel) {
+                            sensors.push_back(::configuration.sensor(i));
+                        }
+                    }
+
+                    ::configuration.sensors(sensors.data(), sensors.size());
+                    return 0;
+                }
+            }
+            break;
     }
 
-    ::configuration.sensors(sensors.data(), sensors.size());
+    return ::DefSubclassProc(wnd, msg, wParam, lParam);
 }
 
 /// <summary>
@@ -777,6 +805,12 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                 ::SendMessage(item, BM_SETCHECK, BST_CHECKED, 0);
             }
 
+            {
+                const auto item = ::GetDlgItem(hWnd, IDC_LBSENSORS);
+                assert(item != NULL);
+                ::SetWindowSubclass(item, &sensor_list_proc, 0, 0);
+            }
+
             try {
                 const auto item1 = ::GetDlgItem(hWnd, IDC_CBSENSORINST);
                 assert(item1 != NULL);
@@ -1001,29 +1035,6 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
             }
             return TRUE;
 
-        case WM_KEYDOWN:
-            switch (wParam) {
-                case VK_DELETE:
-                case VK_BACK: {
-                    // Delete the selected sensor if the list box has the focus.
-                    const auto focus = ::GetFocus();
-                    const auto list = ::GetDlgItem(hWnd, IDC_LBSENSORS);
-                    assert(list != NULL);
-
-                    if (focus == list) {
-                        const auto i = ::SendMessage(list, LB_GETCURSEL, 0, 0);
-                        if (i != LB_ERR) {
-                            ::SendMessage(list, LB_DELETESTRING, i, 0);
-                            ::remove_sensor(i);
-                        }
-                    }
-
-                    // Mark the key as handled.
-                    return TRUE;
-                }
-            }
-            break;
-
         case WM_CLOSE:
         case WM_DESTROY:
             ::PostQuitMessage(0);
@@ -1049,9 +1060,9 @@ int visual_config(void) {
     ::ShowWindow(wnd.get(), SW_SHOW);
 
     while (::GetMessage(&msg, nullptr, 0, 0)) {
-        if (::IsDialogMessage(wnd.get(), &msg)) {
-            continue;
-        }
+        //if (::IsDialogMessage(wnd.get(), &msg)) {
+        //    continue;
+        //}
 
         if (::TranslateAccelerator(wnd.get(), accelerators, &msg)) {
             continue;
