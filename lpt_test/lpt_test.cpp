@@ -10,7 +10,9 @@
 
 #include <cassert>
 #include <chrono>
+#include <fstream>
 #include <iostream>
+#include <thread>
 
 #if defined(_WIN32)
 #include <Windows.h>
@@ -66,18 +68,40 @@ template<class TIterator> static TIterator find_argument(
 /// <returns></returns>
 int _tmain(const int argc, const TCHAR **argv) {
     using namespace visus::pwrowg;
+    using std::chrono::duration_cast;
     typedef std::chrono::steady_clock clock_type;
+    typedef std::chrono::microseconds output_type;
 
     const std::vector<std::basic_string<TCHAR>> cmd_line(argv, argv + argc);
 
     rtx_instrument::channel_type channel = 1;
+    std::chrono::seconds download_timeout(10);
     rtx_instrument instrument;
     std::basic_string<TCHAR> instrument_id;
+    std::basic_string<TCHAR> output(_T("lpt_test.csv"));
     std::basic_string<TCHAR> port(_T("LPT3"));
-    std::chrono::milliseconds pulse(10);
+    std::chrono::milliseconds pulse(100);
     std::chrono::seconds time(5);
+    std::chrono::milliseconds wait_reset(500);
+    std::basic_string<TCHAR> waveform(_T("lpt_test_waveform.csv"));
 
     try {
+        {
+            auto it = ::find_argument(cmd_line.begin(), cmd_line.end(),
+                _T("--channel"));
+            if (it != cmd_line.end()) {
+                channel = std::stoi(*it);
+            }
+        }
+
+        {
+            auto it = ::find_argument(cmd_line.begin(), cmd_line.end(),
+                _T("--download-timeout"));
+            if (it != cmd_line.end()) {
+                download_timeout = std::chrono::seconds(std::stoi(*it));
+            }
+        }
+
         {
             auto it = ::find_argument(cmd_line.begin(), cmd_line.end(),
                 _T("--instrument"));
@@ -88,9 +112,9 @@ int _tmain(const int argc, const TCHAR **argv) {
 
         {
             auto it = ::find_argument(cmd_line.begin(), cmd_line.end(),
-                _T("--channel"));
+                _T("--output"));
             if (it != cmd_line.end()) {
-                channel = std::stoi(*it);
+                output = *it;
             }
         }
 
@@ -118,6 +142,22 @@ int _tmain(const int argc, const TCHAR **argv) {
             }
         }
 
+        {
+            auto it = ::find_argument(cmd_line.begin(), cmd_line.end(),
+                _T("--wait-reset"));
+            if (it != cmd_line.end()) {
+                wait_reset = std::chrono::milliseconds(std::stoi(*it));
+            }
+        }
+
+        {
+            auto it = ::find_argument(cmd_line.begin(), cmd_line.end(),
+                _T("--waveform"));
+            if (it != cmd_line.end()) {
+                waveform = *it;
+            }
+        }
+
         if (instrument_id.empty()) {
             std::vector<rtx_instrument> is(rtx_instrument::all(nullptr, 0));
             rtx_instrument::all(is.data(), is.size());
@@ -136,11 +176,10 @@ int _tmain(const int argc, const TCHAR **argv) {
 
         rtx_instrument_configuration config(time);
         config.acquisition(rtx_acquisition()
-            .state(rtx_acquisition_state::single)
             .enable_automatic_points());
         config.trigger(rtx_trigger::edge(channel)
             .slope(rtx_trigger_slope::rising)
-            .level(rtx_quantity(2.5f, "V"))
+            .level(rtx_quantity(1.5f, "V"))
             .mode(rtx_trigger_mode::normal));
         config.reference_position(rtx_reference_point::middle);
         {
@@ -149,32 +188,74 @@ int _tmain(const int argc, const TCHAR **argv) {
             config.trigger_position(offset);
         }
         config.channel(rtx_channel(channel)
-            .attenuation(0.1f, "V")
+            .state(true)
+            .attenuation(1.0f, "V")
             .bandwidth(rtx_channel_bandwidth::full)
             .coupling(rtx_channel_coupling::direct_current_limit)
-            .range(rtx_quantity(4.0f, "V")));
+            .range(rtx_quantity(8.0f, "V")));
 
+        std::wcout << L"Setting up instrument ..." << std::endl;
         instrument.reset();
+        std::this_thread::sleep_for(wait_reset);
         config.apply(instrument);
 
+        std::wcout << L"Setting up trigger ..." << std::endl;
         parallel_port_trigger trigger(port.c_str());
+        trigger.write(parallel_port_pin::none);
+        instrument.acquisition(rtx_acquisition_state::single);
 
+        std::wcout << L"Measuring ..." << std::endl;
         const auto deadline = clock_type::now() + time;
+        std::vector<clock_type::time_point> begin, risen, drain, end;
+        begin.reserve(static_cast<std::size_t>(std::ceil(time / pulse)));
+        risen.reserve(begin.capacity());
+        drain.reserve(begin.capacity());
+        end.reserve(begin.capacity());
 
         while (clock_type::now() < deadline) {
-            const auto b = clock_type::now();
+            begin.push_back(clock_type::now());
             trigger.write(parallel_port_pin::all);
-            const auto u = clock_type::now();
+            risen.push_back(clock_type::now());
 
-            while (clock_type::now() < u + pulse);
+            while (clock_type::now() < begin.back() + pulse);
 
-            const auto d = clock_type::now();
+            drain.push_back(clock_type::now());
             trigger.write(parallel_port_pin::none);
-            const auto e = clock_type::now();
+            end.push_back(clock_type::now());
 
-            while (clock_type::now() < e + pulse);
+            while (clock_type::now() < end.back() + pulse);
         }
 
+        instrument.operation_complete();
+
+        std::wcout << L"Writing timings ..." << std::endl;
+        std::ofstream stream(output.c_str(), std::ios::trunc);
+        stream << "rise [us],up [us],drain [us]" << std::endl;
+
+        assert(risen.size() == begin.size());
+        assert(drain.size() == begin.size());
+        assert(end.size() == begin.size());
+        for (std::size_t i = 0; i < begin.size(); ++i) {
+            stream << duration_cast<output_type>(risen[i] - begin[i]).count() << ",";
+            stream << duration_cast<output_type>(drain[i] - risen[i]).count() << ",";
+            stream << duration_cast<output_type>(end[i] - drain[i]).count() << std::endl;
+        }
+
+        std::wcout << L"Downloading waveform ..." << std::endl;
+        const auto data = instrument.data(channel,
+            rtx_waveform_points::maximum,
+            duration_cast<std::chrono::milliseconds>(download_timeout).count());
+        const auto range = instrument.time_range();
+
+        std::wcout << L"Writing waveform ..." << std::endl;
+        stream = std::ofstream(waveform, std::ios::trunc);
+        stream << "volts (" << range.value() << range.unit() << ")"
+            << std::endl;
+        for (auto d : data) {
+            stream << d << std::endl;
+        }
+
+        std::wcout << L"Done." << std::endl;
         return 0;
     } catch (std::exception& ex) {
         std::cout << ex.what() << std::endl;
