@@ -206,7 +206,7 @@ public:
     template<class TRep, class TPeriod> inline bool pulse(
             _In_ const parallel_port_pin pins,
             _In_ const std::chrono::duration<TRep, TPeriod> duration) const {
-        typedef std::duration<parallel_port_trigger::milliseconds_type,
+        typedef std::chrono::duration<parallel_port_trigger::milliseconds_type,
             std::milli> milliseconds_type;
         const auto d = std::chrono::duration_cast<milliseconds_type>(duration);
         return this->pulse(pins, d.count());
