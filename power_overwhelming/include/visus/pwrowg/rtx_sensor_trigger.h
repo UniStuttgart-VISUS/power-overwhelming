@@ -8,6 +8,7 @@
 #define _PWROWG_RTX_SENSOR_TRIGGER_H
 #pragma once
 
+#include <chrono>
 #include <exception>
 
 #include "visus/pwrowg/parallel_port_trigger.h"
@@ -170,6 +171,46 @@ public:
     /// all instruments should be set up similarly.
     /// </returns>
     _Ret_z_ const char *path(void) const noexcept;
+
+    /// <summary>
+    /// If the trigger uses the parallel port, raise the given
+    /// <paramref name="pins" /> for the specified <paramref name="duration" />.
+    /// </summary>
+    /// <remarks>
+    /// The method will block while the pins are raised.
+    /// </remarks>
+    /// <param name="pins">The pins to be raised. Make sure that these do not
+    /// accidentally conflict with the configured trigger pins.</param>
+    /// <param name="duration">The duration for which the pins will be high, in
+    /// millseconds.</param>
+    /// <returns><see langword="true" /> if the pins were raised,
+    /// <see langword="false" /> if no parallel port was configured.</returns>
+    bool pulse(_In_ const parallel_port_pin pins,
+        _In_ const parallel_port_trigger::milliseconds_type duration) const;
+
+    /// <summary>
+    /// If the trigger uses the parallel port, raise the given
+    /// <paramref name="pins" /> for the specified <paramref name="duration" />.
+    /// </summary>
+    /// <remarks>
+    /// The method will block while the pins are raised.
+    /// </remarks>
+    /// <typeparam name="TRep">The value type of the duration.</typeparam>
+    /// <typeparam name="TPeriod">The period of the duration.</typeparam>
+    /// <param name="pins">The pins to be raised. Make sure that these do not
+    /// accidentally conflict with the configured trigger pins.</param>
+    /// <param name="duration">The duration for which the pins will be high, in
+    /// millseconds.</param>
+    /// <returns><see langword="true" /> if the pins were raised,
+    /// <see langword="false" /> if no parallel port was configured.</returns>
+    template<class TRep, class TPeriod> inline bool pulse(
+            _In_ const parallel_port_pin pins,
+            _In_ const std::chrono::duration<TRep, TPeriod> duration) const {
+        typedef std::duration<parallel_port_trigger::milliseconds_type,
+            std::milli> milliseconds_type;
+        const auto d = std::chrono::duration_cast<milliseconds_type>(duration);
+        return this->pulse(pins, d.count());
+    }
 
     /// <summary>
     /// Answer the trigger configuration to be applied to the oscilloscope

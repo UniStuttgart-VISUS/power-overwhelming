@@ -202,7 +202,7 @@ template<class TEnum> std::enable_if_t<std::is_enum_v<TEnum>> spin_until_all(
 /// </summary>
 /// <typeparam name="TEnum">An enumeration type that is used as a bitmask.
 /// </typeparam>
-/// <typeparam Thename="TRep">The value type of the duration.</typeparam>
+/// <typeparam name="TRep">The value type of the duration.</typeparam>
 /// <typeparam name="TPeriod">The period of the duration.</typeparam>
 /// <param name="state">The state variable to spin on.</param>
 /// <param name="reference">The reference bitmask to check against.</param>

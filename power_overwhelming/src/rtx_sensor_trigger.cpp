@@ -58,6 +58,26 @@ _Ret_z_ const char *PWROWG_NAMESPACE::rtx_sensor_trigger::path(
 
 
 /*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger::pulse
+ */
+bool PWROWG_NAMESPACE::rtx_sensor_trigger::pulse(
+        _In_ const parallel_port_pin pins,
+        _In_ const parallel_port_trigger::milliseconds_type duration) const {
+    assert(this->_impl != nullptr);
+    if (this->_impl == nullptr) {
+        return false;
+    }
+
+    if (!this->_impl->external_trigger) {
+        return false;
+    }
+
+    this->_impl->external_trigger.pulse(pins, duration);
+    return true;
+}
+
+
+/*
  * PWROWG_NAMESPACE::rtx_sensor_trigger::trigger
  */
 _Ret_maybenull_ const PWROWG_NAMESPACE::rtx_trigger *

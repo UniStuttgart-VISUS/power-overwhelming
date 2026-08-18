@@ -220,13 +220,13 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample(_In_ const bool enable) {
 
     } else {
         PWROWG_TRACE(_T("Signalling the RTX sensor controller to stop."));
-        atomic_unset(trigger.state, sensor_trigger_state::running
-            | sensor_trigger_state::armed);
+        atomic_unset(trigger.state, sensor_trigger_state::running);
 
         PWROWG_TRACE(_T("Making sure that the controller thread is not ")
             _T("working on the instruments anymore before injecting an OPC to ")
             _T("wake it up."));
-        spin_while_all(trigger.state, sensor_trigger_state::busy);
+        spin_while_all(trigger.state, sensor_trigger_state::busy
+            | sensor_trigger_state::armed);
 
 #if false
         while (this->_thread.joinable()) {
