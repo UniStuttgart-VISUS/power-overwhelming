@@ -44,9 +44,13 @@ std::basic_string<TCHAR> derive_filename(
     const auto fb = path.find_last_of(_T("/\\"));
     const auto eb = path.find_last_of(_T("."));
 
-    if ((eb == npos) || (fb > eb)) {
+    if ((eb == npos) || ((fb != npos) && (fb > eb))) {
         return path + suffix + ext;
+    } else if (fb != npos) {
+        assert(eb != npos);
+        return path.substr(0, fb) + suffix + path.substr(eb);
     } else {
+        assert(eb != npos);
         return path.substr(0, eb) + suffix + path.substr(eb);
     }
 }
@@ -143,20 +147,19 @@ static typename std::iterator_traits<TIn>::value_type pulse_width(
     bool state = (*begin > threshold);
     std::size_t start = 0;
     for (auto it = begin; it != end; ++it, ++i) {
-        if (state) {
-            state = (*it <= threshold);
-            if (!state) {
-                const auto w = i - start;
-                retval += w;
-                *oit++ = w;
-                ++pulses;
-            }
+        const auto s = state;
+        state = (*it >= threshold);
 
-        } else {
-            state = (*it >= threshold);
-            if (state) {
-                start = i;
-            }
+        if (!s && state) {
+            // Low to high marks begin of pulse.
+            start = i;
+
+        } else if (s && !state) {
+            // High to low marks end of pulse.
+            const auto w = i - start;
+            retval += w;
+            *oit++ = w;
+            ++pulses;
         }
     }
 
@@ -174,6 +177,7 @@ static typename std::iterator_traits<TIn>::value_type pulse_width(
 /// <returns></returns>
 int _tmain(const int argc, const TCHAR **argv) {
     using namespace visus::pwrowg;
+    using std::chrono::duration;
     using std::chrono::duration_cast;
     using std::chrono::milliseconds;
     using std::chrono::seconds;
@@ -183,14 +187,15 @@ int _tmain(const int argc, const TCHAR **argv) {
     const std::vector<std::basic_string<TCHAR>> cmd_line(argv, argv + argc);
 
     rtx_instrument::channel_type channel = 1;
-    seconds download_timeout(10);
+    seconds download_timeout(30);
     rtx_instrument instrument;
     std::basic_string<TCHAR> instrument_id;
     std::basic_string<TCHAR> output(_T("lpt_test.csv"));
     std::basic_string<TCHAR> port(_T("LPT3"));
     milliseconds pulse(100);
     seconds time(5);
-    milliseconds wait_reset(500);
+    milliseconds wait_reset(1000);
+    milliseconds timeout(10000);
 
     try {
         {
@@ -237,7 +242,7 @@ int _tmain(const int argc, const TCHAR **argv) {
             auto it = ::find_argument(cmd_line.begin(), cmd_line.end(),
                 _T("--pulse"));
             if (it != cmd_line.end()) {
-                pulse = std::chrono::milliseconds(std::stoi(*it));
+                pulse = milliseconds(std::stoi(*it));
             }
         }
 
@@ -245,7 +250,15 @@ int _tmain(const int argc, const TCHAR **argv) {
             auto it = ::find_argument(cmd_line.begin(), cmd_line.end(),
                 _T("--time"));
             if (it != cmd_line.end()) {
-                time = std::chrono::seconds(std::stoi(*it));
+                time = seconds(std::stoi(*it));
+            }
+        }
+
+        {
+            auto it = ::find_argument(cmd_line.begin(), cmd_line.end(),
+                _T("--timeout"));
+            if (it != cmd_line.end()) {
+                timeout = seconds(std::stoi(*it));
             }
         }
 
@@ -253,7 +266,7 @@ int _tmain(const int argc, const TCHAR **argv) {
             auto it = ::find_argument(cmd_line.begin(), cmd_line.end(),
                 _T("--wait-reset"));
             if (it != cmd_line.end()) {
-                wait_reset = std::chrono::milliseconds(std::stoi(*it));
+                wait_reset = milliseconds(std::stoi(*it));
             }
         }
 
@@ -267,9 +280,11 @@ int _tmain(const int argc, const TCHAR **argv) {
 
         } else {
             try {
-                instrument = rtx_instrument::from_name(instrument_id.c_str());
+                instrument = rtx_instrument::from_name(instrument_id.c_str(),
+                    static_cast<std::int32_t>(timeout.count()));
             } catch (...) {
-                instrument = rtx_instrument(instrument_id.c_str());
+                instrument = rtx_instrument(instrument_id.c_str(),
+                    static_cast<std::int32_t>(timeout.count()));
             }
         }
 
@@ -278,7 +293,7 @@ int _tmain(const int argc, const TCHAR **argv) {
             .enable_automatic_points());
         config.trigger(rtx_trigger::edge(channel)
             .slope(rtx_trigger_slope::rising)
-            .level(rtx_quantity(1.5f, "V"))
+            .level(rtx_quantity(3.3f * 0.5f, "V"))
             .mode(rtx_trigger_mode::normal));
         config.reference_position(rtx_reference_point::middle);
         {
@@ -378,6 +393,9 @@ int _tmain(const int argc, const TCHAR **argv) {
             rtx_waveform_points::maximum,
             duration_cast<milliseconds>(download_timeout).count());
         const auto range = instrument.time_range();
+        const auto sample_time = duration_cast<
+            duration<double, output_type::period>>(
+            duration<double>(range.value())) / data.size();
 
         std::wcout << L"Writing waveform ..." << std::endl;
         stream = std::ofstream(derive_filename(output, _T("-waveform")),
@@ -394,6 +412,18 @@ int _tmain(const int argc, const TCHAR **argv) {
             std::back_inserter(pulse_widths),
             data.begin(),
             data.end());
+        stream = std::ofstream(derive_filename(output, _T("-analysis")),
+            std::ios::trunc);
+        stream << "length [samples],"
+            << "width [us]"
+            << std::endl;
+        for (auto w : pulse_widths) {
+            stream << w << ","
+                << (sample_time * w).count() << std::endl;
+        }
+        std::cout << "Average pulse width: " << avg_pulse_width << " samples "
+            << "(" << (sample_time * avg_pulse_width).count() << "us)"
+            << std::endl;
 
         std::wcout << L"Done." << std::endl;
         return 0;

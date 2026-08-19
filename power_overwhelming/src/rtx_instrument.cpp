@@ -1069,6 +1069,9 @@ PWROWG_NAMESPACE::rtx_waveform PWROWG_NAMESPACE::rtx_instrument::data(
             break;
     }
 
+    PWROWG_TRACE(_T("Waiting for data format to be changed."));
+    this->operation_complete();
+
     const auto qxorg = detail::format_string("%s:DATA:XOR?\n", channel);
     auto rxorg = this->query(qxorg.c_str());
     auto xorg = rxorg.as<char>();

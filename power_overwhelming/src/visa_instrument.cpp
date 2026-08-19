@@ -634,6 +634,7 @@ PWROWG_NAMESPACE::blob
 PWROWG_NAMESPACE::visa_instrument::query(_In_z_ const char *query,
         _In_ const std::size_t buffer_size) const {
     auto& impl = this->check_not_disposed();
+    //PWROWG_TRACE("Query \"%s\".", query);
     impl.write(query);
     // Note: we cannot check the system state in case of a query as this is a
     // query in itself that cannot overlap.
