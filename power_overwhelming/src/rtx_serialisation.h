@@ -308,8 +308,8 @@ template<> struct json_serialiser<rtx_sensor_trigger, false, false> final {
 
         const auto& impl = *value._impl;
 
-        auto path = impl.external_trigger
-            ? impl.external_trigger.path<char>()
+        auto lpt = impl.external_trigger
+            ? nlohmann::json(impl.external_trigger.path<char>())
             : nlohmann::json(nullptr);
         auto trigger = (impl.trigger != nullptr)
             ? json_serialise(*impl.trigger)
@@ -317,7 +317,7 @@ template<> struct json_serialiser<rtx_sensor_trigger, false, false> final {
 
         return nlohmann::json::object({
             { u8"daisy_chain", impl.daisy_chain },
-            { u8"external_trigger", path },
+            { u8"external_trigger", lpt },
             { u8"external_trigger_duration", impl.external_trigger_duration },
             { u8"external_trigger_pins", impl.external_trigger_pins },
             { u8"path", impl.path },

@@ -349,6 +349,9 @@ std::size_t PWROWG_NAMESPACE::parallel_port_trigger::path(
     }
 
 #if defined(_WIN32)
+    // Get the NT device path associated with the handle. Note that
+    // GetFinalPathNameByHandle only works for real files, so this is the
+    // only way to do it.
     static detail::nt_query_object ntqo;
     std::vector<wchar_t> buffer(1024);
 
@@ -374,38 +377,43 @@ std::size_t PWROWG_NAMESPACE::parallel_port_trigger::path(
 
     const auto path = reinterpret_cast<UNICODE_STRING *>(buffer.data());
     assert(path->Length % sizeof(wchar_t) == 0);
-    const std::size_t retval = path->Length / sizeof(wchar_t) + 1;
-    ::wcsncpy(dst, path->Buffer, (std::min)(retval, cnt));
+    std::wstring device(path->Buffer, path->Length / sizeof(wchar_t));
 
-    return retval;
+    // Now we have the NT device, but we need the DOS device ... The NT device
+    // does not work for our purposes.
+    const auto query_dos_device = [&buffer](const wchar_t *d) {
+        while (true) {
+            auto retval = ::QueryDosDeviceW(
+                d,
+                buffer.data(),
+                static_cast<DWORD>(buffer.size()));
+            if (retval > 0) {
+                return retval;
+            }
 
-    //const auto query_dos_device = [&buffer](const wchar_t *d) {
-    //    while (true) {
-    //        auto retval = ::QueryDosDeviceW(nullptr, buffer.data(),
-    //            static_cast<DWORD>(buffer.size()));
-    //        if (retval > 0) {
-    //            return retval;
-    //        }
+            const auto error = ::GetLastError();
+            if (error != ERROR_INSUFFICIENT_BUFFER) {
+                throw std::system_error(error, std::system_category());
+            }
 
-    //        const auto error = ::GetLastError();
-    //        if (error != ERROR_INSUFFICIENT_BUFFER) {
-    //            throw std::system_error(error, std::system_category());
-    //        }
+            buffer.resize(2 * buffer.size());
+        }
+    };
 
-    //        buffer.resize(2 * buffer.size());
-    //    }
-    //};
+    query_dos_device(nullptr);
+    multi_sz<wchar_t> devices(buffer.data());
+    for (auto d : devices) {
+        query_dos_device(d);
+        if (detail::equals(buffer.data(), device.c_str(), true)) {
+            const auto retval = ::wcslen(d);
+            ::wcsncpy(dst, d, (std::min)(cnt, retval));
+            return retval + 1;
+        }
+    }
 
-    //query_dos_device(nullptr);
-    //multi_sz<wchar_t> devices(buffer.data());
-    //for (auto d : devices) {
-    //    query_dos_device(d);
-    //    if (detail::equals(buffer.data(), device.c_str(), true)) {
-    //        const auto retval = ::wcslen(d);
-    //        ::wcsncpy(dst, d, (std::min)(cnt, retval));
-    //        return retval + 1;
-    //    }
-    //}
+    // We should never get here, but as a last resort, return the NT device.
+    ::wcsncpy(dst, device.c_str(), (std::min)(cnt, device.size() + 1));
+    return (device.size() + 1);
 
 #else /* defined(_WIN32) */
     throw "TODO";
