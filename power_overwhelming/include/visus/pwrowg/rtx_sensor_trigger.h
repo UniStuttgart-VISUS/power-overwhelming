@@ -20,6 +20,7 @@
 PWROWG_NAMESPACE_BEGIN
 
 // Forward declarations.
+namespace detail { template<class, bool, bool> struct json_serialiser; }
 namespace detail { class rtx_sensor; }
 namespace detail { struct rtx_sensor_trigger_impl; }
 namespace detail { class rtx_sen_trg_bld_final; }
@@ -260,6 +261,7 @@ private:
 
     detail::rtx_sensor_trigger_impl *_impl;
 
+    template<class, bool, bool> friend struct detail::json_serialiser;
     friend class detail::rtx_sensor;
     friend class detail::rtx_sen_trg_bld_final;
     friend class detail::rtx_sen_trg_bld_chan0;

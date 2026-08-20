@@ -24,7 +24,11 @@
 #endif /* !defined(_WIN32) */
 
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/multi_sz.h"
+#include "visus/pwrowg/string_functions.h"
 #include "visus/pwrowg/trace.h"
+
+#include "nt_query_object.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -328,6 +332,114 @@ void PWROWG_NAMESPACE::parallel_port_trigger::open(
         this->_handle = invalid_handle;
         throw std::system_error(errno, std::system_category());
     }
+#endif /* defined(_WIN32) */
+}
+
+
+
+
+/*
+ * PWROWG_NAMESPACE::parallel_port_trigger::path
+ */
+std::size_t PWROWG_NAMESPACE::parallel_port_trigger::path(
+        _Out_writes_opt_(cnt) wchar_t *dst,
+        _In_ std::size_t cnt) const {
+    if (dst == nullptr) {
+        cnt = 0;
+    }
+
+#if defined(_WIN32)
+    static detail::nt_query_object ntqo;
+    std::vector<wchar_t> buffer(1024);
+
+    while (true) {
+        ULONG size;
+        auto status = ntqo(
+            this->_handle,
+            static_cast<OBJECT_INFORMATION_CLASS>(1),
+            buffer.data(),
+            static_cast<ULONG>(buffer.size() * sizeof(wchar_t)),
+            &size);
+
+        if (status == STATUS_SUCCESS) {
+            break;
+        } else if (status == STATUS_INFO_LENGTH_MISMATCH) {
+            buffer.resize(size);
+        } else {
+            throw std::system_error(
+                ::RtlNtStatusToDosError(status),
+                std::system_category());
+        }
+    }
+
+    const auto path = reinterpret_cast<UNICODE_STRING *>(buffer.data());
+    ::wcsncpy(dst, path->Buffer, std::min<std::size_t>(path->Length, cnt));
+
+    return path->Length;
+
+    //const auto query_dos_device = [&buffer](const wchar_t *d) {
+    //    while (true) {
+    //        auto retval = ::QueryDosDeviceW(nullptr, buffer.data(),
+    //            static_cast<DWORD>(buffer.size()));
+    //        if (retval > 0) {
+    //            return retval;
+    //        }
+
+    //        const auto error = ::GetLastError();
+    //        if (error != ERROR_INSUFFICIENT_BUFFER) {
+    //            throw std::system_error(error, std::system_category());
+    //        }
+
+    //        buffer.resize(2 * buffer.size());
+    //    }
+    //};
+
+    //query_dos_device(nullptr);
+    //multi_sz<wchar_t> devices(buffer.data());
+    //for (auto d : devices) {
+    //    query_dos_device(d);
+    //    if (detail::equals(buffer.data(), device.c_str(), true)) {
+    //        const auto retval = ::wcslen(d);
+    //        ::wcsncpy(dst, d, (std::min)(cnt, retval));
+    //        return retval + 1;
+    //    }
+    //}
+
+#else /* defined(_WIN32) */
+    throw "TODO";
+#endif /* defined(_WIN32) */
+}
+
+/*
+ * PWROWG_NAMESPACE::parallel_port_trigger::path
+ */
+std::size_t PWROWG_NAMESPACE::parallel_port_trigger::path(
+        _Out_writes_opt_(cnt) char *dst,
+        _In_ std::size_t cnt) const {
+    if (dst == nullptr) {
+        cnt = 0;
+    }
+
+#if defined(_WIN32)
+    auto retval = ::GetFinalPathNameByHandleA(this->_handle, dst,
+        static_cast<DWORD>(cnt), VOLUME_NAME_DOS);
+    if (retval == 0) {
+        throw std::system_error(::GetLastError(), std::system_category());
+    }
+
+    if (retval <= cnt) {
+        // If the function succeeds, the return value is the length of the
+        // string received.This value does not include the size of the
+        // terminating null character.
+        // If the function fails because the buffer is too small, the return
+        // value is the required buffer size. This value includes the size
+        // of the terminating null character.
+        ++retval;
+    }
+
+    return retval;
+#else /* defined(_WIN32) */
+    throw "TODO";
 #endif /* defined(_WIN32) */
 }
 

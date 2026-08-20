@@ -22,6 +22,7 @@
 #include "visus/pwrowg/rtx_trigger.h"
 
 #include "json_serialiser.h"
+#include "rtx_sensor_trigger_impl.h"
 
 
 #define _PWROWG_DESERIALISE_FIELD(member) auto member = json_deserialise<\
@@ -245,30 +246,81 @@ template<> struct json_serialiser<rtx_sensor_trigger, false, false> final {
     typedef rtx_sensor_trigger value_type;
 
     static inline value_type deserialise(_In_ const nlohmann::json& json) {
-        auto it = json.find(u8"path");
-        auto builder = ((it != json.end()) && it->is_string())
-            ? rtx_sensor_trigger_builder::for_path(it->get<std::string>())
-            : rtx_sensor_trigger_builder::for_all();
+        rtx_sensor_trigger retval;
+        assert(retval._impl != nullptr);
 
-        it = json.find(u8"trigger");
-        if ((it != json.end()) && it->is_object()) {
-            auto trigger = json_deserialise<rtx_trigger>(*it);
-            return builder.with_trigger(trigger).build();
-        } else {
-            return builder.when_software_triggered().build();
+        auto& impl = *retval._impl;
+
+        {
+            auto it = json.find(u8"daisy_chain");
+            if ((it != json.end() && it->is_number())) {
+                impl.daisy_chain = it->get<float>();
+            }
         }
+
+        {
+            auto it = json.find(u8"external_trigger");
+            if ((it != json.end() && it->is_string())) {
+                auto path = it->get<std::string>();
+                impl.external_trigger.open(path.c_str());
+            }
+        }
+
+        {
+            auto it = json.find(u8"external_trigger_duration");
+            if ((it != json.end() && it->is_number())) {
+                impl.external_trigger_duration = it->get<
+                    parallel_port_trigger::milliseconds_type>();
+            }
+        }
+
+        {
+            auto it = json.find(u8"external_trigger_pins");
+            if ((it != json.end() && it->is_number())) {
+                impl.external_trigger_pins = json_deserialise<
+                    parallel_port_pin>(*it);
+                
+            }
+        }
+
+        {
+            auto it = json.find(u8"path");
+            if ((it != json.end()) && it->is_string()) {
+                impl.path = it->get<std::string>();
+            }
+        }
+
+        {
+            auto it = json.find(u8"trigger");
+            if ((it != json.end()) && it->is_object()) {
+                auto trigger = json_deserialise<rtx_trigger>(*it);
+                impl.trigger = std::make_unique<rtx_trigger>(trigger);
+            }
+        }
+
+        return retval;
     }
 
     static inline nlohmann::json serialise(_In_ const value_type& value) {
-        auto path = (value.path() != nullptr)
-            ? json_serialise(value.path())
+        if (value._impl == nullptr) {
+            return nullptr;
+        }
+
+        const auto& impl = *value._impl;
+
+        auto path = impl.external_trigger
+            ? json_serialise(impl.external_trigger.path<char>())
             : nlohmann::json(nullptr);
-        auto trigger = (value.trigger() != nullptr)
-            ? json_serialise(*value.trigger())
+        auto trigger = (impl.trigger != nullptr)
+            ? json_serialise(*impl.trigger)
             : nlohmann::json(nullptr);
 
         return nlohmann::json::object({
-            { u8"path", path },
+            { u8"daisy_chain", impl.daisy_chain },
+            { u8"external_trigger", path },
+            { u8"external_trigger_duration", impl.external_trigger_duration },
+            { u8"external_trigger_pins", impl.external_trigger_pins },
+            { u8"path", impl.path },
             { u8"trigger", trigger },
         });
     }
