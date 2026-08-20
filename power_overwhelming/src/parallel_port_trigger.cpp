@@ -373,9 +373,11 @@ std::size_t PWROWG_NAMESPACE::parallel_port_trigger::path(
     }
 
     const auto path = reinterpret_cast<UNICODE_STRING *>(buffer.data());
-    ::wcsncpy(dst, path->Buffer, std::min<std::size_t>(path->Length, cnt));
+    assert(path->Length % sizeof(wchar_t) == 0);
+    const std::size_t retval = path->Length / sizeof(wchar_t) + 1;
+    ::wcsncpy(dst, path->Buffer, (std::min)(retval, cnt));
 
-    return path->Length;
+    return retval;
 
     //const auto query_dos_device = [&buffer](const wchar_t *d) {
     //    while (true) {
@@ -410,6 +412,7 @@ std::size_t PWROWG_NAMESPACE::parallel_port_trigger::path(
 #endif /* defined(_WIN32) */
 }
 
+
 /*
  * PWROWG_NAMESPACE::parallel_port_trigger::path
  */
@@ -420,27 +423,14 @@ std::size_t PWROWG_NAMESPACE::parallel_port_trigger::path(
         cnt = 0;
     }
 
-#if defined(_WIN32)
-    auto retval = ::GetFinalPathNameByHandleA(this->_handle, dst,
-        static_cast<DWORD>(cnt), VOLUME_NAME_DOS);
-    if (retval == 0) {
-        throw std::system_error(::GetLastError(), std::system_category());
-    }
-
+    const auto retval = this->path(nullptr, 0);
     if (retval <= cnt) {
-        // If the function succeeds, the return value is the length of the
-        // string received.This value does not include the size of the
-        // terminating null character.
-        // If the function fails because the buffer is too small, the return
-        // value is the required buffer size. This value includes the size
-        // of the terminating null character.
-        ++retval;
+        std::vector<wchar_t> buffer(retval);
+        this->path(buffer.data(), buffer.size());
+        detail::convert_string(dst, cnt, buffer.data(), buffer.size());
     }
 
     return retval;
-#else /* defined(_WIN32) */
-    throw "TODO";
-#endif /* defined(_WIN32) */
 }
 
 

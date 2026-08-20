@@ -312,6 +312,7 @@ static void update_configuration(_In_ const HWND hWnd) {
     using visus::pwrowg::parallel_port_pin;
     using visus::pwrowg::rtx_instrument_reset;
     using visus::pwrowg::rtx_reference_point;
+    using visus::pwrowg::rtx_sensor_trigger;
     using visus::pwrowg::rtx_sensor_trigger_builder;
     using visus::pwrowg::rtx_trigger_slope;
 
@@ -487,6 +488,10 @@ static void update_configuration(_In_ const HWND hWnd) {
     // Finally, rebuild the trigger.
     {
         std::basic_string<TCHAR> path;
+
+        // It is important to destroy any previous trigger to free the parallel
+        // port that might be used there.
+        configuration.trigger(rtx_sensor_trigger());
 
         try {
             const auto item = ::GetDlgItem(hWnd, IDC_CBTRIGGERINST);

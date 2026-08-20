@@ -309,7 +309,7 @@ template<> struct json_serialiser<rtx_sensor_trigger, false, false> final {
         const auto& impl = *value._impl;
 
         auto path = impl.external_trigger
-            ? json_serialise(impl.external_trigger.path<char>())
+            ? impl.external_trigger.path<char>()
             : nlohmann::json(nullptr);
         auto trigger = (impl.trigger != nullptr)
             ? json_serialise(*impl.trigger)
