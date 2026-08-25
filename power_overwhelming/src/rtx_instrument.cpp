@@ -1662,7 +1662,9 @@ PWROWG_NAMESPACE::rtx_instrument::trigger(
     impl.format("TRIG:A:TYPE %s\n", to_string(trigger.type()));
     PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
-    if (trigger.hold_off() == nullptr) {
+    if ((trigger.hold_off() == nullptr)
+            || (*trigger.hold_off() == 0)
+            || (detail::equals(trigger.hold_off(), "off", true))) {
         impl.format("TRIG:A:HOLD:MODE OFF\n");
         PWROWG_ASSERT_NO_VISA_ERROR(*this);
 
