@@ -418,6 +418,7 @@ template<> struct json_serialiser<rtx_configuration, false, false> final {
             .download_retries(download_retries)
             .download_timeout(download_timeout)
             .reset_on_enumerate(reset_on_enumerate)
+            .reset_delay(reset_delay)
             .reset_flags(reset_flags)
             .sensors(sensors.data(), sensors.size())
             .trigger(trigger);
@@ -434,8 +435,8 @@ template<> struct json_serialiser<rtx_configuration, false, false> final {
             _PWROWG_SERIALISE_FIELD(download_retries),
             _PWROWG_SERIALISE_FIELD(download_timeout),
             _PWROWG_SERIALISE_FIELD(reset_on_enumerate),
-            _PWROWG_SERIALISE_FIELD(reset_flags),
             _PWROWG_SERIALISE_FIELD(reset_delay),
+            _PWROWG_SERIALISE_FIELD(reset_flags),
             { "sensors", sensors },
             _PWROWG_SERIALISE_FIELD(trigger),
         });
