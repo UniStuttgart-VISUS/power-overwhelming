@@ -190,6 +190,31 @@ public:
         Assert::AreEqual(input.trigger()->level().value(), output.trigger()->level().value(), L"level", LINE_INFO());
     }
 
+    TEST_METHOD(test_parallel_port_sensor_trigger) {
+        rtx_sensor_trigger input;
+        try {
+            input = rtx_sensor_trigger_builder::for_all().when_parallel_port("LPT3").measured_via_external().at_level(1.7f, "V").build();
+        } catch (...) {
+            // Cannot continue without parallel port.
+            return;
+        }
+
+        if (input) {
+            // Input should work before we continue.
+            input.pulse(parallel_port_pin::data, 10);
+
+            const auto json = detail::json_serialise(input);
+            Assert::AreEqual("LPT3", json["external_trigger"].get<std::string>().c_str(), L"external_trigger", LINE_INFO());
+
+            // Clear the input as there can be only one holding the parallel port.
+            input = rtx_sensor_trigger();
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+            auto output = detail::json_deserialise<rtx_sensor_trigger>(json);
+            output.pulse(parallel_port_pin::data, 10);
+        }
+    }
+
     TEST_METHOD(test_rtx_configuration) {
         const auto input = rtx_configuration()
             .base_configuration(rtx_instrument_configuration(42.0f, 512))

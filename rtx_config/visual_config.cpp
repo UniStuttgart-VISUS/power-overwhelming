@@ -312,6 +312,7 @@ static void update_configuration(_In_ const HWND hWnd) {
     using visus::pwrowg::parallel_port_pin;
     using visus::pwrowg::rtx_instrument_reset;
     using visus::pwrowg::rtx_reference_point;
+    using visus::pwrowg::rtx_sensor_trigger;
     using visus::pwrowg::rtx_sensor_trigger_builder;
     using visus::pwrowg::rtx_trigger_slope;
 
@@ -488,6 +489,10 @@ static void update_configuration(_In_ const HWND hWnd) {
     {
         std::basic_string<TCHAR> path;
 
+        // It is important to destroy any previous trigger to free the parallel
+        // port that might be used there.
+        configuration.trigger(rtx_sensor_trigger());
+
         try {
             const auto item = ::GetDlgItem(hWnd, IDC_CBTRIGGERINST);
             assert(item != NULL);
@@ -606,6 +611,7 @@ static void update_configuration(_In_ const HWND hWnd) {
 static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
         _In_ WPARAM wParam, _In_ LPARAM lParam) {
     using visus::pwrowg::convert_string;
+    using visus::pwrowg::parallel_port_pin;
     using visus::pwrowg::detail::empty;
 
     switch (msg) {
@@ -1006,7 +1012,8 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
             {
                 const auto item = ::GetDlgItem(hWnd, IDC_TBLPTTEXT);
                 assert(item != NULL);
-                const auto value = std::to_string(255);
+                const auto pins = static_cast<int>(parallel_port_pin::data);
+                const auto value = std::to_string(pins);
                 ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
                     value.c_str()));
             }

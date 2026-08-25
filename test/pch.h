@@ -27,7 +27,6 @@
 #include <visus/pwrowg/on_exit.h>
 #include <visus/pwrowg/rapl_domain.h>
 #include <visus/pwrowg/rtx_sample.h>
-#include <visus/pwrowg/parallel_port_trigger.h>
 #include <visus/pwrowg/sample.h>
 #include <visus/pwrowg/sensor_array.h>
 #include <visus/pwrowg/sensor_description.h>
