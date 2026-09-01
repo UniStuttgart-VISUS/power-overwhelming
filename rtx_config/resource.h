@@ -57,6 +57,8 @@
 #define IDTRIGALL                       1036
 #define IDC_CBTRIGGERCHAN               1037
 #define IDC_CBTRIGGEREDGE               1038
+#define IDTEST2                         1040
+#define IDAPPLY                         1040
 #define IDC_TBLPT                       1041
 #define IDC_CKSWTRIGGER                 1042
 #define IDC_TBTRIGGERLEVEL              1043

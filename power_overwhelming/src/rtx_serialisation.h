@@ -279,7 +279,6 @@ template<> struct json_serialiser<rtx_sensor_trigger, false, false> final {
             if ((it != json.end() && it->is_number())) {
                 impl.external_trigger_pins = json_deserialise<
                     parallel_port_pin>(*it);
-                
             }
         }
 
@@ -308,18 +307,19 @@ template<> struct json_serialiser<rtx_sensor_trigger, false, false> final {
 
         const auto& impl = *value._impl;
 
-        auto lpt = impl.external_trigger
+        const auto lpt = impl.external_trigger
             ? nlohmann::json(impl.external_trigger.path<char>())
             : nlohmann::json(nullptr);
-        auto trigger = (impl.trigger != nullptr)
+        const auto trigger = (impl.trigger != nullptr)
             ? json_serialise(*impl.trigger)
             : nlohmann::json(nullptr);
+        const auto lpt_pins = json_serialise(impl.external_trigger_pins);
 
         return nlohmann::json::object({
             { u8"daisy_chain", impl.daisy_chain },
             { u8"external_trigger", lpt },
             { u8"external_trigger_duration", impl.external_trigger_duration },
-            { u8"external_trigger_pins", impl.external_trigger_pins },
+            { u8"external_trigger_pins", lpt_pins },
             { u8"path", impl.path },
             { u8"trigger", trigger },
         });
@@ -418,6 +418,7 @@ template<> struct json_serialiser<rtx_configuration, false, false> final {
             .download_retries(download_retries)
             .download_timeout(download_timeout)
             .reset_on_enumerate(reset_on_enumerate)
+            .reset_delay(reset_delay)
             .reset_flags(reset_flags)
             .sensors(sensors.data(), sensors.size())
             .trigger(trigger);
@@ -434,8 +435,8 @@ template<> struct json_serialiser<rtx_configuration, false, false> final {
             _PWROWG_SERIALISE_FIELD(download_retries),
             _PWROWG_SERIALISE_FIELD(download_timeout),
             _PWROWG_SERIALISE_FIELD(reset_on_enumerate),
-            _PWROWG_SERIALISE_FIELD(reset_flags),
             _PWROWG_SERIALISE_FIELD(reset_delay),
+            _PWROWG_SERIALISE_FIELD(reset_flags),
             { "sensors", sensors },
             _PWROWG_SERIALISE_FIELD(trigger),
         });

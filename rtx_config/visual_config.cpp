@@ -33,6 +33,13 @@
 #include "resource.h"
 
 
+#if (defined(UNICODE) || defined(_UNICODE))
+#define std_to_string(v) std::to_wstring(v)
+#else /* (defined(UNICODE) || defined(_UNICODE)) */
+#define std_to_string(v) std::to_string(v)
+#endif /*  (defined(UNICODE) || defined(_UNICODE)) */
+
+
 /// <summary>
 /// The configuration object that is being populated by the dialog.
 /// </summary>
@@ -303,6 +310,301 @@ static LRESULT CALLBACK sensor_list_proc(_In_ const HWND wnd,
 
     return ::DefSubclassProc(wnd, msg, wParam, lParam);
 }
+
+
+/// <summary>
+/// Updates the UI from the <see cref="configuration" />.
+/// </summary>
+/// <param name="hWnd"></param>
+static void update_interface(_In_ const HWND hWnd) {
+    using visus::pwrowg::convert_string;
+    using visus::pwrowg::parallel_port_pin;
+    using visus::pwrowg::rtx_instrument_reset;
+    using visus::pwrowg::rtx_reference_point;
+    using visus::pwrowg::rtx_sensor_trigger;
+    using visus::pwrowg::rtx_sensor_trigger_builder;
+    using visus::pwrowg::rtx_trigger_slope;
+
+    const auto& base = ::configuration.base_configuration();
+
+    // First, update the base configuration.
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_TBDURATION);
+        assert(item != NULL);
+        const auto value = std_to_string(base.time_range().value());
+        ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
+            value.c_str()));
+    }
+
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_TBSAMPLES);
+        assert(item != NULL);
+        const auto value = std_to_string(base.acquisition().points());
+        ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
+            value.c_str()));
+    }
+
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_TBTIMEOUT);
+        assert(item != NULL);
+        const auto value = std_to_string(base.timeout());
+        ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
+            value.c_str()));
+    }
+
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_CBREFPOS);
+        assert(item != NULL);
+        const auto value = base.reference_position();
+
+        const auto idx = ::get_selection(item);
+        switch (value) {
+            case rtx_reference_point::left:
+                ::SendMessage(item, CB_SETCURSEL, 0, 0);
+                break;
+
+            case rtx_reference_point::right:
+                ::SendMessage(item, CB_SETCURSEL, 2, 0);
+                break;
+
+            case rtx_reference_point::middle:
+            default:
+                ::SendMessage(item, CB_SETCURSEL, 1, 0);
+                break;
+        }
+    }
+
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_TBTRIGPOS);
+        assert(item != NULL);
+        const auto value = std_to_string(base.trigger_position().value());
+        ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
+            value.c_str()));
+    }
+
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_CKBEEPERR);
+        assert(item != NULL);
+        const auto value = base.beep_on_error();
+        ::SendMessage(item, BM_SETCHECK, value, 0);
+    }
+
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_CKBEEPTRIGGER);
+        assert(item != NULL);
+        const auto value = base.beep_on_trigger();
+        ::SendMessage(item, BM_SETCHECK, value, 0);
+    }
+
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_CKBEEPAPPLY);
+        assert(item != NULL);
+        const auto value = (base.beep_on_apply() > 0);
+        ::SendMessage(item, BM_SETCHECK, value, 0);
+    }
+
+    // Next, update the properties directly in the sensor configuration.
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_TBWAITRESET);
+        assert(item != NULL);
+        const auto value = std_to_string(::configuration.reset_delay());
+        ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
+            value.c_str()));
+    }
+
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_CKENUMRESET);
+        assert(item != NULL);
+        const auto value = ::configuration.reset_on_enumerate();
+        ::SendMessage(item, BM_SETCHECK, value, 0);
+    }
+
+    {
+        auto reset = ::configuration.reset_flags();
+
+        {
+            const auto item = ::GetDlgItem(hWnd, IDC_CKRESET);
+            assert(item != NULL);
+            const auto value = (reset & rtx_instrument_reset::reset)
+                == rtx_instrument_reset::reset;
+            ::SendMessage(item, BM_SETCHECK, value, 0);
+        }
+
+        {
+            const auto item = ::GetDlgItem(hWnd, IDC_CKCLRBUF);
+            assert(item != NULL);
+            const auto value = (reset & rtx_instrument_reset::buffers)
+                == rtx_instrument_reset::buffers;
+            ::SendMessage(item, BM_SETCHECK, value, 0);
+        }
+
+        {
+            const auto item = ::GetDlgItem(hWnd, IDC_CKCLRSTAT);
+            assert(item != NULL);
+            const auto value = (reset & rtx_instrument_reset::status)
+                == rtx_instrument_reset::status;
+            ::SendMessage(item, BM_SETCHECK, value, 0);
+        }
+
+        {
+            const auto item = ::GetDlgItem(hWnd, IDC_CKCLRERR);
+            assert(item != NULL);
+            const auto value = (reset & rtx_instrument_reset::errors)
+                == rtx_instrument_reset::errors;
+            ::SendMessage(item, BM_SETCHECK, value, 0);
+        }
+
+        {
+            const auto item = ::GetDlgItem(hWnd, IDC_CKSTOP);
+            assert(item != NULL);
+            const auto value = (reset & rtx_instrument_reset::stop)
+                == rtx_instrument_reset::stop;
+            ::SendMessage(item, BM_SETCHECK, value, 0);
+        }
+
+        {
+            const auto item = ::GetDlgItem(hWnd, IDC_CKTRIGGER);
+            assert(item != NULL);
+            const auto value = (reset & rtx_instrument_reset::trigger)
+                == rtx_instrument_reset::trigger;
+            ::SendMessage(item, BM_SETCHECK, value, 0);
+        }
+    }
+
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_TBDLTIMEOUT);
+        assert(item != NULL);
+        const auto value = std_to_string(::configuration.download_timeout());
+        ::SendMessage(item, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(
+            value.c_str()));
+    }
+
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_SLDLRETRIES);
+        assert(item != NULL);
+        const auto value = ::configuration.download_retries();
+        ::SendMessage(item, TBM_SETPOS, 1, value);
+    }
+
+    // Extract the trigger configuration.
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_CBTRIGGERINST);
+        assert(item != NULL);
+        const auto value = convert_string<TCHAR>(
+            ::configuration.trigger().path());
+
+        ::SendMessage(item, CB_SETCURSEL, -1, 0);
+        if (!value.empty()) {
+            // TODO
+        }
+    }
+
+    {
+        const auto item = ::GetDlgItem(hWnd, IDC_CKSWTRIGGER);
+        assert(item != NULL);
+        const auto value = (::configuration.trigger().trigger() == nullptr);
+        ::SendMessage(item, BM_SETCHECK, value, 0);
+    }
+
+    // TODO
+#if false
+    {
+        const auto sw_ctrl = ::GetDlgItem(hWnd, IDC_CKSWTRIGGER);
+        assert(sw_ctrl != NULL);
+
+        if (::get_checked(sw_ctrl)) {
+            const auto daisy_ctrl = ::GetDlgItem(hWnd, IDC_CKSWDAISY);
+            assert(daisy_ctrl != NULL);
+            const auto daisy = ::get_checked(daisy_ctrl);
+
+            const auto level_ctrl = ::GetDlgItem(hWnd, IDC_TBDAISYLEVEL);
+            assert(level_ctrl != NULL);
+            const auto level = std::stof(::get_text(level_ctrl, true));
+
+            if (daisy) {
+                // Software trigger with a daisy chain.
+                ::configuration.trigger(builder
+                    .when_software_triggered()
+                    .with_daisy_chain(level)
+                    .build());
+
+            } else {
+                // Software trigger in a loop.
+                ::configuration.trigger(builder
+                    .when_software_triggered()
+                    .build());
+            }
+
+        } else {
+            const auto lpt_ctrl = ::GetDlgItem(hWnd, IDC_TBLPT);
+            assert(lpt_ctrl != NULL);
+            const auto lpt = ::get_text(lpt_ctrl);
+
+            const auto channel_ctrl = ::GetDlgItem(hWnd, IDC_CBTRIGGERCHAN);
+            assert(channel_ctrl != NULL);
+            const auto channel = ::get_selection(channel_ctrl) + 1;
+
+            const auto edge_ctrl = ::GetDlgItem(hWnd, IDC_CBTRIGGEREDGE);
+            assert(edge_ctrl != NULL);
+            const auto edge = static_cast<rtx_trigger_slope>(::get_selection(
+                edge_ctrl));
+
+            const auto level_ctrl = ::GetDlgItem(hWnd, IDC_TBTRIGGERLEVEL);
+            assert(level_ctrl != NULL);
+            const auto level = std::stof(::get_text(level_ctrl, true));
+
+            if (lpt.empty()) {
+                // Trigger on an edge which is generated by something out of the
+                // control of the sensor trigger.
+
+                switch (edge) {
+                    case rtx_trigger_slope::both:
+                        ::configuration.trigger(builder
+                            .when_channel(channel)
+                            .rises_above(level, "V")
+                            .build());
+                        break;
+
+                    case rtx_trigger_slope::falling:
+                        ::configuration.trigger(builder
+                            .when_channel(channel)
+                            .falls_below(level, "V")
+                            .build());
+                        break;
+
+                    case rtx_trigger_slope::rising:
+                    default:
+                        ::configuration.trigger(builder
+                            .when_channel(channel)
+                            .rises_above(level, "V")
+                            .build());
+                        break;
+                }
+
+            } else {
+                // Setup an edge trigger via a parallel port pin.
+                const auto length_ctrl = ::GetDlgItem(hWnd, IDC_TBTRIGGERLEN);
+                assert(length_ctrl != NULL);
+                const auto length = std::stoul(::get_text(length_ctrl, true));
+
+                const auto value_ctrl = ::GetDlgItem(hWnd, IDC_TBLPTTEXT);
+                assert(value_ctrl != NULL);
+                const auto value = static_cast<parallel_port_pin>(std::stoul(
+                    ::get_text(level_ctrl, true)));
+
+                ::configuration.trigger(builder
+                    .when_parallel_port(lpt.c_str())
+                    .raise_pins(value)
+                    .for_duration(std::chrono::milliseconds(length))
+                    .measured_via_channel(channel)
+                    .at_level(level, "V")
+                    .build());
+            }
+        }
+    }
+#endif
+}
+
 
 /// <summary>
 /// Updates the <see cref="configuration" /> from the dialog.
@@ -612,6 +914,7 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
         _In_ WPARAM wParam, _In_ LPARAM lParam) {
     using visus::pwrowg::convert_string;
     using visus::pwrowg::parallel_port_pin;
+    using visus::pwrowg::rtx_configuration;
     using visus::pwrowg::detail::empty;
 
     switch (msg) {
@@ -648,6 +951,44 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                     }
                     return TRUE;
 
+                case IDAPPLY:
+                    try {
+                        auto filter = ::load_string(IDS_FILE_FILTER);
+                        std::replace(filter.begin(),filter.end(),
+                            _T('|'), _T('\0'));
+
+                        TCHAR path[2 * MAX_PATH] = { 0 };
+
+                        OPENFILENAME ofn { };
+                        ofn.lStructSize = sizeof(ofn);
+                        ofn.hwndOwner = hWnd;
+                        ofn.hInstance = ::GetModuleHandle(NULL);
+                        ofn.lpstrFilter = filter.c_str();
+                        ofn.lpstrFile = &path[0];
+                        ofn.nMaxFile = static_cast<DWORD>(std::size(path));
+                        ofn.Flags = OFN_FILEMUSTEXIST;
+                        ofn.lpstrDefExt = _T("json");
+
+                        if (::GetOpenFileName(&ofn)) {
+                            visus::pwrowg::sensor_array_configuration config;
+                            config.configure<visus::pwrowg::rtx_configuration>(
+                                [&ofn](visus::pwrowg::rtx_configuration& c) {
+                                    c = rtx_configuration::load(ofn.lpstrFile);
+                                });
+                            auto sensors = visus::pwrowg::sensor_array::for_matches(
+                                std::move(config),
+                                visus::pwrowg::is_rtx_sensor);
+                            sensors.start();
+                            sensors.stop();
+                        }
+                    } catch (std::exception& ex) {
+                        ::MessageBoxA(hWnd,
+                            ex.what(),
+                            ::load_string(IDS_ERROR).c_str(),
+                            MB_ICONERROR);
+                    }
+                    return TRUE;
+
                 case IDC_CKSWDAISY: {
                     const auto item1 = ::GetDlgItem(hWnd, IDC_CKSWDAISY);
                     assert(item1 != NULL);
@@ -675,6 +1016,37 @@ static LRESULT CALLBACK wnd_proc(_In_ HWND hWnd, _In_ UINT msg,
                         ::EnableWindow(item3, state);
                     }
                     } return TRUE;
+
+                //case IDLOAD:
+                //    try {
+                //        auto filter = ::load_string(IDS_FILE_FILTER);
+                //        std::replace(filter.begin(),filter.end(),
+                //            _T('|'), _T('\0'));
+
+                //        TCHAR path[2 * MAX_PATH] = { 0 };
+
+                //        OPENFILENAME ofn { };
+                //        ofn.lStructSize = sizeof(ofn);
+                //        ofn.hwndOwner = hWnd;
+                //        ofn.hInstance = ::GetModuleHandle(NULL);
+                //        ofn.lpstrFilter = filter.c_str();
+                //        ofn.lpstrFile = &path[0];
+                //        ofn.nMaxFile = static_cast<DWORD>(std::size(path));
+                //        ofn.Flags = OFN_FILEMUSTEXIST;
+                //        ofn.lpstrDefExt = _T("json");
+
+                //        if (::GetOpenFileName(&ofn)) {
+                //            ::configuration = rtx_configuration::load(
+                //                ofn.lpstrFile);
+                //            ::update_interface(hWnd);
+                //        }
+                //    } catch (std::exception& ex) {
+                //        ::MessageBoxA(hWnd,
+                //            ex.what(),
+                //            ::load_string(IDS_ERROR).c_str(),
+                //            MB_ICONERROR);
+                //    }
+                //    return TRUE;
 
                 case IDSAVE:
                     try {
