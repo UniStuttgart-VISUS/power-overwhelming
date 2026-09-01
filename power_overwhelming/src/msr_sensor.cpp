@@ -122,7 +122,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
 
             // Emit descriptions for all RAPL supported RAPL domains.
             for (auto& d : vit->second) {
-                if (!config.bypass_check() && d.second.is_supported
+                if (!config.bypass_check()
+                        && d.second.is_supported
                         && !d.second.is_supported(c)) {
                     // The specified RAPL domain has specifically been marked as
                     // unsupported for the given core.
@@ -131,9 +132,18 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
 
                 switch (d.first) {
                     case rapl_domain::package:
+                        builder.with_type(base_type | sensor_type::cpu
+                            | sensor_type::gpu);
+                        break;
+
                     case rapl_domain::pp0:
-                    case rapl_domain::pp1:
                         builder.with_type(base_type | sensor_type::cpu);
+                        break;
+
+                    case rapl_domain::pp1:
+                        // Technically, PP1 does not only include the onboard
+                        // GPU, but also other components other than CPU cores.
+                        builder.with_type(base_type | sensor_type::gpu);
                         break;
 
                     case rapl_domain::dram:
