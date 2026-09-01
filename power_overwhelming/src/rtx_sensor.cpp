@@ -143,6 +143,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
 
             if (have_cur) {
                 if (retval < cnt) {
+                    const auto l= PWROWG_NAMESPACE::convert_string<wchar_t>(
+                        cur.label().text());
                     dst[retval] = builder
                         .with_path(sensor.path())
                         .with_private_data(sensor)
@@ -151,6 +153,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
                             cur.channel())
                         .with_type(sensor_type::current)
                         .measured_in(reading_unit::ampere)
+                        .with_label(l.empty() ? nullptr : l.c_str())
                         .build();
                 }
                 ++retval;
@@ -158,6 +161,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
 
             if (have_vol) {
                 if (retval < cnt) {
+                    const auto l = PWROWG_NAMESPACE::convert_string<wchar_t>(
+                        vol.label().text());
                     dst[retval] = builder
                         .with_path(sensor.path())
                         .with_private_data(sensor)
@@ -166,6 +171,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
                             vol.channel())
                         .with_type(sensor_type::voltage)
                         .measured_in(reading_unit::volt)
+                        .with_label(l.empty() ? nullptr : l.c_str())
                         .build();
                 }
                 ++retval;
@@ -173,6 +179,13 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
 
             if (have_cur && have_vol) {
                 if (retval < cnt) {
+                    const auto v = PWROWG_NAMESPACE::convert_string<wchar_t>(
+                        vol.label().text());
+                    const auto c = PWROWG_NAMESPACE::convert_string<wchar_t>(
+                        cur.label().text());
+                    const auto l = (v.empty() || c.empty())
+                        ? std::wstring()
+                        : v + L" * " + c;
                     dst[retval] = builder
                         .with_path(sensor.path())
                         .with_private_data(sensor)
@@ -182,6 +195,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
                             name.c_str(), cur.channel(), vol.channel())
                         .with_type(sensor_type::power)
                         .measured_in(reading_unit::watt)
+                        .with_label(l.empty() ? nullptr : l.c_str())
                         .build();
                 }
 
