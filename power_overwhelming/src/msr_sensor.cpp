@@ -168,6 +168,15 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
                 ++retval;
             }
 
+            if (config.first_core()) {
+                // If we successfully emitted the first core and the
+                // configuration limited the sensor to the first core, leave
+                // immediately. In case of a failure, we would not get here, so
+                // we emit the first working core (which should be core 0 or
+                // none anyway).
+                break;
+            }
+
         } catch (std::system_error) {
             // If creating a device for core 'c' causes an std::system_error, we
             // have reached the last core and leave the loop. Papa Schlumpf

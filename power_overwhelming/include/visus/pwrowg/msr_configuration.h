@@ -56,6 +56,26 @@ public:
     }
 
     /// <summary>
+    /// Indicates whether the sensor should only read MSRs from the first core.
+    /// </summary>
+    /// <returns><see langword="true "/> if only the first core is to be read,
+    /// <see langword="false "/> if all cores are read.</returns>
+    inline bool first_core(void) const noexcept {
+        return this->_first_core;
+    }
+
+    /// <summary>
+    /// Instructs the sensor to read only from the first core.
+    /// </summary>
+    /// <param name="value">Whether the sensor should be limited to the first
+    /// core or not.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline msr_configuration& first_core(_In_ const bool value) noexcept {
+        this->_first_core = value;
+        return *this;
+    }
+
+    /// <summary>
     /// Gets the name used for the driver service if a valid driver was
     /// configured to be started by the MSR sensor.
     /// </summary>
@@ -88,6 +108,7 @@ private:
     bool _bypass_check;
     blob _driver_name;
     blob _driver_path;
+    bool _first_core;
 };
 
 PWROWG_NAMESPACE_END

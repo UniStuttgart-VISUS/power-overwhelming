@@ -19,7 +19,7 @@ const PWROWG_NAMESPACE::guid PWROWG_NAMESPACE::msr_configuration::id(
  * PWROWG_NAMESPACE::msr_configuration::msr_configuration
  */
 PWROWG_NAMESPACE::msr_configuration::msr_configuration(void)
-    : _bypass_check(false) { }
+    : _bypass_check(false), _first_core(false) { }
 
 
 /*
