@@ -163,8 +163,9 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
 
         {
             // Force to only one segment, regardless of what the user said.
+            // Similarly, make sure that we are not running at start.
             auto a = icfg.acquisition();
-            icfg.acquisition(a.count(1));
+            icfg.acquisition(a.count(1).state(rtx_acquisition_state::stop));
         }
 
         // Make sure that the reference position is always in the expected
