@@ -32,6 +32,19 @@ static void configure_par_default(_In_ PWROWG_NAMESPACE::rtx_trigger& trigger) {
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1::with_acquisition_delay
+ */
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1&
+PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1::with_acquisition_delay(
+        _In_ const std::uint32_t delay) {
+    assert(this->_trigger._impl != nullptr);
+    this->_trigger._impl->acquisition_delay = std::chrono::milliseconds(delay);
+    return *this;
+
+}
+
+
+/*
  * PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1::with_coupling
  */
 PWROWG_DETAIL_NAMESPACE::rtx_sen_trg_bld_chan1&

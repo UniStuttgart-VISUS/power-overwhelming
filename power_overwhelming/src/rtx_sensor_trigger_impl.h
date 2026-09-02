@@ -9,6 +9,7 @@
 #pragma once
 
 #include <atomic>
+#include <chrono>
 #include <cinttypes>
 #include <exception>
 #include <limits>
@@ -34,6 +35,11 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <see cref="rtx_sensor_trigger" />.
 /// </summary>
 struct rtx_sensor_trigger_impl final {
+
+    /// <summary>
+    /// A delay between arming an acquisition and triggering.
+    /// </summary>
+    std::chrono::milliseconds acquisition_delay;
 
     /// <summary>
     /// If positive, the oscilloscopes will be assumed to be daisy-chained even
@@ -166,7 +172,8 @@ struct rtx_sensor_trigger_impl final {
     /// Initialises a new instance.
     /// </summary>
     inline rtx_sensor_trigger_impl(void)
-        : daisy_chain(0.0f),
+        : acquisition_delay(0),
+        daisy_chain(0.0f),
         external_trigger_duration(100),
         external_trigger_pins(parallel_port_pin::data),
         references(1),

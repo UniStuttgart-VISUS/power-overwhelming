@@ -170,6 +170,12 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
         while (!i.operation_status(rtx_operation_status::waiting));
     }
 
+    if (this->_impl->acquisition_delay > std::chrono::milliseconds::zero()) {
+        PWROWG_TRACE("Waiting for %u ms before triggering.",
+            static_cast<std::uint32_t>(this->_impl->acquisition_delay.count()));
+        std::this_thread::sleep_for(this->_impl->acquisition_delay);
+    }
+
     if (this->_impl->external_trigger) {
         PWROWG_TRACE(_T("Triggering by raising parallel port pins %u for ")
             _T("%u ms."), this->_impl->external_trigger_pins,

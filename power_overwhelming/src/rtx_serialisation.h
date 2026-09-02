@@ -252,6 +252,14 @@ template<> struct json_serialiser<rtx_sensor_trigger, false, false> final {
         auto& impl = *retval._impl;
 
         {
+            auto it = json.find(u8"acquisition_delay");
+            if ((it != json.end() && it->is_number())) {
+                impl.acquisition_delay = std::chrono::milliseconds(
+                    it->get<std::chrono::milliseconds::rep>());
+            }
+        }
+
+        {
             auto it = json.find(u8"daisy_chain");
             if ((it != json.end() && it->is_number())) {
                 impl.daisy_chain = it->get<float>();
@@ -316,6 +324,7 @@ template<> struct json_serialiser<rtx_sensor_trigger, false, false> final {
         const auto lpt_pins = json_serialise(impl.external_trigger_pins);
 
         return nlohmann::json::object({
+            { u8"acquisition_delay", impl.acquisition_delay.count()},
             { u8"daisy_chain", impl.daisy_chain },
             { u8"external_trigger", lpt },
             { u8"external_trigger_duration", impl.external_trigger_duration },

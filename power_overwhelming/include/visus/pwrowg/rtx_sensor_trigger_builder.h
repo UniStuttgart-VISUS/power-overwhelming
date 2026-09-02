@@ -81,6 +81,47 @@ public:
     }
 
     /// <summary>
+    /// Configures a delay in <see cref="rtx_sensor_trigger::acquire" /> between
+    /// arming the acquistion and triggering.
+    /// </summary>
+    /// <remarks>
+    /// This setting allows for tweaking an issue with the RTx oscilloscopes not
+    /// actually being ready to accept the trigger after leaving the waiting
+    /// state, which can be tracked in software. Setting a non-zero delay here
+    /// will cause the execution of the thread invoking
+    /// <see cref="rtx_sensor_trigger::acquire" /> to suspend for the configured
+    /// amount of time before triggering the instruments.
+    /// </remarks>
+    /// <param name="delay">The delay, in milliseconds.</param>
+    /// <returns></returns>
+    rtx_sen_trg_bld_chan1& with_acquisition_delay(
+        _In_ const std::uint32_t delay);
+
+    /// <summary>
+    /// Configures a delay in <see cref="rtx_sensor_trigger::acquire" /> between
+    /// arming the acquistion and triggering.
+    /// </summary>
+    /// <remarks>
+    /// This setting allows for tweaking an issue with the RTx oscilloscopes not
+    /// actually being ready to accept the trigger after leaving the waiting
+    /// state, which can be tracked in software. Setting a non-zero delay here
+    /// will cause the execution of the thread invoking
+    /// <see cref="rtx_sensor_trigger::acquire" /> to suspend for the configured
+    /// amount of time before triggering the instruments.
+    /// </remarks>
+    /// <typeparam name="TRep"></typeparam>
+    /// <typeparam name="TRatio"></typeparam>
+    /// <param name="duration"></param>
+    /// <returns></returns>
+    template<class TRep, class TRatio>
+    inline rtx_sen_trg_bld_par2 with_acquisition_delay(
+            _In_ const std::chrono::duration<TRep, TRatio>& delay) {
+        using std::chrono::duration_cast;
+        using std::chrono::milliseconds;
+        return this->for_duration(duration_cast<milliseconds>(delay).count());
+    }
+
+    /// <summary>
     /// Sets the trigger coupling to the specified value.
     /// </summary>
     /// <param name="coupling"></param>
