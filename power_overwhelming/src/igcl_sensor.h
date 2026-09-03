@@ -167,9 +167,9 @@ private:
     void time_sync(_In_ std::size_t samples = 16);
 
     std::vector<sample_builder> _builders;
-    std::vector<igctl_telemetry_disp<timestamp, std::size_t,
-        const sensor_array_callback, const sensor_description *,
-        void *>> _deliver_sample;
+    //std::vector<igctl_telemetry_disp<timestamp, std::size_t,
+    //    const sensor_array_callback, const sensor_description *,
+    //    void *>> _deliver_sample;
     ctl_device_adapter_handle_t _device;
     std::vector<igctl_telemetry_disp<timestamp&>> _make_timestamp;
     std::size_t _index;

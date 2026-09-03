@@ -164,8 +164,8 @@ static std::vector<ctl_device_adapter_handle_t> devices(
 
 
 /// <summary>
-/// Adds, if available and representable in Power Overwhelming, the descrption
-/// of the given telementry <paramref name="item" /> to the builder and returns
+/// Adds, if available and representable in Power Overwhelming, the description
+/// of the given telemetry <paramref name="item" /> to the builder and returns
 /// whether it should be emitted or not. The pointer to the
 /// <paramref name="item" /> must point to an element of the given
 /// <paramref name="telemetry" /> for the function to work correctly.
@@ -207,8 +207,8 @@ static bool describe(
         builder.measured_in(unit_traits::unit);
 
         // Next, we need to find out what kind of values we get. This allows for
-        // intantiating the correct conversion from IGCL telemetry to our sample
-        // type.
+        // instantiating the correct conversion from IGCL telemetry to our
+        // sample type.
         dispatch_igcl_data_type_traits(*item, [&](auto tag) {
             typedef std::remove_pointer_t<decltype(tag)> type_traits;
             const auto o = member_offset(telemetry, item);
@@ -219,9 +219,18 @@ static bool describe(
                     const sample::source_type source,
                     const timestamp time,
                     const ctl_power_telemetry_t& data) {
-                auto v = type_traits::get(member_at<item_type>(data, o));
-                typedef std::decay_t<decltype(v)> value_type;
-                return sample_builder<value_type>::build(source, time, v);
+                constexpr auto invalid = (std::numeric_limits<
+                    decltype(sample::source)>::max)();
+                auto& item = member_at<item_type>(data, o);
+                auto value = type_traits::get(item);
+                typedef std::decay_t<decltype(value)> value_type;
+                // The item could be unsupported at runtime, so need to check
+                // again whether the sample is valid or not. In the latter case,
+                // we return an invalid source, which the caller can detect
+                // because it does not match the provided 'source' parameter.
+                return item.bSupported
+                    ? sample_builder<value_type>::build(source, time, value)
+                    : sample(invalid);
             });
         });
     });
@@ -331,6 +340,7 @@ static bool describe_power(
 
     return retval;
 }
+
 
 /// <summary>
 /// Compute a hash of the given adapter properties (except for the reserved
@@ -574,15 +584,15 @@ PWROWG_DETAIL_NAMESPACE::igcl_sensor::igcl_sensor(
         }
     }
 
-    // Create a dispatcher for delivering a sample from telemetry data.
-    this->_deliver_sample = make_igcl_telemetry_disps<timestamp, std::size_t,
-            const sensor_array_callback, const sensor_description *, void *>(
-        [this](auto value, const ctl_units_t, timestamp timestamp,
-                const std::size_t index, const sensor_array_callback callback,
-                const sensor_description *sensors, void *context) {
-            PWROWG_NAMESPACE::sample s(index, timestamp);
-            callback(&s, 1, sensors, context);
-        });
+    //// Create a dispatcher for delivering a sample from telemetry data.
+    //this->_deliver_sample = make_igcl_telemetry_disps<timestamp, std::size_t,
+    //        const sensor_array_callback, const sensor_description *, void *>(
+    //    [this](auto value, const ctl_units_t, timestamp timestamp,
+    //            const std::size_t index, const sensor_array_callback callback,
+    //            const sensor_description *sensors, void *context) {
+    //        PWROWG_NAMESPACE::sample s(index, timestamp);
+    //        callback(&s, 1, sensors, context);
+    //    });
 
     // Create a dispatcher for generating a timestamp from a sample.
     this->_make_timestamp = make_igcl_telemetry_disps<timestamp&>(
@@ -623,13 +633,20 @@ void PWROWG_DETAIL_NAMESPACE::igcl_sensor::sample(
 
     // Collect the samples for all reading enabled via the '_builders'.
     assert(this->_samples.size() >= this->_builders.size());
+    std::size_t cnt = 0;
     for (std::size_t i = 0; i < this->_builders.size(); ++i) {
-        this->_samples[i] = this->_builders[i](this->_index + i, timestamp,
+        this->_samples[cnt] = this->_builders[i](
+            this->_index + i,
+            timestamp,
             telemetry);
+        if (this->_samples[cnt].source == i) {
+            // If we got an invalid source, do not count the sample.
+            ++cnt;
+        }
     }
 
     // Deliver the data.
-    callback(this->_samples.data(), this->_samples.size(), sensors, context);
+    callback(this->_samples.data(), cnt, sensors, context);
 }
 
 
