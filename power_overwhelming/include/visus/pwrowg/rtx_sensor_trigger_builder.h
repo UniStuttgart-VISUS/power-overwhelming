@@ -114,7 +114,7 @@ public:
     /// <param name="duration"></param>
     /// <returns></returns>
     template<class TRep, class TRatio>
-    inline rtx_sen_trg_bld_par2 with_acquisition_delay(
+    inline rtx_sen_trg_bld_chan1 with_acquisition_delay(
             _In_ const std::chrono::duration<TRep, TRatio>& delay) {
         using std::chrono::duration_cast;
         using std::chrono::milliseconds;
