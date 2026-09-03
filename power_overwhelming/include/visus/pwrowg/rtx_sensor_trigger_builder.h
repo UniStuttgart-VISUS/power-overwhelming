@@ -118,7 +118,8 @@ public:
             _In_ const std::chrono::duration<TRep, TRatio>& delay) {
         using std::chrono::duration_cast;
         using std::chrono::milliseconds;
-        return this->for_duration(duration_cast<milliseconds>(delay).count());
+        const auto millis = duration_cast<milliseconds>(delay);
+        return this->with_acquisition_delay(millis.count());
     }
 
     /// <summary>
