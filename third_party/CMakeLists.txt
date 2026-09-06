@@ -31,42 +31,7 @@ mark_as_advanced(FORCE
 
 # Apache Arrow (for Parquet) output.
 if (PWROWG_WithParquet)
-    FetchContent_Declare(arrow
-        URL "https://github.com/apache/arrow/archive/refs/tags/apache-arrow-24.0.0.zip"
-        DOWNLOAD_EXTRACT_TIMESTAMP ON
-    )
-    option(ARROW_COMPUTE "" OFF)
-    option(ARROW_CSV "" OFF)
-    option(ARROW_CUDA "" OFF)
-    option(ARROW_FLIGHT "" OFF)
-    option(ARROW_GANDIVA "" OFF)
-    option(ARROW_GANDIVA_JAVA "" OFF)
-    option(ARROW_GCS "" OFF)
-    option(ARROW_HDFS "" OFF)
-    option(ARROW_JEMALLOC "" OFF)
-    option(ARROW_JSON "" OFF)
-    option(ARROW_MIMALLOC "" OFF)
-    option(ARROW_ORC= "" OFF)
-    option(ARROW_PARQUET "" ON)
-    option(PARQUET_REQUIRE_ENCRYPTION "" OFF)
-    option(ARROW_PYTHON "" OFF)
-    option(ARROW_S3 "" OFF)
-    option(ARROW_SUBSTRAIT "" OFF)
-    option(ARROW_WITH_RE2 "" OFF)
-    option(ARROW_TENSORFLOW "" OFF)
-    option(ARROW_BUILD_BENCHMARKS "" OFF)
-    option(ARROW_BUILD_EXAMPLES "" OFF)
-    option(ARROW_BUILD_INTEGRATION "" OFF)
-    option(ARROW_BUILD_UTILITIES "" OFF)
-    option(ARROW_BUILD_TESTS "" OFF)
-    option(ARROW_ENABLE_TIMING_TESTS "" OFF)
-    option(ARROW_FUZZING "" OFF)
-    set(ARROW_DEPENDENCY_SOURCE "BUNDLED")
-    FetchContent_MakeAvailable(arrow)
-    add_subdirectory(${arrow_SOURCE_DIR}/cpp ${arrow_BINARY_DIR} EXCLUDE_FROM_ALL)
-    mark_as_advanced(FORCE
-        FETCHCONTENT_SOURCE_DIR_ARROW
-        FETCHCONTENT_UPDATES_DISCONNECTED_ARROW)
+    find_package(Parquet CONFIG REQUIRED)
 endif ()
 
 
@@ -236,7 +201,7 @@ endif ()
 # Windows Implementation Library
 if (WIN32)
     FetchContent_Declare(wil
-        URL "https://github.com/microsoft/wil/archive/refs/tags/v1.0.250325.1.zip"
+        URL "https://github.com/microsoft/wil/archive/refs/tags/v1.0.260126.7.zip"
         DOWNLOAD_EXTRACT_TIMESTAMP ON
     )
     option(FAST_BUILD "" OFF)

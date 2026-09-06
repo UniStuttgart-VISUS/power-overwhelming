@@ -9,6 +9,9 @@ project(power_overwhelming)
 include(CMakeDependentOption)
 include(GNUInstallDirs)
 
+# C++ standard
+set(CMAKE_CXX_STANDARD 17)
+
 # User-configurable options.
 option(PWROWG_BuildDemo "Build demo programme" OFF)
 cmake_dependent_option(PWROWG_BuildDriver "Build RAPL MSR driver" OFF WIN32 OFF)
