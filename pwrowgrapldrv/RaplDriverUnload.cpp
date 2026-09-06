@@ -16,7 +16,7 @@
 /// <para>You can free the resources created in the <see cref="DriverEntry" />
 /// either here or in <see cref="RaplCleanup" />.</para>
 /// <param name="driver"></param>
-extern "C" void RaplDriverUnload(_In_ WDFDRIVER driver) noexcept {
+extern "C" void RaplDriverUnload(_In_ WDFDRIVER driver) {
     PAGED_CODE();
     UNREFERENCED_PARAMETER(driver);
     //TraceEvents(TRACE_LEVEL_VERBOSE, DBG_INIT, "Entered NonPnpDriverUnload\n");

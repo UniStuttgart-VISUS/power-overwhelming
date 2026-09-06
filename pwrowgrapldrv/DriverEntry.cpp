@@ -31,7 +31,7 @@
 /// <returns><c>STATUS_SUCCESS</c> if the operation succeeded, an error code
 /// otherwise.</returns>
 extern "C" NTSTATUS DriverEntry(_In_ PDRIVER_OBJECT driverObject,
-        _In_ PUNICODE_STRING registryPath) noexcept {
+        _In_ PUNICODE_STRING registryPath) {
     WDF_OBJECT_ATTRIBUTES attributes { 0 };
     WDF_DRIVER_CONFIG config { 0 };
     PWDFDEVICE_INIT deviceInit = nullptr;

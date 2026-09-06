@@ -10,7 +10,7 @@
 /// <summary>
 /// Called when the driver object is deleted during driver unload.
 /// </summary>
-extern "C" void RaplCleanup(_In_ WDFOBJECT driver) noexcept {
+extern "C" void RaplCleanup(_In_ WDFOBJECT driver) {
     ASSERT(driver != nullptr);
     PAGED_CODE();
     // TODO: cleanup tracing

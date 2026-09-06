@@ -25,7 +25,7 @@ static const GUID GUID_DEVINTERFACE_PWROWG = { 0x4ef5d714, 0xab50, 0x49e1,
 /// <param name="deviceInit"></param>
 /// <returns></returns>
 extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
-        _In_ PWDFDEVICE_INIT deviceInit) noexcept {
+        _In_ PWDFDEVICE_INIT deviceInit) {
     UNREFERENCED_PARAMETER(driver);
     PAGED_CODE();
 

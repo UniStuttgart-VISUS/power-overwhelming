@@ -20,7 +20,7 @@
 /// that in the cleanup callback.
 /// </remarks>
 /// <param name="fileObject"></param>
-extern "C" void RaplClose(IN WDFFILEOBJECT fileObject) noexcept {
+extern "C" void RaplClose(IN WDFFILEOBJECT fileObject) {
     ASSERT(fileObject != nullptr);
     PAGED_CODE();
 

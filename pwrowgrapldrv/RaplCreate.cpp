@@ -92,7 +92,7 @@ NTSTATUS RaplIdentifyCpu(_In_ RaplCpuInfo& dst) {
 /// <param name="request"></param>
 /// <param name="fileObject"></param>
 extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
-        _In_ WDFFILEOBJECT fileObject) noexcept {
+        _In_ WDFFILEOBJECT fileObject) {
     ASSERT(fileObject != nullptr);
     PAGED_CODE();
 
