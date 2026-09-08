@@ -32,9 +32,25 @@ public:
     /// </summary>
     static constexpr const std::uint32_t fourcc = 'PWOG';
 
+    /// <summary>
+    /// Opens the specified file for writing.
+    /// </summary>
+    /// <param name="path">The path to the file to be written.</param>
+    /// <param name="force">If <see langword="true"/>, an existing file will be
+    /// overwritten, otherwise, the operation will fail if the file already
+    /// exists.</param>
+    /// <returns>An object representing the opened file.</returns>
     static pwog_file create(_In_z_ const wchar_t *path,
         _In_ const bool force = false);
 
+    /// <summary>
+    /// Opens the specified file for writing.
+    /// </summary>
+    /// <param name="path">The path to the file to be written.</param>
+    /// <param name="force">If <see langword="true"/>, an existing file will be
+    /// overwritten, otherwise, the operation will fail if the file already
+    /// exists.</param>
+    /// <returns>An object representing the opened file.</returns>
     static pwog_file create(_In_z_ const char *path,
         _In_ const bool force = false);
 
@@ -59,6 +75,10 @@ public:
     /// </summary>
     pwog_file(void) noexcept;
 
+    /// <summary>
+    /// Initialise from move.
+    /// </summary>
+    /// <param name="rhs">The object to be moved.</param>
     pwog_file(_Inout_ pwog_file&& rhs) noexcept;
 
     /// <summary>
@@ -73,6 +93,11 @@ public:
     /// </summary>
     void close(void) noexcept;
 
+    /// <summary>
+    /// Move assignment.
+    /// </summary>
+    /// <param name="rhs">The right-hand-side operand.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
     pwog_file& operator =(_Inout_ pwog_file&& rhs) noexcept;
 
     /// <summary>
@@ -100,15 +125,13 @@ private:
 
     /// <summary>
     /// Reads the FOURCC, checks whether it is expected and whether the byte
-    /// order is the native one.
+    /// order is the native one (the latter is stored to <see cref="_swap" />.
     /// </summary>
-    /// <param name=""></param>
     void check_fourcc(void);
 
     /// <summary>
     /// Reads the version number and checks whether it is supported.
     /// </summary>
-    /// <param name=""></param>
     void check_version(void);
 
     /// <summary>
