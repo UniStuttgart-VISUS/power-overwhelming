@@ -2,7 +2,7 @@
 # Copyright © 2022 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 # Licensed under the MIT licence. See LICENCE file for details.
 
-cmake_minimum_required(VERSION 3.15...3.26)
+cmake_minimum_required(VERSION 3.24...3.31)
 
 project(power_overwhelming)
 
@@ -11,6 +11,7 @@ include(GNUInstallDirs)
 
 # C++ standard
 set(CMAKE_CXX_STANDARD 17)
+#set(MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 # User-configurable options.
 option(PWROWG_BuildDemo "Build demo programme" OFF)
