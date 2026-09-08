@@ -23,7 +23,7 @@ PWROWG_NAMESPACE_BEGIN
 /// RAII object for interacting with a binary file format identified by the
 /// &quot;PWOG&quot; FOURCC.
 /// </summary>
-class PWROWG_TEST_API pwog_file final {
+class POWER_OVERWHELMING_API pwog_file final {
 
 public:
 
@@ -32,8 +32,26 @@ public:
     /// </summary>
     static constexpr const std::uint32_t fourcc = 'PWOG';
 
+    static pwog_file create(_In_z_ const wchar_t *path,
+        _In_ const bool force = false);
+
+    static pwog_file create(_In_z_ const char *path,
+        _In_ const bool force = false);
+
+    /// <summary>
+    /// Opens the specified file for reading.
+    /// </summary>
+    /// <param name="path">The path to the file to be read.</param>
+    /// <returns>An object representing the file in case it exists and is a
+    /// valid PWOG file.</returns>
     static pwog_file read(_In_z_ const wchar_t *path);
 
+    /// <summary>
+    /// Opens the specified file for reading.
+    /// </summary>
+    /// <param name="path">The path to the file to be read.</param>
+    /// <returns>An object representing the file in case it exists and is a
+    /// valid PWOG file.</returns>
     static pwog_file read(_In_z_ const char *path);
 
     /// <summary>
@@ -92,6 +110,17 @@ private:
     /// </summary>
     /// <param name=""></param>
     void check_version(void);
+
+    /// <summary>
+    /// Writes the FOURCC to the current location in the file.
+    /// </summary>
+    void write_fourcc(void);
+
+    /// <summary>
+    /// Writes the version of the file format to the current location in the
+    /// file.
+    /// </summary>
+    void write_version(void);
 
     handle_type _handle;
     bool _swap;
