@@ -62,9 +62,9 @@ PWROWG_DETAIL_NAMESPACE::parquet_sink_impl::parquet_sink_impl(
 
     if (this->raw) {
         fields.push_back(parquet::schema::PrimitiveNode::Make(
-            "raw",
+            "value",
             parquet::Repetition::REQUIRED,
-            parquet::Type::BYTE_ARRAY,
+            parquet::Type::FIXED_LEN_BYTE_ARRAY,
             parquet::ConvertedType::NONE,
             sizeof(sample::reading)
         ));

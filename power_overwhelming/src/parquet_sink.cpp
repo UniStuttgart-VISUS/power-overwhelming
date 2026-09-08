@@ -70,8 +70,14 @@ void PWROWG_NAMESPACE::parquet_sink::write_sample(
     }
 
     if (this->_impl->raw) {
-        //const char (&v)[N]
-        this->_impl->writer << reinterpret_cast<const char *>(s.reading.bytes) << parquet::EndRow;
+        // Unfortunately, the copy is required to make the type check in Parquet
+        // happy.
+        std::array<char, sizeof(sample::reading)> v;
+        static_assert(sizeof(v) == sizeof(sample::reading), "Size mismatch");
+        std::copy(s.reading.bytes,
+            s.reading.bytes + sizeof(sample::reading),
+            v.begin());
+        this->_impl->writer << v;
     } else {
         switch (sensors[s.source].reading_type()) {
             case reading_type::floating_point:
