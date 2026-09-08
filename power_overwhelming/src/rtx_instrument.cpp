@@ -715,17 +715,24 @@ PWROWG_NAMESPACE::rtx_instrument::channel(
     // will also scale other values like the range.
     if (channel.attenuation().value() > 0.0f) {
         // Note: For some reason unbeknownst to us, using ATT does not work on
-        // the RTA family if the unit is Amperes. However, the GAIN works, so
-        // we should change that on the fly here.
+        // the RTA family if the unit is Amperes. However, GAIN does not work
+        // on the RTA family if the unit is Voltage.
         //impl.format("PROB%d:SET:ATT:UNIT %s\n", channel.channel(),
         //    channel.attenuation().unit());
         //impl.format("PROB%d:SET:ATT:MAN %f\n", channel.channel(),
         //    channel.attenuation().value());
         impl.format("PROB%d:SET:GAIN:UNIT %s\n", channel.channel(),
             channel.attenuation().unit());
+        impl.format("PROB%d:SET:ATT:UNIT %s\n", channel.channel(),
+            channel.attenuation().unit());
         PWROWG_ASSERT_NO_VISA_ERROR(*this);
-        impl.format("PROB%d:SET:GAIN:MAN %f\n", channel.channel(),
-            1.0f / channel.attenuation().value());
+        if (std::strcmp(channel.attenuation().unit(), "A") == 0) {
+            impl.format("PROB%d:SET:GAIN:MAN %f\n", channel.channel(),
+                1.0f / channel.attenuation().value());
+        } else {
+            impl.format("PROB%d:SET:ATT:MAN %f\n", channel.channel(),
+                channel.attenuation().value());
+        }
         PWROWG_ASSERT_NO_VISA_ERROR(*this);
     }
 
