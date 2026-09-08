@@ -4,6 +4,19 @@
 
 include(FindPackageHandleStandardArgs)
 
+# Apache Arrow uses its own modules to find dependencies, including Snappy,
+# and takes significant precautions to prevent us from meddling with this
+# process. Unfortunately, there is a bug that prevents multi-target solutions
+# from working properly (https://github.com/apache/arrow/issues/49499). The
+# issue causes debug builds to link against the release build of Snappy, which
+# in turn causes a linker error. As we need a fairly old version, we cannot
+# apply the fix from the issue.
+# Therefore, the infamous  Pre-Loading Institute of Universiät Stuttgart
+# "preloads" Snappy using this module, which must be included before including
+# Arrow/Parquet (currently only the Power Overwhelming library itself and the
+# test driver) to trick Arrow into believing that it already ran its find module
+# for snappy, thus leaving the correct version in place.
+
 if (SnappyPreload_FOUND)
     return()
 endif ()
@@ -11,6 +24,7 @@ endif ()
 
 find_package(Snappy CONFIG)
 set(SnappyPreload_FOUND ${Snappy_FOUND})
+
 
 if (${SnappyPreload_FOUND})
     set(SnappyPreload_FOUND TRUE)
@@ -22,41 +36,11 @@ if (${SnappyPreload_FOUND})
     get_filename_component(_lib "${_dir}" NAME)
     get_filename_component(_dir "${_dir}" DIRECTORY)
 
-    #if(NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]$")
-    #    set(_libs "${_dir}/debug/${_lib}" "${_dir}/${_lib}")
-    #else ()
-    #    set(_libs "${_dir}/${_lib}" "${_dir}/debug/${_lib}")
-    #endif()
-    #if (NOT "${CMAKE_LIBRARY_PATH}")
-    #    set(CMAKE_LIBRARY_PATH "${_libs}")
-    #else ()
-    #    list(INSERT 0 CMAKE_LIBRARY_PATH "${_libs}")
-    #endif ()
-
     # And now, we crowbar the target into Arrow: We claim that the
     # Arrow-provided module was successful such that it does not do anything
     # and alias its target to ours.
     set(SnappyAlt_FOUND TRUE)
     add_library(Snappy::snappy-static ALIAS Snappy::snappy)
-
-    #if(NOT CMAKE_PROPERTY_LIST)
-    #    execute_process(COMMAND cmake --help-property-list OUTPUT_VARIABLE CMAKE_PROPERTY_LIST)
-    #    string(REGEX REPLACE ";" "\\\\;" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
-    #    string(REGEX REPLACE "\n" ";" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
-    #    list(REMOVE_DUPLICATES CMAKE_PROPERTY_LIST)
-    #endif()
-    #foreach(property ${CMAKE_PROPERTY_LIST})
-    #    string(REPLACE "<CONFIG>" "${CMAKE_BUILD_TYPE}" property ${property})
-    #    # Fix https://stackoverflow.com/questions/32197663/how-can-i-remove-the-the-location-property-may-not-be-read-from-target-error-i
-    #    if(property STREQUAL "LOCATION" OR property MATCHES "^LOCATION_" OR property MATCHES "_LOCATION$")
-    #        continue()
-    #    endif()
-    #    get_property(was_set TARGET Snappy::snappy-static PROPERTY ${property} SET)
-    #    if(was_set)
-    #        get_target_property(value Snappy::snappy-static ${property})
-    #        message("${property} = ${value}")
-    #    endif()
-    #endforeach()
 
     unset(_dir)
     unset(_lib)
