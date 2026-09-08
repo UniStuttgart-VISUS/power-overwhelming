@@ -36,7 +36,7 @@ PWROWG_NAMESPACE_BEGIN
 /// exits.</para>
 /// </remarks>
 /// <typeparam name="TSink">The type of the sink, which must have a protected
-/// method <c>write_sample</c> that perists a single <see cref="sample" />.
+/// method <c>write_sample</c> that persists a single <see cref="sample" />.
 /// </typeparam>
 /// <typeparam name="PageSize">The number of samples collected in a single page
 /// of the underlying <see cref="atomic_collector" />.</typeparam>

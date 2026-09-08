@@ -71,7 +71,7 @@ if (WDK_FOUND)
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/${InfFile} $<TARGET_FILE_DIR:${PROJECT_NAME}>
             COMMAND ${PWROWG_StampInfPath} -f $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>\\${InfFile} -a ${InfArchitecture} -k ${PWROWG_KmdfVersion} -v * -d *
             COMMAND ${PWROWG_Inf2CatPath} /driver:$<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>> /os:${PWROWG_DriverTargets}
-            WORKING_DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}>
-            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${InfFile})
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+            #DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${InfFile})
     endforeach ()
 endif ()

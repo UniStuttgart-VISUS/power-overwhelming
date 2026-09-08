@@ -26,7 +26,6 @@ add_library(${PROJECT_NAME} SHARED ${PublicHeaderFiles} ${PrivateHeaderFiles} ${
 # Configure the compiler.
 target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_EXPORTS UNICODE _UNICODE)
 
-
 if (PWROWG_WithAdl)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_ADL)
 endif ()
@@ -68,8 +67,10 @@ if (PWROWG_WithNvml)
 endif ()
 
 if (PWROWG_WithParquet)
+    set(CMAKE_FIND_DEBUG_MODE TRUE)
+    find_package(Parquet CONFIG REQUIRED)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_PARQUET)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Arrow::arrow_static)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Parquet::parquet_static)
 endif ()
 
 if (PWROWG_WithPowenetics)
@@ -137,6 +138,7 @@ endif ()
 
 # Provide the internal API to the unit tests.
 set(PowerOverwhelmingTestInclude "${CMAKE_CURRENT_SOURCE_DIR}/src" PARENT_SCOPE)
+
 
 # Install
 install(TARGETS ${PROJECT_NAME}

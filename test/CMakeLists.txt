@@ -75,6 +75,12 @@ if (PWROWG_WithNvapi)
         COMMAND_EXPAND_LISTS)
 endif ()
 
+# Test test requires Parquet itself to test the parquet sink.
+if (PWROWG_WithParquet)
+    find_package(Parquet CONFIG REQUIRED)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Parquet::parquet_static)
+endif ()
+
 # The test requires access to the Powenetics headers to test the sensor.
 if (PWROWG_WithPowenetics)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_POWENETICS)
@@ -90,6 +96,9 @@ endif ()
 
 # Grab the DLLs to be tested and copy them to the output directory such that
 # the Visual Studio test driver finds everything.
+file(GENERATE
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/runtime_dlls_$<CONFIG>.txt"
+    CONTENT "$<TARGET_RUNTIME_DLLS:${PROJECT_NAME}>")
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}> $<TARGET_FILE_DIR:${PROJECT_NAME}>
     COMMAND_EXPAND_LISTS)

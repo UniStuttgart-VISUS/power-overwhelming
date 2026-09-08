@@ -2,6 +2,7 @@
 # Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 # Licensed under the MIT licence. See LICENCE file for details.
 
+include(ExternalProject)
 include(FetchContent)
 
 set(FETCHCONTENT_QUIET ON)
@@ -29,9 +30,55 @@ mark_as_advanced(FORCE
     FETCHCONTENT_UPDATES_DISCONNECTED_ADL)
 
 
-# Apache Arrow (for Parquet) output.
+# Apache Arrow (for Parquet output). This is a giant hack as we need a version
+# that still works with C++17. Technically, this would be 22, but this is not
+# available on vcpkg, so we get 21 here.
 if (PWROWG_WithParquet)
-    find_package(Parquet CONFIG REQUIRED)
+    set(_arrow_root ${CMAKE_CURRENT_SOURCE_DIR}/arrow-21.0.0)
+    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(_triplet x64)
+    else ()
+        set(_triplet x86)
+    endif()
+    if (WIN32)
+        set(_triplet "${_triplet}-windows-static-md")
+    else ()
+        set(_triplet "${_triplet}-linux")
+    endif()
+
+    ExternalProject_Add(arrow
+        GIT_REPOSITORY "https://github.com/microsoft/vcpkg.git"
+        BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/arrow-build"
+        LOG_DIR "${CMAKE_CURRENT_BINARY_DIR}/arrow-log"
+        SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/arrow-src"
+        STAMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/arrow-stamp"
+        TMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/arrow-tmp"
+        CONFIGURE_COMMAND "<SOURCE_DIR>/$<IF:${WIN32},vcpkg.exe,vcpkg>" install
+            --vcpkg-root "${CMAKE_CURRENT_BINARY_DIR}/arrow-src"
+            --x-manifest-root ${_arrow_root}
+            --triplet ${_triplet}
+            --clean-after-build
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
+        STEP_TARGETS bootstrap configure
+        )
+    ExternalProject_Add_Step(arrow bootstrap
+        COMMENT "Bootstrapping vcpkg..."
+        COMMAND "<SOURCE_DIR>/bootstrap-vcpkg$<IF:${WIN32},.bat,.sh>" -disableMetrics
+        WORKING_DIRECTORY <SOURCE_DIR>
+        DEPENDERS configure
+        ALWAYS TRUE)
+    set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${_arrow_root}/vcpkg_installed/${_triplet}" PARENT_SCOPE)
+    set(ARROW_VCPKG TRUE PARENT_SCOPE)
+    #set(VCPKG_TARGET_TRIPLET ${_triplet})
+    #include("${CMAKE_CURRENT_BINARY_DIR}/arrow-src/scripts/buildsystems/vcpkg.cmake")
+    mark_as_advanced(FORCE
+        _VCPKG_INSTALLED_DIR
+        X_VCPKG_APPLOCAL_DEPS_INSTALL
+        X_VCPKG_APPLOCAL_DEPS_SERIALIZED)
+
+    unset(_arrow_root)
+    unset(_triplet)
 endif ()
 
 
@@ -53,23 +100,22 @@ mark_as_advanced(FORCE
 # Benchlab
 if (PWROWG_WithBenchlab)
     FetchContent_Declare(libbenchlab
-        URL "https://github.com/UniStuttgart-VISUS/libbenchlab/archive/refs/tags/v0.5.zip"
+        URL "https://github.com/UniStuttgart-VISUS/libbenchlab/archive/refs/tags/v0.6.zip"
         DOWNLOAD_EXTRACT_TIMESTAMP ON
     )
     option(BENCHLAB_BuildTests "" OFF)
     option(BENCHLAB_BuildCclient "" OFF)
     option(BENCHLAB_BuildCppClient "" OFF)
     option(BENCHLAB_BuildExcellentBenchlab "" OFF)
-    FetchContent_GetProperties(libbenchlab)
-    if (NOT libbenchlab_POPULATED)
-        FetchContent_Populate(libbenchlab)
-        add_subdirectory(${libbenchlab_SOURCE_DIR} ${libbenchlab_BINARY_DIR} EXCLUDE_FROM_ALL)
-    endif ()
+    FetchContent_MakeAvailable(libbenchlab)
     mark_as_advanced(FORCE
         libbenchlab_SOURCE_DIR
         BENCHLAB_BuildTests
         BENCHLAB_BuildCclient
-        BENCHLAB_BuildExcellentBenchlab)
+        BENCHLAB_BuildCppClient
+        BENCHLAB_BuildExcellentBenchlab
+        FETCHCONTENT_SOURCE_DIR_LIBBENCHLAB
+        FETCHCONTENT_UPDATES_DISCONNECTED_LIBBENCHLAB)
 endif ()
 
 
@@ -82,16 +128,14 @@ if (PWROWG_WithPowenetics)
     option(POWENETICS_BuildTests "" OFF)
     option(POWENETICS_BuildCclient "" OFF)
     option(POWENETICS_BuildExcellentPowenetics "" OFF)
-    FetchContent_GetProperties(libpowenetics)
-    if (NOT libpowenetics_POPULATED)
-        FetchContent_Populate(libpowenetics)
-        add_subdirectory(${libpowenetics_SOURCE_DIR} ${libpowenetics_BINARY_DIR} EXCLUDE_FROM_ALL)
-    endif ()
+    FetchContent_MakeAvailable(libpowenetics)
     mark_as_advanced(FORCE
         libpowenetics_SOURCE_DIR
         POWENETICS_BuildTests
         POWENETICS_BuildCclient
-        POWENETICS_BuildExcellentPowenetics)
+        POWENETICS_BuildExcellentPowenetics
+        FETCHCONTENT_SOURCE_DIR_LIBPOWENETICS
+        FETCHCONTENT_UPDATES_DISCONNECTED_LIBPOWENETICS)
 endif ()
 
 
@@ -108,6 +152,7 @@ mark_as_advanced(FORCE
     JSON_CI
     JSON_Diagnostics
     JSON_DisableEnumSerialization
+    JSON_Diagnostic_Positions
     JSON_GlobalUDLs
     JSON_ImplicitConversions
     JSON_Install
@@ -207,17 +252,15 @@ if (WIN32)
     option(FAST_BUILD "" OFF)
     option(WIL_BUILD_PACKAGING "" OFF)
     option(WIL_BUILD_TESTS "" OFF)
-    FetchContent_GetProperties(wil)
-    if (NOT wil_POPULATED)
-        FetchContent_Populate(wil)
-        add_subdirectory(${wil_SOURCE_DIR} ${wil_BINARY_DIR} EXCLUDE_FROM_ALL)
-    endif ()
+    FetchContent_MakeAvailable(wil)
     mark_as_advanced(FORCE
         FETCHCONTENT_SOURCE_DIR_WIL
         FETCHCONTENT_UPDATES_DISCONNECTED_WIL
         FAST_BUILD
         WIL_BUILD_PACKAGING
-        WIL_BUILD_TESTS)
+        WIL_BUILD_TESTS
+        WIL_ENABLE_ASAN
+        WIL_ENABLE_UBSAN)
 endif()
 
 
@@ -228,4 +271,6 @@ FetchContent_Declare(rapidcsv
 )
 FetchContent_MakeAvailable(rapidcsv)
 mark_as_advanced(FORCE
-    RAPIDCSV_BUILD_TESTS)
+    RAPIDCSV_BUILD_TESTS
+    FETCHCONTENT_SOURCE_DIR_RAPIDCSV
+    FETCHCONTENT_UPDATES_DISCONNECTED_RAPIDCSV)
