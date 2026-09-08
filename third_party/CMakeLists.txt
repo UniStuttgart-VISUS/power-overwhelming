@@ -68,7 +68,7 @@ if (PWROWG_WithParquet)
         WORKING_DIRECTORY <SOURCE_DIR>
         DEPENDERS configure
         ALWAYS TRUE)
-    set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${_arrow_root}/vcpkg_installed/${_triplet}" PARENT_SCOPE)
+    set(CMAKE_PREFIX_PATH "${_arrow_root}/vcpkg_installed/${_triplet}" ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
     set(ARROW_VCPKG TRUE PARENT_SCOPE)
     #set(VCPKG_TARGET_TRIPLET ${_triplet})
     #include("${CMAKE_CURRENT_BINARY_DIR}/arrow-src/scripts/buildsystems/vcpkg.cmake")

@@ -6,6 +6,7 @@
 cmake_dependent_option(PWROWG_ForceDirect3D11 "Force GPU enumeration via Direct3D 11" OFF WIN32 OFF)
 mark_as_advanced(FORCE PWROWG_ForceDirect3D11)
 option(PWROWG_AssertVisaInstrumentState "Assert a valid state of a VISA instrument after each change" OFF)
+mark_as_advanced(FORCE PWROWG_AssertVisaInstrumentState)
 
 
 # Collect source files.
@@ -67,7 +68,8 @@ if (PWROWG_WithNvml)
 endif ()
 
 if (PWROWG_WithParquet)
-    set(CMAKE_FIND_DEBUG_MODE TRUE)
+    #set(CMAKE_FIND_DEBUG_MODE TRUE)
+    find_package(SnappyPreload REQUIRED)    # Cf. FindSnappyPreload.cmake
     find_package(Parquet CONFIG REQUIRED)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_PARQUET)
     target_link_libraries(${PROJECT_NAME} PRIVATE Parquet::parquet_static)
