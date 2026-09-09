@@ -30,7 +30,7 @@ set(PWROWG_CustomTinkerforgeFirmwareMinor "" CACHE STRING "The minor firmware ve
 set(PWROWG_CustomTinkerforgeFirmwareRev "" CACHE STRING "The firmware revision that identifies our custom changes")
 option(PWROWG_CustomTinkerforgeFirmwareMandatory "Raises an exception if a custom firmware was specified, but not found on all bricklets" OFF)
 option(PWROWG_WithAdl "Build support for the AMD Display Library" ON)
-option(PWROWG_WithBenchlab "Build support for the Benchlab telemetry system" OFF)
+option(PWROWG_WithBenchlab "Build support for the Benchlab telemetry system" ON)
 cmake_dependent_option(PWROWG_WithIgcl "Build support for IGCL" ON WIN32 OFF)
 option(PWROWG_WithNiDaqMx "Build support for NI-DAQmx" OFF)
 cmake_dependent_option(PWROWG_WithNvapi "Build support for NVIDIA API" OFF WIN32 OFF)

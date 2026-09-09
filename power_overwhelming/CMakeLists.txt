@@ -69,10 +69,12 @@ endif ()
 
 if (PWROWG_WithParquet)
     #set(CMAKE_FIND_DEBUG_MODE TRUE)
-    find_package(SnappyPreload REQUIRED)    # Cf. FindSnappyPreload.cmake
-    find_package(Parquet CONFIG REQUIRED)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_PARQUET)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Parquet::parquet_static)
+    find_package(SnappyPreload)
+    find_package(Parquet)
+    if (Parquet_FOUND)
+        target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_PARQUET)
+        target_link_libraries(${PROJECT_NAME} PRIVATE Parquet::parquet_static)
+    endif ()
 endif ()
 
 if (PWROWG_WithPowenetics)

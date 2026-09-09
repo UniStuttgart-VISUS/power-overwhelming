@@ -53,23 +53,16 @@ if (PWROWG_WithParquet)
         SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/arrow-src"
         STAMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/arrow-stamp"
         TMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/arrow-tmp"
-        CONFIGURE_COMMAND "<SOURCE_DIR>/$<IF:${WIN32},vcpkg.exe,vcpkg>" install
+        CONFIGURE_COMMAND "<SOURCE_DIR>/bootstrap-vcpkg$<IF:${WIN32},.bat,.sh>" -disableMetrics
+        COMMAND "<SOURCE_DIR>/$<IF:${WIN32},vcpkg.exe,vcpkg>" install
             --vcpkg-root "${CMAKE_CURRENT_BINARY_DIR}/arrow-src"
             --x-manifest-root ${_arrow_root}
             --triplet ${_triplet}
             --clean-after-build
         BUILD_COMMAND ""
-        INSTALL_COMMAND ""
-        STEP_TARGETS bootstrap configure
-        )
-    ExternalProject_Add_Step(arrow bootstrap
-        COMMENT "Bootstrapping vcpkg..."
-        COMMAND "<SOURCE_DIR>/bootstrap-vcpkg$<IF:${WIN32},.bat,.sh>" -disableMetrics
-        WORKING_DIRECTORY <SOURCE_DIR>
-        DEPENDERS configure
-        ALWAYS TRUE)
+        INSTALL_COMMAND "")
     set(CMAKE_PREFIX_PATH "${_arrow_root}/vcpkg_installed/${_triplet}" ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
-    set(ARROW_VCPKG TRUE PARENT_SCOPE)
+    #set(ARROW_VCPKG TRUE PARENT_SCOPE)
     #set(VCPKG_TARGET_TRIPLET ${_triplet})
     #include("${CMAKE_CURRENT_BINARY_DIR}/arrow-src/scripts/buildsystems/vcpkg.cmake")
     mark_as_advanced(FORCE

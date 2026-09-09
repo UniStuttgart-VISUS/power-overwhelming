@@ -77,9 +77,11 @@ endif ()
 
 # Test test requires Parquet itself to test the parquet sink.
 if (PWROWG_WithParquet)
-    find_package(SnappyPreload REQUIRED)    # Cf. FindSnappyPreload.cmake
-    find_package(Parquet CONFIG REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Parquet::parquet_static)
+    find_package(SnappyPreload)
+    find_package(Parquet)
+    if (Parquet_FOUND)
+        target_link_libraries(${PROJECT_NAME} PRIVATE Parquet::parquet_static)
+    endif ()
 endif ()
 
 # The test requires access to the Powenetics headers to test the sensor.
