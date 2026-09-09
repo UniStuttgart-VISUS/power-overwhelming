@@ -75,10 +75,10 @@ if (PWROWG_WithNvapi)
         COMMAND_EXPAND_LISTS)
 endif ()
 
-# Test test requires Parquet itself to test the parquet sink.
+# The test requires Parquet itself to test the parquet sink.
 if (PWROWG_WithParquet)
     find_package(SnappyPreload)
-    find_package(Parquet)
+    find_package(Parquet CONFIG)
     if (Parquet_FOUND)
         target_link_libraries(${PROJECT_NAME} PRIVATE Parquet::parquet_static)
     endif ()
