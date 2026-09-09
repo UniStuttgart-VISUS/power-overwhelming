@@ -722,7 +722,7 @@ PWROWG_NAMESPACE::rtx_instrument::channel(
         impl.format("PROB%d:SET:ATT:UNIT %s\n", channel.channel(),
             channel.attenuation().unit());
         PWROWG_ASSERT_NO_VISA_ERROR(*this);
-        if (detail::equals(channel.attenuation().unit(), "A", true) == 0) {
+        if (detail::equals(channel.attenuation().unit(), "A", true)) {
             impl.format("PROB%d:SET:GAIN:MAN %f\n", channel.channel(),
                 1.0f / channel.attenuation().value());
         } else {
