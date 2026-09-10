@@ -220,6 +220,12 @@ private:
     void initialise(_In_ const handle_type handle, _In_ const state state);
 
     /// <summary>
+    /// Reads the meta data block to <see cref="_meta_data" /> from the current
+    /// location of the file pointer.
+    /// </summary>
+    void read_meta_data(void);
+
+    /// <summary>
     /// Writes a null-terminated string to the file, including the terminating
     /// null character.
     /// </summary>
@@ -232,6 +238,7 @@ private:
     void write(_In_opt_z_ const wchar_t *string);
 
     handle_type _handle;
+    type_erased_storage _meta_data;
     state _state;
     bool _swap;
     std::uint8_t _version[2];

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <map>
 #include <memory>
 #include <stdexcept>
 #include <type_traits>
@@ -109,7 +110,10 @@ PWROWG_NAMESPACE::pwog_file::pwog_file(void) noexcept
  * PWROWG_NAMESPACE::pwog_file::pwog_file
  */
 PWROWG_NAMESPACE::pwog_file::pwog_file(_Inout_ pwog_file&& rhs) noexcept
-        : _handle(rhs._handle), _state(rhs._state), _swap(rhs._swap) {
+        : _handle(rhs._handle),
+        _meta_data(std::move(rhs._meta_data)),
+        _state(rhs._state),
+        _swap(rhs._swap) {
     rhs._handle = invalid;
     std::copy(std::begin(rhs._version),
         std::end(rhs._version),
@@ -142,6 +146,8 @@ PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::operator =(
         assert(!*this);
         std::swap(this->_handle, rhs._handle);
         assert(!rhs);
+        this->_meta_data = std::move(rhs._meta_data);
+        assert(!rhs._meta_data);
         this->_state = rhs._state;
         this->_swap = rhs._swap;
         std::copy(std::begin(rhs._version),
@@ -158,8 +164,12 @@ PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::operator =(
  */
 PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::operator <<(
         _In_ const sensor_description& sensor) {
+    // An empty key/value pair marks the end of the meta data block.
+    const std::uint8_t sep[2] = { 0, 0 };
+
     switch (this->_state) {
         case state::meta_data:
+            detail::write_all_bytes(this->_handle, sep, sizeof(sep));
             this->_state = state::sensors;
             __fallthrough;
         case state::sensors:
@@ -170,7 +180,35 @@ PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::operator <<(
                 "sensor descriptions.");
     }
 
-    throw "TODO";
+    this->write(sensor.id());
+    this->write(sensor.path());
+    this->write(sensor.name());
+    this->write(sensor.label());
+    this->write(sensor.vendor());
+    {
+        auto value = sensor.sensor_type();
+        static_assert(sizeof(value) == sizeof(std::uint32_t), "The sensor type "
+            "is expected to occupy 32 bits.");
+        detail::write_all_bytes(this->_handle, &value, sizeof(value));
+    }
+    {
+        auto value = sensor.reading_type();
+        static_assert(sizeof(value) == sizeof(std::uint32_t), "The reading "
+            "type is expected to occupy 32 bits.");
+        detail::write_all_bytes(this->_handle, &value, sizeof(value));
+    }
+    {
+        auto value = sensor.reading_unit();
+        static_assert(sizeof(value) == sizeof(std::uint32_t), "The reading "
+            "unit is expected to occupy 32 bits.");
+        detail::write_all_bytes(this->_handle, &value, sizeof(value));
+    }
+    {
+        auto& value = sensor.sensor_class();
+        static_assert(sizeof(value) == sizeof(PWROWG_NAMESPACE::guid), "The "
+            "sensor class is expected be a GUID.");
+        detail::write_all_bytes(this->_handle, &value, sizeof(value));
+    }
 
     return *this;
 }
@@ -181,8 +219,12 @@ PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::operator <<(
  */
 PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::operator <<(
         _In_ const sample& sample) {
+    // An empty sensor ID marks the end of the sensor description block.
+    const std::uint8_t sep[1] = { 0 };
+
     switch (this->_state) {
         case state::sensors:
+            detail::write_all_bytes(this->_handle, sep, sizeof(sep));
             this->_state = state::samples;
             __fallthrough;
         case state::samples:
@@ -198,8 +240,7 @@ PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::operator <<(
         + sizeof(PWROWG_NAMESPACE::sample::source)
         + sizeof(PWROWG_NAMESPACE::sample::timestamp), "The implementation "
         "expected samples to be without padding.");
-
-    throw "TODO";
+    detail::write_all_bytes(this->_handle, &sample, sizeof(sample));
 
     return *this;
 }
@@ -257,6 +298,7 @@ void PWROWG_NAMESPACE::pwog_file::initialise(
         case state::read:
             this->check_fourcc();
             this->check_version();
+            this->read_meta_data();
             break;
 
         case state::header:
@@ -272,6 +314,17 @@ void PWROWG_NAMESPACE::pwog_file::initialise(
             this->_state = state::meta_data;
             break;
     }
+}
+
+
+/*
+ * PWROWG_NAMESPACE::pwog_file::read_meta_data
+ */
+void PWROWG_NAMESPACE::pwog_file::read_meta_data(void) {
+    assert(this->_handle != invalid);
+    assert(this->_state == state::read);
+    auto& map = this->_meta_data.emplace<std::map<std::string, std::string>>();
+
 }
 
 

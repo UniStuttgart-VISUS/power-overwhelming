@@ -5,6 +5,7 @@
 include(CMakeFindDependencyMacro)
 
 
+set(PWROWG_UseStaticParquet @PWROWG_UseStaticParquet@)
 set(PWROWG_WithNvapi @PWROWG_WithNvapi@)
 set(PWROWG_WithParquet @PWROWG_WithParquet@)
 set(PWROVRNVAPI_BINARY @PWROVRNVAPI_BINARY@)

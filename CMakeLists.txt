@@ -39,9 +39,17 @@ cmake_dependent_option(PWROWG_WithNvapi "Build support for NVIDIA API" OFF WIN32
 option(PWROWG_WithNvml "Build support for the NVIDIA Management Library" ON)
 option(PWROWG_WithParquet "Build support for Apache Parquet sinks" OFF)
 option(PWROWG_WithPowenetics "Build support for Powenetics" ON)
+option(PWROWG_WithStaticParquet "Build support for Apache Parquet sinks by embedding Arrow in Power Overwhelming" OFF)
 option(PWROWG_WithThreadStats "Enable collector thread statistics" OFF)
 option(PWROWG_WithTimeSynchronisation "Build support for Cristian's algorithm" OFF)
 option(PWROWG_WithVisa "Build support for the VISA-based instruments" ${VISA_FOUND})
+
+# Derived options.
+if (PWROWG_WithStaticParquet)
+    set(PWROWG_WithParquet ON)
+    # TODO: I have no idea how to fudge this ...
+    #set(PWROWG_UseStaticParquet ON)
+endif ()
 
 
 # Dependencies

@@ -8,6 +8,8 @@
 #define _READING_UNIT_H
 #pragma once
 
+#include <cinttypes>
+
 #include "visus/pwrowg/api.h"
 
 
@@ -16,7 +18,7 @@ PWROWG_NAMESPACE_BEGIN
 /// <summary>
 /// Enumerates possible units used for <see cref="reading" />s.
 /// </summary>
-enum class reading_unit {
+enum class reading_unit : std::uint32_t {
 
     /// <summary>
     /// The unit is unknown. Consult the documentation of the sensor for how the

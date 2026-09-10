@@ -23,6 +23,121 @@ function(pwrowg_add_runtime_dll_post_build t)
     endif ()
 endfunction()
 
+# Apache Arrow uses its own modules to find dependencies, including Snappy, and
+# takes significant precautions to prevent us from meddling with this process.
+# Unfortunately, there is a bug that prevents multi-target builds from working
+# properly (https://github.com/apache/arrow/issues/49499). The issue causes
+# debug builds to link against the release build of Snappy, which in turn causes
+# a linker error. As we need a fairly old version, we cannot apply the fix from
+# the issue.
+# Therefore, this function "preloads" Snappy. It must be called before including
+# Arrow/Parquet (currently only the Power Overwhelming library itself and the
+# test driver) to trick Arrow into believing that it already ran its find module
+# for snappy, thus leaving the correct version in place.
+function(pwrowg_preload_parquet_dependencies t)
+    #set(CMAKE_FIND_DEBUG_MODE TRUE)
+
+    if (PWROWG_UseStaticParquet AND NOT PWROWG_PRELOADED_BROTLI)
+        message(STATUS "Pre-loading Brotli in config mode ...")
+        unset(brotli_FOUND)
+        unset(brotli_DIR)
+        find_package(brotli CONFIG NAMES unofficial-brotli)
+        set(PWROWG_PRELOADED_BROTLI ${brotli_FOUND})
+
+        if (${PWROWG_PRELOADED_BROTLI})
+            message(STATUS "Linking ${t} against ${brotli_Dir} ...")
+            target_link_libraries(${t} PRIVATE unofficial::brotli::brotlicommon)
+            target_link_libraries(${t} PRIVATE unofficial::brotli::brotlidec)
+            target_link_libraries(${t} PRIVATE unofficial::brotli::brotlienc)
+        endif ()
+
+        message(STATUS "Tricking Arrow into using our Brotli ...")
+        set(BrotliAlt_FOUND TRUE PARENT_SCOPE)
+        add_library(Brotli::brotlicommon ALIAS unofficial::brotli::brotlicommon)
+        add_library(Brotli::brotlienc ALIAS unofficial::brotli::brotlienc)
+        add_library(Brotli::brotlidec ALIAS unofficial::brotli::brotlidec)
+    endif ()
+
+#    if (PWROWG_UseStaticParquet AND NOT PWROWG_PRELOADED_BZIP2)
+#        message(STATUS "Pre-loading BZip2 in config mode ...")
+#        unset(BZip2_FOUND)
+#        unset(BZip2_DIR)
+#        find_package(BZip2 CONFIG)
+#        set(PWROWG_PRELOADED_BZIP2 ${BZip2_FOUND})
+#
+#        if (${PWROWG_PRELOADED_BZIP2})
+#            message(STATUS "Linking ${t} against ${BZip2_DIR} ...")
+#            target_link_libraries(${t} PRIVATE BZip2::BZip2)
+#        endif ()
+#    endif ()
+
+    if (PWROWG_UseStaticParquet AND NOT PWROWG_PRELOADED_LZ4)
+        message(STATUS "Pre-loading LZ4 in config mode ...")
+        unset(lz4_FOUND)
+        unset(lz4_DIR)
+        find_package(lz4 CONFIG)
+        set(PWROWG_PRELOADED_LZ4 ${lz4_FOUND})
+
+        if (${PWROWG_PRELOADED_LZ4})
+            message(STATUS "Linking ${t} against ${lz4_DIR} ...")
+            target_link_libraries(${t} PRIVATE lz4::lz4)
+        endif ()
+
+        message(STATUS "Tricking Arrow into using our LZ4 ...")
+        set(lz4Alt_FOUND TRUE PARENT_SCOPE)
+    endif ()
+
+    if (PWROWG_UseStaticParquet AND NOT PWROWG_PRELOADED_OPENSSL)
+        message(STATUS "Pre-loading OpenSSL in config mode ...")
+        unset(OpenSSL_FOUND)
+        unset(OpenSSL_DIR)
+        find_package(OpenSSL CONFIG)
+        set(PWROWG_PRELOADED_OPENSSL ${OpenSSL_FOUND})
+
+        if (${OpenSSL_FOUND})
+            message(STATUS "Linking ${t} against ${OpenSSL_DIR} ...")
+            target_link_libraries(${t} PRIVATE OpenSSL::Crypto)
+        endif ()
+
+        message(STATUS "Tricking Arrow into using our OpenSSL ...")
+        set(OpenSSLAlt_FOUND TRUE PARENT_SCOPE)
+    endif ()
+
+    if (PWROWG_UseStaticParquet AND NOT PWROWG_PRELOADED_SNAPPY)
+        message(STATUS "Pre-loading Snappy in config mode ...")
+        unset(Snappy_FOUND)
+        unset(Snappy_DIR)
+        find_package(Snappy CONFIG)
+        set(PWROWG_PRELOADED_SNAPPY ${Snappy_FOUND})
+
+        if (${PWROWG_PRELOADED_SNAPPY})
+            message(STATUS "Linking ${t} against ${Snappy_DIR} ...")
+            target_link_libraries(${t} PRIVATE Snappy::snappy)
+        endif ()
+
+        message(STATUS "Tricking Arrow into using our Snappy ...")
+        set(SnappyAlt_FOUND TRUE PARENT_SCOPE)
+        add_library(Snappy::snappy-static ALIAS Snappy::snappy)
+    endif ()
+
+    if (PWROWG_UseStaticParquet AND NOT PWROWG_PRELOADED_ZSTD)
+        message(STATUS "Pre-loading zstd in config mode ...")
+        unset(zstd_FOUND)
+        unset(zstd_DIR)
+        find_package(zstd CONFIG)
+        set(PWROWG_PRELOADED_ZSTD ${zstd_FOUND})
+
+        if (${zstd_FOUND})
+            message(STATUS "Linking ${t} against ${zstd_DIR} ...")
+            target_link_libraries(${t} PRIVATE zstd::libzstd)
+        endif ()
+
+        message(STATUS "Tricking Arrow into using our zstd ...")
+        set(zstdAlt_FOUND TRUE PARENT_SCOPE)
+    endif ()
+endfunction()
+
+
 
 # AMD Display Library (this is a bit hacky ...)
 FetchContent_Declare(adl
@@ -109,7 +224,7 @@ if (PWROWG_WithParquet)
 
     # Make the installation location available to find_package calls in
     # config mode.
-    set(CMAKE_PREFIX_PATH "${_install_dir}/${_triplet}" ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
+    set(CMAKE_PREFIX_PATH "${_install_dir}/${_triplet}" "${CMAKE_PREFIX_PATH}" PARENT_SCOPE)
 
     set(_debug_bin "${_install_dir}/${_triplet}/debug/bin")
     set(_release_bin "${_install_dir}/${_triplet}/bin")

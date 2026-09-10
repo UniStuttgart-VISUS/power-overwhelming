@@ -78,7 +78,8 @@ if (PWROWG_WithNvml)
 endif ()
 
 if (PWROWG_WithParquet)
-    #set(CMAKE_FIND_DEBUG_MODE TRUE)
+    pwrowg_preload_parquet_dependencies(${PROJECT_NAME})
+
     find_package(Parquet CONFIG REQUIRED)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_PARQUET)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${PWROWG_PARQUET_LIBRARY})
