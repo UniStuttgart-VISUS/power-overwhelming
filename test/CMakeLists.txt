@@ -77,10 +77,16 @@ endif ()
 
 # The test requires Parquet itself to test the parquet sink.
 if (PWROWG_WithParquet)
-    find_package(SnappyPreload)
-    find_package(Parquet CONFIG)
-    if (Parquet_FOUND)
-        target_link_libraries(${PROJECT_NAME} PRIVATE Parquet::parquet_static)
+    #set(CMAKE_FIND_DEBUG_MODE TRUE)
+    find_package(Parquet CONFIG REQUIRED)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_PARQUET)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${PWROWG_PARQUET_LIBRARY})
+
+    if (NOT PWROWG_UseStaticParquet)
+        # Grab all the dependencies and copy it to the output directory.
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${PROJECT_NAME}> "$<IF:$<CONFIG:Debug>,${PWROG_PARQUET_DEBUG_DEPENDENCIES},${PWROG_PARQUET_RELEASE_DEPENDENCIES}>"
+            COMMAND_EXPAND_LISTS)
     endif ()
 endif ()
 

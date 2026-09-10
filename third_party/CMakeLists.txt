@@ -33,45 +33,94 @@ mark_as_advanced(FORCE
 # Apache Arrow (for Parquet output). This is a giant hack as we need a version
 # that still works with C++17. Technically, this would be 22, but this is not
 # available on vcpkg, so we get 21 here.
+# All of the below happens at configure time, so the Power Overwhelming projects
+# can use find_package in config mode to find the installed Arrow libraries.
 if (PWROWG_WithParquet)
-    set(_arrow_root ${CMAKE_CURRENT_SOURCE_DIR}/arrow-21.0.0)
+    set(_arrow_dir ${CMAKE_CURRENT_SOURCE_DIR}/arrow-21.0.0)
     if (CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(_triplet x64)
     else ()
         set(_triplet x86)
     endif()
     if (WIN32)
-        set(_triplet "${_triplet}-windows-static-md")
+        if (PWROWG_UseStaticParquet)
+            set(_triplet "${_triplet}-windows-static-md")
+        else ()
+            set(_triplet "${_triplet}-windows")
+        endif ()
     else ()
         set(_triplet "${_triplet}-linux")
     endif()
+    set(_vcpkg_dir "${FETCHCONTENT_BASE_DIR}/vcpkg")
+    if (WIN32)
+        set(_vcpkg_exe "${_vcpkg_dir}/vcpkg.exe")
+    else ()
+        set(_vcpkg_exe "${_vcpkg_dir}/vcpkg")
+    endif ()
+    #message(STATUS "triplet=${_triplet}")
+    #message(STATUS "vcpkg_dir=${_vcpkg_dir}")
+    #message(STATUS "vcpkg_exe=${_vcpkg_exe}")
 
-    ExternalProject_Add(arrow
-        GIT_REPOSITORY "https://github.com/microsoft/vcpkg.git"
-        BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/arrow-build"
-        LOG_DIR "${CMAKE_CURRENT_BINARY_DIR}/arrow-log"
-        SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/arrow-src"
-        STAMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/arrow-stamp"
-        TMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/arrow-tmp"
-        CONFIGURE_COMMAND "<SOURCE_DIR>/bootstrap-vcpkg$<IF:${WIN32},.bat,.sh>" -disableMetrics
-        COMMAND "<SOURCE_DIR>/$<IF:${WIN32},vcpkg.exe,vcpkg>" install
-            --vcpkg-root "${CMAKE_CURRENT_BINARY_DIR}/arrow-src"
-            --x-manifest-root ${_arrow_root}
-            --triplet ${_triplet}
-            --clean-after-build
-        BUILD_COMMAND ""
-        INSTALL_COMMAND "")
-    set(CMAKE_PREFIX_PATH "${_arrow_root}/vcpkg_installed/${_triplet}" ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
-    #set(ARROW_VCPKG TRUE PARENT_SCOPE)
-    #set(VCPKG_TARGET_TRIPLET ${_triplet})
-    #include("${CMAKE_CURRENT_BINARY_DIR}/arrow-src/scripts/buildsystems/vcpkg.cmake")
-    mark_as_advanced(FORCE
-        _VCPKG_INSTALLED_DIR
-        X_VCPKG_APPLOCAL_DEPS_INSTALL
-        X_VCPKG_APPLOCAL_DEPS_SERIALIZED)
+    if (NOT EXISTS "${_vcpkg_dir}")
+        message(STATUS "Fetching vcpkg to ${_vcpkg_dir}...")
+        execute_process(COMMAND "${GIT_EXECUTABLE}" clone https://github.com/microsoft/vcpkg.git "${_vcpkg_dir}")
+    endif ()
 
-    unset(_arrow_root)
+    if (NOT EXISTS "${_vcpkg_exe}")
+        message(STATUS "Bootstrapping vcpkg ...")
+        if (WIN32)
+            execute_process(COMMAND "${_vcpkg_dir}/bootstrap-vcpkg.bat" -disableMetrics
+                RESULT_VARIABLE _vcpkg_result)
+        else ()
+            execute_process(COMMAND "${_vcpkg_dir}/bootstrap-vcpkg.sh" -disableMetrics
+                RESULT_VARIABLE _vcpkg_result)
+        endif ()
+
+        if (NOT ${_vcpkg_result} EQUAL 0)
+            message(FATAL_ERROR "Failed to bootstrap vcpkg.")
+        endif ()
+    endif ()
+
+    message(STATUS "Installing Apache Arrow ...")
+    set(_install_dir "${FETCHCONTENT_BASE_DIR}/arrow")
+    execute_process(COMMAND "${_vcpkg_exe}" install
+        --vcpkg-root "${_vcpkg_dir}"
+        --x-manifest-root "${_arrow_dir}"
+        --x-install-root "${_install_dir}"
+        --triplet "${_triplet}"
+        --x-wait-for-lock
+        --clean-after-build
+        RESULT_VARIABLE _vcpkg_result)
+
+    if (NOT ${_vcpkg_result} EQUAL 0)
+        message(FATAL_ERROR "Failed to install Apache Arrow.")
+    endif ()
+
+    # Make the installation location available to find_package calls in
+    # config mode.
+    set(CMAKE_PREFIX_PATH "${_install_dir}/${_triplet}" ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
+
+    set(_debug_bin "${_install_dir}/${_triplet}/debug/bin")
+    set(_release_bin "${_install_dir}/${_triplet}/bin")
+    file(GLOB _debug_bin "${_debug_bin}/*.dll")
+    file(GLOB _release_bin "${_release_bin}/*.dll")
+    set(PWROG_PARQUET_DEBUG_DEPENDENCIES "${_debug_bin}" PARENT_SCOPE)
+    set(PWROG_PARQUET_RELEASE_DEPENDENCIES "${_release_bin}" PARENT_SCOPE)
+
+    if (PWROWG_UseStaticParquet)
+        set (PWROWG_PARQUET_LIBRARY Parquet::parquet_static PARENT_SCOPE)
+    else ()
+        set (PWROWG_PARQUET_LIBRARY Parquet::parquet_shared PARENT_SCOPE)
+    endif ()
+
+    unset(_arrow_dir)
+    unset(_debug_bin)
+    unset(_install_dir)
+    unset(_release_bin)
     unset(_triplet)
+    unset(_vcpkg_dir)
+    unset(_vcpkg_exe)
+    unset(_vcpkg_result)
 endif ()
 
 

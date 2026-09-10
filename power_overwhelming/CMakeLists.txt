@@ -59,8 +59,7 @@ if (PWROWG_WithNvapi)
 
     # Grab the wrapper DLL and copy it to the output directory.
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${PWROVRNVAPI_BINARY} $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND_EXPAND_LISTS)
+        COMMAND ${CMAKE_COMMAND} -E copy ${PWROVRNVAPI_BINARY} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 endif ()
 
 if (PWROWG_WithNvml)
@@ -69,11 +68,15 @@ endif ()
 
 if (PWROWG_WithParquet)
     #set(CMAKE_FIND_DEBUG_MODE TRUE)
-    find_package(SnappyPreload)
-    find_package(Parquet CONFIG)
-    if (Parquet_FOUND)
-        target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_PARQUET)
-        target_link_libraries(${PROJECT_NAME} PRIVATE Parquet::parquet_static)
+    find_package(Parquet CONFIG REQUIRED)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_PARQUET)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${PWROWG_PARQUET_LIBRARY})
+
+    if (NOT PWROWG_UseStaticParquet)
+        # Grab all the dependencies and copy it to the output directory.
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${PROJECT_NAME}> "$<IF:$<CONFIG:Debug>,${PWROG_PARQUET_DEBUG_DEPENDENCIES},${PWROG_PARQUET_RELEASE_DEPENDENCIES}>"
+            COMMAND_EXPAND_LISTS)
     endif ()
 endif ()
 
@@ -150,6 +153,14 @@ install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+if (PWROWG_WithNvapi)
+    install(FILES ${PWROVRNVAPI_BINARY} DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif ()
+
+if (PWROWG_WithParquet AND NOT PWROWG_UseStaticParquet)
+    install(FILES ${PWROG_PARQUET_RELEASE_DEPENDENCIES} DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif ()
 
 install(DIRECTORY include/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

@@ -14,7 +14,11 @@
 #include <Windows.h>
 #endif /* defined(_WIN32) */
 
-#include "visus/pwrowg/api.h"
+#include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/pwog_meta_data.h"
+#include "visus/pwrowg/sample.h"
+#include "visus/pwrowg/sensor_description.h"
+#include "visus/pwrowg/type_erased_storage.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -109,6 +113,49 @@ public:
         return (this->_handle != invalid);
     }
 
+    /// <summary>
+    /// Writes the specified meta data to the file. The file must be in the
+    /// state to receive meta data, i.e. it must have been created for writing
+    /// and only the header has been written so far.
+    /// </summary>
+    /// <typeparam name="TChar">The character type used for the meta-data. If
+    /// this is <see langword="char" />, the text must be encoded in UTF-8.
+    /// </typeparam>
+    /// <param name="meta_data">The meta data to be written. The contents of
+    /// this object must be valid until the method returns.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    /// <exception cref="std::logic_error">If the file is not in the expected
+    /// state.</exception>
+    template<class TChar>
+    pwog_file& operator <<(_In_ const pwog_meta_data<TChar>& meta_data);
+
+    /// <summary>
+    /// Writes a sensor description to the file. The file must be in the state
+    /// to receive meta data, in which case it will transition to the sensor
+    /// description state, or in the sensor description state already.
+    /// </summary>
+    /// <remarks>
+    /// Sensor descriptions must be written in-order as they will be referenced
+    /// by their index in the file. You must write all descriptions from the
+    /// sensor array producing the data to be stored in the order they are
+    /// returned from the array.
+    /// </remarks>
+    /// <param name="sensor">The sensor description to be written.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    /// <exception cref="std::logic_error">If the file is not in the expected
+    /// state.</exception>
+    pwog_file& operator <<(_In_ const sensor_description& sensor);
+
+    /// <summary>
+    /// Writes a sample to the file. The file must be in the state to receive
+    /// samples or in a state that can be transitioned to this state.
+    /// </summary>
+    /// <param name="sample">The sample to be written.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    /// <exception cref="std::logic_error">If the file is not in the expected
+    /// state.</exception>
+    pwog_file& operator <<(_In_ const sample& sample);
+
 private:
 
 #if defined(_WIN32)
@@ -116,6 +163,39 @@ private:
 #else /* defined(_WIN32 */
     typedef int handle_type;
 #endif /* defined(_WIN32 */
+
+    /// <summary>
+    /// Tracks the state of the file in write mode.
+    /// </summary>
+    enum class state {
+        /// <summary>
+        /// The file is open in read mode.
+        /// </summary>
+        read,
+
+        /// <summary>
+        /// The file writes the header. This comprises the FOURCC and the file
+        /// version.
+        /// </summary>
+        header,
+
+        /// <summary>
+        /// The writer is writing the meta data block directly following the
+        /// header.
+        /// </summary>
+        meta_data,
+
+        /// <summary>
+        /// The writer is writing the sensor descriptions following the
+        /// user-defined meta data.
+        /// </summary>
+        sensors,
+
+        /// <summary>
+        /// The writer is writing samples following the sensor descriptions.
+        /// </summary>
+        samples
+    };
 
 #if defined(_WIN32)
     static constexpr auto invalid = INVALID_HANDLE_VALUE;
@@ -135,21 +215,30 @@ private:
     void check_version(void);
 
     /// <summary>
-    /// Writes the FOURCC to the current location in the file.
+    /// Initialises the file in the mode defined by <paramref name="state" />.
     /// </summary>
-    void write_fourcc(void);
+    void initialise(_In_ const handle_type handle, _In_ const state state);
 
     /// <summary>
-    /// Writes the version of the file format to the current location in the
-    /// file.
+    /// Writes a null-terminated string to the file, including the terminating
+    /// null character.
     /// </summary>
-    void write_version(void);
+    void write(_In_opt_z_ const char *string);
+
+    /// <summary>
+    /// Writes a null-terminated string to the file, including the terminating
+    /// null character.
+    /// </summary>
+    void write(_In_opt_z_ const wchar_t *string);
 
     handle_type _handle;
+    state _state;
     bool _swap;
     std::uint8_t _version[2];
 };
 
 PWROWG_NAMESPACE_END
+
+#include "visus/pwrowg/pwog_file.inl"
 
 #endif /* !defined(_PWROWG_PWOG_FILE_H) */
