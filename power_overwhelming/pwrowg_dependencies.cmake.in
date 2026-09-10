@@ -1,0 +1,27 @@
+﻿# pwrowg_dependencies.cmake
+# Copyright © 2026 Visualisierungsinstitut der Universität Stuttgart.
+# Licensed under the MIT licence. See LICENCE file for details.
+
+include(CMakeFindDependencyMacro)
+
+
+set(PWROWG_WithNvapi @PWROWG_WithNvapi@)
+set(PWROWG_WithParquet @PWROWG_WithParquet@)
+set(PWROVRNVAPI_BINARY @PWROVRNVAPI_BINARY@)
+set(PWROG_PARQUET_DEBUG_DEPENDENCIES @PWROG_PARQUET_DEBUG_DEPENDENCIES@)
+set(PWROG_PARQUET_RELEASE_DEPENDENCIES @PWROG_PARQUET_RELEASE_DEPENDENCIES@)
+
+
+# Convenience function for copying all dynamic dependencies of Power
+# Overwhelming to the output directory of a target 't'.
+function(pwrowg_add_runtime_dependency_post_build t)
+    if (PWROWG_WithNvapi)
+        add_custom_command(TARGET ${t} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy ${PWROVRNVAPI_BINARY} $<TARGET_FILE_DIR:${t}>)
+    endif ()
+    if (WIN32 AND PWROWG_WithParquet AND NOT PWROWG_UseStaticParquet)
+        add_custom_command(TARGET ${t} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${t}> "$<IF:$<CONFIG:Debug>,${PWROG_PARQUET_DEBUG_DEPENDENCIES},${PWROG_PARQUET_RELEASE_DEPENDENCIES}>"
+            COMMAND_EXPAND_LISTS)
+    endif ()
+endfunction()

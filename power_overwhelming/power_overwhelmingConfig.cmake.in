@@ -26,21 +26,4 @@ if (PWROWG_WithVisa)
     find_dependency(visa REQUIRED)
 endif ()
 
-
-# Convenience function for copying all dynamic dependencies of Power
-# Overwhelming to the output directory of a target 't'.
-function(pwrowg_add_runtime_dependency_post_build t)
-    if (PWROWG_WithNvapi)
-        add_custom_command(TARGET ${t} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy "@PWROVRNVAPI_BINARY@" $<TARGET_FILE_DIR:${t}>)
-    endif ()
-    if (WIN32 AND PWROWG_WithParquet AND NOT PWROWG_UseStaticParquet)
-        add_custom_command(TARGET ${t} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${t}> "$<IF:$<CONFIG:Debug>,@PWROG_PARQUET_DEBUG_DEPENDENCIES@,@PWROG_PARQUET_RELEASE_DEPENDENCIES@>"
-            COMMAND_EXPAND_LISTS)
-    endif ()
-endfunction()
-
-
-
 include("${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}Targets.cmake")

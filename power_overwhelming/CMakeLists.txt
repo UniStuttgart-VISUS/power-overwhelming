@@ -186,3 +186,7 @@ install(EXPORT ${PROJECT_NAME}Targets
 configure_file(${PROJECT_NAME}Config.cmake.in ${PROJECT_NAME}Config.cmake @ONLY)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+configure_file(pwrowg_dependencies.cmake.in pwrowg_dependencies.cmake @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/pwrowg_dependencies.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
