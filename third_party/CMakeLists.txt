@@ -13,6 +13,15 @@ mark_as_advanced(FORCE
     FETCHCONTENT_UPDATES_DISCONNECTED)
 
 
+# A utility that adds a post-build step 't' that copies all runtime DLLs linken
+# to 't' via a DLL import to the output directory of 't'.
+function(pwrowg_add_runtime_dll_post_build t)
+    add_custom_command(TARGET ${t} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:${t}> $<TARGET_FILE_DIR:${t}>
+        COMMAND_EXPAND_LISTS)
+endfunction()
+
+
 # AMD Display Library (this is a bit hacky ...)
 FetchContent_Declare(adl
     URL "https://github.com/GPUOpen-LibrariesAndSDKs/display-library/archive/17.1.tar.gz"
@@ -122,6 +131,17 @@ if (PWROWG_WithParquet)
     unset(_vcpkg_exe)
     unset(_vcpkg_result)
 endif ()
+
+# If required, copies all DLL dependencies of the Parquet library from the vcpkg
+# installation to the output directory of the target 't'.
+function(pwrowg_add_parquet_post_build t)
+    if (WIN32 AND PWROWG_WithParquet AND NOT PWROWG_UseStaticParquet)
+        # Grab all the dependencies and copy it to the output directory.
+        add_custom_command(TARGET ${t} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${t}> "$<IF:$<CONFIG:Debug>,${PWROG_PARQUET_DEBUG_DEPENDENCIES},${PWROG_PARQUET_RELEASE_DEPENDENCIES}>"
+            COMMAND_EXPAND_LISTS)
+    endif ()
+endfunction()
 
 
 # Intel Graphics Control Library (this is even more hacky, because Intel has no 

@@ -6,14 +6,19 @@ include(CMakeFindDependencyMacro)
 
 # Set variables passed to configure_file.
 set(PWROWG_WithNiDaqMx @PWROWG_WithNiDaqMx@)
+#set(PWROWG_WithNvapi @PWROWG_WithNvapi@)
 set(PWROWG_WithVisa @PWROWG_WithVisa@)
 set(PROJECT_NAME @PROJECT_NAME@)
 
 
-# Add dependencies bases on the configuration of the library.
+# Add dependencies based on the configuration of the library.
 if (PWROWG_WithNiDaqMx)
     find_dependency(nidaqmx REQUIRED)
 endif ()
+
+#if (PWROWG_WithNvapi)
+#    find_dependency(pwrovrnvapi REQUIRED)
+#endif ()
 
 if (PWROWG_WithVisa)
     find_dependency(visa REQUIRED)

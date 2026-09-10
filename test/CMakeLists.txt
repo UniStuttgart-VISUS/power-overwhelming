@@ -81,13 +81,6 @@ if (PWROWG_WithParquet)
     find_package(Parquet CONFIG REQUIRED)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_PARQUET)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${PWROWG_PARQUET_LIBRARY})
-
-    if (NOT PWROWG_UseStaticParquet)
-        # Grab all the dependencies and copy it to the output directory.
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${PROJECT_NAME}> "$<IF:$<CONFIG:Debug>,${PWROG_PARQUET_DEBUG_DEPENDENCIES},${PWROG_PARQUET_RELEASE_DEPENDENCIES}>"
-            COMMAND_EXPAND_LISTS)
-    endif ()
 endif ()
 
 # The test requires access to the Powenetics headers to test the sensor.
@@ -105,9 +98,8 @@ endif ()
 
 # Grab the DLLs to be tested and copy them to the output directory such that
 # the Visual Studio test driver finds everything.
-file(GENERATE
-    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/runtime_dlls_$<CONFIG>.txt"
-    CONTENT "$<TARGET_RUNTIME_DLLS:${PROJECT_NAME}>")
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-    COMMAND_EXPAND_LISTS)
+#file(GENERATE
+#    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/runtime_dlls_$<CONFIG>.txt"
+#    CONTENT "$<TARGET_RUNTIME_DLLS:${PROJECT_NAME}>")
+pwrowg_add_parquet_post_build(${PROJECT_NAME})
+pwrowg_add_runtime_dll_post_build(${PROJECT_NAME})

@@ -56,11 +56,22 @@ if (PWROWG_WithNvapi)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_NVAPI)
     target_include_directories(${PROJECT_NAME} PRIVATE ${PWROVRNVAPI_INCLUDE_DIR})
     target_include_directories(${PROJECT_NAME} PRIVATE ${NVAPI_INCLUDE_DIR})
-
-    # Grab the wrapper DLL and copy it to the output directory.
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${PWROVRNVAPI_BINARY} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 endif ()
+
+# A utility that adds a post-build step 't' that the non-linked pwrovrnvapi DLL
+# to the output directory of 't'. This step is required because the wrapper DLL
+# is not linked against this library, but loaded at runtime, to prevent a hard
+# dependency on the NVIDIA driver on the target machine.
+function(pwrowg_add_pwrovrnvapi_post_build t)
+    if (PWROWG_WithNvapi)
+        add_custom_command(TARGET ${t} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy "${PWROVRNVAPI_BINARY}" $<TARGET_FILE_DIR:${t}>)
+    endif ()
+endfunction()
+
+# Grab the wrapper DLL and copy it to the output directory of this library.
+pwrowg_add_pwrovrnvapi_post_build(${PROJECT_NAME})
+
 
 if (PWROWG_WithNvml)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_NVML)
@@ -155,11 +166,13 @@ install(TARGETS ${PROJECT_NAME}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 if (PWROWG_WithNvapi)
-    install(FILES ${PWROVRNVAPI_BINARY} DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(FILES ${PWROVRNVAPI_BINARY}
+        DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif ()
 
 if (PWROWG_WithParquet AND NOT PWROWG_UseStaticParquet)
-    install(FILES ${PWROG_PARQUET_RELEASE_DEPENDENCIES} DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(FILES ${PWROG_PARQUET_RELEASE_DEPENDENCIES}
+        DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif ()
 
 install(DIRECTORY include/

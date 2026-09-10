@@ -1,5 +1,5 @@
 ﻿# CMakeLists.txt
-# Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+# Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 # Licensed under the MIT licence. See LICENCE file for details.
 
 project(rtx_config)
@@ -30,8 +30,5 @@ if (WIN32)
 endif ()
 
 # Deploy DLLs with the executable.
-if (WIN32)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND_EXPAND_LISTS)
-endif (WIN32)
+pwrowg_add_parquet_post_build(${PROJECT_NAME})
+pwrowg_add_runtime_dll_post_build(${PROJECT_NAME})

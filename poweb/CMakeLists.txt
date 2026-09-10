@@ -1,5 +1,5 @@
 # CMakeLists.txt
-# Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
+# Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart. Alle Rechte vorbehalten.
 
 cmake_minimum_required(VERSION 3.21.0)
 
@@ -66,6 +66,5 @@ target_link_libraries(${PROJECT_NAME}
 
 
 # Deploy DLLs with the executable.
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-    COMMAND_EXPAND_LISTS)
+pwrowg_add_parquet_post_build(${PROJECT_NAME})
+pwrowg_add_runtime_dll_post_build(${PROJECT_NAME})
