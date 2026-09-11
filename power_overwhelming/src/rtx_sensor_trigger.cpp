@@ -132,6 +132,8 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::fatal_failure(
  * PWROWG_NAMESPACE::rtx_sensor_trigger::acquire
  */
 bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
+        _In_ void (*acquired)(const type_erased_storage&),
+        _Inout_ type_erased_storage&& acquired_context,
         _In_ void (*done)(const type_erased_storage&),
         _Inout_ type_erased_storage&& done_context,
         _In_ bool (*failed)(const std::exception_ptr,

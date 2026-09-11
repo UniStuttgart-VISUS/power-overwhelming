@@ -122,7 +122,19 @@ struct rtx_sensor_trigger_impl final {
 
     /// <summary>
     /// A callback to be invoked when the RTX sensor controller thread completed
-    /// an acquisition.
+    /// an acquisition and starts downloading the data.
+    /// </summary>
+    void (*when_acquired)(const type_erased_storage&);
+
+    /// <summary>
+    /// The context passed to <see cref="when_acquired" />. This is usually used
+    /// to store a user-defined lambda to be called.
+    /// </summary>
+    type_erased_storage when_acquired_context;
+
+    /// <summary>
+    /// A callback to be invoked when the RTX sensor controller thread has
+    /// downloaded the data of an acquisition.
     /// </summary>
     void (*when_done)(const type_erased_storage&);
 
@@ -179,8 +191,14 @@ struct rtx_sensor_trigger_impl final {
         references(1),
         state(sensor_trigger_state::none),
         trigger_instrument((std::numeric_limits<std::size_t>::max)()),
-        when_failed(nullptr),
-        when_done(nullptr) { }
+        when_acquired(nullptr),
+        when_done(nullptr),
+        when_failed(nullptr) { }
+
+    rtx_sensor_trigger_impl(const rtx_sensor_trigger_impl&) = delete;
+
+    rtx_sensor_trigger_impl& operator =(
+        const rtx_sensor_trigger_impl&) = delete;
 };
 
 PWROWG_DETAIL_NAMESPACE_END

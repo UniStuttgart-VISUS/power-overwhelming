@@ -272,7 +272,7 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample(_In_ const bool enable) {
  * PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments
  */
 void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
-    set_thread_name("PwrOwg RTX Sensor Controller");
+    set_thread_name("PwrOwg RTx Sensor Controller");
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     constexpr auto opc = visa_event_status::operation_complete;
     assert(this->_trigger._impl != nullptr);
@@ -283,7 +283,8 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
     PWROWG_TRACE(_T("The RTX sensor controller thread has started."));
 
     while (check_all(trigger.state, sensor_trigger_state::running)) {
-        auto source = this->_index;
+        auto notified = false;          // Whether 'when_acquired' was called.
+        auto source = this->_index;     // Per-instrument source ID.
 
         for (std::size_t i = 0; i < instruments.size(); ++i) {
             assert(i < this->_channels.size());
@@ -309,6 +310,13 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
                         _T("was requested while waiting for data."));
                     break;
                 };
+
+                if (!notified && (trigger.when_acquired != nullptr)) {
+                    PWROWG_TRACE(_T("The RTX controller thread is invoking ")
+                        _T("acquisition callback."));
+                    trigger.when_acquired(trigger.when_acquired_context);
+                    notified = true;
+                }
 
                 PWROWG_TRACE(_T("The RTX controller thread is processing the ")
                     _T("latest waveforms."));

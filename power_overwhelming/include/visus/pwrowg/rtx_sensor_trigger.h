@@ -90,6 +90,68 @@ public:
     /// Triggers the oscilloscope as soon as any ongoing acquisition has
     /// finished.
     /// </summary>
+    /// <typeparam name="TAcquired">The type of the callback to be invoked
+    /// when a single acquisition is complete and the data are being
+    /// downloaded next. This must be a callable type accepting no arguments
+    /// and returning <see langword="void" />.</typeparam>
+    /// <typeparam name="TDone">The type of the callback to be invoked when
+    /// the acquisition was fully processed by the RTX sensor controller
+    /// thread. This must be a callable type accepting no arguments and
+    /// returning <see langword="void" />.</typeparam>
+    /// <typeparam name="TFailed">The type of the callback to be invoked when
+    /// when RTX sensor controller asynchronously encounters an error while
+    /// processing the waveforms. This must be a callable type accepting an
+    /// <see cref="std::exception_ptr" /> and returning
+    /// <see langword="bool" />. If the callback returns <see cref="true" />,
+    /// the thread will continue processing the next acquisitions. Otherwise,
+    /// the error will be propagated and cause the application to exit.
+    /// </typeparam>
+    /// <param name="when_acquired">The callback to be invoked when a single
+    /// acquisition has completed and the data are being downloaded next. Note
+    /// that the callback should do as little work as possible as it prevents
+    /// the actual download from starting. Note that if multiple instruments
+    /// are involved, the callback will be invoked for the first instrument
+    /// only. The rationale behind this is that the controller thread invoking
+    /// the callback processes the downloads in series and therefore cannot
+    /// invoke it again before all data from the first instrument have been
+    /// downloaded.</param>
+    /// <param name="when_done">The callback to be invoked when the acquisition
+    /// was processed.</param>
+    /// <param name="when_failed">The callback to be invoked when an error was
+    /// encountered.</param>
+    /// <returns><see langword="true" /> if the trigger was acknowledged,
+    /// <see langword="false" /> if the trigger was not issued as the sensor is
+    /// shutting down. Be aware that the return value does not indicate whether
+    /// the acquisition was success for or not, but only whether it has started.
+    /// </returns>
+    template<class TAcquired, class TDone, class TFailed> bool acquire(
+            _Inout_ TAcquired&& when_acquired,
+            _Inout_ TDone&& when_done,
+            _Inout_ TFailed&& when_failed) {
+        type_erased_storage acquired, done, failed;
+        acquired.emplace<TAcquired>(std::forward<TAcquired>(when_acquired));
+        done.emplace<TDone>(std::forward<TDone>(when_done));
+        failed.emplace<TFailed>(std::forward<TFailed>(when_failed));
+
+        return this->acquire(
+            std::move(acquired),
+            [](const type_erased_storage& c) {
+                (*c.template get<TAcquired>())();
+            },
+            [](const type_erased_storage& c) {
+                (*c.template get<TDone>())();
+            },
+            std::move(done),
+            [](const std::exception_ptr ex, const type_erased_storage& c) {
+                return (*c.template get<TFailed>())(ex);
+            },
+            std::move(failed));
+    }
+
+    /// <summary>
+    /// Triggers the oscilloscope as soon as any ongoing acquisition has
+    /// finished.
+    /// </summary>
     /// <typeparam name="TDone">The type of the callback to be invoked when
     /// the acquisition was fully processed by the RTX sensor controller
     /// thread. This must be a callable type accepting no arguments and
@@ -108,14 +170,18 @@ public:
     /// encountered.</param>
     /// <returns><see langword="true" /> if the trigger was acknowledged,
     /// <see langword="false" /> if the trigger was not issued as the sensor is
-    /// shutting down.</returns>
+    /// shutting down. Be aware that the return value does not indicate whether
+    /// the acquisition was success for or not, but only whether it has started.
+    /// </returns>
     template<class TDone, class TFailed>
-    bool acquire(_In_ TDone&& when_done, _In_ TFailed&& when_failed) {
+    bool acquire(_Inout_ TDone&& when_done, _Inout_ TFailed&& when_failed) {
         type_erased_storage done, failed;
         done.emplace<TDone>(std::forward<TDone>(when_done));
         failed.emplace<TFailed>(std::forward<TFailed>(when_failed));
 
         return this->acquire(
+            [](const type_erased_storage&) { },
+            type_erased_storage(),
             [](const type_erased_storage& c) {
                 (*c.template get<TDone>())();
             },
@@ -138,12 +204,16 @@ public:
     /// processed.</param>
     /// <returns><see langword="true" /> if the trigger was acknowledged,
     /// <see langword="false" /> if the trigger was not issued as the sensor is
-    /// shutting down.</returns>
-    template<class TDone> bool acquire(_In_ TDone&& done) {
+    /// shutting down. Be aware that the return value does not indicate whether
+    /// the acquisition was success for or not, but only whether it has started.
+    /// </returns>
+    template<class TDone> bool acquire(_Inout_ TDone&& done) {
         type_erased_storage when_done;
         when_done.emplace<TDone>(std::forward<TDone>(done));
 
         return this->acquire(
+            [](const type_erased_storage&) { },
+            type_erased_storage(),
             [](const type_erased_storage& c) { (*c.template get<TDone>())(); },
             std::move(when_done),
             rtx_sensor_trigger::fatal_failure,
@@ -156,9 +226,13 @@ public:
     /// </summary>
     /// <returns><see langword="true" /> if the trigger was acknowledged,
     /// <see langword="false" /> if the trigger was not issued as the sensor is
-    /// shutting down.</returns>
+    /// shutting down. Be aware that the return value does not indicate whether
+    /// the acquisition was success for or not, but only whether it has started.
+    /// </returns>
     inline bool acquire(void) {
         return this->acquire(
+            [](const type_erased_storage&) { },
+            type_erased_storage(),
             [](const type_erased_storage&) { },
             type_erased_storage(),
             rtx_sensor_trigger::fatal_failure,
@@ -251,6 +325,8 @@ private:
         const type_erased_storage&) noexcept;
 
     bool acquire(
+        _In_ void (*acquired)(const type_erased_storage&),
+        _Inout_ type_erased_storage&& acquired_context,
         _In_ void (*done)(const type_erased_storage&),
         _Inout_ type_erased_storage&& done_context,
         _In_ bool (*failed)(const std::exception_ptr,
