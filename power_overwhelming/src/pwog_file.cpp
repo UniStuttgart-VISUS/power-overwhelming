@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "io_util.h"
 
@@ -103,17 +104,24 @@ PWROWG_NAMESPACE::pwog_file PWROWG_NAMESPACE::pwog_file::read(
  * PWROWG_NAMESPACE::pwog_file::pwog_file
  */
 PWROWG_NAMESPACE::pwog_file::pwog_file(void) noexcept
-    : _handle(invalid), _state(state::read), _swap(false), _version { 1, 0 } { }
+    : _data(0),
+    _handle(invalid),
+    _state(state::read),
+    _swap(false),
+    _version { 1, 0 } { }
 
 
 /*
  * PWROWG_NAMESPACE::pwog_file::pwog_file
  */
 PWROWG_NAMESPACE::pwog_file::pwog_file(_Inout_ pwog_file&& rhs) noexcept
-        : _handle(rhs._handle),
+        : _data(rhs._data),
+        _handle(rhs._handle),
         _meta_data(std::move(rhs._meta_data)),
+        _sensors(std::move(rhs._sensors)),
         _state(rhs._state),
         _swap(rhs._swap) {
+    rhs._data = 0;
     rhs._handle = invalid;
     std::copy(std::begin(rhs._version),
         std::end(rhs._version),
@@ -132,38 +140,21 @@ void PWROWG_NAMESPACE::pwog_file::close(void) noexcept {
         ::close(this->_handle);
 #endif /* defined(_WIN32) */
         this->_handle = invalid;
+
+        this->_data = 0;
+        this->_meta_data.reset();
+        this->_sensors.reset();
     }
 }
 
 
 /*
- * PWROWG_NAMESPACE::pwog_file::operator =
+ * PWROWG_NAMESPACE::pwog_file::write
  */
-PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::operator =(
-        _Inout_ pwog_file&& rhs) noexcept {
-    if (this != std::addressof(rhs)) {
-        this->close();
-        assert(!*this);
-        std::swap(this->_handle, rhs._handle);
-        assert(!rhs);
-        this->_meta_data = std::move(rhs._meta_data);
-        assert(!rhs._meta_data);
-        this->_state = rhs._state;
-        this->_swap = rhs._swap;
-        std::copy(std::begin(rhs._version),
-            std::end(rhs._version),
-            std::begin(this->_version));
-    }
-
-    return *this;
-}
-
-
-/*
- * PWROWG_NAMESPACE::pwog_file::operator <<
- */
-PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::operator <<(
-        _In_ const sensor_description& sensor) {
+PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::write(
+        _In_reads_(cnt) const sensor_description *sensors,
+        _In_ std::size_t cnt) {
+    assert((sensors != nullptr) || (cnt == 0));
     // An empty key/value pair marks the end of the meta data block.
     const std::uint8_t sep[2] = { 0, 0 };
 
@@ -180,51 +171,64 @@ PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::operator <<(
                 "sensor descriptions.");
     }
 
-    this->write(sensor.id());
-    this->write(sensor.path());
-    this->write(sensor.name());
-    this->write(sensor.label());
-    this->write(sensor.vendor());
-    {
-        auto value = sensor.sensor_type();
-        static_assert(sizeof(value) == sizeof(std::uint32_t), "The sensor type "
-            "is expected to occupy 32 bits.");
-        detail::write_all_bytes(this->_handle, &value, sizeof(value));
+    // Fix nonsensical input.
+    if (sensors == nullptr) {
+        cnt = 0;
     }
-    {
-        auto value = sensor.reading_type();
-        static_assert(sizeof(value) == sizeof(std::uint32_t), "The reading "
-            "type is expected to occupy 32 bits.");
-        detail::write_all_bytes(this->_handle, &value, sizeof(value));
-    }
-    {
-        auto value = sensor.reading_unit();
-        static_assert(sizeof(value) == sizeof(std::uint32_t), "The reading "
-            "unit is expected to occupy 32 bits.");
-        detail::write_all_bytes(this->_handle, &value, sizeof(value));
-    }
-    {
-        auto& value = sensor.sensor_class();
-        static_assert(sizeof(value) == sizeof(PWROWG_NAMESPACE::guid), "The "
-            "sensor class is expected be a GUID.");
-        detail::write_all_bytes(this->_handle, &value, sizeof(value));
+
+    for (std::size_t i = 0; i < cnt; ++i) {
+        auto& sensor = sensors[i];
+        this->write(sensor.id());
+        this->write(sensor.path());
+        this->write(sensor.name());
+        this->write(sensor.label());
+        this->write(sensor.vendor());
+        {
+            auto value = sensor.sensor_type();
+            static_assert(sizeof(value) == sizeof(std::uint32_t), "The sensor "
+                "type is expected to occupy 32 bits.");
+            detail::write_all_bytes(this->_handle, &value, sizeof(value));
+        }
+        {
+            auto value = sensor.reading_type();
+            static_assert(sizeof(value) == sizeof(std::uint32_t), "The reading "
+                "type is expected to occupy 32 bits.");
+            detail::write_all_bytes(this->_handle, &value, sizeof(value));
+        }
+        {
+            auto value = sensor.reading_unit();
+            static_assert(sizeof(value) == sizeof(std::uint32_t), "The reading "
+                "unit is expected to occupy 32 bits.");
+            detail::write_all_bytes(this->_handle, &value, sizeof(value));
+        }
+        {
+            auto& value = sensor.sensor_class();
+            static_assert(sizeof(value) == sizeof(PWROWG_NAMESPACE::guid),
+                "The sensor class is expected be a GUID.");
+            detail::write_all_bytes(this->_handle, &value, sizeof(value));
+        }
     }
 
     return *this;
 }
 
 
+
+
 /*
- * PWROWG_NAMESPACE::pwog_file::operator <<
+ * PWROWG_NAMESPACE::pwog_file::write
  */
-PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::operator <<(
-        _In_ const sample& sample) {
+PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::write(
+        _In_reads_(cnt) const sample* samples,
+        _In_ std::size_t cnt) {
+    assert(samples != nullptr);
     // An empty sensor ID marks the end of the sensor description block.
     const std::uint8_t sep[1] = { 0 };
 
     switch (this->_state) {
         case state::sensors:
             detail::write_all_bytes(this->_handle, sep, sizeof(sep));
+            this->_data = detail::tell(this->_handle);
             this->_state = state::samples;
             __fallthrough;
         case state::samples:
@@ -235,14 +239,94 @@ PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::operator <<(
                 "samples.");
     }
 
+    // Fix nonsensical input.
+    if (samples == nullptr) {
+        cnt = 0;
+    }
+
     static_assert(sizeof(sample)
         == sizeof(PWROWG_NAMESPACE::sample::reading)
         + sizeof(PWROWG_NAMESPACE::sample::source)
         + sizeof(PWROWG_NAMESPACE::sample::timestamp), "The implementation "
         "expected samples to be without padding.");
-    detail::write_all_bytes(this->_handle, &sample, sizeof(sample));
+    for (std::size_t i = 0; i < cnt; ++i) {
+        auto& sample = samples[i];
+        detail::write_all_bytes(this->_handle, &sample, sizeof(sample));
+    }
 
     return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::pwog_file::operator =
+ */
+PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::operator =(
+        _Inout_ pwog_file&& rhs) noexcept {
+    if (this != std::addressof(rhs)) {
+        this->close();
+        assert(!*this);
+        assert(this->_data == 0);
+        std::swap(this->_data, rhs._data);
+        std::swap(this->_handle, rhs._handle);
+        assert(!rhs);
+        this->_meta_data = std::move(rhs._meta_data);
+        assert(!rhs._meta_data);
+        this->_sensors = std::move(rhs._sensors);
+        assert(!rhs._sensors);
+        this->_state = rhs._state;
+        this->_swap = rhs._swap;
+        std::copy(std::begin(rhs._version),
+            std::end(rhs._version),
+            std::begin(this->_version));
+    }
+
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::pwog_file::operator []
+ */
+_Ret_maybenull_z_ const char *PWROWG_NAMESPACE::pwog_file::operator [](
+        _In_ const char *key) const noexcept {
+    if (key == nullptr) {
+        return nullptr;
+    }
+
+    auto map = this->_meta_data.get<std::map<std::string, std::string>>();
+    if (map == nullptr) {
+        return nullptr;
+    }
+
+    auto it = map->find(key);
+    if (it == map->end()) {
+        return nullptr;
+    }
+
+    return it->second.c_str();
+}
+
+
+/*
+ * PWROWG_NAMESPACE::pwog_file::operator []
+ */
+_Ret_maybenull_ const PWROWG_NAMESPACE::sensor_description *
+PWROWG_NAMESPACE::pwog_file::operator [](_In_ const int index) const noexcept {
+    if (index < 0) {
+        return nullptr;
+    }
+
+    auto sensors = this->_sensors.get<std::vector<sensor_description>>();
+    if (sensors == nullptr) {
+        return nullptr;
+    }
+
+    if (index >= sensors->size()) {
+        return nullptr;
+    }
+
+    return sensors->data() + index;
 }
 
 

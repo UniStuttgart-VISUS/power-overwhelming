@@ -302,6 +302,37 @@ std::streamoff PWROWG_DETAIL_NAMESPACE::seek(_In_ const int fd,
 
 #if defined(_WIN32)
 /*
+ * PWROWG_DETAIL_NAMESPACE::tell
+ */
+std::size_t PWROWG_DETAIL_NAMESPACE::tell(_In_ const HANDLE handle) {
+    LARGE_INTEGER current = { 0 };
+    LARGE_INTEGER offset = { 0 };
+
+    if (!::SetFilePointerEx(handle, offset, &current, FILE_CURRENT)) {
+        throw std::system_error(::GetLastError(), std::system_category());
+    }
+
+    return static_cast<std::size_t>(current.QuadPart);
+}
+#endif /* defined(_WIN32) */
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::tell
+ */
+std::size_t PWROWG_DETAIL_NAMESPACE::tell(_In_ const int fd) {
+    auto retval = ::tell(fd);
+
+    if (retval == -1) {
+        THROW_POSIX_ERROR();
+    }
+
+    return retval;
+}
+
+
+#if defined(_WIN32)
+/*
  * PWROWG_DETAIL_NAMESPACE::write_all_bytes
  */
 void PWROWG_DETAIL_NAMESPACE::write_all_bytes(

@@ -32,9 +32,12 @@ class POWER_OVERWHELMING_API pwog_file final {
 public:
 
     /// <summary>
-    /// The fourcc at the begin of each file.
+    /// The FOURCC at the begin of each file.
     /// </summary>
-    static constexpr const std::uint32_t fourcc = 'PWOG';
+    /// <remarks>
+    /// The FOURCC prints &quot;PWOG&quot; in ASCII on little-endian systems.
+    /// </remarks>
+    static constexpr const std::uint32_t fourcc = 'GOWP';
 
     /// <summary>
     /// Opens the specified file for writing.
@@ -98,6 +101,56 @@ public:
     void close(void) noexcept;
 
     /// <summary>
+    /// Writes the specified meta data to the file. The file must be in the
+    /// state to receive meta data, i.e. it must have been created for writing
+    /// and only the header has been written so far.
+    /// </summary>
+    /// <typeparam name="TChar">The character type used for the meta-data. If
+    /// this is <see langword="char" />, the text must be encoded in UTF-8.
+    /// </typeparam>
+    /// <param name="meta_data">The meta data to be written. The contents of
+    /// this object must be valid until the method returns.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    /// <exception cref="std::logic_error">If the file is not in the expected
+    /// state.</exception>
+    template<class TChar>
+    pwog_file& write(_In_ const pwog_meta_data<TChar>& meta_data);
+
+    /// <summary>
+    /// Writes the given sensor descriptions to the file. The file must be in
+    /// the state to receive meta data, in which case it will transition to the
+    /// sensor description state, or in the sensor description state already.
+    /// </summary>
+    /// <remarks>
+    /// Sensor descriptions must be written in-order as they will be referenced
+    /// by their index in the file. You must write all descriptions from the
+    /// sensor array producing the data to be stored in the order they are
+    /// returned from the array.
+    /// </remarks>
+    /// <param name="sensors">An array of <paramref name="cnt" /> sensor
+    /// descriptions to be written.</param>
+    /// <param name="cnt">The number of sensor descriptions in
+    /// <paramref name="sensors" />.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    /// <exception cref="std::logic_error">If the file is not in the expected
+    /// state.</exception>
+    pwog_file& write(_In_reads_(cnt) const sensor_description *sensors,
+        _In_ std::size_t cnt);
+
+    /// <summary>
+    /// Writes the given samples to the file. The file must be in the state to
+    /// receive samples or in a state that can be transitioned to this state.
+    /// </summary>
+    /// <param name="samples">An array of <paramref name="cnt" /> samples to be
+    /// written.</param>
+    /// <param name="cnt">The number of <paramref name="samples" />.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    /// <exception cref="std::logic_error">If the file is not in the expected
+    /// state.</exception>
+    pwog_file& write(_In_reads_(cnt) const sample* samples,
+        _In_ std::size_t cnt);
+
+    /// <summary>
     /// Move assignment.
     /// </summary>
     /// <param name="rhs">The right-hand-side operand.</param>
@@ -127,7 +180,9 @@ public:
     /// <exception cref="std::logic_error">If the file is not in the expected
     /// state.</exception>
     template<class TChar>
-    pwog_file& operator <<(_In_ const pwog_meta_data<TChar>& meta_data);
+    inline pwog_file& operator <<(_In_ const pwog_meta_data<TChar>& meta_data) {
+        return this->write(meta_data);
+    }
 
     /// <summary>
     /// Writes a sensor description to the file. The file must be in the state
@@ -144,7 +199,9 @@ public:
     /// <returns><c>*<see langword="this" /></c>.</returns>
     /// <exception cref="std::logic_error">If the file is not in the expected
     /// state.</exception>
-    pwog_file& operator <<(_In_ const sensor_description& sensor);
+    inline pwog_file& operator <<(_In_ const sensor_description& sensor) {
+        return this->write(&sensor, 1);
+    }
 
     /// <summary>
     /// Writes a sample to the file. The file must be in the state to receive
@@ -154,7 +211,38 @@ public:
     /// <returns><c>*<see langword="this" /></c>.</returns>
     /// <exception cref="std::logic_error">If the file is not in the expected
     /// state.</exception>
-    pwog_file& operator <<(_In_ const sample& sample);
+    inline pwog_file& operator <<(_In_ const sample& sample) {
+        return this->write(&sample, 1);
+    }
+
+    /// <summary>
+    /// Answer, if available, the meta datum with the specified key.
+    /// </summary>
+    /// <remarks>
+    /// This operator will always return <see langword="nullptr" /> for files in
+    /// write mode.
+    /// </remarks>
+    /// <param name="key">The meta data key to retrieve.</param>
+    /// <returns>A pointer to the meta datum, or <see langword="nullptr" />
+    /// if that item does not exist. The object remains owner of the memory.
+    /// </returns>
+    _Ret_maybenull_z_ const char *operator [](
+        _In_ const char *key) const noexcept;
+
+    /// <summary>
+    /// Answer, if available, the sensor description at the specified index.
+    /// </summary>
+    /// <remarks>
+    /// This operator will always return <see langword="nullptr" /> for files in
+    /// write mode.
+    /// </remarks>
+    /// <param name="index">The zero-based index of the sensor to retrieve the
+    /// ID for.</param>
+    /// <returns>A pointer to the sensor description, or
+    /// <see langword="nullptr" /> if that item does not exist. The object
+    /// remains owner of the memory.</returns>
+    _Ret_maybenull_ const sensor_description *operator [](
+        _In_ const int index) const noexcept;
 
 private:
 
@@ -237,8 +325,10 @@ private:
     /// </summary>
     void write(_In_opt_z_ const wchar_t *string);
 
+    std::size_t _data;
     handle_type _handle;
     type_erased_storage _meta_data;
+    type_erased_storage _sensors;
     state _state;
     bool _swap;
     std::uint8_t _version[2];

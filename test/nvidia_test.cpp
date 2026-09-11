@@ -12,7 +12,7 @@
 
 PWROWG_TEST_NAMESPACE_BEGIN
 
-TEST_CLASS(nvida_test) {
+TEST_CLASS(nvidia_test) {
 
 public:
 

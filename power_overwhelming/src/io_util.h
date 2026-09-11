@@ -231,6 +231,24 @@ POWER_OVERWHELMING_API std::streamoff seek(_In_ const int fd,
 
 #if defined(_WIN32)
 /// <summary>
+/// Answer the current position in the file.
+/// </summary>
+/// <param name="handle"></param>
+/// <returns></returns>
+/// <exception cref="std::system_error"></exception>
+POWER_OVERWHELMING_API std::size_t tell(_In_ const HANDLE handle);
+#endif /* defined(_WIN32) */
+
+/// <summary>
+/// Answer the current position in the file.
+/// </summary>
+/// <param name="fd"></param>
+/// <returns></returns>
+/// <exception cref="std::system_error"></exception>
+POWER_OVERWHELMING_API std::size_t tell(_In_ const int fd);
+
+#if defined(_WIN32)
+/// <summary>
 /// Writes exactly <paramref name="cnt" /> bytes or fails.
 /// </summary>
 /// <param name="handle"></param>

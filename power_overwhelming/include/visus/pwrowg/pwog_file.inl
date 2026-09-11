@@ -6,10 +6,10 @@
 
 
 /*
- * PWROWG_NAMESPACE::pwog_file::operator <<
+ * PWROWG_NAMESPACE::pwog_file::write
  */
 template<class TChar>
-PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::operator <<(
+PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::write(
         _In_ const pwog_meta_data<TChar>& meta_data) {
     if (this->_state != state::meta_data) {
         throw std::logic_error("The file is not in the state to receive meta "
