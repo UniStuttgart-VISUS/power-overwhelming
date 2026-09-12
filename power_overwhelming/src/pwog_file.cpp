@@ -383,6 +383,7 @@ void PWROWG_NAMESPACE::pwog_file::initialise(
             this->check_fourcc();
             this->check_version();
             this->read_meta_data();
+            this->read_sensors();
             break;
 
         case state::header:
@@ -409,6 +410,61 @@ void PWROWG_NAMESPACE::pwog_file::read_meta_data(void) {
     assert(this->_state == state::read);
     auto& map = this->_meta_data.emplace<std::map<std::string, std::string>>();
 
+    std::vector<char> buffer(1024);
+    std::size_t key = 0;
+    auto is_key = true;
+    std::size_t offset = 0;
+    const auto start = detail::tell(this->_handle);
+    std::size_t value = 0;
+
+    while (true) {
+        const auto read = detail::try_read(this->_handle, buffer, offset);
+        if (read == 0) {
+            throw std::runtime_error("Unexpected end of file while reading "
+                "meta data.");
+        }
+
+        for (std::size_t end = offset + read; offset < end; ++offset) {
+            if (buffer[offset] == 0) {
+                if (is_key) {
+                    if (offset - key == 0) {
+                        // An empty key marks the end of the meta data block.
+                        // Before returning, make sure that we reset the file
+                        // pointer to the first byte after the meta data block.
+                        detail::seek(this->_handle,
+                            start + offset + 2,
+                            detail::native_seek_origin::begin);
+                        return;
+                    }
+
+                    // The value starts at the next character.
+                    value = offset + 1;
+                } else {
+                    // The next key starts at the next character.
+                    map.emplace(buffer.data() + key, buffer.data() + value);
+                    key = offset + 1;
+                }
+
+                // Whenever we encounter the end of a string, switch between key
+                // and value.
+                is_key = !is_key;
+            } /* if (buffer[i] == 0) */
+        } /* for (std::size_t i = offset; i < offset + read; ++i) */
+
+        buffer.resize(buffer.size() * 2);
+    } /* while (true) */
+}
+
+
+/*
+ * PWROWG_NAMESPACE::pwog_file::read_sensors
+ */
+void PWROWG_NAMESPACE::pwog_file::read_sensors(void) {
+    assert(this->_handle != invalid);
+    assert(this->_state == state::read);
+    std::vector<char> buffer(1024);
+
+    const auto read = detail::try_read(this->_handle, buffer);
 }
 
 

@@ -74,6 +74,15 @@ enum class posix_seek_origin : int {
     end = SEEK_END
 };
 
+/// <summary>
+/// The type of the seek origin for platform-native file handles.
+/// </summary>
+#if defined(_WIN32)
+typedef win32_seek_origin native_seek_origin;
+#else /* defined(_WIN32) */
+typedef posix_seek_origin native_seek_origin;
+#endif /* defined(_WIN32) */
+
 #if defined(_WIN32)
 /// <summary>
 /// Opens a native Win32 file handle.
@@ -92,7 +101,7 @@ enum class posix_seek_origin : int {
 /// <returns>A handle for the opened file or device.</returns>
 /// <exception cref="std::system_error">If opening the file or device
 /// failed.</exception>
-POWER_OVERWHELMING_API HANDLE open(_In_z_ const wchar_t *path,
+PWROWG_TEST_API HANDLE open(_In_z_ const wchar_t *path,
     _In_ const DWORD desired_access,
     _In_ const DWORD share_mode,
     _In_ const DWORD create_disposition,
@@ -117,7 +126,7 @@ POWER_OVERWHELMING_API HANDLE open(_In_z_ const wchar_t *path,
 /// <returns>A handle for the opened file or device.</returns>
 /// <exception cref="std::system_error">If opening the file or device
 /// failed.</exception>
-POWER_OVERWHELMING_API HANDLE open(_In_z_ const char *path,
+PWROWG_TEST_API HANDLE open(_In_z_ const char *path,
     _In_ const DWORD desired_access,
     _In_ const DWORD share_mode,
     _In_ const DWORD create_disposition,
@@ -132,7 +141,7 @@ POWER_OVERWHELMING_API HANDLE open(_In_z_ const char *path,
 /// <param name="mode"></param>
 /// <returns></returns>
 /// <exception cref="std::system_error"></exception>
-POWER_OVERWHELMING_API int open(_In_z_ const wchar_t *path,
+PWROWG_TEST_API int open(_In_z_ const wchar_t *path,
     _In_ const int flags, _In_ const int mode = 0);
 
 /// <summary>
@@ -143,7 +152,7 @@ POWER_OVERWHELMING_API int open(_In_z_ const wchar_t *path,
 /// <param name="mode"></param>
 /// <returns></returns>
 /// <exception cref="std::system_error"></exception>
-POWER_OVERWHELMING_API int open(_In_z_ const char *path,
+PWROWG_TEST_API int open(_In_z_ const char *path,
     _In_ const int flags, _In_ const int mode = 0);
 
 /// <summary>
@@ -155,7 +164,7 @@ POWER_OVERWHELMING_API int open(_In_z_ const char *path,
 /// <param name="fd"></param>
 /// <returns></returns>
 /// <exception cref="std::system_error"></exception>
-POWER_OVERWHELMING_API std::vector<std::uint8_t> read_all_bytes(
+PWROWG_TEST_API std::vector<std::uint8_t> read_all_bytes(
     _In_ const int fd);
 
 #if defined(_WIN32)
@@ -168,7 +177,7 @@ POWER_OVERWHELMING_API std::vector<std::uint8_t> read_all_bytes(
 /// <param name="handle"></param>
 /// <returns></returns>
 /// <exception cref="std::system_error"></exception>
-POWER_OVERWHELMING_API std::vector<std::uint8_t> read_all_bytes(
+PWROWG_TEST_API std::vector<std::uint8_t> read_all_bytes(
     _In_ const HANDLE handle);
 #endif /* defined(_WIN329 */
 
@@ -180,8 +189,8 @@ POWER_OVERWHELMING_API std::vector<std::uint8_t> read_all_bytes(
 /// <param name="dst"></param>
 /// <param name="cnt"></param>
 /// <returns></returns>
-POWER_OVERWHELMING_API void read_bytes(_In_ const HANDLE handle,
-    _Out_writes_bytes_(cnt) void *dst, _In_ const std::size_t cnt);
+PWROWG_TEST_API void read_bytes(_In_ const HANDLE handle,
+    _Out_writes_bytes_all_(cnt) void *dst, _In_ const std::size_t cnt);
 #endif /* defined(_WIN32) */
 
 /// <summary>
@@ -194,8 +203,8 @@ POWER_OVERWHELMING_API void read_bytes(_In_ const HANDLE handle,
 /// <param name="dst"></param>
 /// <param name="cnt"></param>
 /// <returns></returns>
-POWER_OVERWHELMING_API void read_bytes(_In_ const int fd,
-    _Out_writes_bytes_(cnt) void *dst, _In_ const std::size_t cnt);
+PWROWG_TEST_API void read_bytes(_In_ const int fd,
+    _Out_writes_bytes_all_(cnt) void *dst, _In_ const std::size_t cnt);
 
 #if defined(_WIN32)
 /// <summary>
@@ -225,7 +234,7 @@ POWER_OVERWHELMING_API std::streamoff seek(_In_ const HANDLE handle,
 /// <param name="origin"></param>
 /// <returns></returns>
 /// <exception cref="std::system_error"></exception>
-POWER_OVERWHELMING_API std::streamoff seek(_In_ const int fd,
+PWROWG_TEST_API std::streamoff seek(_In_ const int fd,
     _In_ const std::streamoff offset,
     _In_ const posix_seek_origin origin);
 
@@ -236,7 +245,7 @@ POWER_OVERWHELMING_API std::streamoff seek(_In_ const int fd,
 /// <param name="handle"></param>
 /// <returns></returns>
 /// <exception cref="std::system_error"></exception>
-POWER_OVERWHELMING_API std::size_t tell(_In_ const HANDLE handle);
+PWROWG_TEST_API std::size_t tell(_In_ const HANDLE handle);
 #endif /* defined(_WIN32) */
 
 /// <summary>
@@ -245,7 +254,72 @@ POWER_OVERWHELMING_API std::size_t tell(_In_ const HANDLE handle);
 /// <param name="fd"></param>
 /// <returns></returns>
 /// <exception cref="std::system_error"></exception>
-POWER_OVERWHELMING_API std::size_t tell(_In_ const int fd);
+PWROWG_TEST_API std::size_t tell(_In_ const int fd);
+
+#if defined(_WIN32)
+/// <summary>
+/// Reads at most <paramref name="cnt" /> bytes.
+/// </summary>
+/// <remarks>
+/// This function is only exported for testing.
+/// </remarks>
+/// <param name="handle"></param>
+/// <param name="dst"></param>
+/// <param name="cnt"></param>
+/// <returns>The number of bytes actually read.</returns>
+/// <exception cref="std::system_error">If the read failed.</exception>
+PWROWG_TEST_API std::size_t try_read_bytes(_In_ const HANDLE handle,
+    _Out_writes_bytes_(cnt) void *dst, _In_ const std::size_t cnt);
+#endif /* defined(_WIN32) */
+
+/// <summary>
+/// Reads at most <paramref name="cnt" /> bytes.
+/// </summary>
+/// <remarks>
+/// This function is only exported for testing.
+/// </remarks>
+/// <param name="fd"></param>
+/// <param name="dst"></param>
+/// <param name="cnt"></param>
+/// <returns>The number of bytes actually read.</returns>
+/// <exception cref="std::system_error">If the read failed.</exception>
+PWROWG_TEST_API std::size_t try_read_bytes(_In_ const int fd,
+    _Out_writes_bytes_(cnt) void *dst, _In_ const std::size_t cnt);
+
+/// <summary>
+/// Reads a most the available memory in the given <paramref name="buffer" />
+/// starting at <paramref name="offset" />.
+/// </summary>
+/// <typeparam name="THandle"></typeparam>
+/// <typeparam name="TElement"></typeparam>
+/// <param name="handle"></param>
+/// <param name="buffer"></param>
+/// <param name="offset"></param>
+/// <returns>The number of bytes actually read.</returns>
+/// <exception cref="std::system_error">If the read failed.</exception>
+template<class THandle, class TElement> inline std::size_t try_read(
+        _In_ const THandle handle,
+        _In_ std::vector<TElement>& buffer,
+        _In_ const std::size_t offset = 0) {
+    assert(offset < buffer.size());
+    const auto size = (buffer.size() - offset) * sizeof(TElement);
+    return try_read_bytes(handle, buffer.data() + offset, size);
+}
+
+/// <summary>
+/// Reads at most <paramref name="cnt" /> bytes.
+/// </summary>
+/// <remarks>
+/// This function is only exported for testing.
+/// </remarks>
+/// <param name="fd"></param>
+/// <param name="dst"></param>
+/// <param name="cnt"></param>
+/// <returns></returns>
+/// <exception cref="std::system_error">If the read failed.</exception>
+POWER_OVERWHELMING_API std::size_t try_read_bytes(_In_ const int fd,
+    _Out_writes_bytes_(cnt) void *dst, _In_ const std::size_t cnt);
+
 
 #if defined(_WIN32)
 /// <summary>
@@ -255,7 +329,7 @@ POWER_OVERWHELMING_API std::size_t tell(_In_ const int fd);
 /// <param name="src"></param>
 /// <param name="cnt"></param>
 /// <returns></returns>
-POWER_OVERWHELMING_API void write_all_bytes(_In_ const HANDLE handle,
+PWROWG_TEST_API void write_all_bytes(_In_ const HANDLE handle,
     _In_reads_bytes_(cnt) const void *src, _In_ std::size_t cnt);
 #endif /* defined(_WIN32) */
 
@@ -269,7 +343,7 @@ POWER_OVERWHELMING_API void write_all_bytes(_In_ const HANDLE handle,
 /// <param name="src"></param>
 /// <param name="cnt"></param>
 /// <returns></returns>
-POWER_OVERWHELMING_API void write_all_bytes(_In_ const int fd,
+PWROWG_TEST_API void write_all_bytes(_In_ const int fd,
     _In_reads_bytes_(cnt) const void *src, _In_ std::size_t cnt);
 
 PWROWG_DETAIL_NAMESPACE_END

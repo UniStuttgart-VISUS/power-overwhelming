@@ -8,12 +8,15 @@
 #define _PWROWG_PWOG_FILE_H
 #pragma once
 
+#include <algorithm>
+#include <memory>
 #include <cinttypes>
 
 #if defined(_WIN32)
 #include <Windows.h>
 #endif /* defined(_WIN32) */
 
+#include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/pwog_meta_data.h"
 #include "visus/pwrowg/sample.h"
@@ -312,6 +315,18 @@ private:
     /// location of the file pointer.
     /// </summary>
     void read_meta_data(void);
+
+    /// <summary>
+    /// Reds the sensor descriptors from the current location of the file pointer
+    /// to <see cref="_sensors" />.
+    /// </summary>
+    void read_sensors(void);
+
+    /// <summary>
+    /// If indicated by <see cref="_swap" />, swaps the byte order of the given
+    /// value.
+    /// </summary>
+    template<class TType> void swap(_Inout_ TType& value) const noexcept;
 
     /// <summary>
     /// Writes a null-terminated string to the file, including the terminating

@@ -126,6 +126,23 @@ public:
 
         file = pwog_file::read("test.pwog");
         Assert::IsTrue(file, L"File valid", LINE_INFO());
+
+        {
+            auto v = file["key1"];
+            Assert::IsNotNull(v, L"key1 exists", LINE_INFO());
+            Assert::AreEqual("value1", v, L"key1 value", LINE_INFO());
+        }
+
+        {
+            auto v = file["key2"];
+            Assert::IsNotNull(v, L"key2 exists", LINE_INFO());
+            Assert::AreEqual("value2", v, L"key2 value", LINE_INFO());
+        }
+
+        {
+            auto v = file["key3"];
+            Assert::IsNull(v, L"key3 does not exist", LINE_INFO());
+        }
     }
 
 };

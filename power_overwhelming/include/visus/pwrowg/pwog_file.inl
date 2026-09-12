@@ -21,3 +21,15 @@ PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::write(
 
     return *this;
 }
+
+
+/*
+ * PWROWG_NAMESPACE::pwog_file::swap
+ */
+template<class TType>
+void PWROWG_NAMESPACE::pwog_file::swap(_Inout_ TType& value) const noexcept {
+    if (this->_swap) {
+        auto bytes = reinterpret_cast<std::uint8_t *>(std::addressof(value));
+        std::reverse(bytes, bytes + sizeof(value));
+    }
+}

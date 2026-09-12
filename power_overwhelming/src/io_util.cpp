@@ -208,7 +208,7 @@ std::vector<std::uint8_t> PWROWG_DETAIL_NAMESPACE::read_all_bytes(
  * PWROWG_DETAIL_NAMESPACE::read_bytes
  */
 void PWROWG_DETAIL_NAMESPACE::read_bytes(_In_ const HANDLE handle,
-        _Out_writes_bytes_(cnt) void *dst, _In_ const std::size_t cnt) {
+        _Out_writes_bytes_all_(cnt) void *dst, _In_ const std::size_t cnt) {
     auto d = static_cast<std::uint8_t *>(dst);
     auto rem = static_cast<int>(cnt);
 
@@ -235,7 +235,7 @@ void PWROWG_DETAIL_NAMESPACE::read_bytes(_In_ const HANDLE handle,
  * PWROWG_DETAIL_NAMESPACE::read_bytes
  */
 void PWROWG_DETAIL_NAMESPACE::read_bytes(_In_ const int fd,
-        _Out_writes_bytes_(cnt) void *dst, _In_ const std::size_t cnt) {
+        _Out_writes_bytes_all_(cnt) void *dst, _In_ const std::size_t cnt) {
     auto c = 0;
     auto d = static_cast<std::uint8_t *>(dst);
     auto rem = static_cast<int>(cnt);
@@ -321,13 +321,49 @@ std::size_t PWROWG_DETAIL_NAMESPACE::tell(_In_ const HANDLE handle) {
  * PWROWG_DETAIL_NAMESPACE::tell
  */
 std::size_t PWROWG_DETAIL_NAMESPACE::tell(_In_ const int fd) {
-    auto retval = ::tell(fd);
+#if defined(_WIN32)
+    const auto retval = ::tell(fd);
+#else /* defined(_WIN32) */
+    const auto retval = ::lseek64(fd, 0, SEEK_CUR);
+#endif /* defined(_WIN32) */
 
     if (retval == -1) {
         THROW_POSIX_ERROR();
     }
 
     return retval;
+}
+
+
+#if defined(_WIN32)
+/*
+ * PWROWG_DETAIL_NAMESPACE::try_read_bytes
+ */
+std::size_t PWROWG_DETAIL_NAMESPACE::try_read_bytes(_In_ const HANDLE handle,
+        _Out_writes_bytes_(cnt) void *dst, _In_ const std::size_t cnt) {
+    DWORD retval = 0;
+
+    if (!::ReadFile(handle, dst, static_cast<DWORD>(cnt), &retval, nullptr)) {
+        THROW_LAST_ERROR();
+    }
+
+    return static_cast<std::size_t>(retval);
+}
+#endif /* defined(_WIN32) */
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::try_read_bytes
+ */
+std::size_t PWROWG_DETAIL_NAMESPACE::try_read_bytes(_In_ const int fd,
+        _Out_writes_bytes_(cnt) void *dst, _In_ const std::size_t cnt) {
+    auto retval = ::read(fd, dst, cnt);
+
+    if (retval == -1) {
+        THROW_POSIX_ERROR();
+    }
+
+    return static_cast<std::size_t>(retval);
 }
 
 
