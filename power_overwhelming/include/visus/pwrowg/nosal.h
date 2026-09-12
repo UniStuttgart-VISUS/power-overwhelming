@@ -93,6 +93,10 @@
 #define _Out_writes_bytes_(cnt)
 #endif /* !defined(_Out_writes_bytes_) */
 
+#if !defined(_Out_writes_bytes_all_)
+#define _Out_writes_bytes_all_(cnt)
+#endif /* !defined(_Out_writes_bytes_all_) */
+
 #if !defined(_Out_writes_opt_)
 #define _Out_writes_opt_(cnt)
 #endif /* !defined(_Out_writes_opt_) */

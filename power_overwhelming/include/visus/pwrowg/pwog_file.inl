@@ -33,3 +33,14 @@ void PWROWG_NAMESPACE::pwog_file::swap(_Inout_ TType& value) const noexcept {
         std::reverse(bytes, bytes + sizeof(value));
     }
 }
+
+
+/*
+ * PWROWG_NAMESPACE::pwog_file::swap
+ */
+template<std::size_t N> void PWROWG_NAMESPACE::pwog_file::swap(
+        _Inout_ std::uint8_t(&value)[N]) const noexcept {
+    if (this->_swap) {
+        std::reverse(std::begin(value), std::end(value));
+    }
+}

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <cinttypes>
 
@@ -102,6 +103,36 @@ public:
     /// Close the file.
     /// </summary>
     void close(void) noexcept;
+
+    /// <summary>
+    /// Answer all meta data keys in the file, provided the file is in read
+    /// mode.
+    /// </summary>
+    /// <param name="keys">A buffer to receive the keys of the meta data map
+    /// in the file. This can be <see langword="nullptr" /> to determine the
+    /// required buffer size. The object remains owner of the memory of the
+    /// strings to which the pointers are returned.</param>
+    /// <param name="cnt">The number of items that can be written to
+    /// <paramref name="keys" />.</param>
+    /// <returns>The number of meta data items in the file, regardless of
+    /// whether anything has been copied to <paramref name="keys" /> or not.
+    /// </returns>
+    std::size_t meta_data(_Out_writes_opt_(cnt) const char **keys,
+        _In_ std::size_t cnt) const;
+
+    /// <summary>
+    /// Answer all sensors the file, provided the file is in read mode.
+    /// </summary>
+    /// <param name="sensors">A buffer to receive a copy of the sensor
+    /// descriptions. This can be <see langword="nullptr" /> to determine
+    /// the required buffer size.</param>
+    /// <param name="cnt">The number of sensors that can be written to
+    /// <paramref name="sensors" />.</param>
+    /// <returns>The number of sensors in the file, regardless of whether
+    /// anything has been copied to <paramref name="sensors" /> or not.
+    /// </returns>
+    std::size_t sensors(_Out_writes_opt_(cnt) sensor_description *sensors,
+        _In_ std::size_t cnt) const;
 
     /// <summary>
     /// Writes the specified meta data to the file. The file must be in the
@@ -327,6 +358,29 @@ private:
     /// value.
     /// </summary>
     template<class TType> void swap(_Inout_ TType& value) const noexcept;
+
+    /// <summary>
+    /// If indicated by <see cref="_swap" />, swaps the byte order of the given
+    /// array.
+    /// </summary>
+    template<std::size_t N>
+    void swap(_Inout_ std::uint8_t(&value)[N]) const noexcept;
+
+    /// <summary>
+    /// If indicated by <see cref="_swap" />, swaps the byte order of the given
+    /// <paramref name="value" />.
+    /// </summary>
+    void swap(_Inout_ timestamp& value) const noexcept;
+
+    /// <summary>
+    /// If indicated by <see cref="_swap" />, swaps the byte order of the fields
+    /// in the given <paramref name="value" />.
+    /// </summary>
+    inline void swap(_Inout_ sample& value) const noexcept {
+        this->swap(value.timestamp);
+        this->swap(value.source);
+        this->swap(value.reading.bytes);
+    }
 
     /// <summary>
     /// Writes a null-terminated string to the file, including the terminating

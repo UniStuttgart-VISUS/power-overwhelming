@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "io_util.h"
+#include "sensor_description_builder.h"
 
 
 /*
@@ -145,6 +146,52 @@ void PWROWG_NAMESPACE::pwog_file::close(void) noexcept {
         this->_meta_data.reset();
         this->_sensors.reset();
     }
+}
+
+
+/*
+ * PWROWG_NAMESPACE::pwog_file::meta_data
+ */
+std::size_t PWROWG_NAMESPACE::pwog_file::meta_data(
+        _Out_writes_opt_(cnt) const char **keys,
+        _In_ std::size_t cnt) const {
+    auto retval = this->_meta_data.get<std::map<std::string, std::string>>();
+    if (retval == nullptr) {
+        return 0;
+    }
+
+    // Fix nonsensical input.
+    if (keys == nullptr) {
+        cnt = 0;
+    }
+
+    if (cnt >= retval->size()) {
+        std::transform(retval->begin(), retval->end(), keys,
+            [](const auto& item) { return item.first.c_str(); });
+    }
+
+    return retval->size();
+}
+
+
+/*
+ * PWROWG_NAMESPACE::pwog_file::sensors
+ */
+std::size_t PWROWG_NAMESPACE::pwog_file::sensors(
+        _Out_writes_opt_(cnt) sensor_description *sensors,
+        _In_ std::size_t cnt) const {
+    auto retval = this->_sensors.get<std::vector<sensor_description>>();
+    if (retval == nullptr) {
+        return 0;
+    }
+
+    // Fix nonsensical input.
+    if (sensors == nullptr) {
+        cnt = 0;
+    }
+
+    std::copy_n(retval->begin(), (std::min)(cnt, retval->size()), sensors);
+    return retval->size();
 }
 
 
@@ -410,7 +457,9 @@ void PWROWG_NAMESPACE::pwog_file::read_meta_data(void) {
     assert(this->_state == state::read);
     auto& map = this->_meta_data.emplace<std::map<std::string, std::string>>();
 
-    std::vector<char> buffer(1024);
+    // TODO: this could be improved by not reallocating the buffer to the
+    // total size of the meta data block, but this part is not perf-critical.
+    std::vector<char> buffer(256);
     std::size_t key = 0;
     auto is_key = true;
     std::size_t offset = 0;
@@ -462,9 +511,147 @@ void PWROWG_NAMESPACE::pwog_file::read_meta_data(void) {
 void PWROWG_NAMESPACE::pwog_file::read_sensors(void) {
     assert(this->_handle != invalid);
     assert(this->_state == state::read);
-    std::vector<char> buffer(1024);
+    std::size_t begin = 0;
+    std::vector<char> buffer(512);
+    std::size_t end = 0;
+    assert(!this->_sensors);
+    auto& sensors = this->_sensors.emplace<std::vector<sensor_description>>();
+    auto seek_to = detail::tell(this->_handle);
 
-    const auto read = detail::try_read(this->_handle, buffer);
+    // Tries parsing a sensor starting at 'begin'. Returns whether a sensor was
+    // written to 'sensors'. Once the lambda returns, 'begin' is set to the
+    // start of the next sensor description.
+    const auto parse_sensor = [this, &buffer, &begin, &end, &sensors](void) {
+        // Searches for the end of the next null-terminated string in 'buffer'
+        // starting at 'b' but before 'end'. If case of success, returns 'b' and
+        // the position past the null terminator.
+        const auto scan_string = [&buffer, &end](const std::size_t b) {
+            std::size_t e = b;
+            while ((e < end) && (buffer[e] != 0)) {
+                ++e;
+            }
+            return (e < end)
+                ? std::make_pair(b, e + 1)
+                : std::make_pair(std::string::npos, std::string::npos);
+        };
+
+        const auto id = scan_string(begin);
+        if (id.first == std::string::npos) {
+            return false;
+        }
+
+        if (buffer[id.first] == 0) {
+            // There are no more sensors.
+            return false;
+        }
+
+        const auto path = scan_string(id.second);
+        if (path.first == std::string::npos) {
+            return false;
+        }
+
+        const auto name = scan_string(path.second);
+        if (name.first == std::string::npos) {
+            return false;
+        }
+
+        const auto label = scan_string(name.second);
+        if (label.first == std::string::npos) {
+            return false;
+        }
+
+        const auto vendor = scan_string(label.second);
+        if (vendor.first == std::string::npos) {
+            return false;
+        }
+
+        // After the variably sized strings, there is only fixed-size data left,
+        // so we can directly check whether we have enough data in the buffer to
+        // build the sensor description.
+        const auto sensor = vendor.second;
+        const auto reading = sensor + sizeof(sensor_type);
+        const auto unit = reading + sizeof(reading_type);
+        const auto clazz = unit + sizeof(reading_unit);
+        const auto next = clazz + sizeof(guid);
+        if (next > end) {
+            return false;
+        }
+
+        // At this point, we have all data to build a description.
+        const auto l = convert_string<wchar_t>(buffer.data() + label.first);
+        const auto v = convert_string<wchar_t>(buffer.data() + vendor.first);
+        auto s = *reinterpret_cast<sensor_type *>(buffer.data() + sensor);
+        this->swap(s);
+        auto r = *reinterpret_cast<reading_type *>(buffer.data() + reading);
+        this->swap(r);
+        auto u = *reinterpret_cast<reading_unit *>(buffer.data() + unit);
+        this->swap(u);
+        const guid c(reinterpret_cast<std::uint8_t *>(buffer.data()) + clazz);
+        sensors.emplace_back(detail::sensor_description_builder()
+            .with_id(buffer.data() + id.first)
+            .with_path(buffer.data() + path.first)
+            .with_name(buffer.data() + name.first)
+            .with_label(l.c_str())
+            .with_vendor(v.c_str())
+            .with_type(s)
+            .produces(r)
+            .measured_in(u)
+            .with_class(c)
+            .build());
+
+        begin = next;
+        return true;
+    };
+
+    while (true) {
+        const auto read = detail::try_read(this->_handle, buffer, end);
+        if (read == 0) {
+            throw std::runtime_error("Unexpected end of file while reading "
+                "the sensor descriptions.");
+        }
+        end += read;
+
+        auto any = false;
+        while (parse_sensor()) {
+            any = true;
+        }
+
+        if (!any) {
+            // We could not parse any sensor description, so we need to read more
+            // data from the file.
+            buffer.resize(buffer.size() * 2);
+            continue;
+        }
+
+        seek_to += begin;
+
+        if (buffer[begin] == 0) {
+            // An empty sensor ID marks the end of the sensor description block.
+            // Before returning, reset the file pointer to the first data entry.
+            detail::seek(this->_handle,
+                seek_to,
+                detail::native_seek_origin::begin);
+            return;
+        }
+
+        std::vector<char> next(buffer.size());
+        assert(begin <= end);
+        std::copy(buffer.data() + begin, buffer.data() + end, next.data());
+        buffer.swap(next);
+        end -= begin;
+        begin = 0;
+    }
+}
+
+
+/*
+ * PWROWG_NAMESPACE::pwog_file::swap
+ */
+void PWROWG_NAMESPACE::pwog_file::swap(
+        _Inout_ timestamp& value) const noexcept {
+    auto t = value.value();
+    this->swap(t);
+    value = timestamp(t);
 }
 
 
