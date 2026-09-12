@@ -15,6 +15,24 @@
 #include <utility>
 #include <vector>
 
+#if defined(POWER_OVERWHELMING_WITH_PARQUET)
+#if (defined(_MSC_VER) && defined(min))
+#pragma push_macro("min")
+#undef min
+#define _PWROWG_POP_MIN
+#endif /* (defined(_MSC_VER) && defined(min)) */
+
+#include <arrow/io/api.h>
+#include <arrow/util/type_fwd.h>
+
+#include <parquet/arrow/writer.h>
+#include <parquet/stream_writer.h>
+
+#if defined(_PWROWG_POP_MIN)
+#pragma pop_macro("min")
+#endif /* _PWROWG_POP_MIN */
+#endif /* defined(POWER_OVERWHELMING_WITH_PARQUET) */
+
 #include "io_util.h"
 #include "sensor_description_builder.h"
 
@@ -101,6 +119,204 @@ PWROWG_NAMESPACE::pwog_file PWROWG_NAMESPACE::pwog_file::read(
 }
 
 
+#if defined(POWER_OVERWHELMING_WITH_PARQUET)
+/*
+ * PWROWG_NAMESPACE::pwog_file::to_parquet
+ */
+std::size_t PWROWG_NAMESPACE::pwog_file::to_parquet(
+        _In_z_ const wchar_t *path,
+        _In_ const pwog_file& file,
+        _In_ const parquet_identity_column identity,
+        _In_ const bool raw,
+        _In_ const std::size_t batch_size) {
+    if (path == nullptr) {
+        throw std::invalid_argument("A valid output path must be specified.");
+    }
+
+    const auto p = convert_string<char>(path);
+    return to_parquet(p.c_str(), file, identity, raw, batch_size);
+}
+#endif /* defined(POWER_OVERWHELMING_WITH_PARQUET) */
+
+
+#if defined(POWER_OVERWHELMING_WITH_PARQUET)
+/*
+ * PWROWG_NAMESPACE::pwog_file::to_parquet
+ */
+std::size_t PWROWG_NAMESPACE::pwog_file::to_parquet(
+        _In_z_ const char *path,
+        _In_ const pwog_file& file,
+        _In_ const parquet_identity_column identity,
+        _In_ const bool raw,
+        _In_ std::size_t batch_size) {
+    if (path == nullptr) {
+        throw std::invalid_argument("A valid output path must be specified.");
+    }
+    if (file._state != state::read) {
+        throw std::invalid_argument("The input file must be in read mode.");
+    }
+
+    // Force file pointer to the first sample.
+    file.read(0, nullptr, 0);
+
+    // Fix nonsensical input.
+    if (batch_size < 1) {
+        batch_size = 1;
+    }
+
+    auto parquet_props = parquet::WriterProperties::Builder()
+        .created_by("Power Overwhelming")
+        ->version(parquet::ParquetVersion::PARQUET_2_6)
+        ->build();
+    auto arrow_props = parquet::ArrowWriterProperties::Builder()
+        .store_schema()
+        ->build();
+
+    std::shared_ptr<arrow::io::FileOutputStream> stream;
+    PARQUET_ASSIGN_OR_THROW(stream, arrow::io::FileOutputStream::Open(path));
+
+    parquet::schema::NodeVector fields;
+    fields.push_back(parquet::schema::PrimitiveNode::Make(
+        "timestamp",
+        parquet::Repetition::REQUIRED,
+        parquet::Type::INT64,
+        parquet::ConvertedType::INT_64
+    ));
+
+    // If we use the sensor index as identity, the sensor is an integer. All
+    // other identity options are represented as strings.
+    switch (identity) {
+        case parquet_identity_column::index:
+            fields.push_back(parquet::schema::PrimitiveNode::Make(
+                "sensor",
+                parquet::Repetition::REQUIRED,
+                parquet::Type::INT32,
+                parquet::ConvertedType::INT_32));
+            break;
+        default:
+            fields.push_back(parquet::schema::PrimitiveNode::Make(
+                "sensor",
+                parquet::Repetition::REQUIRED,
+                parquet::Type::BYTE_ARRAY,
+                parquet::ConvertedType::UTF8));
+            break;
+    }
+
+    // In raw mode, we store the raw bytes of the reading. Otherwise, everything
+    // is converted to floats.
+    if (raw) {
+        fields.push_back(parquet::schema::PrimitiveNode::Make(
+            "value",
+            parquet::Repetition::REQUIRED,
+            parquet::Type::FIXED_LEN_BYTE_ARRAY,
+            parquet::ConvertedType::NONE,
+            sizeof(sample::reading)));
+    } else {
+        fields.push_back(parquet::schema::PrimitiveNode::Make(
+            "value",
+            parquet::Repetition::REQUIRED,
+            parquet::Type::FLOAT,
+            parquet::ConvertedType::NONE));
+    }
+
+    auto schema = std::static_pointer_cast<parquet::schema::GroupNode>(
+        parquet::schema::GroupNode::Make(
+            "readings",
+            parquet::Repetition::REQUIRED,
+            fields));
+
+    auto writer = parquet::StreamWriter(parquet::ParquetFileWriter::Open(
+        stream, schema, parquet_props));
+
+    // Read the samples in batches and write them to Parquet.
+    std::size_t cnt = 0;
+    std::vector<std::string> identities;
+    std::size_t retval = 0;
+    std::vector<sample> samples(batch_size);
+    auto sensors = file._sensors.get<std::vector<sensor_description>>();
+    assert(sensors != nullptr);
+
+    if (identity != parquet_identity_column::index) {
+        identities.resize(sensors->size());
+        for (std::size_t i = 0; i < sensors->size(); ++i) {
+            switch (identity) {
+                case parquet_identity_column::id:
+                    identities[i] = convert_string<char>(sensors->at(i).id());
+                    break;
+
+                case parquet_identity_column::label:
+                    identities[i] = detail::empty(sensors->at(i).label())
+                        ? convert_string<char>(sensors->at(i).id())
+                        : convert_string<char>(sensors->at(i).label());
+                    break;
+
+                default:
+                    identities[i] = std::to_string(i);
+                    break;
+            }
+        }
+    }
+
+    while ((cnt = file.read(samples.data(), samples.size())) > 0) {
+        for (std::size_t i = 0; i < cnt; ++i, ++retval) {
+            writer << samples[i].timestamp.value();
+
+            switch (identity) {
+                case parquet_identity_column::index:
+                    writer << static_cast<int>(samples[i].source);
+                    break;
+
+                default:
+                    writer << identities.at(samples[i].source);
+                    break;
+            }
+
+            if (raw) {
+                // Unfortunately, the copy is required to make the type check in
+                // Parquet happy.
+                std::array<char, sizeof(sample::reading)> v;
+                static_assert(sizeof(v) == sizeof(sample::reading), "The size "
+                    "of the sensor readings does not match the expectation. "
+                    "This should not happen. Check for undesired padding.");
+                std::copy(samples[i].reading.bytes,
+                    samples[i].reading.bytes + sizeof(sample::reading),
+                    v.begin());
+                writer << v;
+
+            } else {
+                switch (sensors->at(samples[i].source).reading_type()) {
+                    case reading_type::floating_point:
+                        writer << samples[i].reading.floating_point;
+                        break;
+
+                    case reading_type::signed_integer:
+                        writer << static_cast<float>(
+                            samples[i].reading.signed_integer);
+                        break;
+
+                    case reading_type::unsigned_integer:
+                        writer << static_cast<float>(
+                            samples[i].reading.unsigned_integer);
+                        break;
+
+                    default:
+                        assert(false);
+                        writer << 0.0f;
+                        break;
+                }
+            }
+
+            writer << parquet::EndRow;
+        }
+
+        writer << parquet::EndRowGroup;
+    }
+
+    return retval;
+}
+#endif /* defined(POWER_OVERWHELMING_WITH_PARQUET) */
+
+
 /*
  * PWROWG_NAMESPACE::pwog_file::pwog_file
  */
@@ -171,6 +387,52 @@ std::size_t PWROWG_NAMESPACE::pwog_file::meta_data(
     }
 
     return retval->size();
+}
+
+
+/*
+ * PWROWG_NAMESPACE::pwog_file::read
+ */
+std::size_t PWROWG_NAMESPACE::pwog_file::read(
+        _Out_writes_(cnt) sample *samples,
+        _In_ const std::size_t cnt) const {
+    if ((this->_data == 0) || (samples == nullptr) || (cnt == 0)) {
+        return 0;
+    }
+
+    std::size_t retval = 0;
+    for (; retval < cnt; ++retval) {
+        auto& sample = samples[retval];
+
+        if (detail::try_read_bytes(this->_handle, &sample, sizeof(sample))
+                < sizeof(sample)) {
+            return retval;
+        }
+
+        this->swap(sample);
+    }
+
+    return retval;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::pwog_file::read
+ */
+std::size_t PWROWG_NAMESPACE::pwog_file::read(
+        _In_ const std::size_t offset,
+        _Out_writes_(cnt) sample *samples,
+        _In_ const std::size_t cnt) const {
+    if (this->_state != state::read) {
+        // Prevent from seeking in write mode.
+        return 0;
+    }
+
+    detail::seek(this->_handle,
+        this->_data + offset * sizeof(sample),
+        detail::native_seek_origin::begin);
+
+    return this->read(samples, cnt);
 }
 
 
@@ -258,8 +520,6 @@ PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::write(
 
     return *this;
 }
-
-
 
 
 /*
@@ -516,7 +776,7 @@ void PWROWG_NAMESPACE::pwog_file::read_sensors(void) {
     std::size_t end = 0;
     assert(!this->_sensors);
     auto& sensors = this->_sensors.emplace<std::vector<sensor_description>>();
-    auto seek_to = detail::tell(this->_handle);
+    this->_data = detail::tell(this->_handle);
 
     // Tries parsing a sensor starting at 'begin'. Returns whether a sensor was
     // written to 'sensors'. Once the lambda returns, 'begin' is set to the
@@ -623,13 +883,13 @@ void PWROWG_NAMESPACE::pwog_file::read_sensors(void) {
             continue;
         }
 
-        seek_to += begin;
+        this->_data += begin;
 
         if (buffer[begin] == 0) {
             // An empty sensor ID marks the end of the sensor description block.
             // Before returning, reset the file pointer to the first data entry.
             detail::seek(this->_handle,
-                seek_to,
+                ++this->_data,
                 detail::native_seek_origin::begin);
             return;
         }

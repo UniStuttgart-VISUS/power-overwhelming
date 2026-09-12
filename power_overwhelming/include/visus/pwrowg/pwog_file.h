@@ -19,6 +19,7 @@
 
 #include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/parquet_identity_column.h"
 #include "visus/pwrowg/pwog_meta_data.h"
 #include "visus/pwrowg/sample.h"
 #include "visus/pwrowg/sensor_description.h"
@@ -81,6 +82,62 @@ public:
     /// valid PWOG file.</returns>
     static pwog_file read(_In_z_ const char *path);
 
+#if defined(POWER_OVERWHELMING_WITH_PARQUET)
+    /// <summary>
+    /// Convers the given <paramref name="file" /> to an Apache Parquet file at
+    /// the specified <paramref name="path" />.
+    /// </summary>
+    /// <param name="path">The path of the Parquet file to create.</param>
+    /// <param name="file">The PWOG file to be converted. This must have been
+    /// opened for reading.</param>
+    /// <param name="identity">The identity column to be used for the sensor in
+    /// the Parquet file.</param>
+    /// <param name="raw">If <see langword="true"/>, store the raw bytes of the
+    /// readings, otherwise (the default) convert everything to floating-point
+    /// numbers.</param>
+    /// <param name="batch_size">The number of samples to read in one batch.
+    /// </param>
+    /// <returns>The total number of samples that have been written into the
+    /// Parquet file.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="path" /> is
+    /// <see langword="nullptr" />, or if <paramref name="file" /> is not in
+    /// read mode, or if the specified <paramref name="identity" /> column
+    /// is not supported (the latter is probably a bug).</exception>
+    static std::size_t to_parquet(_In_z_ const wchar_t *path,
+        _In_ const pwog_file& file,
+        _In_ const parquet_identity_column identity,
+        _In_ const bool raw = false,
+        _In_ const std::size_t batch_size = 512);
+#endif /* defined(POWER_OVERWHELMING_WITH_PARQUET) */
+
+#if defined(POWER_OVERWHELMING_WITH_PARQUET)
+    /// <summary>
+    /// Convers the given <paramref name="file" /> to an Apache Parquet file at
+    /// the specified <paramref name="path" />.
+    /// </summary>
+    /// <param name="path">The path of the Parquet file to create.</param>
+    /// <param name="file">The PWOG file to be converted. This must have been
+    /// opened for reading.</param>
+    /// <param name="identity">The identity column to be used for the sensor in
+    /// the Parquet file.</param>
+    /// <param name="raw">If <see langword="true"/>, store the raw bytes of the
+    /// readings, otherwise (the default) convert everything to floating-point
+    /// numbers.</param>
+    /// <param name="batch_size">The number of samples to read in one batch.
+    /// </param>
+    /// <returns>The total number of samples that have been written into the
+    /// Parquet file.</returns>
+    /// <exception cref="std::invalid_argument">If <paramref name="path" /> is
+    /// <see langword="nullptr" />, or if <paramref name="file" /> is not in
+    /// read mode, or if the specified <paramref name="identity" /> column
+    /// is not supported (the latter is probably a bug).</exception>
+    static std::size_t to_parquet(_In_z_ const char *path,
+        _In_ const pwog_file& file,
+        _In_ const parquet_identity_column identity,
+        _In_ const bool raw = false,
+        _In_ std::size_t batch_size = 512);
+#endif /* defined(POWER_OVERWHELMING_WITH_PARQUET) */
+
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
@@ -119,6 +176,41 @@ public:
     /// </returns>
     std::size_t meta_data(_Out_writes_opt_(cnt) const char **keys,
         _In_ std::size_t cnt) const;
+
+    /// <summary>
+    /// Reads at most <paramref name="cnt" /> samples from the file at the
+    /// current reading position.
+    /// </summary>
+    /// <param name="samples">A buffer that can receive at least
+    /// <paramref name="cnt" /> samples.</param>
+    /// <param name="cnt">The number of samples that can be written to
+    /// <paramref name="samples" />.</param>
+    /// <returns>The number of samples read from the file, which may be less
+    /// than <paramref name="cnt" /> if the end of the file is reached.
+    /// </returns>
+    std::size_t read(_Out_writes_(cnt) sample *samples,
+        _In_ const std::size_t cnt) const;
+
+    /// <summary>
+    /// Reads at most <paramref name="cnt" /> samples from the file starting
+    /// at the <paramref name="offset" />-th sample, thus resetting the file
+    /// pointer.
+    /// </summary>
+    /// <remarks>
+    /// The method will seek unconditionally to the specified offset (in read
+    /// mode), even if nothing can be read.
+    /// </remarks>
+    /// <param name="offset">The offset in number of samples.</param>
+    /// <param name="samples">A buffer that can receive at least
+    /// <paramref name="cnt" /> samples.</param>
+    /// <param name="cnt">The number of samples that can be written to
+    /// <paramref name="samples" />.</param>
+    /// <returns>The number of samples read from the file, which may be less
+    /// than <paramref name="cnt" /> if the end of the file is reached.
+    /// </returns>
+    std::size_t read(_In_ const std::size_t offset,
+        _Out_writes_(cnt) sample *samples,
+        _In_ const std::size_t cnt) const;
 
     /// <summary>
     /// Answer all sensors the file, provided the file is in read mode.
