@@ -19,6 +19,7 @@ cmake_dependent_option(PWROWG_BuildDriver "Build RAPL MSR driver" OFF WIN32 OFF)
 option(PWROWG_BuildDumpReadings "Build dump_readings utility" OFF)
 option(PWROWG_BuildDumpSensors "Build dump_sensors utility" ON)
 option(PWROWG_BuildLptTest "Build parallel port test tool" OFF)
+option(PWROWG_BuildPwogTools "Build tools for the PWOG file format" OFF)
 option(PWROWG_BuildRtxConfig "Build R&S RTA/RTB configuration utility" OFF)
 cmake_dependent_option(PWROWG_BuildStablePower "Build setstablepowerstate tool" OFF WIN32 OFF)
 cmake_dependent_option(PWROWG_BuildTests "Build unit tests." ON WIN32 OFF)
@@ -92,6 +93,11 @@ endif ()
 # Parallel port test tool
 if (PWROWG_BuildLptTest)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lpt_test)
+endif ()
+
+# PWOG file tools
+if (PWROWG_BuildPwogTools)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/pwoginfo)
 endif ()
 
 # Oscilloscope configuration utility
