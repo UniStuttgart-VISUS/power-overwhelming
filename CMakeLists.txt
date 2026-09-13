@@ -98,6 +98,10 @@ endif ()
 # PWOG file tools
 if (PWROWG_BuildPwogTools)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/pwoginfo)
+
+    if (PWROWG_WithStaticParquet)
+        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/pwog2parquet)
+    endif ()
 endif ()
 
 # Oscilloscope configuration utility
