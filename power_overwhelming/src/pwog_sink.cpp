@@ -24,8 +24,14 @@ void PWROWG_NAMESPACE::pwog_sink::write_meta_data(void) {
 #if defined(_WIN32)
     this->_file << make_pwog_meta_data("CommandLine", ::GetCommandLineA());
 #else /* defined(_WIN32) */
-    const auto retval = detail::read_all_bytes("/proc/self/cmdline");
-    this->_file << make_pwog_meta_data("CommandLine",
-        reinterpret_cast<const char *>(retval.data()));
+    auto fh = detail::open("/proc/self/cmdline", O_RDONLY);
+    try {
+        const auto cmd = detail::read_all_bytes("/proc/self/cmdline");
+        this->_file << make_pwog_meta_data("CommandLine",
+            reinterpret_cast<const char *>(cmd.data()));
+        ::close(fh);
+    } catch (...) {
+        ::close(fh);
+    }
 #endif /* defined(_WIN32) */
 }
