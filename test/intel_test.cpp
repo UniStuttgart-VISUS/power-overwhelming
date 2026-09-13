@@ -53,7 +53,7 @@ public:
 
         for (std::size_t i = 0; i < 2; ++i) {
             for (auto& s : sensors) {
-                s.sample([](const sample *samples, const std::size_t cnt, const sensor_description *sensors, void *context) {
+                s.sample([](const sample *samples, const std::size_t cnt, const sensor_description *sensors, const std::size_t, void *) {
                     Assert::IsTrue(cnt > 0, L"IGCL creates at least one sample in default config.", LINE_INFO());
 
                     for (std::size_t i = 0; i < cnt; ++i) {
@@ -78,7 +78,7 @@ public:
                         dump += L"\r\n";
                         ::OutputDebugStringW(dump.c_str());
                     }
-                    }, descs.data());
+                    }, descs.data(), descs.size(), nullptr);
             }
         }
     }

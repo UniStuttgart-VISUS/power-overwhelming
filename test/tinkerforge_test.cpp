@@ -109,7 +109,7 @@ public:
 
         auto evt = create_event();
         sensor_array_configuration config;
-            config.deliver_to([](const sample *s, const std::size_t cnt, const sensor_description *, void *e) {
+            config.deliver_to([](const sample *s, const std::size_t cnt, const sensor_description *, const std::size_t, void *e) {
                 auto evt = static_cast<event_type *>(e);
                 set_event(*evt);
             })

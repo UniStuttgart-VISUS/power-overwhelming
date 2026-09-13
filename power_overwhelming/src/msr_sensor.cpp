@@ -261,7 +261,8 @@ PWROWG_DETAIL_NAMESPACE::msr_sensor::msr_sensor(_In_z_ const wchar_t *path,
  */
 void PWROWG_DETAIL_NAMESPACE::msr_sensor::sample(
         _In_ const sensor_array_callback callback,
-        _In_ const sensor_description *sensors,
+        _In_reads_(cnt) const sensor_description *sensors,
+        _In_ const std::size_t cnt,
         _In_opt_ void *context) {
     typedef std::chrono::duration<float> seconds_type;
     assert(callback != nullptr);
@@ -292,5 +293,5 @@ void PWROWG_DETAIL_NAMESPACE::msr_sensor::sample(
         this->_last_value[i] = value;
     }
 
-    callback(samples.data(), samples.size(), sensors, context);
+    callback(samples.data(), samples.size(), sensors, cnt, context);
 }

@@ -615,7 +615,8 @@ PWROWG_DETAIL_NAMESPACE::igcl_sensor::igcl_sensor(
  */
 void PWROWG_DETAIL_NAMESPACE::igcl_sensor::sample(
         _In_ const sensor_array_callback callback,
-        _In_ const sensor_description *sensors,
+        _In_reads_(cnt) const sensor_description *sensors,
+        _In_ const std::size_t cnt,
         _In_opt_ void *context) {
     // Get the telemetry data from the device.
     ctl_power_telemetry_t telemetry { };
@@ -633,20 +634,20 @@ void PWROWG_DETAIL_NAMESPACE::igcl_sensor::sample(
 
     // Collect the samples for all reading enabled via the '_builders'.
     assert(this->_samples.size() >= this->_builders.size());
-    std::size_t cnt = 0;
+    std::size_t samples = 0;
     for (std::size_t i = 0; i < this->_builders.size(); ++i) {
-        this->_samples[cnt] = this->_builders[i](
+        this->_samples[samples] = this->_builders[i](
             this->_index + i,
             timestamp,
             telemetry);
-        if (this->_samples[cnt].source == i) {
+        if (this->_samples[samples].source == i) {
             // If we got an invalid source, do not count the sample.
-            ++cnt;
+            ++samples;
         }
     }
 
     // Deliver the data.
-    callback(this->_samples.data(), cnt, sensors, context);
+    callback(this->_samples.data(), samples, sensors, cnt, context);
 }
 
 

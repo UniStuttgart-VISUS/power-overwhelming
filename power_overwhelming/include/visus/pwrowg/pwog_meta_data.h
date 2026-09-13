@@ -10,6 +10,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 #include "visus/pwrowg/string_functions.h"
 
@@ -69,6 +70,26 @@ public:
             _In_ const string_type<TTraits, TAlloc>& value)
         : pwog_meta_data(key.c_str(), value.c_str()) { }
 
+    /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <remarks>
+    /// The constructor will create a shallow copy to the data in the strings.
+    /// The caller must ensure that the strings are not modified or destroyed
+    /// before the newly created instance is destroyed.
+    /// </remarks>
+    /// <typeparam name="TTraits">The character traits of the string type.
+    /// </typeparam>
+    /// <typeparam name="TAlloc">The allocator of the string type.</typeparam>
+    /// <param name="key">A non-empty key.</param>
+    /// <param name="value">The value associated with the key.</param>
+    /// <exception cref="std::invalid_argument">If <paramref name="key" /> an
+    /// empty string.</exception>
+    template<class TTraits, class TAlloc>
+    pwog_meta_data(_In_z_ const char_type *key,
+            _In_ const string_type<TTraits, TAlloc>& value)
+        : pwog_meta_data(key, value.c_str()) { }
+
     pwog_meta_data(_In_ const pwog_meta_data&) = delete;
 
     /// <summary>
@@ -94,6 +115,23 @@ private:
     _Field_z_ const char_type *_key;
     _Field_z_ const char_type *_value;
 };
+
+
+/// <summary>
+/// Creates a new instance of <see cref="pwog_meta_data" /> with the given key
+/// and value. Please be sure that both strings remain valid for the lifetime
+/// of the returned instance.
+/// </summary>
+/// <typeparam name="TKey"></typeparam>
+/// <typeparam name="TValue"></typeparam>
+/// <param name="key"></param>
+/// <param name="value"></param>
+/// <returns></returns>
+template<class TKey, class TValue>
+pwog_meta_data<TKey> make_pwog_meta_data(_In_z_ const TKey *key,
+        _In_ TValue&& value) {
+    return pwog_meta_data<TKey>(key, std::forward<TValue>(value));
+}
 
 PWROWG_NAMESPACE_END
 

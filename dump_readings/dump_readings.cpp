@@ -45,8 +45,8 @@ int _tmain(const int argc, const TCHAR **argv) {
         auto sensors = sensor_array::for_all(std::move(
             sensor_array_configuration()
             .sample_every(std::chrono::milliseconds(10))
-            .deliver_to([](const sample *samples, std::size_t cnt,
-                    const sensor_description *sensors, void *ctx) {
+            .deliver_to([](const sample *samples, const std::size_t cnt,
+                    const sensor_description *sensors, std::size_t, void *) {
                 for (std::size_t i = 0; i < cnt; ++i) {
                     std::wcout << sensors[samples[i].source].id()
                         << L"@" << samples[i].timestamp << L": ";

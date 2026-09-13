@@ -62,14 +62,16 @@ protected:
     template<class TIterator>
     void write_samples(_In_ const TIterator begin,
         _In_ const TIterator end,
-        _In_ const sensor_description *sensors);
+        _In_reads_(cnt) const sensor_description *sensors,
+        _In_ const std::size_t cnt);
 
 private:
 
     void end_row_group(void);
 
     void write_sample(_In_ const sample& s,
-        _In_ const sensor_description *sensors);
+        _In_reads_(cnt) const sensor_description *sensors,
+        _In_ const std::size_t cnt);
 
     detail::parquet_sink_impl *_impl;
 };

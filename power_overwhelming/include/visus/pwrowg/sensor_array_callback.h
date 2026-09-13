@@ -34,17 +34,21 @@ PWROWG_NAMESPACE_BEGIN
 /// </remarks>
 /// <param name="samples">An array of one or more <paramref name="sample" />s.
 /// </param>
-/// <param name="cnt">The number of samples in the <paramref name="samples" />
-/// array.</param>
-/// <param name="context">A user-defined pointer that has been registered when
-/// starting the sensor array.</param>
+/// <param name="cnt_samples">The number of samples in the
+/// <paramref name="samples" /> array.</param>
 /// <param name="sensors">An array holding the sensor descriptions. The caller
 /// ensures that the indices provided in the <paramref name="samples" /> are
 /// valid in this array, i.e. it is safe to obtain a description for any sensor
 /// the callback is called for.</param>
-typedef void (*sensor_array_callback)(_In_reads_(cnt) const sample *samples,
-    _In_ const std::size_t cnt,
-    _In_ const sensor_description *sensors,
+/// <param name="cnt_sensors">The number of sensors in the
+/// <paramref name="sensors" /> array.</param>
+/// <param name="context">A user-defined pointer that has been registered when
+/// starting the sensor array.</param>
+typedef void (*sensor_array_callback)(
+    _In_reads_(cnt_samples) const sample *samples,
+    _In_ const std::size_t cnt_samples,
+    _In_reads_(cnt_sensors) const sensor_description *sensors,
+    _In_ const std::size_t cnt_sensors,
     _In_opt_ void *context);
 
 PWROWG_NAMESPACE_END

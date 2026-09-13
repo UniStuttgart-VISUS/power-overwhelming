@@ -169,7 +169,8 @@ PWROWG_DETAIL_NAMESPACE::emi_sensor::emi_sensor(
  */
 void PWROWG_DETAIL_NAMESPACE::emi_sensor::sample(
         _In_ const sensor_array_callback callback,
-        _In_ const sensor_description *sensors,
+        _In_reads_(cnt) const sensor_description *sensors,
+        _In_ const std::size_t cnt,
         _In_opt_ void *context) {
     assert(callback != nullptr);
     std::vector<std::uint8_t> data(0);
@@ -182,6 +183,7 @@ void PWROWG_DETAIL_NAMESPACE::emi_sensor::sample(
                 *reinterpret_cast<EMI_MEASUREMENT_DATA_V1 *>(data.data()),
                 callback,
                 sensors,
+                cnt,
                 context);
             break;
 
@@ -194,6 +196,7 @@ void PWROWG_DETAIL_NAMESPACE::emi_sensor::sample(
                 *reinterpret_cast<EMI_MEASUREMENT_DATA_V2 *>(data.data()),
                 callback,
                 sensors,
+                cnt,
                 context);
             break;
     }
@@ -224,7 +227,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::emi_sensor::buffer_size(void) const {
 void PWROWG_DETAIL_NAMESPACE::emi_sensor::evaluate(
         _In_ const EMI_CHANNEL_MEASUREMENT_DATA& data,
         _In_ const sensor_array_callback callback,
-        _In_ const sensor_description *sensors,
+        _In_reads_(cnt) const sensor_description *sensors,
+        _In_ const std::size_t cnt,
         _In_opt_ void *context) {
     assert(callback != nullptr);
     assert(this->_last_energy.size() == 1);
@@ -242,7 +246,7 @@ void PWROWG_DETAIL_NAMESPACE::emi_sensor::evaluate(
     auto time = data.AbsoluteTime - dt / 2 + this->_time_offset.back();
 
     PWROWG_NAMESPACE::sample s(this->_index, timestamp(time), value);
-    callback(&s, 1, sensors, context);
+    callback(&s, 1, sensors, cnt, context);
 }
 
 
@@ -252,7 +256,8 @@ void PWROWG_DETAIL_NAMESPACE::emi_sensor::evaluate(
 void PWROWG_DETAIL_NAMESPACE::emi_sensor::evaluate(
         _In_ const EMI_MEASUREMENT_DATA_V2& data,
         _In_ const sensor_array_callback callback,
-        _In_ const sensor_description *sensors,
+        _In_reads_(cnt) const sensor_description *sensors,
+        _In_ const std::size_t cnt,
         _In_opt_ void *context) {
     assert(callback != nullptr);
     const auto md = this->_device->metadata_as<EMI_METADATA_V2>();
@@ -292,7 +297,7 @@ void PWROWG_DETAIL_NAMESPACE::emi_sensor::evaluate(
         // TODO: filter out inactive channels.
 
         PWROWG_NAMESPACE::sample s(this->_index + i++, timestamp(time), value);
-        callback(&s, 1, sensors, context);
+        callback(&s, 1, sensors, cnt, context);
     }
 }
 

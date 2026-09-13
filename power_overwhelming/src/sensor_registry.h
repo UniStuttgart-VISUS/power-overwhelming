@@ -70,7 +70,8 @@ public:
     /// more samples from a sensor to be delivered to the given callback.
     /// </summary>
     typedef std::function<void(const sensor_array_callback callback,
-        const sensor_description *, void *context)> sampler_func;
+        const sensor_description *, const std::size_t, void *context)>
+        sampler_func;
 
     /// <summary>
     /// The type of sensors created by the registry. The sensor class defines
@@ -158,7 +159,8 @@ public:
     /// <param name="oit"></param>
     /// <param name="sensors"></param>
     /// <param name="enable"></param>
-    template<class TOutput> inline static void sample(_In_ TOutput oit,
+    template<class TOutput> inline static void sample(
+            _In_ TOutput oit,
             _In_ sensor_list_type& sensors,
             _In_ const bool enable) {
         sample0(oit,
@@ -250,22 +252,25 @@ private:
         sampler_func>
     make_sampler(_In_ T& sensor) {
         return [&sensor](_In_ const sensor_array_callback cb,
-                _In_ const sensor_description *sensors,
+                _In_reads_(cnt) const sensor_description *sensors,
+                _In_ const std::size_t cnt,
                 _In_opt_ void *ctx) {
-            sensor.sample(cb, sensors, ctx);
+            sensor.sample(cb, sensors, cnt, ctx);
         };
     }
 
     /// <summary>
-    /// Creates an empty synchronous <see cref="sampler_func" />.
+    /// Creates an empty synchronous <see cref="sampler_func" />. This sampler
+    /// should never be called.
     /// </summary>
     template<class T>
     static std::enable_if_t<!detail::has_sync_sample<T>::type::value,
         sampler_func>
     make_sampler(_In_ T &sensor) {
-        return [](_In_opt_ const sensor_array_callback cb,
-                _In_opt_ const sensor_description *sensors,
-                _In_opt_ void *ctx) {
+        return [](_In_opt_ const sensor_array_callback,
+                _In_opt_ const sensor_description *,
+                _In_ const std::size_t,
+                _In_opt_ void *) {
             assert(false);
         };
     }

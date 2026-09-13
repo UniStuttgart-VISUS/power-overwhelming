@@ -184,7 +184,8 @@ PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::~usb_pd_sensor(void) {
  */
 void PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::sample(
         _In_ const sensor_array_callback callback,
-        _In_ const sensor_description *sensors,
+        _In_reads_(cnt) const sensor_description *sensors,
+        _In_ const std::size_t cnt,
         _In_opt_ void *context) {
     static const std::uint8_t request[] = { 0x02, 0x01, 0x0C, 0x0C, 0x03 };
 
@@ -199,19 +200,19 @@ void PWROWG_DETAIL_NAMESPACE::usb_pd_sensor::sample(
     if (this->_index_voltage != invalid_index) {
         s.reading.floating_point = voltage / 1000.0f;
         s.source = this->_index_voltage;
-        callback(&s, 1, sensors, context);
+        callback(&s, 1, sensors, cnt, context);
     }
 
     if (this->_index_current != invalid_index) {
         s.reading.floating_point = current / 1000.0f;
         s.source = this->_index_current;
-        callback(&s, 1, sensors, context);
+        callback(&s, 1, sensors, cnt, context);
     }
 
     if (this->_index_power != invalid_index) {
         s.reading.floating_point = (voltage / 1000.0f) * (current / 1000.0f);
         s.source = this->_index_power;
-        callback(&s, 1, sensors, context);
+        callback(&s, 1, sensors, cnt, context);
     }
 }
 

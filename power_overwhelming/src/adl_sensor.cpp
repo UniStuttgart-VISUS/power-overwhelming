@@ -351,7 +351,8 @@ PWROWG_DETAIL_NAMESPACE::adl_sensor::~adl_sensor(void) noexcept {
  */
 void PWROWG_DETAIL_NAMESPACE::adl_sensor::sample(
         _In_ const sensor_array_callback callback,
-        _In_ const sensor_description *sensors,
+        _In_reads_(cnt) const sensor_description *sensors,
+        _In_ const std::size_t cnt,
         _In_opt_ void *context) {
     typedef decltype(reading::floating_point) reading_type;
     constexpr auto thousand = static_cast<reading_type>(1000);
@@ -373,31 +374,31 @@ void PWROWG_DETAIL_NAMESPACE::adl_sensor::sample(
             PWROWG_NAMESPACE::sample s(this->_index + i,
                 this->timestamp(data),
                 static_cast<reading_type>(value));
-            callback(&s, 1, sensors, context);
+            callback(&s, 1, sensors, cnt, context);
 
         } else if (is_power(type)) {
             PWROWG_NAMESPACE::sample s(this->_index + i,
                 this->timestamp(data),
                 static_cast<reading_type>(value));
-            callback(&s, 1, sensors, context);
+            callback(&s, 1, sensors, cnt, context);
 
         } else if (is_thermal(type)) {
             PWROWG_NAMESPACE::sample s(this->_index + i,
                 this->timestamp(data),
                 static_cast<reading_type>(value));
-            callback(&s, 1, sensors, context);
+            callback(&s, 1, sensors, cnt, context);
 
         } else if (is_throttling(type)) {
             PWROWG_NAMESPACE::sample s(this->_index + i,
                 this->timestamp(data),
                 value);
-            callback(&s, 1, sensors, context);
+            callback(&s, 1, sensors, cnt, context);
 
         } else if (is_voltage(type)) {
             PWROWG_NAMESPACE::sample s(this->_index + i,
                 this->timestamp(data),
                 static_cast<reading_type>(value) / thousand);
-            callback(&s, 1, sensors, context);
+            callback(&s, 1, sensors, cnt, context);
         }
     }
 }

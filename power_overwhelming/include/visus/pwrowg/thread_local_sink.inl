@@ -10,9 +10,10 @@
  */
 template<class TSink>
 void PWROWG_NAMESPACE::thread_local_sink<TSink>::sample_callback(
-        _In_reads_(cnt) const sample *samples,
-        _In_ const std::size_t cnt,
-        _In_ const sensor_description *sensors,
+        _In_reads_(cnt_samples) const sample *samples,
+        _In_ const std::size_t cnt_samples,
+        _In_reads_(cnt_sensors) const sensor_description *sensors,
+        _In_ const std::size_t cnt_sensors,
         _In_opt_ void *context) {
     assert(context != nullptr);
     auto that = static_cast<thread_local_sink *>(context);
@@ -27,8 +28,10 @@ void PWROWG_NAMESPACE::thread_local_sink<TSink>::sample_callback(
         // The first sample callback must store the sensor list such that
         // the writer can use it.
         const sensor_description *expected = nullptr;
-        that->_sensors.compare_exchange_strong(expected, sensors,
-            std::memory_order_acq_rel, std::memory_order_relaxed);
+        if (that->_sensors.compare_exchange_strong(expected, sensors,
+                std::memory_order_acq_rel, std::memory_order_relaxed)) {
+            that->_cnt_sensors = cnt_sensors;
+        }
     }
 
     // Find out whether we already have a page assigned to this thread.
@@ -105,7 +108,7 @@ void PWROWG_NAMESPACE::thread_local_sink<TSink>::sample_callback(
 
     // Copy the samples to the page.
     assert((p != nullptr) && (p->is_state(page_state::callback)));
-    std::copy_n(samples, cnt, std::back_inserter(p->buffer));
+    std::copy_n(samples, cnt_samples, std::back_inserter(p->buffer));
 
     // Notify the writer if the page is now full.
     if (p->buffer.size() >= that->_page_size) {
@@ -272,8 +275,9 @@ void PWROWG_NAMESPACE::thread_local_sink<TSink>::write_samples(_In_ page *p) {
     PWROWG_TRACE(_T("TLS writer writes buffer 0x%p containing %zu elements."),
         p, p->buffer.size());
     const auto sensors = this->_sensors.load(std::memory_order_acquire);
+    const auto cnt = this->_cnt_sensors;
     assert(sensors != nullptr);
-    TSink::write_samples(p->buffer.begin(), p->buffer.end(), sensors);
+    TSink::write_samples(p->buffer.begin(), p->buffer.end(), sensors, cnt);
     p->buffer.clear();
     p->buffer.reserve(this->_page_size);
     p->state.store(page_state::reusable, std::memory_order_release);

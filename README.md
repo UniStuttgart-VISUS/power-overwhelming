@@ -35,7 +35,7 @@ using namespace visus::pwrowg;
 sensor_array_configuration config;
 
 config.sample_every(std::chrono::milliseconds(5))
-    .deliver_to([](const sample *samples, std::size_t cnt, const sensor_description *sensors, void *ctx) {
+    .deliver_to([](const sample *samples, std::size_t cnt, const sensor_description *sensors, const std::size_t, void *ctx) {
         // Do something with the 'samples' here.
         // You can access the sensor meta data via samples[i].source in 'descs'.
     })
@@ -474,13 +474,14 @@ The `from_descriptions` method is expected to perform the following tasks:
 ### The `sample` method
 There are two possible signatures for the `sample` method, depending on wether the sensor is sampled synchronously or asynchronously. The synchronous variant looks like
 ```c++
-void sample(const sensor_array_callback callback, const sensor_description *sensors, void *context);
+void sample(const sensor_array_callback callback, const sensor_description *sensors, const std::size_t cnt, void *context);
 ```
-| Parameter | Description |
-| --------- | ----------- |
+| Parameter  | Description |
+| ---------- | ----------- |
 | `callback` | The `sensor_array_callback` the sensor should invoke for any sample it can currently produce. |
-| `sensors` | The list of sensor descriptions that must be forwarded to the `callback`. |
-| `context` | The user-defined context pointer that must be forwarded to the `callback`. |
+| `sensors`  | The list of sensor descriptions that must be forwarded to the `callback`. |
+| `cnt`      | The number of elements in `sensors`, which must be forwarded to the `callback`. |
+| `context`  | The user-defined context pointer that must be forwarded to the `callback`. |
 
 > [!CAUTION]
 > Sensors should not assume that the callback and the context pointer never change. The user can switch these parameters when restarting an array. If the data are cached locally, the cache must be invalidated whenever the sensor is started.

@@ -54,7 +54,8 @@ void PWROWG_NAMESPACE::parquet_sink::end_row_group(void) {
  */
 void PWROWG_NAMESPACE::parquet_sink::write_sample(
         _In_ const sample& s,
-        _In_ const sensor_description *sensors) {
+        _In_reads_(cnt) const sensor_description *sensors,
+        _In_ const std::size_t cnt) {
     assert(sensors != nullptr);
     assert(this->_impl != nullptr);
     this->_impl->writer << s.timestamp.value();

@@ -136,6 +136,7 @@ void PWROWG_DETAIL_NAMESPACE::nvapi_sensor::on_sample(
         static_cast<value_type>(data->totalGpuPowermw) / one_watt);
     sensor_array_impl::callback(that->_owner)(&sample, 1,
         sensor_array_impl::raw_descriptions(that->_owner),
+        sensor_array_impl::count_descriptions(that->_owner),
         sensor_array_impl::context(that->_owner));
 }
 

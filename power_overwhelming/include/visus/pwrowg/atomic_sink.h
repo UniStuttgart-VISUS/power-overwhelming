@@ -50,12 +50,14 @@ public:
     /// sink as target for the samples.
     /// </summary>
     /// <param name="samples"></param>
-    /// <param name="cnt"></param>
+    /// <param name="cnt_samples"></param>
     /// <param name="sensors"></param>
+    /// <param name="cnt_sensors"></param>
     /// <param name="context"></param>
-    static void sample_callback(_In_reads_(cnt) const sample *samples,
-        _In_ const std::size_t cnt,
-        _In_ const sensor_description *sensors,
+    static void sample_callback(_In_reads_(cnt_samples) const sample *samples,
+        _In_ const std::size_t cnt_samples,
+        _In_reads_(cnt_sensors) const sensor_description *sensors,
+        _In_ const std::size_t cnt_sensors,
         _In_opt_ void *context);
 
     template<class TRep, class TPeriod, class... TArgs>
@@ -95,6 +97,7 @@ private:
     alignas(detail::false_sharing_range) std::atomic<bool> _running;
     alignas(detail::false_sharing_range) std::atomic<const sensor_description *>
         _sensors;
+    std::size_t _cnt_sensors;
 };
 
 PWROWG_NAMESPACE_END
