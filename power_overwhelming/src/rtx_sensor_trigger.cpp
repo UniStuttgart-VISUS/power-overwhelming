@@ -151,6 +151,8 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
         _T("working on the instruments anymore before triggering."));
     detail::spin_while_all(this->_impl->state, sensor_trigger_state::busy);
 
+    this->_impl->when_acquired = acquired;
+    this->_impl->when_acquired_context = std::move(acquired_context);
     this->_impl->when_done = done;
     this->_impl->when_done_context = std::move(done_context);
     this->_impl->when_failed = failed;
