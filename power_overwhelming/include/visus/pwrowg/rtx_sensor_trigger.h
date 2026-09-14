@@ -134,10 +134,10 @@ public:
         failed.emplace<TFailed>(std::forward<TFailed>(when_failed));
 
         return this->acquire(
-            std::move(acquired),
             [](const type_erased_storage& c) {
                 (*c.template get<TAcquired>())();
             },
+            std::move(acquired),
             [](const type_erased_storage& c) {
                 (*c.template get<TDone>())();
             },
