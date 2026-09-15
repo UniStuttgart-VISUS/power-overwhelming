@@ -59,10 +59,17 @@ public:
     /// <typeparam name="TArgs">The types of the arguments passed to the
     /// constructor of <typeparamref name="TSink" />.</typeparam>
     /// <param name="page_size">The number of samples allocated at once.</param>
+    /// <param name="write_automatically">If <see langword="true" />, a writer
+    /// thread is created that periodically writes the samples to the sink.
+    /// Otherwise, the caller is responsible for periodically calling
+    /// <see cref="flush" /> to write the samples manually. Note that manual
+    /// sinks will accumulate data until they are disposed if the caller fails
+    /// to invoke <see cref="flush" /> sufficiently often.</param>
     /// <param name="args">The arguments passed tot he constructor of
     /// <typeparamref name="TSink" />.</param>
-    template<class... TArgs>
-    thread_local_sink(_In_ const std::size_t page_size, TArgs&&... args);
+    template<class... TArgs> thread_local_sink(_In_ const std::size_t page_size,
+        _In_ const bool write_automatically,
+        TArgs&&... args);
 
     /// <summary>
     /// Finalises the instance.
@@ -78,6 +85,13 @@ public:
     /// are local variables in the same scope.
     /// </remarks>
     void dispose(void) noexcept;
+
+    /// <summary>
+    /// Synchronously writes all samples that are currently ready to be written.
+    /// This method has no effect if the sink was created with a writer thread.
+    /// </summary>
+    /// <returns></returns>
+    std::size_t flush(void);
 
 private:
 
@@ -152,6 +166,11 @@ private:
     static thread_local std::map<thread_local_sink *, page *> buffer;
 
     /// <summary>
+    /// Mop up every data that are left in the buffer to shut down the sink.s
+    /// </summary>
+    void shutdown(void);
+
+    /// <summary>
     /// The code running in the <see cref="_writer" /> thread.
     /// </summary>
     void write(void);
@@ -168,6 +187,7 @@ private:
     alignas(alignment) std::atomic<bool> _running;
     alignas(alignment) std::atomic<const sensor_description *> _sensors;
     std::size_t _cnt_sensors;
+    bool _write_automatically;
 };
 
 PWROWG_NAMESPACE_END

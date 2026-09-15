@@ -80,7 +80,7 @@ TEST_CLASS(csv_sink_test) {
         stream << csvheader;
         stream << setcsvcolumns(csv_column::id | csv_column::label | csv_column::name);
 
-        sink_type sink(10, std::move(stream));
+        sink_type sink(10, true, std::move(stream));
         config.deliver_context(&sink)
             .deliver_to(sink_type::sample_callback);
 
@@ -109,13 +109,39 @@ TEST_CLASS(csv_sink_test) {
         stream << csvheader;
         stream << setcsvcolumns(csv_column::id | csv_column::label | csv_column::name);
 
-        sink_type sink(10, std::move(stream));
+        sink_type sink(10, true, std::move(stream));
         config.deliver_context(&sink)
             .deliver_to(sink_type::sample_callback);
 
         auto sensors = sensor_array::for_all(std::move(config));
         sensors.start();
         std::this_thread::sleep_for(std::chrono::seconds(1));
+        sensors.stop();
+
+        sink.dispose();
+    }
+
+
+    TEST_METHOD(tls_manual) {
+        typedef std::wofstream stream_type;
+        typedef thread_local_sink<csv_sink<stream_type>> sink_type;
+
+        sensor_array_configuration config;
+        config.exclude<hmc8015_configuration>();
+        stream_type stream;
+        stream.open(L"test.csv");
+        stream << setcsvdelimiter(L',');
+        stream << csvheader;
+        stream << setcsvcolumns(csv_column::id | csv_column::label | csv_column::name);
+
+        sink_type sink(10, false, std::move(stream));
+        config.deliver_context(&sink)
+            .deliver_to(sink_type::sample_callback);
+
+        auto sensors = sensor_array::for_all(std::move(config));
+        sensors.start();
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        Assert::IsTrue(sink.flush() > 0, L"Something was written", LINE_INFO());
         sensors.stop();
 
         sink.dispose();

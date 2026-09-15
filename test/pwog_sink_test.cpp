@@ -25,7 +25,7 @@ TEST_CLASS(pwog_sink_test) {
             .exclude<tinkerforge_configuration>()
             .exclude<usb_pd_configuration>();
 
-        auto sink = std::make_unique<sink_type>(10, "pwog_sink_test.pwog");
+        auto sink = std::make_unique<sink_type>(10, true, "pwog_sink_test.pwog");
         sensor_config.deliver_context(sink.get())
             .deliver_to(sink_type::sample_callback);
 

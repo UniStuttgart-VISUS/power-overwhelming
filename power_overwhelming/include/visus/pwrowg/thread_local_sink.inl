@@ -137,14 +137,19 @@ void PWROWG_NAMESPACE::thread_local_sink<TSink>::sample_callback(
 template<class TSink>
 template<class... TArgs>
 PWROWG_NAMESPACE::thread_local_sink<TSink>::thread_local_sink(
-        _In_ const std::size_t page_size, TArgs&&... args)
+        _In_ const std::size_t page_size,
+        _In_ const bool write_automatically,
+        TArgs&&... args)
     : TSink(std::forward<TArgs>(args)...),
         _event(create_event()),
         _pages(nullptr),
         _page_size(page_size),
         _running(true),
-        _sensors(nullptr) {
-    this->_writer = std::thread(&thread_local_sink::write, this);
+        _sensors(nullptr),
+        _write_automatically(write_automatically) {
+    if (this->_write_automatically) {
+        this->_writer = std::thread(&thread_local_sink::write, this);
+    }
 }
 
 
@@ -170,6 +175,12 @@ void PWROWG_NAMESPACE::thread_local_sink<TSink>::dispose(void) noexcept {
         this->_writer.join();
     }
 
+    if (!this->_write_automatically) {
+        PWROWG_TRACE(_T("Finalising output of TLS sink without a own writer ")
+            _T("thread."));
+        this->shutdown();
+    }
+
     // Delete all the pages. No one should be writing to them anymore as the
     // writer will block on pages that are still in use when exiting.
     auto p = this->_pages.load(std::memory_order_acquire);
@@ -186,6 +197,40 @@ void PWROWG_NAMESPACE::thread_local_sink<TSink>::dispose(void) noexcept {
 
 
 /*
+ * PWROWG_NAMESPACE::thread_local_sink<TSink>::flush
+ */
+template<class TSink>
+std::size_t PWROWG_NAMESPACE::thread_local_sink<TSink>::flush(void) {
+    std::size_t retval = 0;
+
+    // If we have a writer thread, do nothing.
+    if (this->_write_automatically) {
+        PWROWG_TRACE(_T("Sink 0x%p was flushed manually although it has a ")
+            _T("writer thread."), this);
+        return retval;
+    }
+
+    // We have not yet received any samples, so it is not save to call
+    // write_samples.
+    if (this->_sensors.load(std::memory_order_acquire) == nullptr) {
+        return retval;
+    }
+
+    // Check all pages for those that are ready to be written.
+    auto p = this->_pages.load(std::memory_order_acquire);
+    while (p != nullptr) {
+        if (p->is_state(page_state::writing)) {
+            retval += p->buffer.size();
+            this->write_samples(p);
+        }
+        p = p->next;
+    }
+
+    return retval;
+}
+
+
+/*
  * PWROWG_NAMESPACE::thread_local_sink<TSink>::buffer
  */
 template<class TSink>
@@ -195,35 +240,10 @@ PWROWG_NAMESPACE::thread_local_sink<TSink>::buffer;
 
 
 /*
- * PWROWG_NAMESPACE::thread_local_sink<TSink>::write
+ * PWROWG_NAMESPACE::thread_local_sink<TSink>::shutdown
  */
-template<class TSink> void PWROWG_NAMESPACE::thread_local_sink<TSink>::write(
-        void) {
-    PWROWG_THREAD_STATS(_T("thread_local_sink_write.json"));
-    set_thread_name("PwrOwg Writer");
-
-    while (this->_running.load(std::memory_order_acquire)) {
-        wait_event(this->_event);
-        PWROWG_TRACE(_T("TLS writer is awake."));
-
-        if (this->_sensors.load(std::memory_order_acquire) == nullptr) {
-            // This should only happen when an exit was requested before
-            // anything has been written, so we skip the loop and check again.
-            assert(!this->_running.load(std::memory_order_acquire));
-            continue;
-        }
-
-        // Check all pages for those that are ready to be written.
-        auto p = this->_pages.load(std::memory_order_acquire);
-        while (p != nullptr) {
-            if (p->is_state(page_state::writing)) {
-                this->write_samples(p);
-            }
-            p = p->next;
-        }
-    }
-    PWROWG_TRACE(_T("TLS writer is finalising the output."));
-
+template<class TSink>
+void PWROWG_NAMESPACE::thread_local_sink<TSink>::shutdown(void) {
     if (this->_sensors.load(std::memory_order_acquire) != nullptr) {
         // Move out all pending data in the buffers.
         auto p = this->_pages.load(std::memory_order_acquire);
@@ -260,6 +280,40 @@ template<class TSink> void PWROWG_NAMESPACE::thread_local_sink<TSink>::write(
             p = p->next;
         }
     }
+}
+
+
+/*
+ * PWROWG_NAMESPACE::thread_local_sink<TSink>::write
+ */
+template<class TSink> void PWROWG_NAMESPACE::thread_local_sink<TSink>::write(
+        void) {
+    PWROWG_THREAD_STATS(_T("thread_local_sink_write.json"));
+    set_thread_name("PwrOwg Writer");
+
+    while (this->_running.load(std::memory_order_acquire)) {
+        wait_event(this->_event);
+        PWROWG_TRACE(_T("TLS writer is awake."));
+
+        if (this->_sensors.load(std::memory_order_acquire) == nullptr) {
+            // This should only happen when an exit was requested before
+            // anything has been written, so we skip the loop and check again.
+            assert(!this->_running.load(std::memory_order_acquire));
+            continue;
+        }
+
+        // Check all pages for those that are ready to be written.
+        auto p = this->_pages.load(std::memory_order_acquire);
+        while (p != nullptr) {
+            if (p->is_state(page_state::writing)) {
+                this->write_samples(p);
+            }
+            p = p->next;
+        }
+    }
+
+    PWROWG_TRACE(_T("TLS writer is finalising the output."));
+    this->shutdown();
 
     PWROWG_TRACE(_T("TLS writer is exiting."));
 }
