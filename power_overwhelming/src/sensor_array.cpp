@@ -299,6 +299,7 @@ void PWROWG_NAMESPACE::sensor_array::sample(
         for (std::size_t i = offset; i < end; ++i) {
             impl->samplers[i](config->callback,
                 impl->descriptions.data(),
+                impl->descriptions.size(),
                 config->context);
         }
 
@@ -336,7 +337,7 @@ void PWROWG_NAMESPACE::sensor_array::start(
             // and would cause others to generate less samples than requested.
             const auto b = std::chrono::steady_clock::now();
             sampler(detail::sensor_array_configuration_impl::sample_nothing,
-                nullptr, nullptr);
+                nullptr, 0, nullptr);
             const auto dt = std::chrono::steady_clock::now() - b;
 
             if ((sum += dt) > impl->configuration->interval) {

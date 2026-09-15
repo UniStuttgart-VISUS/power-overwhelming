@@ -1,10 +1,12 @@
 ﻿// <copyright file="parallel_port_trigger_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #include "pch.h"
+
+#include <visus/pwrowg/parallel_port_trigger.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -55,6 +57,7 @@ public:
             Assert::AreEqual(L"..-. .... .-.. . .-.", code.data(), message, LINE_INFO());
         }
     }
+
     TEST_METHOD(test_to_value) {
         Assert::AreEqual(parallel_port_trigger::value_type(0), parallel_port_trigger::to_value(parallel_port_pin::none), L"none", LINE_INFO());
         Assert::AreEqual(parallel_port_trigger::value_type(1 << 0), parallel_port_trigger::to_value(parallel_port_pin::data0), L"data0", LINE_INFO());
@@ -68,6 +71,18 @@ public:
         Assert::AreEqual(parallel_port_trigger::value_type(255), parallel_port_trigger::to_value(parallel_port_pin::data), L"data", LINE_INFO());
         Assert::AreEqual(parallel_port_trigger::value_type(255), parallel_port_trigger::to_value(parallel_port_pin::all), L"all", LINE_INFO());
         Assert::AreEqual(parallel_port_trigger::value_type(0), parallel_port_trigger::to_value(parallel_port_pin::acknowledge), L"acknowledge", LINE_INFO());
+    }
+
+    TEST_METHOD(path) {
+        std::unique_ptr<parallel_port_trigger> trigger;
+        try {
+            trigger = std::make_unique<parallel_port_trigger>(L"LPT3");
+        } catch (...) { /* Test cannot run. */ }
+
+        if (trigger != nullptr) {
+            const auto path = trigger->path<wchar_t>();
+            Assert::IsFalse(path.empty(), L"Path not empty", LINE_INFO());
+        }
     }
 
 };

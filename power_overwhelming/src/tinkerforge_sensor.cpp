@@ -353,6 +353,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::current_callback(
         static_cast<value_type>(value) / static_cast<value_type>(1000));
     sensor_array_impl::callback(that->_owner)(&sample, 1,
         sensor_array_impl::raw_descriptions(that->_owner),
+        sensor_array_impl::count_descriptions(that->_owner),
         sensor_array_impl::context(that->_owner));
 }
 
@@ -371,6 +372,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::power_callback(
         static_cast<value_type>(value) / static_cast<value_type>(1000));
     sensor_array_impl::callback(that->_owner)(&sample, 1,
         sensor_array_impl::raw_descriptions(that->_owner),
+        sensor_array_impl::count_descriptions(that->_owner),
         sensor_array_impl::context(that->_owner));
 }
 
@@ -397,6 +399,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::power_time_callback(
         ts, static_cast<value_type>(value) / static_cast<value_type>(1000));
     sensor_array_impl::callback(that->_owner)(&sample, 1,
         sensor_array_impl::raw_descriptions(that->_owner),
+        sensor_array_impl::count_descriptions(that->_owner),
         sensor_array_impl::context(that->_owner));
 #else /* defined(CUSTOM_TINKERFORGE_FIRMWARE) */
     power_callback(value, data);
@@ -467,6 +470,7 @@ void PWROWG_DETAIL_NAMESPACE::tinkerforge_sensor::voltage_callback(
         static_cast<value_type>(value) / static_cast<value_type>(1000));
     sensor_array_impl::callback(that->_owner)(&sample, 1,
         sensor_array_impl::raw_descriptions(that->_owner),
+        sensor_array_impl::count_descriptions(that->_owner),
         sensor_array_impl::context(that->_owner));
 }
 

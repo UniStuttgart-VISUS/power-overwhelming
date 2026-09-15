@@ -131,10 +131,13 @@ public:
     /// <param name="callback">The callback to be invoked.</param>
     /// <param name="sensors">The sensor descriptions passed to the
     /// <paramref name="callback" />.</param>
+    /// <param name="cnt">The number of sensor descriptions in
+    /// <paramref name="sensors" />, which is passed to the callback.</param>
     /// <param name="context">An optional context pointer passed to the
     /// <paramref name="callback" />.</param>
     void sample(_In_ const sensor_array_callback callback,
-        _In_ const sensor_description *sensors,
+        _In_reads_(cnt) const sensor_description *sensors,
+        _In_ const std::size_t cnt,
         _In_opt_ void *context = nullptr);
 
     igcl_sensor& operator =(const igcl_sensor& rhs) = delete;
@@ -167,9 +170,9 @@ private:
     void time_sync(_In_ std::size_t samples = 16);
 
     std::vector<sample_builder> _builders;
-    std::vector<igctl_telemetry_disp<timestamp, std::size_t,
-        const sensor_array_callback, const sensor_description *,
-        void *>> _deliver_sample;
+    //std::vector<igctl_telemetry_disp<timestamp, std::size_t,
+    //    const sensor_array_callback, const sensor_description *,
+    //    void *>> _deliver_sample;
     ctl_device_adapter_handle_t _device;
     std::vector<igctl_telemetry_disp<timestamp&>> _make_timestamp;
     std::size_t _index;

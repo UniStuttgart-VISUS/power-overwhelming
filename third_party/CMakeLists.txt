@@ -2,6 +2,7 @@
 # Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 # Licensed under the MIT licence. See LICENCE file for details.
 
+include(ExternalProject)
 include(FetchContent)
 
 set(FETCHCONTENT_QUIET ON)
@@ -10,6 +11,132 @@ mark_as_advanced(FORCE
     FETCHCONTENT_FULLY_DISCONNECTED
     FETCHCONTENT_QUIET
     FETCHCONTENT_UPDATES_DISCONNECTED)
+
+
+# A utility that adds a post-build step 't' that copies all runtime DLLs linken
+# to 't' via a DLL import to the output directory of 't'.
+function(pwrowg_add_runtime_dll_post_build t)
+    if (WIN32)
+        add_custom_command(TARGET ${t} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:${t}> $<TARGET_FILE_DIR:${t}>
+            COMMAND_EXPAND_LISTS)
+    endif ()
+endfunction()
+
+# Apache Arrow uses its own modules to find dependencies, including Snappy, and
+# takes significant precautions to prevent us from meddling with this process.
+# Unfortunately, there is a bug that prevents multi-target builds from working
+# properly (https://github.com/apache/arrow/issues/49499). The issue causes
+# debug builds to link against the release build of Snappy, which in turn causes
+# a linker error. As we need a fairly old version, we cannot apply the fix from
+# the issue.
+# Therefore, this function "preloads" Snappy. It must be called before including
+# Arrow/Parquet (currently only the Power Overwhelming library itself and the
+# test driver) to trick Arrow into believing that it already ran its find module
+# for snappy, thus leaving the correct version in place.
+function(pwrowg_preload_parquet_dependencies t)
+    #set(CMAKE_FIND_DEBUG_MODE TRUE)
+
+    if (PWROWG_UseStaticParquet AND NOT PWROWG_PRELOADED_BROTLI)
+        message(STATUS "Pre-loading Brotli in config mode ...")
+        unset(brotli_FOUND)
+        unset(brotli_DIR)
+        find_package(brotli CONFIG NAMES unofficial-brotli)
+        set(PWROWG_PRELOADED_BROTLI ${brotli_FOUND})
+
+        if (${PWROWG_PRELOADED_BROTLI})
+            message(STATUS "Linking ${t} against ${brotli_Dir} ...")
+            target_link_libraries(${t} PRIVATE unofficial::brotli::brotlicommon)
+            target_link_libraries(${t} PRIVATE unofficial::brotli::brotlidec)
+            target_link_libraries(${t} PRIVATE unofficial::brotli::brotlienc)
+        endif ()
+
+        message(STATUS "Tricking Arrow into using our Brotli ...")
+        set(BrotliAlt_FOUND TRUE PARENT_SCOPE)
+        add_library(Brotli::brotlicommon ALIAS unofficial::brotli::brotlicommon)
+        add_library(Brotli::brotlienc ALIAS unofficial::brotli::brotlienc)
+        add_library(Brotli::brotlidec ALIAS unofficial::brotli::brotlidec)
+    endif ()
+
+#    if (PWROWG_UseStaticParquet AND NOT PWROWG_PRELOADED_BZIP2)
+#        message(STATUS "Pre-loading BZip2 in config mode ...")
+#        unset(BZip2_FOUND)
+#        unset(BZip2_DIR)
+#        find_package(BZip2 CONFIG)
+#        set(PWROWG_PRELOADED_BZIP2 ${BZip2_FOUND})
+#
+#        if (${PWROWG_PRELOADED_BZIP2})
+#            message(STATUS "Linking ${t} against ${BZip2_DIR} ...")
+#            target_link_libraries(${t} PRIVATE BZip2::BZip2)
+#        endif ()
+#    endif ()
+
+    if (PWROWG_UseStaticParquet AND NOT PWROWG_PRELOADED_LZ4)
+        message(STATUS "Pre-loading LZ4 in config mode ...")
+        unset(lz4_FOUND)
+        unset(lz4_DIR)
+        find_package(lz4 CONFIG)
+        set(PWROWG_PRELOADED_LZ4 ${lz4_FOUND})
+
+        if (${PWROWG_PRELOADED_LZ4})
+            message(STATUS "Linking ${t} against ${lz4_DIR} ...")
+            target_link_libraries(${t} PRIVATE lz4::lz4)
+        endif ()
+
+        message(STATUS "Tricking Arrow into using our LZ4 ...")
+        set(lz4Alt_FOUND TRUE PARENT_SCOPE)
+    endif ()
+
+    if (PWROWG_UseStaticParquet AND NOT PWROWG_PRELOADED_OPENSSL)
+        message(STATUS "Pre-loading OpenSSL in config mode ...")
+        unset(OpenSSL_FOUND)
+        unset(OpenSSL_DIR)
+        find_package(OpenSSL CONFIG)
+        set(PWROWG_PRELOADED_OPENSSL ${OpenSSL_FOUND})
+
+        if (${OpenSSL_FOUND})
+            message(STATUS "Linking ${t} against ${OpenSSL_DIR} ...")
+            target_link_libraries(${t} PRIVATE OpenSSL::Crypto)
+        endif ()
+
+        message(STATUS "Tricking Arrow into using our OpenSSL ...")
+        set(OpenSSLAlt_FOUND TRUE PARENT_SCOPE)
+    endif ()
+
+    if (PWROWG_UseStaticParquet AND NOT PWROWG_PRELOADED_SNAPPY)
+        message(STATUS "Pre-loading Snappy in config mode ...")
+        unset(Snappy_FOUND)
+        unset(Snappy_DIR)
+        find_package(Snappy CONFIG)
+        set(PWROWG_PRELOADED_SNAPPY ${Snappy_FOUND})
+
+        if (${PWROWG_PRELOADED_SNAPPY})
+            message(STATUS "Linking ${t} against ${Snappy_DIR} ...")
+            target_link_libraries(${t} PRIVATE Snappy::snappy)
+        endif ()
+
+        message(STATUS "Tricking Arrow into using our Snappy ...")
+        set(SnappyAlt_FOUND TRUE PARENT_SCOPE)
+        add_library(Snappy::snappy-static ALIAS Snappy::snappy)
+    endif ()
+
+    if (PWROWG_UseStaticParquet AND NOT PWROWG_PRELOADED_ZSTD)
+        message(STATUS "Pre-loading zstd in config mode ...")
+        unset(zstd_FOUND)
+        unset(zstd_DIR)
+        find_package(zstd CONFIG)
+        set(PWROWG_PRELOADED_ZSTD ${zstd_FOUND})
+
+        if (${zstd_FOUND})
+            message(STATUS "Linking ${t} against ${zstd_DIR} ...")
+            target_link_libraries(${t} PRIVATE zstd::libzstd)
+        endif ()
+
+        message(STATUS "Tricking Arrow into using our zstd ...")
+        set(zstdAlt_FOUND TRUE PARENT_SCOPE)
+    endif ()
+endfunction()
+
 
 
 # AMD Display Library (this is a bit hacky ...)
@@ -29,45 +156,109 @@ mark_as_advanced(FORCE
     FETCHCONTENT_UPDATES_DISCONNECTED_ADL)
 
 
-# Apache Arrow (for Parquet) output.
+# Apache Arrow (for Parquet output). This is a giant hack as we need a version
+# that still works with C++17. Technically, this would be 22, but this is not
+# available on vcpkg, so we get 21 here.
+# All of the below happens at configure time, so the Power Overwhelming projects
+# can use find_package in config mode to find the installed Arrow libraries.
 if (PWROWG_WithParquet)
-    FetchContent_Declare(arrow
-        URL "https://github.com/apache/arrow/archive/refs/tags/apache-arrow-24.0.0.zip"
-        DOWNLOAD_EXTRACT_TIMESTAMP ON
-    )
-    option(ARROW_COMPUTE "" OFF)
-    option(ARROW_CSV "" OFF)
-    option(ARROW_CUDA "" OFF)
-    option(ARROW_FLIGHT "" OFF)
-    option(ARROW_GANDIVA "" OFF)
-    option(ARROW_GANDIVA_JAVA "" OFF)
-    option(ARROW_GCS "" OFF)
-    option(ARROW_HDFS "" OFF)
-    option(ARROW_JEMALLOC "" OFF)
-    option(ARROW_JSON "" OFF)
-    option(ARROW_MIMALLOC "" OFF)
-    option(ARROW_ORC= "" OFF)
-    option(ARROW_PARQUET "" ON)
-    option(PARQUET_REQUIRE_ENCRYPTION "" OFF)
-    option(ARROW_PYTHON "" OFF)
-    option(ARROW_S3 "" OFF)
-    option(ARROW_SUBSTRAIT "" OFF)
-    option(ARROW_WITH_RE2 "" OFF)
-    option(ARROW_TENSORFLOW "" OFF)
-    option(ARROW_BUILD_BENCHMARKS "" OFF)
-    option(ARROW_BUILD_EXAMPLES "" OFF)
-    option(ARROW_BUILD_INTEGRATION "" OFF)
-    option(ARROW_BUILD_UTILITIES "" OFF)
-    option(ARROW_BUILD_TESTS "" OFF)
-    option(ARROW_ENABLE_TIMING_TESTS "" OFF)
-    option(ARROW_FUZZING "" OFF)
-    set(ARROW_DEPENDENCY_SOURCE "BUNDLED")
-    FetchContent_MakeAvailable(arrow)
-    add_subdirectory(${arrow_SOURCE_DIR}/cpp ${arrow_BINARY_DIR} EXCLUDE_FROM_ALL)
-    mark_as_advanced(FORCE
-        FETCHCONTENT_SOURCE_DIR_ARROW
-        FETCHCONTENT_UPDATES_DISCONNECTED_ARROW)
+    set(_arrow_dir ${CMAKE_CURRENT_SOURCE_DIR}/arrow-21.0.0)
+    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(_triplet x64)
+    else ()
+        set(_triplet x86)
+    endif()
+    if (WIN32)
+        if (PWROWG_UseStaticParquet)
+            set(_triplet "${_triplet}-windows-static-md")
+        else ()
+            set(_triplet "${_triplet}-windows")
+        endif ()
+    else ()
+        set(_triplet "${_triplet}-linux")
+    endif()
+    set(_vcpkg_dir "${FETCHCONTENT_BASE_DIR}/vcpkg")
+    if (WIN32)
+        set(_vcpkg_exe "${_vcpkg_dir}/vcpkg.exe")
+    else ()
+        set(_vcpkg_exe "${_vcpkg_dir}/vcpkg")
+    endif ()
+    #message(STATUS "triplet=${_triplet}")
+    #message(STATUS "vcpkg_dir=${_vcpkg_dir}")
+    #message(STATUS "vcpkg_exe=${_vcpkg_exe}")
+
+    if (NOT EXISTS "${_vcpkg_dir}")
+        message(STATUS "Fetching vcpkg to ${_vcpkg_dir}...")
+        execute_process(COMMAND "${GIT_EXECUTABLE}" clone https://github.com/microsoft/vcpkg.git "${_vcpkg_dir}")
+    endif ()
+
+    if (NOT EXISTS "${_vcpkg_exe}")
+        message(STATUS "Bootstrapping vcpkg ...")
+        if (WIN32)
+            execute_process(COMMAND "${_vcpkg_dir}/bootstrap-vcpkg.bat" -disableMetrics
+                RESULT_VARIABLE _vcpkg_result)
+        else ()
+            execute_process(COMMAND "${_vcpkg_dir}/bootstrap-vcpkg.sh" -disableMetrics
+                RESULT_VARIABLE _vcpkg_result)
+        endif ()
+
+        if (NOT ${_vcpkg_result} EQUAL 0)
+            message(FATAL_ERROR "Failed to bootstrap vcpkg.")
+        endif ()
+    endif ()
+
+    message(STATUS "Installing Apache Arrow ...")
+    set(_install_dir "${FETCHCONTENT_BASE_DIR}/arrow")
+    execute_process(COMMAND "${_vcpkg_exe}" install
+        --vcpkg-root "${_vcpkg_dir}"
+        --x-manifest-root "${_arrow_dir}"
+        --x-install-root "${_install_dir}"
+        --triplet "${_triplet}"
+        --x-wait-for-lock
+        --clean-after-build
+        RESULT_VARIABLE _vcpkg_result)
+
+    if (NOT ${_vcpkg_result} EQUAL 0)
+        message(FATAL_ERROR "Failed to install Apache Arrow.")
+    endif ()
+
+    # Make the installation location available to find_package calls in
+    # config mode.
+    set(CMAKE_PREFIX_PATH "${_install_dir}/${_triplet}" "${CMAKE_PREFIX_PATH}" PARENT_SCOPE)
+
+    set(_debug_bin "${_install_dir}/${_triplet}/debug/bin")
+    set(_release_bin "${_install_dir}/${_triplet}/bin")
+    file(GLOB _debug_bin "${_debug_bin}/*.dll")
+    file(GLOB _release_bin "${_release_bin}/*.dll")
+    set(PWROG_PARQUET_DEBUG_DEPENDENCIES "${_debug_bin}" PARENT_SCOPE)
+    set(PWROG_PARQUET_RELEASE_DEPENDENCIES "${_release_bin}" PARENT_SCOPE)
+
+    if (PWROWG_UseStaticParquet)
+        set (PWROWG_PARQUET_LIBRARY Parquet::parquet_static PARENT_SCOPE)
+    else ()
+        set (PWROWG_PARQUET_LIBRARY Parquet::parquet_shared PARENT_SCOPE)
+    endif ()
+
+    unset(_arrow_dir)
+    unset(_debug_bin)
+    unset(_install_dir)
+    unset(_release_bin)
+    unset(_triplet)
+    unset(_vcpkg_dir)
+    unset(_vcpkg_exe)
+    unset(_vcpkg_result)
 endif ()
+
+# If required, copies all DLL dependencies of the Parquet library from the vcpkg
+# installation to the output directory of the target 't'.
+function(pwrowg_add_parquet_post_build t)
+    if (WIN32 AND PWROWG_WithParquet AND NOT PWROWG_UseStaticParquet)
+        # Grab all the dependencies and copy it to the output directory.
+        add_custom_command(TARGET ${t} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${t}> "$<IF:$<CONFIG:Debug>,${PWROG_PARQUET_DEBUG_DEPENDENCIES},${PWROG_PARQUET_RELEASE_DEPENDENCIES}>"
+            COMMAND_EXPAND_LISTS)
+    endif ()
+endfunction()
 
 
 # Intel Graphics Control Library (this is even more hacky, because Intel has no 
@@ -88,23 +279,22 @@ mark_as_advanced(FORCE
 # Benchlab
 if (PWROWG_WithBenchlab)
     FetchContent_Declare(libbenchlab
-        URL "https://github.com/UniStuttgart-VISUS/libbenchlab/archive/refs/tags/v0.5.zip"
+        URL "https://github.com/UniStuttgart-VISUS/libbenchlab/archive/refs/tags/v0.7.zip"
         DOWNLOAD_EXTRACT_TIMESTAMP ON
     )
     option(BENCHLAB_BuildTests "" OFF)
     option(BENCHLAB_BuildCclient "" OFF)
     option(BENCHLAB_BuildCppClient "" OFF)
     option(BENCHLAB_BuildExcellentBenchlab "" OFF)
-    FetchContent_GetProperties(libbenchlab)
-    if (NOT libbenchlab_POPULATED)
-        FetchContent_Populate(libbenchlab)
-        add_subdirectory(${libbenchlab_SOURCE_DIR} ${libbenchlab_BINARY_DIR} EXCLUDE_FROM_ALL)
-    endif ()
+    FetchContent_MakeAvailable(libbenchlab)
     mark_as_advanced(FORCE
         libbenchlab_SOURCE_DIR
         BENCHLAB_BuildTests
         BENCHLAB_BuildCclient
-        BENCHLAB_BuildExcellentBenchlab)
+        BENCHLAB_BuildCppClient
+        BENCHLAB_BuildExcellentBenchlab
+        FETCHCONTENT_SOURCE_DIR_LIBBENCHLAB
+        FETCHCONTENT_UPDATES_DISCONNECTED_LIBBENCHLAB)
 endif ()
 
 
@@ -117,16 +307,14 @@ if (PWROWG_WithPowenetics)
     option(POWENETICS_BuildTests "" OFF)
     option(POWENETICS_BuildCclient "" OFF)
     option(POWENETICS_BuildExcellentPowenetics "" OFF)
-    FetchContent_GetProperties(libpowenetics)
-    if (NOT libpowenetics_POPULATED)
-        FetchContent_Populate(libpowenetics)
-        add_subdirectory(${libpowenetics_SOURCE_DIR} ${libpowenetics_BINARY_DIR} EXCLUDE_FROM_ALL)
-    endif ()
+    FetchContent_MakeAvailable(libpowenetics)
     mark_as_advanced(FORCE
         libpowenetics_SOURCE_DIR
         POWENETICS_BuildTests
         POWENETICS_BuildCclient
-        POWENETICS_BuildExcellentPowenetics)
+        POWENETICS_BuildExcellentPowenetics
+        FETCHCONTENT_SOURCE_DIR_LIBPOWENETICS
+        FETCHCONTENT_UPDATES_DISCONNECTED_LIBPOWENETICS)
 endif ()
 
 
@@ -143,6 +331,7 @@ mark_as_advanced(FORCE
     JSON_CI
     JSON_Diagnostics
     JSON_DisableEnumSerialization
+    JSON_Diagnostic_Positions
     JSON_GlobalUDLs
     JSON_ImplicitConversions
     JSON_Install
@@ -150,12 +339,17 @@ mark_as_advanced(FORCE
     JSON_MultipleHeaders
     JSON_SystemInclude)
 
+
 # NI-DAQmx (headers only)
 if (PWROWG_WithNiDaqMx)
     find_package(NIDAQMX REQUIRED)
-    add_library(nidaqmx INTERFACE IMPORTED GLOBAL)
+    add_library(nidaqmx INTERFACE)
     set_target_properties(nidaqmx PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${NIDAQMX_INCLUDE_DIR}")
+    install(TARGETS nidaqmx EXPORT nidaqmxTargets)
+    install(EXPORT nidaqmxTargets
+        FILE nidaqmxConfig.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/nidaqmx)
 endif ()
 
 
@@ -218,32 +412,34 @@ endif ()
 # VISA (headers only)
 if (PWROWG_WithVisa)
     find_package(VISA REQUIRED)
-    add_library(visa INTERFACE IMPORTED GLOBAL)
+    add_library(visa INTERFACE)
     set_target_properties(visa PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${VISA_INCLUDE_DIR}")
+    install(TARGETS visa EXPORT visaTargets)
+    install(EXPORT visaTargets
+        FILE visaConfig.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/visa)
 endif ()
 
 
 # Windows Implementation Library
 if (WIN32)
     FetchContent_Declare(wil
-        URL "https://github.com/microsoft/wil/archive/refs/tags/v1.0.250325.1.zip"
+        URL "https://github.com/microsoft/wil/archive/refs/tags/v1.0.260126.7.zip"
         DOWNLOAD_EXTRACT_TIMESTAMP ON
     )
     option(FAST_BUILD "" OFF)
     option(WIL_BUILD_PACKAGING "" OFF)
     option(WIL_BUILD_TESTS "" OFF)
-    FetchContent_GetProperties(wil)
-    if (NOT wil_POPULATED)
-        FetchContent_Populate(wil)
-        add_subdirectory(${wil_SOURCE_DIR} ${wil_BINARY_DIR} EXCLUDE_FROM_ALL)
-    endif ()
+    FetchContent_MakeAvailable(wil)
     mark_as_advanced(FORCE
         FETCHCONTENT_SOURCE_DIR_WIL
         FETCHCONTENT_UPDATES_DISCONNECTED_WIL
         FAST_BUILD
         WIL_BUILD_PACKAGING
-        WIL_BUILD_TESTS)
+        WIL_BUILD_TESTS
+        WIL_ENABLE_ASAN
+        WIL_ENABLE_UBSAN)
 endif()
 
 
@@ -254,4 +450,6 @@ FetchContent_Declare(rapidcsv
 )
 FetchContent_MakeAvailable(rapidcsv)
 mark_as_advanced(FORCE
-    RAPIDCSV_BUILD_TESTS)
+    RAPIDCSV_BUILD_TESTS
+    FETCHCONTENT_SOURCE_DIR_RAPIDCSV
+    FETCHCONTENT_UPDATES_DISCONNECTED_RAPIDCSV)

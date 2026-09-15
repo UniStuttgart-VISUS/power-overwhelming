@@ -29,6 +29,53 @@ public:
     static const guid id;
 
     /// <summary>
+    /// Initialises a new instance.
+    /// </summary>
+    /// <param name=""></param>
+    msr_configuration(void);
+
+    /// <summary>
+    /// Indicates whether the sensor should not check whether the CPU supports
+    /// RAPL MSRs by means of its built-in list of supported CPUs.
+    /// </summary>
+    /// <returns><see langword="true "/> if the check is bypassed,
+    /// <see langword="false "/> otherwise.</returns>
+    inline bool bypass_check(void) const noexcept {
+        return this->_bypass_check;
+    }
+
+    /// <summary>
+    /// Instructs the sensor to bypass its built-in check for supported CPUs.
+    /// </summary>
+    /// <param name="value"><see langword="true "/> if the check is to be
+    /// bypassed, <see langword="false "/> otherwise.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline msr_configuration& bypass_check(_In_ const bool value) noexcept {
+        this->_bypass_check = value;
+        return *this;
+    }
+
+    /// <summary>
+    /// Indicates whether the sensor should only read MSRs from the first core.
+    /// </summary>
+    /// <returns><see langword="true "/> if only the first core is to be read,
+    /// <see langword="false "/> if all cores are read.</returns>
+    inline bool first_core(void) const noexcept {
+        return this->_first_core;
+    }
+
+    /// <summary>
+    /// Instructs the sensor to read only from the first core.
+    /// </summary>
+    /// <param name="value">Whether the sensor should be limited to the first
+    /// core or not.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline msr_configuration& first_core(_In_ const bool value) noexcept {
+        this->_first_core = value;
+        return *this;
+    }
+
+    /// <summary>
     /// Gets the name used for the driver service if a valid driver was
     /// configured to be started by the MSR sensor.
     /// </summary>
@@ -58,9 +105,10 @@ public:
 
 private:
 
+    bool _bypass_check;
     blob _driver_name;
     blob _driver_path;
-
+    bool _first_core;
 };
 
 PWROWG_NAMESPACE_END

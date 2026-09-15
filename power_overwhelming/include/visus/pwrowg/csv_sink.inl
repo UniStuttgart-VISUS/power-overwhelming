@@ -1,5 +1,5 @@
 ﻿// <copyright file="csv_sink.inl" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for more information.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -21,14 +21,15 @@ PWROWG_NAMESPACE::csv_sink<TStream>::csv_sink(_Inout_ stream_type&& stream)
 
 
 /*
- * PWROWG_NAMESPACE::csv_sink<TStream>::write_sample
+ * PWROWG_NAMESPACE::csv_sink<TStream>::write_samples
  */
 template<class TStream>
 template<class TIterator>
 void PWROWG_NAMESPACE::csv_sink<TStream>::write_samples(
         _In_ const TIterator begin,
         _In_ const TIterator end,
-        _In_ const sensor_description *sensors) {
+        _In_reads_(cnt) const sensor_description *sensors,
+        _In_ const std::size_t cnt) {
     assert(sensors != nullptr);
 
     if (check_csvheader(this->_stream)) {

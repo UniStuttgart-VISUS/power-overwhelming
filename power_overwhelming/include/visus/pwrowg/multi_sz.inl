@@ -207,6 +207,25 @@ PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::size(
     }
 }
 
+
+/*
+ * PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::size
+ */
+template<class TChar, class TTraits>
+template<class TIterator>
+typename PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::size_type
+PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::size(
+        _In_ const TIterator begin, _In_ const TIterator end) {
+    std::size_t retval = 0;
+
+    for (auto it = begin; it != end; ++it) {
+        retval += traits_type::length(*it) + 1;
+    }
+
+    return ++retval;
+}
+
+
 /*
  * PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::multi_sz
  */
@@ -248,14 +267,7 @@ PWROWG_NAMESPACE::multi_sz<TChar, TTraits>::multi_sz(
         _In_ const size_type cnt)
         : _value(nullptr) {
     if ((strings != nullptr) && (cnt> 0)) {
-        // Compute the overall required buffer size.
-        auto cnt_new = 0;
-        for (size_type i = 0; i < cnt; i++) {
-            cnt_new += traits_type::length(strings[i]) + 1;
-        }
-
-        // Alocate the buffer including the final terminator.
-        this->_value = new value_type[cnt_new + 1];
+        this->_value = new value_type[size(strings, strings + cnt)];
 
         // Copy the individual strings.
         auto dst = this->_value;

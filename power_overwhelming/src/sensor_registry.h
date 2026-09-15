@@ -26,6 +26,7 @@
 
 #include "adl_sensor.h"
 #include "benchlab_sensor.h"
+#include "daqmx_sensor.h"
 #include "detect_sample.h"
 #include "emi_sensor.h"
 #include "hmc8015_sensor.h"
@@ -69,7 +70,8 @@ public:
     /// more samples from a sensor to be delivered to the given callback.
     /// </summary>
     typedef std::function<void(const sensor_array_callback callback,
-        const sensor_description *, void *context)> sampler_func;
+        const sensor_description *, const std::size_t, void *context)>
+        sampler_func;
 
     /// <summary>
     /// The type of sensors created by the registry. The sensor class defines
@@ -157,7 +159,8 @@ public:
     /// <param name="oit"></param>
     /// <param name="sensors"></param>
     /// <param name="enable"></param>
-    template<class TOutput> inline static void sample(_In_ TOutput oit,
+    template<class TOutput> inline static void sample(
+            _In_ TOutput oit,
             _In_ sensor_list_type& sensors,
             _In_ const bool enable) {
         sample0(oit,
@@ -249,22 +252,25 @@ private:
         sampler_func>
     make_sampler(_In_ T& sensor) {
         return [&sensor](_In_ const sensor_array_callback cb,
-                _In_ const sensor_description *sensors,
+                _In_reads_(cnt) const sensor_description *sensors,
+                _In_ const std::size_t cnt,
                 _In_opt_ void *ctx) {
-            sensor.sample(cb, sensors, ctx);
+            sensor.sample(cb, sensors, cnt, ctx);
         };
     }
 
     /// <summary>
-    /// Creates an empty synchronous <see cref="sampler_func" />.
+    /// Creates an empty synchronous <see cref="sampler_func" />. This sampler
+    /// should never be called.
     /// </summary>
     template<class T>
     static std::enable_if_t<!detail::has_sync_sample<T>::type::value,
         sampler_func>
     make_sampler(_In_ T &sensor) {
-        return [](_In_opt_ const sensor_array_callback cb,
-                _In_opt_ const sensor_description *sensors,
-                _In_opt_ void *ctx) {
+        return [](_In_opt_ const sensor_array_callback,
+                _In_opt_ const sensor_description *,
+                _In_ const std::size_t,
+                _In_opt_ void *) {
             assert(false);
         };
     }
@@ -325,7 +331,12 @@ typedef basic_sensor_registry<
 #if defined(POWER_OVERWHELMING_WITH_BENCHLAB)
     benchlab_sensor,
 #endif /* defined(POWER_OVERWHELMING_WITH_BENCHLAB) */
+#if defined(POWER_OVERWHELMING_WITH_DAQMX)
+    daqmx_sensor,
+#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     hmc8015_sensor,
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 #if defined(POWER_OVERWHELMING_WITH_IGCL)
     igcl_sensor,
 #endif /* defined(POWER_OVERWHELMING_WITH_IGCL) */
@@ -340,7 +351,9 @@ typedef basic_sensor_registry<
 #if defined(POWER_OVERWHELMING_WITH_POWENETICS)
     powenetics_sensor,
 #endif /* defined(POWER_OVERWHELMING_WITH_POWENETICS) */
+#if defined(POWER_OVERWHELMING_WITH_VISA)
     rtx_sensor,
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
     tinkerforge_sensor>
     sensor_registry;
 

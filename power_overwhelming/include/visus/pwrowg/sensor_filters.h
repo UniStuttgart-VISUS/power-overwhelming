@@ -105,6 +105,17 @@ extern POWER_OVERWHELMING_API bool is_benchlab_sensor(
 
 /// <summary>
 /// Answer whether the given <see cref="sensor_description" /> describes a
+/// sensor based on the RAPL MSRs on the first core of the system.
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><see langword="true" /> if the sensor is a MSR sensor on core 0,
+/// <see langword="false" /> otherwise.
+/// </returns>
+extern POWER_OVERWHELMING_API bool is_core0_msr_sensor(
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes a
 /// sensor targetting the CPU.
 /// </summary>
 /// <param name="desc">The sensor to check.</param>
@@ -121,6 +132,16 @@ extern POWER_OVERWHELMING_API bool is_cpu_sensor(
 /// <returns><c>true</c> if the sensor is a current sensor, <c>false</c>
 /// otherwise.</returns>
 extern POWER_OVERWHELMING_API bool is_current_sensor(
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes a
+/// sensor using a National Instrumens DAQmx device.
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><c>true</c> if the sensor is DAQmx-based, <c>false</c> otherwise.
+/// </returns>
+extern POWER_OVERWHELMING_API bool is_daqmx_sensor(
     _In_ const sensor_description& desc) noexcept;
 
 /// <summary>

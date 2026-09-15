@@ -43,12 +43,14 @@ public:
     /// sink as target for the samples.
     /// </summary>
     /// <param name="samples"></param>
-    /// <param name="cnt"></param>
+    /// <param name="cnt_samples"></param>
     /// <param name="sensors"></param>
+    /// <param name="cnt_sensors"></param>
     /// <param name="context"></param>
-    static void sample_callback(_In_reads_(cnt) const sample *samples,
-        _In_ const std::size_t cnt,
-        _In_ const sensor_description *sensors,
+    static void sample_callback(_In_reads_(cnt_samples) const sample *samples,
+        _In_ const std::size_t cnt_samples,
+        _In_reads_(cnt_sensors) const sensor_description *sensors,
+        _In_ const std::size_t cnt_sensors,
         _In_opt_ void *context);
 
     /// <summary>
@@ -57,10 +59,17 @@ public:
     /// <typeparam name="TArgs">The types of the arguments passed to the
     /// constructor of <typeparamref name="TSink" />.</typeparam>
     /// <param name="page_size">The number of samples allocated at once.</param>
+    /// <param name="write_automatically">If <see langword="true" />, a writer
+    /// thread is created that periodically writes the samples to the sink.
+    /// Otherwise, the caller is responsible for periodically calling
+    /// <see cref="flush" /> to write the samples manually. Note that manual
+    /// sinks will accumulate data until they are disposed if the caller fails
+    /// to invoke <see cref="flush" /> sufficiently often.</param>
     /// <param name="args">The arguments passed tot he constructor of
     /// <typeparamref name="TSink" />.</param>
-    template<class... TArgs>
-    thread_local_sink(_In_ const std::size_t page_size, TArgs&&... args);
+    template<class... TArgs> thread_local_sink(_In_ const std::size_t page_size,
+        _In_ const bool write_automatically,
+        TArgs&&... args);
 
     /// <summary>
     /// Finalises the instance.
@@ -76,6 +85,13 @@ public:
     /// are local variables in the same scope.
     /// </remarks>
     void dispose(void) noexcept;
+
+    /// <summary>
+    /// Synchronously writes all samples that are currently ready to be written.
+    /// This method has no effect if the sink was created with a writer thread.
+    /// </summary>
+    /// <returns></returns>
+    std::size_t flush(void);
 
 private:
 
@@ -134,19 +150,25 @@ private:
         }
 
         inline explicit page(const std::size_t size)
-            : buffer(size),
-            next(nullptr),
-            state(page_state::assigned_callback) { }
+                : next(nullptr),
+                state(page_state::assigned_callback) { 
+            this->buffer.reserve(size);
+        }
 
-        inline bool is_state(_In_ const page_state state) const noexcept {
+        inline bool is_state(_In_ const page_state reference) const noexcept {
             const auto s = this->state.load(std::memory_order_acquire);
-            return ((s & state) == state);
+            return ((s & reference) == reference);
         }
     };
 
     static constexpr auto alignment = detail::false_sharing_range;
 
     static thread_local std::map<thread_local_sink *, page *> buffer;
+
+    /// <summary>
+    /// Mop up every data that are left in the buffer to shut down the sink.s
+    /// </summary>
+    void shutdown(void);
 
     /// <summary>
     /// The code running in the <see cref="_writer" /> thread.
@@ -164,6 +186,8 @@ private:
     std::size_t _page_size;
     alignas(alignment) std::atomic<bool> _running;
     alignas(alignment) std::atomic<const sensor_description *> _sensors;
+    std::size_t _cnt_sensors;
+    bool _write_automatically;
 };
 
 PWROWG_NAMESPACE_END

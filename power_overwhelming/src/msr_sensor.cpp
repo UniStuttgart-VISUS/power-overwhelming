@@ -122,7 +122,9 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
 
             // Emit descriptions for all RAPL supported RAPL domains.
             for (auto& d : vit->second) {
-                if (d.second.is_supported && !d.second.is_supported(c)) {
+                if (!config.bypass_check()
+                        && d.second.is_supported
+                        && !d.second.is_supported(c)) {
                     // The specified RAPL domain has specifically been marked as
                     // unsupported for the given core.
                     continue;
@@ -130,9 +132,18 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
 
                 switch (d.first) {
                     case rapl_domain::package:
+                        builder.with_type(base_type | sensor_type::cpu
+                            | sensor_type::gpu);
+                        break;
+
                     case rapl_domain::pp0:
-                    case rapl_domain::pp1:
                         builder.with_type(base_type | sensor_type::cpu);
+                        break;
+
+                    case rapl_domain::pp1:
+                        // Technically, PP1 does not only include the onboard
+                        // GPU, but also other components other than CPU cores.
+                        builder.with_type(base_type | sensor_type::gpu);
                         break;
 
                     case rapl_domain::dram:
@@ -157,11 +168,20 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
                 ++retval;
             }
 
+            if (config.first_core()) {
+                // If we successfully emitted the first core and the
+                // configuration limited the sensor to the first core, leave
+                // immediately. In case of a failure, we would not get here, so
+                // we emit the first working core (which should be core 0 or
+                // none anyway).
+                break;
+            }
+
         } catch (std::system_error) {
             // If creating a device for core 'c' causes an std::system_error, we
             // have reached the last core and leave the loop. Papa Schlumpf
-            // would not approve this use of exceptions for control flow, but it
-            // is the simplest way to implement this without duplicating code.
+            // would not approve of this use of exceptions for control flow, but
+            // it is the simplest way to implement this without duplicating code.
             succeeded = false;
         }
     }
@@ -241,7 +261,8 @@ PWROWG_DETAIL_NAMESPACE::msr_sensor::msr_sensor(_In_z_ const wchar_t *path,
  */
 void PWROWG_DETAIL_NAMESPACE::msr_sensor::sample(
         _In_ const sensor_array_callback callback,
-        _In_ const sensor_description *sensors,
+        _In_reads_(cnt) const sensor_description *sensors,
+        _In_ const std::size_t cnt,
         _In_opt_ void *context) {
     typedef std::chrono::duration<float> seconds_type;
     assert(callback != nullptr);
@@ -272,5 +293,5 @@ void PWROWG_DETAIL_NAMESPACE::msr_sensor::sample(
         this->_last_value[i] = value;
     }
 
-    callback(samples.data(), samples.size(), sensors, context);
+    callback(samples.data(), samples.size(), sensors, cnt, context);
 }

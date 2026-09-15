@@ -4,7 +4,6 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
 #include "visus/pwrowg/daqmx_sample_clock_timing.h"
 
 #include "visus/pwrowg/convert_string.h"
@@ -85,5 +84,3 @@ PWROWG_NAMESPACE::daqmx_sample_clock_timing::source(
     this->_source.clear();
     return *this;
 }
-
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */

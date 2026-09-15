@@ -1,0 +1,13 @@
+{
+    "name": "arrow21",
+    "dependencies": [
+        "arrow"
+    ],
+    "overrides": [
+        {
+            "name": "arrow",
+            "version-string": "21.0.0"
+        }
+    ],
+    "builtin-baseline": "09f6a4ef2f08252f7f4d924fd9c2d42165fb21c9"
+}

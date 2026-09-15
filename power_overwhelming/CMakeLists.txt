@@ -2,10 +2,11 @@
 # Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 # Licensed under the MIT licence. See LICENCE file for details.
 
-
 # User-configurable options.
 cmake_dependent_option(PWROWG_ForceDirect3D11 "Force GPU enumeration via Direct3D 11" OFF WIN32 OFF)
 mark_as_advanced(FORCE PWROWG_ForceDirect3D11)
+option(PWROWG_AssertVisaInstrumentState "Assert a valid state of a VISA instrument after each change" OFF)
+mark_as_advanced(FORCE PWROWG_AssertVisaInstrumentState)
 
 
 # Collect source files.
@@ -26,7 +27,6 @@ add_library(${PROJECT_NAME} SHARED ${PublicHeaderFiles} ${PrivateHeaderFiles} ${
 # Configure the compiler.
 target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_EXPORTS UNICODE _UNICODE)
 
-
 if (PWROWG_WithAdl)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_ADL)
 endif ()
@@ -43,30 +43,53 @@ if (PWROWG_WithIgcl)
 endif ()
 
 if (PWROWG_WithNiDaqMx)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_DAQMX)
-    # Note: NI-DAQmx must be public as we want to expose the headers to the client.
-    target_link_libraries(${PROJECT_NAME} PUBLIC nidaqmx)
+    # Note: In contrast to VISA, we do not publish NI-DAQmx headers to the
+    # client. If a client wants to have native access to NI-DAQmx, they must
+    # define the macro itself.
+    target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_WITH_DAQMX)
+    target_link_libraries(${PROJECT_NAME} PRIVATE nidaqmx)
 endif ()
 
 if (PWROWG_WithNvapi)
     find_package(NVAPI REQUIRED)
+    # Note: Do not link against the wrapper here as this would defeat its purpose.
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_NVAPI)
     target_include_directories(${PROJECT_NAME} PRIVATE ${PWROVRNVAPI_INCLUDE_DIR})
     target_include_directories(${PROJECT_NAME} PRIVATE ${NVAPI_INCLUDE_DIR})
-
-    # Grab the wrapper DLL and copy it to the output directory.
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${PWROVRNVAPI_BINARY} $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND_EXPAND_LISTS)
 endif ()
+
+# A utility that adds a post-build step 't' that the non-linked pwrovrnvapi DLL
+# to the output directory of 't'. This step is required because the wrapper DLL
+# is not linked against this library, but loaded at runtime, to prevent a hard
+# dependency on the NVIDIA driver on the target machine.
+function(pwrowg_add_pwrovrnvapi_post_build t)
+    if (PWROWG_WithNvapi)
+        add_custom_command(TARGET ${t} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy "${PWROVRNVAPI_BINARY}" $<TARGET_FILE_DIR:${t}>)
+    endif ()
+endfunction()
+
+# Grab the wrapper DLL and copy it to the output directory of this library.
+pwrowg_add_pwrovrnvapi_post_build(${PROJECT_NAME})
+
 
 if (PWROWG_WithNvml)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_NVML)
 endif ()
 
 if (PWROWG_WithParquet)
+    pwrowg_preload_parquet_dependencies(${PROJECT_NAME})
+
+    find_package(Parquet CONFIG REQUIRED)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_PARQUET)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Arrow::arrow_static)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${PWROWG_PARQUET_LIBRARY})
+
+    if (NOT PWROWG_UseStaticParquet)
+        # Grab all the dependencies and copy it to the output directory.
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${PROJECT_NAME}> "$<IF:$<CONFIG:Debug>,${PWROG_PARQUET_DEBUG_DEPENDENCIES},${PWROG_PARQUET_RELEASE_DEPENDENCIES}>"
+            COMMAND_EXPAND_LISTS)
+    endif ()
 endif ()
 
 if (PWROWG_WithPowenetics)
@@ -117,11 +140,15 @@ if (WIN32)
     target_compile_options(${PROJECT_NAME} PRIVATE "-doc")
 endif ()
 
+if (PWROWG_AssertVisaInstrumentState)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE PWROWG_ASSERT_VISA_INSTRUMENT_STATE)
+endif ()
+
 target_link_libraries(${PROJECT_NAME}
     PRIVATE adl nlohmann_json::nlohmann_json nvml tinkerforge usbpdtesterdriver rapidcsv)
 
 if (WIN32)
-    target_link_libraries(${PROJECT_NAME} PUBLIC Cfgmgr32 Ws2_32)
+    target_link_libraries(${PROJECT_NAME} PUBLIC Cfgmgr32 Ws2_32 ntdll)
 else ()
     find_package(Threads REQUIRED)
     target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS} Threads::Threads uuid)
@@ -131,6 +158,7 @@ endif ()
 # Provide the internal API to the unit tests.
 set(PowerOverwhelmingTestInclude "${CMAKE_CURRENT_SOURCE_DIR}/src" PARENT_SCOPE)
 
+
 # Install
 install(TARGETS ${PROJECT_NAME}
     EXPORT ${PROJECT_NAME}Targets
@@ -138,10 +166,28 @@ install(TARGETS ${PROJECT_NAME}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
+if (PWROWG_WithNvapi)
+    install(FILES ${PWROVRNVAPI_BINARY}
+        DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif ()
+
+if (PWROWG_WithParquet AND NOT PWROWG_UseStaticParquet)
+    install(FILES ${PWROG_PARQUET_RELEASE_DEPENDENCIES}
+        DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif ()
+
 install(DIRECTORY include/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 install(EXPORT ${PROJECT_NAME}Targets
-    FILE ${PROJECT_NAME}Config.cmake
+    FILE ${PROJECT_NAME}Targets.cmake
     NAMESPACE ${PROJECT_NAME}::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+configure_file(${PROJECT_NAME}Config.cmake.in ${PROJECT_NAME}Config.cmake @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+configure_file(pwrowg_dependencies.cmake.in pwrowg_dependencies.cmake @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/pwrowg_dependencies.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})

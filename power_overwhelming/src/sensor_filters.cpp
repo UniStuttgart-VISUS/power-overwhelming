@@ -6,6 +6,8 @@
 
 #include "visus/pwrowg/sensor_filters.h"
 
+#include <regex>
+
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/hmc8015_instrument.h"
 #include "visus/pwrowg/string_functions.h"
@@ -31,6 +33,25 @@ bool PWROWG_NAMESPACE::is_benchlab_sensor(
 
 
 /*
+ * PWROWG_NAMESPACE::is_core0_msr_sensor
+ */
+bool PWROWG_NAMESPACE::is_core0_msr_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    static const std::wregex rx(L"^MSR\\/(\\d+)\\/.*$",
+        std::regex_constants::ECMAScript | std::regex_constants::icase);
+
+    std::wcmatch match;
+    if (!std::regex_match(desc.id(), match, rx)) {
+        return false;
+    }
+
+    assert(match.size() > 1);
+    const auto core = std::stoul(match[1].str());
+    return (core == 0);
+}
+
+
+/*
  * PWROWG_NAMESPACE::is_cpu_sensor
  */
 bool PWROWG_NAMESPACE::is_cpu_sensor(
@@ -45,6 +66,15 @@ bool PWROWG_NAMESPACE::is_cpu_sensor(
 bool PWROWG_NAMESPACE::is_current_sensor(
         _In_ const sensor_description& desc) noexcept {
     return desc.is_sensor_type(sensor_type::current);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::is_daqmx_sensor
+ */
+bool PWROWG_NAMESPACE::is_daqmx_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    return detail::starts_with(desc.id(), L"DAQmx/");
 }
 
 

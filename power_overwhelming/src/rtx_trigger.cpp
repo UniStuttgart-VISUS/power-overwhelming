@@ -99,7 +99,9 @@ PWROWG_NAMESPACE::rtx_trigger::rtx_trigger(
         _In_ const input_type source,
         _In_ const rtx_trigger_type type)
         : rtx_trigger("", type) {
-    const auto s = std::string("CH") + std::to_string(source);
+    const auto s = (source == 5)
+        ? std::string("EXT")
+        : std::string("CH") + std::to_string(source);
     this->source(s.c_str());
 }
 

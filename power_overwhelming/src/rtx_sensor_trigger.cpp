@@ -58,6 +58,26 @@ _Ret_z_ const char *PWROWG_NAMESPACE::rtx_sensor_trigger::path(
 
 
 /*
+ * PWROWG_NAMESPACE::rtx_sensor_trigger::pulse
+ */
+bool PWROWG_NAMESPACE::rtx_sensor_trigger::pulse(
+        _In_ const parallel_port_pin pins,
+        _In_ const parallel_port_trigger::milliseconds_type duration) const {
+    assert(this->_impl != nullptr);
+    if (this->_impl == nullptr) {
+        return false;
+    }
+
+    if (!this->_impl->external_trigger) {
+        return false;
+    }
+
+    this->_impl->external_trigger.pulse(pins, duration);
+    return true;
+}
+
+
+/*
  * PWROWG_NAMESPACE::rtx_sensor_trigger::trigger
  */
 _Ret_maybenull_ const PWROWG_NAMESPACE::rtx_trigger *
@@ -112,13 +132,15 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::fatal_failure(
  * PWROWG_NAMESPACE::rtx_sensor_trigger::acquire
  */
 bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
+        _In_ void (*acquired)(const type_erased_storage&),
+        _Inout_ type_erased_storage&& acquired_context,
         _In_ void (*done)(const type_erased_storage&),
         _Inout_ type_erased_storage&& done_context,
         _In_ bool (*failed)(const std::exception_ptr,
             const type_erased_storage&),
         _Inout_ type_erased_storage&& failed_context) {
 #if defined(POWER_OVERWHELMING_WITH_VISA)
-    using detail::rtx_sensor_state;
+    using detail::sensor_trigger_state;
 
     assert(this->_impl != nullptr);
     if (this->_impl == nullptr) {
@@ -127,15 +149,17 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
 
     PWROWG_TRACE(_T("Making sure that the instrument controller thread is not ")
         _T("working on the instruments anymore before triggering."));
-    detail::spin_while_all(this->_impl->state, rtx_sensor_state::busy);
+    detail::spin_while_all(this->_impl->state, sensor_trigger_state::busy);
 
+    this->_impl->when_acquired = acquired;
+    this->_impl->when_acquired_context = std::move(acquired_context);
     this->_impl->when_done = done;
     this->_impl->when_done_context = std::move(done_context);
     this->_impl->when_failed = failed;
     this->_impl->when_failed_context = std::move(failed_context);
 
-    if ((detail::atomic_set(this->_impl->state, rtx_sensor_state::armed)
-            & rtx_sensor_state::running) != rtx_sensor_state::running) {
+    if ((detail::atomic_set(this->_impl->state, sensor_trigger_state::armed)
+            & sensor_trigger_state::running) != sensor_trigger_state::running) {
         PWROWG_TRACE(_T("The RTX sensor controller was shut down while trying ")
             _T("to arm the trigger."));
         return false;
@@ -146,6 +170,8 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
             "asynchronous OPC.", i.path());
         i.acquisition(rtx_acquisition_state::single).operation_complete_async();
 
+        PWROWG_TRACE("Making sure that \"%s\" is waiting for a trigger.",
+            i.path());
         std::size_t cnt = 0;
         std::chrono::milliseconds delay(0);
         while (!i.operation_status(rtx_operation_status::waiting)) {
@@ -155,6 +181,12 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
             }
             std::this_thread::sleep_for(delay);
         }
+    }
+
+    if (this->_impl->acquisition_delay > std::chrono::milliseconds::zero()) {
+        PWROWG_TRACE("Waiting for %u ms before triggering.",
+            static_cast<std::uint32_t>(this->_impl->acquisition_delay.count()));
+        std::this_thread::sleep_for(this->_impl->acquisition_delay);
     }
 
     if (this->_impl->external_trigger) {
@@ -194,9 +226,14 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
 
         } else {
             PWROWG_TRACE(_T("Triggering all instruments manually."));
+            timestamps.clear();
+            timestamps.reserve(this->_impl->instruments.size());
+
             for (auto& i : this->_impl->instruments) {
+                const auto b = timestamp::now();
                 i.trigger_manually();
-                // TODO: timestamps
+                const auto e = timestamp::now();
+                timestamps.push_back(timestamp::middle(b, e));
             }
         }
     } /* if (this->_impl->external_trigger) */
@@ -204,6 +241,7 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
 
     return true;
 }
+
 
 /*
  * PWROWG_NAMESPACE::rtx_sensor_trigger::reset

@@ -47,8 +47,13 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 
 # The test requires access to the BenchLab headers to test the sensor.
 if (PWROWG_WithBenchlab)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_BENCHLAB)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_WITH_BENCHLAB)
     target_link_libraries(${PROJECT_NAME} PRIVATE libbenchlab)
+endif ()
+
+if (PWROWG_WithNiDaqMx)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_WITH_DAQMX)
+    target_link_libraries(${PROJECT_NAME} PRIVATE nidaqmx)
 endif ()
 
 # The test requires access to the IGCL headers to test the sensor.
@@ -70,21 +75,31 @@ if (PWROWG_WithNvapi)
         COMMAND_EXPAND_LISTS)
 endif ()
 
+# The test requires Parquet itself to test the parquet sink.
+if (PWROWG_WithParquet)
+    #set(CMAKE_FIND_DEBUG_MODE TRUE)
+    find_package(Parquet CONFIG REQUIRED)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_PARQUET)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${PWROWG_PARQUET_LIBRARY})
+endif ()
+
 # The test requires access to the Powenetics headers to test the sensor.
 if (PWROWG_WithPowenetics)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_POWENETICS)
     target_link_libraries(${PROJECT_NAME} PRIVATE libpowenetics)
 endif ()
 
-# The test requires access to the VISA headers to test the instruments.
-if (PWROWG_WithVisa)
-    find_package(VISA REQUIRED)
-    target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
-    target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_WITH_VISA)
-endif ()
+## The test requires access to the VISA headers to test the instruments.
+#if (PWROWG_WithVisa)
+#    find_package(VISA REQUIRED)
+#    target_include_directories(${PROJECT_NAME} PRIVATE ${VISA_INCLUDE_DIR})
+#    target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_WITH_VISA)
+#endif ()
 
 # Grab the DLLs to be tested and copy them to the output directory such that
 # the Visual Studio test driver finds everything.
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-    COMMAND_EXPAND_LISTS)
+#file(GENERATE
+#    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/runtime_dlls_$<CONFIG>.txt"
+#    CONTENT "$<TARGET_RUNTIME_DLLS:${PROJECT_NAME}>")
+pwrowg_add_parquet_post_build(${PROJECT_NAME})
+pwrowg_add_runtime_dll_post_build(${PROJECT_NAME})

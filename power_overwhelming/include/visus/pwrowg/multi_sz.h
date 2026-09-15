@@ -1,5 +1,5 @@
 ﻿// <copyright file="multi_sz.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for more information.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -60,9 +60,9 @@ PWROWG_NAMESPACE_BEGIN
 /// Represents a set of zero-terminated strings terminated by an additional zero,
 /// which is commonly used in the Windows registry to store arrays of strings.
 /// </summary>
-/// <typeparam name="TChar">The type of the characters (<c>char</c> or
-/// <c>wchar_t</c>).</typeparam>
-/// <typeparam name="TTrais">The type of the character traits, which defaults to
+/// <typeparam name="TChar">The type of the characters (<see langword="char" /> or
+/// <see langword="wchar_t" />).</typeparam>
+/// <typeparam name="TTraits">The type of the character traits, which defaults to
 /// the STL implementation for strings.</typeparam>
 template<class TChar, class TTraits = std::char_traits<TChar>>
 class multi_sz final {
@@ -290,6 +290,19 @@ public:
     /// <returns>The number of characters that are required to store the
     /// <paramref name="multi_sz" />.</returns>
     static size_type size(_In_opt_z_ const value_type *multi_sz) noexcept;
+
+    /// <summary>
+    /// Answer the number of characters required to store the strings
+    /// <paramref name="begin" /> to <paramref name="end" /> in a multi-sz.
+    /// </summary>
+    /// <typeparam name="TIterator">An iterator over character pointers.
+    /// </typeparam>
+    /// <param name="begin">The begin of the range of strings.</param>
+    /// <param name="end">The end of the range of strings.</param>
+    /// <returns>The number of characters required to store all strings as
+    /// a multi-sz.</returns>
+    template<class TIterator> static inline size_type size(
+        _In_ const TIterator begin, _In_ const TIterator end);
 
     /// <summary>
     /// Initialises a new instance.

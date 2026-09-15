@@ -39,7 +39,8 @@ struct sensor_array_impl final {
     /// The signature of a sampler function.
     /// </summary>
     typedef std::function<void(const sensor_array_callback callback,
-        sensor_description *, void *context)> sampler_func;
+        const sensor_description *, const std::size_t, void *context)>
+        sampler_func;
 
     /// <summary>
     /// Answer the sample callback stored in the given array.
@@ -63,7 +64,9 @@ struct sensor_array_impl final {
     static inline void callback(_In_ const sensor_array_impl *impl,
             _In_reads_(cnt) const sample *samples,
             _In_ const std::size_t cnt) {
-        callback(impl)(samples, cnt, raw_descriptions(impl), context(impl));
+        callback(impl)(samples, cnt,
+            raw_descriptions(impl), count_descriptions(impl),
+            context(impl));
     }
 
     /// <summary>
@@ -82,10 +85,21 @@ struct sensor_array_impl final {
     /// <summary>
     /// Answer the sensor list of the array as a raw pointer.
     /// </summary>
-    /// <param name="impl">The array to check retrieve the context from.
-    /// </param>
-    /// <returns>The context stored in the given array.</returns>
-    static inline _Ret_maybenull_ const sensor_description *raw_descriptions(
+    /// <param name="impl">The array count the sensors of.</param>
+    /// <returns>The number of sensors in the array.</returns>
+    static inline std::size_t count_descriptions(
+            _In_ const sensor_array_impl *impl) {
+        assert(impl != nullptr);
+        return impl->descriptions.size();
+    }
+
+    /// <summary>
+    /// Answer the sensor list of the array as a raw pointer.
+    /// </summary>
+    /// <param name="impl">The array to get the descriptions from.</param>
+    /// <returns>A raw pointer to the sensor descriptions of the array.
+    /// </returns>
+    static inline _Ret_valid_ const sensor_description *raw_descriptions(
             _In_ const sensor_array_impl *impl) {
         assert(impl != nullptr);
         return impl->descriptions.data();

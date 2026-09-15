@@ -375,3 +375,4 @@ third_party/*-subbuild/
 /build
 /poweb/demo.json*.csv
 /_install
+/third_party/arrow-21.0.0/vcpkg_installed

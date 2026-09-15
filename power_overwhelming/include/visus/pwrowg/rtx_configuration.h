@@ -12,9 +12,7 @@
 #include <cstdlib>
 #include <type_traits>
 
-#include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/guid.h"
-#include "visus/pwrowg/rtx_instrument.h"
 #include "visus/pwrowg/rtx_quantity.h"
 #include "visus/pwrowg/rtx_sensor_definition.h"
 #include "visus/pwrowg/rtx_instrument_configuration.h"
@@ -64,7 +62,6 @@ public:
     /// <returns>The configuration object encoded in the given JSON file.
     /// </returns>
     static rtx_configuration load(_In_z_ const wchar_t *path);
-
 
     /// <summary>
     /// Loads an <see cref="rtx_configuration" /> from a JSON file.
@@ -216,13 +213,81 @@ public:
     /// Configure a custom timeout for downloading the channel data.
     /// </summary>
     /// <param name="download_timeout">The timeout used for downloading the
-    /// channel data, or zero to use the timeout set on the instrument when the
-    /// download is started.</param>
+    /// channel data, in milliseconds, or zero to use the timeout set on the
+    /// instrument when the download is started.</param>
     /// <returns><c>*<see cref="this" /></c>.</returns>
     inline rtx_configuration& download_timeout(
             _In_ const timeout_type download_timeout) noexcept {
         this->_download_timeout = download_timeout;
         return *this;
+    }
+
+    /// <summary>
+    /// Configure a custom timeout for downloading the channel data.
+    /// </summary>
+    /// <typeparam name="TRep">The value type of the duration.</typeparam>
+    /// <typeparam name="TPeriod">The period of the duration.</typeparam>
+    /// <param name="t">The timeout used for downloading the channel
+    /// data.</param>
+    /// <returns><c>*<see cref="this" /></c>.</returns>
+    template<class TRep, class TPeriod>
+    inline rtx_configuration& download_timeout(
+            _In_ const std::chrono::duration<TRep, TPeriod>& t) noexcept {
+        typedef std::chrono::duration<timeout_type, std::milli> millis_type;
+        return this->download_timeout(std::chrono::duration_cast<millis_type>(
+            t).count());
+    }
+
+    /// <summary>
+    /// Answer a delay, in milliseconds, that the sensor should wait after a
+    /// reset before starting.
+    /// </summary>
+    /// <returns>The reset delay in milliseconds.</returns>
+    inline timeout_type reset_delay(void) const noexcept {
+        return this->_reset_delay;
+    }
+
+    /// <summary>
+    /// Configure a delay between resetting the instrument and starting the
+    /// sensor.
+    /// </summary>
+    /// <remarks>
+    /// If an RTX sensor addressing multiple oscilloscopes is started after a
+    /// reset is issued, not all of the instruments might be ready to accept the
+    /// trigger, which is (at least to my current knowledge) not detectable by
+    /// software. By forcing the sensor to wait a few milliseconds after the
+    /// reset and before applying the configuration, this can be circumvented.
+    /// The default value of 100 ms seems to work reasonably well for our setup.
+    /// </remarks>
+    /// <param name="reset_delay">The delay in milliseconds.</param>
+    /// <returns><c>*<see cref="this" /></c>.</returns>
+    inline rtx_configuration& reset_delay(
+            _In_ const timeout_type reset_delay) noexcept {
+        this->_reset_delay = reset_delay;
+        return *this;
+    }
+
+    /// <summary>
+    /// Configure a delay between resetting the instrument and starting the
+    /// sensor.
+    /// </summary>
+    /// <remarks>
+    /// If an RTX sensor addressing multiple oscilloscopes is started after a
+    /// reset is issued, not all of the instruments might be ready to accept the
+    /// trigger, which is (at least to my current knowledge) not detectable by
+    /// software. By forcing the sensor to wait a few milliseconds after the
+    /// reset and before applying the configuration, this can be circumvented.
+    /// The default value of 100 ms seems to work reasonably well for our setup.
+    /// </remarks>
+    /// <typeparam name="TRep">The value type of the duration.</typeparam>
+    /// <typeparam name="TPeriod">The period of the duration.</typeparam>
+    /// <param name="t">The delay.</param>
+    /// <returns><c>*<see cref="this" /></c>.</returns>
+    template<class TRep, class TPeriod> inline rtx_configuration& reset_delay(
+            _In_ const std::chrono::duration<TRep, TPeriod>& t) noexcept {
+        typedef std::chrono::duration<timeout_type, std::milli> millis_type;
+        return this->reset_delay(std::chrono::duration_cast<millis_type>(
+            t).count());
     }
 
     /// <summary>
@@ -331,7 +396,7 @@ public:
     /// <param name="trigger">The new trigger configuration which determines how
     /// the underlying oscilloscopes are controlled.</param>
     /// <returns><c>*<see langword="this" /></c>.</returns>
-    rtx_configuration& trigger(_In_ const rtx_sensor_trigger& trigger) {
+    inline rtx_configuration& trigger(_In_ const rtx_sensor_trigger& trigger) {
         this->_trigger = trigger;
         return *this;
     }
@@ -342,7 +407,8 @@ public:
     /// <param name="trigger">The new trigger configuration which determines how
     /// the underlying oscilloscopes are controlled.</param>
     /// <returns><c>*<see langword="this" /></c>.</returns>
-    rtx_configuration& trigger(_Inout_ rtx_sensor_trigger&& trigger) noexcept {
+    inline rtx_configuration& trigger(
+            _Inout_ rtx_sensor_trigger&& trigger) noexcept {
         this->_trigger = std::move(trigger);
         return *this;
     }
@@ -353,9 +419,11 @@ private:
     std::size_t _download_retries;
     timeout_type _download_timeout;
     rtx_instrument_reset _reset_flags;
+    timeout_type _reset_delay;
     bool _reset_on_enumerate;
     type_erased_storage _sensors;
     rtx_sensor_trigger _trigger;
+
 };
 
 PWROWG_NAMESPACE_END

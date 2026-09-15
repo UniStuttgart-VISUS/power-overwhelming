@@ -215,10 +215,13 @@ public:
     /// <param name="callback">The callback to be invoked.</param>
     /// <param name="sensors">The sensor descriptions passed to the
     /// <paramref name="callback" />.</param>
+    /// <param name="cnt">The number of sensor descriptions in
+    /// <paramref name="sensors" />, which is passed to the callback.</param>
     /// <param name="context">An optional context pointer passed to the
     /// <paramref name="callback" />.</param>
     void sample(_In_ const sensor_array_callback callback,
-        _In_ const sensor_description *sensors,
+        _In_reads_(cnt) const sensor_description *sensors,
+        _In_ const std::size_t cnt,
         _In_opt_ void *context = nullptr);
 
     adl_sensor& operator =(const adl_sensor&) = delete;

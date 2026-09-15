@@ -10,7 +10,9 @@
 
 #if defined(_WIN32)
 #pragma push_macro("NOMINMAX")
+#if !defined(NOMINMAX)
 #define NOMINMAX
+#endif /* !defined(NOMINMAX) */
 #include <Windows.h>
 #pragma pop_macro("NOMINMAX")
 

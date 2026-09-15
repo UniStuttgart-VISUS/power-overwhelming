@@ -112,7 +112,8 @@ PWROWG_DETAIL_NAMESPACE::benchlab_sensor::benchlab_sensor(
  */
 void PWROWG_DETAIL_NAMESPACE::benchlab_sensor::sample(
         _In_ const sensor_array_callback callback,
-        _In_ const sensor_description *sensors,
+        _In_reads_(cnt) const sensor_description *sensors,
+        _In_ const std::size_t cnt,
         _In_opt_ void *context) {
     benchlab_sensor_readings readings;
 
@@ -131,7 +132,8 @@ void PWROWG_DETAIL_NAMESPACE::benchlab_sensor::sample(
             ++i;
         }
 
-        callback(this->_samples.data(), this->_samples.size(), sensors,
+        callback(this->_samples.data(), this->_samples.size(),
+            sensors, cnt,
             context);
     }
 }

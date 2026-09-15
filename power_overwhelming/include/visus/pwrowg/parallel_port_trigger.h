@@ -11,6 +11,7 @@
 #include <cinttypes>
 #include <cstdlib>
 #include <limits>
+#include <string>
 
 #if defined(_WIN32)
 #include <Windows.h>
@@ -175,6 +176,65 @@ public:
     /// <exception cref="std::system_error">If the specified port could not
     /// be opened.</exception>
     void open(_In_z_ const char *path);
+
+    /// <summary>
+    /// Answer the path of the port if it is open.
+    /// </summary>
+    /// <param name="dst">A buffer of at least <paramref name="cnt" />
+    /// characters to receive the path. This parameter can be
+    /// <see langword="nullptr "/> to measure the required buffer size.</param>
+    /// <param name="cnt">The number of characters that can be written to
+    /// <paramref name="dst" />.</param>
+    /// <returns>The length of the path, including the terminating null,
+    /// regardless of whether the output has been written.</returns>
+    /// <exception cref="std::system_error">If the path could not be determined,
+    /// most likely because the port is not open.</exception>
+    std::size_t path(_Out_writes_opt_(cnt) wchar_t *dst,
+        _In_ std::size_t cnt) const;
+
+    /// <summary>
+    /// Answer the path of the port if it is open.
+    /// </summary>
+    /// <param name="dst">A buffer of at least <paramref name="cnt" />
+    /// characters to receive the path. This parameter can be
+    /// <see langword="nullptr "/> to measure the required buffer size.</param>
+    /// <param name="cnt">The number of characters that can be written to
+    /// <paramref name="dst" />.</param>
+    /// <returns>The length of the path, including the terminating null,
+    /// regardless of whether the output has been written.</returns>
+    /// <exception cref="std::system_error">If the path could not be determined,
+    /// most likely because the port is not open.</exception>
+    std::size_t path(_Out_writes_opt_(cnt) char *dst,
+        _In_ std::size_t cnt) const;
+
+    /// <summary>
+    /// Answer the required buffer size for the path of the port.
+    /// </summary>
+    /// <returns>The length of the path, including the terminating null.
+    /// </returns>
+/// <exception cref="std::system_error">If the path could not be determined,
+    /// most likely because the port is not open.</exception>
+    inline std::size_t path(_In_opt_ std::nullptr_t,
+            _In_ const std::size_t) const {
+#if defined(_WIN32)
+        return this->path(static_cast<wchar_t *>(nullptr), 0);
+#else /* defined(_WIN32) */
+        return this->path(static_cast<char *>(nullptr), 0);
+#endif /* defined(_WIN32) */
+    }
+
+    /// <summary>
+    /// Answer the path of the port if it is open.
+    /// </summary>
+    /// <typeparam name="TChar">The character type of the string.</typeparam>
+    /// <returns>The path of the parallel port.</returns>
+    /// <exception cref="std::system_error">If the path could not be determined,
+    /// most likely because the port is not open.</exception>
+    template<class TChar> std::basic_string<TChar> path(void) const {
+        std::basic_string<TChar> retval(this->path(nullptr, 0) - 1, 0);
+        this->path(&retval[0], retval.size() + 1);
+        return retval;
+    }
 
     /// <summary>
     /// Activates the given data bits for <paramref name="period" />

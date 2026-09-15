@@ -13,8 +13,7 @@
 #include <visus/pwrowg/rtx_sensor_trigger_builder.h>
 
 #include <rtx_sensor.h>
-
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include <sensor_array_impl.h>
 
 
 PWROWG_TEST_NAMESPACE_BEGIN
@@ -90,15 +89,15 @@ public:
             Assert::IsNotNull(sensor_config0, L"Configuration is set", LINE_INFO());
 
             auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
-            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(3), 5000, 4000).beep_on_trigger(true))
+            Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
+            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(3), 10000, 4000).beep_on_trigger(true))
                 .download_retries(1)
                 .download_timeout(10000);
             auto trigger = rtx_sensor_trigger_builder::for_path(device.c_str()).when_software_triggered().build();
             //trigger = rtx_sensor_trigger_builder::for_all().when_parallel_port("LPT1").measured_via_external().build();
-            trigger = rtx_sensor_trigger_builder::for_all().when_channel("CH0").rises_above(0.1f).build();
+            //trigger = rtx_sensor_trigger_builder::for_all().when_channel("CH1").rises_above(0.1f).build();
             sensor_config->trigger(trigger);
 
-            Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
             sensor_config->add_sensor(device.c_str(),
                 rtx_channel(1).range(2.0f, "V").attenuation(0.1f, "V"),
                 rtx_channel(2).range(2.0f, "A").attenuation(0.1f, "A"));
@@ -142,21 +141,21 @@ public:
             Assert::AreEqual("hugo", trigger.path(), L"Path is set", LINE_INFO());
             Assert::IsNull(trigger.trigger(), L"Trigger is not set", LINE_INFO());
         }
-#if 0
+#if false
         {
             // This test will only work if the port extension card is installed on the test machine.
             auto trigger = rtx_sensor_trigger_builder::for_first().when_channel("CH1").rises_above(2.5f).build();
             Assert::IsNotNull(trigger.path(), L"Path is set", LINE_INFO());
         }
 #endif
-#if 0
+#if false
         {
             // This test will only work if the port extension card is installed on the test machine.
             auto trigger = rtx_sensor_trigger_builder::for_name("rta01").when_channel("CH1").rises_above(2.5f).build();
             Assert::IsNotNull(trigger.path(), L"Path is set", LINE_INFO());
         }
 #endif
-#if 0
+#if false
         {
             // This test will only work if the port extension card is installed on the test machine.
             auto trigger = rtx_sensor_trigger_builder::for_path("hugo")
@@ -170,7 +169,7 @@ public:
             Assert::IsNotNull(trigger.trigger(), L"Trigger is set", LINE_INFO());
         }
 #endif
-#if 0
+#if false
         {
             // This test will only work if the port extension card is installed on the test machine.
             auto trigger = rtx_sensor_trigger_builder::for_path("hugo").when_parallel_port("COM1").measured_via_channel("CH1").build();
@@ -178,7 +177,7 @@ public:
             Assert::IsNotNull(trigger.trigger(), L"Trigger is set", LINE_INFO());
         }
 #endif
-#if 0
+#if false
         {
             // This test will only work if the port extension card is installed on the test machine.
             auto trigger = rtx_sensor_trigger_builder::for_serial(L"103698").when_channel("CH1").rises_above(2.5f).build();
@@ -186,6 +185,129 @@ public:
         }
 #endif
     }
+
+    TEST_METHOD(test_voltage_only_sensor_creation) {
+        typedef detail::rtx_sensor type;
+        const auto device = test_instrument();
+
+        if (!device.empty()) {
+            detail::sensor_array_impl owner;
+            owner.configuration = std::make_unique<detail::sensor_array_configuration_impl>();
+            owner.configuration->sensor_configs[type::configuration_type::id] = std::make_unique<type::configuration_type>();
+
+            auto sensor_config0 = owner.configuration->find_sensor_config(type::configuration_type::id);
+            Assert::IsNotNull(sensor_config0, L"Configuration is set", LINE_INFO());
+
+            auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
+            Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
+
+            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(3), 10000, 4000).beep_on_trigger(true))
+                .download_retries(1)
+                .download_timeout(10000);
+            auto trigger = rtx_sensor_trigger_builder::for_path(device.c_str()).when_software_triggered().build();
+            sensor_config->trigger(trigger);
+
+            sensor_config->add_sensor(device.c_str(),
+                rtx_channel(1).range(2.0f, "V").attenuation(0.1f, "V"),
+                rtx_channel(2).range(2.0f, "A").attenuation(0.1f, "A"));
+            sensor_config->add_sensor(device.c_str(),
+                rtx_channel(3).range(4.0f, "V").attenuation(1.0f, "V"),
+                rtx_channel());
+
+            std::vector<sensor_description> descs;
+            descs.resize(type::descriptions(nullptr, 0, *sensor_config));
+            Assert::AreEqual(std::size_t(4), descs.size(), L"Descriptions for all sensors and the power sensor.", LINE_INFO());
+            type::descriptions(descs.data(), descs.size(), *sensor_config);
+
+            type::list_type sensors;
+            const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), &owner, *sensor_config);
+            Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
+
+            sensors.front().sample(true);
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            Assert::IsTrue(trigger.acquire(
+                [](void) { Assert::IsTrue(true, L"Triggered", LINE_INFO()); },
+                [](std::exception_ptr) { Assert::IsTrue(false, L"Acquisition failure", LINE_INFO()); return true; }
+            ), L"Acquire scheduled", LINE_INFO());
+            std::this_thread::sleep_for(std::chrono::seconds(5));
+        }
+    }
+
+#if false
+    TEST_METHOD(test_multi_sensor_creation) {
+        typedef detail::rtx_sensor type;
+
+        if (rtx_instrument::all(nullptr, 0) > 1) {
+            detail::sensor_array_impl owner;
+            owner.configuration = std::make_unique<detail::sensor_array_configuration_impl>();
+            owner.configuration->sensor_configs[type::configuration_type::id] = std::make_unique<type::configuration_type>();
+
+            auto sensor_config0 = owner.configuration->find_sensor_config(type::configuration_type::id);
+            Assert::IsNotNull(sensor_config0, L"Configuration is set", LINE_INFO());
+
+            auto sensor_config = dynamic_cast<type::configuration_type *>(sensor_config0);
+            Assert::IsNotNull(sensor_config, L"Configuration is of correct type", LINE_INFO());
+
+            sensor_config->base_configuration(rtx_instrument_configuration(std::chrono::seconds(6), 10000, 4000).beep_on_trigger(true).beep_on_apply(true))
+                .download_retries(1)
+                .download_timeout(10000)
+                //.reset_flags(rtx_instrument_reset::status | rtx_instrument_reset::buffers | rtx_instrument_reset::errors);
+                .reset_flags(rtx_instrument_reset::reset);
+            auto trigger = rtx_sensor_trigger_builder::for_all().when_parallel_port("LPT3").measured_via_external().build();
+            //trigger = rtx_sensor_trigger_builder::for_all().when_software_triggered().build();
+            sensor_config->trigger(trigger);
+
+            std::vector<rtx_instrument> instruments(rtx_instrument::all(nullptr, 0));
+            rtx_instrument::all(instruments.data(), instruments.size());
+            Assert::IsFalse(instruments.empty(), L"Have at least one instrument", LINE_INFO());
+
+            rtx_instrument::foreach_instance([](visa_instrument& i, void *c) {
+                auto config = static_cast<type::configuration_type *>(c);
+                config->add_sensor(i.path(),
+                    rtx_channel(1).range(2.0f, "V").attenuation(0.1f, "V"),
+                    rtx_channel(2).range(2.0f, "A").attenuation(0.1f, "A"));
+                config->add_sensor(i.path(),
+                    rtx_channel(4).range(2.0f, "V").attenuation(0.1f, "V"),
+                    rtx_channel(3).range(2.0f, "A").attenuation(0.1f, "A"));
+                return true;
+            }, sensor_config);
+
+            std::vector<sensor_description> descs(type::descriptions(nullptr, 0, *sensor_config));
+            type::descriptions(descs.data(), descs.size(), *sensor_config);
+
+            type::list_type sensors;
+            const auto unused = type::from_descriptions(sensors, 0, descs.begin(), descs.end(), &owner, *sensor_config);
+            Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
+            Assert::IsFalse(sensors.empty(), L"Have at least one sensor.", LINE_INFO());
+
+            sensors.front().sample(true);
+            auto evt = create_event();
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            Assert::IsTrue(trigger.acquire(
+                [evt](void) { 
+                    Assert::IsTrue(true, L"Triggered", LINE_INFO()); 
+                    set_event(evt);
+                },
+                [evt](std::exception_ptr) {
+                    set_event(evt);
+                    Assert::IsTrue(false, L"Acquisition failure", LINE_INFO());
+                    return true;
+                }
+            ), L"Acquire scheduled", LINE_INFO());
+            wait_event(evt);
+
+            //for (auto& i : instruments) {
+            //    if (detail::equals(i.name<char>(), "rtb01")) {
+            //        const auto d = i.data(1, rtx_waveform_points::maximum);
+            //        std::ofstream hack("hugo.csv");
+            //        for (auto s : d) {
+            //            hack << s << std::endl;
+            //        }
+            //    }
+            //}
+        }
+    }
+#endif
 
 private:
 

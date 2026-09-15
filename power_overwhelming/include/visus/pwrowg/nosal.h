@@ -13,6 +13,10 @@
 #endif /* defined(_WIN32) */
 
 // Empty SAL annotations for rancid platforms.
+#if !defined(__fallthrough)
+#define __fallthrough
+#endif /* !defined(__fallthrough) */
+
 #if !defined(_Analysis_assume_)
 #define _Analysis_assume_(expr)
 #endif /* !defined(_Analysis_assume_) */
@@ -20,6 +24,10 @@
 #if !defined(_Check_return_)
 #define _Check_return_
 #endif /* !defined(_Check_return_) */
+
+#if !defined(_Field_z_)
+#define _Field_z_
+#endif /* !defined(_Field_z_) */
 
 #if !defined(_In_)
 #define _In_
@@ -84,6 +92,10 @@
 #if !defined(_Out_writes_bytes_)
 #define _Out_writes_bytes_(cnt)
 #endif /* !defined(_Out_writes_bytes_) */
+
+#if !defined(_Out_writes_bytes_all_)
+#define _Out_writes_bytes_all_(cnt)
+#endif /* !defined(_Out_writes_bytes_all_) */
 
 #if !defined(_Out_writes_opt_)
 #define _Out_writes_opt_(cnt)

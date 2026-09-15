@@ -1,16 +1,16 @@
 // <copyright file="usb_pd_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #include "pch.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include <sensor_array_impl.h>
+#include <usb_pd_sensor.h>
 
 
 PWROWG_TEST_NAMESPACE_BEGIN
-
 
 TEST_CLASS(usb_pd_test) {
 
@@ -51,9 +51,9 @@ public:
         for (auto& s : sensors) {
             auto evt = create_event();
 
-            s.sample([](const sample *samples, const std::size_t cnt, const sensor_description *descs, void *context) {
+            s.sample([](const sample *, const std::size_t cnt, const sensor_description *, const std::size_t, void *) {
                 Assert::AreEqual(std::size_t(1), cnt, L"USB PD creates single sample", LINE_INFO());
-            }, descs.data(), nullptr);
+            }, descs.data(), descs.size(), nullptr);
         }
     }
 };

@@ -1,18 +1,16 @@
 // <copyright file="intel_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #include "pch.h"
 
-#include "igcl_sensor.h"
-
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include <igcl_sensor.h>
+#include <sensor_array_impl.h>
 
 
 PWROWG_TEST_NAMESPACE_BEGIN
-
 
 TEST_CLASS(intel_test) {
 
@@ -55,7 +53,7 @@ public:
 
         for (std::size_t i = 0; i < 2; ++i) {
             for (auto& s : sensors) {
-                s.sample([](const sample *samples, const std::size_t cnt, const sensor_description *sensors, void *context) {
+                s.sample([](const sample *samples, const std::size_t cnt, const sensor_description *sensors, const std::size_t, void *) {
                     Assert::IsTrue(cnt > 0, L"IGCL creates at least one sample in default config.", LINE_INFO());
 
                     for (std::size_t i = 0; i < cnt; ++i) {
@@ -80,7 +78,7 @@ public:
                         dump += L"\r\n";
                         ::OutputDebugStringW(dump.c_str());
                     }
-                    }, descs.data());
+                    }, descs.data(), descs.size(), nullptr);
             }
         }
     }

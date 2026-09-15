@@ -1,12 +1,15 @@
 // <copyright file="type_list_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #include "pch.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include <detect_sample.h>
+#include <nvml_sensor.h>
+#include <tinkerforge_sensor.h>
+#include <type_list.h>
 
 
 PWROWG_TEST_NAMESPACE_BEGIN

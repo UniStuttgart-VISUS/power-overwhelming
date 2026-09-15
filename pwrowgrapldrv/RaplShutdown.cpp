@@ -21,6 +21,6 @@
 /// </para>
 /// </remarks>
 /// <param name="device"></param>
-extern "C" void RaplShutdown(_In_ WDFDEVICE device) noexcept {
+extern "C" void RaplShutdown(_In_ WDFDEVICE device) {
     UNREFERENCED_PARAMETER(device);
 }

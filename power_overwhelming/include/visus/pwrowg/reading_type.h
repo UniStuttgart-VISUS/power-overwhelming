@@ -8,6 +8,8 @@
 #define _READING_TYPE_H
 #pragma once
 
+#include <cinttypes>
+
 #include "visus/pwrowg/api.h"
 
 
@@ -16,7 +18,7 @@ PWROWG_NAMESPACE_BEGIN
 /// <summary>
 /// Defines how a 64-bit sensor reading has to be interpreted.
 /// </summary>
-enum class reading_type {
+enum class reading_type : std::uint32_t {
 
     /// <summary>
     /// The reading is an IEE-754 floating point number

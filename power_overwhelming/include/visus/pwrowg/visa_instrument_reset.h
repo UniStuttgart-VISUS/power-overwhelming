@@ -47,6 +47,11 @@ enum class visa_instrument_reset : std::uint32_t {
     status = 0x0004,
 
     /// <summary>
+    /// Reads all system errors until the queue is empty.
+    /// </summary>
+    errors = 0x0008,
+
+    /// <summary>
     /// All possible things that we can reset right now and possibly in
     /// the future ...
     /// </summary>

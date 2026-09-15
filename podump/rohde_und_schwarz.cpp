@@ -7,7 +7,11 @@
 #include "pch.h"
 #include "rohde_und_schwarz.h"
 
+#include "visus/pwrowg/hmc8015_instrument.h"
+#include "visus/pwrowg/rtx_configuration.h"
+#include "visus/pwrowg/rtx_sensor_trigger_builder.h"
 #include "visus/pwrowg/event.h"
+#include "visus/pwrowg/sensor_array.h"
 
 
 /*
@@ -358,6 +362,96 @@ void configure_rtx_instrument(void) {
                 << "time_range: " << actual.time_range().value() << std::endl;
         }
 
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+#endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
+}
+
+
+/*
+ * ::configure_rtx_sensor
+ */
+void configure_rtx_sensor(void) {
+#if defined(POWER_OVERWHELMING_WITH_VISA)
+    using namespace visus::pwrowg;
+
+    try {
+        std::vector<rtx_instrument> devices(rtx_instrument::all(nullptr, 0));
+        rtx_instrument::all(devices.data(), devices.size());
+
+        auto trigger = rtx_sensor_trigger_builder::for_all()
+            .when_external()
+            .rises_above(2.5f, "V")
+            .build();
+
+        sensor_array_configuration config;
+        config.configure<rtx_configuration>([&trigger](rtx_configuration& c) {
+            c.base_configuration(rtx_instrument_configuration(std::chrono::seconds(5), 10000));
+            c.trigger(trigger);
+
+            {
+                auto i = rtx_instrument::from_name("rtb01");
+
+                c.add_sensor(rtx_sensor_definition(
+                    i.path(),
+                    rtx_channel(3).attenuation(10.0f, "V").range(4.0, "V"),
+                    rtx_channel(4).attenuation(10.0f, "A").range(5, "A"),
+                    L"3ATX3"));
+            }
+
+            {
+                auto i = rtx_instrument::from_name("rtb02");
+
+                c.add_sensor(rtx_sensor_definition(
+                    i.path(),
+                    rtx_channel(1).attenuation(10.0f, "V").range(6.0, "V"),
+                    rtx_channel(2).attenuation(10.0f, "A").range(5, "A"),
+                    L"5ATX"));
+
+                c.add_sensor(rtx_sensor_definition(
+                    i.path(),
+                    rtx_channel(3).attenuation(10.0f, "V").range(13.0, "V"),
+                    rtx_channel(4).attenuation(10.0f, "A").range(5, "A"),
+                    L"12ATX"));
+            }
+
+            {
+                auto i = rtx_instrument::from_name("rtb03");
+
+                c.add_sensor(rtx_sensor_definition(
+                    i.path(),
+                    rtx_channel(1).attenuation(10.0f, "V").range(13.0, "V"),
+                    rtx_channel(2).attenuation(10.0f, "A").range(5, "A"),
+                    L"12EPS"));
+
+                c.add_sensor(rtx_sensor_definition(
+                    i.path(),
+                    rtx_channel(3).attenuation(10.0f, "V").range(4.0, "V"),
+                    rtx_channel(4).attenuation(10.0f, "A").range(5, "A"),
+                    L"3PCI3"));
+            }
+
+            {
+                auto i = rtx_instrument::from_name("rta01");
+
+                c.add_sensor(rtx_sensor_definition(
+                    i.path(),
+                    rtx_channel(1).attenuation(10.0f, "V").range(13.0, "V"),
+                    rtx_channel(2).attenuation(10.0f, "A").range(7, "A"),
+                    L"12PCI"));
+
+                c.add_sensor(rtx_sensor_definition(
+                    i.path(),
+                    rtx_channel(3).attenuation(10.0f, "V").range(1.0f, "V").offset(12.0f, "V").coupling(rtx_channel_coupling::direct),
+                    rtx_channel(4).attenuation(10.0f, "A").range(55, "A"),
+                    L"12GPU"));
+            }
+
+            c.save("visus-benchtable.json");
+        });
+
+        auto sensors = sensor_array::for_matches(std::move(config), is_rtx_sensor);
     } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
     }

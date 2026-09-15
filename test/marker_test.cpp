@@ -6,11 +6,12 @@
 
 #include "pch.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include <marker_sensor.h>
+#include <visus/pwrowg/tinkerforge_configuration.h>
+#include <visus/pwrowg/usb_pd_configuration.h>
 
 
 PWROWG_TEST_NAMESPACE_BEGIN
-
 
 TEST_CLASS(marker_test) {
 
@@ -23,7 +24,7 @@ public:
         config.exclude<hmc8015_configuration>()
             .exclude<tinkerforge_configuration>()
             .exclude<usb_pd_configuration>();
-        config.deliver_to([](const sample *s, std::size_t c, const sensor_description *d, void *) {
+        config.deliver_to([](const sample *s, std::size_t c, const sensor_description *d, const std::size_t, void *) {
             Assert::AreEqual(int(reading_type::unsigned_integer), int(d[s->source].reading_type()), L"Correct value type", LINE_INFO());
             auto is1 = std::any_of(s, s + c, [](const sample& ss) { return (ss.reading.unsigned_integer == 1); });
             auto is2 = std::any_of(s, s + c, [](const sample& ss) { return (ss.reading.unsigned_integer == 2); });

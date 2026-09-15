@@ -13,11 +13,8 @@ file(GLOB_RECURSE SourceFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.cpp")
 add_executable(${PROJECT_NAME} ${HeaderFiles} ${SourceFiles})
 
 # Configure the linker.
-target_link_libraries(${PROJECT_NAME} power_overwhelming WIL::WIL)
+target_link_libraries(${PROJECT_NAME} power_overwhelming)
 
 # Deploy DLLs with the executable.
-if (WIN32)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND_EXPAND_LISTS)
-endif (WIN32)
+pwrowg_add_parquet_post_build(${PROJECT_NAME})
+pwrowg_add_runtime_dll_post_build(${PROJECT_NAME})

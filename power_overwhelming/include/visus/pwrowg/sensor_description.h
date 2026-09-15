@@ -29,7 +29,7 @@ PWROWG_NAMESPACE_BEGIN
 /// <see cref="sensor_array" />.
 /// </summary>
 /// <remarks>
-/// <para>Note to implementors: Use the privte
+/// <para>Note to implementors: Use the private
 /// <see cref="detail::sensor_description_builder" /> class to construct a
 /// description for your sensor type.</para>
 /// <para>Note to implementors: A sensor type must be able to create descriptors

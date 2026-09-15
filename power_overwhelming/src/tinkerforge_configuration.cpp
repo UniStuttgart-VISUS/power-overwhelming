@@ -29,6 +29,42 @@ static constexpr const std::uint16_t default_port = 4223;
 
 
 /*
+ * PWROWG_NAMESPACE::tinkerforge_configuration::end_point::parse
+ */
+PWROWG_NAMESPACE::tinkerforge_configuration::end_point
+PWROWG_NAMESPACE::tinkerforge_configuration::end_point::parse(
+        _In_z_ const wchar_t *str) {
+    if (str == nullptr) {
+        return end_point();
+    }
+
+    auto s = convert_string<char>(str);
+    return parse(s.c_str());
+}
+
+
+/*
+ * PWROWG_NAMESPACE::tinkerforge_configuration::end_point::parse
+ */
+PWROWG_NAMESPACE::tinkerforge_configuration::end_point
+PWROWG_NAMESPACE::tinkerforge_configuration::end_point::parse(
+        _In_z_ const char *str) {
+    if (str == nullptr) {
+        return end_point();
+    }
+
+    auto p = ::strrchr(str, ':');
+    if (p == nullptr) {
+        return end_point(str);
+    }
+
+    auto host = std::string(str, static_cast<std::size_t>(p - str));
+    auto port = static_cast<std::uint16_t>(std::stoul(p + 1));
+    return end_point(host.c_str(), port);
+}
+
+
+/*
  * PWROWG_NAMESPACE::tinkerforge_configuration::end_point::end_point
  */
 PWROWG_NAMESPACE::tinkerforge_configuration::end_point::end_point(void)

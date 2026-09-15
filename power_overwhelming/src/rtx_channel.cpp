@@ -62,6 +62,130 @@ PWROWG_NAMESPACE::rtx_channel::attenuation(
 
 
 /*
+ * PWROWG_NAMESPACE::rtx_channel::name
+ */
+std::size_t PWROWG_NAMESPACE::rtx_channel::name(
+        _Out_writes_(cnt) wchar_t *dst,
+        _In_ std::size_t cnt) const {
+    static constexpr auto channel = L"CH";
+    static constexpr auto ext = L"EXT";
+
+
+    if (dst == nullptr) {
+        cnt = 0;
+    }
+
+    auto number = std::to_wstring(this->_channel);
+    std::size_t retval = 1;
+
+    switch (this->_channel) {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+            retval += ::wcslen(channel);
+            retval += number.size();
+            if (cnt >= retval) {
+#if (defined(_MSC_VER) && (_MSC_VER >= 1400))
+                ::wcscpy_s(dst, cnt, channel);
+                ::wcscat_s(dst, cnt, number.c_str());
+#else /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
+                ::wcscpy(dst, channel);
+                ::wcscat(dst, number.c_str());
+#endif /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
+            }
+            break;
+
+        case 5:
+            retval += ::wcslen(ext);
+            if (cnt >= retval) {
+#if (defined(_MSC_VER) && (_MSC_VER >= 1400))
+                ::wcscpy_s(dst, cnt, ext);
+#else /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
+                ::wcscpy(dst, ext);
+#endif /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
+            }
+            break;
+
+        default:
+            if (cnt >= retval) {
+                *dst = 0;
+            }
+            break;
+    }
+
+    return retval;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_channel::name
+ */
+std::size_t PWROWG_NAMESPACE::rtx_channel::name(
+        _Out_writes_(cnt) char *dst,
+        _In_ std::size_t cnt) const {
+    static constexpr auto channel = "CH";
+    static constexpr auto ext = "EXT";
+
+
+    if (dst == nullptr) {
+        cnt = 0;
+    }
+
+    auto number = std::to_string(this->_channel);
+    std::size_t retval = 1;
+
+    switch (this->_channel) {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+            retval += ::strlen(channel);
+            retval += number.size();
+            if (cnt >= retval) {
+#if (defined(_MSC_VER) && (_MSC_VER >= 1400))
+                ::strcpy_s(dst, cnt, channel);
+                ::strcat_s(dst, cnt, number.c_str());
+#else /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
+                ::strcpy(dst, channel);
+                ::strcat(dst, number.c_str());
+#endif /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
+            }
+            break;
+
+        case 5:
+            retval += ::strlen(ext);
+            if (cnt >= retval) {
+#if (defined(_MSC_VER) && (_MSC_VER >= 1400))
+                ::strcpy_s(dst, cnt, ext);
+#else /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
+                ::strcpy(dst, ext);
+#endif /* (defined(_MSC_VER) && (_MSC_VER >= 1400)) */
+            }
+            break;
+
+        default:
+            if (cnt >= retval) {
+                *dst = 0;
+            }
+            break;
+    }
+
+    return retval;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::rtx_channel::name
+ */
+std::size_t PWROWG_NAMESPACE::rtx_channel::name(
+        _In_opt_ const std::nullptr_t dst,
+        _In_ const std::size_t) const {
+    return this->name(static_cast<wchar_t *>(nullptr), 0);
+}
+
+
+/*
  * PWROWG_NAMESPACE::rtx_channel::zero_adjust_offset
  */
 PWROWG_NAMESPACE::rtx_channel&

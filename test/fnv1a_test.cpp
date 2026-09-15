@@ -6,6 +6,8 @@
 
 #include "pch.h"
 
+#include <fnv1a.h>
+
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 

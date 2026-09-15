@@ -34,14 +34,9 @@ struct sensor_array_configuration_impl final {
     /// An empty sampler callback, which is user as the default, that does
     /// nothing.
     /// </summary>
-    /// <param name=""></param>
-    /// <param name=""></param>
-    /// <param name=""></param>
-    /// <param name=""></param>
-    static void sample_nothing(_In_opt_ const sample *samples,
-        _In_ const std::size_t cnt,
-        _In_opt_ const sensor_description *sensors,
-        _In_opt_ void *context) { }
+    static void sample_nothing(_In_opt_ const sample *, _In_ const std::size_t,
+        _In_opt_ const sensor_description *,_In_ const std::size_t,
+        _In_opt_ void *) { }
 
     /// <summary>
     /// The callback that the <see cref="sampler_threads" /> must invoke.

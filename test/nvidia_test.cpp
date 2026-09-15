@@ -6,13 +6,13 @@
 
 #include "pch.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include <nvapi_sensor.h>
+#include <sensor_array_impl.h>
 
 
 PWROWG_TEST_NAMESPACE_BEGIN
 
-
-TEST_CLASS(nvida_test) {
+TEST_CLASS(nvidia_test) {
 
 public:
 
@@ -106,9 +106,9 @@ public:
         Assert::IsTrue(unused == descs.end(), L"All consumed", LINE_INFO());
 
         for (auto& s : sensors) {
-            s.sample([](const sample *samples, const std::size_t cnt, const sensor_description *sensors, void *context) {
+            s.sample([](const sample *, const std::size_t cnt, const sensor_description *, const std::size_t, void *) {
                 Assert::AreEqual(std::size_t(1), cnt, L"NVML creates single sample", LINE_INFO());
-            }, descs.data());
+            }, descs.data(), descs.size(), nullptr);
         }
     }
 #endif /* defined(POWER_OVERWHELMING_WITH_NVML) */

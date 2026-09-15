@@ -10,19 +10,22 @@
  */
 template<class TSink, std::size_t PageSize>
 void PWROWG_NAMESPACE::atomic_sink<TSink, PageSize>::sample_callback(
-        _In_reads_(cnt) const sample *samples,
-        _In_ const std::size_t cnt,
-        _In_ const sensor_description *sensors,
+        _In_reads_(cnt_samples) const sample *samples,
+        _In_ const std::size_t cnt_samples,
+        _In_reads_(cnt_sensors) const sensor_description *sensors,
+        _In_ const std::size_t cnt_sensors,
         _In_opt_ void *context) {
     assert(context != nullptr);
     auto that = static_cast<atomic_sink *>(context);
 
     {
         const sensor_description *expected = nullptr;
-        that->_sensors.compare_exchange_strong(expected, sensors);
+        if (that->_sensors.compare_exchange_strong(expected, sensors)) {
+            that->_cnt_sensors = cnt_sensors;
+        }
     }
 
-    for (std::size_t i = 0; i < cnt; ++i) {
+    for (std::size_t i = 0; i < cnt_samples; ++i) {
         that->_collector.push(samples[i]);
     }
 }
@@ -39,7 +42,8 @@ PWROWG_NAMESPACE::atomic_sink<TSink, PageSize>::atomic_sink(
     : TSink(std::forward<TArgs>(args)...), 
         _interval(std::chrono::duration_cast<decltype(_interval)>(interval)),
         _running(true),
-        _sensors(nullptr) {
+        _sensors(nullptr),
+        _cnt_sensors(0) {
     this->_writer = std::thread(&atomic_sink::write, this);
 }
 
@@ -80,12 +84,14 @@ void PWROWG_NAMESPACE::atomic_sink<TSink, PageSize>::write(void) {
         }
 
         auto samples = this->_collector.reset();
-        TSink::write_samples(samples.begin(), samples.end(), this->_sensors);
+        TSink::write_samples(samples.begin(), samples.end(),
+            this->_sensors, this->_cnt_sensors);
     }
 
     // There might be dangling stuff in the collector.
     if (this->_sensors != nullptr) {
         auto samples = this->_collector.reset();
-        TSink::write_samples(samples.begin(), samples.end(), this->_sensors);
+        TSink::write_samples(samples.begin(), samples.end(),
+            this->_sensors, this->_cnt_sensors);
     }
 }

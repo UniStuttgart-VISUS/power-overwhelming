@@ -23,7 +23,7 @@ TInput PWROWG_DETAIL_NAMESPACE::rtx_sensor::from_descriptions(
     // Move the RTA/RTB sensor to the front of the list.
     auto retval = move_front_if(begin, end, is_rtx_sensor);
 
-    // If there is not RTA/RTB-based sensor, bail out directly.
+    // If there is no RTA/RTB-based sensor, bail out directly.
     if (begin == retval) {
         return retval;
     }
@@ -124,6 +124,7 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         const auto collect_channel = [&channels](const rtx_channel& c) {
             auto e = channels.find(c.channel());
             if (e == channels.end()) {
+                assert(c.channel() != 0);
                 channels[c.channel()] = c;
             } else if (c != e->second) {
                 throw std::invalid_argument("A channel must be identically "
@@ -162,15 +163,27 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
 
         {
             // Force to only one segment, regardless of what the user said.
+            // Similarly, make sure that we are not running at start.
             auto a = icfg.acquisition();
-            icfg.acquisition(a.count(1));
+            icfg.acquisition(a.count(1).state(rtx_acquisition_state::stop));
         }
 
-        icfg.reference_position(rtx_reference_point::left);
+        // Make sure that the reference position is always in the expected
+        // location such that we can move the trigger to the leftmost edge of
+        // the screen (the begin of the first segment).
+        icfg.reference_position(rtx_reference_point::middle);
 
-        if (this->_trigger._impl->daisy_chain > 0.0f) {
-            PWROWG_TRACE(_T("Setting up daisy chain for trigger."));
-            i.trigger_output(rtx_trigger_output::pulse);
+        {
+            // Force the trigger to happen at the left edge of the screen. Note
+            // that the offset here specifies the offset of the reference
+            // position from the begin of the acquisition (the trigger
+            // position), so moving the trigger to the left means moving the
+            // reference position to the right.
+            const auto range = icfg.time_range();
+            const rtx_quantity offset(range.value() / 2.0f, range.unit());
+            PWROWG_TRACE("Setting trigger position in configuration of \"%s\" "
+                "to %f %s.", i.path(), offset.value(), offset.unit());
+            icfg.trigger_position(offset);
         }
 
         const auto& trig_instr = this->_trigger._impl->path;
@@ -183,26 +196,27 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
 
             if (this->_trigger._impl->trigger != nullptr) {
                 auto& trigger = *this->_trigger._impl->trigger;
-                PWROWG_TRACE("Configuring \"%s\" to use the %u trigger "
-                    "provided by the user. The user-defined trigger will be"
-                    "forced to normal mode.", i.path(), trigger.type());
+                PWROWG_TRACE("Modifying configuration of \"%s\" to use the %u "
+                    "trigger provided by the user. The user-defined trigger "
+                    "will be forced to normal mode.", i.path(), trigger.type());
                 icfg.trigger(trigger.mode(rtx_trigger_mode::normal));
 
             } else {
                 const auto level = (this->_trigger._impl->daisy_chain > 0.0f)
                     ? this->_trigger._impl->daisy_chain
-                    : 400.0f;
-                PWROWG_TRACE("Setting up an external dummy trigger on \"%s\" "
-                    "at %f V.", i.path(), level);
-                icfg.trigger(rtx_trigger(5, rtx_trigger_type::edge)
-                    .external(level)
+                    : 0.0f;
+                PWROWG_TRACE("Setting up an invalid dummy trigger in "
+                    "configuration of \"%s\" at %fV.", i.path(), level);
+                icfg.trigger(rtx_trigger(
+                        static_cast<rtx_trigger::input_type>(0),
+                        rtx_trigger_type::edge)
                     .mode(rtx_trigger_mode::normal));
             }
 
         } else {
             const auto level = this->_trigger._impl->daisy_chain;
-            PWROWG_TRACE("Configuring \"%s\" to use the external trigger at "
-                "%f V.", i.path(), level);
+            PWROWG_TRACE("Changing configuration of \"%s\" to use the external "
+                "trigger at %f V.", i.path(), level);
             icfg.trigger(rtx_trigger(5, rtx_trigger_type::edge)
                 .external(level)
                 .mode(rtx_trigger_mode::normal));
@@ -213,6 +227,11 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
         i.reset(config.reset_flags());
         i.timeout(timeout);
         i.operation_complete();
+
+        PWROWG_TRACE("Pausing for %u ms before configuring \"%s\".",
+            config.reset_delay(), i.path());
+        std::this_thread::sleep_for(std::chrono::milliseconds(
+            config.reset_delay()));
 
         PWROWG_TRACE("Applying configuration to instrument \"%s\".", i.path());
         icfg.apply(i);
@@ -283,6 +302,12 @@ PWROWG_DETAIL_NAMESPACE::rtx_sensor::rtx_sensor(
                     i.path());
             }
         } /* for (auto jt = b; jt != it; ++jt) */
+
+        if (this->_trigger._impl->daisy_chain > 0.0f) {
+            PWROWG_TRACE("Setting up daisy chain for trigger by enabling "
+                "trigger output on \"%s\".", i.path());
+            i.trigger_output(rtx_trigger_output::pulse);
+        }
     }
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }

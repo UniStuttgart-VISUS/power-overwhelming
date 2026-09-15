@@ -18,6 +18,10 @@ PWROWG_NAMESPACE_BEGIN
 /// A descriptor for a current channel of a NI-DAQmx-based sensor, which can be
 /// used to add such a channel to a <see cref="daqmx_task" />.
 /// </summary>
+/// <remarks>
+/// <para>Implementation note: Do not forget to adjust the code in
+/// <c>daqmx_serialisation.h</c> when changing this class.</para>
+/// </remarks>
 class POWER_OVERWHELMING_API daqmx_current_channel final
         : public daqmx_channel {
 

@@ -22,6 +22,7 @@
 #include "visus/pwrowg/trace.h"
 
 #include "no_visa_error_msg.h"
+#include "visa_assert.h"
 #include "visa_instrument_impl.h"
 #include "visa_library.h"
 
@@ -283,6 +284,7 @@ PWROWG_NAMESPACE::visa_instrument::attribute(_In_ ViAttr name,
     detail::throw_if_visa_failed(
         detail::visa_library::instance()._viSetAttribute(
             this->check_not_disposed().session, name, value));
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -295,6 +297,7 @@ PWROWG_NAMESPACE::visa_instrument::beep(_In_ const std::size_t cnt) {
     for (std::size_t i = 0; i < cnt; ++i) {
         this->write("SYST:BEEP:IMM\n");
     }
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -319,6 +322,7 @@ PWROWG_NAMESPACE::visa_instrument::beep_on_error(
         _In_ const bool enable) {
     auto& impl = this->check_not_disposed();
     impl.format("SYST:BEEP:ERR:STAT %s\n", enable ? "ON" : "OFF");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -332,6 +336,7 @@ PWROWG_NAMESPACE::visa_instrument::buffer(
     detail::throw_if_visa_failed(
         detail::visa_library::instance()._viSetBuf(
             this->check_not_disposed().session, mask, size));
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -344,6 +349,7 @@ PWROWG_NAMESPACE::visa_instrument::clear(void) {
     detail::throw_if_visa_failed(
         detail::visa_library::instance()._viClear(
             this->check_not_disposed().session));
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -354,6 +360,7 @@ PWROWG_NAMESPACE::visa_instrument::clear(void) {
 PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::clear_status(void) {
     this->check_not_disposed().write("*CLS\n");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -366,6 +373,7 @@ PWROWG_NAMESPACE::visa_instrument::disable_event(_In_ const ViEventType type,
         _In_ const ViUInt16 mechanism) {
     detail::throw_if_visa_failed(detail::visa_library::instance()
         ._viDisableEvent(this->check_not_disposed().session, type, mechanism));
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -380,6 +388,7 @@ PWROWG_NAMESPACE::visa_instrument::enable_event(_In_ const ViEventType type,
     detail::throw_if_visa_failed(detail::visa_library::instance()
         ._viEnableEvent(this->check_not_disposed().session, type, mechanism,
             VI_NULL));
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -417,6 +426,7 @@ PWROWG_NAMESPACE::visa_instrument::event_status(
     auto s = static_cast<int>(status);
     this->check_not_disposed().format("*ESE %u; *OPC?\n", s);
     this->read_all();
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -575,6 +585,7 @@ const PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::operation_complete(void) const {
     // Cf. https://www.rohde-schwarz.com/at/driver-pages/fernsteuerung/measurements-synchronization_231248.html
     this->query("*OPC?\n");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -586,6 +597,7 @@ const PWROWG_NAMESPACE::visa_instrument&
 PWROWG_NAMESPACE::visa_instrument::operation_complete_async(void) const {
     // Cf. https://www.rohde-schwarz.com/at/driver-pages/fernsteuerung/measurements-synchronization_231248.html
     this->write("*OPC\n");
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -622,6 +634,7 @@ PWROWG_NAMESPACE::blob
 PWROWG_NAMESPACE::visa_instrument::query(_In_z_ const char *query,
         _In_ const std::size_t buffer_size) const {
     auto& impl = this->check_not_disposed();
+    //PWROWG_TRACE("Query \"%s\".", query);
     impl.write(query);
     // Note: we cannot check the system state in case of a query as this is a
     // query in itself that cannot overlap.
@@ -704,6 +717,10 @@ PWROWG_NAMESPACE::visa_instrument& PWROWG_NAMESPACE::visa_instrument::reset(
         this->try_clear();
     }
 
+    if ((reset & visa_instrument_reset::errors) != none) {
+        while (this->system_error() != 0);
+    }
+
     if ((reset & visa_instrument_reset::status) != none) {
         this->write("*CLS\n");
     }
@@ -716,6 +733,7 @@ PWROWG_NAMESPACE::visa_instrument& PWROWG_NAMESPACE::visa_instrument::reset(
         this->query("*OPC?\n");
     }
 
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -805,6 +823,7 @@ PWROWG_NAMESPACE::visa_instrument::synchronise_clock(
         time->tm_year + 1900, time->tm_mon + 1, time->tm_mday);
 #endif /* defined(_WIN32) */
 
+    PWROWG_ASSERT_NO_VISA_ERROR(*this);
     return *this;
 }
 
@@ -827,6 +846,12 @@ int PWROWG_NAMESPACE::visa_instrument::system_error(void) const {
     if (!status.empty()) {
         _Analysis_assume_(status.begin() != nullptr);
         _Analysis_assume_(status.end() != nullptr);
+#if (defined(DEBUG) || defined(_DEBUG))
+        std::string __status(status.begin(), status.end());
+        __status.resize(__status.find_last_not_of("\r\n") + 1);
+        PWROWG_TRACE("Instrument \"%s\" error queue contains \"%s\".",
+            this->path(), __status.c_str());
+#endif /* (defined(DEBUG) || defined(_DEBUG)) */
         auto delimiter = std::find_if(status.begin(),
             status.end(),
             [](const byte_type b) { return b == ','; });
@@ -951,32 +976,32 @@ bool PWROWG_NAMESPACE::visa_instrument::wait_status(
         _In_ const visa_event_status status,
         _In_ const timeout_type timeout) {
     while (true) {
-        if (!this->wait(VI_EVENT_SERVICE_REQ, timeout)) {
-            PWROWG_TRACE(_T("Waiting %u ms for service request timed out."),
-                timeout);
-            return false;
-        }
-
         {
+            // Note: We want to check the status first before waiting, because
+            // the master status bit might already be set when entering the
+            // method.
             const auto actual = this->status();
             if (!(actual && visa_status_byte::master_status)) {
                 PWROWG_TRACE(_T("Received service request, but master status ")
-                    _T("is not set. Status byte was %02x."), actual);
-                continue;
+                    _T("is not set in status byte %02x. Waiting for the next ")
+                    _T("service request."), actual);
+
+                if (!this->wait(VI_EVENT_SERVICE_REQ, timeout)) {
+                    PWROWG_TRACE(_T("Waiting %u ms for service request timed out."),
+                        timeout);
+                    return false;
+                }
             }
         }
 
         {
             const auto evt_status = this->event_status();
-            if (!(evt_status && status)) {
-                PWROWG_TRACE(_T("Received service request with master status, ")
-                    _T("but a different event than the awaited %02x was ")
-                    _T("received. Event status was %02x."), status, evt_status);
-                continue;
+            PWROWG_TRACE(_T("Received service request with master status, ")
+                _T("event status was %02x."), evt_status);
+            if ((evt_status && status)) {
+                return true;
             }
         }
-
-        return true;
     }
 }
 

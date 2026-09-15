@@ -118,7 +118,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
             const auto check_channel = [&instrument](const rtx_channel& c) {
                 // Channels that can be measured range from 1 to 4. The
                 // instrument somehow accepts channel 0, but I have no idea what
-                // this channel is, so we manually reject it here.
+                // this channel is, so we manually reject it here as an invalid
+                // channel.
                 if (c.channel() < 1) {
                     return false;
                 }
@@ -142,6 +143,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
 
             if (have_cur) {
                 if (retval < cnt) {
+                    const auto l= PWROWG_NAMESPACE::convert_string<wchar_t>(
+                        cur.label().text());
                     dst[retval] = builder
                         .with_path(sensor.path())
                         .with_private_data(sensor)
@@ -150,6 +153,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
                             cur.channel())
                         .with_type(sensor_type::current)
                         .measured_in(reading_unit::ampere)
+                        .with_label(l.empty() ? nullptr : l.c_str())
                         .build();
                 }
                 ++retval;
@@ -157,6 +161,8 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
 
             if (have_vol) {
                 if (retval < cnt) {
+                    const auto l = PWROWG_NAMESPACE::convert_string<wchar_t>(
+                        vol.label().text());
                     dst[retval] = builder
                         .with_path(sensor.path())
                         .with_private_data(sensor)
@@ -165,6 +171,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
                             vol.channel())
                         .with_type(sensor_type::voltage)
                         .measured_in(reading_unit::volt)
+                        .with_label(l.empty() ? nullptr : l.c_str())
                         .build();
                 }
                 ++retval;
@@ -172,6 +179,13 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
 
             if (have_cur && have_vol) {
                 if (retval < cnt) {
+                    const auto v = PWROWG_NAMESPACE::convert_string<wchar_t>(
+                        vol.label().text());
+                    const auto c = PWROWG_NAMESPACE::convert_string<wchar_t>(
+                        cur.label().text());
+                    const auto l = (v.empty() || c.empty())
+                        ? std::wstring()
+                        : v + L" * " + c;
                     dst[retval] = builder
                         .with_path(sensor.path())
                         .with_private_data(sensor)
@@ -181,6 +195,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::rtx_sensor::descriptions(
                             name.c_str(), cur.channel(), vol.channel())
                         .with_type(sensor_type::power)
                         .measured_in(reading_unit::watt)
+                        .with_label(l.empty() ? nullptr : l.c_str())
                         .build();
                 }
 
@@ -210,22 +225,32 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample(_In_ const bool enable) {
     auto& trigger = *this->_trigger._impl;
 
     if (enable) {
-        if ((atomic_set(trigger.state, rtx_sensor_state::running)
-                & rtx_sensor_state::running) != rtx_sensor_state::running) {
+        if ((atomic_set(trigger.state, sensor_trigger_state::running)
+                & sensor_trigger_state::running)
+                != sensor_trigger_state::running) {
             PWROWG_TRACE(_T("Starting the RTX sensor controller thread."));
             this->_thread = std::thread(&rtx_sensor::control_instruments, this);
         }
 
     } else {
         PWROWG_TRACE(_T("Signalling the RTX sensor controller to stop."));
-        atomic_unset(trigger.state, rtx_sensor_state::running
-            | rtx_sensor_state::armed);
+        atomic_unset(trigger.state, sensor_trigger_state::running);
 
         PWROWG_TRACE(_T("Making sure that the controller thread is not ")
             _T("working on the instruments anymore before injecting an OPC to ")
             _T("wake it up."));
-        spin_while_all(trigger.state, rtx_sensor_state::busy);
+        spin_while_all(trigger.state, sensor_trigger_state::busy
+            | sensor_trigger_state::armed);
 
+#if false
+        while (this->_thread.joinable()) {
+            for (auto& i : trigger.instruments) {
+                PWROWG_TRACE("Unlocking instrument \"%s\".", i.path());
+                i.operation_complete_async();
+            }
+            std::this_thread::yield();
+        }
+#else 
         if (this->_thread.joinable()) {
             for (auto& i : trigger.instruments) {
                 PWROWG_TRACE("Unlocking instrument \"%s\".", i.path());
@@ -237,6 +262,7 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample(_In_ const bool enable) {
                 _T("to return until all pending samples have been delivered."));
             this->_thread.join();
         }
+#endif
     }
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */
 }
@@ -246,7 +272,7 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::sample(_In_ const bool enable) {
  * PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments
  */
 void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
-    set_thread_name("PwrOwg RTX Sensor Controller");
+    set_thread_name("PwrOwg RTx Sensor Controller");
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     constexpr auto opc = visa_event_status::operation_complete;
     assert(this->_trigger._impl != nullptr);
@@ -256,8 +282,9 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
     auto& instruments = trigger.instruments;
     PWROWG_TRACE(_T("The RTX sensor controller thread has started."));
 
-    while (check_all(trigger.state, rtx_sensor_state::running)) {
-        auto source = this->_index;
+    while (check_all(trigger.state, sensor_trigger_state::running)) {
+        auto notified = false;          // Whether 'when_acquired' was called.
+        auto source = this->_index;     // Per-instrument source ID.
 
         for (std::size_t i = 0; i < instruments.size(); ++i) {
             assert(i < this->_channels.size());
@@ -275,14 +302,21 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
                 // state was not set before that, the previous instrument must
                 // have already set the busy state.
                 const auto prev_state = atomic_change(trigger.state,
-                    rtx_sensor_state::busy,
-                    rtx_sensor_state::armed);
-                if ((prev_state & rtx_sensor_state::running)
-                        != rtx_sensor_state::running) {
+                    sensor_trigger_state::busy,
+                    sensor_trigger_state::armed);
+                if ((prev_state & sensor_trigger_state::running)
+                        != sensor_trigger_state::running) {
                     PWROWG_TRACE(_T("Termination of the RTX sensor thread ")
                         _T("was requested while waiting for data."));
                     break;
                 };
+
+                if (!notified && (trigger.when_acquired != nullptr)) {
+                    PWROWG_TRACE(_T("The RTX controller thread is invoking ")
+                        _T("acquisition callback."));
+                    trigger.when_acquired(trigger.when_acquired_context);
+                    notified = true;
+                }
 
                 PWROWG_TRACE(_T("The RTX controller thread is processing the ")
                     _T("latest waveforms."));
@@ -300,7 +334,8 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
             } catch (const std::exception& ex) {
                 PWROWG_TRACE("An error occurred while processing waveforms "
                     "from instrument \"%s\": %s", instrument.path(), ex.what());
-                if (!trigger.when_failed(std::current_exception(),
+                if ((trigger.when_failed == nullptr) || !trigger.when_failed(
+                        std::current_exception(),
                         trigger.when_failed_context)) {
                     throw;
                 }
@@ -313,9 +348,14 @@ void PWROWG_DETAIL_NAMESPACE::rtx_sensor::control_instruments(void) {
 
         PWROWG_TRACE(_T("The RTX controller thread is done processing the ")
             _T("latest waveforms."));
-        atomic_unset(trigger.state, rtx_sensor_state::busy);
-        trigger.when_done(trigger.when_done_context);
-    } /* while (!check_state(trigger.state, rtx_sensor_state::stop)) */
+        atomic_unset(trigger.state, sensor_trigger_state::busy);
+
+        if (trigger.when_done != nullptr) {
+            PWROWG_TRACE(_T("The RTX controller thread is invoking the ")
+                _T("completion callback."));
+            trigger.when_done(trigger.when_done_context);
+        }
+    } /* while (!check_state(trigger.state, sensor_trigger_state::stop)) */
 
     PWROWG_TRACE(_T("The RTX sensor controller thread is exiting."));
 #endif /* defined(POWER_OVERWHELMING_WITH_VISA) */

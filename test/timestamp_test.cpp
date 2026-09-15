@@ -7,6 +7,8 @@
 #include "pch.h"
 
 #include <visus/pwrowg/timestamp.h>
+
+#include <friendly_timestamp.h>
 #include <timezone.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -157,6 +159,28 @@ public:
     TEST_METHOD(timezone) {
         auto bias = PWROWG_DETAIL_NAMESPACE::get_timezone_bias();
         Assert::IsTrue(true, L"Test did not crash", LINE_INFO());
+    }
+
+    TEST_METHOD(friendly_timestamp) {
+        {
+            wchar_t buffer[8 + 6 + 1];
+            Assert::IsTrue(PWROWG_DETAIL_NAMESPACE::friendly_timestamp(buffer, std::size(buffer)), L"friendly timestamp", LINE_INFO());
+        }
+
+        {
+            wchar_t buffer[8 + 6];
+            Assert::IsFalse(PWROWG_DETAIL_NAMESPACE::friendly_timestamp(buffer, std::size(buffer)), L"friendly timestamp", LINE_INFO());
+        }
+
+        {
+            char buffer[8 + 6 + 1];
+            Assert::IsTrue(PWROWG_DETAIL_NAMESPACE::friendly_timestamp(buffer, sizeof(buffer)), L"friendly timestamp", LINE_INFO());
+        }
+
+        {
+            char buffer[8 + 6];
+            Assert::IsFalse(PWROWG_DETAIL_NAMESPACE::friendly_timestamp(buffer, sizeof(buffer)), L"friendly timestamp", LINE_INFO());
+        }
     }
 
 private:

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <atomic>
+#include <chrono>
 #include <cinttypes>
 #include <exception>
 #include <limits>
@@ -24,7 +25,7 @@
 #include "visus/pwrowg/timestamp.h"
 #include "visus/pwrowg/type_erased_storage.h"
 
-#include "rtx_sensor_state.h"
+#include "sensor_trigger_state.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -34,6 +35,11 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// <see cref="rtx_sensor_trigger" />.
 /// </summary>
 struct rtx_sensor_trigger_impl final {
+
+    /// <summary>
+    /// A delay between arming an acquisition and triggering.
+    /// </summary>
+    std::chrono::milliseconds acquisition_delay;
 
     /// <summary>
     /// If positive, the oscilloscopes will be assumed to be daisy-chained even
@@ -61,6 +67,8 @@ struct rtx_sensor_trigger_impl final {
     /// data pins.
     /// </summary>
     parallel_port_pin external_trigger_pins;
+
+    //std::chrono::duration<float> external_trigger_safety_margin;
 
 #if defined(POWER_OVERWHELMING_WITH_VISA)
     /// <summary>
@@ -91,7 +99,7 @@ struct rtx_sensor_trigger_impl final {
     /// Therefore, the <see cref="rtx_sensor_trigger" /> must have access to the
     /// state.
     /// </remarks>
-    alignas(false_sharing_range) std::atomic<rtx_sensor_state> state;
+    alignas(false_sharing_range) std::atomic<sensor_trigger_state> state;
 
     /// <summary>
     /// The trigger configuration to apply to the oscilloscope identified by the
@@ -114,7 +122,19 @@ struct rtx_sensor_trigger_impl final {
 
     /// <summary>
     /// A callback to be invoked when the RTX sensor controller thread completed
-    /// an acquisition.
+    /// an acquisition and starts downloading the data.
+    /// </summary>
+    void (*when_acquired)(const type_erased_storage&);
+
+    /// <summary>
+    /// The context passed to <see cref="when_acquired" />. This is usually used
+    /// to store a user-defined lambda to be called.
+    /// </summary>
+    type_erased_storage when_acquired_context;
+
+    /// <summary>
+    /// A callback to be invoked when the RTX sensor controller thread has
+    /// downloaded the data of an acquisition.
     /// </summary>
     void (*when_done)(const type_erased_storage&);
 
@@ -164,12 +184,21 @@ struct rtx_sensor_trigger_impl final {
     /// Initialises a new instance.
     /// </summary>
     inline rtx_sensor_trigger_impl(void)
-        : daisy_chain(0.0f),
+        : acquisition_delay(0),
+        daisy_chain(0.0f),
         external_trigger_duration(100),
         external_trigger_pins(parallel_port_pin::data),
         references(1),
-        state(rtx_sensor_state::none),
-        trigger_instrument((std::numeric_limits<std::size_t>::max)()) { }
+        state(sensor_trigger_state::none),
+        trigger_instrument((std::numeric_limits<std::size_t>::max)()),
+        when_acquired(nullptr),
+        when_done(nullptr),
+        when_failed(nullptr) { }
+
+    rtx_sensor_trigger_impl(const rtx_sensor_trigger_impl&) = delete;
+
+    rtx_sensor_trigger_impl& operator =(
+        const rtx_sensor_trigger_impl&) = delete;
 };
 
 PWROWG_DETAIL_NAMESPACE_END

@@ -32,6 +32,11 @@ public:
         : _trigger(trigger) { }
 
     /// <summary>
+    /// Finalises the instance.
+    /// </summary>
+    virtual ~rtx_sen_trg_bld_final(void) noexcept = default;
+
+    /// <summary>
     /// Creates the trigger as configured by the previous steps.
     /// </summary>
     /// <returns>The trigger created using the builder.</returns>
@@ -62,6 +67,10 @@ public:
     inline rtx_sen_trg_bld_chan1(_In_ const rtx_sensor_trigger& trigger)
         : rtx_sen_trg_bld_final(trigger) { }
 
+    /// <summary>
+    /// Finalises the instance.
+    /// </summary>
+    virtual ~rtx_sen_trg_bld_chan1(void) noexcept = default;
 
     /// <summary>
     /// Creates the trigger as configured by the previous steps.
@@ -69,6 +78,48 @@ public:
     /// <returns>The trigger created using the builder.</returns>
     inline const rtx_sensor_trigger& build(void) noexcept {
         return this->_trigger;
+    }
+
+    /// <summary>
+    /// Configures a delay in <see cref="rtx_sensor_trigger::acquire" /> between
+    /// arming the acquistion and triggering.
+    /// </summary>
+    /// <remarks>
+    /// This setting allows for tweaking an issue with the RTx oscilloscopes not
+    /// actually being ready to accept the trigger after leaving the waiting
+    /// state, which can be tracked in software. Setting a non-zero delay here
+    /// will cause the execution of the thread invoking
+    /// <see cref="rtx_sensor_trigger::acquire" /> to suspend for the configured
+    /// amount of time before triggering the instruments.
+    /// </remarks>
+    /// <param name="delay">The delay, in milliseconds.</param>
+    /// <returns></returns>
+    rtx_sen_trg_bld_chan1& with_acquisition_delay(
+        _In_ const std::uint32_t delay);
+
+    /// <summary>
+    /// Configures a delay in <see cref="rtx_sensor_trigger::acquire" /> between
+    /// arming the acquistion and triggering.
+    /// </summary>
+    /// <remarks>
+    /// This setting allows for tweaking an issue with the RTx oscilloscopes not
+    /// actually being ready to accept the trigger after leaving the waiting
+    /// state, which can be tracked in software. Setting a non-zero delay here
+    /// will cause the execution of the thread invoking
+    /// <see cref="rtx_sensor_trigger::acquire" /> to suspend for the configured
+    /// amount of time before triggering the instruments.
+    /// </remarks>
+    /// <typeparam name="TRep"></typeparam>
+    /// <typeparam name="TRatio"></typeparam>
+    /// <param name="duration"></param>
+    /// <returns></returns>
+    template<class TRep, class TRatio>
+    inline rtx_sen_trg_bld_chan1 with_acquisition_delay(
+            _In_ const std::chrono::duration<TRep, TRatio>& delay) {
+        using std::chrono::duration_cast;
+        using std::chrono::milliseconds;
+        const auto millis = duration_cast<milliseconds>(delay);
+        return this->with_acquisition_delay(millis.count());
     }
 
     /// <summary>
@@ -335,8 +386,7 @@ public:
     /// <param name="channel">The channel to trigger on, which must be the name
     /// of a valid channel of the oscilloscope.</param>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sen_trg_bld_par3 measured_via_channel(
-        _In_z_ const wchar_t *channel);
+    rtx_sen_trg_bld_par3 measured_via_channel(_In_z_ const wchar_t *channel);
 
     /// <summary>
     /// Creates a trigger on the specified channel.
@@ -344,8 +394,7 @@ public:
     /// <param name="channel">The channel to trigger on, which must be the name
     /// of a valid channel of the oscilloscope.</param>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sen_trg_bld_par3 measured_via_channel(
-        _In_z_ const char *channel);
+    rtx_sen_trg_bld_par3 measured_via_channel(_In_z_ const char *channel);
 
     /// <summary>
     /// Creates a trigger on the specified channel.
@@ -353,7 +402,7 @@ public:
     /// <param name="channel">The channel to trigger on, which must be the name
     /// of a valid channel of the oscilloscope.</param>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sen_trg_bld_par3 measured_via_channel(
+    rtx_sen_trg_bld_par3 measured_via_channel(
         _In_ const rtx_trigger::input_type channel);
 
 private:
@@ -431,8 +480,7 @@ public:
     /// <param name="channel">The channel to trigger on, which must be the name
     /// of a valid channel of the oscilloscope.</param>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sen_trg_bld_par3 measured_via_channel(
-        _In_z_ const wchar_t *channel);
+    rtx_sen_trg_bld_par3 measured_via_channel(_In_z_ const wchar_t *channel);
 
     /// <summary>
     /// Creates a trigger on the specified channel.
@@ -440,8 +488,7 @@ public:
     /// <param name="channel">The channel to trigger on, which must be the name
     /// of a valid channel of the oscilloscope.</param>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sen_trg_bld_par3 measured_via_channel(
-        _In_z_ const char *channel);
+    rtx_sen_trg_bld_par3 measured_via_channel(_In_z_ const char *channel);
 
     /// <summary>
     /// Creates a trigger on the specified channel.
@@ -449,14 +496,14 @@ public:
     /// <param name="channel">The channel to trigger on, which must be the name
     /// of a valid channel of the oscilloscope.</param>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sen_trg_bld_par3 measured_via_channel(
+    rtx_sen_trg_bld_par3 measured_via_channel(
         _In_ const rtx_trigger::input_type channel);
 
     /// <summary>
     /// Creates a trigger on the external channel.
     /// </summary>
     /// <returns>A builder to configure the type of the trigger.</returns>
-    detail::rtx_sen_trg_bld_par3 measured_via_external(void);
+    rtx_sen_trg_bld_par3 measured_via_external(void);
 
     /// <summary>
     /// Tells the framework to only use the specified pins of the parallel port
@@ -636,6 +683,14 @@ public:
     /// <returns>A builder to configure the type of the trigger.</returns>
     detail::rtx_sen_trg_bld_chan0 when_channel(
         _In_ const rtx_trigger::input_type channel);
+
+    /// <summary>
+    /// Creates a trigger on the external trigger input, which is not controlled
+    /// by the integrated parallel port triggering capability of the
+    /// <see cref="rtx_sensor_trigger" />.
+    /// </summary>
+    /// <returns>A builder to configure the type of the trigger.</returns>
+    detail::rtx_sen_trg_bld_chan0 when_external(void);
 
     /// <summary>
     /// Starts configuring a trigger that is controlled by a parallel port on

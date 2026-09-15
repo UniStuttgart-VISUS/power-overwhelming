@@ -1,16 +1,16 @@
 // <copyright file="tinkerforge_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #include "pch.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include <sensor_array_impl.h>
+#include <tinkerforge_sensor.h>
 
 
 PWROWG_TEST_NAMESPACE_BEGIN
-
 
 TEST_CLASS(tinkerforge_test) {
 
@@ -30,6 +30,39 @@ public:
             Assert::AreNotEqual(std::size_t(0), ::wcslen(d.id()), L"ID not empty", LINE_INFO());
             Assert::AreNotEqual(std::size_t(0), ::wcslen(d.name()), L"Name not empty", LINE_INFO());
             Assert::AreNotEqual(std::size_t(0), ::wcslen(d.path()), L"Path not empty", LINE_INFO());
+        }
+    }
+
+    TEST_METHOD(test_parse_end_point) {
+        {
+            const auto ep = tinkerforge_configuration::end_point::parse((char *) nullptr);
+            Assert::AreEqual("localhost", ep.name(), L"name", LINE_INFO());
+            Assert::AreEqual(4223, int(ep.port()), L"port", LINE_INFO());
+        }
+        {
+            const auto ep = tinkerforge_configuration::end_point::parse((wchar_t *) nullptr);
+            Assert::AreEqual("localhost", ep.name(), L"name", LINE_INFO());
+            Assert::AreEqual(4223, int(ep.port()), L"port", LINE_INFO());
+        }
+        {
+            const auto ep = tinkerforge_configuration::end_point::parse("horst");
+            Assert::AreEqual("horst", ep.name(), L"name", LINE_INFO());
+            Assert::AreEqual(4223, int(ep.port()), L"port", LINE_INFO());
+        }
+        {
+            const auto ep = tinkerforge_configuration::end_point::parse(L"horst:42");
+            Assert::AreEqual("horst", ep.name(), L"name", LINE_INFO());
+            Assert::AreEqual(42, int(ep.port()), L"port", LINE_INFO());
+        }
+        {
+            const auto ep = tinkerforge_configuration::end_point::parse("127.0.0.1:1234");
+            Assert::AreEqual("127.0.0.1", ep.name(), L"name", LINE_INFO());
+            Assert::AreEqual(1234, int(ep.port()), L"port", LINE_INFO());
+        }
+        {
+            const auto ep = tinkerforge_configuration::end_point::parse(L"[::1]:1234");
+            Assert::AreEqual("[::1]", ep.name(), L"name", LINE_INFO());
+            Assert::AreEqual(1234, int(ep.port()), L"port", LINE_INFO());
         }
     }
 
@@ -76,7 +109,7 @@ public:
 
         auto evt = create_event();
         sensor_array_configuration config;
-            config.deliver_to([](const sample *s, const std::size_t cnt, const sensor_description *, void *e) {
+            config.deliver_to([](const sample *s, const std::size_t cnt, const sensor_description *, const std::size_t, void *e) {
                 auto evt = static_cast<event_type *>(e);
                 set_event(*evt);
             })

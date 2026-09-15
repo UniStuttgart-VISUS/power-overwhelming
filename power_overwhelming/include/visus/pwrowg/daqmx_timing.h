@@ -8,7 +8,6 @@
 #define _PWROWG_DAQMX_TIMING_H
 #pragma once
 
-#if defined(POWER_OVERWHELMING_WITH_DAQMX)
 #include "visus/pwrowg/daqmx_sample_mode.h"
 
 
@@ -20,6 +19,11 @@ PWROWG_NAMESPACE_BEGIN
 class POWER_OVERWHELMING_API daqmx_timing {
 
 public:
+
+    /// <summary>
+    /// Finalises the instance.
+    /// </summary>
+    virtual ~daqmx_timing(void) noexcept = default;
 
     /// <summary>
     /// Answer the sample mode.
@@ -44,9 +48,8 @@ protected:
     /// </summary>
     /// <param name="mode"></param>
     /// <param name="samples"></param>
-    explicit daqmx_timing(
-        _In_ const daqmx_sample_mode mode = daqmx_sample_mode::finite,
-        _In_ const std::uint64_t samples = 1024);
+    explicit daqmx_timing(_In_ const daqmx_sample_mode mode,
+        _In_ const std::uint64_t samples);
 
     /// <summary>
     /// Sets a new sample mode.
@@ -73,5 +76,4 @@ private:
 
 PWROWG_NAMESPACE_END
 
-#endif /* defined(POWER_OVERWHELMING_WITH_DAQMX) */
 #endif /* !defined(_PWROWG_DAQMX_TIMING_H) */

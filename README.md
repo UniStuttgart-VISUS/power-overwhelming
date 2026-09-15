@@ -9,14 +9,6 @@ This project provides a library for measuring the power consumption of GPUs (and
 > **Note**
 > The papers "Power Overwhelming: Quantifying the Energy Cost of Visualisation" and "Power Overwhelming: The One With the Oscilloscopes", for which this software was written, can be found on [IEEEXplore](https://doi.org/10.1109/BELIV57783.2022.00009) and on [Springer Link](https://dx.doi.org/10.1007/s12650-024-01001-0) respectively.
 
-## What's new in version 2.x?
-1. The namespace of the library has been changed from `visus::power_overwhelming` to `visus::pwrowg`. Furthermore, ABI versioning via an `inline` namespace has been added.
-1. Access to individual sensors has been removed. All sensors must be managed via the `visus::pwrowg::sensor_array`.
-1. Synchronous APIs have been removed in favour of a "Don't call us, we call you" approach. All sensor data must be retrieved using callbacks passed to the `visus::pwrowg::sensor_array`.
-1. All oscilloscope-related APIs have been renamed to `rtx_...` to indicate that they only support Rohde & Schwarz RTA and RTB series oscilloscopes.
-1. All HMC 8015-related APIs have been renamed to `hmc8015_...` to indicate that they are specifically for these devices.
-1. All Tinkerforge-related APIs have been renamed to `tinkerforge_...` to indicate that they are specifically for these devices.
-
 ## Building the library
 The library is self-contained and most optional external dependencies are in the third_party folder. External dependencies from GitHub are fetched by CMake. Once built, the external dependencies are invisible to the user of the library. However, the required DLLs must be present on the target machine. Configure the project using [CMake](https://cmake.org/) and build with Visual Studio or alike.
 
@@ -43,7 +35,7 @@ using namespace visus::pwrowg;
 sensor_array_configuration config;
 
 config.sample_every(std::chrono::milliseconds(5))
-    .deliver_to([](const sample *samples, std::size_t cnt, const sensor_description *sensors, void *ctx) {
+    .deliver_to([](const sample *samples, std::size_t cnt, const sensor_description *sensors, const std::size_t, void *ctx) {
         // Do something with the 'samples' here.
         // You can access the sensor meta data via samples[i].source in 'descs'.
     })
@@ -147,7 +139,7 @@ using namespace visus::pwrowg;
 
 // Create a CSV sink that writes batches of 512 samples to
 // "log.csv".
-thread_local_sink<csv_sink<std::ofstream>> sink(512, std::ofstream("log.csv"));
+thread_local_sink<csv_sink<std::ofstream>> sink(512, true, std::ofstream("log.csv"));
 
 // The equivalent atomic_collector with a writing interval of
 // one second would look like this:
@@ -157,7 +149,8 @@ thread_local_sink<csv_sink<std::ofstream>> sink(512, std::ofstream("log.csv"));
 // callback. The sink must be passed as the user pointer to the callback.
 sensor_array_configuration config;
 config.sample_every(std::chrono::milliseconds(5))
-    .deliver_to(decltype(sink)::sample_callback, &sink);
+    .deliver_to(decltype(sink)::sample_callback)
+    .deliver_context(&sink);
 
 // Create an array for all available sensors.
 auto sensors = sensor_array::for_all(std::move(config));
@@ -243,9 +236,9 @@ Afterwards, you would configure the channels and the trigger condition. While it
 // Create a configuration for recording 10K samples over three seconds.
 auto config = rtx_instrument_configuration(std::chrono::seconds(3), 10000)
     // Configure CHAN1 to measure up to 2V.
-    .channel(rtx_channel(1).range(2.0f, "V").attenuation(0.1f, "V"))
+    .channel(rtx_channel(1).range(2.0f, "V").attenuation(10.0f, "V"))
     // Configure CHAN2 to measure up to 2A.
-    .channel(rtx_channel(2).range(2.0f, "A").attenuation(0.1f, "A"))
+    .channel(rtx_channel(2).range(2.0f, "A").attenuation(10.0f, "A"))
     // Typically, applications want to control everything manually.
     .disable_automatic_roll()
     // Trigger when the external trigger input rises above 2V.
@@ -307,16 +300,37 @@ auto trigger = rtx_sensor_trigger_builder::for_all()
 
 // Tell the array about the oscilloscopes using the fluent API.
 config.configure<rtx_configuration>([trigger](rtx_configuration& c) {
-    // Setup a linked voltage/current pair like above. 
+    // Set the base configuration shared between instruments. In this case,
+    // we configure that a measurement runs for five seconds and records
+    // 10K samples. It is important to set a base configuration with valid
+    // parameters. Otherwise, the sensor will fail to initialise.
+    c.base_configuration(rtx_instrument_configuration(
+        std::chrono::seconds(5),
+        10000));
+
+    // Setup a linked voltage/current pair like above.
     c.add_sensor("VISA path to instrument", 
-        rtx_channel(1).range(2.0f, "V").attenuation(0.1f, "V"),
-        rtx_channel(2).range(2.0f, "A").attenuation(0.1f, "A"));
+        rtx_channel(1).range(2.0f, "V").attenuation(10.0f, "V"),
+        rtx_channel(2).range(2.0f, "A").attenuation(10.0f, "A"));
     c.trigger(trigger);
+
+    // The configuration can be optionally saved as JSON.
+    //c.save(L"rtx_sensors.json");
 });
 
 // Continue building the sensor array as usual. A voltage, current and power
 // sensor using the oscilloscope should not be included when enumerating the
 // sensor descriptions.
+```
+
+For restoring the RTX sensor configuration from JSON, use
+```c++
+config.configure<rtx_configuration>([&trigger](rtx_configuration& c) {
+    // Load the stored configuration, including the trigger configuration.
+    c = rtx_configuration::load(L"rtx_sensors.json");
+    // Return the restored trigger object to the caller.
+    trigger = c.trigger();
+}
 ```
 
 Once the sensor array has been started, you can use the `rtx_sensor_trigger` object to control when the oscilloscope sensor should measure:
@@ -460,13 +474,14 @@ The `from_descriptions` method is expected to perform the following tasks:
 ### The `sample` method
 There are two possible signatures for the `sample` method, depending on wether the sensor is sampled synchronously or asynchronously. The synchronous variant looks like
 ```c++
-void sample(const sensor_array_callback callback, const sensor_description *sensors, void *context);
+void sample(const sensor_array_callback callback, const sensor_description *sensors, const std::size_t cnt, void *context);
 ```
-| Parameter | Description |
-| --------- | ----------- |
+| Parameter  | Description |
+| ---------- | ----------- |
 | `callback` | The `sensor_array_callback` the sensor should invoke for any sample it can currently produce. |
-| `sensors` | The list of sensor descriptions that must be forwarded to the `callback`. |
-| `context` | The user-defined context pointer that must be forwarded to the `callback`. |
+| `sensors`  | The list of sensor descriptions that must be forwarded to the `callback`. |
+| `cnt`      | The number of elements in `sensors`, which must be forwarded to the `callback`. |
+| `context`  | The user-defined context pointer that must be forwarded to the `callback`. |
 
 > [!CAUTION]
 > Sensors should not assume that the callback and the context pointer never change. The user can switch these parameters when restarting an array. If the data are cached locally, the cache must be invalidated whenever the sensor is started.

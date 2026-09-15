@@ -31,7 +31,13 @@ enum class rtx_channel_coupling {
     /// <summary>
     /// Connection to a virtual ground.
     /// </summary>
-    ground
+    ground,
+
+    /// <summary>
+    /// Direct connection with 50 Ohm termination. This is only available
+    /// on some instruments.
+    /// </summary>
+    direct
 };
 
 /// <summary>

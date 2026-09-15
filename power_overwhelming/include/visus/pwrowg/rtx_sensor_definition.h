@@ -40,22 +40,26 @@ public:
     /// Initialises a new instance.
     /// </summary>
     /// <param name="path">The path to the VISA instrument to be used for
-    /// the sensor, which must not be <c>nullptr</c>.</param>
-    /// <param name="description">The description of the sensor, which must
-    /// not be <c>nullptr</c>.</param>
+    /// the sensor, which must not be <see langword="nullptr" />.</param>
     /// <param name="voltage_channel">The configuration of the channel to
-    /// which the voltage probe is attached.</param>
+    /// which the voltage probe is attached. A default-constructed invalid
+    /// channel can be provided to disable the voltage measurement, but at
+    /// least one of the channels must be valid.</param>
     /// <param name="current_channel">The configuration of the channel to
-    /// which the current probe is attached.</param>
+    /// which the current probe is attached. A default-constructed invalid
+    /// channel can be provided to disable the current measurement, but at
+    /// least one of the channels must be valid.</param>
+    /// <param name="description">The description of the sensor. This parameter
+    /// defaults to <see langword="nullptr" />.</param>
     /// <param name="waveform_points">Specifies which points of the waveform
     /// are downloaded from the instrument to the sensor. This parameter
     /// defaults to the maximum resolution available in the memory of the
     /// instrument.</param>
     /// <exception cref="std::invalid_argument">If <paramref name="path" />
-    /// is <c>nullptr</c> or an empty string.</exception>
-    /// <exception cref="std::invalid_argument">If
-    /// <paramref name="channel_voltage" /> and 
-    /// <paramref name="channel_current" /> are the same or if the quantity
+    /// is <see langword="nullptr" /> or an empty string.</exception>
+    /// <exception cref="std::invalid_argument">If both channels,
+    /// <paramref name="channel_voltage" /> and
+    /// <paramref name="channel_current" />, are the same, or if the quantity
     /// measured by any of the channels is not what their intended use is.
     /// </exception>
     /// <exception cref="std::bad_alloc">If the memory for storing the
@@ -71,21 +75,26 @@ public:
     /// Initialises a new instance.
     /// </summary>
     /// <param name="path">The path to the VISA instrument to be used for
-    /// the sensor, which must not be <c>nullptr</c>.</param>
+    /// the sensor, which must not be <see langword="nullptr" />.</param>
     /// <param name="voltage_channel">The configuration of the channel to
-    /// which the voltage probe is attached.</param>
+    /// which the voltage probe is attached. A default-constructed invalid
+    /// channel can be provided to disable the voltage measurement, but at
+    /// least one of the channels must be valid.</param>
     /// <param name="current_channel">The configuration of the channel to
-    /// which the current probe is attached.</param>
-    /// <param name="description">The description of the sensor.</param>
+    /// which the current probe is attached. A default-constructed invalid
+    /// channel can be provided to disable the current measurement, but at
+    /// least one of the channels must be valid.</param>
+    /// <param name="description">The description of the sensor. This parameter
+    /// defaults to <see langword="nullptr" />.</param>
     /// <param name="waveform_points">Specifies which points of the waveform
     /// are downloaded from the instrument to the sensor. This parameter
     /// defaults to the maximum resolution available in the memory of the
     /// instrument.</param>
     /// <exception cref="std::invalid_argument">If <paramref name="path" />
-    /// is <c>nullptr</c> or an empty string.</exception>
-    /// <exception cref="std::invalid_argument">If
-    /// <paramref name="channel_voltage" /> and 
-    /// <paramref name="channel_current" /> are the same or if the quantity
+    /// is <see langword="nullptr" /> or an empty string.</exception>
+    /// <exception cref="std::invalid_argument">If both channels,
+    /// <paramref name="channel_voltage" /> and
+    /// <paramref name="channel_current" />, are the same, or if the quantity
     /// measured by any of the channels is not what their intended use is.
     /// </exception>
     /// <exception cref="std::bad_alloc">If the memory for storing the
@@ -199,10 +208,13 @@ public:
     }
 
     /// <summary>
-    /// Answer whether the sensor definition is valid for creating a sensor.
+    /// Answer whether the sensor definition is valid for creating a sensor,
+    /// which means that at least one of the channels must be configured and the
+    /// device must be specified.
     /// </summary>
-    /// <returns><c>true</c> if the configuration is valid, <c>false</c> if
-    /// this instance was created using the default constructor.</returns>
+    /// <returns><see langword="true" /> if the configuration is valid,
+    /// <see langword="false" /> if this instance was created using the default
+    /// constructor.</returns>
     operator bool(void) const noexcept;
 
 private:

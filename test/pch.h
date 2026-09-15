@@ -7,7 +7,9 @@
 #pragma once
 
 #include <chrono>
+#include <fstream>
 #include <iterator>
+#include <mutex>
 #include <regex>
 #include <sstream>
 #include <thread>
@@ -25,26 +27,9 @@
 #include <visus/pwrowg/on_exit.h>
 #include <visus/pwrowg/rapl_domain.h>
 #include <visus/pwrowg/rtx_sample.h>
-#include <visus/pwrowg/parallel_port_trigger.h>
 #include <visus/pwrowg/sample.h>
 #include <visus/pwrowg/sensor_array.h>
 #include <visus/pwrowg/sensor_description.h>
-
-#include <adl_error_category.h>
-#include <detect_sample.h>
-#include <emi_device.h>
-#include <fnv1a.h>
-#include <io_util.h>
-#include <marker_sensor.h>
-#include <msr_magic.h>
-#include <msr_sensor.h>
-#include <sensor_array_impl.h>
-#include <sensor_description_builder.h>
-#include <sensor_registry.h>
-#include <sensor_utilities.h>
-#include <setup_api.h>
-#include <tokenise.h>
-#include <transient_driver.h>
 
 #include <CppUnitTest.h>
 
@@ -53,3 +38,5 @@
 PWROWG_NAMESPACE_BEGIN _PWROWG_NAMESPACE_BEGIN(test)
 
 #define PWROWG_TEST_NAMESPACE_END } PWROWG_NAMESPACE_END
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;

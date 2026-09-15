@@ -1,12 +1,15 @@
 // <copyright file="sensor_utilities_test.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
 
 #include "pch.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include <visus/pwrowg/sensor_filters.h>
+
+#include <sensor_description_builder.h>
+#include <sensor_utilities.h>
 
 
 PWROWG_TEST_NAMESPACE_BEGIN

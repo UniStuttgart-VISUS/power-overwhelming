@@ -38,6 +38,7 @@ template<class TType>
 using _sync_sample = decltype(std::declval<TType &>().sample(
     std::declval<sensor_array_callback>(),
     std::declval<sensor_description *>(),
+    std::declval<std::size_t>(),
     std::declval<void *>()));
 
 /// <summary>

@@ -24,7 +24,7 @@
 /// <param name="length"></param>
 /// <returns></returns>
 extern "C" void RaplRead(_In_ WDFQUEUE queue, _In_ WDFREQUEST request,
-        _In_ SIZE_T length) noexcept {
+        _In_ SIZE_T length) {
     ASSERT(request != nullptr);
     PAGED_CODE();
 

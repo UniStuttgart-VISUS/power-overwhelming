@@ -43,6 +43,11 @@ enum class rtx_instrument_reset : std::uint64_t {
     status = static_cast<std::uint64_t>(visa_instrument_reset::status),
 
     /// <summary>
+    /// Reads all system errors until the queue is empty.
+    /// </summary>
+    errors = static_cast<std::uint64_t>(visa_instrument_reset::errors),
+
+    /// <summary>
     /// Stops the acquisition after the reset, which will put the device in
     /// the run state.
     /// </summary>

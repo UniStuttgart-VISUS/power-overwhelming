@@ -1,5 +1,5 @@
 ﻿// <copyright file="rtx_config.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -14,6 +14,8 @@
 #if defined(_WIN32)
 #include <Windows.h>
 #include <tchar.h>
+
+#include "visual_config.h"
 #endif /* defined(_WIN32) */
 
 #if !defined(_tmain)
@@ -34,22 +36,24 @@ int _tmain(const int argc, const TCHAR **argv) {
     using namespace visus::pwrowg;
 
     std::wcout << L"rtx_config" << std::endl;
-    std::wcout << L"© 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart."
-        << std::endl << L"All rights reserved."
+    std::wcout << L"© 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart."
         << std::endl << std::endl;
 
     const std::vector<std::basic_string<TCHAR>> cmd_line(argv, argv + argc);
     auto show_help = (argc != 3);
-    const auto save = (cmd_line[1] == _T("--save"));
-    const auto restore = (cmd_line[1] == _T("--restore"));
+    const auto save = !show_help && (cmd_line[1] == _T("--save"));
+    const auto restore = !show_help && (cmd_line[1] == _T("--restore"));
     show_help = show_help || (!save && !restore);
 
     if (show_help) {
-        // Input is wrong, so show the help.
-        std::wcout << L"TODO " << std::endl << std::endl;
-        std::wcout << "Usage: rtx_config --save <output path>" << std::endl;
-        std::wcout << "Usage: rtx_config --restore <input path>" << std::endl;
+        // Input is wrong, so show the help (or the UI on Windows).
+#if defined(_WIN32)
+        return visual_config();
+#else /* defined(_WIN32) */
+        std::cout << "Usage: rtx_config --save <output path>" << std::endl;
+        std::cout << "Usage: rtx_config --restore <input path>" << std::endl;
         return -2;
+#endif /* defined(_WIN32) */
     }
 
     try {
