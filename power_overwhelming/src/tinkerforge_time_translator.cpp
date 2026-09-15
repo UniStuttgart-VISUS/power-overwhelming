@@ -143,9 +143,8 @@ PWROWG_DETAIL_NAMESPACE::tinkerforge_time_translator::operator ()(
 
     const auto cur = static_cast<std::int64_t>(time);
     const auto last = static_cast<std::int64_t>(b.first.bricklet);
-    assert(last >= cur);
 
-    const auto dt = static_cast<double>(last - cur);
+    const auto dt = static_cast<double>(cur - last);
     const auto retval = b.first.host + float_millis(dt * b.second);
 
     return retval;
