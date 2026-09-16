@@ -282,8 +282,8 @@ if (PWROWG_WithHdf5)
         URL "https://github.com/HDFGroup/hdf5/archive/refs/tags/2.2.0.zip"
         DOWNLOAD_EXTRACT_TIMESTAMP ON
     )
-    FetchContent_MakeAvailable(hdf5)
     option(BUILD_TESTING "" OFF)
+    option(H5EXAMPLE_BUILD_HL "" OFF)
     option(H5EXAMPLE_BUILD_TESTING "" OFF)
     option(HDF5_BUILD_CPP_LIB "" ON)
     option(HDF5_BUILD_DOC "" OFF)
@@ -303,6 +303,7 @@ if (PWROWG_WithHdf5)
     option(HDF5_TEST_SWMR "" OFF)
     option(HDF5_TEST_TOOLS "" OFF)
     option(HDF5_TEST_VFD "" OFF)
+    FetchContent_MakeAvailable(hdf5)
     mark_as_advanced(FORCE
         FETCHCONTENT_SOURCE_DIR_HDF5
         FETCHCONTENT_UPDATES_DISCONNECTED_HDF5)
