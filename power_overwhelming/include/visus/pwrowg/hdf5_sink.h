@@ -8,6 +8,7 @@
 #define _PWROWG_HDF5_SINK_H
 #pragma once
 
+#if defined(POWER_OVERWHELMING_WITH_HDF5)
 #include "visus/pwrowg/hdf5_configuration.h"
 #include "visus/pwrowg/sample.h"
 #include "visus/pwrowg/sensor_description.h"
@@ -100,4 +101,5 @@ PWROWG_NAMESPACE_END
 
 #include "visus/pwrowg/hdf5_sink.inl"
 
+#endif /* defined(POWER_OVERWHELMING_WITH_HDF5) */
 #endif /* !defined(_PWROWG_HDF5_SINK_H) */

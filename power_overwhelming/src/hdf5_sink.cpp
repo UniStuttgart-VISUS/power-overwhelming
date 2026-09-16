@@ -4,6 +4,7 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
+#if defined(POWER_OVERWHELMING_WITH_HDF5)
 #include "visus/pwrowg/hdf5_sink.h"
 
 #include <stdexcept>
@@ -168,3 +169,5 @@ void PWROWG_NAMESPACE::hdf5_sink::write(
 //    }
 //#endif /* defined(_WIN32) */
 //}
+
+#endif /* defined(POWER_OVERWHELMING_WITH_HDF5) */
