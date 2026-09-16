@@ -179,6 +179,11 @@ if (PWROWG_WithParquet)
     endif()
     set(_vcpkg_dir "${FETCHCONTENT_BASE_DIR}/vcpkg")
     if (WIN32)
+        set(_vcpkg_boostrap "${_vcpkg_dir}/bootstrap-vcpkg.bat")
+    else ()
+        set(_vcpkg_boostrap "${_vcpkg_dir}/bootstrap-vcpkg.sh")
+    endif ()
+    if (WIN32)
         set(_vcpkg_exe "${_vcpkg_dir}/vcpkg.exe")
     else ()
         set(_vcpkg_exe "${_vcpkg_dir}/vcpkg")
@@ -187,18 +192,26 @@ if (PWROWG_WithParquet)
     #message(STATUS "vcpkg_dir=${_vcpkg_dir}")
     #message(STATUS "vcpkg_exe=${_vcpkg_exe}")
 
-    if (NOT EXISTS "${_vcpkg_dir}")
+    if (NOT (IS_DIRECTORY "${_vcpkg_dir}" AND EXISTS "${_vcpkg_boostrap}"))
+        find_package(Git REQUIRED)
         message(STATUS "Fetching vcpkg to ${_vcpkg_dir}...")
-        execute_process(COMMAND "${GIT_EXECUTABLE}" clone https://github.com/microsoft/vcpkg.git "${_vcpkg_dir}")
+        execute_process(COMMAND "${GIT_EXECUTABLE}" clone "https://github.com/microsoft/vcpkg.git" "${_vcpkg_dir}"
+            WORKING_DIRECTORY "${FETCHCONTENT_BASE_DIR}"
+            RESULT_VARIABLE _clone_result
+            ERROR_VARIABLE _clone_output)
+
+        if (NOT ${_clone_result} EQUAL 0)
+            message(FATAL_ERROR "${_clone_output}")
+        endif ()
     endif ()
 
     if (NOT EXISTS "${_vcpkg_exe}")
         message(STATUS "Bootstrapping vcpkg ...")
         if (WIN32)
-            execute_process(COMMAND "${_vcpkg_dir}/bootstrap-vcpkg.bat" -disableMetrics
+            execute_process(COMMAND "${_vcpkg_boostrap}" -disableMetrics
                 RESULT_VARIABLE _vcpkg_result)
         else ()
-            execute_process(COMMAND "${_vcpkg_dir}/bootstrap-vcpkg.sh" -disableMetrics
+            execute_process(COMMAND "${_vcpkg_boostrap}" -disableMetrics
                 RESULT_VARIABLE _vcpkg_result)
         endif ()
 
@@ -240,10 +253,13 @@ if (PWROWG_WithParquet)
     endif ()
 
     unset(_arrow_dir)
+    unset(_clone_output)
+    unset(_clone_result)
     unset(_debug_bin)
     unset(_install_dir)
     unset(_release_bin)
     unset(_triplet)
+    unset(_vcpkg_boostrap)
     unset(_vcpkg_dir)
     unset(_vcpkg_exe)
     unset(_vcpkg_result)
@@ -259,6 +275,35 @@ function(pwrowg_add_parquet_post_build t)
             COMMAND_EXPAND_LISTS)
     endif ()
 endfunction()
+
+# HDF5 output.
+if (PWROWG_WithHdf5)
+    FetchContent_Declare(hdf5
+        URL "https://github.com/HDFGroup/hdf5/archive/refs/tags/2.2.0.zip"
+        DOWNLOAD_EXTRACT_TIMESTAMP ON
+    )
+    FetchContent_MakeAvailable(hdf5)
+    option(HFD5_BUILD_CPP_LIB "" ON)
+    option(HFD5_BUILD_DOC "" OFF)
+    option(HFD5_BUILD_EXAMPLES "" OFF)
+    option(HFD5_BUILD_FORTRAN "" OFF)
+    option(HFD5_BUILD_JAVA "" OFF)
+    option(HFD5_BUILD_TOOLS "" OFF)
+    option(HFD5_BUILD_UTILS "" OFF)
+    option(HFD5_ENABLE_NONSTANDARD_FEATURES "" OFF)
+    option(HFD5_TEST_API "" OFF)
+    option(HFD5_TEST_API_ENABLE_ASYNC "" OFF)
+    option(HFD5_TEST_API_ENABLE_DRIVER "" OFF)
+    option(HFD5_TEST_API_INSTALL "" OFF)
+    option(HFD5_TEST_PASSTHROUGH_VOL "" OFF)
+    option(HFD5_TEST_SERIAL "" OFF)
+    option(HFD5_TEST_SWMR "" OFF)
+    option(HFD5_TEST_TOOLS "" OFF)
+    option(HFD5_TEST_VFD "" OFF)
+    mark_as_advanced(FORCE
+        FETCHCONTENT_SOURCE_DIR_HDF5
+        FETCHCONTENT_UPDATES_DISCONNECTED_HDF5)
+endif ()
 
 
 # Intel Graphics Control Library (this is even more hacky, because Intel has no 

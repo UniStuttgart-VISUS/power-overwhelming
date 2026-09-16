@@ -34,6 +34,8 @@ option(PWROWG_WithAdl "Build support for the AMD Display Library" ON)
 # TODO: Enable this for Linux too, once libbenchlab is fully functional.
 #option(PWROWG_WithBenchlab "Build support for the Benchlab telemetry system" ON)
 cmake_dependent_option(PWROWG_WithBenchlab "Build support for the Benchlab telemetry system" ON WIN32 OFF)
+cmake_dependent_option(PWROWG_WithBenchlab "Build support for the Benchlab telemetry system" ON WIN32 OFF)
+option(PWROWG_WithHdf5 "Build support for HDF5 sinks" OFF)
 cmake_dependent_option(PWROWG_WithIgcl "Build support for IGCL" ON WIN32 OFF)
 option(PWROWG_WithNiDaqMx "Build support for NI-DAQmx" OFF)
 cmake_dependent_option(PWROWG_WithNvapi "Build support for NVIDIA API" OFF WIN32 OFF)
