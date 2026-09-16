@@ -200,7 +200,8 @@ bool PWROWG_NAMESPACE::rtx_sensor_trigger::acquire(
         const auto e = timestamp::now();
 
         if (!this->_impl->trigger_timestamps.empty()) {
-            this->_impl->trigger_timestamps.front() = timestamp::middle(b, e);
+            //this->_impl->trigger_timestamps.front() = timestamp::middle(b, e);
+            this->_impl->trigger_timestamps.front() = b;
             PWROWG_TRACE(_T("Recorded external trigger timestamp: %" PRIu64),
                 this->_impl->trigger_timestamps.front().value());
         }
