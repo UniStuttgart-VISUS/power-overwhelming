@@ -7,6 +7,7 @@
 #include "visus/pwrowg/pwog_sink.h"
 
 #if defined(_WIN32)
+#include <Windows.h>
 #include <processenv.h>
 #endif /* defined(_WIN32) */
 
