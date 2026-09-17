@@ -314,7 +314,7 @@ public:
         }
 
 #if defined(POWER_OVERWHELMING_WITH_PARQUET)
-        pwog_file::to_parquet("pwog.parquet", file, parquet_identity_column::id, false, 1);
+        pwog_file::to_parquet(file, parquet_configuration("pwog.parquet", parquet_identity_column::id).raw(false), 1);
 #endif /* defined(POWER_OVERWHELMING_WITH_PARQUET) */
     }
 
@@ -615,7 +615,7 @@ public:
         }
 
 #if defined(POWER_OVERWHELMING_WITH_PARQUET)
-        pwog_file::to_parquet(L"pwog.parquet", file, parquet_identity_column::id, false, 1);
+        pwog_file::to_parquet(file, parquet_configuration("pwog.parquet", parquet_identity_column::id).raw(false), 1);
 #endif /* defined(POWER_OVERWHELMING_WITH_PARQUET) */
     }
 

@@ -114,8 +114,8 @@ std::size_t POWER_OVERWHELMING_API to_string(
 /// <summary>
 /// Converts a <see cref="reading_unit" /> to its SI unit symbol.
 /// </summary>
-/// <unitparam name="TChar">The character unit, which must be one of
-/// <see langword="char" /> or <see langword="wchar_t" />.</unitparam>
+/// <typeparam name="TChar">The character unit, which must be one of
+/// <see langword="char" /> or <see langword="wchar_t" />.</typeparam>
 /// <param name="unit">The unit to be converted.</param>
 /// <returns>The unit symbol.</returns>
 template<class TChar>

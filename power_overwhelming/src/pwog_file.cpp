@@ -33,6 +33,7 @@
 #endif /* _PWROWG_POP_MIN */
 #endif /* defined(POWER_OVERWHELMING_WITH_PARQUET) */
 
+#include "hdf5_sink_impl.h"
 #include "io_util.h"
 #include "sensor_description_builder.h"
 
@@ -124,30 +125,109 @@ PWROWG_NAMESPACE::pwog_file PWROWG_NAMESPACE::pwog_file::read(
  * PWROWG_NAMESPACE::pwog_file::to_hdf5
  */
 std::size_t PWROWG_NAMESPACE::pwog_file::to_hdf5(
-        _In_z_ const wchar_t *path,
         _In_ const pwog_file& file,
-        _In_ const bool raw,
-        _In_ const std::size_t batch_size) const {
-    if (path == nullptr) {
-        throw std::invalid_argument("A valid output path must be specified.");
+        _In_ const hdf5_configuration& config) {
+    if (file._state != state::read) {
+        throw std::invalid_argument("The input file must be in read mode.");
     }
 
-    const auto p = convert_string<char>(path);
-    return to_hdf5(p.c_str(), file, raw, batch_size);
-}
-#endif /* defined(POWER_OVERWHELMING_WITH_HDF5) */
+    H5::H5File h5(config.path(),
+        config.overwrite() ? H5F_ACC_TRUNC : H5F_ACC_EXCL);
 
+    // If any, write the attributes.
+    {
+        auto m = file._meta_data.get<std::map<std::string, std::string>>();
+        std::map<std::string, std::string> meta_data;
+        if (m != nullptr) {
+            meta_data = *m;
+        }
 
-#if defined(POWER_OVERWHELMING_WITH_HDF5)
-/*
- * PWROWG_NAMESPACE::pwog_file::to_hdf5
- */
-std::size_t PWROWG_NAMESPACE::pwog_file::to_hdf5(
-        _In_z_ const char *path,
-        _In_ const pwog_file& file,
-        _In_ const bool raw,
-        _In_ const std::size_t batch_size) const {
-    throw "TODO";
+        // The meta data provided in the 'config' take precedence and
+        // potentially overwrite the meta data from the input file.
+        std::vector<const char *> keys(config.meta_data(nullptr, 0));
+        for (auto key : keys) {
+            auto value = file[key];
+            if (value == nullptr) {
+                continue;
+            }
+            meta_data[key] = value;
+        }
+
+        for (auto& m : meta_data) {
+            auto key = m.first.c_str();
+            auto value = m.second.c_str();
+            H5::DataSpace space(H5S_SCALAR);
+            H5::StrType type(H5::PredType::C_S1, m.second.length() + 1);
+            auto attr = h5.createAttribute(key, type, space);
+            attr.write(type, value);
+        }
+    }
+
+    // Write the sensor descriptions first.
+    {
+        std::vector<sensor_description> sensors(file.sensors(nullptr, 0));
+        file.sensors(sensors.data(), sensors.size());
+
+        std::vector<detail::hdf5_sensor_description> data;
+        std::set<std::string> strings;
+        data.reserve(sensors.size());
+        std::uint32_t source = 0;
+        std::transform(sensors.begin(),
+            sensors.end(),
+            std::back_inserter(data),
+            [&strings, &source](const sensor_description& d) {
+                return detail::hdf5_sensor_description(source++, d, strings);
+            });
+
+        // Create the data space.
+        hsize_t dims[] = { sensors.size() };
+        H5::DataSpace space(std::size(dims), dims);
+
+        // Create the data set and write the data.
+        auto type = detail::hdf5_sensor_description::create();
+        auto dataset = h5.createDataSet("sensors", type, space);
+        dataset.write(data.data(), type);
+    }
+
+    {
+        // Create a dynamically sized data space for the sensors.
+        hsize_t initial[] = { 0 };
+        hsize_t maximum[] = { H5S_UNLIMITED };
+        H5::DataSpace space(std::size(initial), initial, maximum);
+
+        // Create an empty data set using the specified chunk size.
+        H5::DSetCreatPropList props;
+        hsize_t chunks[] = { config.chunk_size() };
+        props.setChunk(std::size(chunks), chunks);
+
+        const auto type = detail::make_hdf5_sample_type(config);
+
+        // Create the data set for the samples.
+        auto data_set = h5.createDataSet("samples", type, space, props);
+
+        // Copy the samples.
+        std::size_t cnt = 0;
+        std::size_t retval = 0;
+        std::vector<sample> samples(config.chunk_size());
+
+        while ((cnt = file.read(samples.data(), samples.size())) > 0) {
+            auto current_space = data_set.getSpace();
+            hsize_t current_dims[1];
+            current_space.getSimpleExtentDims(current_dims, nullptr);
+
+            hsize_t new_dims[] = { current_dims[0] + cnt };
+            data_set.extend(new_dims);
+
+            auto file_space = data_set.getSpace();
+            hsize_t count[] = { cnt };
+            file_space.selectHyperslab(H5S_SELECT_SET, count, current_dims);
+            H5::DataSpace mem_space(1, count);
+
+            data_set.write(samples.data(), type, mem_space, file_space);
+        }
+
+        return retval;
+    }
 }
 #endif /* defined(POWER_OVERWHELMING_WITH_HDF5) */
 
@@ -157,34 +237,9 @@ std::size_t PWROWG_NAMESPACE::pwog_file::to_hdf5(
  * PWROWG_NAMESPACE::pwog_file::to_parquet
  */
 std::size_t PWROWG_NAMESPACE::pwog_file::to_parquet(
-        _In_z_ const wchar_t *path,
         _In_ const pwog_file& file,
-        _In_ const parquet_identity_column identity,
-        _In_ const bool raw,
-        _In_ const std::size_t batch_size) {
-    if (path == nullptr) {
-        throw std::invalid_argument("A valid output path must be specified.");
-    }
-
-    const auto p = convert_string<char>(path);
-    return to_parquet(p.c_str(), file, identity, raw, batch_size);
-}
-#endif /* defined(POWER_OVERWHELMING_WITH_PARQUET) */
-
-
-#if defined(POWER_OVERWHELMING_WITH_PARQUET)
-/*
- * PWROWG_NAMESPACE::pwog_file::to_parquet
- */
-std::size_t PWROWG_NAMESPACE::pwog_file::to_parquet(
-        _In_z_ const char *path,
-        _In_ const pwog_file& file,
-        _In_ const parquet_identity_column identity,
-        _In_ const bool raw,
+        _In_ const parquet_configuration& config,
         _In_ std::size_t batch_size) {
-    if (path == nullptr) {
-        throw std::invalid_argument("A valid output path must be specified.");
-    }
     if (file._state != state::read) {
         throw std::invalid_argument("The input file must be in read mode.");
     }
@@ -206,7 +261,8 @@ std::size_t PWROWG_NAMESPACE::pwog_file::to_parquet(
         ->build();
 
     std::shared_ptr<arrow::io::FileOutputStream> stream;
-    PARQUET_ASSIGN_OR_THROW(stream, arrow::io::FileOutputStream::Open(path));
+    PARQUET_ASSIGN_OR_THROW(stream, arrow::io::FileOutputStream::Open(
+        config.path()));
 
     parquet::schema::NodeVector fields;
     fields.push_back(parquet::schema::PrimitiveNode::Make(
@@ -218,7 +274,7 @@ std::size_t PWROWG_NAMESPACE::pwog_file::to_parquet(
 
     // If we use the sensor index as identity, the sensor is an integer. All
     // other identity options are represented as strings.
-    switch (identity) {
+    switch (config.identity()) {
         case parquet_identity_column::index:
             fields.push_back(parquet::schema::PrimitiveNode::Make(
                 "sensor",
@@ -237,7 +293,7 @@ std::size_t PWROWG_NAMESPACE::pwog_file::to_parquet(
 
     // In raw mode, we store the raw bytes of the reading. Otherwise, everything
     // is converted to floats.
-    if (raw) {
+    if (config.raw()) {
         fields.push_back(parquet::schema::PrimitiveNode::Make(
             "value",
             parquet::Repetition::REQUIRED,
@@ -269,10 +325,10 @@ std::size_t PWROWG_NAMESPACE::pwog_file::to_parquet(
     auto sensors = file._sensors.get<std::vector<sensor_description>>();
     assert(sensors != nullptr);
 
-    if (identity != parquet_identity_column::index) {
+    if (config.identity() != parquet_identity_column::index) {
         identities.resize(sensors->size());
         for (std::size_t i = 0; i < sensors->size(); ++i) {
-            switch (identity) {
+            switch (config.identity()) {
                 case parquet_identity_column::id:
                     identities[i] = convert_string<char>(sensors->at(i).id());
                     break;
@@ -294,7 +350,7 @@ std::size_t PWROWG_NAMESPACE::pwog_file::to_parquet(
         for (std::size_t i = 0; i < cnt; ++i, ++retval) {
             writer << samples[i].timestamp.value();
 
-            switch (identity) {
+            switch (config.identity()) {
                 case parquet_identity_column::index:
                     writer << static_cast<int>(samples[i].source);
                     break;
@@ -304,7 +360,7 @@ std::size_t PWROWG_NAMESPACE::pwog_file::to_parquet(
                     break;
             }
 
-            if (raw) {
+            if (config.raw()) {
                 // Unfortunately, the copy is required to make the type check in
                 // Parquet happy.
                 std::array<char, sizeof(sample::reading)> v;

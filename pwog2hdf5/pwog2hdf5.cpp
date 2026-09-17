@@ -1,4 +1,4 @@
-﻿// <copyright file="pwog2parquet.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+﻿// <copyright file="pwog2hdf5.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
@@ -14,6 +14,7 @@
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/pwog_file.h"
 #include "visus/pwrowg/string_functions.h"
+#include "visus/pwrowg/timestamp.h"
 
 
 /// <summary>
@@ -71,29 +72,13 @@ int main(const int argc, const char **argv) {
         {
             auto it = ::find_argument(argv, end, "--output");
             output = (it == end)
-                ? std::string(input) + ".parquet"
+                ? std::string(input) + ".h5"
                 : *it;
         }
 
-        const auto raw = (::find_switch(argv, end, "--raw") != end);
+        const auto overwrite = (::find_switch(argv, end, "--force") != end);
 
-        auto identity = parquet_identity_column::index;
-        {
-            auto it = ::find_argument(argv, end, "--identity");
-            if (it != end) {
-                if (detail::equals(*it, "id", true)) {
-                    identity = parquet_identity_column::id;
-                } else if (detail::equals(*it, "index")) {
-                    identity = parquet_identity_column::index;
-                } else if (detail::equals(*it, "label", true)) {
-                    identity = parquet_identity_column::label;
-                } else {
-                    throw std::invalid_argument("Invalid value for "
-                        "--identity. Only \"id\", \"index\" or \"label\" "
-                        "are allowed.");
-                }
-            }
-        }
+        const auto raw = (::find_switch(argv, end, "--raw") != end);
 
         std::size_t batch_size = 4096;
         {
@@ -103,11 +88,16 @@ int main(const int argc, const char **argv) {
             }
         }
 
+        auto config = hdf5_configuration(output.c_str(), overwrite)
+            .chunk_size(batch_size)
+            .raw(raw);
+        config.meta_data("Pwog2Hdf5ConvertedFrom", input);
+        config.meta_data("Pwog2Hdf5FileTime", std::to_string(
+            timestamp::now().value()));
+
         // Open the file and convert it.
         auto file = pwog_file::read(input);
-        pwog_file::to_parquet(file,
-            parquet_configuration(output.c_str(), identity).raw(raw),
-            batch_size);
+        pwog_file::to_hdf5(file, config);
         return 0;
     } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;

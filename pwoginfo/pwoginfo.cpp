@@ -101,72 +101,10 @@ int main(const int argc, const char **argv) {
             std::cout << "\tType: 0x"
                 << std::hex << static_cast<sensor_t>(s.sensor_type())
                 << std::dec << std::endl;
-            std::cout << "\tReading type: ";
-            switch (s.reading_type()) {
-                case reading_type::floating_point:
-                    std::cout << "floating point";
-                    break;
-
-                case reading_type::signed_integer:
-                    std::cout << "signed integer";
-                    break;
-
-                case reading_type::unsigned_integer:
-                    std::cout << "unsigned integer";
-                    break;
-
-                default:
-                    std::cout << static_cast<reading_t>(s.reading_type());
-                    break;
-            }
-            std::cout << std::endl;
-            std::cout << "\tUnit: ";
-            switch (s.reading_unit()) {
-                case reading_unit::unknown:
-                    std::cout << "unknown";
-                    break;
-
-                case reading_unit::ampere:
-                    std::cout << "A";
-                    break;
-
-                case reading_unit::volt:
-                    std::cout << "V";
-                    break;
-
-                case reading_unit::watt:
-                    std::cout << "W";
-                    break;
-
-                case reading_unit::joule:
-                    std::cout << "J";
-                    break;
-
-                case reading_unit::watt_hour:
-                    std::cout << "Wh";
-                    break;
-
-                case reading_unit::coulomb:
-                    std::cout << "C";
-                    break;
-
-                case reading_unit::ampere_hour:
-                    std::cout << "Ah";
-                    break;
-
-                case reading_unit::celsius:
-                    std::cout << "°C";
-                    break;
-
-                case reading_unit::kelvin:
-                    std::cout << "K";
-                    break;
-
-                default:
-                    std::cout << static_cast<unit_t>(s.reading_unit());
-                    break;
-            }
-            std::cout << std::endl;
+            std::cout << "\tReading type: " << visus::pwrowg::to_string<char>(
+                s.reading_type()) << std::endl;
+            std::cout << "\tUnit: " << visus::pwrowg::to_string<char>(
+                s.reading_unit()) << std::endl;
         }
 
         if (statistics) {

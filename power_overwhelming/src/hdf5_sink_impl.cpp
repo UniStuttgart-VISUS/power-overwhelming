@@ -33,16 +33,12 @@ H5::CompType PWROWG_DETAIL_NAMESPACE::hdf5_sensor_description::create(void) {
     retval.insertMember("path",
         HOFFSET(hdf5_sensor_description, path),
         string_type);
-    static_assert(sizeof(reading_type) == sizeof(uint32_t), "The HDF5 "
-        "implementation assumes the reading_type to be 32 bit.");
     retval.insertMember("reading_type",
         HOFFSET(hdf5_sensor_description, reading_type),
-        H5::PredType::NATIVE_UINT32);
-    static_assert(sizeof(reading_unit) == sizeof(uint32_t), "The HDF5 "
-        "implementation assumes the reading_unit to be 32 bit.");
+        string_type);
     retval.insertMember("reading_unit",
         HOFFSET(hdf5_sensor_description, reading_unit),
-        H5::PredType::NATIVE_UINT32);
+        string_type);
     retval.insertMember("sensor_class",
         HOFFSET(hdf5_sensor_description, sensor_class),
         string_type);
@@ -57,6 +53,42 @@ H5::CompType PWROWG_DETAIL_NAMESPACE::hdf5_sensor_description::create(void) {
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE::make_hdf5_sample_type
+ */
+H5::CompType PWROWG_DETAIL_NAMESPACE::make_hdf5_sample_type(
+        _In_ const hdf5_configuration& config) {
+    H5::CompType retval(sizeof(PWROWG_NAMESPACE::sample));
+
+    static_assert(sizeof(timestamp) == sizeof(std::int64_t), "The HDF5 "
+        "implementation assumes the timestamp to be 64 bit.");
+    retval.insertMember("timestamp",
+        HOFFSET(PWROWG_NAMESPACE::sample, timestamp),
+        H5::PredType::NATIVE_INT64);
+    static_assert(sizeof(PWROWG_NAMESPACE::sample::source_type)
+        == sizeof(std::uint32_t), "The HDF5 implementation assumes the source "
+        "index to be 32 bit.");
+    retval.insertMember("source",
+        HOFFSET(PWROWG_NAMESPACE::sample, source),
+        H5::PredType::NATIVE_UINT32);
+
+    if (config.raw()) {
+        hsize_t cnt_bytes[] = { 4 };
+        H5::ArrayType bytes_type(H5::PredType::NATIVE_UINT8,
+            std::size(cnt_bytes), cnt_bytes);
+        retval.insertMember("reading",
+            HOFFSET(PWROWG_NAMESPACE::sample, reading),
+            bytes_type);
+    } else {
+        retval.insertMember("reading",
+            HOFFSET(PWROWG_NAMESPACE::sample, reading),
+            H5::PredType::NATIVE_FLOAT);
+    }
+
+    return retval;
+}
+
+
+/*
  * PWROWG_DETAIL_NAMESPACE::hdf5_sensor_description::hdf5_sensor_description
  */
 PWROWG_DETAIL_NAMESPACE::hdf5_sensor_description::hdf5_sensor_description(
@@ -65,8 +97,6 @@ PWROWG_DETAIL_NAMESPACE::hdf5_sensor_description::hdf5_sensor_description(
         _Inout_ std::set<std::string>& buffer)
     : source(source),
         label(nullptr),
-        reading_type(desc.reading_type()),
-        reading_unit(desc.reading_unit()),
         sensor_type(desc.sensor_type()) {
     this->id = buffer.insert(PWROWG_NAMESPACE::convert_string<char>(
         desc.id())).first->c_str();
@@ -82,6 +112,12 @@ PWROWG_DETAIL_NAMESPACE::hdf5_sensor_description::hdf5_sensor_description(
     this->path = buffer.insert(PWROWG_NAMESPACE::convert_string<char>(
         desc.path())).first->c_str();
 
+    this->reading_type = buffer.insert(to_string<char>(desc.reading_type()))
+        .first->c_str();
+
+    this->reading_unit = buffer.insert(to_string<char>(desc.reading_unit()))
+        .first->c_str();
+
     this->sensor_class = buffer.insert(
         desc.sensor_class().to_string<char>()).first->c_str();
 }
@@ -94,7 +130,8 @@ PWROWG_DETAIL_NAMESPACE::hdf5_sink_impl::hdf5_sink_impl(
         _In_ const hdf5_configuration& config)
     : file(config.path(), config.overwrite() ? H5F_ACC_TRUNC : H5F_ACC_EXCL),
         raw(config.raw()),
-        sensors_written(false) {
+        sensors_written(false),
+        type(make_hdf5_sample_type(config)) {
     // Create a dynamically sized data space for the sensors.
     hsize_t initial[] = { 0 };
     hsize_t maximum[] = { H5S_UNLIMITED };
@@ -105,33 +142,7 @@ PWROWG_DETAIL_NAMESPACE::hdf5_sink_impl::hdf5_sink_impl(
     hsize_t chunks[] = { config.chunk_size() };
     props.setChunk(std::size(chunks), chunks);
 
-    // Construct the HDF5 representation of a sample.
-    this->type = H5::CompType(sizeof(PWROWG_NAMESPACE::sample));
-    static_assert(sizeof(timestamp) == sizeof(std::int64_t), "The HDF5 "
-        "implementation assumes the timestamp to be 64 bit.");
-    this->type.insertMember("timestamp",
-        HOFFSET(PWROWG_NAMESPACE::sample, timestamp),
-        H5::PredType::NATIVE_INT64);
-    static_assert(sizeof(PWROWG_NAMESPACE::sample::source_type) 
-        == sizeof(std::uint32_t), "The HDF5 implementation assumes the source "
-        "index to be 32 bit.");
-    this->type.insertMember("source",
-        HOFFSET(PWROWG_NAMESPACE::sample, source),
-        H5::PredType::NATIVE_UINT32);
-
-    if (raw) {
-        hsize_t cnt_bytes[] = { 4 };
-        H5::ArrayType bytes_type(H5::PredType::NATIVE_UINT8,
-            std::size(cnt_bytes), cnt_bytes);
-        this->type.insertMember("reading",
-            HOFFSET(PWROWG_NAMESPACE::sample, reading),
-            bytes_type);
-    } else {
-        this->type.insertMember("reading",
-            HOFFSET(PWROWG_NAMESPACE::sample, reading),
-            H5::PredType::NATIVE_FLOAT);
-    }
-
+    // Create the data set for the samples.
     this->samples = file.createDataSet("samples", this->type, space, props);
 }
 

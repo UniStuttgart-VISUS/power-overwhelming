@@ -19,7 +19,8 @@
 
 #include "visus/pwrowg/blob.h"
 #include "visus/pwrowg/convert_string.h"
-#include "visus/pwrowg/parquet_identity_column.h"
+#include "visus/pwrowg/hdf5_configuration.h"
+#include "visus/pwrowg/parquet_configuration.h"
 #include "visus/pwrowg/pwog_meta_data.h"
 #include "visus/pwrowg/sample.h"
 #include "visus/pwrowg/sensor_description.h"
@@ -84,67 +85,31 @@ public:
 
 #if defined(POWER_OVERWHELMING_WITH_HDF5)
     /// <summary>
-    /// Converts the given <paramref name="file" /> to an HDF5 file at the specified
-    /// <paramref name="path" />.
+    /// Converts the given <paramref name="file" /> to an HDF5 file.
     /// </summary>
-    /// <param name="path">The path of the HDF5 file to create.</param>
     /// <param name="file">The PWOG file to be converted. This must have been
     /// opened for reading.</param>
-    /// <param name="raw">If <see langword="true"/>, store the raw bytes of the
-    /// readings, otherwise (the default) convert everything to floating-point
-    /// numbers.</param>
-    /// <param name="batch_size">The number of samples to read in one batch.
-    /// </param>
+    /// <param name="config">Configures the location and format of the HDF5
+    /// file to be created.</param>
     /// <returns>The total number of samples that have been written into the
     /// HDF5 file.</returns>
     /// <exception cref="std::invalid_argument">If <paramref name="path" /> is
     /// <see langword="nullptr" />, or if <paramref name="file" /> is not in
     /// read mode, or if the specified <paramref name="identity" /> column
     /// is not supported (the latter is probably a bug).</exception>
-    std::size_t to_hdf5(_In_z_ const wchar_t *path,
-        _In_ const pwog_file& file,
-        _In_ const bool raw = false,
-        _In_ const std::size_t batch_size = 512) const;
-#endif /* defined(POWER_OVERWHELMING_WITH_HDF5) */
-
-#if defined(POWER_OVERWHELMING_WITH_HDF5)
-    /// <summary>
-    /// Converts the given <paramref name="file" /> to an HDF5 file at the specified
-    /// <paramref name="path" />.
-    /// </summary>
-    /// <param name="path">The path of the HDF5 file to create.</param>
-    /// <param name="file">The PWOG file to be converted. This must have been
-    /// opened for reading.</param>
-    /// <param name="raw">If <see langword="true"/>, store the raw bytes of the
-    /// readings, otherwise (the default) convert everything to floating-point
-    /// numbers.</param>
-    /// <param name="batch_size">The number of samples to read in one batch.
-    /// </param>
-    /// <returns>The total number of samples that have been written into the
-    /// HDF5 file.</returns>
-    /// <exception cref="std::invalid_argument">If <paramref name="path" /> is
-    /// <see langword="nullptr" />, or if <paramref name="file" /> is not in
-    /// read mode, or if the specified <paramref name="identity" /> column
-    /// is not supported (the latter is probably a bug).</exception>
-    std::size_t to_hdf5(_In_z_ const char *path,
-        _In_ const pwog_file& file,
-        _In_ const bool raw = false,
-        _In_ const std::size_t batch_size = 512) const;
+    static std::size_t to_hdf5(_In_ const pwog_file& file,
+        _In_ const hdf5_configuration& config);
 #endif /* defined(POWER_OVERWHELMING_WITH_HDF5) */
 
 #if defined(POWER_OVERWHELMING_WITH_PARQUET)
     /// <summary>
-    /// Converts the given <paramref name="file" /> to an Apache Parquet file at
-    /// the specified <paramref name="path" />.
+    /// Converts the given <paramref name="file" /> to an Apache Parquet file as
+    /// decribed by the given <paramref name="config" />.
     /// </summary>
-    /// <param name="path">The path of the Parquet file to create.</param>
     /// <param name="file">The PWOG file to be converted. This must have been
     /// opened for reading.</param>
-    /// <param name="identity">The identity column to be used for the sensor in
-    /// the Parquet file.</param>
-    /// <param name="raw">If <see langword="true"/>, store the raw bytes of the
-    /// readings, otherwise (the default) convert everything to floating-point
-    /// numbers.</param>
+    /// <param name="config">Configures the location and format of the Parquet
+    /// file to be created.</param>
     /// <param name="batch_size">The number of samples to read in one batch.
     /// </param>
     /// <returns>The total number of samples that have been written into the
@@ -153,39 +118,9 @@ public:
     /// <see langword="nullptr" />, or if <paramref name="file" /> is not in
     /// read mode, or if the specified <paramref name="identity" /> column
     /// is not supported (the latter is probably a bug).</exception>
-    static std::size_t to_parquet(_In_z_ const wchar_t *path,
-        _In_ const pwog_file& file,
-        _In_ const parquet_identity_column identity,
-        _In_ const bool raw = false,
+    static std::size_t to_parquet(_In_ const pwog_file& file,
+        _In_ const parquet_configuration& config,
         _In_ const std::size_t batch_size = 512);
-#endif /* defined(POWER_OVERWHELMING_WITH_PARQUET) */
-
-#if defined(POWER_OVERWHELMING_WITH_PARQUET)
-    /// <summary>
-    /// Converts the given <paramref name="file" /> to an Apache Parquet file at
-    /// the specified <paramref name="path" />.
-    /// </summary>
-    /// <param name="path">The path of the Parquet file to create.</param>
-    /// <param name="file">The PWOG file to be converted. This must have been
-    /// opened for reading.</param>
-    /// <param name="identity">The identity column to be used for the sensor in
-    /// the Parquet file.</param>
-    /// <param name="raw">If <see langword="true"/>, store the raw bytes of the
-    /// readings, otherwise (the default) convert everything to floating-point
-    /// numbers.</param>
-    /// <param name="batch_size">The number of samples to read in one batch.
-    /// </param>
-    /// <returns>The total number of samples that have been written into the
-    /// Parquet file.</returns>
-    /// <exception cref="std::invalid_argument">If <paramref name="path" /> is
-    /// <see langword="nullptr" />, or if <paramref name="file" /> is not in
-    /// read mode, or if the specified <paramref name="identity" /> column
-    /// is not supported (the latter is probably a bug).</exception>
-    static std::size_t to_parquet(_In_z_ const char *path,
-        _In_ const pwog_file& file,
-        _In_ const parquet_identity_column identity,
-        _In_ const bool raw = false,
-        _In_ std::size_t batch_size = 512);
 #endif /* defined(POWER_OVERWHELMING_WITH_PARQUET) */
 
     /// <summary>

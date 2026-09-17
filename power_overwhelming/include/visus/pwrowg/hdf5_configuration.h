@@ -4,13 +4,15 @@
 // </copyright>
 // <author>Christoph Müller</author>
 
-#if !defined(_PWROWG_PARQUET_CONFIGURATION_H)
-#define _PWROWG_PARQUET_CONFIGURATION_H
+#if !defined(_PWROWG_HDF5_CONFIGURATION_H)
+#define _PWROWG_HDF5_CONFIGURATION_H
 #pragma once
 
 #include <algorithm>
+#include <string>
 
 #include "visus/pwrowg/blob.h"
+#include "visus/pwrowg/type_erased_storage.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -64,6 +66,56 @@ public:
     }
 
     /// <summary>
+    /// Retrieves the keys of all meta data entries to be stored as attributes
+    /// in the HDF5 file.
+    /// </summary>
+    /// <param name="keys">A buffer to receive the keys of the meta data map
+    /// in the file. This can be <see langword="nullptr" /> to determine the
+    /// required buffer size. The object remains owner of the memory of the
+    /// strings to which the pointers are returned.</param>
+    /// <param name="cnt">The number of items that can be written to
+    /// <paramref name="keys" />.</param>
+    /// <returns>The number of meta data items in the file, regardless of
+    /// whether anything has been copied to <paramref name="keys" /> or not.
+    /// </returns>
+    std::size_t meta_data(_Out_writes_opt_(cnt) const char **keys,
+        _In_ std::size_t cnt) const noexcept;
+
+    /// <summary>
+    /// Retrieves the value of a meta data entry by its key.
+    /// </summary>
+    /// <param name="key">The key of the meta data entry.</param>
+    /// <returns>The value associated with the specified key, or
+    /// <see langword="nullptr" /> if the key does not exist. The object remains
+    /// owner of the memory.</returns>
+    _Ret_maybenull_z_ const char *meta_data(
+        _In_z_ const char *key) const noexcept;
+
+    /// <summary>
+    /// Adds a new meta data element to be added as attribute to the HDF5 file.
+    /// If the key already exists, its value is overwritten with the new value.
+    /// </summary>
+    /// <param name="key">The key of the meta data entry. This must be a
+    /// non-empty string.</param>
+    /// <param name="value">The value to be added.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    hdf5_configuration& meta_data(_In_z_ const char *key,
+        _In_z_ const char *value);
+
+    /// <summary>
+    /// Adds a new meta data element to be added as attribute to the HDF5 file.
+    /// If the key already exists, its value is overwritten with the new value.
+    /// </summary>
+    /// <param name="key">The key of the meta data entry. This must be a
+    /// non-empty string.</param>
+    /// <param name="value">The value to be added.</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline hdf5_configuration& meta_data(_In_z_ const char *key,
+            _In_ const std::string& value) {
+        return this->meta_data(key, value.c_str());
+    }
+
+    /// <summary>
     /// Indicates whether an existing file should be overwritten or whether the
     /// sink should fail in this case.
     /// </summary>
@@ -109,6 +161,7 @@ public:
 private:
 
     std::size_t _chunk_size;
+    type_erased_storage _meta_data;
     bool _overwrite;
     blob _path;
     bool _raw;
@@ -116,4 +169,4 @@ private:
 
 PWROWG_NAMESPACE_END
 
-#endif /* !defined(_PWROWG_PARQUET_CONFIGURATION_H) */
+#endif /* !defined(_PWROWG_HDF5_CONFIGURATION_H) */

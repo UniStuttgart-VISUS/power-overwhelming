@@ -34,8 +34,8 @@ struct hdf5_sensor_description final {
     _Field_z_ const char *label;
     _Field_z_ const char *name;
     _Field_z_ const char *path;
-    reading_type reading_type;
-    reading_unit reading_unit;
+    _Field_z_ const char *reading_type;
+    _Field_z_ const char *reading_unit;
     _Field_z_ const char *sensor_class;
     sensor_type sensor_type;
 
@@ -51,6 +51,13 @@ struct hdf5_sensor_description final {
         _In_ const sensor_description& desc,
         _Inout_ std::set<std::string>& buffer);
 };
+
+
+/// <summary>
+/// Create the HDF5 composite type used to represent a <see cref="sample" />
+/// given the configuration of the sink.
+/// </summary>
+H5::CompType make_hdf5_sample_type(_In_ const hdf5_configuration& config);
 
 
 /// <summary>

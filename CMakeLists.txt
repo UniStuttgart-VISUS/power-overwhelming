@@ -101,6 +101,10 @@ endif ()
 if (PWROWG_BuildPwogTools)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/pwoginfo)
 
+    if (PWROWG_WithHdf5)
+        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/pwog2hdf5)
+    endif ()
+
     if (PWROWG_WithStaticParquet)
         add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/pwog2parquet)
     endif ()
