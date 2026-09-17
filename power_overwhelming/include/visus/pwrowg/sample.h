@@ -1,5 +1,5 @@
 ﻿// <copyright file="sample.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -17,7 +17,7 @@ PWROWG_NAMESPACE_BEGIN
 /// <summary>
 /// Represents a single sample from a single sensor.
 /// </summary>
-struct sample final {
+struct POWER_OVERWHELMING_API sample final {
 
     /// <summary>
     /// The type used to index the sensor sources.

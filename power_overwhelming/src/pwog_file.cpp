@@ -119,6 +119,39 @@ PWROWG_NAMESPACE::pwog_file PWROWG_NAMESPACE::pwog_file::read(
 }
 
 
+#if defined(POWER_OVERWHELMING_WITH_HDF5)
+/*
+ * PWROWG_NAMESPACE::pwog_file::to_hdf5
+ */
+std::size_t PWROWG_NAMESPACE::pwog_file::to_hdf5(
+        _In_z_ const wchar_t *path,
+        _In_ const pwog_file& file,
+        _In_ const bool raw,
+        _In_ const std::size_t batch_size) const {
+    if (path == nullptr) {
+        throw std::invalid_argument("A valid output path must be specified.");
+    }
+
+    const auto p = convert_string<char>(path);
+    return to_hdf5(p.c_str(), file, raw, batch_size);
+}
+#endif /* defined(POWER_OVERWHELMING_WITH_HDF5) */
+
+
+#if defined(POWER_OVERWHELMING_WITH_HDF5)
+/*
+ * PWROWG_NAMESPACE::pwog_file::to_hdf5
+ */
+std::size_t PWROWG_NAMESPACE::pwog_file::to_hdf5(
+        _In_z_ const char *path,
+        _In_ const pwog_file& file,
+        _In_ const bool raw,
+        _In_ const std::size_t batch_size) const {
+    throw "TODO";
+}
+#endif /* defined(POWER_OVERWHELMING_WITH_HDF5) */
+
+
 #if defined(POWER_OVERWHELMING_WITH_PARQUET)
 /*
  * PWROWG_NAMESPACE::pwog_file::to_parquet

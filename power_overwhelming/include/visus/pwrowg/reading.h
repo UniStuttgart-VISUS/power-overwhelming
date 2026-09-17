@@ -1,5 +1,5 @@
 ﻿// <copyright file="reading.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -8,9 +8,7 @@
 #define _READING_H
 #pragma once
 
-#include <cinttypes>
-
-#include "visus/pwrowg/api.h"
+#include "visus/pwrowg/reading_type.h"
 
 
 PWROWG_NAMESPACE_BEGIN
@@ -49,6 +47,18 @@ union reading final {
 static_assert(sizeof(reading) == 4, "The size of a reading must be four bytes. "
     "If this assertion fails, something got messed up in the declaration of "
     "the reading union.");
+
+
+/// <summary>
+/// Converts the value of a <paramref name="reading" /> from
+/// <paramref name="type" /> to a <see langword="float" />.
+/// </summary>
+/// <param name="reading">The reading to be converted.</param>
+/// <param name="type">The type contained in the <paramref name="reading" />
+/// </param>
+/// <returns>The value of the reading as a <see langword="float" />.</returns>
+float POWER_OVERWHELMING_API to_float(_In_ const reading& reading,
+    _In_ const reading_type type) noexcept;
 
 PWROWG_NAMESPACE_END
 

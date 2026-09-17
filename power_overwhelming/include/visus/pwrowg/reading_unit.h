@@ -1,5 +1,5 @@
 ﻿// <copyright file="reading_unit.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2025 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -9,6 +9,8 @@
 #pragma once
 
 #include <cinttypes>
+#include <cstdlib>
+#include <string>
 
 #include "visus/pwrowg/api.h"
 
@@ -62,7 +64,7 @@ enum class reading_unit : std::uint32_t {
     ampere_hour,
 
     /// <summary>
-    /// Degrees Ceclius for temperature.
+    /// Degrees Celsius for temperature.
     /// </summary>
     celsius,
 
@@ -71,6 +73,58 @@ enum class reading_unit : std::uint32_t {
     /// </summary>
     kelvin
 };
+
+
+/// <summary>
+/// Converts a <see cref="reading_unit" /> to its SI unit symbol.
+/// </summary>
+/// <param name="dst">The buffer to receive the string representation. This
+/// must be able to hold at least <paramref name="cnt" /> characters. This
+/// parameter can be <see langword="nullptr" /> to measure the required size.
+/// </param>
+/// <param name="cnt">The number of characters that can be written to
+/// <paramref name="dst" />.</param>
+/// <param name="unit">The unit to be converted.</param>
+/// <returns>The number of characters required to represent the unit, including
+/// the null-terminator.</returns>
+std::size_t POWER_OVERWHELMING_API to_string(
+    _Out_writes_opt_z_(cnt) wchar_t *dst,
+    _In_ std::size_t cnt,
+    _In_ const reading_unit unit) noexcept;
+
+
+/// <summary>
+/// Converts a <see cref="reading_unit" /> to its SI unit symbol.
+/// </summary>
+/// <param name="dst">The buffer to receive the string representation. This
+/// must be able to hold at least <paramref name="cnt" /> characters. This
+/// parameter can be <see langword="nullptr" /> to measure the required size.
+/// </param>
+/// <param name="cnt">The number of characters that can be written to
+/// <paramref name="dst" />.</param>
+/// <param name="unit">The unit to be converted.</param>
+/// <returns>The number of characters required to represent the unit, including
+/// the null-terminator.</returns>
+std::size_t POWER_OVERWHELMING_API to_string(
+    _Out_writes_opt_z_(cnt) char *dst,
+    _In_ std::size_t cnt,
+    _In_ const reading_unit unit) noexcept;
+
+
+/// <summary>
+/// Converts a <see cref="reading_unit" /> to its SI unit symbol.
+/// </summary>
+/// <unitparam name="TChar">The character unit, which must be one of
+/// <see langword="char" /> or <see langword="wchar_t" />.</unitparam>
+/// <param name="unit">The unit to be converted.</param>
+/// <returns>The unit symbol.</returns>
+template<class TChar>
+std::basic_string<TChar> to_string(const reading_unit unit) {
+    constexpr auto n = static_cast<TChar *>(nullptr);
+    std::basic_string<TChar> retval(to_string(n, 0, unit), 0);
+    to_string(&retval[0], retval.size() + 1, unit);
+    return retval;
+}
 
 PWROWG_NAMESPACE_END
 
