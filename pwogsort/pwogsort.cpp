@@ -1,4 +1,4 @@
-﻿// <copyright file="pwog2parquet.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+﻿// <copyright file="pwogsort.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
@@ -58,7 +58,7 @@ int main(const int argc, const char **argv) {
 
     try {
         // Process command line arguments.
-        const char *input = nullptr;
+        std::string input;
         {
             auto it = ::find_argument(argv, end, "--input");
             if (it == end) {
@@ -70,46 +70,25 @@ int main(const int argc, const char **argv) {
         std::string output;
         {
             auto it = ::find_argument(argv, end, "--output");
-            output = (it == end)
-                ? std::string(input) + ".parquet"
-                : *it;
-        }
-
-        const auto raw = (::find_switch(argv, end, "--raw") != end);
-
-        auto identity = parquet_identity_column::index;
-        {
-            auto it = ::find_argument(argv, end, "--identity");
-            if (it != end) {
-                if (detail::equals(*it, "id", true)) {
-                    identity = parquet_identity_column::id;
-                } else if (detail::equals(*it, "index")) {
-                    identity = parquet_identity_column::index;
-                } else if (detail::equals(*it, "label", true)) {
-                    identity = parquet_identity_column::label;
+            if (it == end) {
+                auto pos = input.find_last_of('.');
+                if (pos == std::string::npos) {
+                    output = input + "-sorted.pwog";
                 } else {
-                    throw std::invalid_argument("Invalid value for "
-                        "--identity. Only \"id\", \"index\" or \"label\" "
-                        "are allowed.");
+                    output = input.substr(0, pos) + "-sorted.pwog";
                 }
+            } else {
+                output = *it;
             }
         }
 
-        std::size_t batch_size = 4096;
-        {
-            auto it = ::find_argument(argv, end, "--batch-size");
-            if (it != end) {
-                batch_size = std::stoul(*it);
-            }
-        }
+        const auto timestamp = (::find_switch(argv, end, "--timestamp") != end);
 
-        // Open the file and convert it.
+        // Open the file and sort it.
         auto file = pwog_file::read(input);
-        const auto written = pwog_file::to_parquet(file,
-            parquet_configuration(output.c_str(), identity).raw(raw),
-            batch_size);
+        const auto written = pwog_file::sort(output, file, timestamp);
         assert(written == file.samples());
-        std::cout << written << " samples copied to " << output << std::endl;
+        std::cout << written << " samples sorted to " << output << std::endl;
 
         return 0;
     } catch (std::exception& ex) {

@@ -100,6 +100,7 @@ endif ()
 # PWOG file tools
 if (PWROWG_BuildPwogTools)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/pwoginfo)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/pwogsort)
 
     if (PWROWG_WithHdf5)
         add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/pwog2hdf5)

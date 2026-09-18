@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <stdexcept>
+#include <thread>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -32,6 +33,8 @@
 #pragma pop_macro("min")
 #endif /* _PWROWG_POP_MIN */
 #endif /* defined(POWER_OVERWHELMING_WITH_PARQUET) */
+
+#include "visus/pwrowg/timestamp.h"
 
 #include "hdf5_sink_impl.h"
 #include "io_util.h"
@@ -120,6 +123,101 @@ PWROWG_NAMESPACE::pwog_file PWROWG_NAMESPACE::pwog_file::read(
 }
 
 
+/*
+ * PWROWG_NAMESPACE::pwog_file::sort
+ */
+std::size_t PWROWG_NAMESPACE::pwog_file::sort(_In_z_ const wchar_t *path,
+        _In_ const pwog_file& file,
+        _In_ const bool add_timestamp) {
+    if (path == nullptr) {
+        throw std::invalid_argument("A valid output path must be provided.");
+    }
+
+    const auto p = convert_string<char>(path);
+    return sort(p.c_str(), file, add_timestamp);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::pwog_file::sort
+ */
+std::size_t PWROWG_NAMESPACE::pwog_file::sort(_In_z_ const char *path,
+        _In_ const pwog_file& file, _In_ const bool add_timestamp) {
+    if (path == nullptr) {
+        throw std::invalid_argument("A valid output path must be provided.");
+    }
+    if (file._state != state::read) {
+        throw std::invalid_argument("The input file must be in read mode.");
+    }
+
+    // Copies all meta data from 'file' to 'output'.
+    const auto copy_meta_data = [&file](pwog_file& output) {
+        auto md = file._meta_data.get<std::map<std::string, std::string>>();
+        if (md != nullptr) {
+            for (auto& m : *md) {
+                output << make_pwog_meta_data(m);
+            }
+        }
+    };
+
+    // Copies all sensor descriptions from 'file' to 'output'.
+    const auto copy_sensors = [&file](pwog_file& output) {
+        auto sensors = file._sensors.get<std::vector<sensor_description>>();
+        if (sensors != nullptr) {
+            for (auto& s : *sensors) {
+                output << s;
+            }
+        }
+    };
+
+    // Force file pointer to the first sample.
+    file.read(0, nullptr, 0);
+
+    // Try loading everything into memory and sorting it there. If that fails,
+    // we will fall back to performing an out-of-core merge sort.
+    try {
+        std::vector<sample> samples(file.samples());
+        detail::read_bytes(file._handle,
+            samples.data(),
+            samples.size() * sizeof(sample));
+#if (defined(DEBUG) || defined(_DEBUG))
+        {
+            std::uint8_t b;
+            assert(detail::try_read_bytes(file._handle, &b, sizeof(b)) == 0);
+        }
+#endif /* (defined(DEBUG) || defined(_DEBUG)) */
+
+        std::sort(samples.begin(), samples.end(),
+            [](const sample& a, const sample& b) {
+                return (a.timestamp < b.timestamp);
+            });
+
+        auto output = create(path, true);
+        copy_meta_data(output);
+
+        if (add_timestamp) {
+            output << make_pwog_meta_data("PwogSortFileTime",
+                std::to_string(timestamp::now().value()));
+        }
+
+        copy_sensors(output);
+        output.write(samples.data(), samples.size());
+
+        return samples.size();
+
+    } catch (std::bad_alloc) {
+        // TODO
+        throw;
+
+        auto output = create(path, true);
+        copy_meta_data(output);
+        copy_sensors(output);
+
+
+    }
+}
+
+
 #if defined(POWER_OVERWHELMING_WITH_HDF5)
 /*
  * PWROWG_NAMESPACE::pwog_file::to_hdf5
@@ -130,6 +228,9 @@ std::size_t PWROWG_NAMESPACE::pwog_file::to_hdf5(
     if (file._state != state::read) {
         throw std::invalid_argument("The input file must be in read mode.");
     }
+
+    // Force file pointer to the first sample.
+    file.read(0, nullptr, 0);
 
     H5::H5File h5(config.path(),
         config.overwrite() ? H5F_ACC_TRUNC : H5F_ACC_EXCL);
@@ -157,7 +258,7 @@ std::size_t PWROWG_NAMESPACE::pwog_file::to_hdf5(
             auto key = m.first.c_str();
             auto value = m.second.c_str();
             H5::DataSpace space(H5S_SCALAR);
-            H5::StrType type(H5::PredType::C_S1, m.second.length() + 1);
+            H5::StrType type(H5::PredType::C_S1, m.second.length());
             auto attr = h5.createAttribute(key, type, space);
             attr.write(type, value);
         }
@@ -489,16 +590,13 @@ std::size_t PWROWG_NAMESPACE::pwog_file::read(
         return 0;
     }
 
-    std::size_t retval = 0;
-    for (; retval < cnt; ++retval) {
-        auto& sample = samples[retval];
+    auto retval = detail::try_read_bytes(this->_handle, samples,
+        cnt * sizeof(sample));
+    assert(retval % sizeof(sample) == 0);
+    retval /= sizeof(sample);
 
-        if (detail::try_read_bytes(this->_handle, &sample, sizeof(sample))
-                < sizeof(sample)) {
-            return retval;
-        }
-
-        this->swap(sample);
+    for (std::size_t i = 0; i < retval; ++i) {
+        this->swap(samples[i]);
     }
 
     return retval;
@@ -522,6 +620,28 @@ std::size_t PWROWG_NAMESPACE::pwog_file::read(
         detail::native_seek_origin::begin);
 
     return this->read(samples, cnt);
+}
+
+
+/*
+ * PWROWG_NAMESPACE::pwog_file::samples
+ */
+std::size_t PWROWG_NAMESPACE::pwog_file::samples(void) const {
+    switch (this->_state) {
+        case state::read:
+            assert(this->_data > 0);
+            assert(detail::file_size(this->_handle) >= this->_data);
+            return (detail::file_size(this->_handle) - this->_data)
+                / sizeof(sample);
+
+        case state::samples:
+            assert(this->_data > 0);
+            return (detail::tell(this->_handle) - this->_data)
+                / sizeof(sample);
+
+        default:
+            return 0;
+    }
 }
 
 

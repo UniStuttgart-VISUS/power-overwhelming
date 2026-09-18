@@ -122,8 +122,8 @@ private:
 /// and value. Please be sure that both strings remain valid for the lifetime
 /// of the returned instance.
 /// </summary>
-/// <typeparam name="TKey"></typeparam>
-/// <typeparam name="TValue"></typeparam>
+/// <typeparam name="TKey">The string type of the key.</typeparam>
+/// <typeparam name="TValue">The string type of the value.</typeparam>
 /// <param name="key"></param>
 /// <param name="value"></param>
 /// <returns></returns>
@@ -131,6 +131,24 @@ template<class TKey, class TValue>
 pwog_meta_data<TKey> make_pwog_meta_data(_In_z_ const TKey *key,
         _In_ TValue&& value) {
     return pwog_meta_data<TKey>(key, std::forward<TValue>(value));
+}
+
+
+/// <summary>
+/// Creates a new instance of <see cref="pwog_meta_data" /> with the given key
+/// and value. Please be sure that both strings remain valid for the lifetime
+/// of the returned instance.
+/// </summary>
+/// <typeparam name="TKey">The character type of the key.</typeparam>
+/// <typeparam name="TValue">The string type of the value.</typeparam>
+/// <param name="kv">A pair containing the key and value.</param>
+/// <exception cref="std::invalid_argument">If <paramref name="key" /> an
+/// empty string.</exception>
+template<class TKey, class TTraits, class TAlloc, class TValue>
+pwog_meta_data<std::decay_t<TKey>> make_pwog_meta_data(_In_ const std::pair<
+        const std::basic_string<TKey, TTraits, TAlloc>, TValue>& key_value) {
+    return pwog_meta_data<std::decay_t<TKey>>(key_value.first.c_str(),
+        key_value.second);
 }
 
 PWROWG_NAMESPACE_END

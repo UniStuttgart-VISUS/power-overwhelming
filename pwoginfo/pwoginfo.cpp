@@ -107,6 +107,9 @@ int main(const int argc, const char **argv) {
                 s.reading_unit()) << std::endl;
         }
 
+        std::cout << std::endl << "Expected samples: " << file.samples()
+            << std::endl;
+
         if (statistics) {
             auto begin = (std::numeric_limits<timestamp::value_type>::max)();
             auto end = (std::numeric_limits<timestamp::value_type>::min)();

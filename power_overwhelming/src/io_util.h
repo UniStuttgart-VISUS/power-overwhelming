@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <fstream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -83,6 +84,22 @@ typedef win32_seek_origin native_seek_origin;
 typedef posix_seek_origin native_seek_origin;
 #endif /* defined(_WIN32) */
 
+/// <summary>
+/// Answer the the of the file designated by the given descriptor.
+/// </summary>
+/// <param name="fd">A file descriptor.</param>
+/// <returns>The size of the file, in bytes.</returns>
+PWROWG_TEST_API std::size_t file_size(_In_ const int fd);
+
+#if defined(_WIN32)
+/// <summary>
+/// Answer the the of the file designated by the given handle.
+/// </summary>
+/// <param name="handle">A file handle.</param>
+/// <returns>The size of the file, in bytes.</returns>
+PWROWG_TEST_API std::size_t file_size(_In_ const HANDLE handle);
+#endif /* defined(_WIN32) */
+
 #if defined(_WIN32)
 /// <summary>
 /// Opens a native Win32 file handle.
@@ -133,6 +150,38 @@ PWROWG_TEST_API HANDLE open(_In_z_ const char *path,
     _In_ const DWORD flags = FILE_ATTRIBUTE_NORMAL);
 #endif /* defined(_WIN32) */
 
+#if defined(_WIN32)
+/// <summary>
+/// Opens a native Win32 file handle and wraps it in a unique pointer with a
+/// custom deleter.
+/// </summary>
+/// <typeparam name="TChar">The character type of the path string.</typeparam>
+/// <param name="path">The name of the file or device to be opened.</param>
+/// <param name="desired_access">The requested access to the file or device.
+/// Typically, this is one of <c>GENERIC_READ</c> or <c>GENERIC_WRITE</c>.
+/// </param>
+/// <param name="share_mode">The requested sharing mode.</param>
+/// <param name="create_disposition">An action to take on a device or file
+/// which exists or does not exist.</param>
+/// <param name="flags">The file or device attribute flags.</param>
+/// <returns>A handle for the opened file or device.</returns>
+/// <exception cref="std::system_error">If opening the file or device
+/// failed.</exception>
+template<class TChar>
+std::unique_ptr<std::remove_pointer_t<HANDLE>, decltype(&::CloseHandle)>
+open_unique(_In_z_ const TChar *path,
+        _In_ const DWORD desired_access,
+        _In_ const DWORD share_mode,
+        _In_ const DWORD create_disposition,
+        _In_ const DWORD flags = FILE_ATTRIBUTE_NORMAL) {
+    typedef std::unique_ptr<std::remove_pointer_t<HANDLE>,
+        decltype(&::CloseHandle)> return_type;
+    return return_type(
+        open(path, desired_access, share_mode, create_disposition, flags),
+        &::CloseHandle);
+}
+#endif /* defined(_WIN32) */
+
 /// <summary>
 /// Opens a file using POSIX API.
 /// </summary>
@@ -154,6 +203,24 @@ PWROWG_TEST_API int open(_In_z_ const wchar_t *path,
 /// <exception cref="std::system_error"></exception>
 PWROWG_TEST_API int open(_In_z_ const char *path,
     _In_ const int flags, _In_ const int mode = 0);
+
+/// <summary>
+/// Opens a file using POSIX API.
+/// </summary>
+/// <typeparam name="TChar">The character type of the path string.</typeparam>
+/// <param name="path">The name of the file or device to be opened.</param>
+/// <param name="flags"></param>
+/// <param name="mode"></param>
+/// <returns>A handle for the opened file or device.</returns>
+/// <exception cref="std::system_error">If opening the file or device
+/// failed.</exception>
+template<class TChar> std::unique_ptr<int, decltype(&::close)> open_unique(
+        _In_z_ const TChar *path,
+        _In_ const int flags,
+        _In_ const int mode = 0) {
+    typedef std::unique_ptr<int, decltype(&::close)> return_type;
+    return return_type(open(path, flags, mode), &::close);
+}
 
 /// <summary>
 /// Reads all bytes from the file designated by the given descriptor.
@@ -319,7 +386,6 @@ template<class THandle, class TElement> inline std::size_t try_read(
 /// <exception cref="std::system_error">If the read failed.</exception>
 POWER_OVERWHELMING_API std::size_t try_read_bytes(_In_ const int fd,
     _Out_writes_bytes_(cnt) void *dst, _In_ const std::size_t cnt);
-
 
 #if defined(_WIN32)
 /// <summary>

@@ -12,6 +12,7 @@
 #include <iterator>
 #include <memory>
 #include <cinttypes>
+#include <string>
 
 #if defined(_WIN32)
 #include <Windows.h>
@@ -68,6 +69,24 @@ public:
         _In_ const bool force = false);
 
     /// <summary>
+    /// Opens the specified file for writing.
+    /// </summary>
+    /// <typeparam name="TChar"></typeparam>
+    /// <typeparam name="TTraits"></typeparam>
+    /// <typeparam name="TAlloc"></typeparam>
+    /// <param name="path">The path to the file to be written.</param>
+    /// <param name="force">If <see langword="true"/>, an existing file will be
+    /// overwritten, otherwise, the operation will fail if the file already
+    /// exists.</param>
+    /// <returns>An object representing the opened file.</returns>
+    template<class TChar, class TTraits, class TAlloc>
+    static pwog_file create(
+            _In_ const std::basic_string<TChar, TTraits, TAlloc>& path,
+            _In_ const bool force = false) {
+        return pwog_file::create(path.c_str(), force);
+    }
+
+    /// <summary>
     /// Opens the specified file for reading.
     /// </summary>
     /// <param name="path">The path to the file to be read.</param>
@@ -82,6 +101,73 @@ public:
     /// <returns>An object representing the file in case it exists and is a
     /// valid PWOG file.</returns>
     static pwog_file read(_In_z_ const char *path);
+
+    /// <summary>
+    /// Opens the specified file for reading.
+    /// </summary>
+    /// <typeparam name="TChar"></typeparam>
+    /// <typeparam name="TTraits"></typeparam>
+    /// <typeparam name="TAlloc"></typeparam>
+    /// <param name="path">The path to the file to be read.</param>
+    /// <returns>An object representing the file in case it exists and is a
+    /// valid PWOG file.</returns>
+    template<class TChar, class TTraits, class TAlloc> static pwog_file read(
+            _In_ const std::basic_string<TChar, TTraits, TAlloc>& path) {
+        return pwog_file::read(path.c_str());
+    }
+
+    /// <summary>
+    /// Create a sorted (according to time stamps) copy of the given
+    /// <paramref name="file" />.
+    /// </summary>
+    /// <param name="path">The location of the sorted copy.</param>
+    /// <param name="file">The PWOG file to be sorted. This must have been
+    /// opened for reading.</param>
+    /// <param name="add_timestamp">If <see langword="true" />, a meta data
+    /// entry with the sorting timestamp will be added to the output file.
+    /// </param>
+    /// <returns>The total number of samples that have been written into the
+    /// sorted copy.</returns>
+    static std::size_t sort(_In_z_ const wchar_t *path,
+        _In_ const pwog_file& file, _In_ const bool add_timestamp = false);
+
+    /// <summary>
+    /// Create a sorted (according to time stamps) copy of the given
+    /// <paramref name="file" />.
+    /// </summary>
+    /// <param name="path">The location of the sorted copy.</param>
+    /// <param name="file">The PWOG file to be sorted. This must have been
+    /// opened for reading.</param>
+    /// <param name="add_timestamp">If <see langword="true" />, a meta data
+    /// entry with the sorting timestamp will be added to the output file.
+    /// </param>
+    /// <returns>The total number of samples that have been written into the
+    /// sorted copy.</returns>
+    static std::size_t sort(_In_z_ const char *path,
+        _In_ const pwog_file& file, _In_ const bool add_timestamp = false);
+
+    /// <summary>
+    /// Create a sorted (according to time stamps) copy of the given
+    /// <paramref name="file" />.
+    /// </summary>
+    /// <typeparam name="TChar"></typeparam>
+    /// <typeparam name="TTraits"></typeparam>
+    /// <typeparam name="TAlloc"></typeparam>
+    /// <param name="path">The location of the sorted copy.</param>
+    /// <param name="file">The PWOG file to be sorted. This must have been
+    /// opened for reading.</param>
+    /// <param name="add_timestamp">If <see langword="true" />, a meta data
+    /// entry with the sorting timestamp will be added to the output file.
+    /// </param>
+    /// <returns>The total number of samples that have been written into the
+    /// sorted copy.</returns>
+    template <class TChar, class TTraits, class TAlloc>
+    static std::size_t sort(
+            _In_ const std::basic_string<TChar, TTraits, TAlloc>& path,
+            _In_ const pwog_file& file,
+            _In_ const bool add_timestamp = false) {
+        return pwog_file::sort(path.c_str(), file, add_timestamp);
+    }
 
 #if defined(POWER_OVERWHELMING_WITH_HDF5)
     /// <summary>
@@ -198,6 +284,14 @@ public:
         _In_ const std::size_t cnt) const;
 
     /// <summary>
+    /// Answer the number of samples in the file. In read mode, this is computed
+    /// from the size of the file. In write more, this is the current distance
+    /// of the file from the beginning of the sample data.
+    /// </summary>
+    /// <returns>The number of samples in the file.</returns>
+    std::size_t samples(void) const;
+
+    /// <summary>
     /// Answer all sensors the file, provided the file is in read mode.
     /// </summary>
     /// <param name="sensors">A buffer to receive a copy of the sensor
@@ -210,6 +304,15 @@ public:
     /// </returns>
     std::size_t sensors(_Out_writes_opt_(cnt) sensor_description *sensors,
         _In_ std::size_t cnt) const;
+
+    /// <summary>
+    /// Answer the number of sensors in the file, provided the file is in read
+    /// mode.
+    /// </summary>
+    /// <returns>The number of sensors in the file.</returns>
+    inline std::size_t sensors(void) const {
+        return this->sensors(nullptr, 0);
+    }
 
     /// <summary>
     /// Writes the specified meta data to the file. The file must be in the

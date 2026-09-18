@@ -13,6 +13,9 @@
 
 #if defined(_WIN32)
 #include <Windows.h>
+#else /* defined(_WIN32) */
+#include <fcntl.h>
+#include <sys/stat.h>
 #endif /* defined(_WIN32) */
 
 #include "visus/pwrowg/convert_string.h"
@@ -27,6 +30,35 @@
 #define THROW_LAST_ERROR() throw std::system_error(errno,\
     std::system_category())
 #define THROW_POSIX_ERROR() THROW_LAST_ERROR()
+#endif /* defined(_WIN32) */
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::file_size
+ */
+std::size_t PWROWG_DETAIL_NAMESPACE::file_size(_In_ const int fd) {
+    struct stat stat;
+    if (::fstat(fd, &stat) == -1) {
+        THROW_LAST_ERROR();
+    }
+
+    return static_cast<std::size_t>(stat.st_size);
+}
+
+
+#if defined(_WIN32)
+/*
+ * PWROWG_DETAIL_NAMESPACE::file_size
+ */
+std::size_t PWROWG_DETAIL_NAMESPACE::file_size(_In_ const HANDLE handle) {
+    LARGE_INTEGER retval;
+
+    if (!::GetFileSizeEx(handle, &retval)) {
+        THROW_LAST_ERROR();
+    }
+
+    return static_cast<std::size_t>(retval.QuadPart);
+}
 #endif /* defined(_WIN32) */
 
 

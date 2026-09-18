@@ -97,7 +97,10 @@ int main(const int argc, const char **argv) {
 
         // Open the file and convert it.
         auto file = pwog_file::read(input);
-        pwog_file::to_hdf5(file, config);
+        const auto written = pwog_file::to_hdf5(file, config);
+        assert(written == file.samples());
+        std::cout << written << " samples copied to " << output << std::endl;
+
         return 0;
     } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;
