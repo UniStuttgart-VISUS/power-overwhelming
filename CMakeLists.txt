@@ -16,7 +16,7 @@ set(CMAKE_CXX_STANDARD 17)
 # User-configurable options.
 option(PWROWG_BuildDemo "Build demo programme" OFF)
 cmake_dependent_option(PWROWG_BuildDriver "Build RAPL MSR driver" OFF WIN32 OFF)
-option(PWROWG_BuildDumpReadings "Build dump_readings utility" OFF)
+option(PWROWG_BuildDumpReadings "Build dump_readings utility" ON)
 option(PWROWG_BuildDumpSensors "Build dump_sensors utility" ON)
 cmake_dependent_option(PWROWG_BuildLptTest "Build parallel port test tool" OFF PWROWG_WithVisa OFF)
 option(PWROWG_BuildPwogTools "Build tools for the PWOG file format" OFF)
