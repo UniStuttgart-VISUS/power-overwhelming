@@ -640,8 +640,8 @@ void PWROWG_DETAIL_NAMESPACE::igcl_sensor::sample(
             this->_index + i,
             timestamp,
             telemetry);
-        if (this->_samples[samples].source == i) {
-            // If we got an invalid source, do not count the sample.
+        if (this->_samples[samples].source == this->_index + i) {
+            // Only count the sample if it is valid.
             ++samples;
         }
     }
