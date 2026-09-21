@@ -29,11 +29,10 @@ std::string PWROWG_DETAIL_NAMESPACE::nvapi_error_category::message(
         int status) const {
     NvAPI_ShortString msg;
 
-    try {
-        throw_if_nvapi_failed(nvapi_library::instance()
-            ._nvapi_get_error_message(msg, static_cast<NvAPI_Status>(status)));
+    if (nvapi_library::instance()._nvapi_get_error_message(msg,
+            static_cast<NvAPI_Status>(status)) == NVAPI_OK) {
         return msg;
-    } catch (...) {
+    } else {
         return std::to_string(status);
     }
 }
