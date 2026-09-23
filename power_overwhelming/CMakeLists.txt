@@ -153,7 +153,7 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE adl nlohmann_json::nlohmann_json nvml tinkerforge usbpdtesterdriver rapidcsv)
 
 if (WIN32)
-    target_link_libraries(${PROJECT_NAME} PUBLIC Cfgmgr32 Ws2_32 ntdll)
+    target_link_libraries(${PROJECT_NAME} PUBLIC Cfgmgr32 Ws2_32 ntdll Winmm)
 else ()
     find_package(Threads REQUIRED)
     target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS} Threads::Threads uuid)

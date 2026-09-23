@@ -6,8 +6,14 @@
 
 #include "visus/pwrowg/sensor_array.h"
 
+#include <algorithm>
+#include <chrono>
 #include <memory>
 #include <stdexcept>
+
+#if defined(_WIN32)
+#include <Windows.h>
+#endif /* defined(_WIN32) */
 
 #include "visus/pwrowg/thread_name.h"
 #include "visus/pwrowg/trace.h"
@@ -15,6 +21,15 @@
 #include "sensor_array_configuration_impl.h"
 #include "sensor_array_impl.h"
 #include "sensor_registry.h"
+
+
+/// <summary>
+/// The default scheduling interval we expect from a Windows machine. If the
+/// user-provided sampling interval is less than this, we try to increase the
+/// scheduling granularity for our process using the multimedia API.
+/// </summary>
+static constexpr std::chrono::duration<std::uint32_t, std::milli>
+    win32_scheduling_interval(15);
 
 
 /*
@@ -200,6 +215,14 @@ void PWROWG_NAMESPACE::sensor_array::start(
 void PWROWG_NAMESPACE::sensor_array::sensor_array::stop(void) {
     volatile auto impl = this->check_not_disposed();
 
+#if defined(_WIN32)
+    if (impl->resolution > 0) {
+        PWROWG_TRACE(_T("Relinquish elevated scheduler resolution."));
+        ::timeEndPeriod(impl->resolution);
+        impl->resolution = 0;
+    }
+#endif /* defined(_WIN32) */
+
     impl->state.begin_stop();
 
     // Stop the asynchronous sensors.
@@ -349,6 +372,35 @@ void PWROWG_NAMESPACE::sensor_array::start(
                 sum = decltype(sum)::zero();
             }
         }
+
+#if defined(_WIN32)
+        // Tell Windows that we are important. Normally, the scheduling
+        // granularity is around 15 ms, so if we want to sample more frequently,
+        // we need to make sure that we can be rescheduled earlier.
+        if (!impl->sampler_threads.empty() && (impl->configuration->interval
+                < win32_scheduling_interval)) {
+            const auto interval = std::chrono::duration_cast<
+                std::chrono::duration<std::uint32_t, std::milli>>(
+                    impl->configuration->interval);
+
+            TIMECAPS tc;
+            if (::timeGetDevCaps(&tc, sizeof(tc))
+                    != TIMERR_NOERROR) {
+                throw std::runtime_error("The sensor array cannot determine "
+                    "the best possible scheduler resolution.");
+            }
+
+            impl->resolution = (std::max)(interval.count(), tc.wPeriodMin);
+            PWROWG_TRACE(_T("Setting scheduler resolution to %u ms. Ideally, ")
+                _T("we wanted to have %u ms."), impl->resolution,
+                interval.count());
+
+            if (::timeBeginPeriod(impl->resolution) == TIMERR_NOERROR) {
+                throw std::runtime_error("The sensor array cannot decrease "
+                    "the scheduler resolution.");
+            }
+        }
+#endif /* defined(_WIN32) */
 
         if (first < impl->samplers.size()) {
             impl->sampler_threads.emplace_back(sensor_array::sample,

@@ -123,6 +123,15 @@ struct sensor_array_impl final {
     std::vector<sensor_description> descriptions;
 
     /// <summary>
+    /// On Windows, if not zero, the timer resolution that was requested by the
+    /// sensor array to decrease the scheduling resolution for the sampler. This
+    /// information is required because we need to pass the same number of
+    /// milliseconds to <see cref="timeEndPeriod" /> that we passed to
+    /// <see cref="timeBeginPeriod" /> when starting the sensors.
+    /// </summary>
+    std::uint32_t resolution;
+
+    /// <summary>
     /// The synchronous samplers invoked by the <see cref="sampler_threads" />.
     /// </summary>
     std::vector<sampler_func> samplers;
