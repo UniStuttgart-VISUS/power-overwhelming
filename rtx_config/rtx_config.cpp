@@ -125,7 +125,35 @@ int _tmain(const int argc, const TCHAR **argv) {
                 instrums.size(), p.c_str());
 
         } else if (zero_adjust) {
-            ::zero_adjust(path);
+            const bool apply = (::find_switch(argv, end, "--apply") != end);
+
+            std::chrono::duration<float> degauss(1.5f);
+            {
+                auto it = ::find_argument(argv, end, "--degauss-time");
+                if ((it != end)) {
+                    degauss = std::chrono::duration<float>(std::stof(*it));
+                }
+            }
+
+            const bool no_wait = (::find_switch(argv, end, "--no-wait") != end);
+
+            std::chrono::duration<float> range(5.0f);
+            {
+                auto it = ::find_argument(argv, end, "--range");
+                if ((it != end)) {
+                    range = std::chrono::duration<float>(std::stof(*it));
+                }
+            }
+
+            std::size_t retries = 0;
+            {
+                auto it = ::find_argument(argv, end, "--retries");
+                if ((it != end)) {
+                    retries = std::stoul(*it);
+                }
+            }
+
+            ::zero_adjust(path, range, degauss, retries, no_wait, apply);
         }
 
         return 0;

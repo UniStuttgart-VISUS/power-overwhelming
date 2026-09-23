@@ -678,18 +678,19 @@ PWROWG_NAMESPACE::rtx_instrument::channel(
         retval.state(!detail::starts_with(v, "0"));
     }
 
-    // ZADJ only works on RTA devices, not on RTB, so we need to guard
-    // against this.
-    try {
-        impl.format("PROB%d:SET:ADV:ZADJ?\n", channel);
-        blob value;
-        auto v = impl.read_all(value).as<char>();
-        assert(v != nullptr);
-        retval.zero_adjust_offset(detail::parse_float(v));
-    } catch (...) {
-        retval.zero_adjust(false);
-        retval.zero_adjust_offset(0.0f);
-    }
+    // ZADJ and ZOFF are the same if the former is supported.
+    //// ZADJ only works on RTA devices, not on RTB, so we need to guard
+    //// against this.
+    //try {
+    //    impl.format("PROB%d:SET:ADV:ZADJ?\n", channel);
+    //    blob value;
+    //    auto v = impl.read_all(value).as<char>();
+    //    assert(v != nullptr);
+    //    retval.zero_adjust_offset(detail::parse_float(v));
+    //} catch (...) {
+    //    retval.zero_adjust(false);
+    //    retval.zero_adjust_offset(0.0f);
+    //}
 
     {
         impl.format("CHAN%d:ZOFF?\n", channel);
@@ -717,15 +718,15 @@ PWROWG_NAMESPACE::rtx_instrument::channel(
         // Note: For some reason unbeknownst to us, using ATT does not work on
         // the RTA family if the unit is Amperes and GAIN does not work for
         // Volts, so we use GAIN for "A" and ATT for everyhing else.
-        impl.format("PROB%d:SET:GAIN:UNIT %s\n", channel.channel(),
-            channel.attenuation().unit());
-        impl.format("PROB%d:SET:ATT:UNIT %s\n", channel.channel(),
-            channel.attenuation().unit());
         PWROWG_ASSERT_NO_VISA_ERROR(*this);
         if (detail::equals(channel.attenuation().unit(), "A", true)) {
+            impl.format("PROB%d:SET:GAIN:UNIT %s\n", channel.channel(),
+                channel.attenuation().unit());
             impl.format("PROB%d:SET:GAIN:MAN %f\n", channel.channel(),
                 1.0f / channel.attenuation().value());
         } else {
+            impl.format("PROB%d:SET:ATT:UNIT %s\n", channel.channel(),
+                channel.attenuation().unit());
             impl.format("PROB%d:SET:ATT:MAN %f\n", channel.channel(),
                 channel.attenuation().value());
         }
@@ -824,13 +825,14 @@ PWROWG_NAMESPACE::rtx_instrument::channel(
 
     // Note: CHAN:ZOFF must be before PROB:SET:ADV:ZADJ, because setting the
     // channel offset will reset the zero-adjust on the RTA family.
-    impl.format("CHAN%d:ZOFF %f%s\n", channel.channel(),
-        channel.zero_offset().value(), channel.zero_offset().unit());
-    PWROWG_ASSERT_NO_VISA_ERROR(*this);
-
+    // Update: ZOFF and ZADJ are basically the same if ZADJ is supported.
+    // Therefore, we use ZADJ if the flag is set and ZOFF otherwise.
     if (channel.zero_adjust()) {
-        impl.format("PROB%d:SET:ADV:ZADJ %f\n",
-            channel.channel(), channel.zero_adjust_offset());
+        impl.format("PROB%d:SET:ADV:ZADJ %f\n", channel.zero_offset().value());
+        PWROWG_ASSERT_NO_VISA_ERROR(*this);
+    } else {
+        impl.format("CHAN%d:ZOFF %f%s\n", channel.channel(),
+            channel.zero_offset().value(), channel.zero_offset().unit());
         PWROWG_ASSERT_NO_VISA_ERROR(*this);
     }
 

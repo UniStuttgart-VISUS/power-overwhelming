@@ -125,7 +125,6 @@ template<> struct json_serialiser<rtx_channel, false, false> final {
         _PWROWG_DESERIALISE_FIELD(skew);
         _PWROWG_DESERIALISE_FIELD(state);
         _PWROWG_DESERIALISE_FIELD(zero_adjust);
-        _PWROWG_DESERIALISE_FIELD(zero_adjust_offset);
         _PWROWG_DESERIALISE_FIELD(zero_offset);
 
         return value_type(channel)
@@ -140,7 +139,6 @@ template<> struct json_serialiser<rtx_channel, false, false> final {
             .skew(skew)
             .state(state)
             .zero_adjust(zero_adjust)
-            .zero_adjust_offset(zero_adjust_offset)
             .zero_offset(zero_offset);
     }
 
@@ -158,7 +156,6 @@ template<> struct json_serialiser<rtx_channel, false, false> final {
             _PWROWG_SERIALISE_FIELD(skew),
             _PWROWG_SERIALISE_FIELD(state),
             _PWROWG_SERIALISE_FIELD(zero_adjust),
-            _PWROWG_SERIALISE_FIELD(zero_adjust_offset),
             _PWROWG_SERIALISE_FIELD(zero_offset)
         });
     }

@@ -409,7 +409,8 @@ public:
     /// </summary>
     /// <remarks>
     /// Zero adjustment has no effect unless an Rohde &amp; Schwarz RT-ZCxxB
-    /// probe is connected to the channel.
+    /// probe is connected to the channel. Enabling zero adjustment will cause
+    /// the zero offset to be interpreted as a percentage within [-100, 100].
     /// </remarks>
     /// <param name="enabled"><c>true</c> for enabling the function,
     /// <c>false</c> for disabling it.</param>
@@ -425,36 +426,14 @@ public:
     /// </summary>
     /// <remarks>
     /// Zero adjustment has no effect unless an Rohde &amp; Schwarz RT-ZCxxB
-    /// probe is connected to the channel.
+    /// probe is connected to the channel. Setting the value will inplicitly
+    /// set the zero adjustment flag, too. Use <see cref="zero_offset" /> to
+    /// retrieve the value.
     /// </remarks>
     /// <param name="offset">The offset in percent, which will be clamped to
     /// [-100, 100].</param>
     /// <returns><c>*this</c>.</returns>
-    inline rtx_channel& zero_adjust(_In_ const float offset) noexcept {
-        this->zero_adjust(true);
-        this->zero_adjust_offset(offset);
-        return *this;
-    }
-
-    /// <summary>
-    /// Answer the zero adjustment level as positive or negative percentage.
-    /// </summary>
-    /// <returns>The zero adjustment level to be applied.</returns>
-    inline float zero_adjust_offset(void) const noexcept {
-        return this->_zero_adjust_offset;
-    }
-
-    /// <summary>
-    /// Set the zero adjustment offset.
-    /// </summary>
-    /// <remarks>
-    /// Zero adjustment has no effect unless an Rohde &amp; Schwarz RT-ZCxxB
-    /// probe is connected to the channel.
-    /// </remarks>
-    /// <param name="offset">The offset in percent, which will be clamped to
-    /// [-100, 100].</param>
-    /// <returns><c>*this</c>.</returns>
-    rtx_channel& zero_adjust_offset(_In_ const float offset) noexcept;
+    inline rtx_channel& zero_adjust(_In_ float offset) noexcept;
 
     /// <summary>
     /// Gets the zero offset.
@@ -479,6 +458,7 @@ public:
     /// <returns><c>*this</c>.</returns>
     inline rtx_channel& zero_offset(
             _In_ const rtx_quantity& zero_offset) noexcept {
+        this->_zero_adjust = false;
         this->_zero_offset = zero_offset;
         return *this;
     }
@@ -517,7 +497,6 @@ private:
     rtx_quantity _skew;
     bool _state;
     bool _zero_adjust;
-    float _zero_adjust_offset;
     rtx_quantity _zero_offset;
 };
 

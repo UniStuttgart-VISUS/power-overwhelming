@@ -24,8 +24,7 @@ PWROWG_NAMESPACE::rtx_channel::rtx_channel(_In_ const channel_type channel)
         _decimation_mode(rtx_decimation_mode::sample),
         _polarity(rtx_channel_polarity::normal),
         _state(false),
-        _zero_adjust(false),
-        _zero_adjust_offset(0.0f) { }
+        _zero_adjust(false) { }
 
 
 /*
@@ -41,8 +40,8 @@ PWROWG_NAMESPACE::rtx_channel::rtx_channel(
         _decimation_mode(channel_template._decimation_mode),
         _polarity(channel_template._polarity),
         _state(channel_template._state),
-        _zero_adjust(channel_template._zero_adjust),
-        _zero_adjust_offset(channel_template._zero_adjust_offset) { }
+        _zero_adjust(channel_template._zero_adjust) { }
+
 
 
 /*
@@ -186,19 +185,18 @@ std::size_t PWROWG_NAMESPACE::rtx_channel::name(
 
 
 /*
- * PWROWG_NAMESPACE::rtx_channel::zero_adjust_offset
+ * PWROWG_NAMESPACE::rtx_channel::zero_adjust
  */
 PWROWG_NAMESPACE::rtx_channel&
-PWROWG_NAMESPACE::rtx_channel::zero_adjust_offset(
-        _In_ const float offset) noexcept {
+PWROWG_NAMESPACE::rtx_channel::zero_adjust(_In_ float offset) noexcept {
     if (offset < -100.0f) {
-        this->_zero_adjust_offset = -100.0f;
+        offset = -100.0f;
     } else if (offset > 100.0f) {
-        this->_zero_adjust_offset = 100.0f;
-    } else {
-        this->_zero_adjust_offset = offset;
+        offset = 100.0f;
     }
 
+    this->zero_offset(offset);
+    this->zero_adjust(true);
     return *this;
 }
 
@@ -241,10 +239,6 @@ bool PWROWG_NAMESPACE::rtx_channel::operator ==(
     }
 
     if (this->_zero_adjust != rhs._zero_adjust) {
-        return false;
-    }
-
-    if (this->_zero_adjust_offset != rhs._zero_adjust_offset) {
         return false;
     }
 
