@@ -381,7 +381,7 @@ void PWROWG_NAMESPACE::sensor_array::start(
                 < win32_scheduling_interval)) {
             const auto interval = std::chrono::duration_cast<
                 std::chrono::duration<std::uint32_t, std::milli>>(
-                    impl->configuration->interval);
+                    impl->configuration->interval) / 2;
 
             TIMECAPS tc;
             if (::timeGetDevCaps(&tc, sizeof(tc))

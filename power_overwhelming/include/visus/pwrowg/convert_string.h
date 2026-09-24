@@ -8,6 +8,7 @@
 #define _PWROWG_CONVERT_STRING_H
 #pragma once
 
+#include <cassert>
 #include <string>
 #include <vector>
 
@@ -27,6 +28,12 @@ extern std::size_t POWER_OVERWHELMING_API convert_string(
     _In_ const std::size_t cnt_output,
     _In_reads_or_z_(cnt_input) const char *input,
     _In_ const std::size_t cnt_input);
+
+extern std::size_t POWER_OVERWHELMING_API convert_to_oem_string(
+    _Out_writes_opt_z_(cnt_output) char* output,
+    _In_ const std::size_t cnt_output,
+    _In_reads_or_z_(cnt_input) const wchar_t* input,
+    _In_ const int cnt_input);
 
 PWROWG_DETAIL_NAMESPACE_END
 
@@ -90,6 +97,19 @@ inline std::basic_string<TOutput> convert_string(
 template<class TChar> inline const std::basic_string<TChar>& convert_string(
         _In_ const std::basic_string<TChar>& str) {
     return str;
+}
+
+/// <summary>
+/// Converts the given wide string to the OEM code page of the Windows terminal.
+/// </summary>
+/// <param name="str">A non-<see langword="nullptr" /> string pointer.</param>
+/// <returns></returns>
+inline std::string convert_to_oem_string(_In_z_ const wchar_t* str) {
+    const auto cnt = detail::convert_to_oem_string(nullptr, 0, str, -1);
+    assert(cnt > 0);
+    std::string retval(cnt - 1, '\0');
+    detail::convert_to_oem_string(&retval[0], retval.size() + 1, str, -1);
+    return retval;
 }
 
 PWROWG_NAMESPACE_END

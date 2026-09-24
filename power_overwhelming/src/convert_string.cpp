@@ -1,5 +1,5 @@
 ﻿// <copyright file="convert_string.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -11,13 +11,17 @@
 #include <locale>
 #include <system_error>
 
+#if defined(_WIN32)
+#include <Windows.h>
+#endif /* defined(_WIN32) */
+
 #include <errno.h>
 
 
 /*
- * PWROWG_NAMESPACE::detail::convert_string
+ * PWROWG_DETAIL_NAMESPACE::convert_string
  */
-std::size_t PWROWG_NAMESPACE::detail::convert_string(
+std::size_t PWROWG_DETAIL_NAMESPACE::convert_string(
         _Out_writes_opt_z_(cnt_output) char *output,
         _In_ const std::size_t cnt_output,
         _In_reads_or_z_(cnt_input) const wchar_t *input,
@@ -53,9 +57,9 @@ std::size_t PWROWG_NAMESPACE::detail::convert_string(
 
 
 /*
- * PWROWG_NAMESPACE::detail::convert_string
+ * v::convert_string
  */
-std::size_t PWROWG_NAMESPACE::detail::convert_string(
+std::size_t PWROWG_DETAIL_NAMESPACE::convert_string(
         _Out_writes_opt_z_(cnt_output) wchar_t *output,
         _In_ const std::size_t cnt_output,
         _In_reads_or_z_(cnt_input) const char *input,
@@ -87,4 +91,42 @@ std::size_t PWROWG_NAMESPACE::detail::convert_string(
 #endif /* defined(_WIN32) */
 
     return retval;
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::convert_to_oem_string
+ */
+std::size_t PWROWG_DETAIL_NAMESPACE::convert_to_oem_string(
+        _Out_writes_opt_z_(cnt_output) char* output,
+        _In_ const std::size_t cnt_output,
+        _In_reads_or_z_(cnt_input) const wchar_t* input,
+        _In_ const int cnt_input) {
+#if defined(_WIN32)
+    std::size_t retval = 0;
+
+    _try {
+        retval = ::WideCharToMultiByte(CP_OEMCP, 0, input, cnt_input, NULL, 0,
+            NULL, NULL);
+    } _except(EXCEPTION_EXECUTE_HANDLER) {
+        throw std::system_error(ERROR_NOACCESS, std::system_category());
+    }
+
+    if (retval == 0) {
+        throw std::system_error(::GetLastError(), std::system_category());
+    }
+
+    if ((output != nullptr) && (cnt_output >= retval)) {
+        retval = ::WideCharToMultiByte(CP_OEMCP, 0, input, cnt_input, output,
+            static_cast<int>(cnt_output), NULL, NULL);
+    }
+
+    if (retval == 0) {
+        throw std::system_error(::GetLastError(), std::system_category());
+    }
+
+    return retval;
+#else /* defined(_WIN32) */
+    return convert_string(output, cnt_output, input, cnt_input);
+#endif /* defined(_WIN32) */
 }
