@@ -219,7 +219,7 @@ int _tmain(const int argc, const TCHAR **argv) {
             std::cin.get();
 #endif /* !defined(_WIN32) */
         }
-        
+
         sensors.start();
         std::this_thread::sleep_for(timespan);
         sensors.stop();

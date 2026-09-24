@@ -384,10 +384,8 @@ void PWROWG_NAMESPACE::sensor_array::start(
                     impl->configuration->interval) / 2;
 
             TIMECAPS tc;
-            if (::timeGetDevCaps(&tc, sizeof(tc))
-                    != TIMERR_NOERROR) {
-                throw std::runtime_error("The sensor array cannot determine "
-                    "the best possible scheduler resolution.");
+            if (::timeGetDevCaps(&tc, sizeof(tc)) != TIMERR_NOERROR) {
+                tc.wPeriodMin = 1;
             }
 
             impl->resolution = (std::max)(interval.count(), tc.wPeriodMin);
@@ -395,9 +393,10 @@ void PWROWG_NAMESPACE::sensor_array::start(
                 _T("we wanted to have %u ms."), impl->resolution,
                 interval.count());
 
-            if (::timeBeginPeriod(impl->resolution) == TIMERR_NOERROR) {
-                throw std::runtime_error("The sensor array cannot decrease "
-                    "the scheduler resolution.");
+            if (::timeBeginPeriod(impl->resolution) != TIMERR_NOERROR) {
+                PWROWG_TRACE(_T("The sensor array cannot decrease the "
+                    "scheduler resolution to %u ms."), impl->resolution);
+                impl->resolution = 0;
             }
         }
 #endif /* defined(_WIN32) */
