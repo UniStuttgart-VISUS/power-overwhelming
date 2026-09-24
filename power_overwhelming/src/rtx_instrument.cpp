@@ -828,7 +828,8 @@ PWROWG_NAMESPACE::rtx_instrument::channel(
     // Update: ZOFF and ZADJ are basically the same if ZADJ is supported.
     // Therefore, we use ZADJ if the flag is set and ZOFF otherwise.
     if (channel.zero_adjust()) {
-        impl.format("PROB%d:SET:ADV:ZADJ %f\n", channel.zero_offset().value());
+        impl.format("PROB%d:SET:ADV:ZADJ %f\n", channel.channel(),
+            channel.zero_offset().value());
         PWROWG_ASSERT_NO_VISA_ERROR(*this);
     } else {
         impl.format("CHAN%d:ZOFF %f%s\n", channel.channel(),

@@ -62,8 +62,9 @@ int _tmain(const int argc, const TCHAR **argv) {
     const auto end = argv + argc;
 
     std::wcout << L"rtx_config" << std::endl;
-    std::wcout << L"© 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart."
-        << std::endl << std::endl;
+    std::cout << convert_to_oem_string(L"© 2023 - 2026 "
+        L"Visualisierungsinstitut der Universität Stuttgart.") << std::endl
+        << std::endl;
 
     const std::vector<std::basic_string<TCHAR>> cmd_line(argv, argv + argc);
     auto path = static_cast<const TCHAR*>(nullptr);
@@ -100,7 +101,14 @@ int _tmain(const int argc, const TCHAR **argv) {
 #else /* defined(_WIN32) */
         std::cout << "Usage: rtx_config --save <output path>" << std::endl;
         std::cout << "Usage: rtx_config --restore <input path>" << std::endl;
-        std::cout << "Usage: rtx_config --zero_adjust <sensor configuration>"
+        std::cout << "Usage: rtx_config --zero_adjust <sensor configuration> "
+            << "[--apply] "
+            << "[--degauss-time <seconds>] "
+            << "[--horizontal <seconds>] "
+            << "[--no-wait] "
+            << "[--type <type>] "
+            << "[--vertical <seconds>] "
+            << "[--waveforms <count>] "
             << std::endl;
         return -2;
 #endif /* defined(_WIN32) */
@@ -135,25 +143,43 @@ int _tmain(const int argc, const TCHAR **argv) {
                 }
             }
 
-            const bool no_wait = (::find_switch(argv, end, "--no-wait") != end);
-
-            std::chrono::duration<float> range(5.0f);
+            std::chrono::duration<float> horizontal(5.0f);
             {
-                auto it = ::find_argument(argv, end, "--range");
+                auto it = ::find_argument(argv, end, "--horizonal");
                 if ((it != end)) {
-                    range = std::chrono::duration<float>(std::stof(*it));
+                    horizontal = std::chrono::duration<float>(std::stof(*it));
                 }
             }
 
-            std::size_t retries = 0;
+            const bool no_wait = (::find_switch(argv, end, "--no-wait") != end)
+                || (::find_switch(argv, end, "--imfeelinglucky") != end);
+
+            const TCHAR* type = nullptr;
             {
-                auto it = ::find_argument(argv, end, "--retries");
+                auto it = ::find_argument(argv, end, "--type");
                 if ((it != end)) {
-                    retries = std::stoul(*it);
+                    type = *it;
                 }
             }
 
-            ::zero_adjust(path, range, degauss, retries, no_wait, apply);
+            std::chrono::duration<float> vertical(1.5f);
+            {
+                auto it = ::find_argument(argv, end, "--vertical");
+                if ((it != end)) {
+                    vertical = std::chrono::duration<float>(std::stof(*it));
+                }
+            }
+
+            std::size_t waveforms = 8;
+            {
+                auto it = ::find_argument(argv, end, "--waveforms");
+                if ((it != end)) {
+                    waveforms = (std::max)(std::stoul(*it), 1ul);
+                }
+            }
+
+            ::zero_adjust(path, horizontal, vertical, degauss, waveforms, type,
+                no_wait, apply);
         }
 
         return 0;

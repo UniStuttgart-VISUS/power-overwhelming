@@ -8,13 +8,19 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cerrno>
 #include <charconv>
+#include <cstdio>
+#include <ctime>
 #include <limits>
+#include <list>
+#include <memory>
 #include <iomanip>
 #include <iostream>
 #include <map>
 #include <optional>
 #include <thread>
+#include <tuple>
 #include <vector>
 
 #if defined(_WIN32)
@@ -22,6 +28,48 @@
 #endif /* defined(_WIN32) */
 
 #include "visus/pwrowg/convert_string.h"
+#include "visus/pwrowg/rtx_configuration.h"
+#include "visus/pwrowg/string_functions.h"
+
+
+/// <summary>
+/// The valid (100%) range of the ZADJ parameter.s
+/// </summary>
+static constexpr auto zadj_range = 3.0f;
+
+static constexpr auto title_adjustment = "Adjustment";
+static constexpr auto title_channel = "Channel";
+static constexpr auto title_instrument = "Instrument";
+static constexpr auto title_latest = "Latest";
+static constexpr auto title_measurement = "Measurement";
+static constexpr auto title_offset = "Offset";
+static constexpr auto title_type = "Type";
+static constexpr auto title_value = "Value";
+static constexpr auto title_waveforms = "Waveforms";
+
+static constexpr auto precision = 6;
+static constexpr auto width_adjustment = precision + 3;
+static const auto width_channel = ::strlen(title_channel);
+static constexpr auto width_latest = precision + 3;
+static const auto width_measurement = ::strlen(title_measurement);
+static constexpr auto width_offset = precision + 3;
+static const auto width_type = ::strlen(title_type);
+static constexpr auto width_value = precision + 3;
+static const auto width_waveforms = ::strlen(title_waveforms);
+
+/// <summary>
+/// Groups the result of a measurement.
+/// </summary>
+struct measurement final {
+    std::size_t count;
+    float value;
+    float mean;
+
+    inline measurement(_In_ const float value = 0.0f,
+            _In_ const float mean = 0.0f,
+            _In_ const std::size_t count = 0) noexcept
+        : count(count), value(value), mean(mean) { }
+};
 
 
 /// <summary>
@@ -30,7 +78,8 @@
 struct sensor final {
     visus::pwrowg::rtx_channel channel;
     visus::pwrowg::rtx_instrument& instrument;
-    const std::string measurement;
+    std::string instrument_name;
+    std::string measurement;
     float value;
     bool zero_adjust;
 
@@ -39,9 +88,87 @@ struct sensor final {
             _In_ const std::size_t measurement)
         : channel(channel),
             instrument(instrument),
+            instrument_name(instrument.path()),
             measurement(std::string("MEAS") + std::to_string(measurement)),
             value(0.0f),
-            zero_adjust(false) { }
+            zero_adjust(false) {
+        auto name = this->instrument.name<char>();
+        if (!name.empty()) {
+            this->instrument_name += " (" + name + ")";
+        }
+    }
+
+    inline float percent(void) noexcept {
+        return - value / zadj_range * 100.0f;
+    }
+};
+
+
+/// <summary>
+/// Makes sure that the response in <paramref name="blob" /> is null-terminated.
+/// </summary>
+/// <param name="blob"></param>
+/// <returns></returns>
+static _Ret_maybenull_z_ const char* terminate_response(
+        _In_ visus::pwrowg::blob& blob) noexcept {
+    auto retval = blob.as<char>();
+    if (retval == nullptr) {
+        return retval;
+    }
+
+    visus::pwrowg::detail::trim_eol(retval);
+    return retval;
+}
+
+
+/// <summary>
+/// Gets the measurement for the given <paramref name="sensor" />, which might
+/// block.
+/// </summary>
+static std::optional<measurement> get_measurement(
+        _In_ const sensor& sensor) noexcept {
+    // R&S reports something like FLT_MAX, but a bit less, if the measurement is
+    // not available. This seems to be a reasonable threshold for us to detect
+    // this case.s
+    constexpr auto invalid_value = 1.e37f;
+
+    try {
+        measurement retval;
+
+        {
+            const auto query = sensor.measurement + ":RES?\n";
+            auto response = sensor.instrument.query(query.c_str());
+            const auto value = ::terminate_response(response);
+
+            retval.value = std::stof(value);
+            if (retval.value >= invalid_value) {
+                return std::optional<measurement>();
+            }
+        }
+
+        {
+            const auto query = sensor.measurement + ":RES:AVG?\n";
+            auto response = sensor.instrument.query(query.c_str());
+            const auto value = ::terminate_response(response);
+
+            retval.mean = std::stof(value);
+            if (retval.mean >= invalid_value) {
+                return std::optional<measurement>();
+            }
+        }
+
+        {
+            const auto query = sensor.measurement + ":RES:WFMC?\n";
+            auto response = sensor.instrument.query(query.c_str());
+            const auto value = ::terminate_response(response);
+
+            retval.count = std::stoul(value);
+        }
+
+        return retval;
+    } catch (...) {
+        return std::optional<measurement>();
+    }
 };
 
 
@@ -49,9 +176,11 @@ struct sensor final {
  * ::zero_adjust
  */
 void zero_adjust(_In_z_ const TCHAR* path,
-        _In_ const std::chrono::duration<float> range,
+        _In_ const std::chrono::duration<float> horizontal,
+        _In_ const visus::pwrowg::rtx_quantity& vertical,
         _In_ const std::chrono::duration<float> degauss,
-        _In_ const std::size_t retries,
+        _In_ const std::size_t waveforms,
+        _In_opt_z_ const TCHAR* type,
         _In_ const bool no_wait,
         _In_ const bool apply) {
     using namespace visus::pwrowg;
@@ -92,22 +221,16 @@ void zero_adjust(_In_z_ const TCHAR* path,
             std::this_thread::sleep_for(delay);
             config.base_configuration().apply(instrument);
 
-            // Set a single acquisition such that the instrument does not start
-            // automatically.
-            instrument.acquisition(rtx_acquisition()
-                .state(rtx_acquisition_state::single));
-
-            // Disable automatic roll during the setup.
+            // Set a trigger that we expect not to fire because we will do that
+            // manually later on.
             instrument.automatic_roll(false);
-
-            //// Set a trigger that we expect not to fire.
-            //instrument.trigger(rtx_trigger(
-            //    static_cast<rtx_trigger::input_type>(5),
-            //    rtx_trigger_type::edge));
+            instrument.trigger(rtx_trigger(
+                static_cast<rtx_trigger::input_type>(5),
+                rtx_trigger_type::edge));
 
             // Override the time range to the user-defined value for averaging
             // the probe readings.
-            instrument.time_range(range);
+            instrument.time_range(horizontal);
 
             std::string path(instrument.path());
             instruments[path] = std::make_tuple(
@@ -126,8 +249,8 @@ void zero_adjust(_In_z_ const TCHAR* path,
     // Setup measuring the current value of the current channels with zero
     // offset. Remember the measurement channel for each sensor and the path
     // to the instrument it is located on.
-    std::vector<sensor> sensors;
-    sensors.reserve(cnt_sensors);
+    std::list<sensor> sensors;
+    //sensors.reserve(cnt_sensors);
     for (std::size_t i = 0; i < cnt_sensors; ++i) {
         const auto& sensor = config.sensor(i);
 
@@ -150,6 +273,7 @@ void zero_adjust(_In_z_ const TCHAR* path,
         std::vector<wchar_t> channel_name(channel.name(nullptr, 0));
         channel.name(channel_name.data(), channel_name.size());
         channel.offset(rtx_quantity(0.0f, "A"));
+        channel.range(vertical);
         if (channel.zero_adjust()) {
             channel.zero_adjust(0.0f);
         } else {
@@ -181,7 +305,7 @@ void zero_adjust(_In_z_ const TCHAR* path,
             instrument.operation_complete();
             instrument.throw_on_system_error();
             std::cout << "PROB" << channel.channel() << " on instrument ";
-            std::wcout << instrument_path << " can be degaussed." << std::endl;
+            std::wcout << instrument_path << " was degaussed." << std::endl;
 
             sensors.back().zero_adjust = true;
         } catch (...) {
@@ -199,7 +323,13 @@ void zero_adjust(_In_z_ const TCHAR* path,
         }
 
         {
-            const auto cmd = sensors.back().measurement + ":MAIN RMS\n";
+            auto cmd = sensors.back().measurement + ":MAIN ";
+            if (type == nullptr) {
+                cmd += "MEAN\n";
+            } else {
+                cmd += convert_string<char>(type) + "\n";
+            }
+
             instrument.write(cmd.c_str());
         }
 
@@ -226,148 +356,215 @@ void zero_adjust(_In_z_ const TCHAR* path,
     // Put all instruments in free run mode.
     for (auto& i : instruments) {
         auto& instrument = std::get<0>(i.second);
-        instrument.acquisition(rtx_acquisition()
-            .enable_automatic_points()
-            .segmented(true)
-            .state(rtx_acquisition_state::run));
-        instrument.automatic_roll(true);
+
         instrument.operation_complete();
         instrument.throw_on_system_error();
+    } /* for (std::size_t i = 0; i < cnt_sensors; ++i) */
+
+    // Sort the sensors such that the ones on the same instrument are
+    // contiguous.
+    sensors.sort([](const auto& l, const auto& r) {
+        const auto d = ::strcmp(l.instrument.path(), r.instrument.path());
+        return (d < 0) || ((d == 0) && (l.channel.channel()
+            < r.channel.channel()));
+    });
+
+    // If we have all current sensors, we can determine the width of the
+    // column.
+    const auto width_instrument = std::max_element(sensors.begin(),
+        sensors.end(), [](const auto& l, const auto& r) {
+            return l.instrument_name.size() < r.instrument_name.size();
+        })->instrument_name.size();
+
+    // Start a rolling acquisition on all instruments.B
+    for (auto& i : instruments) {
+        auto& instrument = std::get<0>(i.second);
+        instrument.automatic_roll(true);
+        instrument.automatic_roll_time(horizontal / 12);
+        instrument.acquisition(rtx_acquisition()
+            .enable_automatic_points()
+            .segmented(false)
+            .state(rtx_acquisition_state::run));
     }
 
+    // Signal the user that we are ready to start measuring. This is for the
+    // crazy people who use --no-wait and dagauss the hardware during setup...
     std::wcout << L"All probes and instruments are ready." << std::endl
         << std::endl;
+    for (auto& i : instruments) {
+        std::get<0>(i.second).beep(3);
+    }
 
-    const auto get_measurement = []( const sensor& sensor) noexcept {
-        // Block until the measurement becomes available.
-        auto query = sensor.measurement + ":RES?\n";
-        auto response = sensor.instrument.query(query.c_str());
+    // Next, wait until we have the requested number of measurements.
+    std::cout << std::setw(width_instrument) << title_instrument << " "
+        << std::setw(width_channel) << title_channel << " "
+        << std::setw(width_measurement) << title_measurement << " "
+        << std::setw(width_latest) << title_latest << " "
+        << std::setw(width_latest) << title_waveforms << " "
+        << std::setw(width_offset) << title_offset << " "
+        << std::setw(width_adjustment) << title_adjustment << std::endl;
 
-        // Read the average from the statistics.
-        query = sensor.measurement + ":RES:AVG?\n";
-        response = sensor.instrument.query(query.c_str());
+    auto missing_waveforms = true;
+    while (missing_waveforms) {
+        missing_waveforms = false;
 
-
-        auto value = response.as<char>();
-        assert(value != nullptr);
-        for (std::size_t i = 0; i < response.size(); ++i) {
-            if ((value[i] == '\n') || (value[i] == '\r')) {
-                value[i] = 0;
-            }
-            // [sic]
-            if (value[i] == 0) {
-                break;
-            }
+        for (auto& i : instruments) {
+            std::get<0>(i.second).trigger_manually();
         }
 
-        try {
-            const auto number = std::stof(value);
-            if (number > 1.e37f) {
-                // R&S reports something like FLT_MAX, but less, if the
-                // measurement is not available.
-                return std::optional<float>();
-            }
+        std::this_thread::sleep_for(horizontal);
 
-            return std::optional<float>(number);
-        } catch (std::exception& ex) {
-            std::cout << "Parsing measurement \"" << value << "\" failed: "
-                << ex.what();
-            return std::optional<float>();
-        }
-    };
-
-
-    // Next, wait until we have a measurement.
-    constexpr auto title_adjustment = "Adjustment";
-    constexpr auto title_channel = "Channel";
-    constexpr auto title_instrument = "Instrument";
-    constexpr auto title_mean = "Mean";
-    constexpr auto title_measurement = "Measurement";
-    constexpr auto title_offset = "Offset";
-    constexpr auto precision = 6;
-    constexpr auto width_adjustment = precision + 3;
-    const auto width_channel = ::strlen(title_channel);
-    const auto width_instrument = ::strlen(sensors.front().instrument.path());
-    constexpr auto width_mean = precision + 3;
-    const auto width_measurement = ::strlen(title_measurement);
-    constexpr auto width_offset = precision + 3;
-    auto success = false;
-
-    for (std::size_t i = 0; !success && (i < retries + 1); ++i) {
-        success = true;
-
-        std::cout << std::setw(width_instrument) << title_instrument << " "
-            << std::setw(width_channel) << title_channel << " "
-            << std::setw(width_measurement) << title_measurement << " "
-            << std::setw(width_mean) << title_mean << " "
-            << std::setw(width_offset) << title_offset << " "
-            << std::setw(width_adjustment) << title_adjustment << std::endl;
-
-        // Get the measurement.
         for (auto& s : sensors) {
-            try {
-                const auto value = get_measurement(s);
-                if (value) {
-                    s.value = *value;
-                } else {
-                    success = false;
-                }
-            } catch (std::exception& ex) {
-                success = false;
-                std::cerr << ex.what() << std::endl;
-            }
-        } /* for (auto& s : sensors) */
+            const auto value = ::get_measurement(s);
+            if (value) {
+                s.value = value->mean;
 
-        if (!success) {
-            continue;
-        }
+                std::cout << std::setw(width_instrument)
+                    << s.instrument_name
+                    << " ";
+                std::cout << std::setw(width_channel)
+                    << s.channel.channel()
+                    << " ";
+                std::cout << std::setw(width_measurement)
+                    << s.measurement
+                    << " ";
+                std::cout << std::setw(width_latest)
+                    << value->value
+                    << " ";
+                std::cout << std::setw(width_waveforms)
+                    << value->count
+                    << " ";
 
-        // Apply the results to the instrument.
-        for (auto& s : sensors) {
-                        std::cout << std::setw(width_instrument)
-                << s.instrument.path()
-                << " ";
-            std::cout << std::setw(width_channel)
-                << s.channel.channel()
-                << " ";
-            std::cout << std::setw(width_measurement)
-                << s.measurement
-                << " ";
-
-            try {
-                std::cout << std::setw(width_mean)
-                    << std::fixed
-                    << std::setprecision(precision)
-                    << s.value << " ";
-
-                const auto offset = -s.value;
                 std::cout << std::setw(width_offset)
-                    << std::fixed
-                    << std::setprecision(precision)
-                    << offset << " ";
+                    << s.value
+                    << " ";
 
                 if (s.zero_adjust) {
-                    const auto adjustment = offset / -3.0f * 100.0f;
                     std::cout << std::setw(width_adjustment)
                         << std::fixed
                         << std::setprecision(precision)
-                        << adjustment
+                        << s.percent()
                         << std::endl;
-                    s.channel.zero_adjust(adjustment);
 
                 } else {
                     std::cout << std::setw(width_adjustment)
                         << "-"
                         << std::endl;
-                    s.channel.zero_offset(offset);
                 }
 
-                s.instrument.channel(s.channel);
-                s.instrument.operation_complete();
-            } catch (std::exception& ex) {
-                success = false;
-                std::cerr << ex.what() << std::endl;
+                if (value->count < waveforms) {
+                    missing_waveforms = true;
+                }
+            } else {
+                missing_waveforms = true;
+            } /* if (value) */
+        }/* for (auto& s : sensors) */
+    } /* while (missing_waveforms) */
+
+    // Apply the results to the instrument.
+    for (auto& s : sensors) {
+        if (s.zero_adjust) {
+            s.channel.zero_adjust(s.percent());
+        } else {
+            s.channel.zero_offset(s.value);
+        }
+
+        s.instrument.channel(s.channel);
+        s.instrument.operation_complete();
+        s.instrument.beep();
+        
+    } /* for (auto& s : sensors) */
+
+    // Apply or print the results.
+    std::cout << std::endl;
+    if (apply) {
+        constexpr auto time_length = 8 + 6;
+        auto backup = convert_string<char>(path) + ".";
+
+        time_t time;
+        std::time(&time);
+        auto tm = ::localtime(&time);
+
+        const auto offset = backup.size();
+        backup.resize(backup.size() + time_length);
+        if (::strftime(&backup[0] + offset, time_length + 1, "%Y%m%d%H%M%S",
+                tm) <= 0) {
+            throw std::runtime_error("Failed to format timestamp for backup "
+                "file.");
+        }
+        backup += ".json";
+
+        std::cout << "Creating backup " << backup << " of configuration "
+            "file ..." << std::endl;
+        if (::rename(path, backup.c_str()) < 0) {
+#if defined(_WIN32)
+            throw std::system_error(_doserrno, std::system_category());
+#else /* !defined(_WIN32) */
+            throw std::system_error(errno, std::system_category());
+#endif /* !defined(_WIN32) */
+        }
+
+        std::vector<rtx_sensor_definition> patched_sensors(
+            config.count_sensors());
+        std::copy(config.sensors(), config.sensors() + config.count_sensors(),
+            patched_sensors.begin());
+
+        for (auto& p : patched_sensors) {
+            rtx_channel channel(p.current_channel());
+
+            // Patch the copy of the channel.
+            for (auto& s : sensors) {
+                if (!visus::pwrowg::detail::equals(s.instrument.path(),
+                        p.path())) {
+                    continue;
+                }
+                if (s.channel.channel() != channel.channel()) {
+                    continue;
+                }
+
+                if (s.zero_adjust) {
+                    channel.zero_adjust(s.percent());
+                } else {
+                    channel.zero_offset(s.value);
+                }
             }
-        } /* for (auto& s : sensors) */
-    } /* for (std::size_t i = 0; !success && (i < retries + 1); ++i) */
+
+            // Replace the sensor definition with a patched one.
+            p = rtx_sensor_definition(p.path(),
+                p.voltage_channel(),
+                channel,
+                p.description(),
+                p.waveform_points());
+        }
+
+        std::wcout << "Saving patched configuration to "
+            << visus::pwrowg::convert_string<wchar_t>(path) << " ..."
+            << std::endl;
+        auto patched_config = config;
+        patched_config.sensors(patched_sensors.data(), patched_sensors.size());
+        patched_config.save(path);
+
+    } else {
+        std::cout << std::setw(width_instrument) << title_instrument << " "
+            << std::setw(width_channel) << title_channel << " "
+            << std::setw(width_type) << title_type << " "
+            << std::setw(width_value) << title_value << std::endl;
+
+        for (auto& s : sensors) {
+            std::cout << std::setw(width_instrument)
+                << s.instrument_name
+                << " ";
+            std::cout << std::setw(width_channel)
+                << s.channel.channel()
+                << " ";
+            std::cout << std::setw(width_type)
+                << (s.zero_adjust ? "ZADJ" : "ZOFF")
+                << " ";
+            std::cout << std::setw(width_value)
+                << std::fixed
+                << std::setprecision(precision)
+                << (s.zero_adjust ? s.percent() : s.value)
+                << std::endl;
+        }
+    }
 }
