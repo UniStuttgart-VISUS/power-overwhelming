@@ -24,13 +24,16 @@ PWROWG_DETAIL_NAMESPACE::json_serialiser<
 
     {
         auto it = json.find("id");
+        assert(it != json.end());
+        assert(it->is_string());
+        assert(!it->get<std::string>().empty());
         builder.with_id(json_deserialise<std::string>(*it));
     }
 
     {
         auto it = json.find("label");
         auto value = json_deserialise<std::wstring>(*it);
-        builder.with_id(value.c_str());
+        builder.with_label(value.c_str());
     }
 
     {

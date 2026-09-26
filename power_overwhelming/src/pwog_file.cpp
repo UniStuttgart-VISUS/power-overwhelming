@@ -696,6 +696,7 @@ PWROWG_NAMESPACE::pwog_file& PWROWG_NAMESPACE::pwog_file::write(
 
     for (std::size_t i = 0; i < cnt; ++i) {
         auto& sensor = sensors[i];
+        assert((sensor.id() != nullptr) && (*sensor.id() != 0));
         this->write(sensor.id());
         this->write(sensor.path());
         this->write(sensor.name());
@@ -1094,7 +1095,7 @@ void PWROWG_NAMESPACE::pwog_file::read_sensors(void) {
 
         this->_data += begin;
 
-        if (buffer[begin] == 0) {
+        if ((begin < buffer.size()) && (buffer[begin] == 0)) {
             // An empty sensor ID marks the end of the sensor description block.
             // Before returning, reset the file pointer to the first data entry.
             detail::seek(this->_handle,

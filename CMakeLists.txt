@@ -99,6 +99,7 @@ endif ()
 
 # PWOG file tools
 if (PWROWG_BuildPwogTools)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/csv2pwog)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/pwoginfo)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/pwogsort)
 

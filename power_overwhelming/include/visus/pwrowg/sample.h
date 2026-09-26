@@ -8,6 +8,8 @@
 #define _PWROWG_SAMPLE_H
 #pragma once
 
+#include <functional>
+
 #include "visus/pwrowg/timestamp.h"
 #include "visus/pwrowg/reading.h"
 
@@ -135,5 +137,21 @@ static_assert(sizeof(sample) == 16, "The sensor sample should use exactly "
     "data type got messed up.");
 
 PWROWG_NAMESPACE_END
+
+
+/// <summary>
+/// Establishes a week ordering of samples based on their timestamp, or in case
+/// of identical timestamps, based on their source index.
+/// </summary>
+template<> struct std::less<PWROWG_NAMESPACE::sample> final {
+
+    typedef PWROWG_NAMESPACE::sample value_type;
+
+    inline bool operator ()(_In_ const value_type& lhs,
+            _In_ const value_type& rhs) const noexcept {
+        return (lhs.timestamp < rhs.timestamp)
+            || ((lhs.timestamp == rhs.timestamp) && (lhs.source < rhs.source));
+    }
+};
 
 #endif /* !defined(_PWROWG_SAMPLE_H) */
