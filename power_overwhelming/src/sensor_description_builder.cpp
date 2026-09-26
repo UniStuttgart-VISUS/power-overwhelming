@@ -62,11 +62,12 @@ PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_editable_type(
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder&
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_id(
         _In_z_ const wchar_t *id) {
-    if (id == nullptr) {
+    if ((id == nullptr) || (*id == 0)) {
         throw std::invalid_argument("A valid sensor ID must be provided.");
     }
 
     safe_assign(this->_desc._id, id);
+    assert((this->_desc.id() != nullptr) || (*this->_desc.id() != 0));
     return *this;
 }
 
@@ -77,11 +78,12 @@ PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_id(
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder&
 PWROWG_DETAIL_NAMESPACE::sensor_description_builder::with_id(
         _In_z_ const char *id) {
-    if (id == nullptr) {
+    if ((id == nullptr) || (*id == 0)) {
         throw std::invalid_argument("A valid sensor ID must be provided.");
     }
 
     safe_assign(this->_desc._id, PWROWG_NAMESPACE::convert_string<wchar_t>(id));
+    assert((this->_desc.id() != nullptr) || (*this->_desc.id() != 0));
     return *this;
 }
 
