@@ -160,6 +160,15 @@ public:
     }
 
     /// <summary>
+    /// Instructs the sensor array to fill the sampler threads for synchronous
+    /// sensors only up to the given fraction of the sampling interval.
+    /// </summary>
+    /// <param name="fill_factor">The desired fill factor within ]0, 1].</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    sensor_array_configuration& fill_sampler_threads_up_to(
+        _In_ float fill_factor);
+
+    /// <summary>
     /// Sets the sampling interval in milliseconds.
     /// </summary>
     /// <param name="millis">The sampling interval in milliseconds.</param>
@@ -185,6 +194,23 @@ public:
         const auto millis = duration_cast<milliseconds>(interval);
         return this->sample_every(millis.count());
     }
+
+    /// <summary>
+    /// On Windows, the scheduler interval is in many cases longer that the
+    /// sampling interval for synchronous sensors. This method allows to
+    /// decrease the scheduler interval (to a minimum of 1 ms) by a scaling
+    /// factor within [0, 1] being applied to the sampling interval.
+    /// </summary>
+    /// <remarks>
+    /// This method has no effect on non-Windows platforms.
+    /// </remarks>
+    /// <param name="scaling_factor">The desired scaling factor within [0, 1].
+    /// When choosing zero, the smallest possible scheduler interval (usually
+    /// 1 ms) is used regardless of the sampling interval.
+    /// </param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    sensor_array_configuration& scale_scheduler_interval_to(
+        _In_ float scaling_factor);
 
     /// <summary>
     /// Answer whether the configuration is valid.

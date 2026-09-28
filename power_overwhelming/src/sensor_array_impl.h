@@ -158,6 +158,11 @@ struct sensor_array_impl final {
     sensor_state state;
 
     /// <summary>
+    /// Initialiss a new instance.
+    /// </summary>
+    inline sensor_array_impl(void) : resolution(0) { }
+
+    /// <summary>
     /// Finalises the instance.
     /// </summary>
     inline ~sensor_array_impl(void) noexcept {

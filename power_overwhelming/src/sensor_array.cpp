@@ -363,7 +363,8 @@ void PWROWG_NAMESPACE::sensor_array::start(
                 nullptr, 0, nullptr);
             const auto dt = std::chrono::steady_clock::now() - b;
 
-            if ((sum += dt) > impl->configuration->interval) {
+            if (((sum += dt)  * impl->configuration->fill_factor)
+                    > impl->configuration->interval) {
                 impl->sampler_threads.emplace_back(sensor_array::sample,
                     impl,
                     first,
@@ -381,7 +382,8 @@ void PWROWG_NAMESPACE::sensor_array::start(
                 < win32_scheduling_interval)) {
             const auto interval = std::chrono::duration_cast<
                 std::chrono::duration<std::uint32_t, std::milli>>(
-                    impl->configuration->interval) / 2;
+                    impl->configuration->interval
+                    * impl->configuration->interval_scaling);
 
             TIMECAPS tc;
             if (::timeGetDevCaps(&tc, sizeof(tc)) != TIMERR_NOERROR) {
