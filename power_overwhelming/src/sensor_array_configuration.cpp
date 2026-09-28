@@ -70,6 +70,24 @@ PWROWG_NAMESPACE::sensor_array_configuration::exclude(
 
 
 /*
+ * PWROWG_NAMESPACE::sensor_array_configuration::fill_sampler_threads_up_to
+ */
+PWROWG_NAMESPACE::sensor_array_configuration&
+PWROWG_NAMESPACE::sensor_array_configuration::fill_sampler_threads_up_to(
+        _In_ float fill_factor) {
+    auto impl = this->check_not_disposed();
+    if (fill_factor <= 0) {
+        fill_factor = 0.1f;
+    } else if (fill_factor > 1) {
+        fill_factor = 1;
+    }
+
+    impl->fill_factor = fill_factor;
+    return *this;
+}
+
+
+/*
  * PWROWG_NAMESPACE::sensor_array_configuration::sample_every
  */
 PWROWG_NAMESPACE::sensor_array_configuration&
@@ -77,6 +95,24 @@ PWROWG_NAMESPACE::sensor_array_configuration::sample_every(
         _In_ const std::int64_t millis) {
     this->check_not_disposed()->interval = std::chrono::milliseconds(
         std::abs(millis));
+    return *this;
+}
+
+
+/*
+ * PWROWG_NAMESPACE::sensor_array_configuration::scale_scheduler_interval_to
+ */
+PWROWG_NAMESPACE::sensor_array_configuration&
+PWROWG_NAMESPACE::sensor_array_configuration::scale_scheduler_interval_to(
+        _In_ float scaling_factor) {
+    auto impl = this->check_not_disposed();
+    if (scaling_factor < 0) {
+        scaling_factor = 0;
+    } else if (scaling_factor > 1) {
+        scaling_factor = 1;
+    }
+
+    impl->interval_scaling = scaling_factor;
     return *this;
 }
 

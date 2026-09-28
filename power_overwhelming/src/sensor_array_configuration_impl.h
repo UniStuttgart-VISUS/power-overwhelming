@@ -55,9 +55,21 @@ struct sensor_array_configuration_impl final {
     std::set<guid> exclude_list;
 
     /// <summary>
+    /// A fill factor within ]0, 1] for the creation of sampler threads.
+    /// </summary>
+    float fill_factor;
+
+    /// <summary>
     /// The sampling interval for the <see cref="sampler_threads" />.
     /// </summary>
     std::chrono::milliseconds interval;
+
+    /// <summary>
+    /// A scaling factor between [0, 1] that is applied on the
+    /// <see cref="interval" /> to determine the scheduler resolution on
+    /// Windows. Has no effect on other platforms.
+    /// </summary>
+    float interval_scaling;
 
     /// <summary>
     /// Holds the configuration objects of all known sensors.
@@ -70,7 +82,9 @@ struct sensor_array_configuration_impl final {
     inline sensor_array_configuration_impl(void)
         : callback(sample_nothing),
         context(nullptr),
-        interval(5) { }
+        fill_factor(0.75f),
+        interval(5),
+        interval_scaling(0.5f) { }
 
     /// <summary>
     /// Gets the sensor configuration registered with the specified ID.

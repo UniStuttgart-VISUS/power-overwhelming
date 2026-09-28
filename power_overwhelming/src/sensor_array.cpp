@@ -363,7 +363,8 @@ void PWROWG_NAMESPACE::sensor_array::start(
                 nullptr, 0, nullptr);
             const auto dt = std::chrono::steady_clock::now() - b;
 
-            if ((sum += dt) > impl->configuration->interval) {
+            if (((sum += dt)  * impl->configuration->fill_factor)
+                    > impl->configuration->interval) {
                 impl->sampler_threads.emplace_back(sensor_array::sample,
                     impl,
                     first,
@@ -377,21 +378,22 @@ void PWROWG_NAMESPACE::sensor_array::start(
         // Tell Windows that we are important. Normally, the scheduling
         // granularity is around 15 ms, so if we want to sample more frequently,
         // we need to make sure that we can be rescheduled earlier.
-        if (!impl->sampler_threads.empty() && (impl->configuration->interval
+        const auto desired_interval = std::chrono::duration_cast<
+            std::chrono::duration<std::uint32_t, std::milli>>(
+                impl->configuration->interval
+                * impl->configuration->interval_scaling);
+        if (!impl->sampler_threads.empty() && (desired_interval
                 < win32_scheduling_interval)) {
-            const auto interval = std::chrono::duration_cast<
-                std::chrono::duration<std::uint32_t, std::milli>>(
-                    impl->configuration->interval) / 2;
-
             TIMECAPS tc;
             if (::timeGetDevCaps(&tc, sizeof(tc)) != TIMERR_NOERROR) {
                 tc.wPeriodMin = 1;
             }
 
-            impl->resolution = (std::max)(interval.count(), tc.wPeriodMin);
+            impl->resolution = (std::max)(desired_interval.count(),
+                tc.wPeriodMin);
             PWROWG_TRACE(_T("Setting scheduler resolution to %u ms. Ideally, ")
                 _T("we wanted to have %u ms."), impl->resolution,
-                interval.count());
+                desired_interval.count());
 
             if (::timeBeginPeriod(impl->resolution) != TIMERR_NOERROR) {
                 PWROWG_TRACE(_T("The sensor array cannot decrease the "
