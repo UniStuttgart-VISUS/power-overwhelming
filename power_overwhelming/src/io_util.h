@@ -257,7 +257,7 @@ PWROWG_TEST_API std::vector<std::uint8_t> read_all_bytes(
 /// <param name="cnt"></param>
 /// <returns></returns>
 PWROWG_TEST_API void read_bytes(_In_ const HANDLE handle,
-    _Out_writes_bytes_all_(cnt) void *dst, _In_ const std::size_t cnt);
+    _Out_writes_bytes_all_(cnt) void *dst, _In_ std::size_t cnt);
 #endif /* defined(_WIN32) */
 
 /// <summary>
@@ -271,7 +271,7 @@ PWROWG_TEST_API void read_bytes(_In_ const HANDLE handle,
 /// <param name="cnt"></param>
 /// <returns></returns>
 PWROWG_TEST_API void read_bytes(_In_ const int fd,
-    _Out_writes_bytes_all_(cnt) void *dst, _In_ const std::size_t cnt);
+    _Out_writes_bytes_all_(cnt) void *dst, _In_ std::size_t cnt);
 
 #if defined(_WIN32)
 /// <summary>

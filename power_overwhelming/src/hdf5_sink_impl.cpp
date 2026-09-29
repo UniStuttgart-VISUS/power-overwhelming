@@ -84,6 +84,10 @@ H5::CompType PWROWG_DETAIL_NAMESPACE::make_hdf5_sample_type(
             H5::PredType::NATIVE_FLOAT);
     }
 
+    assert(retval.getMemberIndex("timestamp") == 0);
+    assert(retval.getMemberIndex("source") == 1);
+    assert(retval.getMemberIndex("reading") == 2);
+    assert(retval.getSize() == sizeof(PWROWG_NAMESPACE::sample));
     return retval;
 }
 

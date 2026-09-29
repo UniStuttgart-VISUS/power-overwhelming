@@ -33,6 +33,23 @@
 #endif /* defined(_WIN32) */
 
 
+PWROWG_DETAIL_NAMESPACE_BEGIN
+
+/// <summary>
+/// Clamps the <paramref name="size" /> of an I/O request to the maximum value
+/// of the given type <typeparamref name="TType" />.
+/// </summary>
+template<class TType>
+static inline TType clamp_cast(_In_ const std::size_t size) noexcept {
+    static_assert(sizeof(TType) <= sizeof(std::size_t), "Cannot clamp to larger "
+        "type.");
+    constexpr std::size_t limit = (std::numeric_limits<TType>::max)();
+    return static_cast<TType>((std::min)(size, limit));
+}
+
+PWROWG_DETAIL_NAMESPACE_END
+
+
 /*
  * PWROWG_DETAIL_NAMESPACE::file_size
  */
@@ -152,12 +169,12 @@ std::vector<std::uint8_t> PWROWG_DETAIL_NAMESPACE::read_all_bytes(
         seek(handle, 0, win32_seek_origin::begin);
     }
 
-    DWORD cnt = 0;
-    auto dst = retval.data();
-    auto rem = static_cast<unsigned int>(retval.size());
+    DWORD cnt = 0;              // Size of last read.
+    auto dst = retval.data();   // Insertion position in 'retval'.
+    auto rem = retval.size();   // Expected remaining bytes to read.
 
     while (rem > 0) {
-        if (!::ReadFile(handle, dst, rem, &cnt, nullptr)) {
+        if (!::ReadFile(handle, dst, clamp_cast<DWORD>(rem), &cnt, nullptr)) {
             THROW_LAST_ERROR();
         }
 
@@ -172,8 +189,9 @@ std::vector<std::uint8_t> PWROWG_DETAIL_NAMESPACE::read_all_bytes(
             rem -= cnt;
 
         } else {
-            // We read more than initially expected, so increase the buffer and
-            // continue.
+            // The buffer was filled completely without reaching EOF, which
+            // means the file is potentially larger than expected. Enlarge the
+            // buffer and continue.
             auto a = (std::max)(retval.size() / 2, static_cast<std::size_t>(1));
             retval.resize(retval.size() + a);
             rem += a;
@@ -205,9 +223,10 @@ std::vector<std::uint8_t> PWROWG_DETAIL_NAMESPACE::read_all_bytes(
 
     auto cnt = 0;
     auto dst = retval.data();
-    auto rem = static_cast<unsigned int>(retval.size());
+    auto rem = retval.size();
+    auto r = clamp_cast<unsigned int>(rem);
 
-    while ((cnt = ::read(fd, dst, rem)) > 0) {
+    while ((cnt = ::read(fd, dst, r)) > 0) {
         dst += cnt;
 
         if (rem > cnt) {
@@ -215,22 +234,23 @@ std::vector<std::uint8_t> PWROWG_DETAIL_NAMESPACE::read_all_bytes(
             rem -= cnt;
 
         } else {
-            // We read more than initially expected, so increase the buffer and
-            // continue.
+            // The buffer was filled completely without reaching EOF, which
+            // means the file is potentially larger than expected. Enlarge the
+            // buffer and continue.
             auto a = (std::max)(retval.size() / 2, static_cast<std::size_t>(1));
             retval.resize(retval.size() + a);
             rem += a;
             rem -= cnt;
         }
+
+        r = clamp_cast<unsigned int>(rem);
     }
 
     if (cnt == -1) {
         THROW_POSIX_ERROR();
     }
 
-    static_assert(sizeof(*(retval.data())) == 1, "value_type must be a byte.");
     retval.resize(dst - retval.data());
-
     return retval;
 }
 
@@ -240,21 +260,22 @@ std::vector<std::uint8_t> PWROWG_DETAIL_NAMESPACE::read_all_bytes(
  * PWROWG_DETAIL_NAMESPACE::read_bytes
  */
 void PWROWG_DETAIL_NAMESPACE::read_bytes(_In_ const HANDLE handle,
-        _Out_writes_bytes_all_(cnt) void *dst, _In_ const std::size_t cnt) {
+        _Out_writes_bytes_all_(cnt) void *dst,
+        _In_ std::size_t cnt) {
     auto d = static_cast<std::uint8_t *>(dst);
-    auto rem = static_cast<int>(cnt);
 
-    while (rem > 0) {
+    while (cnt > 0) {
         DWORD c = 0;
 
-        if (!::ReadFile(handle, d, rem, &c, nullptr)) {
+        if (!::ReadFile(handle, d, clamp_cast<DWORD>(cnt), &c, nullptr)) {
             THROW_LAST_ERROR();
         }
 
+        assert(c <= cnt);
         d += c;
-        rem -= c;
+        cnt -= c;
 
-        if ((c == 0) && (rem > 0)) {
+        if ((c == 0) && (cnt > 0)) {
             // Reached the end of the file, but could not read requested data.
             throw std::system_error(ERROR_NO_MORE_ITEMS, std::system_category());
         }
@@ -267,21 +288,23 @@ void PWROWG_DETAIL_NAMESPACE::read_bytes(_In_ const HANDLE handle,
  * PWROWG_DETAIL_NAMESPACE::read_bytes
  */
 void PWROWG_DETAIL_NAMESPACE::read_bytes(_In_ const int fd,
-        _Out_writes_bytes_all_(cnt) void *dst, _In_ const std::size_t cnt) {
+        _Out_writes_bytes_all_(cnt) void *dst, _In_ std::size_t cnt) {
     auto c = 0;
     auto d = static_cast<std::uint8_t *>(dst);
-    auto rem = static_cast<int>(cnt);
+    auto r = clamp_cast<unsigned int>(cnt);
 
-    while ((rem > 0) && ((c = ::read(fd, d, rem)) > 0)) {
+    while ((cnt > 0) && ((c = ::read(fd, d, r)) > 0)) {
         d += c;
-        rem -= c;
+        assert(c <= cnt);
+        cnt -= c;
+        r = clamp_cast<unsigned int>(cnt);
     }
 
     if (c == -1) {
         THROW_POSIX_ERROR();
     }
 
-    if (rem > 0) {
+    if (cnt > 0) {
 #if defined(_WIN32)
         throw std::system_error(ERROR_NO_MORE_ITEMS, std::system_category());
 #else /* defined(_WIN32) */
@@ -375,7 +398,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::try_read_bytes(_In_ const HANDLE handle,
         _Out_writes_bytes_(cnt) void *dst, _In_ const std::size_t cnt) {
     DWORD retval = 0;
 
-    if (!::ReadFile(handle, dst, static_cast<DWORD>(cnt), &retval, nullptr)) {
+    if (!::ReadFile(handle, dst, clamp_cast<DWORD>(cnt), &retval, nullptr)) {
         THROW_LAST_ERROR();
     }
 
@@ -389,8 +412,9 @@ std::size_t PWROWG_DETAIL_NAMESPACE::try_read_bytes(_In_ const HANDLE handle,
  */
 std::size_t PWROWG_DETAIL_NAMESPACE::try_read_bytes(_In_ const int fd,
         _Out_writes_bytes_(cnt) void *dst, _In_ const std::size_t cnt) {
-    auto retval = ::read(fd, dst, cnt);
+    constexpr std::size_t limit = (std::numeric_limits<unsigned int>::max)();
 
+    const auto retval = ::read(fd, dst, clamp_cast<unsigned int>(cnt));
     if (retval == -1) {
         THROW_POSIX_ERROR();
     }
@@ -407,11 +431,13 @@ void PWROWG_DETAIL_NAMESPACE::write_all_bytes(
         _In_ const HANDLE handle,
         _In_reads_bytes_(cnt) const void *src,
         _In_ std::size_t cnt) {
+    constexpr std::size_t limit = (std::numeric_limits<DWORD>::max)();
     auto cur = static_cast<const std::uint8_t *>(src);
 
     while (cnt > 0) {
         DWORD c = 0;
-        if (!::WriteFile(handle, cur, static_cast<DWORD>(cnt), &c, nullptr)) {
+
+        if (!::WriteFile(handle, cur, clamp_cast<DWORD>(cnt), &c, nullptr)) {
             THROW_LAST_ERROR();
         }
         assert(c <= cnt);
@@ -432,7 +458,7 @@ void PWROWG_DETAIL_NAMESPACE::write_all_bytes(
     auto cur = static_cast<const std::uint8_t *>(src);
 
     while (cnt > 0) {
-        auto c = ::write(fd, cur, cnt);
+        auto c = ::write(fd, cur, clamp_cast<unsigned int>(cnt));
         assert(c <= cnt);
         cur += c;
         cnt -= c;
