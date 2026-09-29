@@ -185,8 +185,15 @@ PWROWG_NAMESPACE::sensor_array::end(void) noexcept {
 void PWROWG_NAMESPACE::sensor_array::start(void) {
     volatile auto impl = this->check_not_disposed();
     impl->state.begin_start();
-    start(impl);
-    impl->state.end_start();
+
+    try {
+        start(impl);
+        impl->state.end_start();
+    } catch (...) {
+        PWROWG_TRACE(_T("Sensor array failed starting."));
+        impl->state.stop();
+        throw;
+    }
 }
 
 
@@ -202,10 +209,17 @@ void PWROWG_NAMESPACE::sensor_array::start(
 
     volatile auto impl = this->check_not_disposed();
     impl->state.begin_start();
-    impl->configuration->callback = callback;
-    impl->configuration->context = context;
-    start(impl);
-    impl->state.end_start();
+
+    try {
+        impl->configuration->callback = callback;
+        impl->configuration->context = context;
+        start(impl);
+        impl->state.end_start();
+    } catch (...) {
+        PWROWG_TRACE(_T("Sensor array failed starting."));
+        impl->state.stop();
+        throw;
+    }
 }
 
 
@@ -363,8 +377,9 @@ void PWROWG_NAMESPACE::sensor_array::start(
                 nullptr, 0, nullptr);
             const auto dt = std::chrono::steady_clock::now() - b;
 
-            if (((sum += dt)  * impl->configuration->fill_factor)
-                    > impl->configuration->interval) {
+            const auto full = ((sum += dt) * impl->configuration->fill_factor)
+                >= impl->configuration->interval;
+            if (full) {
                 impl->sampler_threads.emplace_back(sensor_array::sample,
                     impl,
                     first,
@@ -382,8 +397,8 @@ void PWROWG_NAMESPACE::sensor_array::start(
             std::chrono::duration<std::uint32_t, std::milli>>(
                 impl->configuration->interval
                 * impl->configuration->interval_scaling);
-        if (!impl->sampler_threads.empty() && (desired_interval
-                < win32_scheduling_interval)) {
+        if (!impl->samplers.empty()
+                && (desired_interval < win32_scheduling_interval)) {
             TIMECAPS tc;
             if (::timeGetDevCaps(&tc, sizeof(tc)) != TIMERR_NOERROR) {
                 tc.wPeriodMin = 1;

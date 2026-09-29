@@ -70,8 +70,8 @@ int _tmain(const int argc, const TCHAR **argv) {
     using namespace visus::pwrowg;
 
     std::wcout << L"dump_readings" << std::endl;
-    std::wcout
-        << L"© 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart."
+    std::cout << visus::pwrowg::convert_to_oem_string(L"© 2023 - 2026 "
+        L"Visualisierungsinstitut der Universität Stuttgart.")
         << std::endl << std::endl;
 
     try {

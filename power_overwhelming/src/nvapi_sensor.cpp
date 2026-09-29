@@ -98,7 +98,8 @@ void PWROWG_DETAIL_NAMESPACE::nvapi_sensor::sample(_In_ const bool enable) {
         const auto interval = get_sampling_interval(*this->_owner);
         settings.callback = &nvapi_sensor::on_sample;
         settings.super.super.pCallbackParam = this;
-        settings.super.callbackPeriodms = static_cast<NvU32>(interval.count());
+        settings.super.callbackPeriodms = (std::max)(static_cast<NvU32>(1),
+            static_cast<NvU32>(interval.count()));
     }
 
     throw_if_nvapi_failed(nvapi_library::instance()
