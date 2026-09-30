@@ -265,9 +265,18 @@ std::size_t PWROWG_NAMESPACE::pwog_file::to_hdf5(
     }
 
     // Write the sensor descriptions first.
+    std::vector<reading_type> reading_types;
     {
         std::vector<sensor_description> sensors(file.sensors(nullptr, 0));
         file.sensors(sensors.data(), sensors.size());
+
+        reading_types.reserve(sensors.size());
+        std::transform(sensors.begin(),
+            sensors.end(),
+            std::back_inserter(reading_types),
+            [](const sensor_description& d) {
+                return d.reading_type();
+            });
 
         std::vector<detail::hdf5_sensor_description> data;
         std::set<std::string> strings;
@@ -315,6 +324,15 @@ std::size_t PWROWG_NAMESPACE::pwog_file::to_hdf5(
             auto current_space = data_set.getSpace();
             hsize_t current_dims[1];
             current_space.getSimpleExtentDims(current_dims, nullptr);
+
+            if (!config.raw()) {
+                // If requested, perform the conversion to floats.
+                for (auto& s : samples) {
+                    assert(s.source < reading_types.size());
+                    s.reading.floating_point = to_float(s.reading,
+                        reading_types[s.source]);
+                }
+            }
 
             hsize_t new_dims[] = { current_dims[0] + cnt };
             data_set.extend(new_dims);
