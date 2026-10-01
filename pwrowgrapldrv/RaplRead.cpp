@@ -54,7 +54,7 @@ extern "C" void RaplRead(_In_ WDFQUEUE queue, _In_ WDFREQUEST request,
     KdPrint(("[PWROWG] RAPL request offset 0x%I64x\r\n", offset.QuadPart));
 
     if (NT_SUCCESS(status) && (offset.HighPart != 0)) {
-        // The offset is larger thatn 32-bit, so it cannot be a valid register.
+        // The offset is larger that 32-bit, so it cannot be a valid register.
         // We indicate invalid register addresses as end of file.
         KdPrint(("[PWROWG] Register 0x%I64x does not fit into 32 bits\r\n",
             offset.QuadPart));
