@@ -9,7 +9,7 @@
 #pragma once
 
 #include "detector.h"
-#include "sensor_array_state.h"
+#include "sensor_state.h"
 
 
 PWROWG_DETAIL_NAMESPACE_BEGIN
@@ -22,7 +22,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// </typeparam>
 template<class TType>
 using _state_change = decltype(std::declval<TType &>().state_change(
-    std::declval<sensor_array_state>()));
+    std::declval<sensor_state::value_type>()));
 
 /// <summary>
 /// Detects whether <typeparamref name="TType" /> has a <c>state_change</c>

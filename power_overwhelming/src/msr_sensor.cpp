@@ -295,3 +295,10 @@ void PWROWG_DETAIL_NAMESPACE::msr_sensor::sample(
 
     callback(samples.data(), samples.size(), sensors, cnt, context);
 }
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::msr_sensor::state_change
+ */
+void PWROWG_DETAIL_NAMESPACE::msr_sensor::state_change(
+        _In_ const sensor_state::value_type state) { }
