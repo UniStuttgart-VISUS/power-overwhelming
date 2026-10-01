@@ -185,13 +185,16 @@ PWROWG_NAMESPACE::sensor_array::end(void) noexcept {
 void PWROWG_NAMESPACE::sensor_array::start(void) {
     volatile auto impl = this->check_not_disposed();
     impl->state.begin_start();
+    impl->notify_state_change();
 
     try {
         start(impl);
         impl->state.end_start();
+        impl->notify_state_change();
     } catch (...) {
         PWROWG_TRACE(_T("Sensor array failed starting."));
         impl->state.stop();
+        impl->notify_state_change();
         throw;
     }
 }
@@ -209,15 +212,18 @@ void PWROWG_NAMESPACE::sensor_array::start(
 
     volatile auto impl = this->check_not_disposed();
     impl->state.begin_start();
+    impl->notify_state_change();
 
     try {
         impl->configuration->callback = callback;
         impl->configuration->context = context;
         start(impl);
         impl->state.end_start();
+        impl->notify_state_change();
     } catch (...) {
         PWROWG_TRACE(_T("Sensor array failed starting."));
         impl->state.stop();
+        impl->notify_state_change();
         throw;
     }
 }
@@ -238,6 +244,7 @@ void PWROWG_NAMESPACE::sensor_array::sensor_array::stop(void) {
 #endif /* defined(_WIN32) */
 
     impl->state.begin_stop();
+    impl->notify_state_change();
 
     // Stop the asynchronous sensors.
     detail::sensor_registry::sample(impl->samplers.begin(), impl->sensors,
@@ -254,6 +261,7 @@ void PWROWG_NAMESPACE::sensor_array::sensor_array::stop(void) {
     impl->sampler_threads.clear();
 
     impl->state.end_stop();
+    impl->notify_state_change();
 }
 
 

@@ -173,6 +173,15 @@ struct sensor_array_impl final {
             [](std::thread& t) { return t.joinable(); }));
 #endif /* (defined(DEBUG) || defined(_DEBUG)) */
     }
+
+    /// <summary>
+    /// Notify all interested <paramref name="sensors" /> about a change in the
+    /// state of the sensor array. The caller must have set the appropriate
+    /// <see cref="state" /> in advance.
+    /// </summary>
+    inline void notify_state_change(void) {
+        detail::sensor_registry::state_change(this->sensors, this->state);
+    }
 };
 
 PWROWG_DETAIL_NAMESPACE_END

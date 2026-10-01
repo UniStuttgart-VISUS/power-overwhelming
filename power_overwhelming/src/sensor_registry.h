@@ -28,6 +28,7 @@
 #include "benchlab_sensor.h"
 #include "daqmx_sensor.h"
 #include "detect_sample.h"
+#include "detect_state_change.h"
 #include "emi_sensor.h"
 #include "hmc8015_sensor.h"
 #include "igcl_sensor.h"
@@ -177,6 +178,21 @@ public:
         return sizeof...(TSensors);
     }
 
+    /// <summary>
+    /// Notifies all of the <paramref name="sensors" /> that support state
+    /// change notifications about a change in the state of the sensor array.
+    /// </summary>
+    /// <param name="sensors"></param>
+    /// <param name="state"></param>
+    inline static void state_change(
+            _In_ sensor_list_type& sensors,
+            _In_ const sensor_state::value_type state) {
+        state_change0(
+            std::make_index_sequence<sizeof...(TSensors)>(),
+            sensors,
+            state);
+    }
+
     basic_sensor_registry(void) = delete;
 
 private:
@@ -284,8 +300,8 @@ private:
     template<class TOutput>
     inline static void sample0(_In_ TOutput oit,
         _In_ std::index_sequence<>,
-        _In_ sensor_list_type& sensor_lists,
-        _In_ const bool enable) { }
+        _In_ sensor_list_type&,
+        _In_ const bool) { }
 
     /// <summary>
     /// Tries to enable or disable asynchronously sampling
@@ -303,11 +319,34 @@ private:
     /// </summary>
     template<class T, class TInput>
     static std::enable_if_t<!detail::has_async_sample<T>::type::value, bool>
-    sample1(_In_ const TInput begin,
-            _In_ const TInput end,
-            _In_ const bool enable) {
+    sample1(_In_ const TInput, _In_ const TInput, _In_ const bool) {
         return false;
     }
+
+    template<std::size_t Index, std::size_t... Indices>
+    static void state_change0(
+        _In_ std::index_sequence<Index, Indices...>,
+        _In_ sensor_list_type& sensor_lists,
+        _In_ const sensor_state::value_type state);
+
+    inline static void state_change0(
+        _In_ std::index_sequence<>,
+        _In_ const sensor_list_type&,
+        _In_ const sensor_state::value_type) { }
+
+    template<class T, class TInput>
+    static void state_change1(
+        _In_ const TInput begin,
+        _In_ const TInput end,
+        _In_ const sensor_state::value_type state,
+        _In_ const std::true_type);
+
+    template<class T, class TInput>
+    inline static void state_change1(
+        _In_ const TInput,
+        _In_ const TInput,
+        _In_ const sensor_state::value_type,
+        _In_ const std::false_type) { }
 };
 
 

@@ -213,3 +213,41 @@ PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::sample1(
 
     return true;
 }
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::state_change0
+ */
+template<class... TSensors>
+template<std::size_t Index, std::size_t... Indices>
+void PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::state_change0(
+        _In_ std::index_sequence<Index, Indices...>,
+        _In_ sensor_list_type& sensor_lists,
+        _In_ const sensor_state::value_type state) {
+    auto& list = std::get<Index>(sensor_lists);
+
+    // Derive which type of sensor we are processing.
+    typedef typename std::decay_t<decltype(list)>::value_type sensor_type;
+
+    // Notify the sensor if it supports notifications.
+    state_change1<sensor_type>(list.begin(),
+        list.end(),
+        state,
+        has_state_change<sensor_type>());
+}
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::state_change1
+ */
+template<class... TSensors>
+template<class T, class TInput>
+void PWROWG_DETAIL_NAMESPACE::basic_sensor_registry<TSensors...>::state_change1(
+        _In_ const TInput begin,
+        _In_ const TInput end,
+        _In_ const sensor_state::value_type state,
+        _In_ const std::true_type) {
+    for (auto it = begin; it != end; ++it) {
+        it->state_change(state);
+    }
+}

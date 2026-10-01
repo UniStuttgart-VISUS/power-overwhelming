@@ -8,6 +8,7 @@
 
 #include <cassert>
 #include <cerrno>
+#include <limits>
 #include <stdexcept>
 #include <system_error>
 
