@@ -71,7 +71,12 @@ enum class reading_unit : std::uint32_t {
     /// <summary>
     /// Kelvin for temperature.
     /// </summary>
-    kelvin
+    kelvin,
+
+    /// <summary>
+    /// Seconds for time.
+    /// </summary>
+    seconds
 };
 
 

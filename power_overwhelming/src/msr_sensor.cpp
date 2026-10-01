@@ -60,6 +60,9 @@ static const rapl_domain_configs_type domain_configs = {
             make_energy_magic_config(cpu_vendor::intel,
                 rapl_domain::pp1,
                 msr_offsets::intel::pp1_energy_status),
+            make_throttling_magic_config(cpu_vendor::intel,
+                rapl_domain::package,
+                msr_offsets::intel::package_performance_status),
         }
     },
 };
@@ -149,6 +152,10 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
                     case rapl_domain::dram:
                         builder.with_type(base_type | sensor_type::memory);
                         break;
+
+                    case rapl_domain::package_performance:
+                        builder.with_type(sensor_type::throttling | sensor_type::cpu);
+                        break;
                 }
 
                 builder.with_id(L"MSR/%d/%s", c, to_string(d.first))
@@ -156,10 +163,15 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
                         to_string(d.first))
                     .with_path(path)
                     .produces(reading_type::floating_point)
-                    .measured_in(reading_unit::watt)
                     .with_new_private_data<register_identifier>(
                         d.second.data_location,
                         msr_unit_divisor(dev, d.second));
+
+                if (d.first == rapl_domain::package_performance) {
+                    builder.measured_in(reading_unit::seconds);
+                } else {
+                    builder.measured_in(reading_unit::watt);
+                }
 
                 if (retval < cnt) {
                     dst[retval] = builder.build();

@@ -166,6 +166,19 @@ inline PWROWG_TEST_API msr_magic_config_entry make_energy_magic_config(
     return make_energy_magic_config(vendor, domain, data_location, nullptr);
 }
 
+extern PWROWG_TEST_API msr_magic_config_entry make_throttling_magic_config(
+    _In_ const cpu_vendor vendor,
+    _In_ const rapl_domain domain,
+    _In_ const std::streamoff data_location,
+    _In_ const std::function<bool(const msr_sensor::core_type)>& check);
+
+inline PWROWG_TEST_API msr_magic_config_entry make_throttling_magic_config(
+    _In_ const cpu_vendor vendor,
+    _In_ const rapl_domain domain,
+    _In_ const std::streamoff data_location) {
+    return make_throttling_magic_config(vendor, domain, data_location, nullptr);
+}
+
 PWROWG_DETAIL_NAMESPACE_END
 
 #endif /* !defined(_PWROWG_MSR_MAGIC_H) */
