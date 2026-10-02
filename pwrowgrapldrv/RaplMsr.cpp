@@ -6,8 +6,8 @@
 
 #include "RaplMsr.h"
 
+#include <intrin.h>
 #include <ntddk.h>
-
 
 // https://github.com/amd/amd_energy/blob/master/amd_energy.c
 // https://github.com/deater/uarch-configure/blob/master/rapl-read/rapl-read.c
@@ -79,46 +79,105 @@ static SIZE_T GetSupportedIntelRegisters(_In_ const RaplCpuInfo& cpuInfo,
     const auto model = cpuInfo.ExtendedModel << 4 | cpuInfo.BaseModel;
     SIZE_T retval = 0;
 
+    RaplDisplayFamilyModel displayFamilyModel(cpuInfo);
+
 #define _WRT_DST(r) if ((dst != nullptr) && (retval < cnt)) \
     { dst[retval] = (r); } ++retval
-    https://github.com/torvalds/linux/blob/6a8f57ae2eb07ab39a6f0ccad60c760743051026/drivers/powercap/intel_rapl_msr.c#L139-L147
-    if (cpuInfo.BaseFamily == 0x6) {
-        switch (model) {
-            case 0x8C:  // Tiger Lake L
-            case 0x97:  // Alder Lake
-            case 0x9A:  // Alder Lake L
-            case 0xBE:  // Alder Lake N
-            case 0xB7:  // Raptor Lake
-            case 0xBA:  // Raptor Lake P
-            case 0xAC:  // Meteor Lake
-            case 0xAA:  // Meteor Lake L
-            case 0xC5:  // Arrow Lake H
-            case 0xC6:  // Arrow Lake
-            case 0xB5:  // Arrow Lake U
-            case 0xBD:  // Lunar Lake M
-            case 0xCC:  // Panther Lake L
-            case 0xE5:  // Panther Lake R
-            case 0xD5:  // Wildcat Lake
-                _WRT_DST(INTEL_DRAM_ENERGY_STATUS);
-                _WRT_DST(INTEL_DRAM_PERFORMANCE_STATUS);
-                _WRT_DST(INTEL_DRAM_POWER_INFO);
-                _WRT_DST(INTEL_DRAM_POWER_LIMIT);
-                _WRT_DST(INTEL_PACKAGE_ENERGY_STATUS);
-                _WRT_DST(INTEL_PACKAGE_PERFORMANCE_STATUS);
-                _WRT_DST(INTEL_PACKAGE_POWER_INFO);
-                _WRT_DST(INTEL_PACKAGE_POWER_LIMIT);
-                _WRT_DST(INTEL_PLATFORM_ENERGY_STATUS);
-                _WRT_DST(INTEL_PP0_ENERGY_STATUS);
-                _WRT_DST(INTEL_PP0_PERFORMANCE_STATUS);
-                _WRT_DST(INTEL_PP0_POWER_LIMIT);
-                _WRT_DST(INTEL_PP0_POLICY);
-                _WRT_DST(INTEL_PP1_ENERGY_STATUS);
-                _WRT_DST(INTEL_PP1_POLICY);
-                _WRT_DST(INTEL_PP1_POWER_LIMIT);
-                _WRT_DST(INTEL_UNIT_DIVISORS);
-                break;
+
+#define _PROBE_MSR(r) \
+    __try { \
+        ::__readmsr(r); \
+        _WRT_DST(r); \
+    } __except (EXCEPTION_EXECUTE_HANDLER) { \
+        /* MSR is not accessible. */ \
+    }
+
+    if (displayFamilyModel.DisplayFamily == 0x6 && displayFamilyModel.DisplayModel >= 0x2A) {
+        // RAPL available for Intel Sandy Bridge and successors.
+        // Client and server CPUs support Package and PP0 domains.
+        _PROBE_MSR(INTEL_PACKAGE_ENERGY_STATUS);
+        _PROBE_MSR(INTEL_PACKAGE_PERFORMANCE_STATUS);
+        _PROBE_MSR(INTEL_PACKAGE_POWER_INFO);
+        _PROBE_MSR(INTEL_PACKAGE_POWER_LIMIT);
+        _PROBE_MSR(INTEL_PP0_ENERGY_STATUS);
+        _PROBE_MSR(INTEL_PP0_PERFORMANCE_STATUS);
+        _PROBE_MSR(INTEL_PP0_POWER_LIMIT);
+        _PROBE_MSR(INTEL_PP0_POLICY);
+        _PROBE_MSR(INTEL_UNIT_DIVISORS);
+        
+        _PROBE_MSR(INTEL_PP1_ENERGY_STATUS);
+        _PROBE_MSR(INTEL_PP1_POLICY);
+        _PROBE_MSR(INTEL_PP1_POWER_LIMIT);
+
+        // Intel Xeon Processor Families from Sandy Bridge and successors support DRAM RAPL MSRs.
+        if (displayFamilyModel.DisplayModel >= 0x2D) {
+            _PROBE_MSR(INTEL_DRAM_ENERGY_STATUS);
+            _PROBE_MSR(INTEL_DRAM_PERFORMANCE_STATUS);
+            _PROBE_MSR(INTEL_DRAM_POWER_INFO);
+            _PROBE_MSR(INTEL_DRAM_POWER_LIMIT);
+        }
+        
+        // 4th and 5th Generation Intel Xeon Scalable Processor Families support PLATFORM_ENERGY_STATUS MSR.
+        if (displayFamilyModel.DisplayModel == 0x8F || displayFamilyModel.DisplayModel == 0xCF) {
+            _PROBE_MSR(INTEL_PLATFORM_ENERGY_STATUS);
         }
     }
+
+    https://github.com/torvalds/linux/blob/6a8f57ae2eb07ab39a6f0ccad60c760743051026/drivers/powercap/intel_rapl_msr.c#L139-L147
+    //if (cpuInfo.BaseFamily == 0x6) {
+    //    switch (model) {
+    //        case 0x4E:  // Skylake L
+    //        case 0x5E:  // Skylake
+    //        case 0x55:  // Skylake X
+    //            _WRT_DST(INTEL_DRAM_ENERGY_STATUS);
+    //            _WRT_DST(INTEL_DRAM_PERFORMANCE_STATUS);
+    //            _WRT_DST(INTEL_DRAM_POWER_INFO);
+    //            _WRT_DST(INTEL_DRAM_POWER_LIMIT);
+    //            _WRT_DST(INTEL_PACKAGE_ENERGY_STATUS);
+    //            _WRT_DST(INTEL_PACKAGE_PERFORMANCE_STATUS);
+    //            _WRT_DST(INTEL_PACKAGE_POWER_INFO);
+    //            _WRT_DST(INTEL_PACKAGE_POWER_LIMIT);
+    //            _WRT_DST(INTEL_PP0_ENERGY_STATUS);
+    //            _WRT_DST(INTEL_PP0_PERFORMANCE_STATUS);
+    //            _WRT_DST(INTEL_PP0_POWER_LIMIT);
+    //            _WRT_DST(INTEL_PP0_POLICY);
+    //            _WRT_DST(INTEL_UNIT_DIVISORS);
+    //            break;
+    //        case 0x8C:  // Tiger Lake L
+    //        case 0x97:  // Alder Lake
+    //        case 0x9A:  // Alder Lake L
+    //        case 0xBE:  // Alder Lake N
+    //        case 0xB7:  // Raptor Lake
+    //        case 0xBA:  // Raptor Lake P
+    //        case 0xAC:  // Meteor Lake
+    //        case 0xAA:  // Meteor Lake L
+    //        case 0xC5:  // Arrow Lake H
+    //        case 0xC6:  // Arrow Lake
+    //        case 0xB5:  // Arrow Lake U
+    //        case 0xBD:  // Lunar Lake M
+    //        case 0xCC:  // Panther Lake L
+    //        case 0xE5:  // Panther Lake R
+    //        case 0xD5:  // Wildcat Lake
+    //            _WRT_DST(INTEL_DRAM_ENERGY_STATUS);
+    //            _WRT_DST(INTEL_DRAM_PERFORMANCE_STATUS);
+    //            _WRT_DST(INTEL_DRAM_POWER_INFO);
+    //            _WRT_DST(INTEL_DRAM_POWER_LIMIT);
+    //            _WRT_DST(INTEL_PACKAGE_ENERGY_STATUS);
+    //            _WRT_DST(INTEL_PACKAGE_PERFORMANCE_STATUS);
+    //            _WRT_DST(INTEL_PACKAGE_POWER_INFO);
+    //            _WRT_DST(INTEL_PACKAGE_POWER_LIMIT);
+    //            _WRT_DST(INTEL_PLATFORM_ENERGY_STATUS);
+    //            _WRT_DST(INTEL_PP0_ENERGY_STATUS);
+    //            _WRT_DST(INTEL_PP0_PERFORMANCE_STATUS);
+    //            _WRT_DST(INTEL_PP0_POWER_LIMIT);
+    //            _WRT_DST(INTEL_PP0_POLICY);
+    //            _WRT_DST(INTEL_PP1_ENERGY_STATUS);
+    //            _WRT_DST(INTEL_PP1_POLICY);
+    //            _WRT_DST(INTEL_PP1_POWER_LIMIT);
+    //            _WRT_DST(INTEL_UNIT_DIVISORS);
+    //            break;
+    //    }
+    //}
 #undef _WRT_DST
 
     return retval;

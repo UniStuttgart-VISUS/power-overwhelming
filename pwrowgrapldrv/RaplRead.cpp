@@ -68,6 +68,8 @@ extern "C" void RaplRead(_In_ WDFQUEUE queue, _In_ WDFREQUEST request,
             KdPrint(("[PWROWG] Register 0x%x is not supported on this "
                 "CPU.\r\n", offset.LowPart));
             status = STATUS_END_OF_FILE;
+            ::WdfRequestComplete(request, status);
+            return;
         }
     }
 
