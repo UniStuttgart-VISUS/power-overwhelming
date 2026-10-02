@@ -40,11 +40,11 @@ static const rapl_domain_configs_type domain_configs = {
             make_energy_magic_config(cpu_vendor::amd,
                 rapl_domain::package,
                 msr_offsets::amd::package_energy_status,
-                sensor_type::cpu | sensor_type::gpu),
+                sensor_type::cpu | sensor_type::gpu | sensor_type::power),
             make_energy_magic_config(cpu_vendor::amd,
                 rapl_domain::pp0,
                 msr_offsets::amd::pp0_energy_status,
-                sensor_type::cpu)
+                sensor_type::cpu | sensor_type::power)
         }
     },
 
@@ -54,15 +54,15 @@ static const rapl_domain_configs_type domain_configs = {
             make_energy_magic_config(cpu_vendor::intel,
                 rapl_domain::dram,
                 msr_offsets::intel::dram_energy_status,
-                sensor_type::memory),
+                sensor_type::memory | sensor_type::power),
             make_energy_magic_config(cpu_vendor::intel,
                 rapl_domain::package,
                 msr_offsets::intel::package_energy_status,
-                sensor_type::cpu | sensor_type::gpu),
+                sensor_type::cpu | sensor_type::gpu | sensor_type::power),
             make_energy_magic_config(cpu_vendor::intel,
                 rapl_domain::pp0,
                 msr_offsets::intel::pp0_energy_status,
-                sensor_type::cpu),
+                sensor_type::cpu | sensor_type::power),
             make_energy_magic_config(cpu_vendor::intel,
                 rapl_domain::pp1,
                 msr_offsets::intel::pp1_energy_status,
@@ -70,6 +70,10 @@ static const rapl_domain_configs_type domain_configs = {
                 // onboard GPU, but also other components other than CPU
                 // cores.
                 sensor_type::gpu),
+            make_time_magic_config(cpu_vendor::intel,
+                rapl_domain::package,
+                msr_offsets::intel::package_performance_status,
+                sensor_type::cpu | sensor_type::time),
         }
     },
 };
@@ -144,16 +148,26 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
                     }
                 }
 
-                builder.with_id(L"MSR/%d/%s", c, to_string(d.first))
+                builder.with_id(L"MSR/%d/%s/%s", c, to_string(d.first), to_string(d.second.rapl_if))
                     .with_name(L"%s Core %d %s (MSR)", to_string(vendor), c,
                         to_string(d.first))
                     .with_path(path)
-                    .with_type(sensor_type::power | d.second.type)
+                    .with_type(d.second.type)
                     .produces(reading_type::floating_point)
-                    .measured_in(reading_unit::watt)
                     .with_new_private_data<register_identifier>(
                         d.second.data_location,
                         msr_unit_divisor(dev, d.second));
+
+                switch (d.second.rapl_if) {
+                    case msr_interface::energy_status:
+                        builder.measured_in(reading_unit::watt);
+                        break;
+                    case msr_interface::perf_status:
+                        builder.measured_in(reading_unit::second);
+                        break;
+                    default:
+                        continue;
+                }
 
                 if (retval < cnt) {
                     dst[retval] = builder.build();
