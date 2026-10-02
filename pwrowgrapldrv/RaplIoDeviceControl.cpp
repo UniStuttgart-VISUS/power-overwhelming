@@ -54,7 +54,7 @@ extern "C" void RaplIoDeviceControl(_In_ WDFQUEUE queue,
     }
 
     // We are done. Make sure to return how much information we returned.
-    KdPrint(("[PWROWG] Complete open with 0x%x\r\n", status));
+    KdPrint(("[PWROWG] Complete IOCTL with 0x%x\r\n", status));
     if (NT_SUCCESS(status)) {
         ::WdfRequestCompleteWithInformation(request, status, 0);// TODO
     } else {

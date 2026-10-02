@@ -112,7 +112,7 @@ extern "C" void RaplRead(_In_ WDFQUEUE queue, _In_ WDFREQUEST request,
 
     // We are done. Make sure to return how much we read if the operation did
     // succeed.
-    KdPrint(("[PWROWG] Complete open with 0x%x\r\n", status));
+    KdPrint(("[PWROWG] Complete read with 0x%x\r\n", status));
     if (NT_SUCCESS(status)) {
         ::WdfRequestCompleteWithInformation(request, status, bytesRead);
     } else {
