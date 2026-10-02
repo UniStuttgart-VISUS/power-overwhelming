@@ -148,14 +148,9 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
     const auto restoreAffinity = NT_SUCCESS(status);
 
     // Obtain the CPU vendor and model, which allows us to find out whether the
-    // requested core supports RAPL MSRs. Afterwards, we restore the thread
-    // affinity to its original state.
+    // requested core supports RAPL MSRs.
     if (NT_SUCCESS(status)) {
         status = ::RaplIdentifyCpu(cpuInfo);
-    }
-
-    if (restoreAffinity) {
-        ::KeSetSystemGroupAffinityThread(&originalAffinity, nullptr);
     }
 
     // Next, make sure that the CPU is by AMD or Intel and determine which
@@ -174,13 +169,18 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
             // Note: We allocate at least one byte, because 'Msrs' being
             // nullptr indicates that the test should be skipped and if we
             // have zero registers in this code path, we want to signal that
-            // none us supported.
+            // none is supported.
             fileContext->Msrs = reinterpret_cast<unsigned __int32 *>(
                 ::ExAllocatePoolWithTag(PagedPool,
                 max(1, fileContext->CountMsrs * sizeof(unsigned __int32)),
                 RAPL_POOL_TAG));
 
             if (fileContext->Msrs != nullptr) {
+                // Note: It is important to update the 'CountMsrs' member here,
+                // because the call to RaplGetSupportedRegisters with a nullptr
+                // buffer only tells us the upper bound of what might be
+                // supported. Only by providing an actual buffer, we get the
+                // actual number of supported registers.
                 fileContext->CountMsrs = ::RaplGetSupportedRegisters(cpuInfo,
                     fileContext->Msrs, fileContext->CountMsrs);
                 KdPrint(("[PWROWG] MSR list 0x%p has %I64u element(s).\r\n",
@@ -191,6 +191,12 @@ extern "C" void RaplCreate(_In_ WDFDEVICE device, _In_ WDFREQUEST request,
                 status = STATUS_NO_MEMORY;
             }
         }
+    }
+
+    // Restore thread affinity to its original state when we are done with the
+    // MSR checks.
+    if (restoreAffinity) {
+        ::KeSetSystemGroupAffinityThread(&originalAffinity, nullptr);
     }
 
     KdPrint(("[PWROWG] Complete open with 0x%x\r\n", status));

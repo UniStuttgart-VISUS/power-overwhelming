@@ -15,7 +15,10 @@
 /// <param name="cpuInfo"></param>
 /// <param name="dst"></param>
 /// <param name="cnt"></param>
-/// <returns></returns>
+/// <returns>If <paramref name="dst" /> is <see langword="nullptr"/>, the
+/// maximum number of registers supported, which can be used to allocate the
+/// required memory for a second call. Otherwise, the number of registers
+/// written to <paramref name="dst" />.</returns>
 SIZE_T RaplGetSupportedRegisters(_In_ const RaplCpuInfo& cpuInfo,
     _Out_writes_opt_(cnt) unsigned __int32 *dst,
     _In_ const SIZE_T cnt);
