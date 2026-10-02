@@ -11,6 +11,31 @@
 
 
 /*
+ * PWROWG_DETAIL_NAMESPACE::to_string
+ */
+_Ret_z_ const wchar_t* PWROWG_DETAIL_NAMESPACE::to_string(
+    _In_ const msr_interface rapl_if) {
+#define _GCC_IS_SHIT(v) L##v
+#define _TO_STRING_CASE(v) case msr_interface::v: return _GCC_IS_SHIT(#v)
+
+    switch (rapl_if) {
+        _TO_STRING_CASE(power_limit);
+        _TO_STRING_CASE(energy_status);
+        _TO_STRING_CASE(perf_status);
+        _TO_STRING_CASE(power_info);
+        _TO_STRING_CASE(policy);
+
+    default:
+        throw std::invalid_argument("The specified RAPL domain is "
+            "unknown. Make sure to add all new sources in to_string.");
+    }
+
+#undef _GCC_IS_SHIT
+#undef _TO_STRING_CASE
+}
+
+
+/*
  * PWROWG_DETAIL_NAMESPACE::make_energy_magic_config
  */
 PWROWG_DETAIL_NAMESPACE::msr_magic_config_entry

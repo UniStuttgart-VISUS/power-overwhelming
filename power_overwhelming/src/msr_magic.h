@@ -78,6 +78,17 @@ namespace intel {
 } /* namespace msr_units */
 
 
+enum class msr_interface : std::uint32_t {
+    power_limit = 0,
+    energy_status,
+    perf_status, // Optional
+    power_info, // Optional
+    policy, // Optional
+};
+
+_Ret_z_ const wchar_t* to_string(
+    _In_ const msr_interface rapl_if);
+
 /// <summary>
 /// A container for all the magic offsets required to retrieve and interpret
 /// data from an MSR device file.
@@ -93,6 +104,8 @@ struct msr_magic_config final {
     /// The type of sendor we want to report to users of Power Overwhelming.
     /// </summary>
     sensor_type type;
+
+    msr_interface rapl_if;
 
     /// <summary>
     /// Specifies the offset into the MSR file where the unit divisors are

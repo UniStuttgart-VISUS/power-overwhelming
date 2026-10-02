@@ -76,7 +76,7 @@ enum class reading_unit : std::uint32_t {
     /// <summary>
     /// Seconds for time.
     /// </summary>
-    seconds
+    second
 };
 
 
