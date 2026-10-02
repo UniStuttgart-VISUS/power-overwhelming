@@ -10,8 +10,21 @@
 #include "RaplDriver.h"
 
 
-// Retrieves all RAPL registers that are valid for the CPU core that has been
-// opened via the file object.
+/// <summary>
+/// An I/O control code to retrieve all RAPL registers that are available for
+/// the core for which the file context has been created.
+/// </summary>
+/// <remarks>
+/// <para>The I/O control has no input and requires an output buffer for at
+/// least one MSR register address (32-bit integer). If the buffer is too small,
+/// the IOCTL will fail and <see cref="GetLastError" /> will return
+/// <c>ERROR_INSUFFICIENT_BUFFER</c>. The caller should try again with a larger
+/// buffer until the IOCTL succeeds.</para>
+/// <para>The IOCTL will fail if the driver was configured to not check the MSR
+/// registers for validity via the registry. This mode of operation should not
+/// be used anyway as it might crash the system if an invalid MSR is specified.
+/// </para>
+/// </remarks>
 #define IOCTL_RAPL_REGISTERS CTL_CODE(FILE_DEVICE_UNKNOWN, 0x800, METHOD_BUFFERED, FILE_READ_DATA)
 
 
