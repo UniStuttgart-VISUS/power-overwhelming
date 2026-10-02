@@ -21,7 +21,7 @@ PWROWG_DETAIL_NAMESPACE::make_energy_magic_config(
         _In_ const sensor_type type) {
     msr_magic_config config;
     config.data_location = data_location;
-    config.type = type;
+    config.type = sensor_type::software | type;
 
     switch (vendor) {
         case cpu_vendor::amd:

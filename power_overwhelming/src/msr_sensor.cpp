@@ -95,7 +95,6 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
         _In_ std::size_t cnt,
         _In_ const configuration_type& config) {
-    const auto base_type = sensor_type::software | sensor_type::power;
     sensor_description_builder builder;
     builder.with_class(configuration_type::id);
 
@@ -149,7 +148,7 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
                     .with_name(L"%s Core %d %s (MSR)", to_string(vendor), c,
                         to_string(d.first))
                     .with_path(path)
-                    .with_type(base_type | d.second.type)
+                    .with_type(sensor_type::power | d.second.type)
                     .produces(reading_type::floating_point)
                     .measured_in(reading_unit::watt)
                     .with_new_private_data<register_identifier>(
