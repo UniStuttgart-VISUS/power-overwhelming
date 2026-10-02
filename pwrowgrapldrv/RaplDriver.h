@@ -1,5 +1,5 @@
 ﻿// <copyright file="RaplDriver.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -85,5 +85,6 @@ extern "C" EVT_WDF_DEVICE_FILE_CREATE RaplCreate;
 extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
     _In_ PWDFDEVICE_INIT deviceInit);
 extern "C" EVT_WDF_DRIVER_UNLOAD RaplDriverUnload;
+extern "C" EVT_WDF_IO_QUEUE_IO_DEVICE_CONTROL RaplIoDeviceControl;
 extern "C" EVT_WDF_IO_QUEUE_IO_READ RaplRead;
 extern "C" EVT_WDF_DEVICE_SHUTDOWN_NOTIFICATION RaplShutdown;

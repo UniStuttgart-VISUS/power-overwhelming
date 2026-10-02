@@ -1,5 +1,5 @@
 ﻿// <copyright file="RaplDeviceAdd.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2024 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -101,6 +101,7 @@ extern "C" NTSTATUS RaplDeviceAdd(_In_ WDFDRIVER driver,
         WDF_IO_QUEUE_CONFIG ioQueueConfig{ 0 };
         WDF_IO_QUEUE_CONFIG_INIT_DEFAULT_QUEUE(&ioQueueConfig,
             WdfIoQueueDispatchSequential);
+        ioQueueConfig.EvtIoDeviceControl = ::RaplIoDeviceControl;
         ioQueueConfig.EvtIoRead = ::RaplRead;
 
         WDF_OBJECT_ATTRIBUTES_INIT(&attributes);
