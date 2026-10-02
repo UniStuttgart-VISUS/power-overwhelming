@@ -134,7 +134,7 @@ typedef std::pair<rapl_domain, msr_magic_config> msr_magic_config_entry;
 /// vendor and the energy unit and wraps it into a pair for the initialiser
 /// of a lookup table.
 /// </summary>
-inline PWROWG_TEST_API msr_magic_config_entry make_energy_magic_config(
+PWROWG_TEST_API msr_magic_config_entry make_energy_magic_config(
     _In_ const cpu_vendor vendor,
     _In_ const rapl_domain domain,
     _In_ const std::streamoff data_location,
