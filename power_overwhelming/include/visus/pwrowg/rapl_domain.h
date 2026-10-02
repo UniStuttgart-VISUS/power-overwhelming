@@ -49,8 +49,6 @@ enum class rapl_domain {
     /// The DRAM package.
     /// </summary>
     dram,
-
-    package_performance,
 };
 
 

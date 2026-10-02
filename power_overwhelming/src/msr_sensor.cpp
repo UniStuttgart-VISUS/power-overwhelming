@@ -150,15 +150,10 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
                     .with_path(path)
                     .with_type(sensor_type::power | d.second.type)
                     .produces(reading_type::floating_point)
+                    .measured_in(reading_unit::watt)
                     .with_new_private_data<register_identifier>(
                         d.second.data_location,
                         msr_unit_divisor(dev, d.second));
-
-                if (d.first == rapl_domain::package_performance) {
-                    builder.measured_in(reading_unit::seconds);
-                } else {
-                    builder.measured_in(reading_unit::watt);
-                }
 
                 if (retval < cnt) {
                     dst[retval] = builder.build();
