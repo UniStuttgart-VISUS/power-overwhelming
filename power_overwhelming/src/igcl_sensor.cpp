@@ -568,7 +568,7 @@ PWROWG_DETAIL_NAMESPACE::igcl_sensor::igcl_sensor(
         _offset(0) {
     // Search for the adapter that produces the specified hash for its
     // properties. The reason for this implementation is that the device handle
-    // is tied to the igcl_scope taht was used to enumerate it. As each sensor
+    // is tied to the igcl_scope that was used to enumerate it. As each sensor
     // has its own scope, we need to re-open the devices here.
     const auto devices = ::devices(this->_scope);
     for (auto& d : devices) {

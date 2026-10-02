@@ -24,6 +24,7 @@
 
 #include "msr_device.h"
 #include "sensor_description_builder.h"
+#include "sensor_state.h"
 #include "sensor_utilities.h"
 
 
@@ -214,6 +215,13 @@ public:
         _In_reads_(cnt) const sensor_description *sensors,
         _In_ const std::size_t cnt,
         _In_opt_ void *context = nullptr);
+
+    /// <summary>
+    /// Handles certain state changes in the sensor array to initialise the
+    /// sensor state.
+    /// </summary>
+    /// <param name="state">The new state of the owning sensor array.</param>
+    void state_change(_In_ const sensor_state::value_type state);
 
 private:
 

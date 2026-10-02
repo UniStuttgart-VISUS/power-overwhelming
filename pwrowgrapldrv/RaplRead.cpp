@@ -54,7 +54,7 @@ extern "C" void RaplRead(_In_ WDFQUEUE queue, _In_ WDFREQUEST request,
     KdPrint(("[PWROWG] RAPL request offset 0x%I64x\r\n", offset.QuadPart));
 
     if (NT_SUCCESS(status) && (offset.HighPart != 0)) {
-        // The offset is larger thatn 32-bit, so it cannot be a valid register.
+        // The offset is larger that 32-bit, so it cannot be a valid register.
         // We indicate invalid register addresses as end of file.
         KdPrint(("[PWROWG] Register 0x%I64x does not fit into 32 bits\r\n",
             offset.QuadPart));
@@ -89,9 +89,12 @@ extern "C" void RaplRead(_In_ WDFQUEUE queue, _In_ WDFREQUEST request,
 
     // Read the register which is given by the offset in the file. This one line
     // is the only reason for this whole driver existing ...
-    auto data = __readmsr(offset.LowPart);
-    KdPrint(("[PWROWG] Read 0x%I64x from register 0x%x\r\n", data,
-        offset.LowPart));
+    unsigned __int64 data = 0;
+    if (NT_SUCCESS(status)) {
+        data = __readmsr(offset.LowPart);
+        KdPrint(("[PWROWG] Read 0x%I64x from register 0x%x\r\n", data,
+            offset.LowPart));
+    }
 
     // Restore previous thread affinity.
     if (restoreAffinity) {

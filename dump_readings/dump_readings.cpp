@@ -191,6 +191,14 @@ int _tmain(const int argc, const TCHAR **argv) {
 
         auto sensors = sensor_array::for_all(std::move(sensor_config));
 
+        // Print the sensors such that the user can check whether they are
+        // complete.
+        std::wcout << "Available sensors:" << std::endl;
+        for (auto& s : sensors) {
+            std::wcout << s.name() << L" (" << s.id() << L")" << std::endl;
+        }
+        std::wcout << std::endl;
+
         // If we have a file, measure how many samples we can expect.
         if (output != nullptr) {
             std::wcout << L"Measuring how many samples to expect within "

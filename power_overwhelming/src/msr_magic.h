@@ -1,5 +1,5 @@
 ﻿// <copyright file="msr_magic_config.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2023 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -8,13 +8,13 @@
 #define _PWROWG_MSR_MAGIC_H
 #pragma once
 
-#include <functional>
 #include <utility>
 
 #include "visus/pwrowg/cpu_info.h"
 #include "visus/pwrowg/api.h"
 #include "visus/pwrowg/rapl_domain.h"
 #include "visus/pwrowg/rapl_quantity.h"
+#include "visus/pwrowg/sensor_type.h"
 
 #include "msr_magic.h"
 #include "msr_sensor.h"
@@ -90,10 +90,9 @@ struct msr_magic_config final {
     std::streamoff data_location;
 
     /// <summary>
-    /// A functional that performs a check at runtime whether the CPU the
-    /// code is running on actually supports the RAPL register in question.
+    /// The type of sendor we want to report to users of Power Overwhelming.
     /// </summary>
-    std::function<bool(const msr_sensor::core_type)> is_supported;
+    sensor_type type;
 
     /// <summary>
     /// Specifies the offset into the MSR file where the unit divisors are
@@ -116,8 +115,12 @@ struct msr_magic_config final {
     /// <summary>
     /// Initialises a new instance.
     /// </summary>
-    inline msr_magic_config(void) noexcept : data_location(0),
-        unit_location(0), unit_mask(0), unit_offset(0) { }
+    inline msr_magic_config(void) noexcept
+        : data_location(0),
+        type(sensor_type::unknown),
+        unit_location(0),
+        unit_mask(0),
+        unit_offset(0) { }
 };
 
 /// <summary>
@@ -127,44 +130,15 @@ struct msr_magic_config final {
 typedef std::pair<rapl_domain, msr_magic_config> msr_magic_config_entry;
 
 /// <summary>
-/// Performs the default test whether a specific RAPL domain is supported on
-/// the specified CPU core.
-/// </summary>
-/// <remarks>
-/// <para>Note that this implementation only tests for energy registers, not
-/// for other kinds that might or might not be available.</para>
-/// <para>This function is not part of the public API, but only exported for
-/// testing.</para>
-/// </remarks>
-/// <param name="core">The zero-based index of the CPU core to check.
-/// </param>
-/// <param name="domain">The RAPL domain to be tested.</param>
-/// <returns><c>true</c> if the core has a RAPL MSRs for the specified
-/// domain.</returns>
-extern PWROWG_TEST_API bool is_rapl_energy_supported(
-    _In_ const msr_sensor::core_type core, _In_ const rapl_domain domain);
-
-/// <summary>
 /// Creates a <see cref="msr_magic_config" /> for a CPU from the specified
 /// vendor and the energy unit and wraps it into a pair for the initialiser
 /// of a lookup table.
 /// </summary>
-extern PWROWG_TEST_API msr_magic_config_entry make_energy_magic_config(
+inline PWROWG_TEST_API msr_magic_config_entry make_energy_magic_config(
     _In_ const cpu_vendor vendor,
     _In_ const rapl_domain domain,
     _In_ const std::streamoff data_location,
-    _In_ const std::function<bool(const msr_sensor::core_type)>& check);
-
-/// <summary>
-/// Creates a <see cref="msr_magic_config" /> with the built-in check for
-/// whether RAPL MSRs are supported.
-/// </summary>
-inline PWROWG_TEST_API msr_magic_config_entry make_energy_magic_config(
-        _In_ const cpu_vendor vendor,
-        _In_ const rapl_domain domain,
-        _In_ const std::streamoff data_location) {
-    return make_energy_magic_config(vendor, domain, data_location, nullptr);
-}
+    _In_ const sensor_type type);
 
 extern PWROWG_TEST_API msr_magic_config_entry make_throttling_magic_config(
     _In_ const cpu_vendor vendor,

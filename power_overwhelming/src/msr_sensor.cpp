@@ -1,4 +1,4 @@
-﻿// <copyright file="msr_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+// <copyright file="msr_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
@@ -12,6 +12,7 @@
 #include "visus/pwrowg/cpu_affinity.h"
 #include "visus/pwrowg/cpu_info.h"
 #include "visus/pwrowg/for_each_rapl_domain.h"
+#include "visus/pwrowg/trace.h"
 
 #include "msr_magic.h"
 #include "sensor_description_builder.h"
@@ -38,10 +39,12 @@ static const rapl_domain_configs_type domain_configs = {
         {
             make_energy_magic_config(cpu_vendor::amd,
                 rapl_domain::package,
-                msr_offsets::amd::package_energy_status),
+                msr_offsets::amd::package_energy_status,
+                sensor_type::cpu | sensor_type::gpu),
             make_energy_magic_config(cpu_vendor::amd,
                 rapl_domain::pp0,
-                msr_offsets::amd::pp0_energy_status)
+                msr_offsets::amd::pp0_energy_status,
+                sensor_type::cpu)
         }
     },
 
@@ -50,19 +53,23 @@ static const rapl_domain_configs_type domain_configs = {
         {
             make_energy_magic_config(cpu_vendor::intel,
                 rapl_domain::dram,
-                msr_offsets::intel::dram_energy_status),
+                msr_offsets::intel::dram_energy_status,
+                sensor_type::memory),
             make_energy_magic_config(cpu_vendor::intel,
                 rapl_domain::package,
-                msr_offsets::intel::package_energy_status),
+                msr_offsets::intel::package_energy_status,
+                sensor_type::cpu | sensor_type::gpu),
             make_energy_magic_config(cpu_vendor::intel,
                 rapl_domain::pp0,
-                msr_offsets::intel::pp0_energy_status),
+                msr_offsets::intel::pp0_energy_status,
+                sensor_type::cpu),
             make_energy_magic_config(cpu_vendor::intel,
                 rapl_domain::pp1,
-                msr_offsets::intel::pp1_energy_status),
-            make_throttling_magic_config(cpu_vendor::intel,
-                rapl_domain::package,
-                msr_offsets::intel::package_performance_status),
+                msr_offsets::intel::pp1_energy_status,
+                // Technically, PP1 ("uncore") does not only include the
+                // onboard GPU, but also other components other than CPU
+                // cores.
+                sensor_type::gpu),
         }
     },
 };
@@ -88,7 +95,6 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
         _When_(dst != nullptr, _Out_writes_opt_(cnt)) sensor_description *dst,
         _In_ std::size_t cnt,
         _In_ const configuration_type& config) {
-    const auto base_type = sensor_type::software | sensor_type::power;
     sensor_description_builder builder;
     builder.with_class(configuration_type::id);
 
@@ -123,45 +129,26 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
             const auto path = msr_device::path(c);
             auto dev = msr_device(path);
 
-            // Emit descriptions for all RAPL supported RAPL domains.
+            // Emit descriptions for all RAPL supported RAPL domains (the ones
+            // we can read).
             for (auto& d : vit->second) {
-                if (!config.bypass_check()
-                        && d.second.is_supported
-                        && !d.second.is_supported(c)) {
-                    // The specified RAPL domain has specifically been marked as
-                    // unsupported for the given core.
-                    continue;
-                }
-
-                switch (d.first) {
-                    case rapl_domain::package:
-                        builder.with_type(base_type | sensor_type::cpu
-                            | sensor_type::gpu);
-                        break;
-
-                    case rapl_domain::pp0:
-                        builder.with_type(base_type | sensor_type::cpu);
-                        break;
-
-                    case rapl_domain::pp1:
-                        // Technically, PP1 does not only include the onboard
-                        // GPU, but also other components other than CPU cores.
-                        builder.with_type(base_type | sensor_type::gpu);
-                        break;
-
-                    case rapl_domain::dram:
-                        builder.with_type(base_type | sensor_type::memory);
-                        break;
-
-                    case rapl_domain::package_performance:
-                        builder.with_type(sensor_type::throttling | sensor_type::cpu);
-                        break;
+                if (!config.bypass_check()) {
+                    try {
+                        const auto data = dev.read(d.second.data_location);
+                        const auto unit = dev.read(d.second.unit_location);
+                    } catch (...) {
+                        PWROWG_TRACE(_T("RAPL domain %u is not supported on ")
+                            _T("core %u."), static_cast<unsigned int>(d.first),
+                            c);
+                        continue;
+                    }
                 }
 
                 builder.with_id(L"MSR/%d/%s", c, to_string(d.first))
                     .with_name(L"%s Core %d %s (MSR)", to_string(vendor), c,
                         to_string(d.first))
                     .with_path(path)
+                    .with_type(sensor_type::power | d.second.type)
                     .produces(reading_type::floating_point)
                     .with_new_private_data<register_identifier>(
                         d.second.data_location,
@@ -307,3 +294,10 @@ void PWROWG_DETAIL_NAMESPACE::msr_sensor::sample(
 
     callback(samples.data(), samples.size(), sensors, cnt, context);
 }
+
+
+/*
+ * PWROWG_DETAIL_NAMESPACE::msr_sensor::state_change
+ */
+void PWROWG_DETAIL_NAMESPACE::msr_sensor::state_change(
+        _In_ const sensor_state::value_type state) { }
