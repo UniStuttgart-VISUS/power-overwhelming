@@ -87,9 +87,12 @@ extern "C" void RaplRead(_In_ WDFQUEUE queue, _In_ WDFREQUEST request,
 
     // Read the register which is given by the offset in the file. This one line
     // is the only reason for this whole driver existing ...
-    auto data = __readmsr(offset.LowPart);
-    KdPrint(("[PWROWG] Read 0x%I64x from register 0x%x\r\n", data,
-        offset.LowPart));
+    unsigned __int64 data = 0;
+    if (NT_SUCCESS(status)) {
+        data = __readmsr(offset.LowPart);
+        KdPrint(("[PWROWG] Read 0x%I64x from register 0x%x\r\n", data,
+            offset.LowPart));
+    }
 
     // Restore previous thread affinity.
     if (restoreAffinity) {
