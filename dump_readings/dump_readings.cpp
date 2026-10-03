@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include <mutex>
+#include <regex>
 #include <thread>
 #include <vector>
 
@@ -77,6 +78,12 @@ int _tmain(const int argc, const TCHAR **argv) {
     try {
         // Process command line arguments.
         const auto end = argv + argc;
+
+        const TCHAR *filter = nullptr;
+        {
+            auto it = ::find_argument(argv, end, "--filter");
+            filter = *it;
+        }
 
         std::chrono::milliseconds interval(10);
         {
@@ -189,7 +196,18 @@ int _tmain(const int argc, const TCHAR **argv) {
             });
         }
 
-        auto sensors = sensor_array::for_all(std::move(sensor_config));
+        std::wregex rx_filter;
+        if (filter != nullptr) {
+            rx_filter = std::wregex(convert_string<wchar_t>(filter),
+                std::regex_constants::icase | std::regex_constants::ECMAScript);
+        }
+
+        auto sensors = (filter == nullptr)
+            ? sensor_array::for_all(std::move(sensor_config))
+            : sensor_array::for_matches(std::move(sensor_config),
+                [&rx_filter](const sensor_description& d) {
+                    return std::regex_search(d.id(), rx_filter);
+                });
 
         // Print the sensors such that the user can check whether they are
         // complete.
@@ -264,8 +282,18 @@ int _tmain(const int argc, const TCHAR **argv) {
                 }
 
                 // Dump the samples.
-                file.write(file_context.samples.data(),
-                    file_context.samples.size());
+                if (!file_context.samples.empty()) {
+#if ((defined(DEBUG) || defined(_DEBUG)))
+                    assert(std::none_of(
+                        file_context.samples.begin(),
+                        file_context.samples.end(),
+                        [&sensors](const auto& s) {
+                            return (s.source >= sensors.size());
+                        }));
+#endif  /* ((defined(DEBUG) || defined(_DEBUG))) */
+                    file.write(file_context.samples.data(),
+                        file_context.samples.size());
+                }
             } else {
                 // Assume CSV.
                 std::ofstream stream(output,

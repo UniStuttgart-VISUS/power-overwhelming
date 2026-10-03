@@ -66,6 +66,28 @@ public:
     }
 
     /// <summary>
+    /// Answer whether the writer should gracefully ignore invalid source IDs
+    /// and alike and just drop the sample.
+    /// </summary>
+    /// <returns><see langword="true" /> if the writer is lenient,
+    /// <see langword="false" /> otherwise.</returns>
+    inline bool lenient(void) const noexcept {
+        return this->_lenient;
+    }
+
+    /// <summary>
+    /// Configures  whether the writer should gracefully ignore invalid source IDs
+    /// and alike and just drop the sample.
+    /// </summary>
+    /// <param name="lenient"><see langword="true" /> if the writer should be
+    /// lenient, <see langword="false" /> otherwise</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline hdf5_configuration& lenient(_In_ const bool lenient) noexcept {
+        this->_lenient = lenient;
+        return *this;
+    }
+
+    /// <summary>
     /// Retrieves the keys of all meta data entries to be stored as attributes
     /// in the HDF5 file.
     /// </summary>
@@ -161,6 +183,7 @@ public:
 private:
 
     std::size_t _chunk_size;
+    bool _lenient;
     type_erased_storage _meta_data;
     bool _overwrite;
     blob _path;

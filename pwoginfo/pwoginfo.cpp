@@ -59,7 +59,7 @@ int main(const int argc, const char **argv) {
     const auto end = argv + argc;
 
     try {
-        // Process command line arguments.
+        // The mandatory input file.
         const char *path = nullptr;
         {
             auto it = ::find_argument(argv, end, "--path");
@@ -69,6 +69,19 @@ int main(const int argc, const char **argv) {
             path = *it;
         }
 
+        // The batch size for computing the statistics.
+        std::size_t batch_size = 4096;
+        {
+            auto it = ::find_argument(argv, end, "--batch-size");
+            if (it != end) {
+                batch_size = (std::max)(1ul, std::stoul(*it));
+            }
+        }
+
+        // Skip readings with invalid sources.
+        const auto lenient = (::find_switch(argv, end, "--lenient") != end);
+
+        // Compute per-sensor statistics.
         const auto statistics = (::find_switch(argv, end, "--statistics") != end);
 
         // Read and dump embedded meta data.
@@ -118,7 +131,7 @@ int main(const int argc, const char **argv) {
                 (std::numeric_limits<float>::max)());
             std::vector<float> maxima(sensors.size(),
                 (std::numeric_limits<float>::min)());
-            std::vector<sample> samples(1024);
+            std::vector<sample> samples(batch_size);
             std::size_t total = 0;
             std::vector<std::size_t> totals(sensors.size(), 0);
 
@@ -126,6 +139,16 @@ int main(const int argc, const char **argv) {
             while ((cnt = file.read(samples.data(), samples.size())) > 0) {
                 for (std::size_t i = 0; i < cnt; ++i, ++total) {
                     const auto& sample = samples[i];
+                    if (sample.source >= sensors.size()) {
+                        if (lenient) {
+                            std::cerr << "Sample " << total << " has an "
+                                "invalid source " << sample.source << std::endl;
+                            continue;
+                        }
+
+                        throw std::runtime_error("Invalid sample source.");
+                    }
+
                     auto& average = averages[sample.source];
                     auto& maximum = maxima[sample.source];
                     auto& minimum = minima[sample.source];

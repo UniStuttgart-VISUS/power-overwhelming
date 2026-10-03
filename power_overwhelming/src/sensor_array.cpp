@@ -348,7 +348,11 @@ void PWROWG_NAMESPACE::sensor_array::sample(
                 config->context);
         }
 
-        std::this_thread::sleep_until(then);
+        if (config->interval <= std::chrono::nanoseconds::zero()) {
+            std::this_thread::yield();
+        } else {
+            std::this_thread::sleep_until(then);
+        }
     }
 }
 

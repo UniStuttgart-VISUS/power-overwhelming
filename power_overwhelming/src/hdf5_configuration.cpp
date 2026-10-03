@@ -20,7 +20,10 @@
 PWROWG_NAMESPACE::hdf5_configuration::hdf5_configuration(
         _In_z_ const wchar_t *path,
         _In_ const bool overwrite)
-        : _chunk_size(1024), _overwrite(overwrite), _raw(false) {
+    : _chunk_size(1024),
+        _lenient(false),
+        _overwrite(overwrite),
+        _raw(false) {
     if (path == nullptr) {
         throw std::invalid_argument("A valid path for the HDF5 file must "
             "be specified.");
@@ -40,7 +43,10 @@ PWROWG_NAMESPACE::hdf5_configuration::hdf5_configuration(
 PWROWG_NAMESPACE::hdf5_configuration::hdf5_configuration(
         _In_z_ const char *path,
         _In_ const bool overwrite)
-        : _chunk_size(1024), _overwrite(overwrite), _raw(false) {
+    : _chunk_size(1024),
+        _lenient(false),
+        _overwrite(overwrite),
+        _raw(false) {
     if (path == nullptr) {
         throw std::invalid_argument("A valid path for the HDF5 file must "
             "be specified.");
