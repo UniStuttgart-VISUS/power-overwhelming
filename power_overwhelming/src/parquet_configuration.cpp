@@ -16,7 +16,9 @@
 PWROWG_NAMESPACE::parquet_configuration::parquet_configuration(
         _In_z_ const wchar_t *path,
         _In_ const parquet_identity_column identity)
-        : _identity(identity), _raw(false) {
+    : _identity(identity),
+        _lenient(false),
+        _raw(false) {
     if (path == nullptr) {
         throw std::invalid_argument("A valid path for the Parquet file must "
             "be specified.");
@@ -33,7 +35,9 @@ PWROWG_NAMESPACE::parquet_configuration::parquet_configuration(
 PWROWG_NAMESPACE::parquet_configuration::parquet_configuration(
         _In_z_ const char *path,
         _In_ const parquet_identity_column identity)
-        : _identity(identity), _raw(false) {
+    : _identity(identity),
+        _lenient(false),
+        _raw(false) {
     if (path == nullptr) {
         throw std::invalid_argument("A valid path for the Parquet file must "
             "be specified.");

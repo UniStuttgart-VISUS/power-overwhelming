@@ -78,6 +78,28 @@ public:
     }
 
     /// <summary>
+    /// Answer whether the writer should gracefully ignore invalid source IDs
+    /// and alike and just drop the sample.
+    /// </summary>
+    /// <returns><see langword="true" /> if the writer is lenient,
+    /// <see langword="false" /> otherwise.</returns>
+    inline bool lenient(void) const noexcept {
+        return this->_lenient;
+    }
+
+    /// <summary>
+    /// Configures  whether the writer should gracefully ignore invalid source IDs
+    /// and alike and just drop the sample.
+    /// </summary>
+    /// <param name="lenient"><see langword="true" /> if the writer should be
+    /// lenient, <see langword="false" /> otherwise</param>
+    /// <returns><c>*<see langword="this" /></c>.</returns>
+    inline parquet_configuration& lenient(_In_ const bool lenient) noexcept {
+        this->_lenient = lenient;
+        return *this;
+    }
+
+    /// <summary>
     /// Gets the path to the Parquet file to be written.
     /// </summary>
     /// <returns>The path to the Parquet file.</returns>
@@ -120,6 +142,7 @@ public:
 private:
 
     parquet_identity_column _identity;
+    bool _lenient;
     blob _path;
     bool _raw;
 };

@@ -466,7 +466,12 @@ std::size_t PWROWG_NAMESPACE::pwog_file::to_parquet(
     }
 
     while ((cnt = file.read(samples.data(), samples.size())) > 0) {
-        for (std::size_t i = 0; i < cnt; ++i, ++retval) {
+        for (std::size_t i = 0; i < cnt; ++i) {
+            if (config.lenient() && (samples[i].source >= sensors->size())) {
+                writer << 0.0f;
+                continue;
+            }
+
             writer << samples[i].timestamp.value();
 
             switch (config.identity()) {
@@ -515,6 +520,7 @@ std::size_t PWROWG_NAMESPACE::pwog_file::to_parquet(
             }
 
             writer << parquet::EndRow;
+            ++retval;
         }
 
         writer << parquet::EndRowGroup;

@@ -67,6 +67,8 @@ int main(const int argc, const char **argv) {
             input = *it;
         }
 
+        const auto lenient = (::find_switch(argv, end, "--lenient") != end);
+
         std::string output;
         {
             auto it = ::find_argument(argv, end, "--output");
@@ -106,7 +108,9 @@ int main(const int argc, const char **argv) {
         // Open the file and convert it.
         auto file = pwog_file::read(input);
         const auto written = pwog_file::to_parquet(file,
-            parquet_configuration(output.c_str(), identity).raw(raw),
+            parquet_configuration(output.c_str(), identity)
+                .lenient(lenient)
+                .raw(raw),
             batch_size);
         assert(written == file.samples());
         std::cout << written << " samples copied to " << output << std::endl;
