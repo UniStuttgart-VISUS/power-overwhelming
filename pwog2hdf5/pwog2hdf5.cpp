@@ -68,6 +68,8 @@ int main(const int argc, const char **argv) {
             input = *it;
         }
 
+        const auto lenient = (::find_switch(argv, end, "--lenient") != end);
+
         std::string output;
         {
             auto it = ::find_argument(argv, end, "--output");
@@ -90,6 +92,7 @@ int main(const int argc, const char **argv) {
 
         auto config = hdf5_configuration(output.c_str(), overwrite)
             .chunk_size(batch_size)
+            .lenient(lenient)
             .raw(raw);
         config.meta_data("Pwog2Hdf5ConvertedFrom", input);
         config.meta_data("Pwog2Hdf5FileTime", std::to_string(
