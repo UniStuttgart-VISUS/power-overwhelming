@@ -104,6 +104,12 @@ int main(const int argc, const char **argv) {
         assert(written == file.samples());
         std::cout << written << " samples copied to " << output << std::endl;
 
+        if (file.samples() > written) {
+            std::cerr << "Warning: " << (file.samples() - written)
+                << " samples have been dropped due to being invalid."
+                << std::endl;
+        }
+
         return 0;
     } catch (std::exception& ex) {
         std::cerr << ex.what() << std::endl;

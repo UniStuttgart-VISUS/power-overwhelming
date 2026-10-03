@@ -340,6 +340,8 @@ std::size_t PWROWG_NAMESPACE::pwog_file::to_hdf5(
                 cnt -= rem;
             }
 
+            retval += cnt;
+
             if (!config.raw()) {
                 // If requested, perform the conversion to floats.
                 for (auto& s : samples) {
