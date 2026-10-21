@@ -79,4 +79,5 @@ private:
     wil::com_ptr<ICoreWebView2> _webView;
     wil::com_ptr<ICoreWebView2Controller> _webViewController;
     std::thread _worker;
+    std::atomic<bool> _firstLoad;
 };

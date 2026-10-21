@@ -150,6 +150,7 @@ LRESULT Controller::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             break;
 
         case WM_NAVIGATE:
+            that->_firstLoad = true;
             that->_webView->Navigate(that->_url.c_str());
             break;
 
@@ -252,7 +253,9 @@ HRESULT Controller::OnNavigationCompleted(ICoreWebView2 *webView,
     assert(webView != nullptr);
     assert(args != nullptr);
     ::OutputDebugString(_T("Navigation completed.\r\n"));
-    ::SetEvent(this->_hEvent);
+    if (this->_firstLoad.exchange(false)) {
+        ::SetEvent(this->_hEvent);
+    }
     return S_OK;
 }
 
