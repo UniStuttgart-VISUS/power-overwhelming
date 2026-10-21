@@ -49,6 +49,7 @@ visus::power_overwhelming::parse_adl_sensor_source(_In_z_ const wchar_t *str) {
 
     if (false);
     _FROM_STRING_CASE(asic);
+    _FROM_STRING_CASE(board);
     _FROM_STRING_CASE(cpu);
     _FROM_STRING_CASE(graphics);
     _FROM_STRING_CASE(soc);
@@ -70,6 +71,7 @@ _Ret_z_ const wchar_t *visus::power_overwhelming::to_string(
 
     switch (source) {
         _TO_STRING_CASE(asic);
+        _TO_STRING_CASE(board);
         _TO_STRING_CASE(cpu);
         _TO_STRING_CASE(graphics);
         _TO_STRING_CASE(soc);
