@@ -156,6 +156,22 @@ mark_as_advanced(FORCE
     FETCHCONTENT_UPDATES_DISCONNECTED_ADL)
 
 
+# AMD Device Library eXtra (successor of ADL)
+if (PWROWG_WithAdlx)
+    FetchContent_Declare(adlx
+        URL "https://github.com/GPUOpen-LibrariesAndSDKs/ADLX/archive/refs/tags/v2.0.zip"
+        DOWNLOAD_EXTRACT_TIMESTAMP ON
+    )
+    FetchContent_MakeAvailable(adlx)
+    add_library(adlx INTERFACE IMPORTED GLOBAL)
+    set_target_properties(adlx PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${adlx_SOURCE_DIR}/SDK/Include")
+    mark_as_advanced(FORCE
+        FETCHCONTENT_SOURCE_DIR_ADLX
+        FETCHCONTENT_UPDATES_DISCONNECTED_ADLX)
+endif ()
+
+
 # Apache Arrow (for Parquet output). This is a giant hack as we need a version
 # that still works with C++17. Technically, this would be 22, but this is not
 # available on vcpkg, so we get 21 here.

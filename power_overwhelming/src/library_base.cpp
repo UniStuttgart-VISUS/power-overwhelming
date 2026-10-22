@@ -1,5 +1,5 @@
 ﻿// <copyright file="library_base.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -85,13 +85,8 @@ PWROWG_DETAIL_NAMESPACE::library_base::library_base(
  * PWROWG_DETAIL_NAMESPACE::library_base::get_function
  */
 PWROWG_DETAIL_NAMESPACE::library_base::function_type
-PWROWG_DETAIL_NAMESPACE::library_base::get_function(
-        const char *name) {
-#if defined(_WIN32)
-    auto retval = ::GetProcAddress(this->_handle, name);
-#else /* defined(_WIN32) */
-    auto retval = ::dlsym(this->_handle, name);
-#endif /* defined(_WIN32) */
+PWROWG_DETAIL_NAMESPACE::library_base::get_function(_In_z_ const char *name) {
+    auto retval = this->try_get_function(name);
 
     if (retval == nullptr) {
 #if defined(_WIN32)
@@ -103,4 +98,3 @@ PWROWG_DETAIL_NAMESPACE::library_base::get_function(
 
     return retval;
 }
-

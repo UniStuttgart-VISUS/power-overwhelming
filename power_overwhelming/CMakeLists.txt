@@ -31,6 +31,12 @@ if (PWROWG_WithAdl)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_ADL)
 endif ()
 
+if (PWROWG_WithAdlx)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_ADLX)
+    target_link_libraries(${PROJECT_NAME} PRIVATE adlx)
+endif ()
+
+
 if (PWROWG_WithBenchlab)
     target_compile_definitions(${PROJECT_NAME} PUBLIC POWER_OVERWHELMING_WITH_BENCHLAB)
     target_link_libraries(${PROJECT_NAME} PRIVATE libbenchlab)

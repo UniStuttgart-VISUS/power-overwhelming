@@ -1,5 +1,5 @@
 ﻿// <copyright file="library_base.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2021 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -10,6 +10,7 @@
 #pragma once
 
 #include <array>
+#include <cassert>
 #include <system_error>
 
 #if defined(_WIN32)
@@ -84,11 +85,27 @@ protected:
 
     template<class... TPaths> library_base(TPaths&&... paths);
 
-    function_type get_function(const char *name);
+    _Ret_valid_ function_type get_function(_In_z_ const char *name);
 
     template<class TFunction>
-    inline TFunction get_function(const char *name) {
-            return reinterpret_cast<TFunction>(this->get_function(name));
+    inline _Ret_valid_ TFunction get_function(_In_z_ const char *name) {
+        return reinterpret_cast<TFunction>(this->get_function(name));
+    }
+
+    inline _Ret_maybenull_ function_type try_get_function(
+            _In_z_ const char *name) noexcept {
+        assert(name != nullptr);
+#if defined(_WIN32)
+        return ::GetProcAddress(this->_handle, name);
+#else /* defined(_WIN32) */
+        return ::dlsym(this->_handle, name);
+#endif /* defined(_WIN32) */
+    }
+
+    template <class TFunction>
+    inline _Ret_maybenull_ TFunction try_get_function(
+            _In_z_ const char *name) noexcept {
+        return reinterpret_cast<TFunction>(this->try_get_function(name));
     }
 
 private:

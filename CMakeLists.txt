@@ -31,6 +31,7 @@ set(PWROWG_CustomTinkerforgeFirmwareMinor "" CACHE STRING "The minor firmware ve
 set(PWROWG_CustomTinkerforgeFirmwareRev "" CACHE STRING "The firmware revision that identifies our custom changes")
 option(PWROWG_CustomTinkerforgeFirmwareMandatory "Raises an exception if a custom firmware was specified, but not found on all bricklets" OFF)
 option(PWROWG_WithAdl "Build support for the AMD Display Library" ON)
+cmake_dependent_option(PWROWG_WithAdlx "Build support for the AMD Device Library eXtra" ON WIN32 OFF)
 # TODO: Enable this for Linux too, once libbenchlab is fully functional.
 #option(PWROWG_WithBenchlab "Build support for the Benchlab telemetry system" ON)
 cmake_dependent_option(PWROWG_WithBenchlab "Build support for the Benchlab telemetry system" ON WIN32 OFF)
