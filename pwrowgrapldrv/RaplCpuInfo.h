@@ -35,3 +35,26 @@ struct RaplCpuInfo {
     __int8 Stepping;
     RaplCpuVendor Vendor;
 };
+
+
+/// <summary>
+/// Structure holding the DisplayFamily and DisplayModel of the CPU,
+/// which is used to identify the CPU model in a human-readable way.
+/// </summary>
+struct RaplDisplayFamilyModel {
+    unsigned __int32 DisplayFamily;
+    unsigned __int32 DisplayModel;
+    RaplDisplayFamilyModel(void) : DisplayFamily(0), DisplayModel(0) {}
+    RaplDisplayFamilyModel(_In_ const RaplCpuInfo& cpuInfo) {
+        if (cpuInfo.BaseFamily != 0xF) {
+            this->DisplayFamily = cpuInfo.BaseFamily;
+        } else {
+            this->DisplayFamily = cpuInfo.ExtendedFamily + cpuInfo.BaseFamily;
+        }
+        if ((cpuInfo.BaseFamily == 0x6) || (cpuInfo.BaseFamily == 0xF)) {
+            this->DisplayModel = (cpuInfo.ExtendedModel << 4) + cpuInfo.BaseModel;
+        } else {
+            this->DisplayModel = cpuInfo.BaseModel;
+        }
+    }
+};

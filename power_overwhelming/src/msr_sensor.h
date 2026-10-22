@@ -37,11 +37,25 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 class PWROWG_TEST_API msr_sensor final {
 
 public:
+    static std::pair<float, timestamp> process_power(_In_ const float raw,
+        _In_ const timestamp now, _In_ const timestamp last_ts,
+        _In_ const float first_value, _In_ const float last_value);
+
+    static std::pair<float, timestamp> process_raw(_In_ const float raw,
+        _In_ const timestamp now, _In_ const timestamp last_ts,
+        _In_ const float first_value, _In_ const float last_value);
+
+    static std::pair<float, timestamp> process_time(_In_ const float raw,
+        _In_ const timestamp now, _In_ const timestamp last_ts,
+        _In_ const float first_value, _In_ const float last_value);
 
     /// <summary>
     /// Identification of an MSRs and its unit divisor.
     /// </summary>
     struct register_identifier final {
+        typedef std::pair<float, timestamp> (*processor_ptr_t)(
+            const float, const timestamp, const timestamp,
+            const float, const float);
 
         /// <summary>
         /// The divisor to convert the register value into the actual value.
@@ -53,6 +67,8 @@ public:
         /// </summary>
         std::streamoff offset;
 
+        processor_ptr_t processor;
+
         /// <summary>
         /// Initialises a new instance.
         /// </summary>
@@ -60,8 +76,8 @@ public:
         /// <param name="divisor"> The divisor to convert the register value
         /// into the actual value.</param>
         inline register_identifier(_In_ const std::streamoff offset,
-                _In_ const float divisor = 1.0f)
-            : divisor(divisor), offset(offset) { }
+                _In_ const float divisor = 1.0f, _In_ const processor_ptr_t processor = &process_raw)
+            : divisor(divisor), offset(offset), processor(processor) { }
     };
 
     /// <summary>
@@ -233,6 +249,7 @@ private:
     msr_device _device;
     PWROWG_NAMESPACE::sample::source_type _index;
     std::vector<timestamp> _last_timestamp;
+    std::vector<float> _first_value;
     std::vector<float> _last_value;
     std::vector<register_identifier> _registers;
 };

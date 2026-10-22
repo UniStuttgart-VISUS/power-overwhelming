@@ -218,6 +218,15 @@ bool PWROWG_NAMESPACE::is_tinkerforge_sensor(
 
 
 /*
+ * PWROWG_NAMESPACE::is_time_sensor
+ */
+bool PWROWG_NAMESPACE::is_time_sensor(
+    _In_ const sensor_description& desc) noexcept {
+    return desc.is_sensor_type(sensor_type::time);
+}
+
+
+/*
  * PWROWG_NAMESPACE::is_usb_pd_sensor
  */
 bool PWROWG_NAMESPACE::is_usb_pd_sensor(

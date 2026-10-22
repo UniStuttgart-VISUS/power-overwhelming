@@ -1,4 +1,4 @@
-﻿// <copyright file="msr_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+// <copyright file="msr_sensor.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2021 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
@@ -26,7 +26,7 @@ PWROWG_DETAIL_NAMESPACE_BEGIN
 /// the MSR device file, which can also be used to find out whether a
 /// RAPL domain is supported for a CPU vendor.
 /// </summary>
-typedef std::map<cpu_vendor, std::map<rapl_domain, msr_magic_config>>
+typedef std::map<cpu_vendor, std::vector<std::pair<rapl_domain, msr_magic_config>>>
 rapl_domain_configs_type;
 
 /// <summary>
@@ -40,11 +40,13 @@ static const rapl_domain_configs_type domain_configs = {
             make_energy_magic_config(cpu_vendor::amd,
                 rapl_domain::package,
                 msr_offsets::amd::package_energy_status,
-                sensor_type::cpu | sensor_type::gpu),
+                sensor_type::cpu | sensor_type::gpu,
+                msr_interface::energy_status),
             make_energy_magic_config(cpu_vendor::amd,
                 rapl_domain::pp0,
                 msr_offsets::amd::pp0_energy_status,
-                sensor_type::cpu)
+                sensor_type::cpu,
+                msr_interface::energy_status)
         }
     },
 
@@ -54,22 +56,41 @@ static const rapl_domain_configs_type domain_configs = {
             make_energy_magic_config(cpu_vendor::intel,
                 rapl_domain::dram,
                 msr_offsets::intel::dram_energy_status,
-                sensor_type::memory),
+                sensor_type::memory,
+                msr_interface::energy_status),
             make_energy_magic_config(cpu_vendor::intel,
                 rapl_domain::package,
                 msr_offsets::intel::package_energy_status,
-                sensor_type::cpu | sensor_type::gpu),
+                sensor_type::cpu | sensor_type::gpu,
+                msr_interface::energy_status),
             make_energy_magic_config(cpu_vendor::intel,
                 rapl_domain::pp0,
                 msr_offsets::intel::pp0_energy_status,
-                sensor_type::cpu),
+                sensor_type::cpu,
+                msr_interface::energy_status),
             make_energy_magic_config(cpu_vendor::intel,
                 rapl_domain::pp1,
                 msr_offsets::intel::pp1_energy_status,
                 // Technically, PP1 ("uncore") does not only include the
                 // onboard GPU, but also other components other than CPU
                 // cores.
-                sensor_type::gpu),
+                sensor_type::gpu,
+                msr_interface::energy_status),
+           make_time_magic_config(cpu_vendor::intel,
+                rapl_domain::dram,
+                msr_offsets::intel::dram_performance_status,
+                sensor_type::memory,
+                msr_interface::perf_status),
+            make_time_magic_config(cpu_vendor::intel,
+                rapl_domain::package,
+                msr_offsets::intel::package_performance_status,
+                sensor_type::cpu,
+                msr_interface::perf_status),
+            make_time_magic_config(cpu_vendor::intel,
+                rapl_domain::pp0,
+                msr_offsets::intel::pp0_performance_status,
+                sensor_type::cpu,
+                msr_interface::perf_status),
         }
     },
 };
@@ -144,19 +165,59 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
                     }
                 }
 
-                builder.with_id(L"MSR/%d/%s", c, to_string(d.first))
-                    .with_name(L"%s Core %d %s (MSR)", to_string(vendor), c,
-                        to_string(d.first))
-                    .with_path(path)
-                    .with_type(sensor_type::power | d.second.type)
-                    .produces(reading_type::floating_point)
-                    .measured_in(reading_unit::watt)
-                    .with_new_private_data<register_identifier>(
-                        d.second.data_location,
-                        msr_unit_divisor(dev, d.second));
+                builder.with_path(path)
+                    .produces(reading_type::floating_point);
+                auto raw_builder = builder;
+
+                switch (d.second.msr_if) {
+                case msr_interface::energy_status:
+                    builder.with_id(L"MSR/%d/%s/%s", c, to_string(d.first), to_string(d.second.msr_if))
+                        .with_name(L"%s Core %d %s %s (MSR)", to_string(vendor), c,
+                            to_string(d.first), to_string(d.second.msr_if))
+                        .measured_in(reading_unit::watt)
+                        .with_type(d.second.type | sensor_type::power)
+                        .with_new_private_data<register_identifier>(
+                            d.second.data_location,
+                            msr_unit_divisor(dev, d.second), &process_power);
+                    raw_builder.with_id(L"MSR/%d/%s/%s(RAW)", c, to_string(d.first), to_string(d.second.msr_if))
+                        .with_name(L"%s Core %d %s %s RAW (MSR)", to_string(vendor), c,
+                            to_string(d.first), to_string(d.second.msr_if))
+                        .measured_in(reading_unit::joule)
+                        .with_type(d.second.type | sensor_type::energy)
+                        .with_new_private_data<register_identifier>(
+                            d.second.data_location,
+                            msr_unit_divisor(dev, d.second), &process_raw);
+                    break;
+                case msr_interface::perf_status:
+                    builder.with_id(L"MSR/%d/%s/%s", c, to_string(d.first), to_string(d.second.msr_if))
+                        .with_name(L"%s Core %d %s %s (MSR)", to_string(vendor), c,
+                            to_string(d.first), to_string(d.second.msr_if))
+                        .measured_in(reading_unit::second)
+                        .with_type(d.second.type | sensor_type::time)
+                        .with_new_private_data<register_identifier>(
+                            d.second.data_location,
+                            msr_unit_divisor(dev, d.second), &process_time);
+                    raw_builder.with_id(L"MSR/%d/%s/%s(RAW)", c, to_string(d.first), to_string(d.second.msr_if))
+                        .with_name(L"%s Core %d %s %s RAW (MSR)", to_string(vendor), c,
+                            to_string(d.first), to_string(d.second.msr_if))
+                        .measured_in(reading_unit::second)
+                        .with_type(d.second.type | sensor_type::time)
+                        .with_new_private_data<register_identifier>(
+                            d.second.data_location,
+                            msr_unit_divisor(dev, d.second), &process_raw);
+                    break;
+                default:
+                    continue;
+                }
 
                 if (retval < cnt) {
                     dst[retval] = builder.build();
+                }
+
+                ++retval;
+
+                if (retval < cnt) {
+                    dst[retval] = raw_builder.build();
                 }
 
                 ++retval;
@@ -181,6 +242,40 @@ std::size_t PWROWG_DETAIL_NAMESPACE::msr_sensor::descriptions(
     }
 
     return retval;
+}
+
+
+std::pair<float, PWROWG_NAMESPACE::timestamp>
+PWROWG_DETAIL_NAMESPACE::msr_sensor::process_power(const float raw,
+    const timestamp now, const timestamp last_ts,
+    const float first_value, const float last_value) {
+    typedef std::chrono::duration<float> seconds_type;
+    // Compute the time elapsed since the last call to the method. We use
+    // that to compute the point in time for the sample in between the two
+    // calls as the timestamp of the sample we deliver.
+    const auto dt = now - last_ts;
+    const auto timestamp = last_ts + dt / 2;
+
+    auto dv = raw - last_value;
+    dv /= std::chrono::duration_cast<seconds_type>(dt).count();
+
+    return std::make_pair(dv, timestamp);
+}
+
+
+std::pair<float, PWROWG_NAMESPACE::timestamp>
+PWROWG_DETAIL_NAMESPACE::msr_sensor::process_raw(const float raw,
+    const timestamp now, const timestamp last_ts,
+    const float first_value, const float last_value) {
+    return std::make_pair(raw, now);
+}
+
+
+std::pair<float, PWROWG_NAMESPACE::timestamp>
+PWROWG_DETAIL_NAMESPACE::msr_sensor::process_time(const float raw,
+    const timestamp now, const timestamp last_ts,
+    const float first_value, const float last_value) {
+    return std::make_pair(raw - first_value, now);
 }
 
 
@@ -238,13 +333,15 @@ PWROWG_DETAIL_NAMESPACE::msr_sensor::msr_sensor(_In_z_ const wchar_t *path,
         _index(index),
         _registers(std::move(registers)) {
     this->_last_timestamp.reserve(this->_registers.size());
+    this->_first_value.reserve(this->_registers.size());
     this->_last_value.reserve(this->_registers.size());
 
     // Obtain the first reading, which (i) ensures the sensor is working and
     // (ii) provides the reference value to convert energy into power estimates.
     for (auto& r : this->_registers) {
-        this->_last_value.emplace_back(this->_device.read(r.offset)
-            / r.divisor);
+        auto const value = this->_device.read(r.offset) / r.divisor;
+        this->_first_value.emplace_back(value);
+        this->_last_value.emplace_back(value);
         this->_last_timestamp.push_back(timestamp::now());
     }
 }
@@ -271,14 +368,8 @@ void PWROWG_DETAIL_NAMESPACE::msr_sensor::sample(
         const auto value = this->_device.read(r.offset) / r.divisor;
         const auto now = timestamp::now();
 
-        // Compute the time elapsed since the last call to the method. We use
-        // that to compute the point in time for the sample in between the two
-        // calls as the timestamp of the sample we deliver.
-        const auto dt = now - this->_last_timestamp[i];
-        const auto timestamp = this->_last_timestamp[i] + dt / 2;
-
-        auto dv = value - this->_last_value[i];
-        dv /= std::chrono::duration_cast<seconds_type>(dt).count();
+        auto const [dv, timestamp] = r.processor(value, now, this->_last_timestamp[i],
+            this->_first_value[i], this->_last_value[i]);
 
         samples.emplace_back(this->_index + i, timestamp, dv);
 

@@ -311,6 +311,16 @@ extern POWER_OVERWHELMING_API bool is_tinkerforge_sensor(
 
 /// <summary>
 /// Answer whether the given <see cref="sensor_description" /> describes a
+/// sensor measuring time.
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><c>true</c> if the sensor is a time sensor, <c>false</c>
+/// otherwise.</returns>
+extern POWER_OVERWHELMING_API bool is_time_sensor(
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes a
 /// sensor for USB power delivery measurement.
 /// </summary>
 /// <param name="desc">The sensor to check.</param>
