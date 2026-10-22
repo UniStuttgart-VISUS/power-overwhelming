@@ -16,6 +16,7 @@ TEST_CLASS(adl_test) {
 
 public:
 
+#if defined(POWER_OVERWHELMING_WITH_ADL)
     TEST_METHOD(adl_wrapper) {
         try {
             auto& lib = detail::amd_display_library::instance();
@@ -23,7 +24,9 @@ public:
             Assert::IsNotNull(lib._ADL2_Adapter_AdapterInfo_Get, L"ADL2_Adapter_AdapterInfo_Get", LINE_INFO());
         } catch (...) { /* Test cannot run without AMD driver. */ }
     }
+#endif /* defined(POWER_OVERWHELMING_WITH_ADL) */
 
+#if defined(POWER_OVERWHELMING_WITH_ADLX)
     TEST_METHOD(adlx_wrapper) {
         try {
             auto& lib = detail::amd_device_library_extra::instance();
@@ -31,6 +34,8 @@ public:
             //lib._ADLXInitializeWithIncompatibleDriver
         } catch (...) { /* Test cannot run without AMD driver. */ }
     }
+#endif /* defined(POWER_OVERWHELMING_WITH_ADLX) */
+
 };
 
 PWROWG_TEST_NAMESPACE_END
