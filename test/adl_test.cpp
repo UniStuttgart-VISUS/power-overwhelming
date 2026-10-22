@@ -6,29 +6,31 @@
 
 #include "pch.h"
 
+#include "amd_device_library_extra.h"
+#include "amd_display_library.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
+PWROWG_TEST_NAMESPACE_BEGIN
 
-namespace visus {
-namespace power_overwhelming {
-namespace test {
+TEST_CLASS(adl_test) {
 
-    TEST_CLASS(adl_test) {
+public:
 
-    public:
+    TEST_METHOD(adl_wrapper) {
+        try {
+            auto& lib = detail::amd_display_library::instance();
+            Assert::IsNotNull(lib._ADL2_Adapter_Active_Get, L"ADL2_Adapter_Active_Get", LINE_INFO());
+            Assert::IsNotNull(lib._ADL2_Adapter_AdapterInfo_Get, L"ADL2_Adapter_AdapterInfo_Get", LINE_INFO());
+        } catch (...) { /* Test cannot run without AMD driver. */ }
+    }
 
-        //TEST_METHOD(test_exception) {
-        //    {
-        //        adl_exception ex(ADL_OK);
-        //        Assert::AreEqual("The ADL function completed successfully.", ex.what(), L"ADL_OK message", LINE_INFO());
-        //    }
-        //}
+    TEST_METHOD(adlx_wrapper) {
+        try {
+            auto& lib = detail::amd_device_library_extra::instance();
+            Assert::IsNotNull(lib._ADLXQueryVersion, L"ADLXQueryVersion", LINE_INFO());
+            //lib._ADLXInitializeWithIncompatibleDriver
+        } catch (...) { /* Test cannot run without AMD driver. */ }
+    }
+};
 
-        //TEST_METHOD(test_singleton) {
-        //    auto& a = adl::instance();
-        //}
-    };
-} /* namespace test */
-} /* namespace power_overwhelming */
-} /* namespace visus */
+PWROWG_TEST_NAMESPACE_END

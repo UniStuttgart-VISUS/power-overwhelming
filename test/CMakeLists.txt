@@ -45,6 +45,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     power_overwhelming
     usbpdtesterdriver)
 
+if (PWROWG_WithAdlx)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_WITH_ADLX)
+    target_link_libraries(${PROJECT_NAME} PRIVATE adlx)
+endif ()
+
 # The test requires access to the BenchLab headers to test the sensor.
 if (PWROWG_WithBenchlab)
     target_compile_definitions(${PROJECT_NAME} PRIVATE POWER_OVERWHELMING_WITH_BENCHLAB)
