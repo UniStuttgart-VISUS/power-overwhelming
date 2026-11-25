@@ -6,6 +6,8 @@
 
 #include "pch.h"
 
+#include <visus/pwrowg/tinkerforge_conversion_time_traits.h>
+
 #include <sensor_array_impl.h>
 #include <tinkerforge_sensor.h>
 
@@ -15,6 +17,20 @@ PWROWG_TEST_NAMESPACE_BEGIN
 TEST_CLASS(tinkerforge_test) {
 
 public:
+
+    TEST_METHOD(conversion_time_traits) {
+        using std::chrono::duration_cast;
+        using std::chrono::microseconds;
+
+        Assert::AreEqual(140ll, tinkerforge_conversion_time_traits<tinkerforge_conversion_time::microseconds_140>::value.count(), L"140 탎", LINE_INFO());
+        Assert::AreEqual(204ll, tinkerforge_conversion_time_traits<tinkerforge_conversion_time::microseconds_204>::value.count(), L"204 탎", LINE_INFO());
+        Assert::AreEqual(332ll, tinkerforge_conversion_time_traits<tinkerforge_conversion_time::microseconds_332>::value.count(), L"332 탎", LINE_INFO());
+        Assert::AreEqual(588ll, tinkerforge_conversion_time_traits<tinkerforge_conversion_time::microseconds_588>::value.count(), L"588 탎", LINE_INFO());
+        Assert::AreEqual(duration_cast<microseconds>(std::chrono::duration<double, std::milli>(1.1)).count(), tinkerforge_conversion_time_traits<tinkerforge_conversion_time::milliseconds_1_1>::value.count(), L"1.1 ms", LINE_INFO());
+        Assert::AreEqual(duration_cast<microseconds>(std::chrono::duration<double, std::milli>(2.116)).count(), tinkerforge_conversion_time_traits<tinkerforge_conversion_time::milliseconds_2_116>::value.count(), L"2.116 ms", LINE_INFO());
+        Assert::AreEqual(duration_cast<microseconds>(std::chrono::duration<double, std::milli>(4.156)).count(), tinkerforge_conversion_time_traits<tinkerforge_conversion_time::milliseconds_4_156>::value.count(), L"4.156 ms", LINE_INFO());
+        Assert::AreEqual(duration_cast<microseconds>(std::chrono::duration<double, std::milli>(8.244)).count(), tinkerforge_conversion_time_traits<tinkerforge_conversion_time::milliseconds_8_244>::value.count(), L"8.244 ms", LINE_INFO());
+    }
 
     TEST_METHOD(test_descriptions) {
         typedef detail::tinkerforge_sensor type;
