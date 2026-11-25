@@ -10,6 +10,8 @@
 
 #include "visus/pwrowg/convert_string.h"
 #include "visus/pwrowg/hmc8015_instrument.h"
+#include "visus/pwrowg/nvapi_configuration.h"
+#include "visus/pwrowg/nvapi_synchronous_configuration.h"
 #include "visus/pwrowg/string_functions.h"
 
 
@@ -159,7 +161,7 @@ bool PWROWG_NAMESPACE::is_msr_sensor(
  */
 bool PWROWG_NAMESPACE::is_nvapi_sensor(
         _In_ const sensor_description& desc) noexcept {
-    return detail::starts_with(desc.id(), L"NVAPI/");
+    return (desc.sensor_class() == nvapi_configuration::id);
 }
 
 
@@ -206,6 +208,16 @@ bool PWROWG_NAMESPACE::is_rtx_sensor(
         _In_ const sensor_description& desc) noexcept {
     return detail::starts_with(desc.id(), L"RTX/");
 }
+
+
+/*
+ * PWROWG_NAMESPACE::is_synchronous_nvapi_sensor
+ */
+bool PWROWG_NAMESPACE::is_synchronous_nvapi_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    return (desc.sensor_class() == nvapi_synchronous_configuration::id);
+}
+
 
 
 /*

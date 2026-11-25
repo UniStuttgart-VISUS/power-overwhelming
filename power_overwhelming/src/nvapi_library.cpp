@@ -37,6 +37,7 @@ PWROWG_DETAIL_NAMESPACE::nvapi_library::nvapi_library(void)
     __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_pci_identifiers);
     __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_gpu_slot_id);
     __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_initialise);
+    __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_get_perf_policies_status);
     __POWER_OVERWHELMING_NVAPI_FUNC(nvapi_register_power_callback);
 }
 

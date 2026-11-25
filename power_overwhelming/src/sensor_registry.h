@@ -35,6 +35,7 @@
 #include "marker_sensor.h"
 #include "msr_sensor.h"
 #include "nvapi_sensor.h"
+#include "nvapi_synchronous_sensor.h"
 #include "nvml_sensor.h"
 #include "powenetics_sensor.h"
 #include "rtx_sensor.h"
@@ -383,6 +384,7 @@ typedef basic_sensor_registry<
     msr_sensor,
 #if defined(POWER_OVERWHELMING_WITH_NVAPI)
     nvapi_sensor,
+    nvapi_synchronous_sensor,
 #endif /* defined(POWER_OVERWHELMING_WITH_NVAPI) */
 #if defined(POWER_OVERWHELMING_WITH_NVML)
     nvml_sensor,

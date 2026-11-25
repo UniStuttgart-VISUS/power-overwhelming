@@ -89,6 +89,16 @@ NvAPI_Status nvapi_initialise(void) {
 
 
 /*
+ * nvapi_get_perf_policies_status
+ */
+PWROVRNVAPI_API NvAPI_Status nvapi_get_perf_policies_status(
+        _In_ NvPhysicalGpuHandle handle,
+        _Inout_ NV_GPU_PERF_POLICIES_STATUS_PARAMS *status) {
+    return ::NvAPI_GPU_PerfPoliciesGetStatus(handle, status);
+}
+
+
+/*
  * ::nvapi_register_power_callback
  */
 NvAPI_Status nvapi_register_power_callback(

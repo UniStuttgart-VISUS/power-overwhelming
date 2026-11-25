@@ -300,6 +300,17 @@ extern POWER_OVERWHELMING_API bool is_rtx_sensor(
 
 /// <summary>
 /// Answer whether the given <see cref="sensor_description" /> describes a
+/// synchronous NVAPI-based sensor.
+/// </summary>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><see langword="true" /> if the sensor is NVAPI-based and synchronous,
+/// <see langword="false"> otherwise.
+/// </returns>
+extern POWER_OVERWHELMING_API bool is_synchronous_nvapi_sensor(
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes a
 /// Tinkerforge-based sensor.
 /// </summary>
 /// <param name="desc">The sensor to check.</param>

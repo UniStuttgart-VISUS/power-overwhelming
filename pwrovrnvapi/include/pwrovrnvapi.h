@@ -111,6 +111,19 @@ PWROVRNVAPI_API NvAPI_Status nvapi_get_gpu_slot_id(
     _In_ NvPhysicalGpuHandle handle);
 
 /// <summary>
+/// Get the current client power policies of the GPU associated with the given
+/// handle by calling <see cref="NvAPI_GPU_PerfPoliciesGetStatus" />.
+/// </summary>
+/// <param name="handle">A handle for a physical GPU.</param>
+/// <param name="status">A pointer to a variable that receives the current
+/// client power policies.</param>
+/// <returns>A status code indicating whether the operation was successful.
+/// </returns>
+PWROVRNVAPI_API NvAPI_Status nvapi_get_perf_policies_status(
+    _In_ NvPhysicalGpuHandle handle,
+    _Inout_ NV_GPU_PERF_POLICIES_STATUS_PARAMS *status);
+
+/// <summary>
 /// Calls <see cref="NvAPI_Initialize" />.
 /// </summary>
 /// <returns>A status code indicating whether the operation was successful.
