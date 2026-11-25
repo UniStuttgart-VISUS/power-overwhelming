@@ -94,6 +94,21 @@ inline bool is_any_sensor_type_of(
 }
 
 /// <summary>
+/// Answer whether the given <see cref="sensor_description" /> describes an
+/// inherently asynchronous NVAPI-based sensor.
+/// </summary>
+/// <remarks>
+/// Note that only the power sensor is asynchronous, use
+/// <see cref="is_nvapi_sensor" /> to check for any NVAPI-based sensor.
+/// </remarks>
+/// <param name="desc">The sensor to check.</param>
+/// <returns><see langword="true" /> if the sensor is NVAPI-based and
+/// asynchronous, <see langword="false" /> otherwise.
+/// </returns>
+extern POWER_OVERWHELMING_API bool is_asynchronous_nvapi_sensor(
+    _In_ const sensor_description& desc) noexcept;
+
+/// <summary>
 /// Answer whether the given <see cref="sensor_description" /> describes a
 /// sensor on the ElmorLab's BenchLab power measurement device.
 /// </summary>
@@ -235,7 +250,8 @@ inline bool is_none_of(_In_ const sensor_description& desc) {
 /// NVAPI-based sensor.
 /// </summary>
 /// <param name="desc">The sensor to check.</param>
-/// <returns><c>true</c> if the sensor is NVAPI-based, <c>false</c> otherwise.
+/// <returns><see langword="true" /> if the sensor is NVAPI-based,
+/// <see langword="false" /> otherwise.
 /// </returns>
 extern POWER_OVERWHELMING_API bool is_nvapi_sensor(
     _In_ const sensor_description& desc) noexcept;

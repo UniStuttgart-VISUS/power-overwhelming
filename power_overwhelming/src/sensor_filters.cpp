@@ -26,6 +26,16 @@ bool PWROWG_NAMESPACE::is_adl_sensor(
 
 
 /*
+ * PWROWG_NAMESPACE::is_asynchronous_nvapi_sensor
+ */
+bool PWROWG_NAMESPACE::is_asynchronous_nvapi_sensor(
+        _In_ const sensor_description& desc) noexcept {
+    return (desc.sensor_class() == nvapi_configuration::id);
+}
+
+
+
+/*
  * PWROWG_NAMESPACE::is_benchlab_sensor
  */
 bool PWROWG_NAMESPACE::is_benchlab_sensor(
@@ -161,7 +171,8 @@ bool PWROWG_NAMESPACE::is_msr_sensor(
  */
 bool PWROWG_NAMESPACE::is_nvapi_sensor(
         _In_ const sensor_description& desc) noexcept {
-    return (desc.sensor_class() == nvapi_configuration::id);
+    return (is_asynchronous_nvapi_sensor(desc)
+        || is_synchronous_nvapi_sensor(desc));
 }
 
 
