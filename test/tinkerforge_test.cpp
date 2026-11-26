@@ -7,6 +7,7 @@
 #include "pch.h"
 
 #include <visus/pwrowg/tinkerforge_conversion_time_traits.h>
+#include <visus/pwrowg/tinkerforge_sample_averaging_traits.h>
 
 #include <sensor_array_impl.h>
 #include <tinkerforge_sensor.h>
@@ -30,6 +31,17 @@ public:
         Assert::AreEqual(duration_cast<microseconds>(std::chrono::duration<double, std::milli>(2.116)).count(), tinkerforge_conversion_time_traits<tinkerforge_conversion_time::milliseconds_2_116>::value.count(), L"2.116 ms", LINE_INFO());
         Assert::AreEqual(duration_cast<microseconds>(std::chrono::duration<double, std::milli>(4.156)).count(), tinkerforge_conversion_time_traits<tinkerforge_conversion_time::milliseconds_4_156>::value.count(), L"4.156 ms", LINE_INFO());
         Assert::AreEqual(duration_cast<microseconds>(std::chrono::duration<double, std::milli>(8.244)).count(), tinkerforge_conversion_time_traits<tinkerforge_conversion_time::milliseconds_8_244>::value.count(), L"8.244 ms", LINE_INFO());
+    }
+
+    TEST_METHOD(sample_avg_traits) {
+        Assert::AreEqual(std::size_t(1), tinkerforge_sample_averaging_traits<tinkerforge_sample_averaging::average_of_1>::value, L"1 sample", LINE_INFO());
+        Assert::AreEqual(std::size_t(4), tinkerforge_sample_averaging_traits<tinkerforge_sample_averaging::average_of_4>::value, L"4 samples", LINE_INFO());
+        Assert::AreEqual(std::size_t(16), tinkerforge_sample_averaging_traits<tinkerforge_sample_averaging::average_of_16>::value, L"16 samples", LINE_INFO());
+        Assert::AreEqual(std::size_t(64), tinkerforge_sample_averaging_traits<tinkerforge_sample_averaging::average_of_64>::value, L"64 samples", LINE_INFO());
+        Assert::AreEqual(std::size_t(128), tinkerforge_sample_averaging_traits<tinkerforge_sample_averaging::average_of_128>::value, L"128 samples", LINE_INFO());
+        Assert::AreEqual(std::size_t(256), tinkerforge_sample_averaging_traits<tinkerforge_sample_averaging::average_of_256>::value, L"256 samples", LINE_INFO());
+        Assert::AreEqual(std::size_t(512), tinkerforge_sample_averaging_traits<tinkerforge_sample_averaging::average_of_512>::value, L"512 samples", LINE_INFO());
+        Assert::AreEqual(std::size_t(1024), tinkerforge_sample_averaging_traits<tinkerforge_sample_averaging::average_of_1024>::value, L"1024 samples", LINE_INFO());
     }
 
     TEST_METHOD(test_descriptions) {

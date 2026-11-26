@@ -19,8 +19,12 @@ PWROWG_NAMESPACE_BEGIN
 /// Possible values for averaging samples of Tinkerforge sensors.
 /// </summary>
 /// <remarks>
-/// Constants are taken from
+/// <para>Constants are taken from
 /// https://www.tinkerforge.com/de/doc/Software/Bricklets/VoltageCurrentV2_Bricklet_C.html#voltage-current-v2-bricklet-c-api
+/// </para>
+/// <para>This enumeration should not change as the hardware is fixed. However,
+/// make sure that the <see cref="tinkerforge_conversion_time" /> are in sync
+/// whenever changing something in this enumeration.</para>
 /// </remarks>
 enum class tinkerforge_sample_averaging : std::uint8_t {
 

@@ -1,5 +1,5 @@
 ﻿// <copyright file="tinkerforge_conversion_time.h" company="Visualisierungsinstitut der Universität Stuttgart">
-// Copyright © 2022 - 2025 Visualisierungsinstitut der Universität Stuttgart.
+// Copyright © 2022 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
 // <author>Christoph Müller</author>
@@ -18,6 +18,11 @@ PWROWG_NAMESPACE_BEGIN
 /// <summary>
 /// Possible conversion times for the Tinkerforge ADCs.
 /// </summary>
+/// <remarks>
+/// This enumeration should not change as the hardware is fixed. However, make
+/// sure that the <see cref="tinkerforge_conversion_time" /> are in sync
+/// whenever changing something in this enumeration.
+/// </remarks>
 enum class tinkerforge_conversion_time : std::uint8_t {
 
     /// <summary>
