@@ -89,6 +89,11 @@ enum class sensor_type : std::uint32_t {
     energy = 0x00200000,
 
     /// <summary>
+    /// The sensor measures time in seconds.
+    /// </summary>
+    time = 0x00400000,
+
+    /// <summary>
     /// The sensor is a software sensor which obtains its data from the driver
     /// or operating system.
     /// </summary>

@@ -78,6 +78,17 @@ namespace intel {
 } /* namespace msr_units */
 
 
+enum class msr_interface : std::uint32_t {
+    power_limit = 0,
+    energy_status,
+    perf_status, // Optional
+    power_info, // Optional
+    policy, // Optional
+};
+
+_Ret_z_ const wchar_t* to_string(
+    _In_ const msr_interface msr_if);
+
 /// <summary>
 /// A container for all the magic offsets required to retrieve and interpret
 /// data from an MSR device file.
@@ -93,6 +104,8 @@ struct msr_magic_config final {
     /// The type of sendor we want to report to users of Power Overwhelming.
     /// </summary>
     sensor_type type;
+
+    msr_interface msr_if;
 
     /// <summary>
     /// Specifies the offset into the MSR file where the unit divisors are
@@ -138,7 +151,33 @@ PWROWG_TEST_API msr_magic_config_entry make_energy_magic_config(
     _In_ const cpu_vendor vendor,
     _In_ const rapl_domain domain,
     _In_ const std::streamoff data_location,
-    _In_ const sensor_type type);
+    _In_ const sensor_type type,
+    _In_ const msr_interface msr_if);
+
+/// <summary>
+/// Creates a <see cref="msr_magic_config" /> for a CPU from the specified
+/// vendor and the power unit and wraps it into a pair for the initialiser
+/// of a lookup table.
+/// </summary>
+inline PWROWG_TEST_API msr_magic_config_entry make_power_magic_config(
+    _In_ const cpu_vendor vendor,
+    _In_ const rapl_domain domain,
+    _In_ const std::streamoff data_location,
+    _In_ const sensor_type type,
+    _In_ const msr_interface msr_if);
+
+/// <summary>
+/// Creates a <see cref="msr_magic_config" /> for a CPU from the specified
+/// vendor and the time unit and wraps it into a pair for the initialiser
+/// of a lookup table.
+/// </summary>
+inline PWROWG_TEST_API msr_magic_config_entry make_time_magic_config(
+    _In_ const cpu_vendor vendor,
+    _In_ const rapl_domain domain,
+    _In_ const std::streamoff data_location,
+    _In_ const sensor_type type,
+    _In_ const msr_interface msr_if);
+
 
 PWROWG_DETAIL_NAMESPACE_END
 

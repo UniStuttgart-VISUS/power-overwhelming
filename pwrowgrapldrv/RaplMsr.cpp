@@ -1,4 +1,4 @@
-﻿// <copyright file="RaplMsr.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
+// <copyright file="RaplMsr.cpp" company="Visualisierungsinstitut der Universität Stuttgart">
 // Copyright © 2023 - 2026 Visualisierungsinstitut der Universität Stuttgart.
 // Licensed under the MIT licence. See LICENCE file for details.
 // </copyright>
@@ -8,7 +8,6 @@
 
 #include <intrin.h>
 #include <ntddk.h>
-
 
 // https://github.com/amd/amd_energy/blob/master/amd_energy.c
 // https://github.com/deater/uarch-configure/blob/master/rapl-read/rapl-read.c
